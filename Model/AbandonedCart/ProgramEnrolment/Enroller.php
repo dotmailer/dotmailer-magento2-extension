@@ -2,7 +2,9 @@
 
 namespace Dotdigitalgroup\Email\Model\AbandonedCart\ProgramEnrolment;
 
+use Dotdigitalgroup\Email\Model\ResourceModel\Automation\CollectionFactory as AutomationCollectionFactory;
 use Dotdigitalgroup\Email\Model\Sync\SetsSyncFromTime;
+use Dotdigitalgroup\Email\Model\AbandonedCart\TimeLimit;
 
 class Enroller
 {
@@ -39,14 +41,25 @@ class Enroller
     private $cartInsight;
 
     /**
+     * @var AutomationCollectionFactory
+     */
+    private $automationFactory;
+
+    /**
+     * @var TimeLimit
+     */
+    private $timeLimit;
+
+    /**
      * Enroller constructor.
-     *
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory $collectionFactory
      * @param \Dotdigitalgroup\Email\Helper\Data $data
      * @param Interval $interval
      * @param Saver $saver
      * @param Rules $rules
      * @param \Dotdigitalgroup\Email\Model\AbandonedCart\CartInsight\Data $cartInsight
+     * @param AutomationCollectionFactory $automationFactory
+     * @param TimeLimit $timeLimit
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory $collectionFactory,
@@ -54,7 +67,9 @@ class Enroller
         Interval $interval,
         Saver $saver,
         Rules $rules,
-        \Dotdigitalgroup\Email\Model\AbandonedCart\CartInsight\Data $cartInsight
+        \Dotdigitalgroup\Email\Model\AbandonedCart\CartInsight\Data $cartInsight,
+        AutomationCollectionFactory $automationFactory,
+        TimeLimit $timeLimit
     ) {
         $this->orderCollection = $collectionFactory;
         $this->helper = $data;
@@ -62,6 +77,8 @@ class Enroller
         $this->saver = $saver;
         $this->rules = $rules;
         $this->cartInsight = $cartInsight;
+        $this->automationFactory = $automationFactory;
+        $this->timeLimit = $timeLimit;
     }
 
     public function process()
@@ -98,7 +115,9 @@ class Enroller
 
         foreach ($quoteCollection as $batchQuoteCollection) {
             foreach ($batchQuoteCollection as $quote) {
-                $this->saver->save($quote, $store, $programId);
+                if ($quote->hasItems()) {
+                    $this->saveIfNotAlreadyInDatabase($quote, $store, $programId);
+                }
 
                 // Confirm that a contact has been created on EC
                 $contact = $this->helper->getOrCreateContact($quote->getCustomerEmail(), $store->getWebsiteId());
@@ -127,7 +146,7 @@ class Enroller
 
         $initialCollection = $this->orderCollection
             ->create()
-            ->getStoreQuotesForGuestsAndCustomers($storeId, $updated);
+            ->getStoreQuotesForAutomationEnrollmentGuestsAndCustomers($storeId, $updated);
 
         $page = 1;
         $collectionSize = $initialCollection->getSize();
@@ -136,7 +155,7 @@ class Enroller
 
             $salesCollection = $this->orderCollection
                 ->create()
-                ->getStoreQuotesForGuestsAndCustomers($storeId, $updated);
+                ->getStoreQuotesForAutomationEnrollmentGuestsAndCustomers($storeId, $updated);
 
             $salesCollection->setPageSize($batchSize)->setCurPage($page);
             $this->rules->apply($salesCollection, $storeId);
@@ -144,5 +163,46 @@ class Enroller
             $page++;
             yield $salesCollection;
         }
+    }
+
+    /**
+     * @param \Magento\Quote\Model\ResourceModel\Quote
+     * @param \Magento\Store\Api\Data\StoreInterface $store
+     * @param int $programId
+     * @throws \Exception
+     */
+    private function saveIfNotAlreadyInDatabase($quote, $store, $programId)
+    {
+        if ($this->isAutomationFoundInsideTimeLimit($quote, $store->getId())) {
+            return;
+        }
+
+        $this->saver->save($quote, $store, $programId);
+    }
+
+    /**
+     * @param \Magento\Quote\Model\ResourceModel\Quote $quote
+     * @param string $storeId
+     * @return bool
+     */
+    private function isAutomationFoundInsideTimeLimit($quote, $storeId)
+    {
+        $updated = $this->timeLimit->getAbandonedCartTimeLimit($storeId);
+
+        if (!$updated) {
+            return false;
+        }
+
+        try {
+            $automations = $this->automationFactory->create()
+                ->getAbandonedCartAutomationsForContactByInterval(
+                    $quote->getCustomerEmail(),
+                    $updated
+                );
+        } catch (\Exception $e) {
+            return false;
+        }
+
+        return $automations->getSize();
     }
 }

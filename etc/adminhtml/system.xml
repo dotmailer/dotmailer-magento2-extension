@@ -1366,13 +1366,13 @@
                        showInWebsite="1" showInDefault="1">
                     <label>Allow abandoned cart for non-subscribed contacts</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <comment><![CDATA[Enable this if you want to allow abandoned cart emails to be sent also to contacts who haven't opted in (This will always exclude unsubscribed contacts)]]></comment>
+                    <comment><![CDATA[Enable this if you want to allow abandoned cart emails to be sent also to contacts who haven't opted in. (This will always exclude unsubscribed contacts).]]></comment>
                 </field>
                 <field id="cart_limit" translate="label" sortOrder="30" type="select" showInStore="0" showInWebsite="1"
                        showInDefault="1">
                     <label>Abandoned Cart Limit</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Cartlimit</source_model>
-                    <comment><![CDATA[Do not send an abandoned cart email to a contact if they have received a previous abandoned cart email in previous x hours.]]></comment>
+                    <comment><![CDATA[Do not send an abandoned cart email to a contact if they have received a previous abandoned cart email in the last x hours. Do not re-enrol a contact to a program if they were already enrolled in the last x hours.]]></comment>
                 </field>
                 <field id="link_back_to_cart" translate="label" sortOrder="40" type="select" showInStore="0"
                        showInWebsite="1" showInDefault="1">

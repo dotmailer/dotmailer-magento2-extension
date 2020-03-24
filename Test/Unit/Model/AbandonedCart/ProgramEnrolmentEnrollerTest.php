@@ -9,6 +9,8 @@ use Dotdigitalgroup\Email\Model\AbandonedCart\ProgramEnrolment\Enroller;
 use Dotdigitalgroup\Email\Model\AbandonedCart\ProgramEnrolment\Interval;
 use Dotdigitalgroup\Email\Model\AbandonedCart\ProgramEnrolment\Rules;
 use Dotdigitalgroup\Email\Model\AbandonedCart\ProgramEnrolment\Saver;
+use Dotdigitalgroup\Email\Model\AbandonedCart\TimeLimit;
+use Dotdigitalgroup\Email\Model\ResourceModel\Automation\CollectionFactory as AutomationCollectionFactory;
 use Dotdigitalgroup\Email\Model\ResourceModel\Order\Collection;
 use Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory;
 use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
@@ -66,6 +68,21 @@ class ProgramEnrolmentEnrollerTest extends TestCase
      */
     protected $objectManager;
 
+    /**
+     * @var \PHPUnit\Framework\MockObject\MockObject
+     */
+    private $automationCollectionFactoryMock;
+
+    /**
+     * @var \PHPUnit\Framework\MockObject\MockObject
+     */
+    private $timeLimitMock;
+
+    /**
+     * @var \PHPUnit\Framework\MockObject\MockObject
+     */
+    private $quoteMock;
+
     protected function setUp()
     {
         $this->orderCollectionFactoryMock = $this->getMockBuilder(CollectionFactory::class)
@@ -85,8 +102,17 @@ class ProgramEnrolmentEnrollerTest extends TestCase
 
         //We need to mock an Object to behave as a Collection (of Quote objects) in order to pass the tests
         $this->objectManager = new ObjectManager($this);
-        $quoteMock = $this->createMock(\Magento\Quote\Model\Quote::class);
-        $this->orderCollectionMock = $this->objectManager->getCollectionMock(Collection::class, [$quoteMock]);
+        $this->quoteMock = $this->createMock(\Magento\Quote\Model\Quote::class);
+        $this->orderCollectionMock = $this->objectManager->getCollectionMock(Collection::class, [$this->quoteMock]);
+
+        $this->automationCollectionFactoryMock = $this->getMockBuilder(AutomationCollectionFactory::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['create','getAbandonedCartAutomationsForContactByInterval','getSize'])
+            ->getMock();
+
+        $this->timeLimitMock = $this->createMock(TimeLimit::class);
+
+        $this->prepare();
 
         $this->model = new Enroller(
             $this->orderCollectionFactoryMock,
@@ -94,11 +120,97 @@ class ProgramEnrolmentEnrollerTest extends TestCase
             $this->interval,
             $this->saver,
             $this->rules,
-            $this->cartInsight
+            $this->cartInsight,
+            $this->automationCollectionFactoryMock,
+            $this->timeLimitMock
         );
     }
 
-    public function testAutomationIsSavedIfACProgramIdSet()
+    public function testAutomationIsNotSavedIfQuoteHasNoItems()
+    {
+        $this->quoteMock->expects($this->atLeastOnce())
+            ->method('hasItems')
+            ->willReturn(false);
+
+        $this->saver->expects($this->never())
+            ->method('save');
+
+        $this->model->process();
+    }
+
+    public function testAutomationIsSavedIfQuoteHasItemsAndNoAbandonedCartLimit()
+    {
+        $this->quoteMock->expects($this->atLeastOnce())
+            ->method('hasItems')
+            ->willReturn(true);
+
+        $this->timeLimitMock->expects($this->atLeastOnce())
+            ->method('getAbandonedCartTimeLimit')
+            ->willReturn(null);
+
+        $this->saver->expects($this->atLeastOnce())
+            ->method('save');
+
+        $this->model->process();
+    }
+
+    public function testAutomationIsSavedIfQuoteHasItemsAndAbandonedCartLimitPasses()
+    {
+        $this->quoteMock->expects($this->atLeastOnce())
+            ->method('hasItems')
+            ->willReturn(true);
+
+        $this->timeLimitMock->expects($this->atLeastOnce())
+            ->method('getAbandonedCartTimeLimit')
+            ->willReturn('6');
+
+        $this->automationCollectionFactoryMock->expects($this->atLeastOnce())
+            ->method('create')
+            ->willReturn($this->automationCollectionFactoryMock);
+
+        $this->automationCollectionFactoryMock->expects($this->atLeastOnce())
+            ->method('getAbandonedCartAutomationsForContactByInterval')
+            ->willReturn($this->automationCollectionFactoryMock);
+
+        $this->automationCollectionFactoryMock->expects($this->atLeastOnce())
+            ->method('getSize')
+            ->willReturn(0);
+
+        $this->saver->expects($this->atLeastOnce())
+            ->method('save');
+
+        $this->model->process();
+    }
+
+    public function testAutomationIsNotSavedIfQuoteHasItemsAndAbandonedCartLimitFails()
+    {
+        $this->quoteMock->expects($this->atLeastOnce())
+            ->method('hasItems')
+            ->willReturn(true);
+
+        $this->timeLimitMock->expects($this->atLeastOnce())
+            ->method('getAbandonedCartTimeLimit')
+            ->willReturn('6');
+
+        $this->automationCollectionFactoryMock->expects($this->atLeastOnce())
+            ->method('create')
+            ->willReturn($this->automationCollectionFactoryMock);
+
+        $this->automationCollectionFactoryMock->expects($this->atLeastOnce())
+            ->method('getAbandonedCartAutomationsForContactByInterval')
+            ->willReturn($this->automationCollectionFactoryMock);
+
+        $this->automationCollectionFactoryMock->expects($this->atLeastOnce())
+            ->method('getSize')
+            ->willReturn(1);
+
+        $this->saver->expects($this->never())
+            ->method('save');
+
+        $this->model->process();
+    }
+
+    private function prepare()
     {
         $storeId = 1;
         $programId = "123456";
@@ -154,7 +266,7 @@ class ProgramEnrolmentEnrollerTest extends TestCase
             ->willReturn($this->orderCollectionMock);
 
         $this->orderCollectionMock->expects($this->atLeastOnce())
-            ->method('getStoreQuotesForGuestsAndCustomers')
+            ->method('getStoreQuotesForAutomationEnrollmentGuestsAndCustomers')
             ->with(
                 $storeId,
                 $updated
@@ -173,9 +285,6 @@ class ProgramEnrolmentEnrollerTest extends TestCase
             ->method('setCurPage')
             ->willReturn($this->orderCollectionMock);
 
-        $this->saver->expects($this->atLeastOnce())
-            ->method('save');
-
         $this->dataHelperMock->expects($this->atLeastOnce())
             ->method('getOrCreateContact')
             ->willReturn(true);
@@ -186,7 +295,5 @@ class ProgramEnrolmentEnrollerTest extends TestCase
         $this->rules
             ->method('apply')
             ->with($this->orderCollectionMock, $storeId);
-
-        $this->model->process();
     }
 }
