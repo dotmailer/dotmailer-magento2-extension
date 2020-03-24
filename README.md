@@ -19,21 +19,6 @@ You are welcome to contribute to Engagement Cloud for Magento! You can either:
 - Fix a bug: please clone and use our [Develop branch](https://github.com/dotmailer/dotmailer-magento2-extension/tree/develop) to submit your Pull Request
 - Request a feature on our [roadmap](https://roadmap.dotdigital.com)
 
-# 4.5.0
-
-###### What's new
-- Configurable products now have a stock figure that is the sum of their child products.
-- We have added a plugin to detect stock updates that are performed outside of the Magento admin, that is, by third-party code.
-- Resource names across all dotdigital admin pages are now consistent. 
-- We added MFTF tests for our abandoned cart and review exclusion rules.
-
-###### Bug fixes
-- Missing or defunct product attribute sets now won't break the order sync. 
-- We added an extra check to our `MessagePlugin`  class to fix a potential `setEncoding` cron error.
-- We fixed a bug with the wishlist cron that could result in wishlists syncing without products.
-- `Single_Delete` importer jobs would always be marked as _Failed_; this has been fixed.
-- We now apply CSS styles to our coupon EDC inline, to ensure they are correctly added in Gmail.
-
 # 4.3.6
 
 ###### What's new
