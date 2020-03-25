@@ -25,7 +25,7 @@ interface CouponAttributeInterface extends \Magento\Framework\Api\ExtensionAttri
     public function setEmail($email);
 
     /**
-     * @return \DateTime|null
+     * @return string|null
      */
     public function getExpiresAt();
 
