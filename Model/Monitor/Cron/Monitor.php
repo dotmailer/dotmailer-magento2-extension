@@ -79,6 +79,4 @@ class Monitor implements MonitorInterface
 
         return array_unique($rowsWithError);
     }
-
 }
-

@@ -1,21 +1,20 @@
 <?php
 /** @var \Dotdigitalgroup\Email\Block\Basket $block */
-// @codingStandardsIgnoreFile
 ?>
 <?php $items = $block->getBasketItems(); ?>
-<?php if ($items) : ?>
+<?php if ($items): ?>
     <?php $dynamicStyle = $block->getDynamicStyles(); ?>
     <style>
         .product-name {
             color: <?= $block->escapeHtml($dynamicStyle['nameColor']); ?>;
             font-size: <?= $block->escapeHtml($dynamicStyle['fontSize']); ?>;
-            <?php if (in_array('bold', $dynamicStyle['nameStyle'])) : ?>
+            <?php if (in_array('bold', $dynamicStyle['nameStyle'])): ?>
                 font-weight: bold;
             <?php endif; ?>
-            <?php if (in_array('italic', $dynamicStyle['nameStyle'])) : ?>
+            <?php if (in_array('italic', $dynamicStyle['nameStyle'])): ?>
                 font-style: italic;
             <?php endif; ?>
-            <?php if (in_array('underline', $dynamicStyle['nameStyle'])) : ?>
+            <?php if (in_array('underline', $dynamicStyle['nameStyle'])): ?>
                 text-decoration: underline;
             <?php endif; ?>
             padding: 1px;
@@ -28,13 +27,13 @@
             font-size: <?= $block->escapeHtml($dynamicStyle['priceFontSize']); ?>;
             padding: 5px;
             border-bottom: 1px solid #cbd3d4;
-            <?php if (in_array('bold', $dynamicStyle['priceStyle'])) : ?>
+            <?php if (in_array('bold', $dynamicStyle['priceStyle'])): ?>
                 font-weight: bold;
             <?php endif; ?>
-            <?php if (in_array('italic', $dynamicStyle['priceStyle'])) : ?>
+            <?php if (in_array('italic', $dynamicStyle['priceStyle'])): ?>
                 font-style: italic;
             <?php endif; ?>
-            <?php if (in_array('underline', $dynamicStyle['priceStyle'])) : ?>
+            <?php if (in_array('underline', $dynamicStyle['priceStyle'])): ?>
                 text-decoration: underline;
             <?php endif; ?>
         }
@@ -42,13 +41,13 @@
         .product-url {
             color: <?= $block->escapeHtml($dynamicStyle['urlColor']); ?>;
             font-size: <?= $block->escapeHtml($dynamicStyle['urlFontSize']); ?>
-            <?php if (in_array('bold', $dynamicStyle['linkStyle'])) : ?>
+            <?php if (in_array('bold', $dynamicStyle['linkStyle'])): ?>
                 font-weight: bold;
             <?php endif; ?>
-            <?php if (in_array('italic', $dynamicStyle['linkStyle'])) : ?>
+            <?php if (in_array('italic', $dynamicStyle['linkStyle'])): ?>
                 font-style: italic;
             <?php endif; ?>
-            <?php if (in_array('underline', $dynamicStyle['linkStyle'])) : ?>
+            <?php if (in_array('underline', $dynamicStyle['linkStyle'])): ?>
                 text-decoration: underline;
             <?php endif; ?>
         }
@@ -56,13 +55,13 @@
         .other-text {
             color: <?= $block->escapeHtml($dynamicStyle['otherColor']); ?>;
             font-size: <?= $block->escapeHtml($dynamicStyle['otherFontSize']); ?>;
-            <?php if (in_array('bold', $dynamicStyle['otherStyle'])) : ?>
+            <?php if (in_array('bold', $dynamicStyle['otherStyle'])): ?>
                 font-weight: bold;
             <?php endif; ?>
-            <?php if (in_array('italic', $dynamicStyle['otherStyle'])) : ?>
+            <?php if (in_array('italic', $dynamicStyle['otherStyle'])): ?>
                 font-style: italic;
             <?php endif; ?>
-            <?php if (in_array('underline', $dynamicStyle['otherStyle'])) : ?>
+            <?php if (in_array('underline', $dynamicStyle['otherStyle'])): ?>
                 text-decoration: underline;
             <?php endif; ?>
         }
@@ -190,16 +189,19 @@
                 <?= $block->escapeHtml(__('Total')); ?>
             </th>
         </tr>
-        <?php foreach ($items as $item) : ?>
+        <?php foreach ($items as $item): ?>
             <tr>
                 <td class="product-image">
-                    <img src="<?= $block->getProductImageUrl($item['product_details']) ?>" alt="<?= $item['product']->getName() ?>">
+                    <?php //@codingStandardsIgnoreStart ?>
+                    <img src="<?= $block->getProductImageUrl($item['product_details']) ?>"
+                         alt="<?= $item['product']->getName() ?>">
+                    <?php //@codingStandardsIgnoreEnd ?>
                 </td>
                 <td class="product-name">
                     <a class="product-url" href="<?= $block->escapeHtml($item['productUrl']); ?>">
                     <?= $block->escapeHtml($item['product']->getName())
                         . '</a></br>'
-                        ?></td>
+                    ?></td>
                 <td class="product-price quantity">
                     <?= (int) $item['qty']; ?>
                 </td>
@@ -213,11 +215,13 @@
             <td class="hidemob"></td>
             <td class="hidemob"></td>
             <td class="other-text other-text-padding">
+                <?php //@codingStandardsIgnoreStart ?>
                 <?= $block->getGrandTotalWithCurrency() ?>
+                <?php //@codingStandardsIgnoreEnd ?>
             </td>
         </tr>
     </table>
-    <?php if ($block->canShowUrl()) : ?>
+    <?php if ($block->canShowUrl()): ?>
         <p class="cart-link">
             <a href="<?= $block->escapeUrl($block->getUrlForLink()); ?>" class="product-url">
                 <strong>

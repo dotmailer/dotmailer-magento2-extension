@@ -415,10 +415,10 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
 
         //replace the api with the app prefix from the domain name
         return $this->regionAwarePortalUrl = str_replace(
-                ['api', 'dotmailer'],
-                [$appSubDomain, 'dotdigital'],
-                $apiEndpoint
-            ) . '/';
+            ['api', 'dotmailer'],
+            [$appSubDomain, 'dotdigital'],
+            $apiEndpoint
+        ) . '/';
     }
 
     /**

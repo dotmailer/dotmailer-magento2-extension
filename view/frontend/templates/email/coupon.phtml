@@ -4,16 +4,16 @@
  */
 ?>
 <?php $coupon = $block->generateCoupon(); ?>
-<?php if ($coupon) : ?>
+<?php if ($coupon): ?>
     <?php $style = $block->getStyle(); ?>
     <div class="edc-coupon" style="
         color: <?= $block->escapeHtml($block->getCouponColor());?>;
         font-size: <?= $block->escapeHtml($block->getFontSize());?>;
-    <?php if (in_array('bold', $style)) : ?>
+    <?php if (in_array('bold', $style)): ?>
         font-weight: bold;
-    <?php endif; ?><?php if (in_array('italic', $style)) : ?>
+    <?php endif; ?><?php if (in_array('italic', $style)): ?>
         font-style: italic;
-    <?php endif; ?><?php if (in_array('underline', $style)) : ?>
+    <?php endif; ?><?php if (in_array('underline', $style)): ?>
         text-decoration: underline;
     <?php endif; ?>
         font-family: <?= $block->getHtmlFontFamily();?>;

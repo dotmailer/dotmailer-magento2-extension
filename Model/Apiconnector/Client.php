@@ -2,8 +2,6 @@
 
 namespace Dotdigitalgroup\Email\Model\Apiconnector;
 
-use Dotdigitalgroup\Email\Logger\Logger;
-
 /**
  * dotdigital REST V2 api client.
  *
@@ -97,7 +95,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      */
     public function getApiEndpoint()
     {
-        if (is_null($this->apiEndpoint)) {
+        if ($this->apiEndpoint === null) {
             throw new \Magento\Framework\Exception\LocalizedException(
                 __('Dotmailer connector API endpoint cannot be empty.')
             );
@@ -166,11 +164,12 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      * @param string|int $addressBookId
      *
      * @return mixed
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function postAddressBookContactsImport($filename, $addressBookId)
     {
         $url = $this->getApiEndpoint() . "/v2/address-books/{$addressBookId}/contacts/import";
-
+        // @codingStandardsIgnoreStart
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
         curl_setopt(
@@ -178,22 +177,27 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
             CURLOPT_USERPWD,
             $this->getApiUsername() . ':' . $this->getApiPassword()
         );
+        // @codingStandardsIgnoreEnd
 
         //case the deprecation of @filename for uploading
         if (function_exists('curl_file_create')) {
             $args['file']
+                // @codingStandardsIgnoreStart
                 = curl_file_create(
                     $this->fileHelper->getFilePathWithFallback($filename),
                     'text/csv'
                 );
             curl_setopt($ch, CURLOPT_POSTFIELDS, $args);
+        // @codingStandardsIgnoreEnd
         } else {
             //standard use of curl file
+            // @codingStandardsIgnoreLine
             curl_setopt($ch, CURLOPT_POSTFIELDS, [
                 'file' => '@' . $this->fileHelper->getFilePathWithFallback($filename),
             ]);
         }
 
+        // @codingStandardsIgnoreStart
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
@@ -201,11 +205,13 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
             ]);
         // send contacts to address book
         $result = curl_exec($ch);
+        // @codingStandardsIgnoreEnd
+
         $result = json_decode($result);
 
         if (isset($result->message)) {
             $message = 'postAddressBookContactsImport' . $addressBookId . ' file : ' . $filename
-                . ' ,user : ' . $this->getApiUsername() . '. ' .  $result->message;
+                . ' ,user : ' . $this->getApiUsername() . '. ' . $result->message;
             $this->helper->debug('postAddressBookContactsImport', [$message]);
         }
 
@@ -219,6 +225,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      * @param string|int $apiContact
      *
      * @return mixed|null
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function postAddressBookContacts($addressBookId, $apiContact)
     {
@@ -262,6 +269,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      * @param string|int $contactId
      *
      * @return null
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function deleteAddressBookContact($addressBookId, $contactId)
     {
@@ -283,6 +291,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      * @param string|int $importId
      *
      * @return mixed
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getContactsImportReport($importId)
     {
@@ -307,6 +316,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      * @param string $email
      *
      * @return mixed
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getContactByEmail($email)
     {
@@ -433,6 +443,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     /**
      * @param int $campaignId
      * @return mixed
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getCampaignById($campaignId)
     {
@@ -453,6 +464,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     /**
      * @param int $campaignId
      * @return mixed
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getCampaignByIdWithPreparedContent($campaignId)
     {
@@ -479,9 +491,10 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      * @param        $data         string/array
      * @param string $type string, numeric, date, boolean
      * @param string $visibility public, private
-     * @param bool   $defaultValue
+     * @param bool $defaultValue
      *
      * @return object
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function postDataFields(
         $data,
@@ -525,6 +538,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      * Lists the data fields within the account.
      *
      * @return mixed
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getDataFields()
     {
@@ -548,6 +562,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      * @param array $data
      *
      * @return object
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function updateContact($contactId, $data)
     {
@@ -642,6 +657,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      * @param array $contacts
      *
      * @return mixed
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function postCampaignsSend($campaignId, $contacts)
     {
@@ -704,6 +720,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      * @param int $skip
      *
      * @return object
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getContactsSuppressedSinceDate(
         $dateString,
@@ -1161,6 +1178,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      * @param int $contactId
      *
      * @return object
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getContactAddressBooks($contactId)
     {
@@ -1183,6 +1201,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      * Gets list of all templates.
      *
      * @return object
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getApiTemplateList()
     {
@@ -1205,6 +1224,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      * @param string $templateId
      *
      * @return object
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getApiTemplate($templateId)
     {
@@ -1319,6 +1339,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      * @param string $importId
      *
      * @return object
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getContactsTransactionalDataImportByImportId($importId)
     {
@@ -1376,6 +1397,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      *
      * @param string $id
      * @return object
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getSendStatus($id)
     {
@@ -1406,6 +1428,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      */
     public function getAccessToken($url, $params)
     {
+        // @codingStandardsIgnoreStart
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -1416,8 +1439,10 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/x-www-form-urlencoded']);
 
         $response = json_decode(curl_exec($ch));
+        // @codingStandardsIgnoreEnd
 
         if ($response === false) {
+            // @codingStandardsIgnoreLine
             $this->helper->error('Error Number: ' . curl_errno($ch), []);
         } elseif (isset($response->error)) {
             $this->helper->error('OAUTH failed. Error - ' . $response->error, []);
@@ -1436,6 +1461,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      *
      * @param string $content
      * @return mixed
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function sendApiTransactionalEmail($content)
     {
@@ -1456,6 +1482,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      * @param null $aggregatedBy 'AllTime', 'Month', 'Week', 'Day'
      *
      * @return mixed
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getEmailStats($date, $endDate = null, $aggregatedBy = null)
     {
@@ -1480,6 +1507,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      *
      * @param $contactId
      * @return mixed
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getPreferencesForContact($contactId)
     {
@@ -1503,6 +1531,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      * @param $preferences
      *
      * @return mixed
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function setPreferencesForContact($contactId, $preferences)
     {
@@ -1555,6 +1584,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      * Gets the preferences, as a tree structure
      *
      * @return mixed
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getPreferences()
     {
@@ -1634,6 +1664,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      * @param string $email
      *
      * @return mixed
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function postAddressBookContactResubscribe($addressBookId, $email)
     {

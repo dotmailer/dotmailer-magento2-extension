@@ -1,6 +1,5 @@
 <?php
 /** @var \Dotdigitalgroup\Email\Block\Feefo $block */
-// @codingStandardsIgnoreFile
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -24,31 +23,39 @@
                                 <th width="90"><?= $block->escapeHtml(__("Rating")); ?></th>
                                 <th width="300"><?= $block->escapeHtml(__("Comment")); ?></th>
                             </tr>
-                            <?php foreach ($reviews as $name => $review) : ?>
-                                <tr>
-                                    <td width="150">
-                                        <a href="<?= $block->escapeUrl($review['url']); ?>"><?= $name; ?></a>
-                                    </td>
-                                    <td width="100"><?= $block->escapeHtml($review['last_updated_date']); ?></td>
-                                    <td width="90">
-                                        <div class="comm-rating">
-                                            <em>Product:</em>
-                                            <?php if (!empty($block->escapeHtml($review['star_image_path']))) { ?>
-                                                <img src="<?= $block->escapeHtml($review['star_image_path']); ?>" />
-                                            <?php } ?>
-                                            <div itemtype="http://schema.org/Rating" itemscope="itemscope" itemprop="reviewRating">
-                                                <meta content="1" itemprop="worstRating"/>
-                                                <span itemprop="ratingValue"><?= $block->escapeHtml($review['rating']); ?></span>
-                                                <span content="5" itemprop="bestRating"></span>
-                                            </div>
+                            <?php foreach ($reviews as $name => $review): ?>
+                            <tr>
+                                <td width="150">
+                                    <a href="<?= $block->escapeUrl($review['url']); ?>">
+                                        <?php //@codingStandardsIgnoreStart ?>
+                                        <?= $name; ?>
+                                        <?php //@codingStandardsIgnoreEnd ?>
+                                    </a>
+                                </td>
+                                <td width="100"><?= $block->escapeHtml($review['last_updated_date']); ?></td>
+                                <td width="90">
+                                    <div class="comm-rating">
+                                        <em>Product:</em>
+                                        <?php if (!empty($block->escapeHtml($review['star_image_path']))) { ?>
+                                            <img src="<?= $block->escapeHtml($review['star_image_path']); ?>" />
+                                        <?php } ?>
+                                        <div itemtype="http://schema.org/Rating"
+                                             itemscope="itemscope"
+                                             itemprop="reviewRating">
+                                            <meta content="1" itemprop="worstRating"/>
+                                            <span itemprop="ratingValue">
+                                                <?= $block->escapeHtml($review['rating']); ?>
+                                            </span>
+                                            <span content="5" itemprop="bestRating"></span>
                                         </div>
-                                    </td>
-                                    <td width="300">
-                                        <p style="margin:0;" itemprop="description">
-                                            <?= $block->escapeHtml($review['review']); ?>
-                                        </p>
-                                    </td>
-                                </tr>
+                                    </div>
+                                </td>
+                                <td width="300">
+                                    <p style="margin:0;" itemprop="description">
+                                        <?= $block->escapeHtml($review['review']); ?>
+                                    </p>
+                                </td>
+                            </tr>
                             <?php endforeach; ?>
                         </table>
                     </td>

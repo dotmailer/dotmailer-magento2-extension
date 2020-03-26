@@ -9,6 +9,7 @@ use Magento\Framework\DB\Adapter\AdapterInterface;
 use Magento\Framework\Serialize\SerializerInterface;
 use Dotdigitalgroup\Email\Setup\SchemaInterface as Schema;
 use Dotdigitalgroup\Email\Setup\Schema\Shared;
+use Dotdigitalgroup\Email\Logger\Logger;
 
 /**
  * @codeCoverageIgnore
@@ -26,17 +27,24 @@ class UpgradeSchema implements UpgradeSchemaInterface
     private $shared;
 
     /**
+     * @var Logger
+     */
+    private $logger;
+
+    /**
      * UpgradeSchema constructor.
-     *
      * @param SerializerInterface $json
      * @param Shared $shared
+     * @param Logger $logger
      */
     public function __construct(
         SerializerInterface $json,
-        Shared $shared
+        Shared $shared,
+        Logger $logger
     ) {
         $this->shared = $shared;
         $this->json = $json;
+        $this->logger = $logger;
     }
 
     /**
@@ -438,6 +446,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
                     );
                 } catch (\Exception $e) {
                     // Not critical. Continue upgrade.
+                    $this->logger->debug((string) $e);
                 }
 
                 try {
@@ -447,6 +456,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
                     );
                 } catch (\Exception $e) {
                     // Not critical. Continue upgrade.
+                    $this->logger->debug((string) $e);
                 }
 
                 // add processed and last_imported_at columns

@@ -115,7 +115,10 @@ class EnableConnectorCommand extends Command
             ->getAccountInfo();
 
         if (!$accountInfo || isset($accountInfo->message)) {
-            $this->output->writeln(__('There was a problem connecting to the API: ' . $accountInfo->message)->getText());
+            $this->output->writeln(
+                __('There was a problem connecting to the API: ' . $accountInfo->message)
+                ->getText()
+            );
             return;
         }
 
