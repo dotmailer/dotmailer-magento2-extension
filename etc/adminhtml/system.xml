@@ -1836,6 +1836,7 @@
                 <field id="enabled" translate="label" type="select" sortOrder="1" showInDefault="1" showInStore="0" showInWebsite="0">
                     <label>Enable System Messages</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment><![CDATA[Allow to send in-app system messages to admin users when errors that may affect the dotdigital extension are detected.]]></comment>
                 </field>
             </group>
         </section>
