@@ -23,10 +23,10 @@ class StatusProvider
     }
 
     /**
-     * @return array|null
+     * @return array
      */
     public function getErrors()
     {
-        return $this->flagManager->getFlagData(Monitor::CRON_MONITOR_ERROR_FLAG_CODE);
+        return $this->flagManager->getFlagData(Monitor::CRON_MONITOR_ERROR_FLAG_CODE) ?: [];
     }
 }
