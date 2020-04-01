@@ -2,7 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Plugin;
 
-use Magento\CatalogInventory\Model\StockRegistry;
+use Magento\CatalogInventory\Api\StockRegistryInterface;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Dotdigitalgroup\Email\Model\Catalog\UpdateCatalog;
 use Dotdigitalgroup\Email\Model\Catalog\CatalogService;
@@ -41,14 +41,14 @@ class StockUpdatePlugin
     }
 
     /**
-     * @param StockRegistry $subject
+     * @param StockRegistryInterface $subject
      * @param $result
      * @param string $productSku
      *
      * @return mixed
      */
     public function afterUpdateStockItemBySku(
-        StockRegistry $subject,
+        StockRegistryInterface $subject,
         $result,
         $productSku
     ) {
