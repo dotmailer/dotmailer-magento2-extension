@@ -267,6 +267,24 @@ class ContactData
     }
 
     /**
+     * @return string
+     */
+    public function getStoreNameAdditional()
+    {
+        try {
+            $storeGroup = $this->storeManager->getGroup($this->model->getGroupId());
+            return $storeGroup->getName();
+        } catch (\Magento\Framework\Exception\NoSuchEntityException $e) {
+            $this->logger->debug(
+                'Requested store is not found. Store id: ' . $this->model->getStoreId(),
+                [(string) $e]
+            );
+        }
+
+        return '';
+    }
+
+    /**
      * @param mixed $id
      * @return string
      */

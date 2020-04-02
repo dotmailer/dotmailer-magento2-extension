@@ -285,6 +285,11 @@
                 </field>
                 <field id="store_name" type="select" translate="label" sortOrder="490" showInDefault="1"
                        showInWebsite="1" showInStore="0">
+                    <label>Store View Name</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
+                </field>
+                <field id="store_name_additional" type="select" translate="label" sortOrder="490" showInDefault="1"
+                       showInWebsite="1" showInStore="0">
                     <label>Store Name</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
