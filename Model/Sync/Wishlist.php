@@ -3,6 +3,7 @@
 namespace Dotdigitalgroup\Email\Model\Sync;
 
 use Dotdigitalgroup\Email\Model\Importer;
+use Magento\Framework\App\Config\ScopeConfigInterface;
 
 /**
  * Sync Wishlists.
@@ -82,6 +83,11 @@ class Wishlist implements SyncInterface
     private $emulationFactory;
 
     /**
+     * @var ScopeConfigInterface
+     */
+    private $scopeConfig;
+
+    /**
      * Wishlist constructor.
      * @param \Magento\Wishlist\Model\ResourceModel\Item\CollectionFactory $itemCollection
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist\CollectionFactory $wishlistCollection
@@ -93,6 +99,7 @@ class Wishlist implements SyncInterface
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Magento\Framework\Stdlib\DateTime\DateTime $datetime
      * @param \Magento\Store\Model\App\EmulationFactory $emulationFactory
+     * @param ScopeConfigInterface $scopeConfig
      */
     public function __construct(
         \Magento\Wishlist\Model\ResourceModel\Item\CollectionFactory $itemCollection,
@@ -104,7 +111,8 @@ class Wishlist implements SyncInterface
         \Magento\Customer\Model\CustomerFactory $customerFactory,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Framework\Stdlib\DateTime\DateTime $datetime,
-        \Magento\Store\Model\App\EmulationFactory $emulationFactory
+        \Magento\Store\Model\App\EmulationFactory $emulationFactory,
+        ScopeConfigInterface $scopeConfig
     ) {
         $this->itemCollection     = $itemCollection;
         $this->wishlistCollection = $wishlistCollection;
@@ -116,6 +124,7 @@ class Wishlist implements SyncInterface
         $this->helper             = $helper;
         $this->datetime           = $datetime;
         $this->emulationFactory   = $emulationFactory;
+        $this->scopeConfig = $scopeConfig;
     }
 
     /**
@@ -127,6 +136,11 @@ class Wishlist implements SyncInterface
     public function sync(\DateTime $from = null)
     {
         $response = ['success' => true, 'message' => 'Done.'];
+
+        $limit = $this->scopeConfig->getValue(
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_TRANSACTIONAL_DATA_SYNC_LIMIT
+        );
+
         $websites = $this->helper->getWebsites();
         foreach ($websites as $website) {
             $wishlistEnabled = $this->helper->getWebsiteConfig(
@@ -139,7 +153,7 @@ class Wishlist implements SyncInterface
             if ($wishlistEnabled && $apiEnabled && ! empty($storeIds)) {
                 //using bulk api
                 $this->start = microtime(true);
-                $this->exportWishlistForWebsite($website);
+                $this->exportWishlistForWebsite($website, $limit);
                 //send wishlist as transactional data
                 if (isset($this->wishlists[$website->getId()])) {
                     $websiteWishlists = $this->wishlists[$website->getId()];
@@ -164,7 +178,7 @@ class Wishlist implements SyncInterface
 
                 $response['message'] = $message;
                 //using single api
-                $this->exportWishlistForWebsiteInSingle($website);
+                $this->exportWishlistForWebsiteInSingle($website, $limit);
             }
         }
 
@@ -174,19 +188,15 @@ class Wishlist implements SyncInterface
     /**
      *
      * @param \Magento\Store\Api\Data\WebsiteInterface $website
-     *
+     * @param string|int $limit
      * @return null
      */
-    public function exportWishlistForWebsite(\Magento\Store\Api\Data\WebsiteInterface $website)
+    public function exportWishlistForWebsite(\Magento\Store\Api\Data\WebsiteInterface $website, $limit)
     {
         //reset wishlists
         $this->wishlists   = [];
         $this->wishlistIds = [];
-        //sync limit
-        $limit = $this->helper->getWebsiteConfig(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_TRANSACTIONAL_DATA_SYNC_LIMIT,
-            $website
-        );
+
         //wishlist collection
         $emailWishlist = $this->getWishlistToImport($website, $limit);
 
@@ -250,16 +260,11 @@ class Wishlist implements SyncInterface
      * Export single wishlist for website.
      *
      * @param \Magento\Store\Api\Data\WebsiteInterface $website
-     *
+     * @param string|int $limit
      * @return null
      */
-    public function exportWishlistForWebsiteInSingle(\Magento\Store\Api\Data\WebsiteInterface $website)
+    public function exportWishlistForWebsiteInSingle(\Magento\Store\Api\Data\WebsiteInterface $website, $limit)
     {
-        //transactional data limit
-        $limit             = $this->helper->getWebsiteConfig(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_TRANSACTIONAL_DATA_SYNC_LIMIT,
-            $website
-        );
         $collection        = $this->getModifiedWishlistToImport(
             $website,
             $limit
