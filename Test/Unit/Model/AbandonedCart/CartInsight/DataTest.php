@@ -2,18 +2,19 @@
 
 namespace Dotdigitalgroup\Email\Test\Unit\Model\AbandonedCart\CartInsight;
 
-use Dotdigitalgroup\Email\Model\Product\ImageFinder;
 use Dotdigitalgroup\Email\Helper\Data;
+use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\AbandonedCart\CartInsight\Data as CartInsightData;
 use Dotdigitalgroup\Email\Model\Apiconnector\Client;
 use Dotdigitalgroup\Email\Model\Catalog\UrlFinder;
+use Dotdigitalgroup\Email\Model\Product\ImageFinder;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Catalog\Model\Product;
+use Magento\Framework\Stdlib\DateTime\DateTime;
 use Magento\Quote\Model\Quote;
 use Magento\Sales\Model\Order\Item;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
-use Magento\Framework\Stdlib\DateTime\DateTime;
 use PHPUnit\Framework\TestCase;
 
 class UpdateAbandonedCartFieldsTest extends TestCase
@@ -88,6 +89,11 @@ class UpdateAbandonedCartFieldsTest extends TestCase
      */
     private $imageFinderMock;
 
+    /**
+     * @var \PHPUnit\Framework\MockObject\MockObject
+     */
+    private $loggerMock;
+
     protected function setUp()
     {
         $this->helperMock = $this->createMock(Data::class);
@@ -101,6 +107,7 @@ class UpdateAbandonedCartFieldsTest extends TestCase
         $this->dateTimeMock = $this->createMock(DateTime::class);
         $this->urlFinderMock = $this->createMock(UrlFinder::class);
         $this->imageFinderMock = $this->createMock(ImageFinder::class);
+        $this->loggerMock = $this->createMock(Logger::class);
 
         $this->class = new CartInsightData(
             $this->storeManagerInterfaceMock,
@@ -108,7 +115,8 @@ class UpdateAbandonedCartFieldsTest extends TestCase
             $this->helperMock,
             $this->dateTimeMock,
             $this->urlFinderMock,
-            $this->imageFinderMock
+            $this->imageFinderMock,
+            $this->loggerMock
         );
     }
 
@@ -196,14 +204,6 @@ class UpdateAbandonedCartFieldsTest extends TestCase
             ->method('getDiscountAmount')
             ->willReturn($expectedPayload['json']['discountAmount']);
 
-        $itemsArray[0]->expects($this->atLeastOnce())
-            ->method('getProduct')
-            ->willReturn($this->productMock);
-
-        $this->productRepositoryMock->expects($this->once())
-            ->method('getById')
-            ->willReturn($this->productMock);
-
         $this->productMock->expects($this->once())
             ->method('getPrice')
             ->willReturn($expectedPayload['json']['lineItems'][0]['unitPrice']);
@@ -216,7 +216,11 @@ class UpdateAbandonedCartFieldsTest extends TestCase
             ->method('getPath')
             ->willReturn($expectedPayload['json']['lineItems'][0]['imageUrl']);
 
-        $itemsArray[0]->expects($this->once())
+        $this->productRepositoryMock->expects($this->atLeastOnce())
+            ->method('get')
+            ->willReturn($this->productMock);
+
+        $itemsArray[0]->expects($this->atLeastOnce())
             ->method('getSku')
             ->willReturn($expectedPayload['json']['lineItems'][0]['sku']);
 
