@@ -4,7 +4,6 @@ namespace Dotdigitalgroup\Email\Model;
 
 use Dotdigitalgroup\Email\Model\Sync\IntegrationInsightsFactory;
 use Dotdigitalgroup\Email\Setup\SchemaInterface as Schema;
-use Dotdigitalgroup\Email\Model\MonitorFactory;
 
 /**
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
@@ -92,31 +91,24 @@ class Cron
     private $integrationInsights;
 
     /**
-     * @var MonitorFactory
-     */
-    private $monitor;
-
-    /**
      * Cron constructor.
      *
-     * @param Sync\CampaignFactory $campaignFactory
-     * @param Sync\OrderFactory $syncOrderFactory
-     * @param Sales\QuoteFactory $quoteFactory
-     * @param Customer\GuestFactory $guestFactory
-     * @param Newsletter\SubscriberFactory $subscriberFactory
-     * @param Sync\CatalogFactory $catalogFactory
-     * @param Sync\ImporterFactory $importerFactory
-     * @param Sync\AutomationFactory $automationFactory
-     * @param Apiconnector\ContactFactory $contact
-     * @param \Dotdigitalgroup\Email\Helper\Data $helper
-     * @param \Dotdigitalgroup\Email\Helper\File $fileHelper
-     * @param ResourceModel\Importer $importerResource
-     * @param Email\TemplateFactory $templateFactory
-     * @param ResourceModel\Cron\CollectionFactory $cronCollection
-     * @param Cron\CronSubFactory $cronSubFactory
-     * @param AbandonedCart\ProgramEnrolment\Enroller $abandonedCartProgramEnroller
-     * @param IntegrationInsightsFactory $integrationInsightsFactory
-     * @param MonitorFactory $cronMonitorFactory
+     * @param Sync\CampaignFactory                     $campaignFactory
+     * @param Sync\OrderFactory                        $syncOrderFactory
+     * @param Sales\QuoteFactory                       $quoteFactory
+     * @param Customer\GuestFactory                    $guestFactory
+     * @param Newsletter\SubscriberFactory             $subscriberFactory
+     * @param Sync\CatalogFactory                      $catalogFactory
+     * @param Sync\ImporterFactory                     $importerFactory
+     * @param Sync\AutomationFactory                   $automationFactory
+     * @param Apiconnector\ContactFactory              $contact
+     * @param \Dotdigitalgroup\Email\Helper\Data       $helper
+     * @param \Dotdigitalgroup\Email\Helper\File       $fileHelper
+     * @param ResourceModel\Importer                   $importerResource
+     * @param ResourceModel\Cron\CollectionFactory     $cronCollection
+     * @param Cron\CronSubFactory                      $cronSubFactory
+     *
+     * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\Sync\CampaignFactory $campaignFactory,
@@ -135,8 +127,7 @@ class Cron
         \Dotdigitalgroup\Email\Model\ResourceModel\Cron\CollectionFactory $cronCollection,
         Cron\CronSubFactory $cronSubFactory,
         \Dotdigitalgroup\Email\Model\AbandonedCart\ProgramEnrolment\Enroller $abandonedCartProgramEnroller,
-        IntegrationInsightsFactory $integrationInsightsFactory,
-        MonitorFactory $monitorFactory
+        IntegrationInsightsFactory $integrationInsightsFactory
     ) {
         $this->campaignFactory   = $campaignFactory;
         $this->syncOrderFactory  = $syncOrderFactory;
@@ -155,7 +146,6 @@ class Cron
         $this->cronHelper        = $cronSubFactory->create();
         $this->abandonedCartProgramEnroller = $abandonedCartProgramEnroller;
         $this->integrationInsights = $integrationInsightsFactory;
-        $this->monitor = $monitorFactory;
     }
 
     /**
@@ -422,19 +412,5 @@ class Cron
 
         return $this->templateFactory->create()
             ->sync();
-    }
-
-    /**
-     * @return void
-     */
-    public function monitor()
-    {
-        if ($this->jobHasAlreadyBeenRun('ddg_automation_monitor')) {
-            $message = 'Skipping ddg_automation_monitor job run';
-            $this->helper->log($message);
-        }
-
-        $this->monitor->create()
-            ->runAll();
     }
 }
