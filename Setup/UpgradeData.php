@@ -5,6 +5,7 @@ namespace Dotdigitalgroup\Email\Setup;
 use Dotdigitalgroup\Email\Helper\Config;
 use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Helper\Transactional;
+use Dotdigitalgroup\Email\Setup\SchemaInterface as Schema;
 use Magento\Config\Model\ResourceModel\Config\Data\CollectionFactory;
 use Magento\Framework\App\Config\ReinitableConfigInterface;
 use Magento\Framework\App\Config\ScopeConfigInterface;
@@ -15,7 +16,6 @@ use Magento\Framework\Setup\UpgradeDataInterface;
 use Magento\Store\Model\ScopeInterface;
 use Magento\User\Model\ResourceModel\User;
 use Magento\User\Model\ResourceModel\User\CollectionFactory as UserCollectionFactory;
-use Dotdigitalgroup\Email\Setup\SchemaInterface as Schema;
 
 /**
  * @codeCoverageIgnore
@@ -132,6 +132,7 @@ class UpgradeData implements UpgradeDataInterface
 
         $this->upgradeFourOhOne($setup, $context);
         $this->upgradeFourThreeSix($setup, $context);
+        $this->upgradeFourFourZero($setup, $context);
 
         $installer->endSetup();
     }
@@ -309,6 +310,42 @@ class UpgradeData implements UpgradeDataInterface
                     'wishlist_imported IS NULL'
                 ]
             );
+        }
+    }
+
+    /**
+     * @param ModuleDataSetupInterface $setup
+     * @param ModuleContextInterface $context
+     */
+    private function upgradeFourFourZero(
+        ModuleDataSetupInterface $setup,
+        ModuleContextInterface $context
+    ) {
+        if (version_compare($context->getVersion(), '4.4.0', '<')) {
+
+            $select = $setup->getConnection()->select()->from(
+                $setup->getTable('core_config_data'),
+                ['config_id', 'value']
+            )->where(
+                'path = ?',
+                \Dotdigitalgroup\Email\Helper\Transactional::XML_PATH_DDG_TRANSACTIONAL_HOST
+            );
+            foreach ($setup->getConnection()->fetchAll($select) as $configRow) {
+                preg_match_all('/\d+/', $configRow['value'], $matches);
+                $value = $matches[0];
+                //Invalid Smtp Host
+                if (!count($value) === 1) {
+                    continue;
+                }
+                $row = [
+                    'value' => reset($value)
+                ];
+                $setup->getConnection()->update(
+                    $setup->getTable('core_config_data'),
+                    $row,
+                    ['config_id = ?' => $configRow['config_id']]
+                );
+            }
         }
     }
 }
