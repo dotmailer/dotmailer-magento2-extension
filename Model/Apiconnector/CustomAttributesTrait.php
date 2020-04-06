@@ -8,10 +8,10 @@ trait CustomAttributesTrait
 {
     /**
      * @param Attribute|Attribute\AbstractAttribute $attribute
-     * @param $method
+     * @param $attributeCode
      * @return mixed
      */
-    private function getDropDownValues(Attribute $attribute, $method)
+    private function getDropDownValues(Attribute $attribute, $attributeCode)
     {
         $options = $this->getOptions($attribute);
 
@@ -20,7 +20,7 @@ trait CustomAttributesTrait
         }
 
         foreach ($options as $option) {
-            if ($option['value'] === $this->model->$method()) {
+            if ($option['value'] === $this->model->getData($attributeCode)) {
                 return $option['label'];
             }
         }
@@ -28,13 +28,13 @@ trait CustomAttributesTrait
 
     /**
      * @param Attribute|Attribute\AbstractAttribute $attribute
-     * @param $method
+     * @param $attributeCode
      * @return string
      */
-    private function getMultiSelectValues(Attribute $attribute, $method)
+    private function getMultiSelectValues(Attribute $attribute, $attributeCode)
     {
         $options = $this->getOptions($attribute);
-        $selectedOptions = explode(',', $this->model->$method());
+        $selectedOptions = explode(',', $this->model->getData($attributeCode));
 
         if (!is_array($options)) {
             return '';

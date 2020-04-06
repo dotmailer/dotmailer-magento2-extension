@@ -194,7 +194,7 @@ class ContactData
                     $method = 'get' . str_replace(' ', '', ucwords(str_replace('_', ' ', $key)));
                     $value = method_exists($this, $method)
                         ? $this->$method()
-                        : $this->getValue($method, $key);
+                        : $this->getValue($key);
             }
 
             $this->contactData[$key] = $value;
@@ -658,25 +658,24 @@ class ContactData
     }
 
     /**
-     * @param $method
-     * @param $key
+     * @param $attributeCode
      * @return string
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    private function getValue($method, $key)
+    private function getValue($attributeCode)
     {
-        $attribute = $this->eavConfig->getAttribute('customer', $key);
+        $attribute = $this->eavConfig->getAttribute('customer', $attributeCode);
 
-        switch ($debug = $attribute->getData('frontend_input')) {
+        switch ($attribute->getData('frontend_input')) {
             case 'select':
-                return $this->getDropDownValues($attribute, $method);
+                return $this->getDropDownValues($attribute, $attributeCode);
 
             case 'multiselect':
-                return $this->getMultiSelectValues($attribute, $method);
+                return $this->getMultiSelectValues($attribute, $attributeCode);
 
             default:
                 //Text, Dates, Multilines, Boolean
-                return $this->model->$method();
+                return $this->model->getData($attributeCode);
         }
     }
 }
