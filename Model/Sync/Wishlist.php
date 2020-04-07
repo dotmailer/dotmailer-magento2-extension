@@ -3,6 +3,7 @@
 namespace Dotdigitalgroup\Email\Model\Sync;
 
 use Dotdigitalgroup\Email\Model\Importer;
+use Magento\Framework\App\Config\ScopeConfigInterface;
 
 /**
  * Sync Wishlists.
@@ -15,26 +16,6 @@ class Wishlist implements SyncInterface
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     private $helper;
-
-    /**
-     * @var array
-     */
-    private $wishlists;
-
-    /**
-     * @var array
-     */
-    private $wishlistIds = [];
-
-    /**
-     * @var mixed
-     */
-    private $start;
-
-    /**
-     * @var int
-     */
-    private $countWishlists = 0;
 
     /**
      * @var \Magento\Customer\Model\CustomerFactory
@@ -82,6 +63,11 @@ class Wishlist implements SyncInterface
     private $emulationFactory;
 
     /**
+     * @var ScopeConfigInterface
+     */
+    private $scopeConfig;
+
+    /**
      * Wishlist constructor.
      * @param \Magento\Wishlist\Model\ResourceModel\Item\CollectionFactory $itemCollection
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist\CollectionFactory $wishlistCollection
@@ -93,6 +79,7 @@ class Wishlist implements SyncInterface
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Magento\Framework\Stdlib\DateTime\DateTime $datetime
      * @param \Magento\Store\Model\App\EmulationFactory $emulationFactory
+     * @param ScopeConfigInterface $scopeConfig
      */
     public function __construct(
         \Magento\Wishlist\Model\ResourceModel\Item\CollectionFactory $itemCollection,
@@ -104,7 +91,8 @@ class Wishlist implements SyncInterface
         \Magento\Customer\Model\CustomerFactory $customerFactory,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Framework\Stdlib\DateTime\DateTime $datetime,
-        \Magento\Store\Model\App\EmulationFactory $emulationFactory
+        \Magento\Store\Model\App\EmulationFactory $emulationFactory,
+        ScopeConfigInterface $scopeConfig
     ) {
         $this->itemCollection     = $itemCollection;
         $this->wishlistCollection = $wishlistCollection;
@@ -116,6 +104,7 @@ class Wishlist implements SyncInterface
         $this->helper             = $helper;
         $this->datetime           = $datetime;
         $this->emulationFactory   = $emulationFactory;
+        $this->scopeConfig = $scopeConfig;
     }
 
     /**
@@ -126,8 +115,17 @@ class Wishlist implements SyncInterface
      */
     public function sync(\DateTime $from = null)
     {
-        $response = ['success' => true, 'message' => 'Done.'];
+        $response = ['success' => true, 'message' => '----------- Wishlist bulk sync ----------- : '];
+        $syncSummary = '';
+        $totalWishlists = 0;
+        $limit = $this->scopeConfig->getValue(
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_TRANSACTIONAL_DATA_SYNC_LIMIT
+        );
+
         $websites = $this->helper->getWebsites();
+
+        $start = microtime(true);
+
         foreach ($websites as $website) {
             $wishlistEnabled = $this->helper->getWebsiteConfig(
                 \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_WISHLIST_ENABLED,
@@ -138,34 +136,34 @@ class Wishlist implements SyncInterface
 
             if ($wishlistEnabled && $apiEnabled && ! empty($storeIds)) {
                 //using bulk api
-                $this->start = microtime(true);
-                $this->exportWishlistForWebsite($website);
+                $wishlists = $this->exportWishlistForWebsite($website, $limit);
                 //send wishlist as transactional data
-                if (isset($this->wishlists[$website->getId()])) {
-                    $websiteWishlists = $this->wishlists[$website->getId()];
+                if ($wishlists) {
                     //register in queue with importer
                     $this->importerFactory->create()
-                                          ->registerQueue(
-                                              Importer::IMPORT_TYPE_WISHLIST,
-                                              $websiteWishlists,
-                                              Importer::MODE_BULK,
-                                              $website->getId()
-                                          );
+                        ->registerQueue(
+                            Importer::IMPORT_TYPE_WISHLIST,
+                            $wishlists,
+                            Importer::MODE_BULK,
+                            $website->getId()
+                        );
                     //mark connector wishlist as  imported
-                    $this->setImported($this->wishlistIds);
+                    $this->setImported(array_column($wishlists, 'id'));
                 }
-                $message = '----------- Wishlist bulk sync ----------- : ' .
-                    gmdate('H:i:s', microtime(true) - $this->start) .
-                    ', Total synced = ' . $this->countWishlists;
+                $syncSummary .= ' Website id ' . $website->getId() . ' (' . count($wishlists) . ') --';
+                $totalWishlists += count($wishlists);
 
-                if ($this->countWishlists) {
-                    $this->helper->log($message);
-                }
-
-                $response['message'] = $message;
                 //using single api
-                $this->exportWishlistForWebsiteInSingle($website);
+                $this->exportWishlistForWebsiteInSingle($website, $limit);
             }
+        }
+
+        $response['message'] .= gmdate('H:i:s', microtime(true) - $start) . ',';
+        $response['message'] .= $syncSummary;
+        $response['message'] .= ' Total synced = ' . $totalWishlists;
+
+        if ($totalWishlists) {
+            $this->helper->log($response['message']);
         }
 
         return $response;
@@ -174,27 +172,18 @@ class Wishlist implements SyncInterface
     /**
      *
      * @param \Magento\Store\Api\Data\WebsiteInterface $website
-     *
-     * @return null
+     * @param string|int $limit
+     * @return array
      */
-    public function exportWishlistForWebsite(\Magento\Store\Api\Data\WebsiteInterface $website)
+    public function exportWishlistForWebsite(\Magento\Store\Api\Data\WebsiteInterface $website, $limit)
     {
-        //reset wishlists
-        $this->wishlists   = [];
-        $this->wishlistIds = [];
-        //sync limit
-        $limit = $this->helper->getWebsiteConfig(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_TRANSACTIONAL_DATA_SYNC_LIMIT,
-            $website
-        );
-        //wishlist collection
-        $emailWishlist = $this->getWishlistToImport($website, $limit);
+        $wishlists   = [];
+        $wishlistIds = $this->getWishlistToImport($website, $limit)
+            ->getColumnValues('wishlist_id');
 
-        $this->wishlistIds = $emailWishlist->getColumnValues('wishlist_id');
-
-        if (! empty($this->wishlistIds)) {
+        if (! empty($wishlistIds)) {
             $collection = $this->wishlist->create()
-                                         ->getWishlistByIds($this->wishlistIds);
+                ->getWishlistByIds($wishlistIds);
 
             foreach ($collection as $wishlist) {
                 $connectorWishlist = $this->wishlistFactory->create();
@@ -207,7 +196,7 @@ class Wishlist implements SyncInterface
                 $appEmulation->startEnvironmentEmulation($wishlist->getStoreId());
 
                 $wishListItemCollection = $this->itemCollection->create()
-                                                               ->addWishlistFilter($wishlist);
+                    ->addWishlistFilter($wishlist);
 
                 if ($wishListItemCollection->getSize()) {
                     foreach ($wishListItemCollection as $item) {
@@ -219,18 +208,19 @@ class Wishlist implements SyncInterface
                                 ->setPrice($product);
                             //store for wishlists
                             $connectorWishlist->setItem($wishlistItem);
-                            ++$this->countWishlists;
                         } catch (\Exception $e) {
                             //Product does not exist. Continue to next item
                             continue;
                         }
                     }
                     //set wishlists for later use
-                    $this->wishlists[$website->getId()][] = $connectorWishlist->expose();
+                    $wishlists[] = $connectorWishlist->expose();
                 }
                 $appEmulation->stopEnvironmentEmulation();
             }
         }
+
+        return $wishlists;
     }
 
     /**
@@ -250,26 +240,17 @@ class Wishlist implements SyncInterface
      * Export single wishlist for website.
      *
      * @param \Magento\Store\Api\Data\WebsiteInterface $website
-     *
-     * @return null
+     * @param string|int $limit
+     * @return void
      */
-    public function exportWishlistForWebsiteInSingle(\Magento\Store\Api\Data\WebsiteInterface $website)
+    public function exportWishlistForWebsiteInSingle(\Magento\Store\Api\Data\WebsiteInterface $website, $limit)
     {
-        //transactional data limit
-        $limit             = $this->helper->getWebsiteConfig(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_TRANSACTIONAL_DATA_SYNC_LIMIT,
-            $website
-        );
-        $collection        = $this->getModifiedWishlistToImport(
-            $website,
-            $limit
-        );
-        $this->wishlistIds = [];
-        //email_wishlist wishlist ids
-        $wishlistIds = $collection->getColumnValues('wishlist_id');
+        $wishlistIds = [];
+        $wishlistIdsToSync = $this->getModifiedWishlistToImport($website, $limit)
+            ->getColumnValues('wishlist_id');
 
         $wishlistCollection = $this->wishlist->create()
-                                             ->getWishlistByIds($wishlistIds);
+            ->getWishlistByIds($wishlistIdsToSync);
 
         foreach ($wishlistCollection as $wishlist) {
             $wishlistId    = $wishlist->getid();
@@ -291,41 +272,35 @@ class Wishlist implements SyncInterface
                         if ($connectorWishlistItem) {
                             $connectorWishlist->setItem($connectorWishlistItem);
                         }
-                        $this->countWishlists++;
                     } catch (\Exception $e) {
                         //Product does not exist. Continue to next item
                         continue;
                     }
                 }
-                //send wishlist as transactional data
-                $this->start = microtime(true);
                 //register in queue with importer
                 $check = $this->importerFactory->create()
-                                               ->registerQueue(
-                                                   Importer::IMPORT_TYPE_WISHLIST,
-                                                   $connectorWishlist->expose(),
-                                                   Importer::MODE_SINGLE,
-                                                   $website->getId()
-                                               );
-                if ($check) {
-                    $this->wishlistIds[] = $wishlistId;
-                }
+                    ->registerQueue(
+                        Importer::IMPORT_TYPE_WISHLIST,
+                        $connectorWishlist->expose(),
+                        Importer::MODE_SINGLE,
+                        $website->getId()
+                    );
             } else {
                 //register in queue with importer
                 $check = $this->importerFactory->create()
-                                               ->registerQueue(
-                                                   Importer::IMPORT_TYPE_WISHLIST,
-                                                   [$wishlist->getId()],
-                                                   Importer::MODE_SINGLE_DELETE,
-                                                   $website->getId()
-                                               );
-                if ($check) {
-                    $this->wishlistIds[] = $wishlistId;
-                }
+                    ->registerQueue(
+                        Importer::IMPORT_TYPE_WISHLIST,
+                        [$wishlistId],
+                        Importer::MODE_SINGLE_DELETE,
+                        $website->getId()
+                    );
+            }
+            if ($check) {
+                $wishlistIds[] = $wishlistId;
             }
         }
-        if (! empty($this->wishlistIds)) {
-            $this->setImported($this->wishlistIds, true);
+        if (! empty($wishlistIds)) {
+            $this->setImported($wishlistIds, true);
         }
     }
 

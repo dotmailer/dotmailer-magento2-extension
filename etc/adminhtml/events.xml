@@ -9,6 +9,9 @@
     <event name="admin_system_config_changed_section_connector_data_mapping">
         <observer name="admin_connector_data_mapping" instance="Dotdigitalgroup\Email\Observer\Adminhtml\ResetContactImport"/>
     </event>
+    <event name="admin_system_config_changed_section_transactional_emails">
+        <observer name="admin_connector_transactional_emails" instance="Dotdigitalgroup\Email\Observer\Adminhtml\TransactionalEmails"/>
+    </event>
     <event name="view_block_abstract_to_html_before">
         <observer name="ddg_add_column_expiration_date" instance="Dotdigitalgroup\Email\Observer\Html\BeforeBlockToHtml"/>
     </event>

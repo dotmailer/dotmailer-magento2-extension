@@ -12,6 +12,8 @@ use Dotdigitalgroup\Email\Logger\Logger;
  */
 class ContactData
 {
+    use CustomAttributesTrait;
+
     /**
      * @var array
      */
@@ -103,6 +105,11 @@ class ContactData
     private $logger;
 
     /**
+     * @var \Magento\Eav\Model\Config
+     */
+    private $eavConfig;
+
+    /**
      * ContactData constructor.
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      * @param \Magento\Catalog\Api\Data\ProductInterfaceFactory $productFactory
@@ -116,6 +123,7 @@ class ContactData
      * @param TimezoneInterfaceFactory $localeDateFactory
      * @param DateIntervalFactory $dateIntervalFactory
      * @param Logger $logger
+     * @param \Magento\Eav\Model\Config $eavConfig
      */
     public function __construct(
         \Magento\Store\Model\StoreManagerInterface $storeManager,
@@ -129,7 +137,8 @@ class ContactData
         \Dotdigitalgroup\Email\Helper\Config $configHelper,
         TimezoneInterfaceFactory $localeDateFactory,
         DateIntervalFactory $dateIntervalFactory,
-        Logger $logger
+        Logger $logger,
+        \Magento\Eav\Model\Config $eavConfig
     ) {
         $this->storeManager = $storeManager;
         $this->orderFactory = $orderFactory;
@@ -143,6 +152,7 @@ class ContactData
         $this->localeDateFactory = $localeDateFactory;
         $this->dateIntervalFactory = $dateIntervalFactory;
         $this->logger = $logger;
+        $this->eavConfig = $eavConfig;
     }
 
     public function init(AbstractModel $model, array $columns)
@@ -164,6 +174,7 @@ class ContactData
      * Set column data on the customer model
      *
      * @return $this
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function setContactData()
     {
@@ -183,7 +194,7 @@ class ContactData
                     $method = 'get' . str_replace(' ', '', ucwords(str_replace('_', ' ', $key)));
                     $value = method_exists($this, $method)
                         ? $this->$method()
-                        : $this->model->$method();
+                        : $this->getValue($key);
             }
 
             $this->contactData[$key] = $value;
@@ -245,6 +256,24 @@ class ContactData
         try {
             $store = $this->storeManager->getStore($this->model->getStoreId());
             return $store->getName();
+        } catch (\Magento\Framework\Exception\NoSuchEntityException $e) {
+            $this->logger->debug(
+                'Requested store is not found. Store id: ' . $this->model->getStoreId(),
+                [(string) $e]
+            );
+        }
+
+        return '';
+    }
+
+    /**
+     * @return string
+     */
+    public function getStoreNameAdditional()
+    {
+        try {
+            $storeGroup = $this->storeManager->getGroup($this->model->getGroupId());
+            return $storeGroup->getName();
         } catch (\Magento\Framework\Exception\NoSuchEntityException $e) {
             $this->logger->debug(
                 'Requested store is not found. Store id: ' . $this->model->getStoreId(),
@@ -626,5 +655,27 @@ class ContactData
             )
             ->add($offset)
             ->format(\Zend_Date::ISO_8601);
+    }
+
+    /**
+     * @param $attributeCode
+     * @return string
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    private function getValue($attributeCode)
+    {
+        $attribute = $this->eavConfig->getAttribute('customer', $attributeCode);
+
+        switch ($attribute->getData('frontend_input')) {
+            case 'select':
+                return $this->getDropDownValues($attribute, $attributeCode);
+
+            case 'multiselect':
+                return $this->getMultiSelectValues($attribute, $attributeCode);
+
+            default:
+                //Text, Dates, Multilines, Boolean
+                return $this->model->getData($attributeCode);
+        }
     }
 }

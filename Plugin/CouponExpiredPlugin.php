@@ -76,7 +76,7 @@ class CouponExpiredPlugin
             }
 
             if ($ddgExtensionAttributes = $coupon->getExtensionAttributes()->getDdgExtensionAttributes()) {
-                $expiresAt = $ddgExtensionAttributes->getExpiresAt();
+                $expiresAt = $ddgExtensionAttributes->getExpiresAtDate();
                 if ($expiresAt && $this->timezone->date($expiresAt) < $this->timezone->date()) {
                     // individual coupon has expired
                     $rule->setIsValidForAddress($address, false);

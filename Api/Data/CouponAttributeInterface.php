@@ -5,7 +5,8 @@ namespace Dotdigitalgroup\Email\Api\Data;
 interface CouponAttributeInterface extends \Magento\Framework\Api\ExtensionAttributesInterface
 {
     /**
-     * @deprecated
+     * @deprecated 4.3.6 Use SALESRULE_COUPON_ID instead.
+     * @see CouponAttributeInterface::SALESRULE_COUPON_ID
      */
     const COUPON_ID = 'coupon_id';
 
@@ -25,7 +26,7 @@ interface CouponAttributeInterface extends \Magento\Framework\Api\ExtensionAttri
     public function setEmail($email);
 
     /**
-     * @return \DateTime|null
+     * @return string|null
      */
     public function getExpiresAt();
 

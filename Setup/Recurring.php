@@ -2,13 +2,14 @@
 
 namespace Dotdigitalgroup\Email\Setup;
 
+use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Sync\IntegrationInsightsFactory;
+use Dotdigitalgroup\Email\Setup\Schema\Shared;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Setup\ExternalFKSetup;
 use Magento\Framework\Setup\InstallSchemaInterface;
 use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\SchemaSetupInterface;
-use Dotdigitalgroup\Email\Setup\Schema\Shared;
 
 /**
  * Catalog recurring setup
@@ -31,18 +32,27 @@ class Recurring implements InstallSchemaInterface
     private $integrationInsightsFactory;
 
     /**
+     * @var Logger
+     */
+    private $logger;
+
+    /**
+     * Recurring constructor.
      * @param ExternalFKSetup $externalFKSetup
      * @param Shared $shared
      * @param IntegrationInsightsFactory $integrationInsightsFactory
+     * @param Logger $logger
      */
     public function __construct(
         ExternalFKSetup $externalFKSetup,
         Shared $shared,
-        IntegrationInsightsFactory $integrationInsightsFactory
+        IntegrationInsightsFactory $integrationInsightsFactory,
+        Logger $logger
     ) {
         $this->shared = $shared;
         $this->externalFKSetup = $externalFKSetup;
         $this->integrationInsightsFactory = $integrationInsightsFactory;
+        $this->logger = $logger;
     }
 
     /**
@@ -75,7 +85,7 @@ class Recurring implements InstallSchemaInterface
         try {
             $this->integrationInsightsFactory->create()->sync();
         } catch (LocalizedException $e) {
-
+            $this->logger->debug((string) $e);
         }
     }
 

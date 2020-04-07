@@ -285,6 +285,11 @@
                 </field>
                 <field id="store_name" type="select" translate="label" sortOrder="490" showInDefault="1"
                        showInWebsite="1" showInStore="0">
+                    <label>Store View Name</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
+                </field>
+                <field id="store_name_additional" type="select" translate="label" sortOrder="490" showInDefault="1"
+                       showInWebsite="1" showInStore="0">
                     <label>Store Name</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
@@ -1035,10 +1040,10 @@
                     <label>Send Mode</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Transactional\Mode</source_model>
                 </field>
-                <field id="host" translate="label" sortOrder="30" type="text" showInStore="1" showInWebsite="1"
+                <field id="host" translate="label" sortOrder="30" type="select" showInStore="1" showInWebsite="1"
                        showInDefault="1">
                     <label>Host</label>
-                    <backend_model>Dotdigitalgroup\Email\Model\Adminhtml\Backend\TextValueTrimmer</backend_model>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Transactional\Region</source_model>
                 </field>
                 <field id="username" translate="label" sortOrder="40" type="text" showInStore="1" showInWebsite="1"
                        showInDefault="1">
@@ -1366,13 +1371,13 @@
                        showInWebsite="1" showInDefault="1">
                     <label>Allow abandoned cart for non-subscribed contacts</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <comment><![CDATA[Enable this if you want to allow abandoned cart emails to be sent also to contacts who haven't opted in (This will always exclude unsubscribed contacts)]]></comment>
+                    <comment><![CDATA[Enable this if you want to allow abandoned cart emails to be sent also to contacts who haven't opted in. (This will always exclude unsubscribed contacts).]]></comment>
                 </field>
                 <field id="cart_limit" translate="label" sortOrder="30" type="select" showInStore="0" showInWebsite="1"
                        showInDefault="1">
                     <label>Abandoned Cart Limit</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Cartlimit</source_model>
-                    <comment><![CDATA[Do not send an abandoned cart email to a contact if they have received a previous abandoned cart email in previous x hours.]]></comment>
+                    <comment><![CDATA[Do not send an abandoned cart email to a contact if they have received a previous abandoned cart email in the last x hours. Do not re-enrol a contact to a program if they were already enrolled in the last x hours.]]></comment>
                 </field>
                 <field id="link_back_to_cart" translate="label" sortOrder="40" type="select" showInStore="0"
                        showInWebsite="1" showInDefault="1">

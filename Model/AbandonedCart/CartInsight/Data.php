@@ -2,6 +2,8 @@
 
 namespace Dotdigitalgroup\Email\Model\AbandonedCart\CartInsight;
 
+use Dotdigitalgroup\Email\Logger\Logger;
+
 class Data
 {
     /**
@@ -40,6 +42,11 @@ class Data
     private $imageFinder;
 
     /**
+     * @var Logger
+     */
+    private $logger;
+
+    /**
      * Data constructor.
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      * @param \Magento\Catalog\Api\ProductRepositoryInterface $productRepository
@@ -47,6 +54,7 @@ class Data
      * @param \Magento\Framework\Stdlib\DateTime\DateTime $dateTime
      * @param \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder
      * @param \Dotdigitalgroup\Email\Model\Product\ImageFinder $imageFinder
+     * @param Logger $logger
      */
     public function __construct(
         \Magento\Store\Model\StoreManagerInterface $storeManager,
@@ -54,7 +62,8 @@ class Data
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Framework\Stdlib\DateTime\DateTime $dateTime,
         \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder,
-        \Dotdigitalgroup\Email\Model\Product\ImageFinder $imageFinder
+        \Dotdigitalgroup\Email\Model\Product\ImageFinder $imageFinder,
+        Logger $logger
     ) {
         $this->storeManager = $storeManager;
         $this->productRepository = $productRepository;
@@ -62,6 +71,7 @@ class Data
         $this->dateTime = $dateTime;
         $this->urlFinder = $urlFinder;
         $this->imageFinder = $imageFinder;
+        $this->logger = $logger;
     }
 
     /**
@@ -110,22 +120,24 @@ class Data
         $lineItems = [];
 
         foreach ($quote->getAllVisibleItems() as $item) {
+            try {
+                $product = $this->productRepository->get($item->getSku(), false, $store->getId());
+                $discountTotal += $item->getDiscountAmount();
+                $mediaPath = $this->imageFinder->getProductImageUrl($item, $store);
 
-            $discountTotal += $item->getDiscountAmount();
-            $product = $this->productRepository->getById($item->getProduct()->getId(), false, $store->getId());
-
-            $mediaPath = $this->imageFinder->getProductImageUrl($item, $store);
-
-            $lineItems[] = [
-                'sku' => $item->getSku(),
-                'imageUrl' => $this->urlFinder->getPath($mediaPath),
-                'productUrl' => $this->urlFinder->fetchFor($product),
-                'name' => $item->getName(),
-                'unitPrice' => round($product->getPrice(), 2),
-                'quantity' => $item->getQty(),
-                'salePrice' => round($item->getBasePriceInclTax(), 2),
-                'totalPrice' => round($item->getRowTotalInclTax(), 2)
-            ];
+                $lineItems[] = [
+                    'sku' => $item->getSku(),
+                    'imageUrl' => $this->urlFinder->getPath($mediaPath),
+                    'productUrl' => $this->urlFinder->fetchFor($product),
+                    'name' => $item->getName(),
+                    'unitPrice' => round($product->getPrice(), 2),
+                    'quantity' => $item->getQty(),
+                    'salePrice' => round($item->getBasePriceInclTax(), 2),
+                    'totalPrice' => round($item->getRowTotalInclTax(), 2)
+                ];
+            } catch (\Exception $e) {
+                $this->logger->debug('Exception thrown when fetching CartInsight data', [(string) $e]);
+            }
         }
 
         $data['json']['discountAmount'] = (float) $discountTotal;
@@ -142,6 +154,7 @@ class Data
      * @param \Magento\Store\Model\Store $store
      *
      * @return string
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     private function getBasketUrl($quoteId, $store)
     {

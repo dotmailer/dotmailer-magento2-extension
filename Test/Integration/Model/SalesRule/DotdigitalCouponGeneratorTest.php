@@ -295,7 +295,7 @@ class DotdigitalCouponGeneratorTest extends \PHPUnit\Framework\TestCase
 
         $expiresAt = $coupon->getExtensionAttributes()
             ->getDdgExtensionAttributes()
-            ->getExpiresAt();
+            ->getExpiresAtDate();
 
         $this->assertNotEmpty($expiresAt);
         $this->assertEquals(7, (new \DateTime('now', new \DateTimeZone('UTC')))->diff($expiresAt)->days);

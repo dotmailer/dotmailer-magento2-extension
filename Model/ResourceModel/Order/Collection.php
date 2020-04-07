@@ -319,6 +319,29 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     }
 
     /**
+     * Get store quotes for both guests and customers, excluding inactive and empty.
+     *
+     * @param int $storeId
+     * @param array $updated
+     *
+     * @return \Magento\Quote\Model\ResourceModel\Quote\Collection
+     */
+    public function getStoreQuotesForAutomationEnrollmentGuestsAndCustomers($storeId, $updated)
+    {
+        $salesCollection = $this->quoteCollection->create();
+        $salesCollection->addFieldToFilter('is_active', 1)
+            ->addFieldToFilter('customer_email', ['neq' => ''])
+            ->addFieldToFilter('main_table.store_id', $storeId)
+            ->addFieldToFilter('main_table.updated_at', $updated);
+
+        if ($this->helper->isOnlySubscribersForAC($storeId)) {
+            $salesCollection = $this->subscriberFilterer->filterBySubscribedStatus($salesCollection);
+        }
+
+        return $salesCollection;
+    }
+
+    /**
      * Check emails exist in sales order table.
      *
      * @param array $emails

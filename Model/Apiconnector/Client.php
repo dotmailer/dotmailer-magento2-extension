@@ -97,7 +97,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      */
     public function getApiEndpoint()
     {
-        if (is_null($this->apiEndpoint)) {
+        if ($this->apiEndpoint === null) {
             throw new \Magento\Framework\Exception\LocalizedException(
                 __('Dotmailer connector API endpoint cannot be empty.')
             );
@@ -122,8 +122,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
             $accountInfo = $this->getAccountInfo();
 
             if (isset($accountInfo->message)) {
-                $message = 'VALIDATION ERROR :  ' . $accountInfo->message;
-                $this->helper->debug('validate', [$message]);
+                $this->addClientLog('Error validating API credentials', [], Logger::ERROR);
                 return false;
             }
 
@@ -150,8 +149,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         $response = $this->execute();
 
         if (isset($response->message)) {
-            $message = 'GET CONTACT INFO ID ' . $url . ', ' . $response->message;
-            $this->helper->debug('getContactById', [$message]);
+            $this->addClientLog('Get contact info error');
         }
 
         return $response;
@@ -166,11 +164,12 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      * @param string|int $addressBookId
      *
      * @return mixed
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function postAddressBookContactsImport($filename, $addressBookId)
     {
         $url = $this->getApiEndpoint() . "/v2/address-books/{$addressBookId}/contacts/import";
-
+        // @codingStandardsIgnoreStart
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
         curl_setopt(
@@ -178,22 +177,27 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
             CURLOPT_USERPWD,
             $this->getApiUsername() . ':' . $this->getApiPassword()
         );
+        // @codingStandardsIgnoreEnd
 
         //case the deprecation of @filename for uploading
         if (function_exists('curl_file_create')) {
             $args['file']
+                // @codingStandardsIgnoreStart
                 = curl_file_create(
                     $this->fileHelper->getFilePathWithFallback($filename),
                     'text/csv'
                 );
             curl_setopt($ch, CURLOPT_POSTFIELDS, $args);
+        // @codingStandardsIgnoreEnd
         } else {
             //standard use of curl file
+            // @codingStandardsIgnoreLine
             curl_setopt($ch, CURLOPT_POSTFIELDS, [
                 'file' => '@' . $this->fileHelper->getFilePathWithFallback($filename),
             ]);
         }
 
+        // @codingStandardsIgnoreStart
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
@@ -201,12 +205,15 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
             ]);
         // send contacts to address book
         $result = curl_exec($ch);
+        // @codingStandardsIgnoreEnd
+
         $result = json_decode($result);
 
         if (isset($result->message)) {
-            $message = 'postAddressBookContactsImport' . $addressBookId . ' file : ' . $filename
-                . ' ,user : ' . $this->getApiUsername() . '. ' .  $result->message;
-            $this->helper->debug('postAddressBookContactsImport', [$message]);
+            $this->addClientLog('Address book contacts import', [
+                'address_book_id' => $addressBookId,
+                'file' => $filename,
+            ]);
         }
 
         return $result;
@@ -219,6 +226,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      * @param string|int $apiContact
      *
      * @return mixed|null
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function postAddressBookContacts($addressBookId, $apiContact)
     {
@@ -231,8 +239,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         $response = $this->execute();
 
         if (isset($response->message)) {
-            $message = 'POST ADDRESS BOOK CONTACTS ' . $url . ', ' . $response->message;
-            $this->helper->debug('postAddressBookContacts', [$message]);
+            $this->addClientLog('Address book contacts error');
         }
 
         return $response;
@@ -248,8 +255,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         $response = $this->execute();
 
         if (isset($response->message)) {
-            $message = 'POST CARTINSIGHT ' . $url . ', ' . $response->message;
-            $this->helper->debug('postAbandonedCartInsightData', [$message]);
+            $this->addClientLog('Cart insight error');
         }
 
         return $response;
@@ -262,6 +268,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      * @param string|int $contactId
      *
      * @return null
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function deleteAddressBookContact($addressBookId, $contactId)
     {
@@ -273,7 +280,10 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
                 ->setVerb('DELETE');
             $this->execute();
 
-            $this->helper->log(sprintf('Delete-contact %s from addressbook %s', $contactId, $addressBookId));
+            $this->addClientLog('Deleted contact from address book', [
+                'contact_id' => $contactId,
+                'address_book_id' => $addressBookId,
+            ], Logger::DEBUG);
         }
     }
 
@@ -283,6 +293,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      * @param string|int $importId
      *
      * @return mixed
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getContactsImportReport($importId)
     {
@@ -294,8 +305,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         $response = $this->execute();
 
         if (isset($response->message)) {
-            $message = 'GET CONTACTS IMPORT REPORT  . ' . $url . ' message : ' . $response->message;
-            $this->helper->debug('getContactsImportReport', [$message]);
+            $this->addClientLog('Contacts import report', [], Logger::DEBUG);
         }
 
         return $response;
@@ -307,6 +317,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      * @param string $email
      *
      * @return mixed
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getContactByEmail($email)
     {
@@ -317,8 +328,10 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         $response = $this->execute();
 
         if (isset($response->message)) {
-            $message = 'GET CONTACT BY email : ' . $email . ' ' . $response->message;
-            $this->helper->debug('getContactByEmail', [$message]);
+            $this->addClientLog('Error fetching contact by email', [
+                'email' => $email,
+                'message' => $response->message,
+            ], Logger::DEBUG);
         }
 
         return $response;
@@ -339,8 +352,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
 
         $response = $this->execute();
         if (isset($response->message)) {
-            $message = 'GET ALL ADDRESS BOOKS : ' . $url . ', ' . $response->message;
-            $this->helper->debug('getAddressBooks', [$message]);
+            $this->addClientLog('Error fetching address books');
         }
 
         return $response;
@@ -363,8 +375,9 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         $response = $this->execute();
 
         if (isset($response->message)) {
-            $message = 'GET ADDRESS BOOK BY ID ' . $id . ', ' . $response->message;
-            $this->helper->debug('getAddressBookById', [$message]);
+            $this->addClientLog('Error getting address book', [
+                'address_book_id' => $id,
+            ]);
         }
 
         return $response;
@@ -393,7 +406,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         $response = $this->execute();
 
         if (isset($response->message)) {
-            $this->helper->debug('postAddressBooks', $data);
+            $this->addClientLog('Error creating address book');
         }
 
         return $response;
@@ -423,8 +436,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         $response = $this->execute();
 
         if (isset($response->message)) {
-            $message = 'GET CAMPAIGNS ' . $response->message . ' api user : ' . $this->getApiUsername();
-            $this->helper->debug('getCampaigns', [$message]);
+            $this->addClientLog('Error getting campaigns');
         }
 
         return $response;
@@ -433,6 +445,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     /**
      * @param int $campaignId
      * @return mixed
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getCampaignById($campaignId)
     {
@@ -443,8 +456,9 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         $response = $this->execute();
 
         if (isset($response->message)) {
-            $message = 'GET CAMPAIGN BY ID ' . $response->message;
-            $this->helper->log($message);
+            $this->addClientLog('Error getting campaign', [
+                'campaign_id' => $campaignId,
+            ]);
         }
 
         return $response;
@@ -453,6 +467,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     /**
      * @param int $campaignId
      * @return mixed
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getCampaignByIdWithPreparedContent($campaignId)
     {
@@ -466,8 +481,9 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         $response = $this->execute();
 
         if (isset($response->message)) {
-            $message = 'GET CAMPAIGN BY ID WITH PREPARED CONTENT' . $response->message;
-            $this->helper->log($message);
+            $this->addClientLog('Error getting prepared content for campaign', [
+                'campaign_id' => $campaignId,
+            ]);
         }
 
         return $response;
@@ -479,9 +495,10 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      * @param        $data         string/array
      * @param string $type string, numeric, date, boolean
      * @param string $visibility public, private
-     * @param bool   $defaultValue
+     * @param bool $defaultValue
      *
      * @return object
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function postDataFields(
         $data,
@@ -513,9 +530,10 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         $response = $this->execute();
 
         if (isset($response->message)) {
-            $message = 'POST CREATE DATAFIELDS ' . $response->message;
-            $this->helper->debug('postDataFields', [$message]);
-            $this->helper->debug('postDataFields', $data);
+            $this->addClientLog('Error creating data fields')
+                ->addClientLog('Failed data field creation', [
+                    'data' => $data,
+                ], Logger::DEBUG);
         }
 
         return $response;
@@ -525,6 +543,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      * Lists the data fields within the account.
      *
      * @return mixed
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getDataFields()
     {
@@ -534,8 +553,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
 
         $response = $this->execute();
         if (isset($response->message)) {
-            $message = 'GET ALL DATAFIELDS ' . $response->message;
-            $this->helper->debug('getDataFields', [$message]);
+            $this->addClientLog('Error fetching data fields');
         }
 
         return $response;
@@ -548,6 +566,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      * @param array $data
      *
      * @return object
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function updateContact($contactId, $data)
     {
@@ -558,9 +577,12 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
 
         $response = $this->execute();
         if (isset($response->message)) {
-            $message = 'ERROR : UPDATE SINGLE CONTACT : ' . $url . ' message : ' . $response->message;
-            $this->helper->debug('updateContact', [$message]);
-            $this->helper->debug('updateContact', $data);
+            $this->addClientLog('Error updating single contact', [
+                'contact_id' => $contactId,
+            ])
+                ->addClientLog('Failed contact data', [
+                    'data' => $data,
+                ], Logger::DEBUG);
         }
 
         return $response;
@@ -584,8 +606,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
             $response = $this->execute();
 
             if (isset($response->message)) {
-                $message = ' url : ' . $url . ', ' . $response->message;
-                $this->helper->debug('deleteContact', [$message]);
+                $this->addClientLog('Error deleting contact');
             }
 
             return $response;
@@ -625,10 +646,10 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
 
         $response = $this->execute();
         if (isset($response->message)) {
-            $message = 'ERROR: UPDATE CONTACT DATAFIELD ' . $url . ' message : '
-                . $response->message;
-            $this->helper->debug('updateContactDatafieldsByEmail', [$message]);
-            $this->helper->debug('updateContactDatafieldsByEmail', $data);
+            $this->addClientLog('Error updating contact data field')
+                ->addClientLog('Failed contact field data', [
+                    'data' => $data,
+                ], Logger::DEBUG);
         }
 
         return $response;
@@ -642,6 +663,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      * @param array $contacts
      *
      * @return mixed
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function postCampaignsSend($campaignId, $contacts)
     {
@@ -659,9 +681,12 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         if (isset($response->message)) {
             unset($data['password']);
 
-            $message = 'SENDING CAMPAIGN ' . $response->message;
-            $this->helper->debug('postCampaignsSend', [$message]);
-            $this->helper->debug('postCampaignsSend', $data);
+            $this->addClientLog('Error sending campaign', [
+                'campaign_id' => $campaignId,
+            ])
+                ->addClientLog('Failed campaign send data', [
+                    'data' => $data,
+                ], Logger::DEBUG);
         }
 
         return $response;
@@ -689,8 +714,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         $response = $this->execute();
 
         if (isset($response->message)) {
-            $message = $email . ' , url ' . $url . ', ' . $response->message;
-            $this->helper->debug('postContacts', [$message]);
+            $this->addClientLog('Error adding contacts');
         }
 
         return $response;
@@ -704,6 +728,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      * @param int $skip
      *
      * @return object
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getContactsSuppressedSinceDate(
         $dateString,
@@ -718,10 +743,12 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         $response = $this->execute();
 
         if (isset($response->message)) {
-            $message = 'GET CONTACTS SUPPRESSED SINCE : ' .
-                $dateString . ' select ' . $select . ' skip : ' . $skip .
-                '   response : ' . $response->message;
-            $this->helper->debug('getContactsSuppressedSinceDate', [$message]);
+            $this->addClientLog('Error getting suppressed contacts')
+                ->addClientLog('Suppressed contacts request parameters', [
+                    'since_date' => $dateString,
+                    'select' => $select,
+                    'skip' => $skip,
+                ], Logger::DEBUG);
         }
 
         return $response;
@@ -759,8 +786,11 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         $response = $this->execute();
 
         if (isset($response->message)) {
-            $message = 'SEND MULTI TRANSACTIONAL DATA ' . $response->message;
-            $this->helper->debug('postContactsTransactionalDataImport', [$message]);
+            $this->addClientLog('Error in bulk import of transactional data for contacts')
+                ->addClientLog('Failed transactional data', [
+                    'collection' => $collectionName,
+                    'data' => $orders
+                ]);
         }
 
         return $response;
@@ -804,9 +834,11 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         $response = $this->execute();
 
         if (isset($response->message)) {
-            $message = 'POST CONTACTS TRANSACTIONAL DATA  ' . $response->message;
-            $this->helper->debug('postContactsTransactionalData', [$message]);
-            $this->helper->debug('postContactsTransactionalData', $apiData);
+            $this->addClientLog('Error adding transactional data to a contact')
+                ->addClientLog('Failed transactional data', [
+                    'collection' => $collectionName,
+                    'data' => $apiData,
+                ], Logger::DEBUG);
         }
 
         return $response;
@@ -850,9 +882,11 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         $response = $this->execute();
 
         if (isset($response->message)) {
-            $message = 'POST ACCOUNT TRANSACTIONAL DATA  ' . $response->message;
-            $this->helper->debug('postAccountTransactionalData', [$message]);
-            $this->helper->debug('postAccountTransactionalData', $apiData);
+            $this->addClientLog('Error adding transactional data to account')
+                ->addClientLog('Failed transactional data', [
+                    'collection' => $collectionName,
+                    'data' => $apiData,
+                ], Logger::DEBUG);
         }
 
         return $response;
@@ -915,8 +949,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
 
         $response = $this->execute();
         if (isset($response->message)) {
-            $message = 'GET ACCOUNT INFO for api user : ' . $this->getApiUsername() . ' ' . $response->message;
-            $this->helper->debug('getAccountInfo', [$message]);
+            $this->addClientLog('Error getting account info for API user');
         }
 
         return $response;
@@ -943,9 +976,10 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
 
         $response = $this->execute();
         if (isset($response->message)) {
-            $message = 'Resubscribe : ' . $url . ', message :' . $response->message;
-            $this->helper->debug('postContactsResubscribe', [$message]);
-            $this->helper->debug('postContactsResubscriber', $data);
+            $this->addClientLog('Error resubscribing contact')
+                ->addClientLog('Failed contact resubscription', [
+                    'contact' => $apiContact,
+                ], Logger::DEBUG);
         }
 
         return $response;
@@ -967,8 +1001,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         $response = $this->execute();
 
         if (isset($response->message)) {
-            $message = 'GET CampaignFromAddressList ' . $response->message . ' api user : ' . $this->getApiUsername();
-            $this->helper->debug('getCustomFromAddresses', [$message]);
+            $this->addClientLog('Error getting custom from addresses');
         }
 
         return $response;
@@ -992,8 +1025,10 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         $response = $this->execute();
 
         if (isset($response->message)) {
-            $message = $response->message;
-            $this->helper->debug('postCampaign', [$message]);
+            $this->addClientLog('Error creating campaign')
+                ->addClientLog('Failed campaign data', [
+                    'data' => $data,
+                ], Logger::DEBUG);
         }
 
         return $response;
@@ -1016,8 +1051,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         $response = $this->execute();
 
         if (isset($response->message)) {
-            $message = 'Get programs : ' . $response->message;
-            $this->helper->debug('getPrograms', [$message]);
+            $this->addClientLog('Error getting programs');
         }
 
         return $response;
@@ -1041,9 +1075,10 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         $response = $this->execute();
 
         if (isset($response->message)) {
-            $message = 'Post programs enrolments : ' . $response->message;
-            $this->helper->debug('postProgramsEnrolments', [$message]);
-            $this->helper->debug('postProgramsEnrolments', $data);
+            $this->addClientLog('Error sending program enrolments')
+                ->addClientLog('Failed program enrolments data', [
+                    'data' => $data,
+                ], Logger::DEBUG);
         }
 
         return $response;
@@ -1065,8 +1100,9 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
 
         $response = $this->execute();
         if (isset($response->message)) {
-            $message = 'Get program by id  ' . $id . ', ' . $response->message;
-            $this->helper->debug('getProgramById', [$message]);
+            $this->addClientLog('Error getting program by ID', [
+                'program_id' => $id,
+            ]);
         }
 
         return $response;
@@ -1090,8 +1126,9 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         $response = $this->execute();
 
         if (isset($response->message)) {
-            $message = 'Get Campaign Summary ' . $response->message . '  ,url : ' . $url;
-            $this->helper->debug('title', [$message]);
+            $this->addClientLog('Error getting campaign summary', [
+                'campaign_id' => $campaignId,
+            ]);
         }
 
         return $response;
@@ -1119,10 +1156,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
             $response = $this->execute();
 
             if (isset($response->message)) {
-                $this->helper->debug(
-                    'deleteContactsTransactionalData',
-                    ['DELETE CONTACTS TRANSACTIONAL DATA : ' . $url . ' ' . $response->message]
-                );
+                $this->addClientLog('Error deleting transactional data for contacts');
             }
 
             return $response;
@@ -1149,7 +1183,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         $result = $this->execute();
 
         if (isset($result->message)) {
-            $this->helper->debug('postCampaignAttachments', [' CAMPAIGN ATTACHMENT ' . $result->message]);
+            $this->addClientLog('Error adding campaign attachments');
         }
 
         return $result;
@@ -1161,6 +1195,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      * @param int $contactId
      *
      * @return object
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getContactAddressBooks($contactId)
     {
@@ -1172,8 +1207,9 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         $response = $this->execute();
 
         if (isset($response->message)) {
-            $message = 'GET CONTACTS ADDRESS BOOKS contact: ' . $contactId . $response->message;
-            $this->helper->debug('getContactAddressBooks', [$message]);
+            $this->addClientLog('Error fetching address books for contact', [
+                'contact_id' => $contactId,
+            ]);
         }
 
         return $response;
@@ -1183,6 +1219,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      * Gets list of all templates.
      *
      * @return object
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getApiTemplateList()
     {
@@ -1192,8 +1229,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         $response = $this->execute();
 
         if (isset($response->message)) {
-            $message = 'GET API CONTACT LIST ' . $response->message;
-            $this->helper->debug('getApiTemplateList', [$message]);
+            $this->addClientLog('Error getting template list');
         }
 
         return $response;
@@ -1205,6 +1241,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      * @param string $templateId
      *
      * @return object
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getApiTemplate($templateId)
     {
@@ -1215,8 +1252,9 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         $response = $this->execute();
 
         if (isset($response->message)) {
-            $message = 'GET API CONTACT LIST ' . $response->message;
-            $this->helper->debug('getApiTemplate', [$message]);
+            $this->addClientLog('Error getting template by ID', [
+                'template_id' => $templateId
+            ]);
         }
 
         return $response;
@@ -1255,8 +1293,11 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         $response = $this->execute();
 
         if (isset($response->message)) {
-            $message = ' SEND MULTI TRANSACTIONAL DATA TO ACCOUNT' . $response->message;
-            $this->helper->debug('postAccountTransactionalDataImport', [$message]);
+            $this->addClientLog('Error in bulk import of transactional data for account')
+                ->addClientLog('Failed transactional data', [
+                    'collection' => $collectionName,
+                    'data' => $orders
+                ], Logger::DEBUG);
         }
 
         return $response;
@@ -1306,8 +1347,9 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         $response = $this->execute();
 
         if (isset($response->message)) {
-            $message = 'GET CONTACTS IMPORT BY IMPORT ID ' . $response->message;
-            $this->helper->debug('getContactsImportByImportId', [$message]);
+            $this->addClientLog('Error getting contacts import status', [
+                'import_id' => $importId
+            ]);
         }
 
         return $response;
@@ -1319,6 +1361,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      * @param string $importId
      *
      * @return object
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getContactsTransactionalDataImportByImportId($importId)
     {
@@ -1331,8 +1374,9 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         $response = $this->execute();
 
         if (isset($response->message)) {
-            $message = 'GET CONTACTS TRANSACTIONAL DATA IMPORT BY IMPORT ID ' . $response->message;
-            $this->helper->debug('getContactsTransactionalDataImportByImportId', [$message]);
+            $this->addClientLog('Error getting transactional data import status', [
+                'import_id' => $importId
+            ]);
         }
 
         return $response;
@@ -1361,8 +1405,9 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         if (json_decode($response)) {
             //log error
             if (isset($response->message)) {
-                $message = 'GET CONTACT IMPORT REPORT FAULTS: ' . $response->message;
-                $this->helper->log($message);
+                $this->addClientLog('Error getting contacts import report faults', [
+                    'import_id' => $id
+                ]);
             }
 
             return false;
@@ -1376,6 +1421,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      *
      * @param string $id
      * @return object
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getSendStatus($id)
     {
@@ -1390,8 +1436,9 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
                 $this->excludeMessages
             )
         ) {
-            $message = 'GETS THE SEND STATUS USING SEND ID: ' . $response->message;
-            $this->helper->log($message);
+            $this->addClientLog('Error getting send status', [
+                'send_id' => $id
+            ]);
         }
         return $response;
     }
@@ -1406,6 +1453,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      */
     public function getAccessToken($url, $params)
     {
+        // @codingStandardsIgnoreStart
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -1416,8 +1464,10 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/x-www-form-urlencoded']);
 
         $response = json_decode(curl_exec($ch));
+        // @codingStandardsIgnoreEnd
 
         if ($response === false) {
+            // @codingStandardsIgnoreLine
             $this->helper->error('Error Number: ' . curl_errno($ch), []);
         } elseif (isset($response->error)) {
             $this->helper->error('OAUTH failed. Error - ' . $response->error, []);
@@ -1435,7 +1485,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      * Sends a transactional email.
      *
      * @param string $content
-     * @return mixed
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function sendApiTransactionalEmail($content)
     {
@@ -1456,6 +1506,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      * @param null $aggregatedBy 'AllTime', 'Month', 'Week', 'Day'
      *
      * @return mixed
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getEmailStats($date, $endDate = null, $aggregatedBy = null)
     {
@@ -1469,7 +1520,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
             ->execute();
 
         if (isset($response->message)) {
-            $this->helper->log('GET EMAIL STATS : ' . $response->message);
+            $this->addClientLog('Error getting email stats');
         }
 
         return $response;
@@ -1480,6 +1531,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      *
      * @param $contactId
      * @return mixed
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getPreferencesForContact($contactId)
     {
@@ -1490,7 +1542,9 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
             ->execute();
 
         if (isset($response->message)) {
-            $this->helper->log('GET PREFERENCES FOR CONTACT: ' . $response->message);
+            $this->addClientLog('Error getting preferences for contact', [
+                'contact_id' => $contactId
+            ]);
         }
 
         return $response;
@@ -1503,6 +1557,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      * @param $preferences
      *
      * @return mixed
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function setPreferencesForContact($contactId, $preferences)
     {
@@ -1514,7 +1569,9 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         $response = $this->execute();
 
         if (isset($response->message)) {
-            $this->helper->log('SET PREFERENCES FOR CONTACT: ' . $response->message);
+            $this->addClientLog('Error setting preferences for contact', [
+                'contact_id' => $contactId
+            ]);
         }
 
         return $response;
@@ -1543,8 +1600,10 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         $response = $this->execute();
 
         if (isset($response->message)) {
-            $message = $contact['Email'] . ' , url ' . $url . ', ' . $response->message;
-            $this->helper->debug('postContactWithConsent', [$message]);
+            $this->addClientLog('Error creating contact with consent')
+                ->addClientLog('Failed contact data', [
+                    'data' => $data,
+                ], Logger::DEBUG);
             return $response;
         }
 
@@ -1555,6 +1614,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      * Gets the preferences, as a tree structure
      *
      * @return mixed
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getPreferences()
     {
@@ -1565,7 +1625,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
             ->execute();
 
         if (isset($response->message)) {
-            $this->helper->log('GET PREFERENCES: ' . $response->message);
+            $this->addClientLog('Error getting preferences');
         }
 
         return $response;
@@ -1596,8 +1656,10 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         $response = $this->execute();
 
         if (isset($response->message)) {
-            $message = $contact['Email'] . ' , url ' . $url . ', ' . $response->message;
-            $this->helper->debug('postContactWithConsentAndPreferences', [$message]);
+            $this->addClientLog('Error creating contact with consent and preferences')
+                ->addClientLog('Failed contact data', [
+                    'data' => $data,
+                ], Logger::DEBUG);
         }
 
         return $response;
@@ -1634,6 +1696,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      * @param string $email
      *
      * @return mixed
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function postAddressBookContactResubscribe($addressBookId, $email)
     {

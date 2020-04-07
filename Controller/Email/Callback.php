@@ -120,7 +120,7 @@ class Callback extends \Magento\Framework\App\Action\Action
 
             //callback url
             $url = $this->config->getTokenUrl();
-
+            // @codingStandardsIgnoreStart
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $url);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -131,8 +131,10 @@ class Callback extends \Magento\Framework\App\Action\Action
             curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/x-www-form-urlencoded']);
 
             $response = json_decode(curl_exec($ch));
+            // @codingStandardsIgnoreEnd
 
             if ($response === false) {
+                // @codingStandardsIgnoreLine
                 $this->helper->error('Error Number: ' . curl_errno($ch), []);
             }
             if (isset($response->error)) {

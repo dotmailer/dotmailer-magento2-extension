@@ -1,6 +1,5 @@
 <?php
 /** @var \Dotdigitalgroup\Email\Block\Review $block */
-// @codingStandardsIgnoreFile
 ?>
 <?php
 $i = 0;
@@ -9,39 +8,39 @@ $order = $block->getOrder();
 $mode = $block->getMode();
 $website = $block->getWebsite();
 ?>
-<?php if ($order) : ?>
+<?php if ($order): ?>
     <?php $dynamicStyle = $block->getDynamicStyles(); ?>
     <style>
         .product-name{
             color: <?= $block->escapeHtml($dynamicStyle['nameColor']);?>;
             font-size: <?= $block->escapeHtml($dynamicStyle['fontSize']);?>;
-        <?php if (in_array('bold', $dynamicStyle['nameStyle'])) : ?>
+        <?php if (in_array('bold', $dynamicStyle['nameStyle'])): ?>
             font-weight: bold;
-        <?php endif; ?><?php if (in_array('italic', $dynamicStyle['nameStyle'])) : ?>
+        <?php endif; ?><?php if (in_array('italic', $dynamicStyle['nameStyle'])): ?>
             font-style: italic;
-        <?php endif; ?><?php if (in_array('underline', $dynamicStyle['nameStyle'])) : ?>
+        <?php endif; ?><?php if (in_array('underline', $dynamicStyle['nameStyle'])): ?>
             text-decoration: underline;
         <?php endif; ?>
         }
         .product-price{
             color: <?= $block->escapeHtml($dynamicStyle['priceColor']);?>;
             font-size: <?= $block->escapeHtml($dynamicStyle['priceFontSize']);?>;
-        <?php if (in_array('bold', $dynamicStyle['priceStyle'])) : ?>
+        <?php if (in_array('bold', $dynamicStyle['priceStyle'])): ?>
             font-weight: bold;
-        <?php endif; ?><?php if (in_array('italic', $dynamicStyle['priceStyle'])) : ?>
+        <?php endif; ?><?php if (in_array('italic', $dynamicStyle['priceStyle'])): ?>
             font-style: italic;
-        <?php endif; ?><?php if (in_array('underline', $dynamicStyle['priceStyle'])) : ?>
+        <?php endif; ?><?php if (in_array('underline', $dynamicStyle['priceStyle'])): ?>
             text-decoration: underline;
         <?php endif; ?>
         }
         .product-url{
             color: <?= $block->escapeHtml($dynamicStyle['urlColor']);?>;
             font-size: <?= $block->escapeHtml($dynamicStyle['urlFontSize']);?>;
-        <?php if (in_array('bold', $dynamicStyle['linkStyle'])) : ?>
+        <?php if (in_array('bold', $dynamicStyle['linkStyle'])): ?>
             font-weight: bold;
-        <?php endif; ?><?php if (in_array('italic', $dynamicStyle['linkStyle'])) : ?>
+        <?php endif; ?><?php if (in_array('italic', $dynamicStyle['linkStyle'])): ?>
             font-style: italic;
-        <?php endif; ?><?php if (in_array('underline', $dynamicStyle['linkStyle'])) : ?>
+        <?php endif; ?><?php if (in_array('underline', $dynamicStyle['linkStyle'])): ?>
             text-decoration: underline;
         <?php endif; ?>
         }
@@ -80,16 +79,17 @@ $website = $block->getWebsite();
 
     <?php $items = $block->getItems(); ?>
 
-    <?php foreach ($items as $item) : ?>
-        <?php if ($i == 0) : ?>
+    <?php foreach ($items as $item): ?>
+        <?php if ($i == 0): ?>
             <table class="product-table" border="0" width="147" cellpadding="0" cellspacing="0"
             style='border-collapse: collapse;'><tr>
         <?php endif;?>
-        <?php if ($mode == 'list') : ?>
+        <?php if ($mode == 'list'): ?>
             </tr><tr>
         <?php endif;?>
 
         <td style="vertical-align: text-top; padding-right: 2px;">
+            <?php //@codingStandardsIgnoreStart ?>
             <img src="<?= $block->getProductImageUrl($item, 'category_page_grid') ?>" alt="<?= $item->getName() ?>">
             <div class="product-name" align="center"><b>
                     <?= mb_substr($block->escapeHtml($item->getName()), 0, 40); ?></b></div>
@@ -99,13 +99,14 @@ $website = $block->getWebsite();
                     <?= $block->escapeHtml(__('Leave a review')); ?>
                 </a>
             </div>
+            <?php //@codingStandardsIgnoreEnd ?>
         </td>
 
-        <?php if ($i++ % 4 == 3 && $mode == 'grid') : ?>
+        <?php if ($i++ % 4 == 3 && $mode == 'grid'): ?>
             </tr><tr>
         <?php endif; ?>
     <?php endforeach;?>
-    <?php if ($i > 0) : ?>
+    <?php if ($i > 0): ?>
         </table>
     <?php endif;?>
 <?php endif;
