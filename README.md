@@ -19,6 +19,25 @@ You are welcome to contribute to Engagement Cloud for Magento! You can either:
 - Fix a bug: please clone and use our [Develop branch](https://github.com/dotmailer/dotmailer-magento2-extension/tree/develop) to submit your Pull Request
 - Request a feature on our [roadmap](https://roadmap.dotdigital.com)
 
+# 4.5.1
+
+###### What’s new
+- Customer attribute values captured via any input type (dropdown, multiple select, etc.) are now correctly synced as data fields.
+- We're now handling an exception thrown if the API user is locked when mapping data fields.
+- Security is improved for SMTP configuration; SMTP host is now set via a dropdown list of options.  
+- Cart insight data is now sent for all active quotes, even if they have no items. This allows merchants to exit contacts from a program if they empty their cart.
+- Merchants can now sync website name, store name and store view name via individual data fields.
+- Wishlist, Review and Order syncs now look up the transactional data sync limit once, prior to looping over websites.
+- Logging output from the `Client` class has been improved, and is now consistent across all methods in the API wrapper. 
+
+###### Bug fixes
+- We fixed the exception thrown when trying to fetch stock during catalog sync.
+- Text compression for saved templates is now restored. 
+- Unit price for some products (simple, with configurable parents) was 0 in cart insight data; this has been fixed.  
+- We improved the way we fetch customer attribute values for data fields; attribute codes containing numbers (for example,  `title_123`) won't now break the contact sync.
+- We fixed an issue with inaccurate log output for wishlist sync.
+- An invalid return type was breaking web API processing for Swagger; this has been fixed. [External contribution](https://github.com/dotmailer/dotmailer-magento2-extension/pull/558) 
+
 # 4.5.0
 
 ###### What's new
