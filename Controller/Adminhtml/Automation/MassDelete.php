@@ -16,9 +16,9 @@ class MassDelete extends MassDeleteCsrf
     const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::automation';
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Automation\Collection
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Automation\CollectionFactory
      */
-    protected $catalogCollection;
+    protected $collectionFactory;
 
     /**
      * @var \Magento\Framework\Message\ManagerInterface
@@ -50,7 +50,7 @@ class MassDelete extends MassDeleteCsrf
         \Dotdigitalgroup\Email\Model\ResourceModel\Automation\CollectionFactory $collectionFactory
     ) {
         $this->filter = $filter;
-        $this->catalogCollection = $collectionFactory->create();
+        $this->collectionFactory = $collectionFactory;
         $this->collectionResource = $collectionResource;
         parent::__construct($context);
     }
