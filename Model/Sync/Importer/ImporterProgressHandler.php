@@ -8,8 +8,8 @@ use Dotdigitalgroup\Email\Helper\File;
 use Dotdigitalgroup\Email\Model\Apiconnector\Client;
 use Dotdigitalgroup\Email\Model\Importer as ImporterModel;
 use Dotdigitalgroup\Email\Model\ImporterFactory;
-use Magento\Framework\Stdlib\DateTime;
 use Magento\Framework\DataObject;
+use Magento\Framework\Stdlib\DateTime;
 
 class ImporterProgressHandler extends DataObject
 {
@@ -226,7 +226,7 @@ class ImporterProgressHandler extends DataObject
             if (! empty($reportData)) {
                 $contacts = [];
                 foreach ($reportData as $row) {
-                    if (empty($row)) {
+                    if (empty($row) || strpos($row, ',') === false) {
                         continue;
                     }
 
