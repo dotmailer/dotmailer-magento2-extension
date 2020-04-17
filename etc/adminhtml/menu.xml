@@ -2,8 +2,8 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
     <menu>
         <add id="Dotdigitalgroup_Email::marketing_automation" title="Customer Engagement" module="Dotdigitalgroup_Email" sortOrder="100"
-             parent="Magento_Backend::marketing" resource="Dotdigitalgroup_Email::contact"/>
-        <add id="Dotdigitalgroup_Email::automation_studio" title="dotdigital Engagement Cloud" module="Dotdigitalgroup_Email" sortOrder="120" action="dotdigitalgroup_email/studio" resource="Dotdigitalgroup_Email::studio"
+             parent="Magento_Backend::marketing" resource="Dotdigitalgroup_Email::automation"/>
+        <add id="Dotdigitalgroup_Email::automation_studio" title="dotdigital Engagement Cloud" module="Dotdigitalgroup_Email" sortOrder="120" action="dotdigitalgroup_email/studio" resource="Dotdigitalgroup_Email::automation_studio"
              parent="Dotdigitalgroup_Email::marketing_automation" />
         <add id="Dotdigitalgroup_Email::exclusion_rules" title="Exclusion Rules" module="Dotdigitalgroup_Email" sortOrder="126" action="dotdigitalgroup_email/rules"
              resource="Dotdigitalgroup_Email::exclusion_rules" parent="Dotdigitalgroup_Email::marketing_automation" />
