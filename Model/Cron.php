@@ -5,9 +5,6 @@ namespace Dotdigitalgroup\Email\Model;
 use Dotdigitalgroup\Email\Model\Sync\IntegrationInsightsFactory;
 use Dotdigitalgroup\Email\Setup\SchemaInterface as Schema;
 
-/**
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
- */
 class Cron
 {
     /**
@@ -61,11 +58,6 @@ class Cron
     private $campaignFactory;
 
     /**
-     * @var \Dotdigitalgroup\Email\Helper\Data
-     */
-    private $helper;
-
-    /**
      * @var \Dotdigitalgroup\Email\Helper\File
      */
     private $fileHelper;
@@ -91,42 +83,46 @@ class Cron
     private $integrationInsights;
 
     /**
+     * @var AbandonedCart\ProgramEnrolment\Enroller
+     */
+    private $abandonedCartProgramEnroller;
+
+    /**
      * Cron constructor.
      *
-     * @param Sync\CampaignFactory                     $campaignFactory
-     * @param Sync\OrderFactory                        $syncOrderFactory
-     * @param Sales\QuoteFactory                       $quoteFactory
-     * @param Customer\GuestFactory                    $guestFactory
-     * @param Newsletter\SubscriberFactory             $subscriberFactory
-     * @param Sync\CatalogFactory                      $catalogFactory
-     * @param Sync\ImporterFactory                     $importerFactory
-     * @param Sync\AutomationFactory                   $automationFactory
-     * @param Apiconnector\ContactFactory              $contact
-     * @param \Dotdigitalgroup\Email\Helper\Data       $helper
-     * @param \Dotdigitalgroup\Email\Helper\File       $fileHelper
-     * @param ResourceModel\Importer                   $importerResource
-     * @param ResourceModel\Cron\CollectionFactory     $cronCollection
-     * @param Cron\CronSubFactory                      $cronSubFactory
-     *
-     * @SuppressWarnings(PHPMD.ExcessiveParameterList)
+     * @param Sync\CampaignFactory $campaignFactory
+     * @param Sync\OrderFactory $syncOrderFactory
+     * @param Sales\QuoteFactory $quoteFactory
+     * @param Customer\GuestFactory $guestFactory
+     * @param Newsletter\SubscriberFactory $subscriberFactory
+     * @param Sync\CatalogFactory $catalogFactory
+     * @param Sync\ImporterFactory $importerFactory
+     * @param Sync\AutomationFactory $automationFactory
+     * @param Apiconnector\ContactFactory $contact
+     * @param \Dotdigitalgroup\Email\Helper\File $fileHelper
+     * @param ResourceModel\Importer $importerResource
+     * @param Email\TemplateFactory $templateFactory
+     * @param ResourceModel\Cron\CollectionFactory $cronCollection
+     * @param Cron\CronSubFactory $cronSubFactory
+     * @param AbandonedCart\ProgramEnrolment\Enroller $abandonedCartProgramEnroller
+     * @param IntegrationInsightsFactory $integrationInsightsFactory
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\Sync\CampaignFactory $campaignFactory,
-        \Dotdigitalgroup\Email\Model\Sync\OrderFactory $syncOrderFactory,
-        \Dotdigitalgroup\Email\Model\Sales\QuoteFactory $quoteFactory,
-        \Dotdigitalgroup\Email\Model\Customer\GuestFactory $guestFactory,
-        \Dotdigitalgroup\Email\Model\Newsletter\SubscriberFactory $subscriberFactory,
-        \Dotdigitalgroup\Email\Model\Sync\CatalogFactory $catalogFactory,
-        \Dotdigitalgroup\Email\Model\Sync\ImporterFactory $importerFactory,
-        \Dotdigitalgroup\Email\Model\Sync\AutomationFactory $automationFactory,
-        \Dotdigitalgroup\Email\Model\Apiconnector\ContactFactory $contact,
-        \Dotdigitalgroup\Email\Helper\Data $helper,
+        Sync\CampaignFactory $campaignFactory,
+        Sync\OrderFactory $syncOrderFactory,
+        Sales\QuoteFactory $quoteFactory,
+        Customer\GuestFactory $guestFactory,
+        Newsletter\SubscriberFactory $subscriberFactory,
+        Sync\CatalogFactory $catalogFactory,
+        Sync\ImporterFactory $importerFactory,
+        Sync\AutomationFactory $automationFactory,
+        Apiconnector\ContactFactory $contact,
         \Dotdigitalgroup\Email\Helper\File $fileHelper,
-        \Dotdigitalgroup\Email\Model\ResourceModel\Importer $importerResource,
-        \Dotdigitalgroup\Email\Model\Email\TemplateFactory $templateFactory,
-        \Dotdigitalgroup\Email\Model\ResourceModel\Cron\CollectionFactory $cronCollection,
+        ResourceModel\Importer $importerResource,
+        Email\TemplateFactory $templateFactory,
+        ResourceModel\Cron\CollectionFactory $cronCollection,
         Cron\CronSubFactory $cronSubFactory,
-        \Dotdigitalgroup\Email\Model\AbandonedCart\ProgramEnrolment\Enroller $abandonedCartProgramEnroller,
+        AbandonedCart\ProgramEnrolment\Enroller $abandonedCartProgramEnroller,
         IntegrationInsightsFactory $integrationInsightsFactory
     ) {
         $this->campaignFactory   = $campaignFactory;
@@ -138,7 +134,6 @@ class Cron
         $this->importerFactory   = $importerFactory;
         $this->automationFactory = $automationFactory;
         $this->contactFactory    = $contact;
-        $this->helper            = $helper;
         $this->fileHelper        = $fileHelper;
         $this->importerResource  = $importerResource;
         $this->cronCollection    = $cronCollection;
@@ -149,80 +144,59 @@ class Cron
     }
 
     /**
-     * CRON FOR CONTACTS SYNC.
-     *
-     * @return array
+     * @return void
      */
     public function contactSync()
     {
         if ($this->jobHasAlreadyBeenRun('ddg_automation_customer_subscriber_guest_sync')) {
-            $message = 'Skipping ddg_automation_customer_subscriber_guest_sync job run';
-            $this->helper->log($message);
-            return ['message' => $message];
+            return;
         }
 
         //run the sync for contacts
-        $result = $this->contactFactory->create()
+        $this->contactFactory->create()
             ->sync();
         //run subscribers and guests sync
-        $subscriberResult = $this->subscribersAndGuestSync();
-
-        if (isset($subscriberResult['message']) && isset($result['message'])) {
-            $result['message'] = $result['message'] . ' - '
-                . $subscriberResult['message'];
-        }
-
-        return $result;
+        $this->subscribersAndGuestSync();
     }
 
     /**
      * CRON FOR SUBSCRIBERS AND GUEST CONTACTS.
-     *
-     * @return array
      */
     public function subscribersAndGuestSync()
     {
         //sync subscribers
         $subscriberModel = $this->subscriberFactory->create();
-        $result = $subscriberModel->runExport();
+        $subscriberModel->runExport();
 
         //un-subscribe suppressed contacts
         $subscriberModel->unsubscribe();
 
         //sync guests
         $this->guestFactory->create()->sync();
-
-        return $result;
     }
 
     /**
-     * CRON FOR CATALOG SYNC.
-     *
-     * @return array
+     * @return void
      */
     public function catalogSync()
     {
         if ($this->jobHasAlreadyBeenRun('ddg_automation_catalog_sync')) {
-            $message = 'Skipping ddg_automation_catalog_sync job run';
-            $this->helper->log($message);
-            return ['message' => $message];
+            return;
         }
 
-        $result = $this->catalogFactory->create()
+        $this->catalogFactory->create()
             ->sync();
-
-        return $result;
     }
 
     /**
      * CRON FOR EMAIL IMPORTER PROCESSOR.
      *
-     * @return null
+     * @return void
+     * @throws \Magento\Framework\Exception\AlreadyExistsException
      */
     public function emailImporter()
     {
         if ($this->jobHasAlreadyBeenRun('ddg_automation_importer')) {
-            $this->helper->log('Skipping ddg_automation_importer job run');
             return;
         }
 
@@ -236,7 +210,6 @@ class Cron
     public function sendIntegrationInsights()
     {
         if ($this->jobHasAlreadyBeenRun('ddg_automation_integration_insights')) {
-            $this->helper->log('Skipping ddg_automation_integration_insights job run');
             return;
         }
 
@@ -245,15 +218,13 @@ class Cron
     }
 
     /**
-     *
      * CRON FOR SYNC REVIEWS and REGISTER ORDER REVIEW CAMPAIGNS.
      *
-     * @return null
+     * @return void
      */
     public function reviewsAndWishlist()
     {
         if ($this->jobHasAlreadyBeenRun('ddg_automation_reviews_and_wishlist')) {
-            $this->helper->log('Skipping ddg_automation_reviews_and_wishlist job run');
             return;
         }
 
@@ -266,22 +237,21 @@ class Cron
     /**
      * Review sync.
      *
-     * @return array
+     * @return void
      */
     public function reviewSync()
     {
-        return $this->cronHelper->reviewSync();
+        $this->cronHelper->reviewSync();
     }
 
     /**
      * CRON FOR ABANDONED CARTS.
      *
-     * @return null
+     * @return void
      */
     public function abandonedCarts()
     {
         if ($this->jobHasAlreadyBeenRun('ddg_automation_abandonedcarts')) {
-            $this->helper->log('Skipping ddg_automation_abandonedcarts job run');
             return;
         }
 
@@ -292,12 +262,12 @@ class Cron
     /**
      * CRON FOR AUTOMATION.
      *
-     * @return null
+     * @return void
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function syncAutomation()
     {
         if ($this->jobHasAlreadyBeenRun('ddg_automation_status')) {
-            $this->helper->log('Skipping ddg_automation_status job run');
             return;
         }
 
@@ -307,14 +277,12 @@ class Cron
     /**
      * Send email campaigns.
      *
+     * @return void
      * @throws \Magento\Framework\Exception\LocalizedException
-     *
-     * @return null
      */
     public function sendCampaigns()
     {
         if ($this->jobHasAlreadyBeenRun('ddg_automation_campaign')) {
-            $this->helper->log('Skipping ddg_automation_campaign job run');
             return;
         }
 
@@ -323,35 +291,27 @@ class Cron
 
     /**
      * CRON FOR ORDER TRANSACTIONAL DATA.
-     *
-     * @return array
+     * @return void
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function orderSync()
     {
         if ($this->jobHasAlreadyBeenRun('ddg_automation_order_sync')) {
-            $message = 'Skipping ddg_automation_order_sync job run';
-            $this->helper->log($message);
-            return ['message' => $message];
+            return;
         }
 
         // send order
-        $orderResult = $this->syncOrderFactory->create()
+        $this->syncOrderFactory->create()
             ->sync();
-
-        return $orderResult;
     }
 
     /**
      * Cleaning for csv files and connector tables.
-     *
-     * @return string
      */
     public function cleaning()
     {
         if ($this->jobHasAlreadyBeenRun('ddg_automation_cleaner')) {
-            $message = 'Skipping ddg_automation_cleaner job run';
-            $this->helper->log($message);
-            return $message;
+            return;
         }
 
         //Clean tables
@@ -363,15 +323,11 @@ class Cron
         $message = 'Cleaning cron job result :';
 
         foreach ($tables as $key => $table) {
-            $result = $this->importerResource->cleanup($table);
-            $message .= " $result records removed from $key .";
+            $this->importerResource->cleanup($table);
         }
-        $archivedFolder = $this->fileHelper->getArchiveFolder();
-        $result = $this->fileHelper->deleteDir($archivedFolder);
-        $message .= ' Deleting archived folder result : ' . $result;
-        $this->helper->log($message);
 
-        return $message;
+        $archivedFolder = $this->fileHelper->getArchiveFolder();
+        $this->fileHelper->deleteDir($archivedFolder);
     }
 
     /**
@@ -401,16 +357,15 @@ class Cron
 
     /**
      * Sync the email templates from dotmailer.
+     * @return void
      */
     public function syncEmailTemplates()
     {
         if ($this->jobHasAlreadyBeenRun('ddg_automation_email_templates')) {
-            $message = 'Skipping ddg_automation_email_templates job run';
-            $this->helper->log($message);
-            return $message;
+            return;
         }
 
-        return $this->templateFactory->create()
+        $this->templateFactory->create()
             ->sync();
     }
 }
