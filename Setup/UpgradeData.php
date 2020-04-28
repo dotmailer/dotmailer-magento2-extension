@@ -222,8 +222,7 @@ class UpgradeData implements UpgradeDataInterface
      * Maps 'imported' data to 'processed' in email_catalog.
      * Released in 4.0.1, this replaces the previous updateThreeFourTwo.
      * For merchants on 3.4.2 <> 4.0.0 no data upgrade is required.
-     *
-     * @param SchemaSetupInterface $setup
+     * @param ModuleDataSetupInterface $setup
      * @param ModuleContextInterface $context
      */
     private function upgradeFourOhOne(
@@ -232,17 +231,20 @@ class UpgradeData implements UpgradeDataInterface
     ) {
         if (version_compare($context->getVersion(), '3.4.2', '<')) {
             $catalogTable = $setup->getTable(Schema::EMAIL_CATALOG_TABLE);
-
-            $setup->getConnection()->update(
-                $catalogTable,
-                [
-                    'processed' => 1
-                ],
-                [
-                    'imported' => 1,
-                    'modified IS NULL OR modified = 0'
-                ]
-            );
+            if ($setup->getConnection()->tableColumnExists($catalogTable, 'imported') &&
+                $setup->getConnection()->tableColumnExists($catalogTable, 'modified')
+                ) {
+                $setup->getConnection()->update(
+                    $catalogTable,
+                    [
+                        'processed' => 1
+                    ],
+                    [
+                        'imported' => 1,
+                        'modified IS NULL OR modified = 0'
+                    ]
+                );
+            }
         }
     }
 

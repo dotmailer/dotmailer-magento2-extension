@@ -1037,20 +1037,6 @@ class InstallSchema implements InstallSchemaInterface
             'Product Id'
         )
         ->addColumn(
-            'imported',
-            \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
-            null,
-            ['unsigned' => true, 'nullable' => true],
-            'Product imported [deprecated]'
-        )
-        ->addColumn(
-            'modified',
-            \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
-            null,
-            ['unsigned' => true, 'nullable' => true],
-            'Product modified [deprecated]'
-        )
-        ->addColumn(
             'processed',
             \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
             null,
