@@ -124,7 +124,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     public function resetAllContacts()
     {
         $conn = $this->getConnection();
-        $where = ['email_imported' => 1];
+        $where = ['email_imported = ?' => 1];
         $num = $conn->update(
             $this->getTable(Schema::EMAIL_CONTACT_TABLE),
             ['email_imported' => 0],
@@ -163,7 +163,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         $num = $conn->update(
             $this->getTable(Schema::EMAIL_CONTACT_TABLE),
             ['subscriber_imported' => 0],
-            ['subscriber_imported' => 1]
+            ['subscriber_imported = ?' => 1]
         );
 
         return $num;
