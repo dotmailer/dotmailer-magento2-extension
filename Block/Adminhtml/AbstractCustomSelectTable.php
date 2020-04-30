@@ -55,6 +55,19 @@ abstract class AbstractCustomSelectTable extends AbstractFieldArray
     }
 
     /**
+     * Get the column layout for this block, in the format:
+     *
+     * 'fieldId' => [
+     *    'label' => '',
+     *    'style' => '',
+     *    'options' => [],
+     * ]
+     *
+     * @return array
+     */
+    abstract protected function columnLayout(): array;
+
+    /**
      * @param string $columnName
      * @return mixed|string
      * @throws \Exception
@@ -114,19 +127,6 @@ EOT;
             ]);
         }
     }
-
-    /**
-     * Get the column layout for this block, in the format:
-     *
-     * 'fieldId' => [
-     *    'label' => '',
-     *    'style' => '',
-     *    'options' => [],
-     * ]
-     *
-     * @return array
-     */
-    abstract protected function columnLayout(): array;
 
     /**
      * Get the generated column layout
