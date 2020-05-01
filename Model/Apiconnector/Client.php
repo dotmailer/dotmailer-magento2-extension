@@ -1681,11 +1681,6 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
 
         $response = $this->execute();
 
-        if ($response) {
-            $this->helper->log('Initialised for chat');
-            return $response;
-        }
-
         return $response;
     }
 
