@@ -32,21 +32,24 @@ define([
             );
 
             var productData = data[productId];
-            var trackingData = {
-                product_name: productData.name,
-                product_url: productData.url,
-                product_currency: productData.currency_code,
-                product_status: parseInt(productData.is_salable) === 1 ? 'In stock' : 'Out of stock',
-                product_price: productData.price_info.final_price,
-                product_specialPrice: productData.price_info.special_price || 0,
-                product_sku: productData.extension_attributes.ddg_sku,
-                product_brand: productData.extension_attributes.ddg_brand || '',
-                product_categories: (productData.extension_attributes.ddg_categories || []).join(','),
-                product_image_path: productData.extension_attributes.ddg_image || '',
-                product_description: productData.extension_attributes.ddg_description || ''
-            };
 
-            this.wbtTrack(trackingData);
+            if (productData != null) {
+                var trackingData = {
+                    product_name: productData.name || '',
+                    product_url: productData.url || '',
+                    product_currency: productData.currency_code || '',
+                    product_status: parseInt(productData.is_salable) === 1 ? 'In stock' : 'Out of stock',
+                    product_price: productData.price_info.final_price || 0,
+                    product_specialPrice: productData.price_info.special_price || 0,
+                    product_sku: productData.extension_attributes.ddg_sku || '',
+                    product_brand: productData.extension_attributes.ddg_brand || '',
+                    product_categories: (productData.extension_attributes.ddg_categories || []).join(','),
+                    product_image_path: productData.extension_attributes.ddg_image || '',
+                    product_description: productData.extension_attributes.ddg_description || ''
+                };
+
+                this.wbtTrack(trackingData);
+            }
         },
 
         initWbt: function (id) {
