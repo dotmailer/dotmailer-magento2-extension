@@ -63,6 +63,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
         $this->upgradeFourThreeZero($setup, $context, $connection);
         $this->upgradeFourThreeFour($setup, $context, $connection);
         $this->upgradeFourThreeSix($setup, $connection, $context);
+        $this->upgradeFourFiveTwo($setup, $connection, $context);
 
         $setup->endSetup();
     }
@@ -643,6 +644,29 @@ class UpgradeSchema implements UpgradeSchemaInterface
                     'comment' => 'Review Imported'
                     ]
                 );
+            }
+        }
+    }
+
+    /**
+     * @param SchemaSetupInterface $setup
+     * @param AdapterInterface $connection
+     * @param ModuleContextInterface $context
+     */
+    private function upgradeFourFiveTwo(
+        SchemaSetupInterface $setup,
+        AdapterInterface $connection,
+        ModuleContextInterface $context
+    ) {
+        if (version_compare($context->getVersion(), '4.5.2', '<')) {
+            $emailCatalogTable = $setup->getTable(Schema::EMAIL_CATALOG_TABLE);
+
+            if ($connection->tableColumnExists($emailCatalogTable, 'imported')) {
+                $connection->dropColumn($emailCatalogTable, 'imported');
+            }
+
+            if ($connection->tableColumnExists($emailCatalogTable, 'modified')) {
+                $connection->dropColumn($emailCatalogTable, 'modified');
             }
         }
     }

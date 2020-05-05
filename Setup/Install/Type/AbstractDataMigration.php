@@ -123,15 +123,7 @@ abstract class AbstractDataMigration
             // select offset for query
             $selectStatement->limit(self::BATCH_SIZE, $this->useOffset ? $this->rowsAffected : 0);
 
-            $query = $selectStatement->insertFromSelect(
-                $this->resourceConnection->getTableName($this->tableName),
-                $this->getInsertArray(),
-                $this->onDuplicate
-            );
-            $rowCount = $this->resourceConnection
-                ->getConnection()
-                ->query($query)
-                ->rowCount();
+            $rowCount = $this->insertData($selectStatement);
 
             // increase the batch offset
             $this->rowsAffected += $rowCount;
@@ -142,5 +134,25 @@ abstract class AbstractDataMigration
             }
 
         } while ($rowCount > 0);
+    }
+
+    /**
+     * By default, records are directly inserted via the select statement.
+     *
+     * @param Select $selectStatement
+     * @return int
+     * @throws \Zend_Db_Statement_Exception
+     */
+    protected function insertData(Select $selectStatement)
+    {
+        $query = $selectStatement->insertFromSelect(
+            $this->resourceConnection->getTableName($this->tableName),
+            $this->getInsertArray(),
+            $this->onDuplicate
+        );
+        return $this->resourceConnection
+            ->getConnection()
+            ->query($query)
+            ->rowCount();
     }
 }

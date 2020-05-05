@@ -51,6 +51,10 @@ class Options implements \Magento\Framework\Data\OptionSourceInterface
                 'label' => Automation::CONTACT_STATUS_EXPIRED,
                 'value' => Automation::CONTACT_STATUS_EXPIRED
             ],
+            [
+                'label' => Automation::AUTOMATION_STATUS_CANCELLED,
+                'value' => Automation::AUTOMATION_STATUS_CANCELLED
+            ],
         ];
 
         return $options;

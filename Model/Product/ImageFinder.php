@@ -57,7 +57,7 @@ class ImageFinder
 
             // Use item SKU to retrieve properties of configurable products
             $id = $item->getProduct()->getIdBySku($item->getSku());
-            $product = $this->productRepository->getById($id);
+            $product = $this->productRepository->getById($id, false, $item->getStoreId());
 
             if ($product->getThumbnail() !== "no_selection") {
                 return $base . $product->getThumbnail();

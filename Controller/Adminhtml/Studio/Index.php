@@ -9,7 +9,7 @@ class Index extends \Magento\Backend\App\AbstractAction
      *
      * @see _isAllowed()
      */
-    const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::studio';
+    const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::automation_studio';
 
     /**
      * Execute method.

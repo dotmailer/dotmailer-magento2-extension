@@ -32,10 +32,10 @@ class Order extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             $where = [
                 'created_at >= ?' => $from . ' 00:00:00',
                 'created_at <= ?' => $to . ' 23:59:59',
-                'email_imported' => 1
+                'email_imported = ?' => 1
             ];
         } else {
-            $where = ['email_imported' => 1];
+            $where = ['email_imported = ?' => 1];
         }
         $num = $conn->update(
             $this->getTable(Schema::EMAIL_ORDER_TABLE),

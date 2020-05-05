@@ -84,7 +84,6 @@ class Catalog implements SyncInterface
 
         if (!$productsToProcess) {
             $message = 'Catalog sync skipped, no products to process.';
-            $this->helper->log($message);
             $response['message'] = $message;
         } else {
             $syncedProducts = $this->syncCatalog($productsToProcess);

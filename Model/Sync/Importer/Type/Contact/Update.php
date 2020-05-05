@@ -231,7 +231,7 @@ class Update extends AbstractItemSyncer
      */
     private function handleResubscribeResponseStatus($response)
     {
-        if (!$response->status) {
+        if (!isset($response->status)) {
             return null;
         }
 

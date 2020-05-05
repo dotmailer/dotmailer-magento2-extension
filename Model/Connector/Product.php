@@ -231,7 +231,7 @@ class Product
                 $websiteId
             );
             $this->websites[$count]['Id'] = $website->getId();
-            $this->websites[$count]['Name'] = $website->getName();
+            $this->websites[$count]['Name'] = $website->getName() ?: '';
             ++$count;
         }
 
