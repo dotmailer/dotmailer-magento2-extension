@@ -19,6 +19,25 @@ You are welcome to contribute to Engagement Cloud for Magento! You can either:
 - Fix a bug: please clone and use our [Develop branch](https://github.com/dotmailer/dotmailer-magento2-extension/tree/develop) to submit your Pull Request
 - Request a feature on our [roadmap](https://roadmap.dotdigital.com)
 
+# 4.5.2
+
+###### What's new
+- We have introduced diagnostic system alerts via two channels: in-app system messages and email notifications. At this stage these are set to disabled by default.
+
+###### Bug fixes
+- Data migration now functions correctly in a split-database setup.
+- We’ve improved the way we parse Engagement Cloud contact import report faults.
+- Deletion of automation enrolments and abandoned carts from their respective report grids now works as expected.
+- Automations with the status _Cancelled_ are now labelled as such in the Automation Report.
+- We’ve improved our handling of the API response we receive when processing resubscribes.
+- We resolved some access control issues relating to non-admin user accounts.
+- We removed some excessive logging from the `Cron` class and catalog sync.
+- Deprecated `imported` and `modified` columns are now dropped from the `email_catalog` table.
+- We’ve fixed a possible insight data error by ensuring website name defaults to string in catalog sync.
+- We’re catching exceptions thrown by `unserialize()` to protect against unserialisable data stored for custom attributes.
+- Our syntax for `where` clauses has been updated to use question mark placeholders.
+- The configurable product thumbnail used in cart insight data when the cart image is set to be _Product Thumbnail Itself_ now uses the correct store scope. 
+
 # 4.5.1
 
 ###### What’s new
