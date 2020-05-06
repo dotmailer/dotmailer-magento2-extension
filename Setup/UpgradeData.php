@@ -158,7 +158,7 @@ class UpgradeData implements UpgradeDataInterface
         $this->upgradeFourOhOne($setup, $context);
         $this->upgradeFourThreeSix($setup, $context);
         $this->upgradeFourFourZero($setup, $context);
-        $this->upgradeFourFiveOne($context);
+        $this->upgradeFourFiveTwo($context);
 
         $installer->endSetup();
     }
@@ -380,10 +380,10 @@ class UpgradeData implements UpgradeDataInterface
     /**
      * @param ModuleContextInterface $context
      */
-    private function upgradeFourFiveOne(
+    private function upgradeFourFiveTwo(
         ModuleContextInterface $context
     ) {
-        if (version_compare($context->getVersion(), '4.5.1', '<')) {
+        if (version_compare($context->getVersion(), '4.5.2', '<')) {
             if (!$this->scopeConfig->isSetFlag(Config::XML_PATH_CONNECTOR_SYSTEM_ALERTS_USER_ROLES)) {
                 $defaultRole = $this->roleCollection->create()
                     ->setRolesFilter()
