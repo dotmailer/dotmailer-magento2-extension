@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd" label="Dotdigital System Alert Notification Items List">
+    <body>
+        <block class="Dotdigitalgroup\Email\Block\Adminhtml\Email\Items" name="ddg.system_alert.campaign_items" template="Dotdigitalgroup_Email::email/system_alert_notification_campaign_items.phtml"/>
+    </body>
+</page>

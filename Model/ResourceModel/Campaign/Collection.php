@@ -166,4 +166,17 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
             ->addFieldToFilter('send_status', \Dotdigitalgroup\Email\Model\Campaign::PROCESSING)
             ->getSize();
     }
+
+    /**
+     * Search the email_campaign table for jobs with sent_status = '3'(failed),
+     * with a created_at time inside the specified time window.
+     * @param $timeWindow
+     * @return Collection
+     */
+    public function fetchCampaignsWithErrorStatusInTimeWindow($timeWindow)
+    {
+        return $this->addFieldToFilter('send_status', \Dotdigitalgroup\Email\Model\Campaign::FAILED)
+            ->addFieldToFilter('created_at', $timeWindow)
+            ->setOrder('updated_at', 'DESC');
+    }
 }

@@ -141,4 +141,28 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
             ->addFieldToFilter('automation_type', Automation::AUTOMATION_TYPE_ABANDONED_CART_PROGRAM_ENROLMENT)
             ->addFieldToFilter('updated_at', $updated);
     }
+
+    /**
+     * Search the email_importer table for jobs with automation_status = 'Suppressed' or Cancelled (failed),
+     * with a created_at time inside the specified time window.
+     *
+     * @param array $timeWindow
+     * @return $this
+     */
+    public function fetchAutomationEnrolmentsWithErrorStatusInTimeWindow($timeWindow)
+    {
+        return $this->addFieldToFilter('enrolment_status', Automation::AUTOMATION_STATUS_FAILED)
+            ->addFieldToFilter('created_at', $timeWindow)
+            ->setOrder('updated_at', 'DESC');
+    }
+
+    /**
+     * @return $this
+     */
+    public function fetchAutomationEnrolmentsWithLongerPendingStatus()
+    {
+        return $this->addFieldToFilter('enrolment_status', Automation::AUTOMATION_STATUS_PENDING)
+            ->addFieldToFilter('created_at', ['lt' => new \DateTime('-1 hour')])
+            ->setOrder('updated_at', 'DESC');
+    }
 }

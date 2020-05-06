@@ -1,0 +1,37 @@
+<!--@subject {{trans "dotdigital: Extension task errors"}} @-->
+<!--@vars {
+"var user.firstname":"User first name",
+"var total":"Error count",
+"var items":"Cron error list",
+"var summary":"Error summary"
+} @-->
+
+<p>{{trans "Hello %firstname" firstname=$user.firstname}}</p>
+
+<p>{{trans "Some errors have been detected in the Magento instance %base_url." base_url=$store_url}}</p>
+
+<ul>
+    {{if cron_total}}
+    <li>{{trans "We've found %total error(s) in the following dotdigital cron task(s): %summary." total=$cron_total summary=$cron_summary}}</li>
+    {{/if}}
+    {{if importer_total}}
+    <li>{{trans "We've found %total error(s) in the following dotdigital import task(s): %summary." total=$importer_total summary=$importer_summary}}</li>
+    {{/if}}
+    {{if campaign_total}}
+    <li>{{trans "We've found %total error(s) in the following dotdigital campaign send(s): %summary." total=$campaign_total summary=$campaign_summary}}</li>
+    {{/if}}
+    {{if automation_total}}
+    <li>{{trans "We've found %total error(s) in the following dotdigital automation task(s): %summary." total=$automation_total summary=$automation_summary}}</li>
+    {{/if}}
+</ul>
+
+<p>{{trans "Here's more detail:"}}</p>
+
+{{layout handle="system_alert_notification_cron_items" items=$cron_items area="adminhtml"}}
+
+{{layout handle="system_alert_notification_importer_items" items=$importer_items area="adminhtml"}}
+
+{{layout handle="system_alert_notification_automation_items" items=$automation_items area="adminhtml"}}
+
+{{layout handle="system_alert_notification_campaign_items" items=$campaign_items area="adminhtml"}}
+
