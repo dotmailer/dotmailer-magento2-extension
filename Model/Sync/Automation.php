@@ -26,6 +26,7 @@ class Automation implements SyncInterface
     const CONTACT_STATUS_PENDING = "PendingOptIn";
     const CONTACT_STATUS_CONFIRMED = "Confirmed";
     const CONTACT_STATUS_EXPIRED = "Expired";
+    const AUTOMATION_STATUS_FAILED = "Failed";
 
     /**
      * @var array
@@ -570,7 +571,7 @@ class Automation implements SyncInterface
             );
             //check for error message
             if (isset($result->message)) {
-                $this->programStatus = 'Failed';
+                $this->programStatus = self::AUTOMATION_STATUS_FAILED;
                 $this->programMessage = $result->message;
             }
             //program is not active

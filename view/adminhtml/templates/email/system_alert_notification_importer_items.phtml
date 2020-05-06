@@ -1,0 +1,36 @@
+<?php
+/** @var $block Dotdigitalgroup\Email\Block\Adminhtml\Email\Items */
+?>
+<?php if ($block->hasItems()) { ?>
+<p><strong>Importer errors</strong></p>
+
+<table class="notification-items"
+       summary="<?= $block->escapeHtmlAttr(__('System Alert Notifications - Importer Errors')) ?>"
+       style="border-collapse: collapse; border: 1px solid black;">
+    <thead>
+    <tr>
+        <th style="padding: 10px; border: 1px solid black;"><?= $block->escapeHtml(__('Id')) ?></th>
+        <th style="padding: 10px; border: 1px solid black;"><?= $block->escapeHtml(__('Website Id')) ?></th>
+        <th style="padding: 10px; border: 1px solid black;"><?= $block->escapeHtml(__('Import type')) ?></th>
+        <th style="padding: 10px; border: 1px solid black;"><?= $block->escapeHtml(__('Import mode')) ?></th>
+        <th style="padding: 10px; border: 1px solid black;"><?= $block->escapeHtml(__('Message')) ?></th>
+        <th style="padding: 10px; border: 1px solid black;"><?= $block->escapeHtml(__('Created at')) ?></th>
+    </tr>
+    </thead>
+    <tbody>
+    <?php $i = 0; foreach ($block->getItems() as $item): ?>
+        <tr>
+            <td style="padding: 10px; border: 1px solid black;"><?= $block->escapeHtml($item['id']) ?></td>
+            <td style="padding: 10px; border: 1px solid black;"><?= $block->escapeHtml($item['website_id']) ?></td>
+            <td style="padding: 10px; border: 1px solid black;"><?= $block->escapeHtml($item['import_type']) ?></td>
+            <td style="padding: 10px; border: 1px solid black;"><?= $block->escapeHtml($item['import_mode']) ?></td>
+            <td style="padding: 10px; border: 1px solid black;"><?= $block->escapeHtml($item['message']) ?></td>
+            <td style="padding: 10px; border: 1px solid black;"><?= $block->escapeHtml($item['created_at']) ?></td>
+        </tr>
+        <?php $i++;
+    endforeach; ?>
+    </tbody>
+</table>
+
+<p><?= $block->escapeHtml(__('Please go to the Import Report to review.')); ?></p>
+<?php } ?>

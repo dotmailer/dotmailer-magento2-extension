@@ -1,0 +1,35 @@
+<?php
+/** @var $block Dotdigitalgroup\Email\Block\Adminhtml\Email\Items */
+?>
+<?php if ($block->hasItems()) { ?>
+    <p><strong>Campaign errors</strong></p>
+
+    <table class="notification-items"
+           summary="<?= $block->escapeHtmlAttr(__('System Alert Notifications - Campaign Errors')) ?>"
+           style="border-collapse: collapse; border: 1px solid black;">
+        <thead>
+        <tr>
+            <th style="padding: 10px; border: 1px solid black;"><?= $block->escapeHtml(__('Id')) ?></th>
+            <th style="padding: 10px; border: 1px solid black;"><?= $block->escapeHtml(__('Email')) ?></th>
+            <th style="padding: 10px; border: 1px solid black;"><?= $block->escapeHtml(__('Event Name')) ?></th>
+            <th style="padding: 10px; border: 1px solid black;"><?= $block->escapeHtml(__('Send Status')) ?></th>
+            <th style="padding: 10px; border: 1px solid black;"><?= $block->escapeHtml(__('Message')) ?></th>
+            <th style="padding: 10px; border: 1px solid black;"><?= $block->escapeHtml(__('Created at')) ?></th>
+        </tr>
+        </thead>
+        <tbody>
+        <?php foreach ($block->getItems() as $item): ?>
+            <tr>
+                <td style="padding: 10px; border: 1px solid black;"><?= $block->escapeHtml($item['id']) ?></td>
+                <td style="padding: 10px; border: 1px solid black;"><?= $block->escapeHtml($item['email']) ?></td>
+                <td style="padding: 10px; border: 1px solid black;"><?= $block->escapeHtml($item['event_name']) ?></td>
+                <td style="padding: 10px; border: 1px solid black;"><?= $block->escapeHtml($item['send_status']) ?></td>
+                <td style="padding: 10px; border: 1px solid black;"><?= $block->escapeHtml($item['message']) ?></td>
+                <td style="padding: 10px; border: 1px solid black;"><?= $block->escapeHtml($item['created_at']) ?></td>
+            </tr>
+        <?php endforeach; ?>
+        </tbody>
+    </table>
+
+    <p><?= $block->escapeHtml(__('Please go to the Campaign Sends report to review.')); ?></p>
+<?php } ?>

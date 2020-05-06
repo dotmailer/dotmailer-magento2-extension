@@ -34,5 +34,8 @@
         <job name="ddg_automation_email_templates" instance="Dotdigitalgroup\Email\Model\Cron" method="syncEmailTemplates">
             <schedule>0 */6 * * *</schedule>
         </job>
+        <job name="ddg_automation_monitor" instance="Dotdigitalgroup\Email\Model\Cron" method="monitor">
+            <schedule>*/15 * * * *</schedule>
+        </job>
     </group>
 </config>

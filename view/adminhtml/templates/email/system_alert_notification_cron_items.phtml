@@ -1,0 +1,31 @@
+<?php
+/** @var $block Dotdigitalgroup\Email\Block\Adminhtml\Email\Items */
+?>
+<?php if ($block->hasItems()) { ?>
+<p><strong>Cron errors</strong></p>
+
+<table class="notification-items"
+       summary="<?= $block->escapeHtmlAttr(__('System Alert Notifications - Cron Errors')) ?>"
+       style="border-collapse: collapse; border: 1px solid black;">
+    <thead>
+    <tr>
+        <th style="padding: 10px; border: 1px solid black;"><?= $block->escapeHtml(__('Id')) ?></th>
+        <th style="padding: 10px; border: 1px solid black;"><?= $block->escapeHtml(__('Job code')) ?></th>
+        <th style="padding: 10px; border: 1px solid black;"><?= $block->escapeHtml(__('Message')) ?></th>
+        <th style="padding: 10px; border: 1px solid black;"><?= $block->escapeHtml(__('Scheduled at')) ?></th>
+    </tr>
+    </thead>
+    <tbody>
+    <?php foreach ($block->getItems() as $item): ?>
+        <tr>
+            <td style="padding: 10px; border: 1px solid black;"><?= $block->escapeHtml($item['schedule_id']) ?></td>
+            <td style="padding: 10px; border: 1px solid black;"><?= $block->escapeHtml($item['job_code']) ?></td>
+            <td style="padding: 10px; border: 1px solid black;"><?= $block->escapeHtml($item['messages']) ?></td>
+            <td style="padding: 10px; border: 1px solid black;"><?= $block->escapeHtml($item['scheduled_at']) ?></td>
+        </tr>
+    <?php endforeach; ?>
+    </tbody>
+</table>
+
+<p><?= $block->escapeHtml(__('Please go to the Cron Tasks report to review.')); ?></p>
+<?php } ?>

@@ -155,4 +155,19 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
 
         return $this;
     }
+
+    /**
+     * Search the email_importer table for jobs with import_status = 3 (failed),
+     * with a created_at time inside the specified time window.
+     *
+     * @param array $timeWindow
+     * @return $this
+     */
+    public function fetchImporterTasksWithErrorStatusInTimeWindow($timeWindow)
+    {
+        return $this->addFieldToSelect(['import_type', 'import_mode', 'website_id', 'message', 'created_at'])
+            ->addFieldToFilter('import_status', 3)
+            ->addFieldToFilter('created_at', $timeWindow)
+            ->setOrder('created_at', 'DESC');
+    }
 }

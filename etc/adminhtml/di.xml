@@ -69,4 +69,14 @@
     <type name="Magento\Catalog\Controller\Adminhtml\Product\Action\Attribute\Save">
         <plugin name="Ddg_UpdateProductAttribute_MassActionPlugin" type="Dotdigitalgroup\Email\Plugin\CatalogProductAttributeSavePlugin" sortOrder="1"/>
     </type>
+    <type name="Magento\Framework\Notification\MessageList">
+        <arguments>
+            <argument name="messages" xsi:type="array">
+                <item name="cronErrorMessage" xsi:type="string">Dotdigitalgroup\Email\Model\System\Message\CronError</item>
+                <item name="importerErrorMessage" xsi:type="string">Dotdigitalgroup\Email\Model\System\Message\ImporterError</item>
+                <item name="campaignErrorMessage" xsi:type="string">Dotdigitalgroup\Email\Model\System\Message\CampaignError</item>
+                <item name="automationErrorMessage" xsi:type="string">Dotdigitalgroup\Email\Model\System\Message\AutomationError</item>
+            </argument>
+        </arguments>
+    </type>
 </config>

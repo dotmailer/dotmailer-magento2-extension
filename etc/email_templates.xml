@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Email:etc/email_templates.xsd">
+    <template id="system_alert_email_template" label="dotdigital System Alert" file="system_alert.html" type="html" module="Dotdigitalgroup_Email" area="adminhtml"/>
+</config>

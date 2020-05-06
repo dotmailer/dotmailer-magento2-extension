@@ -317,6 +317,13 @@
                 <catalog>*/15 * * * *</catalog>
                 <review_wishlist>*/15 * * * *</review_wishlist>
             </cron_schedules>
+            <system_alerts>
+                <system_messages>0</system_messages>
+                <email_notifications>0</email_notifications>
+                <user_roles></user_roles>
+                <frequency>24</frequency>
+                <email_notification_template>system_alert_email_template</email_notification_template>
+            </system_alerts>
         </connector_developer_settings>
     </default>
 </config>

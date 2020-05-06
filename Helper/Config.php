@@ -265,6 +265,14 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_PATH_CONNECTOR_ENABLE_SUBSCRIBER_SALES_DATA =
         'connector_developer_settings/import_settings/subscriber_sales_data_enabled';
     const XML_PATH_CONNECTOR_STRIP_PUB = 'connector_developer_settings/import_settings/strip_pub_from_media_paths';
+    const XML_PATH_CONNECTOR_SYSTEM_ALERTS_SYSTEM_MESSAGES =
+        'connector_developer_settings/system_alerts/system_messages';
+    const XML_PATH_CONNECTOR_SYSTEM_ALERTS_EMAIL_NOTIFICATIONS =
+        'connector_developer_settings/system_alerts/email_notifications';
+    const XML_PATH_CONNECTOR_SYSTEM_ALERTS_USER_ROLES = 'connector_developer_settings/system_alerts/user_roles';
+    const XML_PATH_CONNECTOR_SYSTEM_ALERTS_FREQUENCY = 'connector_developer_settings/system_alerts/frequency';
+    const XML_PATH_CONNECTOR_SYSTEM_ALERTS_EMAIL_NOTIFICATION_TEMPLATE =
+        'connector_developer_settings/system_alerts/email_notification_template';
 
     /*
      * Cron schedules
