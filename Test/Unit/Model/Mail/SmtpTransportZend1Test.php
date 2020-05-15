@@ -34,7 +34,7 @@ class SmtpTransportZend1Test extends \PHPUnit\Framework\TestCase
     /**
      * Prepare data
      */
-    protected function setUp()
+    protected function setUp() :void
     {
         $this->loggerMock = $this->createMock(Logger::class);
 
@@ -71,9 +71,9 @@ class SmtpTransportZend1Test extends \PHPUnit\Framework\TestCase
             ->willReturn($host);
 
         $this->transactionalEmailSettings->expects($this->once())
-                                         ->method('getTransportConfig')
-                                         ->with($storeId)
-                                         ->willReturn($transportConfig);
+            ->method('getTransportConfig')
+            ->with($storeId)
+            ->willReturn($transportConfig);
 
         $zendMailTransportSmtp = $this->getMockBuilder(
             Zend_Mail_Transport_Smtp::class
@@ -81,13 +81,13 @@ class SmtpTransportZend1Test extends \PHPUnit\Framework\TestCase
         )->getMock();
 
         $this->zendMailTransportSmtp1Factory->expects($this->once())
-                                            ->method('create')
-                                            ->with($host, $transportConfig)
-                                            ->willReturn($zendMailTransportSmtp);
+            ->method('create')
+            ->with($host, $transportConfig)
+            ->willReturn($zendMailTransportSmtp);
 
         $zendMailTransportSmtp->expects($this->once())
-                              ->method('send')
-                              ->with($message);
+            ->method('send')
+            ->with($message);
 
         $this->smtpTransportZend1->send($message, $storeId);
     }

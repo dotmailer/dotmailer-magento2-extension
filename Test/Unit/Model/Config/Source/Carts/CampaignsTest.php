@@ -30,7 +30,7 @@ class CampaignsTest extends TestCase
     /**
      * Mock class dependencies
      */
-    protected function setUp()
+    protected function setUp() :void
     {
         $this->escaper = $this->getMockBuilder(Escaper::class)
             ->disableOriginalConstructor()

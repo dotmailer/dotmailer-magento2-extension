@@ -43,7 +43,7 @@ class UpdateCatalogTest extends TestCase
      */
     private $productMock;
 
-    protected function setUp()
+    protected function setUp() :void
     {
         $this->productMock = $this->createMock(Product::class);
         $this->catalogResourceMock = $this->createMock(Catalog::class);
