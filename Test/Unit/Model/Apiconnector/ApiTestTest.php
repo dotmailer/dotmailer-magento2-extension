@@ -19,7 +19,7 @@ class ApiTestTest extends TestCase
      */
     private $configInterfaceMock;
 
-    protected function setUp()
+    protected function setUp() :void
     {
         $this->helperMock = $this->createMock(Data::class);
         $this->configInterfaceMock = $this->createMock(ReinitableConfigInterface::class);

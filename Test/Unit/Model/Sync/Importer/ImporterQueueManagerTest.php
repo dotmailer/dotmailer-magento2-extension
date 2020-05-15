@@ -48,7 +48,7 @@ class ImporterQueueManagerTest extends TestCase
      */
     private $deleteFactoryMock;
 
-    protected function setUp()
+    protected function setUp() :void
     {
         $this->contactBulkFactoryMock = $this->createMock(ContactBulkFactory::class);
         $this->contactUpdateFactoryMock = $this->createMock(ContactUpdateFactory::class);

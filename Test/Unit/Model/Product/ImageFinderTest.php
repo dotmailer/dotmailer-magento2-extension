@@ -43,7 +43,7 @@ class ImageFinderTest extends TestCase
      */
     private $itemMock;
 
-    protected function setUp()
+    protected function setUp() :void
     {
         $this->productRepositoryMock = $this->createMock(ProductRepositoryInterface::class);
         $this->scopeConfigMock = $this->createMock(ScopeConfigInterface::class);
@@ -71,10 +71,10 @@ class ImageFinderTest extends TestCase
         $this->productMock->expects($this->atLeastOnce())
             ->method('__call')
             ->withConsecutive(
-                $this->equalTo('getThumbnail'),
-                $this->equalTo('getThumbnail'),
-                $this->equalTo('getThumbnail'),
-                $this->equalTo('getThumbnail')
+                [$this->equalTo('getThumbnail')],
+                [$this->equalTo('getThumbnail')],
+                [$this->equalTo('getThumbnail')],
+                [$this->equalTo('getThumbnail')]
             )
             ->willReturnOnConsecutiveCalls(
                 '/image.jpg',

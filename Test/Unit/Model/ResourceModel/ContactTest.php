@@ -15,7 +15,7 @@ class ContactTest extends TestCase
      */
     private $contactResourceModel;
 
-    protected function setUp()
+    protected function setUp() :void
     {
         $this->makeMocks();
 
@@ -108,16 +108,16 @@ class ContactTest extends TestCase
     private function makeMocks()
     {
         foreach ([
-             \Magento\Framework\Model\ResourceModel\Db\Context::class,
-             \Magento\Newsletter\Model\ResourceModel\Subscriber\CollectionFactory::class,
-             \Magento\Customer\Model\ResourceModel\Customer\CollectionFactory::class,
-             \Magento\Cron\Model\ScheduleFactory::class,
-             \Dotdigitalgroup\Email\Model\Sql\ExpressionFactory::class,
-             \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory::class,
-             \Magento\Sales\Model\ResourceModel\Order\CollectionFactory::class,
-             \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory::class,
-             \Dotdigitalgroup\Email\Helper\Config::class,
-        ] as $class) {
+                     \Magento\Framework\Model\ResourceModel\Db\Context::class,
+                     \Magento\Newsletter\Model\ResourceModel\Subscriber\CollectionFactory::class,
+                     \Magento\Customer\Model\ResourceModel\Customer\CollectionFactory::class,
+                     \Magento\Cron\Model\ScheduleFactory::class,
+                     \Dotdigitalgroup\Email\Model\Sql\ExpressionFactory::class,
+                     \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory::class,
+                     \Magento\Sales\Model\ResourceModel\Order\CollectionFactory::class,
+                     \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory::class,
+                     \Dotdigitalgroup\Email\Helper\Config::class,
+                 ] as $class) {
             $this->constructorMocks[$class] = $this->getMockBuilder($class)->disableOriginalConstructor()->getMock();
         }
     }

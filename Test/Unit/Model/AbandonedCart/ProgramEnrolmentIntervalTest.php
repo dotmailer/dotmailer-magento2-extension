@@ -30,7 +30,7 @@ class ProgramEnrolmentIntervalTest extends TestCase
      */
     private $model;
 
-    protected function setUp()
+    protected function setUp() :void
     {
         $this->dateTimeFactoryMock = $this->getMockBuilder(DateTimeFactory::class)
             ->disableOriginalConstructor()
@@ -98,8 +98,8 @@ class ProgramEnrolmentIntervalTest extends TestCase
         $dateTimeMock->expects($this->atLeastOnce())
             ->method('sub')
             ->withConsecutive(
-                $intervalModelMock1,
-                $intervalModelMock2
+                [$intervalModelMock1],
+                [$intervalModelMock2]
             )
             ->willReturnOnConsecutiveCalls(
                 $dateTimeMock,

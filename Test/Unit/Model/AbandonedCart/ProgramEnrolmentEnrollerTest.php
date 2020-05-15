@@ -83,7 +83,7 @@ class ProgramEnrolmentEnrollerTest extends TestCase
      */
     private $quoteMock;
 
-    protected function setUp()
+    protected function setUp() :void
     {
         $this->orderCollectionFactoryMock = $this->getMockBuilder(CollectionFactory::class)
             ->setMethods(['create'])

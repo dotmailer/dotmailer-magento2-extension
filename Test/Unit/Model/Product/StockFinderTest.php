@@ -48,7 +48,7 @@ class StockFinderTest extends TestCase
      */
     private $typeInstanceMock;
 
-    protected function setUp()
+    protected function setUp() :void
     {
         $this->loggerMock = $this->createMock(Logger::class);
         $this->stockItemRepositoryMock = $this->createMock(StockItemRepositoryInterface::class);

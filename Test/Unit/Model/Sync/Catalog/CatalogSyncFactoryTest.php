@@ -42,7 +42,7 @@ class CatalogSyncFactoryTest extends TestCase
      */
     private $storeLevelCatalogSyncerMock;
 
-    protected function setUp()
+    protected function setUp() :void
     {
         $this->scopeConfigInterfaceMock = $this->createMock(ScopeConfigInterface::class);
         $this->defaultLevelCatalogSyncerFactoryMock = $this->createMock(DefaultLevelCatalogSyncerFactory::class);
