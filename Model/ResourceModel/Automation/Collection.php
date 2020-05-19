@@ -143,7 +143,7 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     }
 
     /**
-     * Search the email_importer table for jobs with automation_status = 'Suppressed' or Cancelled (failed),
+     * Search the email_automation table for jobs with automation_status = 'Failed',
      * with a created_at time inside the specified time window.
      *
      * @param array $timeWindow
@@ -157,11 +157,17 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     }
 
     /**
-     * @return $this
+     * Search the email_automation table for jobs with automation_status = 'pending',
+     * with a created_at time inside the time window but older than 1 hour.
+     *
+     * @param array $timeWindow
+     * @return Collection
+     * @throws \Exception
      */
-    public function fetchAutomationEnrolmentsWithLongerPendingStatus()
+    public function fetchAutomationEnrolmentsWithPendingStatusInTimeWindow($timeWindow)
     {
         return $this->addFieldToFilter('enrolment_status', Automation::AUTOMATION_STATUS_PENDING)
+            ->addFieldToFilter('created_at', $timeWindow)
             ->addFieldToFilter('created_at', ['lt' => new \DateTime('-1 hour')])
             ->setOrder('updated_at', 'DESC');
     }

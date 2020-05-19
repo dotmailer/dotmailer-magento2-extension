@@ -55,7 +55,7 @@ class Monitor extends AbstractMonitor implements MonitorInterface
             ->fetchAutomationEnrolmentsWithErrorStatusInTimeWindow($timeWindow);
 
         $automationPendingCollection = $this->automationCollection->create()
-            ->fetchAutomationEnrolmentsWithLongerPendingStatus();
+            ->fetchAutomationEnrolmentsWithPendingStatusInTimeWindow($timeWindow);
 
         $items = array_merge($automationErrorCollection->getItems(), $automationPendingCollection->getItems());
 
