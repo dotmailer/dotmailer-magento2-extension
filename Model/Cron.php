@@ -152,7 +152,8 @@ class Cron
     }
 
     /**
-     * @return void
+     * @return array|void
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function contactSync()
     {
@@ -161,26 +162,34 @@ class Cron
         }
 
         //run the sync for contacts
-        $this->contactFactory->create()
+        $result = $this->contactFactory->create()
             ->sync();
         //run subscribers and guests sync
-        $this->subscribersAndGuestSync();
+        $subscriberResult = $this->subscribersAndGuestSync();
+
+        $result['message'] .= ' - ' . $subscriberResult['message'];
+
+        return $result;
     }
 
     /**
      * CRON FOR SUBSCRIBERS AND GUEST CONTACTS.
+     * @return array
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function subscribersAndGuestSync()
     {
         //sync subscribers
         $subscriberModel = $this->subscriberFactory->create();
-        $subscriberModel->runExport();
+        $result = $subscriberModel->runExport();
 
         //un-subscribe suppressed contacts
         $subscriberModel->unsubscribe();
 
         //sync guests
         $this->guestFactory->create()->sync();
+
+        return $result;
     }
 
     /**
@@ -243,13 +252,11 @@ class Cron
     }
 
     /**
-     * Review sync.
-     *
-     * @return void
+     * @return array
      */
     public function reviewSync()
     {
-        $this->cronHelper->reviewSync();
+        return $this->cronHelper->reviewSync();
     }
 
     /**
@@ -298,8 +305,7 @@ class Cron
     }
 
     /**
-     * CRON FOR ORDER TRANSACTIONAL DATA.
-     * @return void
+     * @return array|void
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function orderSync()
@@ -309,7 +315,7 @@ class Cron
         }
 
         // send order
-        $this->syncOrderFactory->create()
+        return $this->syncOrderFactory->create()
             ->sync();
     }
 
@@ -364,7 +370,6 @@ class Cron
     }
 
     /**
-     * Sync the email templates from dotmailer.
      * @return void
      */
     public function syncEmailTemplates()
