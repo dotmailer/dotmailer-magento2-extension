@@ -47,7 +47,7 @@ class Monitor extends AbstractMonitor implements MonitorInterface
      * @param array $timeWindow
      * @return array
      */
-    public function fetchErrors($timeWindow)
+    public function fetchErrors(array $timeWindow)
     {
         return $this->cronCollection->create()
             ->fetchCronTasksWithErrorStatusInTimeWindow($timeWindow)
@@ -58,7 +58,7 @@ class Monitor extends AbstractMonitor implements MonitorInterface
      * @param array $items
      * @return array
      */
-    public function filterErrorItems($items)
+    public function filterErrorItems(array $items)
     {
         $array = [];
         foreach ($items as $item) {
