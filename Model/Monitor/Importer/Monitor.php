@@ -48,7 +48,7 @@ class Monitor extends AbstractMonitor implements MonitorInterface
      * @return array
      * @throws \Exception
      */
-    public function fetchErrors($timeWindow)
+    public function fetchErrors(array $timeWindow)
     {
         return $this->importerCollection->create()
             ->fetchImporterTasksWithErrorStatusInTimeWindow($timeWindow)
@@ -59,7 +59,7 @@ class Monitor extends AbstractMonitor implements MonitorInterface
      * @param array $items
      * @return array
      */
-    public function filterErrorItems($items)
+    public function filterErrorItems(array $items)
     {
         $array = [];
         foreach ($items as $item) {

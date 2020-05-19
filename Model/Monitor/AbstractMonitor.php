@@ -71,7 +71,7 @@ abstract class AbstractMonitor
      * @param array $timeWindow
      * @return array
      */
-    abstract public function fetchErrors($timeWindow);
+    abstract public function fetchErrors(array $timeWindow);
 
     /**
      * @param array $items
