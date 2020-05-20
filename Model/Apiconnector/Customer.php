@@ -68,16 +68,6 @@ class Customer extends ContactData
     public $contactFactory;
 
     /**
-     * @var array
-     */
-    public $subscriberStatus = [
-        \Magento\Newsletter\Model\Subscriber::STATUS_SUBSCRIBED => 'Subscribed',
-        \Magento\Newsletter\Model\Subscriber::STATUS_NOT_ACTIVE => 'Not Active',
-        \Magento\Newsletter\Model\Subscriber::STATUS_UNSUBSCRIBED => 'Unsubscribed',
-        \Magento\Newsletter\Model\Subscriber::STATUS_UNCONFIRMED => 'Unconfirmed',
-    ];
-
-    /**
      * @var \Magento\Customer\Model\ResourceModel\Group
      */
     private $groupResource;
@@ -552,7 +542,7 @@ class Customer extends ContactData
             ->loadByCustomerId($this->model->getId());
 
         if ($subscriberModel->getCustomerId()) {
-            return $this->subscriberStatus[$subscriberModel->getSubscriberStatus()];
+            return $this->getSubscriberStatusString($subscriberModel->getSubscriberStatus());
         }
 
         return false;

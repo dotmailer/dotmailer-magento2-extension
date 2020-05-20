@@ -2,11 +2,12 @@
 
 namespace Dotdigitalgroup\Email\Model\Sync\Importer\Type\Contact;
 
-use Dotdigitalgroup\Email\Model\Apiconnector\Customer;
+use Dotdigitalgroup\Email\Model\Apiconnector\ContactData;
 use Dotdigitalgroup\Email\Model\Importer;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact;
 use Dotdigitalgroup\Email\Model\Sync\Importer\Type\AbstractItemSyncer;
 use Dotdigitalgroup\Email\Model\Sync\Importer\Type\SingleItemPostProcessorFactory;
+use Magento\Newsletter\Model\Subscriber;
 
 /**
  * Handle update data for importer.
@@ -24,9 +25,9 @@ class Update extends AbstractItemSyncer
     public $contactResource;
 
     /**
-     * @var Customer
+     * @var ContactData
      */
-    private $apiConnectorCustomer;
+    private $contactData;
 
     /**
      * @var SingleItemPostProcessorFactory
@@ -48,7 +49,7 @@ class Update extends AbstractItemSyncer
      * @param \Magento\Framework\Serialize\SerializerInterface $serializer
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Importer $importerResource
      * @param Contact $contactResource
-     * @param Customer $apiConnectorCustomer
+     * @param ContactData $contactData
      * @param SingleItemPostProcessorFactory $postProcessor
      * @param array $data
      */
@@ -58,12 +59,12 @@ class Update extends AbstractItemSyncer
         \Magento\Framework\Serialize\SerializerInterface $serializer,
         \Dotdigitalgroup\Email\Model\ResourceModel\Importer $importerResource,
         Contact $contactResource,
-        Customer $apiConnectorCustomer,
+        ContactData $contactData,
         SingleItemPostProcessorFactory $postProcessor,
         array $data = []
     ) {
         $this->contactResource = $contactResource;
-        $this->apiConnectorCustomer = $apiConnectorCustomer;
+        $this->contactData = $contactData;
         $this->postProcessor = $postProcessor;
 
         parent::__construct($helper, $fileHelper, $serializer, $importerResource, $data);
@@ -193,21 +194,22 @@ class Update extends AbstractItemSyncer
     }
 
     /**
-     * @param mixed $importData
-     * @param mixed $websiteId
+     * @param array $importData
+     * @param string|int $websiteId
      *
      * @return mixed
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     private function syncItemSubscriberUpdateMode($importData, $websiteId)
     {
         $email = $importData['email'];
         $id = $importData['id'];
 
-        $subscriberStatuses = $this->apiConnectorCustomer->subscriberStatus;
-        $unsubscribedValue = $subscriberStatuses[\Magento\Newsletter\Model\Subscriber::STATUS_UNSUBSCRIBED];
         $data[] = [
             'Key' => 'SUBSCRIBER_STATUS',
-            'Value' => $unsubscribedValue
+            'Value' => $this->contactData->getSubscriberStatusString(
+                Subscriber::STATUS_UNSUBSCRIBED
+            )
         ];
 
         $result = $this->client->updateContactDatafieldsByEmail($email, $data);

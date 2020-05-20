@@ -4,6 +4,7 @@ namespace Dotdigitalgroup\Email\Model\Newsletter;
 
 use Dotdigitalgroup\Email\Setup\SchemaInterface as Schema;
 use Dotdigitalgroup\Email\Helper\Config;
+use Dotdigitalgroup\Email\Model\Apiconnector\ContactData;
 
 class SubscriberExporter
 {
@@ -58,6 +59,11 @@ class SubscriberExporter
     private $contactResource;
 
     /**
+     * @var ContactData
+     */
+    private $contactData;
+
+    /**
      * SubscriberExporter constructor.
      * @param \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
@@ -68,6 +74,7 @@ class SubscriberExporter
      * @param \Magento\Framework\Stdlib\DateTime\DateTime $dateTime
      * @param \Magento\Newsletter\Model\ResourceModel\Subscriber\CollectionFactory $subscriberCollectionFactory
      * @param CsvGeneratorFactory $csvGeneratorFactory
+     * @param ContactData $contactData
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
@@ -78,7 +85,8 @@ class SubscriberExporter
         \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contactResource,
         \Magento\Framework\Stdlib\DateTime\DateTime $dateTime,
         \Magento\Newsletter\Model\ResourceModel\Subscriber\CollectionFactory $subscriberCollectionFactory,
-        CsvGeneratorFactory $csvGeneratorFactory
+        CsvGeneratorFactory $csvGeneratorFactory,
+        ContactData $contactData
     ) {
         $this->csvGeneratorFactory    = $csvGeneratorFactory;
         $this->helper          = $helper;
@@ -89,6 +97,7 @@ class SubscriberExporter
         $this->contactResource = $contactResource;
         $this->importerFactory = $importerFactory;
         $this->subscriberCollectionFactory = $subscriberCollectionFactory;
+        $this->contactData = $contactData;
     }
 
     /**
@@ -111,13 +120,17 @@ class SubscriberExporter
         $subscriberWebsiteName = $store->getWebsite()->getConfig(
             Config::XML_PATH_CONNECTOR_CUSTOMER_WEBSITE_NAME
         );
+        $subscriberStatus = $store->getWebsite()->getConfig(
+            Config::XML_PATH_CONNECTOR_CUSTOMER_SUBSCRIBER_STATUS
+        );
 
         $csv = $this->csvGeneratorFactory->create()
             ->createCsv($subscribersFilename)
             ->createHeaders(
                 $store,
                 $subscriberStorename ?: '',
-                $subscriberWebsiteName ?: ''
+                $subscriberWebsiteName ?: '',
+                $subscriberStatus ?: ''
             );
 
         // If consent insight is enabled, include additional headers
@@ -140,7 +153,8 @@ class SubscriberExporter
                 $contact->getEmail(),
                 'Html',
                 $store->getName(),
-                $store->getWebsite()->getName()
+                $store->getWebsite()->getName(),
+                $this->contactData->getSubscriberStatusString($contact->getSubscriberStatus())
             ];
 
             if ($optInType) {
