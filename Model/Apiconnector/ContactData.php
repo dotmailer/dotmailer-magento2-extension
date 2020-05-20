@@ -110,6 +110,16 @@ class ContactData
     private $eavConfig;
 
     /**
+     * @var array
+     */
+    private $subscriberStatuses = [
+        \Magento\Newsletter\Model\Subscriber::STATUS_SUBSCRIBED => 'Subscribed',
+        \Magento\Newsletter\Model\Subscriber::STATUS_NOT_ACTIVE => 'Not Active',
+        \Magento\Newsletter\Model\Subscriber::STATUS_UNSUBSCRIBED => 'Unsubscribed',
+        \Magento\Newsletter\Model\Subscriber::STATUS_UNCONFIRMED => 'Unconfirmed',
+    ];
+
+    /**
      * ContactData constructor.
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      * @param \Magento\Catalog\Api\Data\ProductInterfaceFactory $productFactory
@@ -677,5 +687,24 @@ class ContactData
                 //Text, Dates, Multilines, Boolean
                 return $this->model->getData($attributeCode);
         }
+    }
+
+    /**
+     * Subscriber status for email contact.
+     *
+     * @return string
+     */
+    public function getSubscriberStatus()
+    {
+        return $this->getSubscriberStatusString($this->model->getSubscriberStatus());
+    }
+
+    /**
+     * @param $statusCode
+     * @return string
+     */
+    public function getSubscriberStatusString($statusCode)
+    {
+        return $this->subscriberStatuses[$statusCode];
     }
 }

@@ -1708,6 +1708,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $subscriberDataFields = [
             'website_name' => '',
             'store_name' => '',
+            'subscriber_status' => '',
             'number_of_orders' => '',
             'average_order_value' => '',
             'total_spend' => '',
@@ -1726,7 +1727,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $store = $website->getDefaultStore();
         $mappedData = $this->scopeConfig->getValue(
             'connector_data_mapping/customer_data',
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+            ScopeInterface::SCOPE_STORE,
             $store->getId()
         );
 

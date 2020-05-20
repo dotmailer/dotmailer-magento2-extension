@@ -55,9 +55,10 @@ class CsvGenerator
      * @param StoreInterface $store
      * @param string $storeName
      * @param string $websiteName
+     * @param string $status
      * @return $this
      */
-    public function createHeaders($store, $storeName = '', $websiteName = '')
+    public function createHeaders($store, $storeName = '', $websiteName = '', $status = '')
     {
         $this->headers = ['Email', 'EmailType'];
         if (strlen($storeName)) {
@@ -65,6 +66,9 @@ class CsvGenerator
         }
         if (strlen($websiteName)) {
             $this->headers[] = $websiteName;
+        }
+        if (strlen($status)) {
+            $this->headers[] = $status;
         }
         $optInType = $this->isOptInTypeDouble($store);
         if ($optInType) {
