@@ -9,9 +9,6 @@ use Magento\Framework\UrlInterface;
 
 class DummyRecordsData
 {
-    const IMAGE_URL = 'https://raw.githubusercontent.com/
-    magento/magento2-sample-data/2.3/pub/media/catalog/product/m/h/mh01-black_main.jpg';
-
     const PRODUCT_NAME = 'Chaz Kangeroo Hoodie';
 
     /**
@@ -134,7 +131,7 @@ class DummyRecordsData
 
         $lineItems[] = [
             'sku' => 'MH06-M-Blue',
-            'imageUrl' => self::IMAGE_URL,
+            'imageUrl' => $this->getImageUrl(),
             'productUrl' => $store->getBaseUrl(
                 UrlInterface::URL_TYPE_WEB,
                 $store->isCurrentlySecure()
@@ -151,5 +148,15 @@ class DummyRecordsData
         $data['json']['cartPhase'] = 'ORDER_PENDING';
 
         return $data;
+    }
+
+    /**
+     * @return string
+     */
+    private function getImageUrl()
+    {
+        return 'https://raw.githubusercontent.com/'
+               .'magento/magento2-sample-data/'
+               .'2.3/pub/media/catalog/product/m/h/mh01-black_main.jpg';
     }
 }
