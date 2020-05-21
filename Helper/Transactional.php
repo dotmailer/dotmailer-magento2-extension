@@ -155,19 +155,23 @@ class Transactional extends \Magento\Framework\App\Helper\AbstractHelper
     {
         try {
             $host = $this->getSmtpHost($storeId);
-
-            return new SmtpOptions(
-                [
+            $options = [
                 'host' => $host,
                 'port' => $this->getSmtpPort($storeId),
-                'connection_class' => 'login',
                 'connection_config' => [
-                    'username' => $this->getSmtpUsername($storeId),
-                    'password' => $this->getSmtpPassword($storeId),
                     'ssl' => 'tls'
                 ]
-                ]
-            );
+            ];
+
+            $username = $this->getSmtpUsername($storeId);
+            $password = $this->getSmtpPassword($storeId);
+            if ($username || $password) {
+                $options['connection_class'] = 'login';
+                $options['connection_config']['username'] = $username;
+                $options['connection_config']['password'] = $password;
+            }
+
+            return new SmtpOptions($options);
         } catch (\Exception $e) {
             $this->_logger->debug((string) $e);
         }
