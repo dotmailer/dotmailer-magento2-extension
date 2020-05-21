@@ -23,6 +23,9 @@
     {{if automation_total}}
     <li>{{trans "We've found %total error(s) in the following dotdigital automation task(s): %summary." total=$automation_total summary=$automation_summary}}</li>
     {{/if}}
+    {{if smtp_total}}
+    <li>{{trans "We've found %total error(s) in recent dotdigital SMTP mail sends." total=$smtp_total}}</li>
+    {{/if}}
 </ul>
 
 <p>{{trans "Here's more detail:"}}</p>
@@ -34,4 +37,6 @@
 {{layout handle="system_alert_notification_automation_items" items=$automation_items area="adminhtml"}}
 
 {{layout handle="system_alert_notification_campaign_items" items=$campaign_items area="adminhtml"}}
+
+{{layout handle="system_alert_notification_smtp_items" items=$smtp_items area="adminhtml"}}
 

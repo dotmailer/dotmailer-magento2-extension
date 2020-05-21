@@ -1,0 +1,29 @@
+<?php
+/** @var $block Dotdigitalgroup\Email\Block\Adminhtml\Email\Items */
+?>
+<?php if ($block->hasItems()) { ?>
+    <p><strong>SMTP errors</strong></p>
+
+    <table class="notification-items"
+           summary="<?= $block->escapeHtmlAttr(__('System Alert Notifications - SMTP Errors')) ?>"
+           style="border-collapse: collapse; border: 1px solid black;">
+        <thead>
+        <tr>
+            <th style="padding: 10px; border: 1px solid black;"><?= $block->escapeHtml(__('Date')) ?></th>
+            <th style="padding: 10px; border: 1px solid black;"><?= $block->escapeHtml(__('Message')) ?></th>
+        </tr>
+        </thead>
+        <tbody>
+        <?php foreach ($block->getItems() as $item): ?>
+            <tr>
+                <td style="padding: 10px; border: 1px solid black;"><?= $block->escapeHtml($item['date']) ?></td>
+                <td
+                    style="padding: 10px; border: 1px solid black;">
+                    <?= $block->escapeHtml($item['error_message']) ?>
+                </td>
+            </tr>
+        <?php endforeach; ?>
+        </tbody>
+    </table>
+
+<?php } ?>

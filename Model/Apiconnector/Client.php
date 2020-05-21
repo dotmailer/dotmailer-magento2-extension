@@ -1484,7 +1484,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     /**
      * Sends a transactional email.
      *
-     * @param string $content
+     * @param array $content
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function sendApiTransactionalEmail($content)
@@ -1495,7 +1495,13 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
             ->setVerb('POST')
             ->buildPostBody($content);
 
-        $this->execute();
+        $response = $this->execute();
+
+        if (isset($response->message)) {
+            $this->addClientLog('Error sending transactional email');
+        }
+
+        return $response;
     }
 
     /**

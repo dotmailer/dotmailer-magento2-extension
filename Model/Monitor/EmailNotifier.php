@@ -7,6 +7,7 @@ use Dotdigitalgroup\Email\Model\Monitor\Cron\Monitor as CronMonitor;
 use Dotdigitalgroup\Email\Model\Monitor\Importer\Monitor as ImporterMonitor;
 use Dotdigitalgroup\Email\Model\Monitor\Campaign\Monitor as CampaignMonitor;
 use Dotdigitalgroup\Email\Model\Monitor\Automation\Monitor as AutomationMonitor;
+use Dotdigitalgroup\Email\Model\Monitor\Smtp\Monitor as SmtpMonitor;
 use Dotdigitalgroup\Email\Helper\Config;
 use Magento\Framework\UrlInterface;
 use Magento\Framework\App\Config\ScopeConfigInterface;
@@ -18,8 +19,8 @@ use Magento\Backend\Helper\Data as BackendData;
 use Magento\Backend\App\Area\FrontNameResolver;
 use Magento\Store\Model\Store;
 use Magento\User\Model\ResourceModel\User\Collection as UserCollection;
-use Magento\Framework\Exception\MailException;
 use Magento\Framework\Exception\LocalizedException;
+use Dotdigitalgroup\Email\Helper\Data;
 
 class EmailNotifier
 {
@@ -71,6 +72,11 @@ class EmailNotifier
     private $automationMonitor;
 
     /**
+     * @var SmtpMonitor
+     */
+    private $smtpMonitor;
+
+    /**
      * @var FlagManager
      */
     private $flagManager;
@@ -86,6 +92,11 @@ class EmailNotifier
     private $backendHelper;
 
     /**
+     * @var Data
+     */
+    private $helper;
+
+    /**
      * EmailNotifier constructor.
      * @param UrlInterface $urlBuilder
      * @param ScopeConfigInterface $scopeConfig
@@ -99,6 +110,8 @@ class EmailNotifier
      * @param BackendData $backendHelper
      * @param CampaignMonitor $campaignMonitor
      * @param AutomationMonitor $automationMonitor
+     * @param SmtpMonitor $smtpMonitor
+     * @param Data $helper
      */
     public function __construct(
         UrlInterface $urlBuilder,
@@ -112,7 +125,9 @@ class EmailNotifier
         FlagManager $flagManager,
         BackendData $backendHelper,
         CampaignMonitor $campaignMonitor,
-        AutomationMonitor $automationMonitor
+        AutomationMonitor $automationMonitor,
+        SmtpMonitor $smtpMonitor,
+        Data $helper
     ) {
         $this->urlBuilder = $urlBuilder;
         $this->scopeConfig = $scopeConfig;
@@ -126,6 +141,8 @@ class EmailNotifier
         $this->backendHelper = $backendHelper;
         $this->campaignMonitor = $campaignMonitor;
         $this->automationMonitor = $automationMonitor;
+        $this->smtpMonitor = $smtpMonitor;
+        $this->helper = $helper;
     }
 
     /**
@@ -167,10 +184,20 @@ class EmailNotifier
                 $recipient->getFirstName() . ' ' . $recipient->getLastName()
             )->getTransport();
 
-            try {
+            if (isset($errors['smtp'])) {
+                //API METHOD TO SEND MAILS
+                $client = $this->helper->getWebsiteApiClient();
+
+                $content = [
+                    "Subject" => $transport->getMessage()->getSubject(),
+                    "ToAddresses" => [$recipient->getEmail()],
+                    "FromAddress" => $this->scopeConfig->getValue('trans_email/ident_general/email'),
+                    "HtmlContent" => quoted_printable_decode($transport->getMessage()->getBodyText())
+                ];
+
+                $client->sendApiTransactionalEmail($content);
+            } else {
                 $transport->sendMessage();
-            } catch (MailException $e) {
-                $this->logger->debug('Send message error', [(string) $e]);
             }
         }
     }
