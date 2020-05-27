@@ -2,20 +2,25 @@
 <div class="content-header">
     <?= $block->getChildHtml('adminhtml.system.config.switcher');?>
 </div>
-<div class="dashboard-container">
+<div class="message-system">
     <?= $block->getChildHtml('store_language');?>
-    <table cellspacing="25" class="message-system-inner ddg-dashboard-table">
-        <tr>
-            <td><?= $block->getChildHtml('dotdigitalgroup.email.dashboard_left') ?></td>
-            <td><?= $block->getChildHtml('dotdigitalgroup.email.dashboard_right') ?></td>
-        </tr>
-    </table>
-    <table>
-        <tr>
-            <td><?= $block->getChildHtml('dotdigitalgroup.email.dashboard_config') ?></td>
-        </tr>
-    </table>
+    <div class="message-system-inner add-top-border">
+        <div class="ddg-dashboard-container">
+            <table cellspacing="25" class="ddg-dashboard-table">
+                <tr>
+                    <td class="ddg-dashboard-cell">
+                        <?= $block->getChildHtml('dotdigitalgroup.email.dashboard_left') ?>
+                    </td>
+                    <td class="ddg-dashboard-cell">
+                        <?= $block->getChildHtml('dotdigitalgroup.email.dashboard_right') ?>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
 </div>
+
+<?= $block->getChildHtml('dotdigitalgroup.email.dashboard_config') ?>
 
 <script type="text/x-magento-init">
     {

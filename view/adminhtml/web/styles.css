@@ -17,8 +17,19 @@ div.dotmailer-error{background:url(images/i_msg-error.png) no-repeat;padding:10p
 .ddg-config-heading-comment {
     padding-left: 2.8rem;
 }
-.ddg-dashboard-table { width: 100%}
-.ddg-dashboard-table td { width: 45%}
+.ddg-dashboard-container {
+    padding: 20px;
+}
+.ddg-dashboard-table {
+    width: 100%;
+}
+.ddg-dashboard-cell {
+    width: 45%;
+    vertical-align: top;
+}
+.ddg-dashboard-table th {
+    text-align: left;
+}
 .ddg-edc-wrapper {
     width: 200px;
     height: auto;
@@ -84,4 +95,10 @@ div.dotmailer-error{background:url(images/i_msg-error.png) no-repeat;padding:10p
     display: block;
     padding-top: 5px;
     font-size: 1.2rem;
+}
+.message-system-short-label {
+    margin-right: 15px;
+}
+.add-top-border {
+    border-top-width: 1px;
 }
