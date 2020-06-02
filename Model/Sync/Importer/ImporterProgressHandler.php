@@ -248,6 +248,9 @@ class ImporterProgressHandler extends DataObject
                 $recentlyResubscribed = array_filter(
                     $this->helper->contactResource->getLastSubscribedAtDates($contacts),
                     function ($contact) use ($lastSyncPeriod) {
+                        if ($contact['last_subscribed_at'] === null) {
+                            return false;
+                        }
                         $lastSubscribed = new \DateTime($contact['last_subscribed_at'], new \DateTimeZone('UTC'));
                         return $lastSubscribed >= $lastSyncPeriod;
                     }
