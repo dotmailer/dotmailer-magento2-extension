@@ -123,8 +123,14 @@ class IntegrationInsightDataUnitTest extends TestCase
             ->willReturn(true);
 
         $data = $this->integrationInsightData->getIntegrationInsightData();
+        $toAssert = reset($data);
 
-        $this->assertArrayHasKey('phpVersion', reset($data));
+        $this->assertArrayHasKey('platform', $toAssert);
+        $this->assertArrayHasKey('edition', $toAssert);
+        $this->assertArrayHasKey('version', $toAssert);
+        $this->assertArrayHasKey('connectorVersion', $toAssert);
+
+        $this->assertArrayHasKey('phpVersion', $toAssert);
     }
 
     /**
