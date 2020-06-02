@@ -119,8 +119,12 @@ class DotdigitalCouponRequestProcessor
 
         $email = $params['code_email'] ?? null;
         if ($email && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $this->couponGeneratorStatus = self::STATUS_EMAIL_INVALID;
-            return $this;
+            // Replace space with + and re-validate
+            $email = str_replace(' ', '+', $email);
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                $this->couponGeneratorStatus = self::STATUS_EMAIL_INVALID;
+                return $this;
+            }
         }
 
         $this->couponGeneratorStatus = self::STATUS_GENERATED;
