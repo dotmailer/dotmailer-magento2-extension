@@ -14,7 +14,7 @@ use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Authorization\Model\ResourceModel\Role;
 use Magento\Framework\FlagManager;
 use Magento\Framework\Mail\Template\TransportBuilder;
-use Magento\User\Model\ResourceModel\User\CollectionFactory as UserCollectionFactory;
+use Dotdigitalgroup\Email\Model\ResourceModel\User\CollectionFactory as UserCollectionFactory;
 use Magento\Backend\Helper\Data as BackendData;
 use Magento\Backend\App\Area\FrontNameResolver;
 use Magento\Store\Model\Store;
@@ -238,10 +238,7 @@ class EmailNotifier
         );
 
         return $this->userCollection->create()
-            ->addFieldToFilter(
-                'user_role.parent_id',
-                ['in' => explode(',', $selectedRoles)]
-            );
+            ->fetchUsersByRole($selectedRoles);
     }
 
     /**
