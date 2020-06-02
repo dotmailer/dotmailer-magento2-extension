@@ -38,6 +38,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     const REST_CAMPAIGNS_WITH_PREPARED_CONTENT = 'prepared-for-transactional-email';
     const REST_POST_ABANDONED_CART_CARTINSIGHT = '/v2/contacts/transactional-data/cartInsight';
     const REST_CHAT_SETUP = '/v2/webchat/setup';
+    const REST_SURVEYS_FORMS = '/v2/surveys';
 
     //rest error responses
     const API_ERROR_API_EXCEEDED = 'Your account has generated excess API activity and is being temporarily capped. ' .
@@ -1712,6 +1713,39 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
 
         if (isset($response->message)) {
             $this->addClientLog('Error resubscribing address book contact');
+        }
+
+        return $response;
+    }
+
+    /**
+     * Get list of all surveys and forms.
+     *
+     * @param string $assignedToAddressBookOnly
+     * @param int $select
+     * @param int $skip
+     * @return mixed
+     *
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function getSurveysAndForms($assignedToAddressBookOnly = 'false', $select = 1000, $skip = 0)
+    {
+        $url = sprintf(
+            '%s%s?assignedToAddressBookOnly=%s&select=%s&skip=%s',
+            $this->getApiEndpoint(),
+            self::REST_SURVEYS_FORMS,
+            $assignedToAddressBookOnly,
+            $select,
+            $skip
+        );
+
+        $this->setUrl($url)
+            ->setVerb('GET');
+
+        $response = $this->execute();
+
+        if (isset($response->message)) {
+            $this->addClientLog('Error getting surveys and forms');
         }
 
         return $response;
