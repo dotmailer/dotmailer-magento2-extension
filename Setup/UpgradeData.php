@@ -404,7 +404,9 @@ class UpgradeData implements UpgradeDataInterface
 
                 $this->configResource->saveConfig(
                     Config::XML_PATH_CONNECTOR_SYSTEM_ALERTS_USER_ROLES,
-                    $defaultRole->getId()
+                    $defaultRole->getId(),
+                    ScopeConfigInterface::SCOPE_TYPE_DEFAULT,
+                    0
                 );
 
                 //Clear config cache
