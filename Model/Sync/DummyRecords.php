@@ -59,14 +59,14 @@ class DummyRecords implements SyncInterface
 
     /**
      * @param $websiteId
-     * @param $email
      * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @throws \Exception
      */
     private function postContactAndCartInsightData($websiteId)
     {
-        $this->helper->getWebsiteApiClient($websiteId)
-            ->postAbandonedCartCartInsight(
-                $this->dummyData->getContactInsightData($websiteId)
-            );
+        $cartInsightData = $this->dummyData->getContactInsightData($websiteId);
+        $client = $this->helper->getWebsiteApiClient($websiteId);
+        $client->postContacts($cartInsightData['contactIdentifier']);
+        $client->postAbandonedCartCartInsight($cartInsightData);
     }
 }
