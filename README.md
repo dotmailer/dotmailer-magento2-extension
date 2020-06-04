@@ -19,6 +19,18 @@ You are welcome to contribute to Engagement Cloud for Magento! You can either:
 - Fix a bug: please clone and use our [Develop branch](https://github.com/dotmailer/dotmailer-magento2-extension/tree/develop) to submit your Pull Request
 - Request a feature on our [roadmap](https://roadmap.dotdigital.com)
 
+# 4.5.4
+
+###### Improvements
+- We're revising the order insight data schema to show bundle products as distinct items with their child components listed as `sub_items`.
+- For system alerts relating to pending automations, we now limit these to automations that have been pending for longer than an hour, but whose created date still falls within the alert time window.
+
+###### Bug fixes
+- Coupons are now generated (using the external dynamic content URL for coupon generation) for email addresses containing plus ('+') signs.
+- We fixed an issue with contacts being resubscribed even if their `last_subscribed_at` value was `null`.
+- System alert email notifications now work as expected in Magento 2.2.
+- We've fixed an upgrade error (dating from 4.5.2) affecting Magento versions 2.2.0 - 2.2.4.
+
 # 4.5.3
 
 ###### Improvements
