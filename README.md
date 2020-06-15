@@ -19,6 +19,16 @@ You are welcome to contribute to Engagement Cloud for Magento! You can either:
 - Fix a bug: please clone and use our [Develop branch](https://github.com/dotmailer/dotmailer-magento2-extension/tree/develop) to submit your Pull Request
 - Request a feature on our [roadmap](https://roadmap.dotdigital.com)
 
+# 4.7.0-RC1
+
+###### What’s new
+- System alerts now report on transactional email send failures. 
+- Our unit tests have been updated to be compatible with PHPUnit v9+. This change was required for Magento 2.4.
+- Module dependencies have been updated in line with Magento 2.4 requirements. 
+- Cart insight data is now sent for the Engagement Cloud account owner’s email address when validating API credentials, and at upgrade. This allows the Abandoned cart block to be visible in EasyEditor before customer data is received.
+- All active dotdigital modules are now displayed with their version numbers in the Email module dashboard (**Reports > Customer Engagement > Dashboard**).
+- We’ve added a new API method to fetch surveys and forms from Engagement Cloud.
+
 # 4.5.4
 
 ###### Improvements
