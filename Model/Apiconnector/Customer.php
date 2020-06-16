@@ -534,7 +534,7 @@ class Customer extends ContactData
     /**
      * Subscriber status for Customer.
      *
-     * @return boolean|string
+     * @return string
      */
     public function getSubscriberStatus()
     {
@@ -542,10 +542,14 @@ class Customer extends ContactData
             ->loadByCustomerId($this->model->getId());
 
         if ($subscriberModel->getCustomerId()) {
-            return $this->getSubscriberStatusString($subscriberModel->getSubscriberStatus());
+            try {
+                return $this->getSubscriberStatusString($subscriberModel->getSubscriberStatus());
+            } catch (\InvalidArgumentException $e) {
+                return '';
+            }
         }
 
-        return false;
+        return '';
     }
 
     /**

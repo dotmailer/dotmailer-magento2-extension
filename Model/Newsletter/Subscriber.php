@@ -154,42 +154,33 @@ class Subscriber implements SyncInterface
      * Export subscribers per store.
      *
      * @param \Magento\Store\Api\Data\StoreInterface $store
-     *
      * @return int
-     *
-     * @throws LocalizedException
      */
     public function exportSubscribersPerStore($store)
     {
-        /** @var \Magento\Store\Model\Website $website */
+        $updated = 0;
         $website = $store->getWebsite();
         $storeId = $store->getId();
+        $limit = $this->helper->getSyncLimit($website->getId());
         $isSubscriberSalesDataEnabled = $this->helper->getWebsiteConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_ENABLE_SUBSCRIBER_SALES_DATA,
             $website
         );
 
-        $updated = 0;
-        $limit = $this->helper->getSyncLimit($website->getId());
-        //subscriber collection to import
         $emailContactModel = $this->contactFactory->create();
-        //Customer Subscribers
         $subscribersAreCustomers = $emailContactModel->getSubscribersToImport($storeId, $limit);
-        //Guest Subscribers
         $subscribersAreGuest = $emailContactModel->getSubscribersToImport($storeId, $limit, false);
+
         $subscribersGuestEmails = $subscribersAreGuest->getColumnValues('email');
+        $subscribersCustomerEmails = $subscribersAreCustomers->getColumnValues('email');
 
-        $existInSales = [];
-        //Only if subscriber with sales data enabled
+        $guestsWithOrders = [];
         if ($isSubscriberSalesDataEnabled && ! empty($subscribersGuestEmails)) {
-            $existInSales = $this->checkInSales($subscribersGuestEmails);
+            $guestsWithOrders = $this->checkInSales($subscribersGuestEmails);
         }
+        $guestsWithoutOrders = array_diff($subscribersGuestEmails, $guestsWithOrders);
+        $emailsWithNoSaleData = array_merge($guestsWithoutOrders, $subscribersCustomerEmails);
 
-        $emailsNotInSales = array_diff($subscribersGuestEmails, $existInSales);
-        $customerSubscribers = $subscribersAreCustomers->getColumnValues('email');
-        $emailsWithNoSaleData = array_merge($emailsNotInSales, $customerSubscribers);
-
-        //subscriber that are customer or/and the one that do not exist in sales order table.
         $subscribersWithNoSaleData = [];
         if (! empty($emailsWithNoSaleData)) {
             $subscribersWithNoSaleData = $emailContactModel
@@ -201,10 +192,10 @@ class Subscriber implements SyncInterface
                 $subscribersWithNoSaleData
             );
         }
-        //subscriber that are guest and also exist in sales order table.
+
         $subscribersWithSaleData = [];
-        if (! empty($existInSales)) {
-            $subscribersWithSaleData = $emailContactModel->getSubscribersToImportFromEmails($existInSales);
+        if (! empty($guestsWithOrders)) {
+            $subscribersWithSaleData = $emailContactModel->getSubscribersToImportFromEmails($guestsWithOrders);
         }
 
         if (! empty($subscribersWithSaleData)) {
