@@ -134,6 +134,8 @@ class Subscriber implements SyncInterface
                 if ($numUpdated) {
                     $storesSummary .= $store->getName() . ' (' . $numUpdated . ') --';
                 }
+
+                $this->countSubscribers += $numUpdated;
             }
         }
 
@@ -198,8 +200,6 @@ class Subscriber implements SyncInterface
                 $store,
                 $subscribersWithNoSaleData
             );
-            //add updated number for the website
-            $this->countSubscribers += $updated;
         }
         //subscriber that are guest and also exist in sales order table.
         $subscribersWithSaleData = [];
@@ -212,8 +212,6 @@ class Subscriber implements SyncInterface
                 $store,
                 $subscribersWithSaleData
             );
-            //add updated number for the website
-            $this->countSubscribers += $updated;
         }
         return $updated;
     }
