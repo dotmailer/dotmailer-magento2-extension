@@ -114,13 +114,13 @@ class SubscriberExporter
         $websiteId = $store->getWebsiteId();
         $subscribersFilename = strtolower($store->getCode() . '_subscribers_' . date('d_m_Y_His') . '.csv');
         $consentModel = $this->consentFactory->create();
-        $subscriberStorename = $store->getWebsite()->getConfig(
+        $subscriberStorenameKey = $store->getWebsite()->getConfig(
             Config::XML_PATH_CONNECTOR_MAPPING_CUSTOMER_STORENAME
         );
-        $subscriberWebsiteName = $store->getWebsite()->getConfig(
+        $subscriberWebsiteNameKey = $store->getWebsite()->getConfig(
             Config::XML_PATH_CONNECTOR_CUSTOMER_WEBSITE_NAME
         );
-        $subscriberStatus = $store->getWebsite()->getConfig(
+        $subscriberStatusKey = $store->getWebsite()->getConfig(
             Config::XML_PATH_CONNECTOR_CUSTOMER_SUBSCRIBER_STATUS
         );
 
@@ -128,9 +128,9 @@ class SubscriberExporter
             ->createCsv($subscribersFilename)
             ->createHeaders(
                 $store,
-                $subscriberStorename ?: '',
-                $subscriberWebsiteName ?: '',
-                $subscriberStatus ?: ''
+                $subscriberStorenameKey ?: '',
+                $subscriberWebsiteNameKey ?: '',
+                $subscriberStatusKey ?: ''
             );
 
         // If consent insight is enabled, include additional headers
@@ -149,12 +149,24 @@ class SubscriberExporter
         $optInType = $csv->isOptInTypeDouble($store);
 
         foreach ($emailContactCollection as $contact) {
+            try {
+                $subscriberStatus = $this->contactData->getSubscriberStatusString(
+                    $contact->getData('subscriber_status')
+                );
+            } catch (\InvalidArgumentException $e) {
+                $this->helper->debug(
+                    'Error fetching subscriber status for contact ' . $contact->getEmail(),
+                    [(string) $e]
+                );
+                $subscriberStatus = "";
+            }
+
             $outputData = [
                 $contact->getEmail(),
                 'Html',
                 $store->getName(),
                 $store->getWebsite()->getName(),
-                $this->contactData->getSubscriberStatusString($contact->getSubscriberStatus())
+                $subscriberStatus
             ];
 
             if ($optInType) {

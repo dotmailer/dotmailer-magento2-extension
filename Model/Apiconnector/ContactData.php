@@ -696,15 +696,23 @@ class ContactData
      */
     public function getSubscriberStatus()
     {
-        return $this->getSubscriberStatusString($this->model->getSubscriberStatus());
+        try {
+            return $this->getSubscriberStatusString($this->model->getSubscriberStatus());
+        } catch (\InvalidArgumentException $e) {
+            return "";
+        }
     }
 
     /**
      * @param $statusCode
+     * @throws \InvalidArgumentException
      * @return string
      */
     public function getSubscriberStatusString($statusCode)
     {
+        if (!array_key_exists($statusCode, $this->subscriberStatuses)) {
+            throw new \InvalidArgumentException();
+        }
         return $this->subscriberStatuses[$statusCode];
     }
 }
