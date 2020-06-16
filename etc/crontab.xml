@@ -8,7 +8,7 @@
             <config_path>connector_developer_settings/cron_schedules/importer</config_path>
         </job>
         <job name="ddg_automation_status" instance="Dotdigitalgroup\Email\Model\Cron" method="syncAutomation">
-            <schedule>*/15 * * * *</schedule>
+            <schedule>*/16 * * * *</schedule>
         </job>
         <job name="ddg_automation_abandonedcarts" instance="Dotdigitalgroup\Email\Model\Cron" method="abandonedCarts">
             <schedule>*/5 * * * *</schedule>
