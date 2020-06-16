@@ -3,8 +3,8 @@
 namespace Dotdigitalgroup\Email\Model\Product;
 
 use Magento\CatalogInventory\Api\StockItemRepositoryInterface;
-use Magento\CatalogInventory\Api\StockRegistryInterface;
 use Dotdigitalgroup\Email\Api\StockFinderInterface;
+use Magento\CatalogInventory\Api\StockItemCriteriaInterfaceFactory;
 use Dotdigitalgroup\Email\Logger\Logger;
 
 class StockFinder implements StockFinderInterface
@@ -15,29 +15,29 @@ class StockFinder implements StockFinderInterface
     private $stockItemRepository;
 
     /**
-     * @var StockRegistryInterface
-     */
-    private $stockRegistry;
-
-    /**
      * @var Logger
      */
     private $logger;
 
     /**
+     * @var StockItemCriteriaInterfaceFactory
+     */
+    private $stockItemCriteria;
+
+    /**
      * StockFinder constructor.
      * @param StockItemRepositoryInterface $stockItemRepository
-     * @param StockRegistryInterface $stockRegistry
      * @param Logger $logger
+     * @param StockItemCriteriaInterfaceFactory $stockItemCriteria
      */
     public function __construct(
         StockItemRepositoryInterface $stockItemRepository,
-        StockRegistryInterface $stockRegistry,
-        Logger $logger
+        Logger $logger,
+        StockItemCriteriaInterfaceFactory $stockItemCriteria
     ) {
         $this->stockItemRepository = $stockItemRepository;
-        $this->stockRegistry = $stockRegistry;
         $this->logger = $logger;
+        $this->stockItemCriteria = $stockItemCriteria;
     }
 
     /**
@@ -51,7 +51,7 @@ class StockFinder implements StockFinderInterface
                 case 'configurable':
                     return $this->getStockQtyForConfigurableProduct($product);
                 default:
-                    return $this->getStockQtyForProduct($product);
+                    return $this->getStockQtyForProducts($product);
             }
         } catch (\Exception $e) {
             $this->logger->debug(
@@ -63,29 +63,35 @@ class StockFinder implements StockFinderInterface
 
     /**
      * @param $configurableProduct
-     * @return float
+     * @return float|int
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     private function getStockQtyForConfigurableProduct($configurableProduct)
     {
         $simpleProducts = $configurableProduct->getTypeInstance()->getUsedProducts($configurableProduct);
-        $stockQty = 0;
-        foreach ($simpleProducts as $product) {
-            $stockQty += $this->getStockQtyForProduct($product);
-        }
-        return $stockQty;
+        return $this->getStockQtyForProducts($simpleProducts);
     }
 
     /**
-     * @param $product
-     * @return float
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @param $products
+     * @return float|int
      */
-    private function getStockQtyForProduct($product)
+    private function getStockQtyForProducts($products)
     {
-        $stockItem = $this->stockRegistry->getStockItem($product->getId());
-        return $this->stockItemRepository->get(
-            $stockItem->getItemId()
-        )->getQty();
+        $stock = 0;
+
+        $searchCriteria = $this->stockItemCriteria->create();
+        $searchCriteria->setProductsFilter($products);
+        $stockProducts = $this->stockItemRepository->getList(
+            $searchCriteria
+        );
+
+        if ($stockProducts->getSize()) {
+            foreach ($stockProducts->getItems() as $product) {
+                $stock += $product->getQty();
+            }
+        }
+
+        return $stock;
     }
 }
