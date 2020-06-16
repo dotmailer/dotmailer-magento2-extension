@@ -2001,4 +2001,19 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     {
         return (int)$this->scopeConfig->getValue(Config::XML_PATH_TRACKING_SCRIPT_VERSION);
     }
+
+    /**
+     * @return bool
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function isConnectorEnabledAtAnyLevel()
+    {
+        foreach ($this->storeManager->getWebsites(true) as $website) {
+            if ($this->isEnabled($website->getId())) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }
