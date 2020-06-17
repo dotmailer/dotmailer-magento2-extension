@@ -19,6 +19,16 @@ You are welcome to contribute to Engagement Cloud for Magento! You can either:
 - Fix a bug: please clone and use our [Develop branch](https://github.com/dotmailer/dotmailer-magento2-extension/tree/develop) to submit your Pull Request
 - Request a feature on our [roadmap](https://roadmap.dotdigital.com)
 
+# 4.5.5
+
+###### Improvements
+- We've improved the performance of catalog sync by optimising our `StockFinder` class. Batches of configurable products are now processed up to 25% quicker.
+- The timing for the automation sync has been changed to every 16 minutes, so it coincides less often with the contact sync.
+
+###### Bug fixes
+- We've fixed a regression introduced in 4.5.3, relating to using a magic method to obtain the subscriber status when preparing subscriber export.
+- The total figure for synced subscribers, presented in the logs and on screen, is now correctly calculated.
+
 # 4.5.4
 
 ###### Improvements
