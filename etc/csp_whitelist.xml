@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<csp_whitelist xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Csp:etc/csp_whitelist.xsd">
+    <policies>
+        <policy id="script-src">
+            <values>
+                <value id="dotdigital_trackedlink_r1" type="host">r1-t.trackedlink.net</value>
+                <value id="dotdigital_trackedlink_r2" type="host">r2-t.trackedlink.net</value>
+                <value id="dotdigital_trackedlink_r3" type="host">r3-t.trackedlink.net</value>
+                <value id="dotdigital_trackedweb_r1" type="host">r1.trackedweb.net</value>
+                <value id="dotdigital_trackedweb_r2" type="host">r2.trackedweb.net</value>
+                <value id="dotdigital_trackedweb_r3" type="host">r3.trackedweb.net</value>
+                <value id="dotdigital_trackedweb_static" type="host">static.trackedweb.net</value>
+            </values>
+        </policy>
+        <policy id="connect-src">
+            <values>
+                <value id="dotdigital_trackedlink_r1" type="host">r1-t.trackedlink.net</value>
+                <value id="dotdigital_trackedlink_r2" type="host">r2-t.trackedlink.net</value>
+                <value id="dotdigital_trackedlink_r3" type="host">r3-t.trackedlink.net</value>
+                <value id="dotdigital_trackedweb_r1" type="host">r1.trackedweb.net</value>
+                <value id="dotdigital_trackedweb_r2" type="host">r2.trackedweb.net</value>
+                <value id="dotdigital_trackedweb_r3" type="host">r3.trackedweb.net</value>
+                <value id="dotdigital_trackedweb_static" type="host">static.trackedweb.net</value>
+            </values>
+        </policy>
+    </policies>
+</csp_whitelist>
