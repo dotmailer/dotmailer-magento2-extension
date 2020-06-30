@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Cron:etc/crontab.xsd">
-    <group id="ddg_automation">
+    <group id="ddg_automation_main">
         <job name="ddg_automation_customer_subscriber_guest_sync" instance="Dotdigitalgroup\Email\Model\Cron" method="contactSync">
             <config_path>connector_developer_settings/cron_schedules/contact</config_path>
         </job>
@@ -9,9 +9,6 @@
         </job>
         <job name="ddg_automation_status" instance="Dotdigitalgroup\Email\Model\Cron" method="syncAutomation">
             <schedule>*/16 * * * *</schedule>
-        </job>
-        <job name="ddg_automation_abandonedcarts" instance="Dotdigitalgroup\Email\Model\Cron" method="abandonedCarts">
-            <schedule>*/5 * * * *</schedule>
         </job>
         <job name="ddg_automation_reviews_and_wishlist" instance="Dotdigitalgroup\Email\Model\Cron" method="reviewsAndWishlist">
             <config_path>connector_developer_settings/cron_schedules/review_wishlist</config_path>
@@ -36,6 +33,11 @@
         </job>
         <job name="ddg_automation_monitor" instance="Dotdigitalgroup\Email\Model\Cron" method="monitor">
             <schedule>*/15 * * * *</schedule>
+        </job>
+    </group>
+    <group id="ddg_automation_ac">
+        <job name="ddg_automation_abandonedcarts" instance="Dotdigitalgroup\Email\Model\Cron" method="abandonedCarts">
+            <schedule>*/5 * * * *</schedule>
         </job>
     </group>
 </config>
