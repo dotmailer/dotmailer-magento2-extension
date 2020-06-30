@@ -1750,4 +1750,25 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
 
         return $response;
     }
+
+    public function getFormById($formId)
+    {
+        $url = sprintf(
+            '%s%s/%s',
+            $this->getApiEndpoint(),
+            self::REST_SURVEYS_FORMS,
+            $formId
+        );
+
+        $this->setUrl($url)
+            ->setVerb('GET');
+
+        $response = $this->execute();
+
+        if (empty($response) || isset($response->message)) {
+            $this->addClientLog('Error getting data for form id ' . $formId);
+        }
+
+        return $response;
+    }
 }
