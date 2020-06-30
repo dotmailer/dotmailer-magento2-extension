@@ -1744,7 +1744,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
 
         $response = $this->execute();
 
-        if (isset($response->message)) {
+        if (empty($response) || isset($response->message)) {
             $this->addClientLog('Error getting surveys and forms');
         }
 
