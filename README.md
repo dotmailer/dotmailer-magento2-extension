@@ -19,6 +19,12 @@ You are welcome to contribute to Engagement Cloud for Magento! You can either:
 - Fix a bug: please clone and use our [Develop branch](https://github.com/dotmailer/dotmailer-magento2-extension/tree/develop) to submit your Pull Request
 - Request a feature on our [roadmap](https://roadmap.dotdigital.com)
 
+# 4.5.6
+
+###### Improvements
+- We are moving the `ddg_automation_abandonedcarts` cron job to its own cron group, in order to protect it from scheduling delays caused by over-running sync jobs. 
+- We've added a Content Security Policy whitelist for specific domains used by this module.
+
 # 4.5.5
 
 ###### Improvements
