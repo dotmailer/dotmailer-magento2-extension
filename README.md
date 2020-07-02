@@ -19,6 +19,12 @@ You are welcome to contribute to Engagement Cloud for Magento! You can either:
 - Fix a bug: please clone and use our [Develop branch](https://github.com/dotmailer/dotmailer-magento2-extension/tree/develop) to submit your Pull Request
 - Request a feature on our [roadmap](https://roadmap.dotdigital.com)
 
+# 4.5.6
+
+###### Improvements
+- We are moving the `ddg_automation_abandonedcarts` cron job to its own cron group, in order to protect it from scheduling delays caused by over-running sync jobs. 
+- We've added a Content Security Policy whitelist for specific domains used by this module.
+
 # 4.7.0-RC1
 
 ###### What’s new
@@ -28,6 +34,16 @@ You are welcome to contribute to Engagement Cloud for Magento! You can either:
 - Cart insight data is now sent for the Engagement Cloud account owner’s email address when validating API credentials, and at upgrade. This allows the Abandoned cart block to be visible in EasyEditor before customer data is received.
 - All active dotdigital modules are now displayed with their version numbers in the Email module dashboard (**Reports > Customer Engagement > Dashboard**).
 - We’ve added a new API method to fetch surveys and forms from Engagement Cloud.
+
+# 4.5.5
+
+###### Improvements
+- We've improved the performance of catalog sync by optimising our `StockFinder` class. Batches of configurable products are now processed up to 25% quicker.
+- The timing for the automation sync has been changed to every 16 minutes, so it coincides less often with the contact sync.
+
+###### Bug fixes
+- We've fixed a regression introduced in 4.5.3, relating to using a magic method to obtain the subscriber status when preparing subscriber export.
+- The total figure for synced subscribers, presented in the logs and on screen, is now correctly calculated.
 
 # 4.5.4
 
