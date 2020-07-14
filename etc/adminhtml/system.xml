@@ -1845,15 +1845,17 @@
                 <field id="email_notifications" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Enable Email Notifications</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment><![CDATA[Allow to send system alert email notifications when errors that may affect the dotdigital extension are detected.]]></comment>
                 </field>
                 <field id="user_roles" translate="label" sortOrder="30" type="multiselect" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Select Roles</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Developer\UserRoles</source_model>
-                    <comment><![CDATA[Select multiple roles by pressing Ctrl button while selecting]]></comment>
+                    <comment><![CDATA[Users assigned to the selected role(s) will receive email notifications. Select multiple roles by pressing Ctrl button while selecting.]]></comment>
                 </field>
                 <field id="frequency" translate="label" sortOrder="40" type="select"  showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Alert Frequency</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Developer\AlertFrequency</source_model>
+                    <comment><![CDATA[This setting controls both email notification frequency and the time period in which we report errors. e.g. Select "24 Hours" to receive an email every 24 hours reporting any errors that may have occurred in the last 24 hours.]]></comment>
                 </field>
             </group>
         </section>
