@@ -7,11 +7,9 @@
         "*": {
             "Dotdigitalgroup_Email/js/emailCapture":{
                 "type":"checkout",
-                "url":"<?= $block->escapeUrl($block->getEmailCaptureUrl()); ?>",
-                "enabled": "<?= $block->escapeJs($block->isEasyEmailCaptureEnabled()) ?>"
+                "url":"<?= $block->escapeUrl($block->getEmailCaptureUrl()); ?>"
             }
         }
     }
-
     </script>
 <?php endif; ?>

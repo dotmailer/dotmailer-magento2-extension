@@ -3,9 +3,9 @@
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <body>
         <referenceContainer name="before.body.end">
-            <block class="Dotdigitalgroup\Email\Block\EmailCapture\EmailCaptureForNewsletter"
+            <block class="Dotdigitalgroup\Email\Block\EmailCapture\EmailCapture"
                    name="emailCapture"
-                   template="Dotdigitalgroup_Email::email/email_capture_newsletter.phtml"/>
+                   template="Dotdigitalgroup_Email::email/email_wbt_newsletter.phtml"/>
         </referenceContainer>
         <referenceContainer name="after.body.start">
             <block class="Dotdigitalgroup\Email\Block\Tracking"
