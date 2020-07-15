@@ -1036,16 +1036,22 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     }
 
     /**
-     * Gets all programs.
      * https://apiconnector.com/v2/programs?select={select}&skip={skip}.
-     *
-     * @return object
-     *
-     * @throws \Exception
+     * @param int $skip
+     * @param int $select
+     * @return mixed|null
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function getPrograms()
+    public function getPrograms($skip = 0, $select = 1000)
     {
-        $url = $this->getApiEndpoint() . self::REST_PROGRAM;
+        $url = sprintf(
+            '%s%s?select=%s&skip=%s',
+            $this->getApiEndpoint(),
+            self::REST_PROGRAM,
+            $select,
+            $skip
+        );
+
         $this->setUrl($url)
             ->setVerb('GET');
 

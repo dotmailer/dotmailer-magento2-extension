@@ -57,8 +57,12 @@ class Program implements \Magento\Framework\Data\OptionSourceInterface
                 $programs = $savedPrograms;
             } else {
                 //grab the datafields request and save to register
-                $client = $this->helper->getWebsiteApiClient($website);
-                $programs = $client->getPrograms();
+                $programs = [];
+                do {
+                    $client = $this->helper->getWebsiteApiClient($website);
+                    $programResponse = $client->getPrograms(count($programs));
+                    $programs = array_merge($programs, $programResponse);
+                } while (count($programResponse) === 1000);
                 $this->registry->unregister('programs');
                 $this->registry->register('programs', $programs);
             }
@@ -70,10 +74,10 @@ class Program implements \Magento\Framework\Data\OptionSourceInterface
             } elseif (!empty($programs)) {
                 //loop for all programs option
                 foreach ($programs as $program) {
-                    if (isset($program->id) && $program->status == 'Active') {
+                    if (isset($program->id)) {
                         $fields[] = [
                             'value' => $program->id,
-                            'label' => $program->name,
+                            'label' => $program->name . $this->getProgramStatus($program->status),
                         ];
                     }
                 }
@@ -81,5 +85,21 @@ class Program implements \Magento\Framework\Data\OptionSourceInterface
         }
 
         return $fields;
+    }
+
+    /**
+     * @param $programStatus
+     * @return \Magento\Framework\Phrase|string
+     */
+    private function getProgramStatus($programStatus)
+    {
+        switch ($programStatus) {
+            case 'Deactivated':
+                return __(' (Deactivated)');
+            case 'Draft':
+                return __(' (Draft)');
+            default:
+                return '';
+        }
     }
 }
