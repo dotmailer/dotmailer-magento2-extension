@@ -19,10 +19,10 @@
             <actionGroup ref="LoginToStorefrontActionGroup" stepKey="signUpNewUser">
                 <argument name="Customer" value="$$createSimpleUsCustomer$$"/>
             </actionGroup>
-            <actionGroup ref="LoginAsAdmin" stepKey="loginAsAdmin"/>
+            <actionGroup ref="AdminLoginActionGroup" stepKey="AdminLoginActionGroup"/>
         </before>
         <after>
-            <actionGroup ref="logout" stepKey="logoutAsAdmin"/>
+            <actionGroup ref="AdminLogoutActionGroup" stepKey="logoutAsAdmin"/>
             <deleteData createDataKey="createSimpleUsCustomer" stepKey="deleteCustomer"/>
         </after>
         <actionGroup ref="SetDisableDotmailerAccount" stepKey="setDisableDotmailerAccount"/>

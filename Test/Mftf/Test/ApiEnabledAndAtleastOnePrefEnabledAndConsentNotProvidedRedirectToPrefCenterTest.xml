@@ -19,13 +19,13 @@
             <actionGroup ref="LoginToStorefrontActionGroup" stepKey="signUpNewUser">
                 <argument name="Customer" value="$$createSimpleUsCustomer$$"/>
             </actionGroup>
-            <actionGroup ref="LoginAsAdmin" stepKey="loginAsAdmin"/>
+            <actionGroup ref="AdminLoginActionGroup" stepKey="AdminLoginActionGroup"/>
             <actionGroup ref="SetDotmailerAccountData" stepKey="SetDotmailerAccountData"/>
         </before>
         <after>
             <actionGroup ref="ResetDotmailerAccountData" stepKey="resetAccountData"/>
             <deleteData createDataKey="createSimpleUsCustomer" stepKey="deleteCustomer"/>
-            <actionGroup ref="logout" stepKey="logoutAsAdmin"/>
+            <actionGroup ref="AdminLogoutActionGroup" stepKey="logoutAsAdmin"/>
         </after>
         <actionGroup ref="SetOnePreferenceTypeToShowYes" stepKey="setOnePreferenceTypeToShowYes"/>
         <actionGroup ref="ResetCustomerConsentText" stepKey="resetCustomerConsentText"/>

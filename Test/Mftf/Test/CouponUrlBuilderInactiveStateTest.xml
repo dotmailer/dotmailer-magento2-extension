@@ -14,7 +14,7 @@
 
         <before>
             <!-- Log in and set API credentials -->
-            <actionGroup ref="LoginAsAdmin" stepKey="loginAsAdmin1"/>
+            <actionGroup ref="AdminLoginActionGroup" stepKey="AdminLoginActionGroup1"/>
 
             <!-- Disable account -->
             <actionGroup ref="SetDisableDotmailerAccount" stepKey="disableDotmailerAccount"/>
@@ -31,7 +31,7 @@
                 <argument name="ruleName" value="{{DotSalesRule.name}}"/>
             </actionGroup>
 
-            <actionGroup ref="logout" stepKey="logout"/>
+            <actionGroup ref="AdminLogoutActionGroup" stepKey="logout"/>
         </after>
 
         <!-- Confirm URL builder is in a disabled state -->
@@ -40,12 +40,24 @@
 
         <seeElement selector="{{EngagementCloudCouponUrlBuilderSection.disabledNotice}}" stepKey="seeDisabledNotice"/>
 
-        <assertElementContainsAttribute selector="{{EngagementCloudCouponUrlBuilderSection.codeFormat}}" attribute="disabled" expectedValue="true" stepKey="assertFieldIsDisabled1" />
-        <assertElementContainsAttribute selector="{{EngagementCloudCouponUrlBuilderSection.codePrefix}}" attribute="disabled" expectedValue="true" stepKey="assertFieldIsDisabled2" />
-        <assertElementContainsAttribute selector="{{EngagementCloudCouponUrlBuilderSection.codeSuffix}}" attribute="disabled" expectedValue="true" stepKey="assertFieldIsDisabled3" />
-        <assertElementContainsAttribute selector="{{EngagementCloudCouponUrlBuilderSection.expiresAfter}}" attribute="disabled" expectedValue="true" stepKey="assertFieldIsDisabled4" />
-        <assertElementContainsAttribute selector="{{EngagementCloudCouponUrlBuilderSection.allowResend}}" attribute="disabled" expectedValue="true" stepKey="assertFieldIsDisabled5" />
-        <assertElementContainsAttribute selector="{{EngagementCloudCouponUrlBuilderSection.cancelSend}}" attribute="disabled" expectedValue="true" stepKey="assertFieldIsDisabled6" />
+        <assertElementContainsAttribute stepKey="assertFieldIsDisabled1">
+			<expectedResult selector="{{EngagementCloudCouponUrlBuilderSection.codeFormat}}" attribute="disabled" type="string">true</expectedResult>
+        </assertElementContainsAttribute>
+        <assertElementContainsAttribute stepKey="assertFieldIsDisabled2">
+			<expectedResult selector="{{EngagementCloudCouponUrlBuilderSection.codePrefix}}" attribute="disabled" type="string">true</expectedResult>
+        </assertElementContainsAttribute>
+        <assertElementContainsAttribute stepKey="assertFieldIsDisabled3">
+			<expectedResult selector="{{EngagementCloudCouponUrlBuilderSection.codeSuffix}}" attribute="disabled" type="string">true</expectedResult>
+        </assertElementContainsAttribute>
+        <assertElementContainsAttribute stepKey="assertFieldIsDisabled4">
+			<expectedResult selector="{{EngagementCloudCouponUrlBuilderSection.expiresAfter}}" attribute="disabled" type="string">true</expectedResult>
+        </assertElementContainsAttribute>
+        <assertElementContainsAttribute stepKey="assertFieldIsDisabled5">
+			<expectedResult selector="{{EngagementCloudCouponUrlBuilderSection.allowResend}}" attribute="disabled" type="string">true</expectedResult>
+        </assertElementContainsAttribute>
+        <assertElementContainsAttribute stepKey="assertFieldIsDisabled6">
+			<expectedResult selector="{{EngagementCloudCouponUrlBuilderSection.cancelSend}}" attribute="disabled" type="string">true</expectedResult>
+        </assertElementContainsAttribute>
 
     </test>
 </tests>

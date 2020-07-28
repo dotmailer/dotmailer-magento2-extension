@@ -19,7 +19,7 @@
             <actionGroup ref="LoginToStorefrontActionGroup" stepKey="signUpNewUser">
                 <argument name="Customer" value="$$createSimpleUsCustomer$$"/>
             </actionGroup>
-            <actionGroup ref="LoginAsAdmin" stepKey="loginAsAdmin"/>
+            <actionGroup ref="AdminLoginActionGroup" stepKey="AdminLoginActionGroup"/>
             <actionGroup ref="SetDotmailerAccountData" stepKey="SetDotmailerAccountData"/>
             <actionGroup ref="SetCustomerConsentText" stepKey="setCustomerConsentText"/>
         </before>
@@ -27,7 +27,7 @@
             <actionGroup ref="ResetDotmailerAccountData" stepKey="resetAccountData"/>
             <actionGroup ref="ResetCustomerConsentText" stepKey="resetCustomerConsentText"/>
             <deleteData createDataKey="createSimpleUsCustomer" stepKey="deleteCustomer"/>
-            <actionGroup ref="logout" stepKey="logoutAsAdmin"/>
+            <actionGroup ref="AdminLogoutActionGroup" stepKey="logoutAsAdmin"/>
         </after>
         <actionGroup ref="SetOnePreferenceTypeToShowYes" stepKey="setOnePreferenceTypeToShowYes"/>
         <amOnPage url="newsletter/manage/" stepKey="amOnCustomerNewsletterManagePage"/>

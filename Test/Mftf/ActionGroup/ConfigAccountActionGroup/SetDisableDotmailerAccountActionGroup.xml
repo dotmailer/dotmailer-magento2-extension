@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ /**
+  * Copyright © Magento, Inc. All rights reserved.
+  * See COPYING.txt for license details.
+  */
+-->
+<actionGroups xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/actionGroupSchema.xsd">
+    <actionGroup name="SetDisableDotmailerAccount">
+        <amOnPage url="{{AdminDotmailerAccountsPage.url}}" stepKey="navigateToDotmailerAccountPage1"/>
+        <waitForPageLoad stepKey="waitForPageLoad3"/>
+        <conditionalClick stepKey="expandAccountsTab1" selector="{{AdminDotmailerAccountsSection.accountsFieldsetToggle}}" dependentSelector="{{AdminDotmailerAccountsSection.accountsFieldset}}" visible="false"/>
+        <selectOption selector="{{AdminDotmailerAccountsSection.accountsEnabledOption}}" userInput="No" stepKey="setEnabled1"/>
+        <click selector="{{AdminMainActionsSection.save}}" stepKey="saveConfig1"/>
+        <waitForPageLoad stepKey="waitForPageLoad4"/>
+    </actionGroup>
+</actionGroups>

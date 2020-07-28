@@ -13,7 +13,7 @@
             <group value="dotmailer"/>
         </annotations>
         <before>
-            <actionGroup ref="LoginAsAdmin" stepKey="loginAsAdmin1"/>
+            <actionGroup ref="AdminLoginActionGroup" stepKey="AdminLoginActionGroup1"/>
             <amOnPage url="{{AdminDotmailerDeveloperSettingPage.url}}" stepKey="dotmailerDeveloperSettings"/>
             <waitForPageLoad stepKey="waitForPageLoad1"/>
             <conditionalClick selector="{{AdminDeveloperSettingsSection.developerIpRestrictionFieldsetToggle}}" dependentSelector="{{AdminDeveloperSettingsSection.developerIpRestrictionFieldset}}" visible="false" stepKey="click"/>
@@ -28,7 +28,7 @@
             <fillField selector="{{AdminDeveloperSettingsSection.developerIpAddresses}}" userInput="{$grabCookie}" stepKey="noIpLimitBack"/>
             <click selector="{{AdminDeveloperSettingsSection.developerSettingSaveButton}}" stepKey="click2"/>
             <resetCookie userInput="beforeIps" stepKey="resetCookie"/>
-            <actionGroup ref="logout" stepKey="logoutAdminUserAfterTest"/>
+            <actionGroup ref="AdminLogoutActionGroup" stepKey="logoutAdminUserAfterTest"/>
         </after>
 
         <click selector="{{AdminDeveloperSettingsSection.developerSettingSaveButton}}" stepKey="click1"/>

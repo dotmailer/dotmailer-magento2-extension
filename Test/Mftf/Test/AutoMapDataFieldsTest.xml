@@ -13,7 +13,7 @@
         </annotations>
 
         <before>
-            <actionGroup ref="LoginAsAdmin" stepKey="loginAsAdmin1"/>
+            <actionGroup ref="AdminLoginActionGroup" stepKey="AdminLoginActionGroup1"/>
             <actionGroup ref="SetDotmailerAccountData" stepKey="SetDotmailerAccountData"/>
             <actionGroup ref="ResetDataFields" stepKey="resetDataFieldsBefore"/>
         </before>
@@ -21,7 +21,7 @@
         <after>
             <actionGroup ref="ResetDataFields" stepKey="resetDataFieldsAfter"/>
             <actionGroup ref="ResetDotmailerAccountData" stepKey="resetAccountData"/>
-            <actionGroup ref="logout" stepKey="logout"/>
+            <actionGroup ref="AdminLogoutActionGroup" stepKey="logout"/>
         </after>
 
         <comment userInput="Running dotdigital:connector:automap CLI command" stepKey="autoMapCliCommandComment"/>
