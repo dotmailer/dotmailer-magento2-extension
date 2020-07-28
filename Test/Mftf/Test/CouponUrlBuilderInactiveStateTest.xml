@@ -13,9 +13,7 @@
         </annotations>
 
         <before>
-            <!-- Log in and set API credentials -->
             <actionGroup ref="AdminLoginActionGroup" stepKey="AdminLoginActionGroup1"/>
-
             <!-- Disable account -->
             <actionGroup ref="SetDisableDotmailerAccount" stepKey="disableDotmailerAccount"/>
 
