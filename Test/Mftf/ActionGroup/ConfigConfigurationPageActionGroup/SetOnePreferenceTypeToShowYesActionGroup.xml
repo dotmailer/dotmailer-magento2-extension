@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ /**
+  * Copyright © Magento, Inc. All rights reserved.
+  * See COPYING.txt for license details.
+  */
+-->
+<actionGroups xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/actionGroupSchema.xsd">
+    <actionGroup name="SetOnePreferenceTypeToShowYes">
+        <amOnPage url="{{AdminDotmailerConfigurationPage.url}}" stepKey="navigateToDotmailerConfigurationPage1"/>
+        <waitForPageLoad stepKey="waitForPageLoad3"/>
+        <conditionalClick stepKey="expandCustomerPreferencesTab1" selector="{{AdminDotmailerConfigurationPreferencesSection.preferencesFieldsetToggle}}" dependentSelector="{{AdminDotmailerConfigurationPreferencesSection.preferencesFieldset}}" visible="false"/>
+        <selectOption selector="{{AdminDotmailerConfigurationPreferencesSection.showPreferencesToCustomer}}" userInput="Yes" stepKey="setShowPreferencesEnabled"/>
+        <selectOption selector="{{AdminDotmailerConfigurationPreferencesSection.showAddressBookToCustomer}}" userInput="No" stepKey="setShowBooksDisabled1"/>
+        <selectOption selector="{{AdminDotmailerConfigurationPreferencesSection.showDatafieldToCustomer}}" userInput="No" stepKey="setShowDataFieldsDisabled1"/>
+        <click selector="{{AdminMainActionsSection.save}}" stepKey="saveConfig1"/>
+        <waitForPageLoad stepKey="waitForPageLoad4"/>
+    </actionGroup>
+</actionGroups>

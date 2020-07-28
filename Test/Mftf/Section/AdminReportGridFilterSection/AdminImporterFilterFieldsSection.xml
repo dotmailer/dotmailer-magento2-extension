@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ /**
+  * Copyright © Magento, Inc. All rights reserved.
+  * See COPYING.txt for license details.
+  */
+-->
+<sections xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="urn:magento:mftf:Page/etc/SectionObject.xsd">
+    <section name="AdminImporterFilterFieldsSection">
+        <element name="importIdFilter" type="input" selector="input.admin__control-text[name='import_id']"/>
+        <element name="importTypeFilter" type="input" selector="input.admin__control-text[name='import_type']"/>
+        <element name="importModeFilter" type="select" selector="select.admin__control-select[name='import_mode']"/>
+        <element name="importStatusFilter" type="select" selector="select.admin__control-select[name='import_status']"/>
+        <element name="messageFilter" type="input" selector="input.admin__control-text[name='message']"/>
+        <element name="websiteFilter" type="select" selector="select.admin__control-select[name='website_id']"/>
+    </section>
+</sections>
