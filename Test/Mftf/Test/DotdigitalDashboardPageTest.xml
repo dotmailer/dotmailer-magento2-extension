@@ -27,6 +27,6 @@
         <click selector="li.item-dashboards" stepKey="clickOnDashBoard"/>
 
         <seeInCurrentUrl url="{{AdminDashboardPage.url}}" stepKey="confirmThatImOnDashboard"/>
-        <seeElement selector="div.dashboard-container" stepKey="seeDDGDescription"/>
+        <seeElement selector="div.ddg-dashboard-container" stepKey="seeDDGDescription"/>
     </test>
 </tests>

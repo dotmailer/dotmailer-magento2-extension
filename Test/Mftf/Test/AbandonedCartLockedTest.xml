@@ -43,13 +43,13 @@
         <amOnPage url="{{AdminDotmailerDashboardPage.url}}" stepKey="amOnDashboardPage"/>
         <waitForPageLoad stepKey="waitForPageLoad3"/>
         <seeInCurrentUrl url="{{AdminDotmailerDashboardPage.url}}" stepKey="seeDashboard"/>
-        <see userInput="Not Locked." selector="{{AdminDashboardSection.lockStatus}}" stepKey="SeeLockStatus"/>
+        <see userInput="Not locked" selector="{{AdminDashboardSection.lockStatus}}" stepKey="SeeLockStatus"/>
         <amOnPage url="{{StorefrontAbandonedCartPage.url}}/hacked" stepKey="amOnAbandonedCartPage_1"/>
         <amOnPage url="{{StorefrontAbandonedCartPage.url}}/hacked" stepKey="amOnAbandonedCartPage_2"/>
         <amOnPage url="{{StorefrontAbandonedCartPage.url}}/hacked" stepKey="amOnAbandonedCartPage_3"/>
         <amOnPage url="{{StorefrontAbandonedCartPage.url}}/hacked" stepKey="amOnAbandonedCartPage_4"/>
         <amOnPage url="{{StorefrontAbandonedCartPage.url}}/hacked" stepKey="amOnAbandonedCartPage_5"/>
         <amOnPage url="{{AdminDotmailerDashboardPage.url}}" stepKey="amBackOnDashboard"/>
-        <see userInput="Locked." selector="{{AdminDashboardSection.lockStatus}}" stepKey="SeeLockStatus1"/>
+        <see userInput="Locked" selector="{{AdminDashboardSection.lockStatus}}" stepKey="SeeLockStatus1"/>
     </test>
 </tests>
