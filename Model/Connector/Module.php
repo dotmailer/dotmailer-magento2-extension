@@ -37,6 +37,14 @@ class Module
     }
 
     /**
+     * @return bool
+     */
+    public function hasChatModule()
+    {
+        return $this->fullModuleList->has(self::CHAT_MODULE);
+    }
+
+    /**
      * Get chat connector version.
      *
      * @return string
@@ -47,6 +55,14 @@ class Module
     }
 
     /**
+     * @return bool
+     */
+    public function hasEnterpriseModule()
+    {
+        return $this->fullModuleList->has(self::ENTERPRISE_MODULE);
+    }
+
+    /**
      * Get Enterprise connector version.
      *
      * @return string
@@ -54,6 +70,14 @@ class Module
     public function getEnterpriseConnectorVersion()
     {
         return $this->fullModuleList->getOne(self::ENTERPRISE_MODULE)['setup_version'];
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasB2bModule()
+    {
+        return $this->fullModuleList->has(self::B2B_MODULE);
     }
 
     /**

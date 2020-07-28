@@ -40,7 +40,7 @@
         </th>
         <td><?= $block->escapeHtml($block->getConnectorVersion()) ?></td>
     </tr>
-    <?php if ($block->getChatConnectorVersion()): ?>
+    <?php if ($block->hasChatModule()): ?>
         <tr>
             <th>
                 <strong class="message-system-short-label">
@@ -50,7 +50,7 @@
             <td><?= $block->escapeHtml($block->getChatConnectorVersion()) ?></td>
         </tr>
     <?php endif; ?>
-    <?php if ($block->getEnterpriseConnectorVersion()): ?>
+    <?php if ($block->hasEnterpriseModule()): ?>
         <tr>
             <th>
                 <strong class="message-system-short-label">
@@ -60,7 +60,7 @@
             <td><?= $block->escapeHtml($block->getEnterpriseConnectorVersion()) ?></td>
         </tr>
     <?php endif; ?>
-    <?php if ($block->getB2bConnectorVersion()): ?>
+    <?php if ($block->hasB2bModule()): ?>
         <tr>
             <th>
                 <strong class="message-system-short-label">
@@ -71,4 +71,3 @@
         </tr>
     <?php endif; ?>
 </table>
-

@@ -117,15 +117,27 @@ class Information extends \Magento\Backend\Block\Template
     }
 
     /**
+     * @return bool
+     */
+    public function hasChatModule()
+    {
+        return $this->moduleList->hasChatModule();
+    }
+
+    /**
      * @return string
      */
     public function getChatConnectorVersion()
     {
-        if ($this->moduleList->getChatConnectorVersion()) {
-            return $this->escapeHtml(__('v. %1', $this->moduleList->getChatConnectorVersion()));
-        }
+        return $this->escapeHtml(__('v. %1', $this->moduleList->getChatConnectorVersion()));
+    }
 
-        return null;
+    /**
+     * @return bool
+     */
+    public function hasEnterpriseModule()
+    {
+        return $this->moduleList->hasEnterpriseModule();
     }
 
     /**
@@ -133,11 +145,15 @@ class Information extends \Magento\Backend\Block\Template
      */
     public function getEnterpriseConnectorVersion()
     {
-        if ($this->moduleList->getEnterpriseConnectorVersion()) {
-            return $this->escapeHtml(__('v. %1', $this->moduleList->getEnterpriseConnectorVersion()));
-        }
+        return $this->escapeHtml(__('v. %1', $this->moduleList->getEnterpriseConnectorVersion()));
+    }
 
-        return null;
+    /**
+     * @return bool
+     */
+    public function hasB2bModule()
+    {
+        return $this->moduleList->hasB2bModule();
     }
 
     /**
@@ -145,11 +161,7 @@ class Information extends \Magento\Backend\Block\Template
      */
     public function getB2bConnectorVersion()
     {
-        if ($this->moduleList->getB2bConnectorVersion()) {
-            return $this->escapeHtml(__('v. %1', $this->moduleList->getB2bConnectorVersion()));
-        }
-
-        return null;
+        return $this->escapeHtml(__('v. %1', $this->moduleList->getB2bConnectorVersion()));
     }
 
     /**
