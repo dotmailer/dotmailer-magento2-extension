@@ -2,7 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Test\Unit\Model\Product;
 
-use Dotdigitalgroup\Email\Helper\Data;
+use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Product\ParentFinder;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Catalog\Model\Product;
@@ -21,7 +21,7 @@ class ParentFinderTest extends TestCase
     /**
      * @var \PHPUnit\Framework\MockObject\MockObject
      */
-    private $helperMock;
+    private $loggerMock;
 
     /**
      * @var \PHPUnit\Framework\MockObject\MockObject
@@ -51,7 +51,7 @@ class ParentFinderTest extends TestCase
     protected function setUp() :void
     {
         $this->productRepositoryMock = $this->createMock(ProductRepositoryInterface::class);
-        $this->helperMock = $this->createMock(Data::class);
+        $this->loggerMock = $this->createMock(Logger::class);
         $this->configurableTypeMock = $this->createMock(Configurable::class);
         $this->groupedTypeMock = $this->createMock(Grouped::class);
         $this->bundleSelectionMock = $this->createMock(Selection::class);
@@ -59,7 +59,7 @@ class ParentFinderTest extends TestCase
 
         $this->parentFinder = new ParentFinder(
             $this->productRepositoryMock,
-            $this->helperMock,
+            $this->loggerMock,
             $this->configurableTypeMock,
             $this->groupedTypeMock,
             $this->bundleSelectionMock

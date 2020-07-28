@@ -2,7 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Model\Product;
 
-use Dotdigitalgroup\Email\Helper\Data;
+use Dotdigitalgroup\Email\Logger\Logger;
 use Magento\Catalog\Model\Product;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
 
@@ -14,9 +14,9 @@ class ParentFinder
     private $productRepository;
 
     /**
-     * @var Data
+     * @var Logger
      */
-    private $helper;
+    private $logger;
 
     /**
      * @var \Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable
@@ -36,20 +36,20 @@ class ParentFinder
     /**
      * ParentFinder constructor.
      * @param \Magento\Catalog\Api\ProductRepositoryInterface $productRepository
-     * @param Data $helper
+     * @param Logger $logger
      * @param \Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable $configurableType
      * @param \Magento\GroupedProduct\Model\Product\Type\Grouped $groupedType
      * @param \Magento\Bundle\Model\ResourceModel\Selection $bundleSelection
      */
     public function __construct(
         \Magento\Catalog\Api\ProductRepositoryInterface $productRepository,
-        Data $helper,
+        Logger $logger,
         \Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable $configurableType,
         \Magento\GroupedProduct\Model\Product\Type\Grouped $groupedType,
         \Magento\Bundle\Model\ResourceModel\Selection $bundleSelection
     ) {
         $this->productRepository = $productRepository;
-        $this->helper = $helper;
+        $this->logger = $logger;
         $this->configurableType = $configurableType;
         $this->groupedType = $groupedType;
         $this->bundleSelection = $bundleSelection;
@@ -61,16 +61,18 @@ class ParentFinder
      */
     public function getParentProduct($product)
     {
-        try {
-            if ($parentId = $this->getFirstParentId($product)) {
+        $parentId = $this->getFirstParentId($product);
+
+        if ($parentId) {
+            try {
                 return $this->productRepository->getById($parentId, false, $product->getStoreId());
+            } catch (\Magento\Framework\Exception\NoSuchEntityException $e) {
+                $this->logger->debug(
+                    $e->getMessage() .
+                    ' Parent Product: ' . $parentId .
+                    ', Child Product: ' . $product->getId()
+                );
             }
-        } catch (\Magento\Framework\Exception\NoSuchEntityException $e) {
-            $this->helper->debug(
-                $e->getMessage() . ' Parent Product: ' .
-                $parentId . ',
-                Child Product: ' . $product->getId()
-            );
         }
 
         return null;
@@ -94,7 +96,6 @@ class ParentFinder
     /**
      * @param array $products
      * @return array
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function getConfigurableParentsFromBunchOfProducts($products)
     {
@@ -102,7 +103,15 @@ class ParentFinder
 
         foreach ($products as $product) {
             if (is_array($product) && isset($product['sku'])) {
-                $product = $this->productRepository->get($product['sku']);
+                try {
+                    $product = $this->productRepository->get($product['sku']);
+                } catch (\Magento\Framework\Exception\NoSuchEntityException $e) {
+                    $this->logger->debug(
+                        $e->getMessage() .
+                        ' SKU not found: ' . $product['sku']
+                    );
+                    continue;
+                }
             }
             if ($product instanceof Product) {
                 $parentProduct = $this->getParentProduct($product);

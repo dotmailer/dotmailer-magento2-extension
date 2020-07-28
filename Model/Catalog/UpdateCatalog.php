@@ -54,7 +54,6 @@ class UpdateCatalog
 
     /**
      * @param \Magento\Catalog\Api\Data\ProductInterface $product
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     private function updateEmailCatalog($product)
     {
