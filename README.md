@@ -19,6 +19,11 @@ You are welcome to contribute to Engagement Cloud for Magento! You can either:
 - Fix a bug: please clone and use our [Develop branch](https://github.com/dotmailer/dotmailer-magento2-extension/tree/develop) to submit your Pull Request
 - Request a feature on our [roadmap](https://roadmap.dotdigital.com)
 
+# 4.5.7
+
+###### Bug fixes
+- We fixed a problem with order sync breaking if an order contained product SKUs that no longer exist in the catalog.
+
 # 4.5.6
 
 ###### Improvements
