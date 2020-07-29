@@ -19,6 +19,18 @@ You are welcome to contribute to Engagement Cloud for Magento! You can either:
 - Fix a bug: please clone and use our [Develop branch](https://github.com/dotmailer/dotmailer-magento2-extension/tree/develop) to submit your Pull Request
 - Request a feature on our [roadmap](https://roadmap.dotdigital.com)
 
+# 4.7.0-RC2
+
+###### Improvements
+- In-app system messages for system alerts are now enabled by default.
+- We've added new API methods to fetch pages and forms from Engagement Cloud.
+- dotdigital forms embedded in CMS pages and blocks can now add email addresses to Magento’s newsletter subscribers list. 
+- _Easy Email Capture_ for newsletter subscriptions now happens on the server side after submit (this supports our forms integration for Page Builder).
+- We've added a helper method to check if Magento has an active Engagement Cloud account enabled at any level. 
+- The program select in **dotdigital > Abandoned Carts > Abandoned Cart Program** now lists all programs, even those with a status of 'Draft' or 'Deactivated'. 
+- We've fixed a small omission in the install schema script, by adding a `nullable` property to the `last_subscribed_at`  column in `email_contact`.
+- Our MFTF test suite has been updated.
+
 # 4.5.6
 
 ###### Improvements
