@@ -42,7 +42,7 @@ class RulesTest extends \PHPUnit\Framework\TestCase
      */
     private $currentWebsiteId;
 
-    public function setUp()
+    public function setUp() :void
     {
         include __DIR__ . '/../_files/products.php';
         $this->quoteCollection = ObjectManager::getInstance()->create(QuoteCollection::class);

@@ -4,14 +4,27 @@
  * See COPYING.txt for license details.
  */
 
+use Magento\Catalog\Api\ProductRepositoryInterface;
+use Magento\TestFramework\Workaround\Override\Fixture\Resolver;
+
 \Magento\TestFramework\Helper\Bootstrap::getInstance()->loadArea(
     \Magento\Backend\App\Area\FrontNameResolver::AREA_CODE
 );
+$objectManager = \Magento\TestFramework\Helper\Bootstrap::getObjectManager();
 
-require __DIR__. '/customer_second_website.php';
-require __DIR__ . '/product_simple.php';
+\Magento\TestFramework\Helper\Bootstrap::getInstance()->loadArea(
+    \Magento\Backend\App\Area\FrontNameResolver::AREA_CODE
+);
+Resolver::getInstance()->requireDataFixture(
+    'Dotdigitalgroup_Email::Test/Integration/_files/customer_second_website.php'
+);
+Resolver::getInstance()->requireDataFixture(
+    'Dotdigitalgroup_Email::Test/Integration/_files/product_simple.php'
+);
 
-$storeId = $website->getStoreIds();
+$secondWebsite = $objectManager->get(\Magento\Store\Api\WebsiteRepositoryInterface::class)->get('test');
+
+$storeId = $secondWebsite->getStoreIds();
 $storeId = reset($storeId);
 
 $review = \Magento\TestFramework\Helper\Bootstrap::getObjectManager()->create(
@@ -23,6 +36,9 @@ $review = \Magento\TestFramework\Helper\Bootstrap::getObjectManager()->create(
         'nickname' => 'Nickname second website',
     ]]
 );
+
+$productRepository = $objectManager->get(ProductRepositoryInterface::class);
+$product = $productRepository->get('ddg-fixture-product');
 
 $review
     ->setEntityId($review->getEntityIdByCode(\Magento\Review\Model\Review::ENTITY_PRODUCT_CODE))

@@ -36,7 +36,7 @@ class CustomerGuestAbandonedTest extends \PHPUnit\Framework\TestCase
     /**
      * @return void
      */
-    public function setUp()
+    public function setUp() :void
     {
         $this->objectManager = \Magento\TestFramework\Helper\Bootstrap::getObjectManager();
 
@@ -80,7 +80,7 @@ class CustomerGuestAbandonedTest extends \PHPUnit\Framework\TestCase
         ]);
     }
 
-    public function tearDown()
+    public function tearDown() :void
     {
         $abandonedCollection = $this->objectManager->create(
             \Dotdigitalgroup\Email\Model\ResourceModel\Abandoned\Collection::class

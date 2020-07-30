@@ -25,7 +25,7 @@ class TablePrefixTest extends \PHPUnit\Framework\TestCase
     /**
      * @return void
      */
-    public function setup()
+    public function setup() :void
     {
         $this->objectManager = ObjectManager::getInstance();
         $this->contactResource = $this->objectManager->get(\Dotdigitalgroup\Email\Model\ResourceModel\Contact::class);

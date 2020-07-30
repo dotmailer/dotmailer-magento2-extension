@@ -20,7 +20,7 @@ class IntegrationInsightsTest extends \PHPUnit\Framework\TestCase
      */
     private $mutableScopeConfig;
 
-    public function setUp()
+    public function setUp() :void
     {
         $this->mutableScopeConfig = ObjectManager::getInstance()->get(MutableScopeConfigInterface::class);
         $this->mockClientFactory()->instantiateDataHelper();
