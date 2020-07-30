@@ -87,7 +87,7 @@ class ReviewTest extends \PHPUnit\Framework\TestCase
      */
     private $reviewProduct;
 
-    public function setUp()
+    public function setUp() :void
     {
         $this->objectManager = \Magento\TestFramework\Helper\Bootstrap::getObjectManager();
 

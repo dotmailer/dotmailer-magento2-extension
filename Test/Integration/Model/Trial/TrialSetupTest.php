@@ -27,7 +27,7 @@ class TrialSetupTest extends \PHPUnit\Framework\TestCase
      */
     private $configWriter;
 
-    public function setUp()
+    public function setUp() :void
     {
         $this->objectManager = ObjectManager::getInstance();
         $this->configWriter = $this->objectManager->create(WriterInterface::class);

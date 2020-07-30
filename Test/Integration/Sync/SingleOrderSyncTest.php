@@ -35,7 +35,7 @@ class SingleOrderSyncTest extends \PHPUnit\Framework\TestCase
     /**
      * @return void
      */
-    public function setup()
+    public function setUp() :void
     {
         $this->objectManager = \Magento\TestFramework\Helper\Bootstrap::getObjectManager();
 

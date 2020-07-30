@@ -30,7 +30,7 @@ class EmailcaptureTest extends AbstractController
      */
     private $quoteResourceMock;
 
-    public function setUp()
+    public function setUp() :void
     {
         parent::setUp();
 

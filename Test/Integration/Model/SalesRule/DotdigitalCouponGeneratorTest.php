@@ -47,7 +47,7 @@ class DotdigitalCouponGeneratorTest extends \PHPUnit\Framework\TestCase
      */
     private $couponRequestProcessor;
 
-    public function setUp()
+    public function setUp() :void
     {
         $objectManager = ObjectManager::getInstance();
 
@@ -82,7 +82,7 @@ class DotdigitalCouponGeneratorTest extends \PHPUnit\Framework\TestCase
         // strip default prefix and delimiters
         $code = str_replace(['DOT', '-'], '', $code);
 
-        $this->assertRegExp('/[A-Za-z]+/', $code);
+        $this->assertMatchesRegularExpression('/[A-Za-z]+/', $code);
     }
 
     public function testCouponPrefix()

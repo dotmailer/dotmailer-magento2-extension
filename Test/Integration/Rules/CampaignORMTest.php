@@ -51,7 +51,7 @@ class CampaignORMTest extends \PHPUnit\Framework\TestCase
     /**
      * @return void
      */
-    protected function setUp()
+    protected function setUp() :void
     {
         /** @var CampaignCollection $collection */
         $collection = ObjectManager::getInstance()->create(CampaignCollection::class);

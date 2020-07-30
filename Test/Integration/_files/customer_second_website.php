@@ -1,6 +1,10 @@
 <?php
+use Magento\TestFramework\Workaround\Override\Fixture\Resolver;
 
-require 'create_second_website.php';
+\Magento\TestFramework\Helper\Bootstrap::getInstance()->loadArea(
+    \Magento\Backend\App\Area\FrontNameResolver::AREA_CODE
+);
+Resolver::getInstance()->requireDataFixture('Dotdigitalgroup_Email::Test/Integration/_files/create_second_website.php');
 
 $objectManager = \Magento\TestFramework\Helper\Bootstrap::getObjectManager();
 
@@ -14,11 +18,13 @@ $customerCollection = \Magento\TestFramework\Helper\Bootstrap::getObjectManager(
 
 $customerFactory = $objectManager->get('\Magento\Customer\Model\CustomerFactory')->create();
 
-$storeId = $website->getStoreIds();
+$secondWebsite = $objectManager->get(\Magento\Store\Api\WebsiteRepositoryInterface::class)->get('test');
+
+$storeId = $secondWebsite->getStoreIds();
 $storeId = reset($storeId);
 
 /** @var Magento\Customer\Model\Customer $customer */
-$customerFactory->setWebsiteId($website->getId())
+$customerFactory->setWebsiteId($secondWebsite->getId())
     ->setEntityId(2)
     ->setStoreId($storeId)
     ->setEmail('customer_sec_website@example.com')
