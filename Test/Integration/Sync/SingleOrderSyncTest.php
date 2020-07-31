@@ -99,10 +99,11 @@ class SingleOrderSyncTest extends \PHPUnit\Framework\TestCase
      */
     public function testSingleOrderTypeIsObject()
     {
+        $this->createModifiedEmailOrder();
         $this->prep();
         $item = $this->importerCollection->getFirstItem();
 
-        $this->assertInternalType('object', json_decode($item->getImportData()), 'Import data is not of object type');
+        $this->assertIsObject(json_decode($item->getImportData()), 'Import data is not of object type');
     }
 
     /**

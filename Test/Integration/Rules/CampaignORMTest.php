@@ -45,7 +45,7 @@ class CampaignORMTest extends \PHPUnit\Framework\TestCase
     private function assertCollectionContains(Campaign $campaign, CampaignCollection $collection)
     {
         $message = sprintf('Expected campaign with ID "%s" not found in collection', $campaign->getId());
-        $this->assertContains($campaign->getId(), array_keys($collection->getItems()), $message);
+        $this->assertContains((int) $campaign->getId(), array_keys($collection->getItems()), $message);
     }
 
     /**
