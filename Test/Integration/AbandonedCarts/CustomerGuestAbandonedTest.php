@@ -10,6 +10,7 @@ use Dotdigitalgroup\Email\Model\Abandoned;
 use Dotdigitalgroup\Email\Model\AbandonedCart\CartInsight\Data;
 use Dotdigitalgroup\Email\Model\Apiconnector\Client;
 use Dotdigitalgroup\Email\Model\ResourceModel\Abandoned as AbandonedResource;
+use Dotdigitalgroup\Email\Model\ResourceModel\Abandoned\Collection as AbandonedCollection;
 use Dotdigitalgroup\Email\Model\Sales\Quote;
 use Dotdigitalgroup\Email\Test\Integration\MocksApiResponses;
 use Magento\Quote\Model\ResourceModel\Quote\Collection;
@@ -287,28 +288,16 @@ class CustomerGuestAbandonedTest extends \PHPUnit\Framework\TestCase
 
     private function createEmailQuoteMockInstance()
     {
-        $quoteMock = $this->getMockForAbstractClass(
-            Quote::class,
-            [],
-            '',
-            false,
-            false,
-            true,
-            ['getAbandonedCartsForStore']
-        );
-
-        $abandonedCollectionMock = $this->getMockBuilder(
-            \Dotdigitalgroup\Email\Model\ResourceModel\Abandoned\Collection::class
-        )->disableOriginalConstructor()
+        $abandonedCollectionMock = $this->getMockBuilder(AbandonedCollection::class)
+            ->disableOriginalConstructor()
             ->getMock();
 
-        $quoteMock->method('getAbandonedCartsForStore')->willReturn([]);
+        $abandonedCollectionMock->method('getAbandonedCartsForStore')->willReturn($abandonedCollectionMock);
         $abandonedCollectionMock->method('getColumnValues')->willReturn([1,2,3]);
 
         $this->objectManager->addSharedInstance(
             $abandonedCollectionMock,
             \Dotdigitalgroup\Email\Model\ResourceModel\Abandoned\Collection::class
         );
-        $this->objectManager->addSharedInstance($quoteMock, Quote::class);
     }
 }

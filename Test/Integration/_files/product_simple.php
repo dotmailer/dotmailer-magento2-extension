@@ -21,7 +21,7 @@ $product
     ->setAttributeSetId(4)
     ->setWebsiteIds([$secondWebsite->getId()])
     ->setName('Simple Product 2')
-    ->setSku('ddg-fitxure-product')
+    ->setSku('ddg-fixture-product')
     ->setPrice(10)
     ->setMetaTitle('meta title')
     ->setMetaKeyword('meta keyword')
