@@ -31,6 +31,11 @@ You are welcome to contribute to Engagement Cloud for Magento! You can either:
 - We've fixed a small omission in the install schema script, by adding a `nullable` property to the `last_subscribed_at`  column in `email_contact`.
 - Our MFTF test suite has been updated.
 
+# 4.5.7
+
+###### Bug fixes
+- We fixed a problem with order sync breaking if an order contained product SKUs that no longer exist in the catalog.
+
 # 4.5.6
 
 ###### Improvements
