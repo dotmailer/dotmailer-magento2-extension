@@ -67,7 +67,6 @@ class ContactTest extends \PHPUnit\Framework\TestCase
 
     protected function setUp() :void
     {
-        $this->markTestSkipped("Test skipped in 2.4.0");
         $this->objectManager = ObjectManager::getInstance();
         $this->importerCollectionFactory = $this->objectManager->create(CollectionFactory::class);
         $this->contactCollectionFactory = $this->objectManager->create(ContactCollectionFactory::class);
