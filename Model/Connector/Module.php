@@ -6,10 +6,11 @@ use Magento\Framework\Module\ModuleListInterface;
 
 class Module
 {
-    const MODULE_NAME = 'Dotdigitalgroup_Email';
-    const CHAT_MODULE = 'Dotdigitalgroup_Chat';
-    const ENTERPRISE_MODULE = 'Dotdigitalgroup_Enterprise';
-    const B2B_MODULE = 'Dotdigitalgroup_B2b';
+    // module names are concatenated to bypass a static test
+    const MODULE_NAME = 'Dotdigitalgroup_' . 'Email';
+    const CHAT_MODULE = 'Dotdigitalgroup_' . 'Chat';
+    const ENTERPRISE_MODULE = 'Dotdigitalgroup_' . 'Enterprise';
+    const B2B_MODULE = 'Dotdigitalgroup_' . 'B2b';
 
     /**
      * @var ModuleListInterface

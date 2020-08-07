@@ -35,15 +35,15 @@ class TrialSetup
      * Map of address books to config paths
      */
     private static $addressBookMap = [
-        'Magento_Customers' => [
+        'Magento Customers' => [
             'visibility' => 'Private',
             'path' => Config::XML_PATH_CONNECTOR_CUSTOMERS_ADDRESS_BOOK_ID,
         ],
-        'Magento_Subscribers' => [
+        'Magento Subscribers' => [
             'visibility' => 'Private',
             'path' => Config::XML_PATH_CONNECTOR_SUBSCRIBERS_ADDRESS_BOOK_ID,
         ],
-        'Magento_Guests' => [
+        'Magento Guests' => [
             'visibility' => 'Private',
             'path' => Config::XML_PATH_CONNECTOR_GUEST_ADDRESS_BOOK_ID,
         ],
