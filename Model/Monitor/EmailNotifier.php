@@ -2,25 +2,25 @@
 
 namespace Dotdigitalgroup\Email\Model\Monitor;
 
+use Dotdigitalgroup\Email\Helper\Config;
+use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Logger\Logger;
+use Dotdigitalgroup\Email\Model\Monitor\Automation\Monitor as AutomationMonitor;
+use Dotdigitalgroup\Email\Model\Monitor\Campaign\Monitor as CampaignMonitor;
 use Dotdigitalgroup\Email\Model\Monitor\Cron\Monitor as CronMonitor;
 use Dotdigitalgroup\Email\Model\Monitor\Importer\Monitor as ImporterMonitor;
-use Dotdigitalgroup\Email\Model\Monitor\Campaign\Monitor as CampaignMonitor;
-use Dotdigitalgroup\Email\Model\Monitor\Automation\Monitor as AutomationMonitor;
 use Dotdigitalgroup\Email\Model\Monitor\Smtp\Monitor as SmtpMonitor;
-use Dotdigitalgroup\Email\Helper\Config;
-use Magento\Framework\UrlInterface;
-use Magento\Framework\App\Config\ScopeConfigInterface;
+use Dotdigitalgroup\Email\Model\ResourceModel\User\CollectionFactory as UserCollectionFactory;
 use Magento\Authorization\Model\ResourceModel\Role;
+use Magento\Backend\App\Area\FrontNameResolver;
+use Magento\Backend\Helper\Data as BackendData;
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\FlagManager;
 use Magento\Framework\Mail\Template\TransportBuilder;
-use Dotdigitalgroup\Email\Model\ResourceModel\User\CollectionFactory as UserCollectionFactory;
-use Magento\Backend\Helper\Data as BackendData;
-use Magento\Backend\App\Area\FrontNameResolver;
+use Magento\Framework\UrlInterface;
 use Magento\Store\Model\Store;
 use Magento\User\Model\ResourceModel\User\Collection as UserCollection;
-use Magento\Framework\Exception\LocalizedException;
-use Dotdigitalgroup\Email\Helper\Data;
 
 class EmailNotifier
 {
