@@ -14,7 +14,7 @@ require([
         var content;
 
         if (element.attr('id') === 'sync_settings_addressbook_allow_non_subscribers') {
-            content = $t('You are about to allow dotdigital to import customers that haven\'t explicitly opted into your emails. This means Customers and Guests address book will contain contacts that you might not be able to reach out, depending on the applicable regulations. Do you wish to continue?');
+            content = $t('You are about to allow dotdigital to import customers that haven\'t explicitly opted into your emails. This means the Customers and Guests address books will contain contacts that you might not be able to reach out to, depending on the applicable regulations. Do you wish to continue?');
         } else {
             content = $t('You are about to enable this feature for customers that haven\'t explicitly opted into your emails. Do you wish to continue?');
         }
