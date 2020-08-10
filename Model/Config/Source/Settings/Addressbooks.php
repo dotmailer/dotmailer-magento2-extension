@@ -8,7 +8,7 @@ class Addressbooks implements \Magento\Framework\Option\ArrayInterface
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     private $helper;
-    
+
     /**
      * @var \Magento\Framework\Registry
      */
@@ -39,14 +39,14 @@ class Addressbooks implements \Magento\Framework\Option\ArrayInterface
         // Add a "Do Not Map" Option
         $fields[] = ['value' => 0, 'label' => '-- Please Select --'];
 
-        $apiEnabled = $this->helper->isEnabled($this->helper->getWebsite());
+        $apiEnabled = $this->helper->isEnabled($this->helper->getWebsiteForSelectedScopeInAdmin());
         if ($apiEnabled) {
             $savedAddressbooks = $this->registry->registry('addressbooks');
 
             if ($savedAddressbooks) {
                 $addressBooks = $savedAddressbooks;
             } else {
-                $client = $this->helper->getWebsiteApiClient($this->helper->getWebsite());
+                $client = $this->helper->getWebsiteApiClient($this->helper->getWebsiteForSelectedScopeInAdmin());
                 //make an api call an register the addressbooks
                 $addressBooks = $client->getAddressBooks();
                 if ($addressBooks) {
