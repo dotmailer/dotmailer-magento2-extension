@@ -3,24 +3,22 @@
     <policies>
         <policy id="script-src">
             <values>
-                <value id="dotdigital_trackedlink_r1" type="host">r1-t.trackedlink.net</value>
-                <value id="dotdigital_trackedlink_r2" type="host">r2-t.trackedlink.net</value>
-                <value id="dotdigital_trackedlink_r3" type="host">r3-t.trackedlink.net</value>
-                <value id="dotdigital_trackedweb_r1" type="host">r1.trackedweb.net</value>
-                <value id="dotdigital_trackedweb_r2" type="host">r2.trackedweb.net</value>
-                <value id="dotdigital_trackedweb_r3" type="host">r3.trackedweb.net</value>
-                <value id="dotdigital_trackedweb_static" type="host">static.trackedweb.net</value>
+                <value id="dotdigital_trackedlink" type="host">*.trackedlink.net</value>
+                <value id="dotdigital_trackedweb" type="host">*.trackedweb.net</value>
+                <value id="dotdigital_pages" type="host">*.dotdigital-pages.com</value>
             </values>
         </policy>
         <policy id="connect-src">
             <values>
-                <value id="dotdigital_trackedlink_r1" type="host">r1-t.trackedlink.net</value>
-                <value id="dotdigital_trackedlink_r2" type="host">r2-t.trackedlink.net</value>
-                <value id="dotdigital_trackedlink_r3" type="host">r3-t.trackedlink.net</value>
-                <value id="dotdigital_trackedweb_r1" type="host">r1.trackedweb.net</value>
-                <value id="dotdigital_trackedweb_r2" type="host">r2.trackedweb.net</value>
-                <value id="dotdigital_trackedweb_r3" type="host">r3.trackedweb.net</value>
-                <value id="dotdigital_trackedweb_static" type="host">static.trackedweb.net</value>
+                <value id="dotdigital_trackedlink" type="host">*.trackedlink.net</value>
+                <value id="dotdigital_trackedweb" type="host">*.trackedweb.net</value>
+                <value id="dotdigital_pages" type="host">*.dotdigital-pages.com</value>
+            </values>
+        </policy>
+        <policy id="frame-src">
+            <values>
+                <value id="dotdigital_pages" type="host">*.dotdigital-pages.com</value>
+                <value id="dotdigital_com" type="host">*.dotdigital.com</value>
             </values>
         </policy>
     </policies>
