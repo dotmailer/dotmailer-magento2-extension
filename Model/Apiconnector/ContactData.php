@@ -710,7 +710,7 @@ class ContactData
      */
     public function getSubscriberStatusString($statusCode)
     {
-        if (!array_key_exists($statusCode, $this->subscriberStatuses)) {
+        if (!array_key_exists((int) $statusCode, $this->subscriberStatuses)) {
             throw new \InvalidArgumentException();
         }
         return $this->subscriberStatuses[$statusCode];
