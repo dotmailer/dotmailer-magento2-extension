@@ -61,6 +61,12 @@ class Program implements \Magento\Framework\Data\OptionSourceInterface
                 do {
                     $client = $this->helper->getWebsiteApiClient($website);
                     $programResponse = $client->getPrograms(count($programs));
+
+                    if (isset($programResponse->message)) {
+                        $programs = $programResponse;
+                        break;
+                    }
+
                     $programs = array_merge($programs, $programResponse);
                 } while (count($programResponse) === 1000);
                 $this->registry->unregister('programs');
