@@ -23,6 +23,7 @@ You are welcome to contribute to Engagement Cloud for Magento! You can either:
 
 ###### Improvements
 - Our composer dependencies have been updated to support Magento 2.4.
+- Our MFTF tests have been updated to be compatible with v3.0.0 of the Magento Functional Testing Framework.
 
 ###### Bug fixes
 - We've fixed empty product categories in web insight data.
