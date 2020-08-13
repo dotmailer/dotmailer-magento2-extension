@@ -3,6 +3,7 @@
 namespace Dotdigitalgroup\Email\Model\Sync;
 
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use Dotdigitalgroup\Email\Model\Sales\OrderFactory;
 
 /**
  * Sync Reviews.
@@ -70,6 +71,11 @@ class Review implements SyncInterface
     private $scopeConfig;
 
     /**
+     * @var OrderFactory
+     */
+    private $orderFactory;
+
+    /**
      * Review constructor.
      *
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Review\CollectionFactory $reviewCollection
@@ -80,6 +86,7 @@ class Review implements SyncInterface
      * @param \Dotdigitalgroup\Email\Helper\Data                                  $data
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\ReviewFactory            $reviewResourceFactory
      * @param ScopeConfigInterface $scopeConfig
+     * @param OrderFactory $orderFactory
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ResourceModel\Review\CollectionFactory $reviewCollection,
@@ -89,7 +96,8 @@ class Review implements SyncInterface
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Dotdigitalgroup\Email\Model\ResourceModel\ReviewFactory $reviewResourceFactory,
-        ScopeConfigInterface $scopeConfig
+        ScopeConfigInterface $scopeConfig,
+        OrderFactory $orderFactory
     ) {
         $this->coreDate               = $coreDate;
         $this->reviewCollection       = $reviewCollection;
@@ -99,15 +107,31 @@ class Review implements SyncInterface
         $this->helper                 = $data;
         $this->reviewResourceFactory  = $reviewResourceFactory;
         $this->scopeConfig = $scopeConfig;
+        $this->orderFactory = $orderFactory;
     }
 
     /**
-     * Sync reviews.
+     * Sync
+     * - Create campaigns for review automations
+     * - Sync reviews to Engagement Cloud
      *
      * @param \DateTime|null $from
      * @return array
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function sync(\DateTime $from = null)
+    {
+        $this->orderFactory->create()
+            ->createReviewCampaigns();
+
+        return $this->syncReviews();
+    }
+
+    /**
+     * @return array
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    private function syncReviews()
     {
         $response = ['success' => true, 'message' => 'Done.'];
 
