@@ -1313,7 +1313,7 @@
                 <field id="dotmailer_consent_subscriber_enabled" translate="comment label" sortOrder="10" type="select" showInStore="0" showInWebsite="1" showInDefault="1">
                     <label>Import subscribers with their consent information</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <comment>Enable this is you want to import consent insight data when customers subscribe via the newsletter signup form, registration form or during checkout.</comment>
+                    <comment>Enable this if you want to import consent insight data when customers subscribe via the newsletter signup form, registration form or during checkout.</comment>
                 </field>
                 <field id="dotmailer_consent_subscriber_text" translate="comment label" sortOrder="20" type="textarea" showInStore="0" showInWebsite="1" showInDefault="1">
                     <label>Consent text provided to your subscribers above the newsletter signup form</label>
