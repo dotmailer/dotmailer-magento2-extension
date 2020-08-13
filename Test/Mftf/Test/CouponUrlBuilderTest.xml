@@ -40,10 +40,10 @@
 
         <!-- Verify default value -->
         <grabValueFrom selector="{{EngagementCloudCouponUrlBuilderSection.urlBuilderOutput}}" stepKey="grabDefaultUrlValue"/>
-        <assertContains message="The default URL value does not match the expected value." stepKey="assertContains1">
+        <assertStringContainsString message="The default URL value does not match the expected value." stepKey="assertContains1">
 			<actualResult type="const">$grabDefaultUrlValue</actualResult>
-			<expectedResult type="const">'{{DotCouponUrl.defaultUrlValue}}'</expectedResult>
-        </assertContains>
+			<expectedResult type="string">{{DotCouponUrl.defaultUrlValue}}</expectedResult>
+        </assertStringContainsString>
 
         <!-- Set some options for format, prefix and suffix and re-verify -->
         <selectOption selector="{{EngagementCloudCouponUrlBuilderSection.codeFormat}}" userInput="{{DotCouponUrl.codeFormatNum}}" stepKey="setCodeFormat"/>
@@ -51,29 +51,29 @@
         <fillField selector="{{EngagementCloudCouponUrlBuilderSection.codeSuffix}}" userInput="{{DotCouponUrl.codeSuffix}}" stepKey="setCodeSuffix"/>
 
         <grabValueFrom selector="{{EngagementCloudCouponUrlBuilderSection.urlBuilderOutput}}" stepKey="grabUrlValueWithFormatPrefixSuffixUpdated"/>
-        <assertContains message="The URL value does not match the expected value after code format, code prefix and code suffix are modified." stepKey="assertContains2">
+        <assertStringContainsString message="The URL value does not match the expected value after code format, code prefix and code suffix are modified." stepKey="assertContains2">
 			<actualResult type="const">$grabUrlValueWithFormatPrefixSuffixUpdated</actualResult>
-			<expectedResult type="const">'{{DotCouponUrl.urlValueWithNumericFormatPrefixAndSuffix}}'</expectedResult>
-        </assertContains>
+			<expectedResult type="string">{{DotCouponUrl.urlValueWithNumericFormatPrefixAndSuffix}}</expectedResult>
+        </assertStringContainsString>
 
         <!-- Set option for Expires After and re-verify -->
         <fillField selector="{{EngagementCloudCouponUrlBuilderSection.expiresAfter}}" userInput="{{DotCouponUrl.expiresAfter}}" stepKey="setExpiresAfter"/>
 
         <grabValueFrom selector="{{EngagementCloudCouponUrlBuilderSection.urlBuilderOutput}}" stepKey="grabUrlValueWithExpiresAfterUpdated"/>
-        <assertContains message="The URL value does not match the expected value after expires after is modified." stepKey="assertContains3">
+        <assertStringContainsString message="The URL value does not match the expected value after expires after is modified." stepKey="assertContains3">
 			<actualResult type="const">$grabUrlValueWithExpiresAfterUpdated</actualResult>
-			<expectedResult type="const">'{{DotCouponUrl.urlValueWithExpireDays}}'</expectedResult>
-        </assertContains>
+			<expectedResult type="string">{{DotCouponUrl.urlValueWithExpireDays}}</expectedResult>
+        </assertStringContainsString>
 
         <!-- Set options for Allow Resend and Cancel Send If Used/Expired and re-verify -->
         <selectOption selector="{{EngagementCloudCouponUrlBuilderSection.allowResend}}" userInput="{{DotCouponUrl.allowResend}}" stepKey="setAllowResend"/>
         <selectOption selector="{{EngagementCloudCouponUrlBuilderSection.cancelSend}}" userInput="{{DotCouponUrl.cancelSend}}" stepKey="setCancelSend"/>
 
         <grabValueFrom selector="{{EngagementCloudCouponUrlBuilderSection.urlBuilderOutput}}" stepKey="grabUrlValueWithAllowResendCancelSendUpdated"/>
-        <assertContains message="The URL value does not match the expected value after allow resend is set to No." stepKey="assertContains4">
+        <assertStringContainsString message="The URL value does not match the expected value after allow resend is set to No." stepKey="assertContains4">
 			<actualResult type="const">$grabUrlValueWithAllowResendCancelSendUpdated</actualResult>
-			<expectedResult type="const">'{{DotCouponUrl.urlValueWithAllowResendOff}}'</expectedResult>
-        </assertContains>
+			<expectedResult type="string">{{DotCouponUrl.urlValueWithAllowResendOff}}</expectedResult>
+        </assertStringContainsString>
 
     </test>
 </tests>
