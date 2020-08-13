@@ -19,7 +19,19 @@ You are welcome to contribute to Engagement Cloud for Magento! You can either:
 - Fix a bug: please clone and use our [Develop branch](https://github.com/dotmailer/dotmailer-magento2-extension/tree/develop) to submit your Pull Request
 - Request a feature on our [roadmap](https://roadmap.dotdigital.com)
 
-# 4.7.0-RC2
+# 4.7.0
+
+###### Improvements
+- Our composer dependencies have been updated to support Magento 2.4.
+- Our MFTF tests have been updated to be compatible with v3.0.0 of the Magento Functional Testing Framework.
+
+###### Bug fixes
+- We've fixed empty product categories in web insight data.
+- Web Behaviour Tracking was not working for some merchants with certain theme configurations; we’ve added a fallback selector to fix this.
+- The subscriber status data field could have an empty value when customer sync was run using cron. We fixed this using App Emulation.
+- We've fixed an issue with address book mapping if a dotdigital account is enabled at default level but disabled for the main website.
+
+# 4.8.0-RC2
 
 ###### Improvements
 - In-app system messages for system alerts are now enabled by default.
@@ -42,7 +54,7 @@ You are welcome to contribute to Engagement Cloud for Magento! You can either:
 - We are moving the `ddg_automation_abandonedcarts` cron job to its own cron group, in order to protect it from scheduling delays caused by over-running sync jobs. 
 - We've added a Content Security Policy whitelist for specific domains used by this module.
 
-# 4.7.0-RC1
+# 4.8.0-RC1
 
 ###### What’s new
 - System alerts now report on transactional email send failures. 
