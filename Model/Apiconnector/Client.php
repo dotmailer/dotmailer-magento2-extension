@@ -100,7 +100,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     {
         if ($this->apiEndpoint === null) {
             throw new \Magento\Framework\Exception\LocalizedException(
-                __('Dotmailer connector API endpoint cannot be empty.')
+                __('Connector API endpoint cannot be empty.')
             );
         }
 
