@@ -2,6 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Model\Connector;
 
+use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Product\AttributeFactory;
 
 /**
@@ -138,6 +139,11 @@ class Order
     private $attributeHandler;
 
     /**
+     * @var Logger
+     */
+    private $logger;
+
+    /**
      * Order constructor.
      *
      * @param \Magento\Catalog\Model\ProductFactory $productFactory
@@ -146,6 +152,7 @@ class Order
      * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
      * @param KeyValidator $validator
      * @param AttributeFactory $attributeHandler
+     * @param Logger $logger
      */
     public function __construct(
         \Magento\Catalog\Model\ProductFactory $productFactory,
@@ -153,7 +160,8 @@ class Order
         \Dotdigitalgroup\Email\Helper\Data $helperData,
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
         KeyValidator $validator,
-        AttributeFactory $attributeHandler
+        AttributeFactory $attributeHandler,
+        Logger $logger
     ) {
         $this->productFactory      = $productFactory;
         $this->customerFactory     = $customerFactory;
@@ -161,6 +169,7 @@ class Order
         $this->storeManager = $storeManagerInterface;
         $this->validator = $validator;
         $this->attributeHandler = $attributeHandler;
+        $this->logger = $logger;
     }
 
     /**
@@ -243,7 +252,15 @@ class Order
         /*
          * Order items.
          */
-        $this->processOrderItems($orderData, $syncCustomOption);
+        try {
+            $this->processOrderItems($orderData, $syncCustomOption);
+        } catch (\InvalidArgumentException $e) {
+            $this->logger->debug(
+                'Could not process order items for order id ' . $orderData->getRealOrderId(),
+                [(string) $e]
+            );
+            $this->products = [];
+        }
 
         $this->orderSubtotal = (float)number_format(
             $orderData->getData('subtotal'),
@@ -263,7 +280,7 @@ class Order
         $this->orderTotal = (float)number_format($orderTotal, 2, '.', '');
         $this->orderStatus = $orderData->getStatus();
 
-        unset($this->storeManager);
+        unset($this->storeManager, $this->logger);
 
         return $this;
     }
