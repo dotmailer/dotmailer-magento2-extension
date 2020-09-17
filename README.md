@@ -36,18 +36,6 @@ You are welcome to contribute to Engagement Cloud for Magento! You can either:
 - The subscriber status data field could have an empty value when customer sync was run using cron. We fixed this using App Emulation.
 - We've fixed an issue with address book mapping if a dotdigital account is enabled at default level but disabled for the main website.
 
-# 4.8.0-RC2
-
-###### Improvements
-- In-app system messages for system alerts are now enabled by default.
-- We've added new API methods to fetch pages and forms from Engagement Cloud.
-- dotdigital forms embedded in CMS pages and blocks can now add email addresses to Magento’s newsletter subscribers list. 
-- _Easy Email Capture_ for newsletter subscriptions now happens on the server side after submit (this supports our forms integration for Page Builder).
-- We've added a helper method to check if Magento has an active Engagement Cloud account enabled at any level. 
-- The program select in **dotdigital > Abandoned Carts > Abandoned Cart Program** now lists all programs, even those with a status of 'Draft' or 'Deactivated'. 
-- We've fixed a small omission in the install schema script, by adding a `nullable` property to the `last_subscribed_at`  column in `email_contact`.
-- Our MFTF test suite has been updated.
-
 # 4.5.7
 
 ###### Bug fixes
@@ -58,16 +46,6 @@ You are welcome to contribute to Engagement Cloud for Magento! You can either:
 ###### Improvements
 - We are moving the `ddg_automation_abandonedcarts` cron job to its own cron group, in order to protect it from scheduling delays caused by over-running sync jobs. 
 - We've added a Content Security Policy whitelist for specific domains used by this module.
-
-# 4.8.0-RC1
-
-###### What’s new
-- System alerts now report on transactional email send failures. 
-- Our unit tests have been updated to be compatible with PHPUnit v9+. This change was required for Magento 2.4.
-- Module dependencies have been updated in line with Magento 2.4 requirements. 
-- Cart insight data is now sent for the Engagement Cloud account owner’s email address when validating API credentials, and at upgrade. This allows the Abandoned cart block to be visible in EasyEditor before customer data is received.
-- All active dotdigital modules are now displayed with their version numbers in the Email module dashboard (**Reports > Customer Engagement > Dashboard**).
-- We’ve added a new API method to fetch surveys and forms from Engagement Cloud.
 
 # 4.5.5
 
