@@ -285,6 +285,8 @@ class RulesTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * @magentoAppIsolation enabled
+     *
      * @return void
      */
     public function testRuleWithSubtotalCondition()
@@ -310,6 +312,8 @@ class RulesTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * @magentoAppIsolation enabled
+     *
      * @return void
      */
     public function testMultipleRules()
@@ -364,6 +368,8 @@ class RulesTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test shipping city AC is excluded by the exclusion rules.
+     *
+     * @magentoAppIsolation enabled
      */
     public function testShippingCityNullValue()
     {
