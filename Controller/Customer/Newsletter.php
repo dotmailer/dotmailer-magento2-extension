@@ -5,6 +5,8 @@ namespace Dotdigitalgroup\Email\Controller\Customer;
 use Magento\Customer\Api\CustomerRepositoryInterface as CustomerRepository;
 use Magento\Newsletter\Model\Subscriber;
 use Dotdigitalgroup\Email\Model\Newsletter\CsvGenerator;
+use Magento\Store\Model\StoreManagerInterface;
+use Dotdigitalgroup\Email\Model\Customer\DataField\Date;
 
 class Newsletter extends \Magento\Framework\App\Action\Action
 {
@@ -17,11 +19,6 @@ class Newsletter extends \Magento\Framework\App\Action\Action
      * @var \Magento\Customer\Model\Session
      */
     private $customerSession;
-
-    /**
-     * @var \Magento\Framework\Stdlib\DateTime\TimezoneInterface
-     */
-    private $localeDate;
 
     /**
      * @var \Dotdigitalgroup\Email\Model\ConsentFactory
@@ -49,37 +46,50 @@ class Newsletter extends \Magento\Framework\App\Action\Action
     private $csvGenerator;
 
     /**
+     * @var StoreManagerInterface
+     */
+    private $storeManager;
+
+    /**
+     * @var Date
+     */
+    private $dateField;
+
+    /**
      * Newsletter constructor.
      *
-     * @param \Dotdigitalgroup\Email\Helper\Data                            $helper
-     * @param \Magento\Customer\Model\Session                               $session
-     * @param \Dotdigitalgroup\Email\Model\ConsentFactory                   $consentFactory
-     * @param \Magento\Framework\App\Action\Context                         $context
-     * @param \Magento\Framework\Stdlib\DateTime\TimezoneInterface          $localeDate
-     * @param \Magento\Framework\Data\Form\FormKey\Validator                $formKeyValidator
-     * @param CustomerRepository                                            $customerRepository
-     * @param \Magento\Newsletter\Model\SubscriberFactory                   $subscriberFactory
-     * @param CsvGenerator                                                  $csvGenerator
+     * @param \Dotdigitalgroup\Email\Helper\Data $helper
+     * @param \Magento\Customer\Model\Session $session
+     * @param \Dotdigitalgroup\Email\Model\ConsentFactory $consentFactory
+     * @param \Magento\Framework\App\Action\Context $context
+     * @param \Magento\Framework\Data\Form\FormKey\Validator $formKeyValidator
+     * @param CustomerRepository $customerRepository
+     * @param \Magento\Newsletter\Model\SubscriberFactory $subscriberFactory
+     * @param StoreManagerInterface $storeManager
+     * @param Date $dateField
+     * @param CsvGenerator $csvGenerator
      */
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Customer\Model\Session $session,
         \Dotdigitalgroup\Email\Model\ConsentFactory $consentFactory,
         \Magento\Framework\App\Action\Context $context,
-        \Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate,
         \Magento\Framework\Data\Form\FormKey\Validator $formKeyValidator,
         CustomerRepository $customerRepository,
         \Magento\Newsletter\Model\SubscriberFactory $subscriberFactory,
+        StoreManagerInterface $storeManager,
+        Date $dateField,
         CsvGenerator $csvGenerator
     ) {
         $this->helper           = $helper;
         $this->customerSession  = $session;
-        $this->localeDate       = $localeDate;
         $this->consentFactory   = $consentFactory;
         $this->formKeyValidator = $formKeyValidator;
         $this->customerRepository = $customerRepository;
         $this->subscriberFactory = $subscriberFactory;
         $this->csvGenerator = $csvGenerator;
+        $this->storeManager = $storeManager;
+        $this->dateField = $dateField;
         parent::__construct($context);
     }
 
@@ -282,7 +292,11 @@ class Newsletter extends \Magento\Framework\App\Action\Action
                     $paramDataFields[$key] = (string)$value;
                 }
                 if ($processedFields[$key] == 'Date') {
-                    $paramDataFields[$key] = $this->localeDate->date($value)->format(\Zend_Date::ISO_8601);
+                    $paramDataFields[$key] = $this->dateField
+                        ->getScopeAdjustedDate(
+                            $this->storeManager->getStore()->getId(),
+                            $value
+                        );
                 }
                 if ($processedFields[$key] == 'Boolean') {
                     $paramDataFields[$key] = (bool)$value;

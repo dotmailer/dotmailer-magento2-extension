@@ -3,9 +3,8 @@
 namespace Dotdigitalgroup\Email\Model\Apiconnector;
 
 use Magento\Framework\Model\AbstractModel;
-use Magento\Framework\Stdlib\DateTime\TimezoneInterfaceFactory;
-use Dotdigitalgroup\Email\Model\DateIntervalFactory;
 use Dotdigitalgroup\Email\Logger\Logger;
+use Dotdigitalgroup\Email\Model\Customer\DataField\Date;
 
 /**
  * Manages data synced as contact.
@@ -90,16 +89,6 @@ class ContactData
     private $products = [];
 
     /**
-     * @var TimezoneInterfaceFactory
-     */
-    private $localeDateFactory;
-
-    /**
-     * @var DateIntervalFactory
-     */
-    private $dateIntervalFactory;
-
-    /**
      * @var Logger
      */
     private $logger;
@@ -108,6 +97,11 @@ class ContactData
      * @var \Magento\Eav\Model\Config
      */
     private $eavConfig;
+
+    /**
+     * @var Date
+     */
+    protected $dateField;
 
     /**
      * @var array
@@ -130,9 +124,8 @@ class ContactData
      * @param \Magento\Catalog\Model\ResourceModel\Category $categoryResource
      * @param \Magento\Eav\Model\ConfigFactory $eavConfigFactory
      * @param \Dotdigitalgroup\Email\Helper\Config $configHelper
-     * @param TimezoneInterfaceFactory $localeDateFactory
-     * @param DateIntervalFactory $dateIntervalFactory
      * @param Logger $logger
+     * @param Date $dateField
      * @param \Magento\Eav\Model\Config $eavConfig
      */
     public function __construct(
@@ -145,9 +138,8 @@ class ContactData
         \Magento\Catalog\Model\ResourceModel\Category $categoryResource,
         \Magento\Eav\Model\ConfigFactory $eavConfigFactory,
         \Dotdigitalgroup\Email\Helper\Config $configHelper,
-        TimezoneInterfaceFactory $localeDateFactory,
-        DateIntervalFactory $dateIntervalFactory,
         Logger $logger,
+        Date $dateField,
         \Magento\Eav\Model\Config $eavConfig
     ) {
         $this->storeManager = $storeManager;
@@ -159,9 +151,8 @@ class ContactData
         $this->productResource = $productResource;
         $this->categoryResource = $categoryResource;
         $this->eavConfigFactory = $eavConfigFactory;
-        $this->localeDateFactory = $localeDateFactory;
-        $this->dateIntervalFactory = $dateIntervalFactory;
         $this->logger = $logger;
+        $this->dateField = $dateField;
         $this->eavConfig = $eavConfig;
     }
 
@@ -192,7 +183,10 @@ class ContactData
             switch ($key) {
                 case 'dob':
                     $value = $this->model->getDob()
-                        ? $this->getScopeAdjustedDob($this->model->getStoreId())
+                        ? $this->dateField->getScopeAdjustedDate(
+                            $this->model->getStoreId(),
+                            $this->model->getDob()
+                        )
                         : null;
                     break;
 
@@ -630,41 +624,6 @@ class ContactData
         }
 
         return $this->products[$productId];
-    }
-
-    /**
-     * @param string $storeId
-     * @return string
-     */
-    private function getScopeAdjustedDob($storeId)
-    {
-        $scopedDob = $this->localeDateFactory->create()
-            ->scopeDate(
-                $storeId,
-                strtotime($this->model->getDob()),
-                true
-            );
-
-        $timezoneOffset = $scopedDob->getOffset();
-
-        // For locales east of GMT i.e. +01:00 and up, return the raw date
-        if ($timezoneOffset > 0) {
-            return $this->model->getDob();
-        }
-
-        // For locales west of GMT i.e. -01:00 and below, adjust DOB by adding the current timezone offset
-        $offset = $this->dateIntervalFactory->create(
-            ['interval_spec' => 'PT' . abs($timezoneOffset) . 'S']
-        );
-
-        return $this->localeDateFactory->create()
-            ->date(
-                strtotime($this->model->getDob()),
-                null,
-                false
-            )
-            ->add($offset)
-            ->format(\Zend_Date::ISO_8601);
     }
 
     /**
