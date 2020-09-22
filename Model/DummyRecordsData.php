@@ -5,11 +5,13 @@ namespace Dotdigitalgroup\Email\Model;
 use Dotdigitalgroup\Email\Helper\Data;
 use Magento\Store\Model\StoreManagerInterface;
 use Dotdigitalgroup\Email\Model\Catalog\UrlFinder;
+use Dotdigitalgroup\Email\Logger\Logger;
 use Magento\Framework\UrlInterface;
 
 class DummyRecordsData
 {
     const PRODUCT_NAME = 'Chaz Kangeroo Hoodie';
+    const EMAIL_PROPERTY_NAME = 'MainEmail';
 
     /**
      * @var Data
@@ -32,19 +34,27 @@ class DummyRecordsData
     private $email;
 
     /**
+     * @var Logger
+     */
+    private $logger;
+
+    /**
      * DummyRecordsData constructor.
      * @param Data $helper
      * @param StoreManagerInterface $storeManager
      * @param UrlFinder $urlFinder
+     * @param Logger $logger
      */
     public function __construct(
         Data $helper,
         StoreManagerInterface $storeManager,
-        UrlFinder $urlFinder
+        UrlFinder $urlFinder,
+        Logger $logger
     ) {
         $this->helper = $helper;
         $this->storeManager = $storeManager;
         $this->urlFinder = $urlFinder;
+        $this->logger = $logger;
     }
 
     /**
@@ -65,10 +75,17 @@ class DummyRecordsData
 
             $accountInfo = $this->helper->getWebsiteApiClient()->getAccountInfo();
 
-            if (!isset($accountInfo->properties[2])) {
+            if (isset($accountInfo->properties)) {
+                $emailKey = $this->getEmailKey($accountInfo->properties);
+                if (!$emailKey) {
+                    $this->logger->debug('Email Info not found for that account');
+                    continue;
+                }
+            } else {
                 continue;
             }
-            $this->email = $accountInfo->properties[2]->value;
+
+            $this->email = $accountInfo->properties[$emailKey]->value;
 
             $users[] = $this->helper->getApiUsername($website->getId());
             $websiteData[$website->getId()] = [
@@ -158,5 +175,18 @@ class DummyRecordsData
         return 'https://raw.githubusercontent.com/'
                .'magento/magento2-sample-data/'
                .'2.3/pub/media/catalog/product/m/h/mh01-black_main.jpg';
+    }
+
+    /**
+     * @param array $properties
+     * @return int|string
+     */
+    private function getEmailKey(array $properties)
+    {
+        foreach ($properties as $key => $property) {
+            if ($property->name === self::EMAIL_PROPERTY_NAME) {
+                return $key;
+            }
+        }
     }
 }
