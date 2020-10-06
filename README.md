@@ -19,6 +19,30 @@ You are welcome to contribute to Engagement Cloud for Magento! You can either:
 - Fix a bug: please clone and use our [Develop branch](https://github.com/dotmailer/dotmailer-magento2-extension/tree/develop) to submit your Pull Request
 - Request a feature on our [roadmap](https://roadmap.dotdigital.com)
 
+# 4.9.0
+
+###### What’s new
+- System alerts now report on transactional email send failures.
+- In-app system messages for system alerts are now enabled by default.
+- dotdigital forms embedded in CMS pages and blocks can now add email addresses to Magento’s newsletter subscribers list. [requires Enterprise module 1.2.0+]
+
+###### Improvements
+- Cart insight data is now sent for the Engagement Cloud account owner’s email address when validating API credentials, and at upgrade. This allows the Abandoned cart block to be visible in EasyEditor before customer data is received.
+- All active dotdigital modules are now displayed with their version numbers in the Email module dashboard (Reports > Customer Engagement > Dashboard).
+- Easy Email Capture for newsletter subscriptions now happens on the server side after submit (this supports our forms integration for Page Builder).
+- Programs listed in dotdigital > Abandoned Carts > Abandoned Cart Program now list all programs, even those whose status is Draft or Deactivated. 
+- We've added a helper method to check if Magento has an active Engagement Cloud account enabled at any level.
+- The timing for the automation sync has been changed to every 16 minutes, so it coincides less often with the contact sync.
+- We’ve fixed a small omission in the install schema script, by adding a `nullable` property to the `last_subscribed_at`  column in `email_contact`.
+- Module dependencies have been updated in line with Magento 2.4 requirements.
+- Our unit tests have been updated to be compatible with PHPUnit v9+. This change was required for Magento 2.4.
+- Our MFTF test suite has been updated.
+
+###### Bug fixes
+- We fixed a problem with finding the wrong product IDs from a batch of SKUs, when importing or updating products in bulk.
+- All types of tracking (Page, ROI and Web Behaviour) now function at website level if tracking is disabled at default level.
+- Newsletter preferences captured in date format are now synced to Engagement Cloud correctly for non-UTC locales.
+
 # 4.7.1
 
 ###### Bug fixes
