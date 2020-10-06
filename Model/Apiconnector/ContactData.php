@@ -114,16 +114,6 @@ class ContactData
     ];
 
     /**
-     * @var array
-     */
-    private $subscriberStatuses = [
-        \Magento\Newsletter\Model\Subscriber::STATUS_SUBSCRIBED => 'Subscribed',
-        \Magento\Newsletter\Model\Subscriber::STATUS_NOT_ACTIVE => 'Not Active',
-        \Magento\Newsletter\Model\Subscriber::STATUS_UNSUBSCRIBED => 'Unsubscribed',
-        \Magento\Newsletter\Model\Subscriber::STATUS_UNCONFIRMED => 'Unconfirmed',
-    ];
-
-    /**
      * ContactData constructor.
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      * @param \Magento\Catalog\Api\Data\ProductInterfaceFactory $productFactory
