@@ -55,8 +55,8 @@ class Bunch
         $products = $this->productRepository->getList($this->searchCriteria);
         $productItems = $products->getItems();
 
-        $productIds = array_keys($productItems);
-
-        return $productIds;
+        return array_map(function ($product) {
+            return $product->getId();
+        }, $productItems);
     }
 }

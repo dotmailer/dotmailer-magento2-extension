@@ -32,6 +32,7 @@
             <module name="Magento_Bundle" />
             <module name="Magento_GroupedProduct" />
             <module name="Magento_Theme" />
+            <module name="Magento_Authorization" />
         </sequence>
     </module>
 </config>

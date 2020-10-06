@@ -48,7 +48,7 @@ class ParentFinderTest extends TestCase
      */
     private $productMock;
 
-    protected function setUp()
+    protected function setUp() :void
     {
         $this->productRepositoryMock = $this->createMock(ProductRepositoryInterface::class);
         $this->loggerMock = $this->createMock(Logger::class);

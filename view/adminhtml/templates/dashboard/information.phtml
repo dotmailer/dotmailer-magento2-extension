@@ -1,9 +1,9 @@
 <?php /** @var \Dotdigitalgroup\Email\Block\Adminhtml\Dashboard\Information $block */?>
-<table class="message-system-short">
+<table>
     <tr>
         <th>
             <strong class="message-system-short-label">
-                <?= $block->escapeHtml(__('PHP Version')) ?>:
+                <?= $block->escapeHtml(__('PHP version')) ?>:
             </strong>
         </th>
         <td><div class="message-link"><?= $block->escapeHtml($block->getPhpVersion()) ?></div></td>
@@ -19,7 +19,7 @@
     <tr>
         <th>
             <strong class="message-system-short-label">
-                <?= $block->escapeHtml(__('Mode ')) ?>:
+                <?= $block->escapeHtml(__('Mode')) ?>:
             </strong>
         </th>
         <td><?= $block->escapeHtml($block->getDeveloperMode()) ?></td>
@@ -27,7 +27,7 @@
     <tr>
         <th>
             <strong class="message-system-short-label">
-                <?= $block->escapeHtml(__('Magento Version ')) ?>:
+                <?= $block->escapeHtml(__('Magento version')) ?>:
             </strong>
         </th>
         <td><?= $block->escapeHtml($block->getMagentoVersion()) ?></td>
@@ -35,11 +35,39 @@
     <tr>
         <th>
             <strong class="message-system-short-label">
-                <?= $block->escapeHtml(__('Connector Version ')) ?>:
+                <?= $block->escapeHtml(__('Engagement Cloud for Magento 2')) ?>:
             </strong>
         </th>
         <td><?= $block->escapeHtml($block->getConnectorVersion()) ?></td>
     </tr>
-
+    <?php if ($block->hasChatModule()): ?>
+        <tr>
+            <th>
+                <strong class="message-system-short-label">
+                    <?= $block->escapeHtml(__('Engagement Cloud Chat for Magento 2')) ?>:
+                </strong>
+            </th>
+            <td><?= $block->escapeHtml($block->getChatConnectorVersion()) ?></td>
+        </tr>
+    <?php endif; ?>
+    <?php if ($block->hasEnterpriseModule()): ?>
+        <tr>
+            <th>
+                <strong class="message-system-short-label">
+                    <?= $block->escapeHtml(__('Engagement Cloud for Magento Enterprise')) ?>:
+                </strong>
+            </th>
+            <td><?= $block->escapeHtml($block->getEnterpriseConnectorVersion()) ?></td>
+        </tr>
+    <?php endif; ?>
+    <?php if ($block->hasB2bModule()): ?>
+        <tr>
+            <th>
+                <strong class="message-system-short-label">
+                    <?= $block->escapeHtml(__('Engagement Cloud for Magento B2B')) ?>:
+                </strong>
+            </th>
+            <td><?= $block->escapeHtml($block->getB2bConnectorVersion()) ?></td>
+        </tr>
+    <?php endif; ?>
 </table>
-    

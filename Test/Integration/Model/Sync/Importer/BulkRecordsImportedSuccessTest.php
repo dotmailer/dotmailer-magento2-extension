@@ -34,7 +34,7 @@ class BulkRecordsImportedSuccessTest extends \PHPUnit\Framework\TestCase
      */
     private $catalog;
 
-    public function setUp()
+    public function setUp() :void
     {
         $this->objectManager = \Magento\TestFramework\Helper\Bootstrap::getObjectManager();
 

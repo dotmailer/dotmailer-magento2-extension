@@ -3,10 +3,9 @@
 namespace Dotdigitalgroup\Email\Model\Apiconnector;
 
 use Magento\Framework\Model\AbstractModel;
-use Magento\Framework\Stdlib\DateTime\TimezoneInterfaceFactory;
-use Dotdigitalgroup\Email\Model\DateIntervalFactory;
 use Dotdigitalgroup\Email\Logger\Logger;
 use Magento\Store\Model\App\Emulation;
+use Dotdigitalgroup\Email\Model\Customer\DataField\Date;
 
 /**
  * Manages the Customer data as datafields for contact.
@@ -95,9 +94,9 @@ class Customer extends ContactData
      * @param \Magento\Sales\Model\ResourceModel\Order $resourceOrder
      * @param \Magento\Eav\Model\ConfigFactory $eavConfigFactory
      * @param \Dotdigitalgroup\Email\Helper\Config $configHelper
-     * @param TimezoneInterfaceFactory $localeDateFactory
-     * @param DateIntervalFactory $dateIntervalFactory
      * @param Logger $logger
+     * @param \Magento\Eav\Model\Config $eavConfig
+     * @param Date $dateField
      * @param Emulation $appEmulation
      */
     public function __construct(
@@ -115,10 +114,9 @@ class Customer extends ContactData
         \Magento\Sales\Model\ResourceModel\Order $resourceOrder,
         \Magento\Eav\Model\ConfigFactory $eavConfigFactory,
         \Dotdigitalgroup\Email\Helper\Config $configHelper,
-        TimezoneInterfaceFactory $localeDateFactory,
-        DateIntervalFactory $dateIntervalFactory,
         Logger $logger,
         \Magento\Eav\Model\Config $eavConfig,
+        Date $dateField,
         Emulation $appEmulation
     ) {
         $this->reviewCollection  = $reviewCollectionFactory;
@@ -127,6 +125,7 @@ class Customer extends ContactData
         $this->subscriberFactory = $subscriberFactory;
         $this->groupResource     = $groupResource;
         $this->appEmulation = $appEmulation;
+        $this->dateField = $dateField;
 
         parent::__construct(
             $storeManager,
@@ -138,9 +137,8 @@ class Customer extends ContactData
             $categoryResource,
             $eavConfigFactory,
             $configHelper,
-            $localeDateFactory,
-            $dateIntervalFactory,
             $logger,
+            $dateField,
             $eavConfig
         );
     }

@@ -55,7 +55,7 @@ class MessagePluginTest extends TestCase
     /**
      * @return void
      */
-    protected function setUp()
+    protected function setUp() :void
     {
         $this->messageMock = $this->createMock(MessageInterface::class);
         $this->mimeMessageMock = $this->createMock(\Zend\Mime\Message::class);

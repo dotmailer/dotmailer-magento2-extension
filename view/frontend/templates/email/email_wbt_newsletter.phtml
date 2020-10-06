@@ -1,0 +1,14 @@
+<?php
+/** @var \Dotdigitalgroup\Email\Block\EmailCapture\EmailCapture $block */
+?>
+<?php if ($block->isWebBehaviourTrackingEnabled()): ?>
+    <script type="text/x-magento-init">
+    {
+        "*": {
+            "Dotdigitalgroup_Email/js/emailCapture":{
+                "type":"newsletter"
+            }
+        }
+    }
+    </script>
+<?php endif; ?>

@@ -195,7 +195,7 @@ class InstallSchema implements InstallSchemaInterface
                 'last_subscribed_at',
                 Table::TYPE_TIMESTAMP,
                 null,
-                [],
+                ['nullable' => true],
                 'Last time user subscribed'
             );
     }

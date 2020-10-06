@@ -48,7 +48,7 @@ class StoreCatalogSyncerTest extends TestCase
      */
     private $importerModelMock;
 
-    protected function setUp()
+    protected function setUp() :void
     {
         $this->importerFactoryMock = $this->createMock(ImporterFactory::class);
         $this->helperMock = $this->createMock(Data::class);

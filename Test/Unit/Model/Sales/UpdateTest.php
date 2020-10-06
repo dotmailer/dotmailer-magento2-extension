@@ -66,7 +66,7 @@ class UpdateTest extends TestCase
      */
     private $storeManagerInterfaceMock;
 
-    protected function setUp()
+    protected function setUp() :void
     {
         $this->automationFactoryMock = $this->createMock(CollectionFactory::class);
         $this->quoteRepositoryMock = $this->createMock(QuoteRepository::class);

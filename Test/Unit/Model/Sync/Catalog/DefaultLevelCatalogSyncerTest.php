@@ -36,7 +36,7 @@ class DefaultLevelCatalogSyncerTest extends TestCase
      */
     private $resourceCatalogMock;
 
-    protected function setUp()
+    protected function setUp() :void
     {
         $this->helperMock = $this->createMock(Data::class);
         $this->scopeConfigInterfaceMock = $this->createMock(ScopeConfigInterface::class);

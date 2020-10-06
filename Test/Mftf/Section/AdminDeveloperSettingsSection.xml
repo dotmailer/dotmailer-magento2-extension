@@ -7,5 +7,11 @@
         <element name="developerIpRestrictionFieldset" type="button" selector="#connector_developer_settings_ip_restriction"/>
         <element name="developerIpAddresses" type="textarea" selector="#connector_developer_settings_ip_restriction_ip_addresses" />
         <element name="developerSettingSaveButton" type="button" selector="#save" />
+        <element name="developerSystemAlertsToggle" type="button" selector="#connector_developer_settings_system_alerts-head"/>
+        <element name="developerSystemAlertsFieldset" type="button" selector="#connector_developer_settings_system_alerts"/>
+        <element name="developerEnableSystemMessages" type="select" selector="#connector_developer_settings_system_alerts_system_messages" />
+        <element name="developerEnableEmailNotifications" type="select" selector="#connector_developer_settings_system_alerts_email_notifications" />
+        <element name="developerSelectUserRoles" type="select" selector="#connector_developer_settings_system_alerts_user_roles" />
+        <element name="developerAlertFrequency" type="select" selector="#connector_developer_settings_system_alerts_frequency" />
     </section>
 </sections>

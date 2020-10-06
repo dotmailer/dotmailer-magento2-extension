@@ -318,7 +318,7 @@
                 <review_wishlist>*/15 * * * *</review_wishlist>
             </cron_schedules>
             <system_alerts>
-                <system_messages>0</system_messages>
+                <system_messages>1</system_messages>
                 <email_notifications>0</email_notifications>
                 <user_roles></user_roles>
                 <frequency>24</frequency>

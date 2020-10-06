@@ -28,7 +28,7 @@ class SmtpTransportZend2Test extends \PHPUnit\Framework\TestCase
     /**
      * Prepare data
      */
-    protected function setUp()
+    protected function setUp() :void
     {
         $this->transactionalEmailSettings = $this->getMockBuilder(
             Transactional::class
@@ -55,9 +55,9 @@ class SmtpTransportZend2Test extends \PHPUnit\Framework\TestCase
         $smtpOptions = [];
 
         $this->transactionalEmailSettings->expects($this->once())
-                                         ->method('getSmtpOptions')
-                                         ->with($storeId)
-                                         ->willReturn($smtpOptions);
+            ->method('getSmtpOptions')
+            ->with($storeId)
+            ->willReturn($smtpOptions);
 
         $zendMail2TransportSmtp = $this->getMockBuilder(
             Smtp::class
@@ -65,13 +65,13 @@ class SmtpTransportZend2Test extends \PHPUnit\Framework\TestCase
         )->getMock();
 
         $this->zendMailTransportSmtp2Factory->expects($this->once())
-                                            ->method('create')
-                                            ->with($smtpOptions)
-                                            ->willReturn($zendMail2TransportSmtp);
+            ->method('create')
+            ->with($smtpOptions)
+            ->willReturn($zendMail2TransportSmtp);
 
         $zendMail2TransportSmtp->expects($this->once())
-                              ->method('send')
-                              ->with($message);
+            ->method('send')
+            ->with($message);
 
         $this->smtpTransportZend2->send($message, $storeId);
     }

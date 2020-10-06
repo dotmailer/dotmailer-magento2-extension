@@ -3,6 +3,9 @@
     <type name="Magento\Sales\Api\OrderCustomerManagementInterface">
         <plugin name="Ddg_CustomerManagementPlugin" type="Dotdigitalgroup\Email\Plugin\CustomerManagementPlugin" sortOrder="1"/>
     </type>
+    <type name="Magento\Newsletter\Controller\Subscriber\NewAction">
+        <plugin name="ddg_newsletter_email_capture" type="Dotdigitalgroup\Email\Plugin\NewsletterEmailCapturePlugin" sortOrder="1"/>
+    </type>
     <type name="Magento\Newsletter\Model\Subscriber">
         <plugin name="ddg_newsletter_disabler" type="Dotdigitalgroup\Email\Plugin\SubscriberPlugin" sortOrder="1" disabled="false"/>
     </type>

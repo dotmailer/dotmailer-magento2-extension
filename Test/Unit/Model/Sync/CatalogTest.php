@@ -60,7 +60,7 @@ class CatalogTest extends TestCase
      */
     private $scopeConfigInterfaceMock;
 
-    protected function setUp()
+    protected function setUp() :void
     {
         $this->catalogCollectionMock = $this->createMock(CatalogCollection::Class);
         $this->catalogCollectionFactoryMock = $this->createMock(CollectionFactory::class);

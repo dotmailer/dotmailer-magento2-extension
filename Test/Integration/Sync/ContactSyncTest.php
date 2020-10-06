@@ -33,7 +33,7 @@ class ContactSyncTest extends \PHPUnit\Framework\TestCase
     /**
      * @return void
      */
-    public function setup()
+    public function setup() :void
     {
         $this->objectManager = \Magento\TestFramework\Helper\Bootstrap::getObjectManager();
         $this->importerCollection = $this->objectManager->create(

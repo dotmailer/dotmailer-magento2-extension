@@ -21,11 +21,11 @@ class DotdigitalCouponCodeGeneratorTest extends TestCase
     /**
      * Prepare data
      */
-    protected function setUp()
+    protected function setUp() :void
     {
         $this->couponHelperMock = $this->getMockBuilder(Coupon::class)
-                                       ->disableOriginalConstructor()
-                                       ->getMock();
+            ->disableOriginalConstructor()
+            ->getMock();
 
         $this->couponHelperMock->expects($this->any())
             ->method('getFormatsList')
@@ -42,8 +42,8 @@ class DotdigitalCouponCodeGeneratorTest extends TestCase
     {
         $expectedSeparator = "^";
         $this->couponHelperMock->expects($this->once())
-                               ->method('getCodeSeparator')
-                               ->willReturn($expectedSeparator);
+            ->method('getCodeSeparator')
+            ->willReturn($expectedSeparator);
 
         $actualSeparator = $this->model->getDelimiter();
 
@@ -54,9 +54,9 @@ class DotdigitalCouponCodeGeneratorTest extends TestCase
     {
         $delimiter = "$";
         $this->couponHelperMock->method('getCodeSeparator')
-                               ->willReturn($delimiter);
+            ->willReturn($delimiter);
         $this->couponHelperMock->method('getCharset')
-                               ->willReturn(['1','2','3','A','S','D']);
+            ->willReturn(['1','2','3','A','S','D']);
 
         $couponCode = $this->model->generateCode();
 

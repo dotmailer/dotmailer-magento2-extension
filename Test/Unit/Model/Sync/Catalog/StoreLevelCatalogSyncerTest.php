@@ -49,7 +49,7 @@ class StoreLevelCatalogSyncerTest extends TestCase
      */
     private $appEmulation;
 
-    protected function setUp()
+    protected function setUp() :void
     {
         $this->helperMock = $this->createMock(Data::class);
         $this->catalogResourceFactoryMock = $this->createMock(CatalogFactory::class);
@@ -169,8 +169,8 @@ class StoreLevelCatalogSyncerTest extends TestCase
     {
         $storeDetails = $this->getStoreDetails();
         $store = $this->getMockBuilder(StoreInterface::class)
-                        ->setMethods(['getWebsite'])
-                        ->getMockForAbstractClass();
+            ->setMethods(['getWebsite'])
+            ->getMockForAbstractClass();
         $store->expects($this->exactly(3))
             ->method('getWebsiteId')
             ->willReturn($storeDetails['websiteId']);
@@ -324,9 +324,9 @@ class StoreLevelCatalogSyncerTest extends TestCase
     public function getStoreDetails()
     {
         return [
-          'websiteId' => rand(1, 10),
-          'storeId' => rand(1, 10),
-          'code' => hash("sha256", rand())
+            'websiteId' => rand(1, 10),
+            'storeId' => rand(1, 10),
+            'code' => hash("sha256", rand())
         ];
     }
 

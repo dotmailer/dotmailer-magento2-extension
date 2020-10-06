@@ -76,6 +76,7 @@
                 <item name="importerErrorMessage" xsi:type="string">Dotdigitalgroup\Email\Model\System\Message\ImporterError</item>
                 <item name="campaignErrorMessage" xsi:type="string">Dotdigitalgroup\Email\Model\System\Message\CampaignError</item>
                 <item name="automationErrorMessage" xsi:type="string">Dotdigitalgroup\Email\Model\System\Message\AutomationError</item>
+                <item name="smtpErrorMessage" xsi:type="string">Dotdigitalgroup\Email\Model\System\Message\SmtpError</item>
             </argument>
         </arguments>
     </type>

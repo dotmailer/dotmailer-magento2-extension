@@ -31,7 +31,7 @@ class CouponTest extends AbstractController
      */
     private $couponAttributeCollection;
 
-    public function setUp()
+    public function setUp() :void
     {
         parent::setUp();
 

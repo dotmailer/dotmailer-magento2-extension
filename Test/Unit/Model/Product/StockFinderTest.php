@@ -60,7 +60,7 @@ class StockFinderTest extends TestCase
      */
     private $stockItemCriteriaMock;
 
-    protected function setUp()
+    protected function setUp() :void
     {
         $this->loggerMock = $this->createMock(Logger::class);
         $this->stockItemRepositoryMock = $this->getMockBuilder(StockItemRepositoryInterface::class)

@@ -49,7 +49,7 @@ class BunchTest extends TestCase
      */
     private $productMock;
 
-    protected function setUp()
+    protected function setUp() :void
     {
         $this->filterGroupMock = $this->createMock(FilterGroup::class);
         $this->filterBuilderMock = $this->createMock(FilterBuilder::class);

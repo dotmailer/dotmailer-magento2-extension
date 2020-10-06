@@ -49,7 +49,7 @@ class SmtpTransportAdapterTest extends \PHPUnit\Framework\TestCase
     /**
      * Prepare data
      */
-    protected function setUp()
+    protected function setUp() :void
     {
         $this->transactionalEmailSettingsMock = $this->getMockBuilder(
             Transactional::class
@@ -126,8 +126,8 @@ class SmtpTransportAdapterTest extends \PHPUnit\Framework\TestCase
         )->getMock();
 
         $magentoFrameworkMessage->expects($this->once())
-                                ->method('getRawMessage')
-                                ->willReturn($zendMessage->toString());
+            ->method('getRawMessage')
+            ->willReturn($zendMessage->toString());
 
         $this->subject->expects($this->once())->method('getMessage')->willReturn($magentoFrameworkMessage);
 

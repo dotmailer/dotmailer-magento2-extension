@@ -38,6 +38,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     const REST_CAMPAIGNS_WITH_PREPARED_CONTENT = 'prepared-for-transactional-email';
     const REST_POST_ABANDONED_CART_CARTINSIGHT = '/v2/contacts/transactional-data/cartInsight';
     const REST_CHAT_SETUP = '/v2/webchat/setup';
+    const REST_SURVEYS_FORMS = '/v2/surveys';
 
     //rest error responses
     const API_ERROR_API_EXCEEDED = 'Your account has generated excess API activity and is being temporarily capped. ' .
@@ -99,7 +100,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     {
         if ($this->apiEndpoint === null) {
             throw new \Magento\Framework\Exception\LocalizedException(
-                __('Dotmailer connector API endpoint cannot be empty.')
+                __('Connector API endpoint cannot be empty.')
             );
         }
 
@@ -1035,16 +1036,22 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     }
 
     /**
-     * Gets all programs.
      * https://apiconnector.com/v2/programs?select={select}&skip={skip}.
-     *
-     * @return object
-     *
-     * @throws \Exception
+     * @param int $skip
+     * @param int $select
+     * @return mixed|null
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function getPrograms()
+    public function getPrograms($skip = 0, $select = 1000)
     {
-        $url = $this->getApiEndpoint() . self::REST_PROGRAM;
+        $url = sprintf(
+            '%s%s?select=%s&skip=%s',
+            $this->getApiEndpoint(),
+            self::REST_PROGRAM,
+            $select,
+            $skip
+        );
+
         $this->setUrl($url)
             ->setVerb('GET');
 
@@ -1484,7 +1491,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     /**
      * Sends a transactional email.
      *
-     * @param string $content
+     * @param array $content
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function sendApiTransactionalEmail($content)
@@ -1495,7 +1502,13 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
             ->setVerb('POST')
             ->buildPostBody($content);
 
-        $this->execute();
+        $response = $this->execute();
+
+        if (isset($response->message)) {
+            $this->addClientLog('Error sending transactional email');
+        }
+
+        return $response;
     }
 
     /**
@@ -1706,6 +1719,60 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
 
         if (isset($response->message)) {
             $this->addClientLog('Error resubscribing address book contact');
+        }
+
+        return $response;
+    }
+
+    /**
+     * Get list of all surveys and forms.
+     *
+     * @param string $assignedToAddressBookOnly
+     * @param int $select
+     * @param int $skip
+     * @return mixed
+     *
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function getSurveysAndForms($assignedToAddressBookOnly = 'false', $select = 1000, $skip = 0)
+    {
+        $url = sprintf(
+            '%s%s?assignedToAddressBookOnly=%s&select=%s&skip=%s',
+            $this->getApiEndpoint(),
+            self::REST_SURVEYS_FORMS,
+            $assignedToAddressBookOnly,
+            $select,
+            $skip
+        );
+
+        $this->setUrl($url)
+            ->setVerb('GET');
+
+        $response = $this->execute();
+
+        if (empty($response) || isset($response->message)) {
+            $this->addClientLog('Error getting surveys and forms');
+        }
+
+        return $response;
+    }
+
+    public function getFormById($formId)
+    {
+        $url = sprintf(
+            '%s%s/%s',
+            $this->getApiEndpoint(),
+            self::REST_SURVEYS_FORMS,
+            $formId
+        );
+
+        $this->setUrl($url)
+            ->setVerb('GET');
+
+        $response = $this->execute();
+
+        if (empty($response) || isset($response->message)) {
+            $this->addClientLog('Error getting data for form id ' . $formId);
         }
 
         return $response;

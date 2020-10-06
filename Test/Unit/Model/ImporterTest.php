@@ -66,7 +66,7 @@ class ImporterTest extends TestCase
      */
     private $importer;
 
-    protected function setUp()
+    protected function setUp() :void
     {
         $this->contextMock = $this->createMock(Context::class);
         $this->registryMock = $this->createMock(Registry::class);

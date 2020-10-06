@@ -66,7 +66,7 @@ class UrlFinderTest extends TestCase
      */
     private $parentFinderMock;
 
-    protected function setUp()
+    protected function setUp() :void
     {
         $this->productRepositoryMock = $this->createMock(ProductRepositoryInterface::class);
         $this->productMock = $this->createMock(Product::class);

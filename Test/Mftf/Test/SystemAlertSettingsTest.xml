@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
+    <test name="SystemAlertSettingsTest">
+        <annotations>
+            <features value="Engagement Cloud module"/>
+            <stories value="Test dotdigital system alert settings"/>
+            <title value="Test System alerts settings page"/>
+            <description value="The dotdigital System alerts section can be viewed."/>
+            <severity value="AVERAGE"/>
+            <group value="dotmailer"/>
+        </annotations>
+
+        <before>
+            <actionGroup ref="AdminLoginActionGroup" stepKey="AdminLoginActionGroup1"/>
+        </before>
+
+        <after>
+            <actionGroup ref="AdminLogoutActionGroup" stepKey="logout"/>
+        </after>
+
+        <amOnPage url="{{AdminDotmailerDeveloperSettingPage.url}}" stepKey="amOnDeveloperSettingsPage"/>
+        <waitForPageLoad stepKey="waitForPageLoad"/>
+
+        <conditionalClick stepKey="expandSystemAlertsTab" selector="{{AdminDeveloperSettingsSection.developerSystemAlertsToggle}}" dependentSelector="{{AdminDeveloperSettingsSection.developerSystemAlertsFieldset}}" visible="false"/>
+
+        <!-- Confirm That Fields Exist -->
+        <seeElement selector="{{AdminDeveloperSettingsSection.developerEnableSystemMessages}}" stepKey="seeEnableSystemMessages"/>
+        <seeElement selector="{{AdminDeveloperSettingsSection.developerEnableEmailNotifications}}" stepKey="seeEnableEmailNotifications"/>
+        <seeElement selector="{{AdminDeveloperSettingsSection.developerAlertFrequency}}" stepKey="seeDeveloperAlertFrequency"/>
+        <seeElement selector="{{AdminDeveloperSettingsSection.developerSelectUserRoles}}" stepKey="seeDeveloperUserRoles"/>
+    </test>
+</tests>

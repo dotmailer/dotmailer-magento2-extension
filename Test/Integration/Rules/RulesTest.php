@@ -42,7 +42,7 @@ class RulesTest extends \PHPUnit\Framework\TestCase
      */
     private $currentWebsiteId;
 
-    public function setUp()
+    public function setUp() :void
     {
         include __DIR__ . '/../_files/products.php';
         $this->quoteCollection = ObjectManager::getInstance()->create(QuoteCollection::class);
@@ -285,6 +285,8 @@ class RulesTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * @magentoAppIsolation enabled
+     *
      * @return void
      */
     public function testRuleWithSubtotalCondition()
@@ -310,6 +312,8 @@ class RulesTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * @magentoAppIsolation enabled
+     *
      * @return void
      */
     public function testMultipleRules()
@@ -364,6 +368,8 @@ class RulesTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Test shipping city AC is excluded by the exclusion rules.
+     *
+     * @magentoAppIsolation enabled
      */
     public function testShippingCityNullValue()
     {

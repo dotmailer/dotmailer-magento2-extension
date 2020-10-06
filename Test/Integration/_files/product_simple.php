@@ -8,6 +8,7 @@ use Magento\Catalog\Api\Data\ProductInterface;
 
 $objectManager = \Magento\TestFramework\Helper\Bootstrap::getObjectManager();
 /** @var Magento\Store\Model\Website $website */
+$secondWebsite = $objectManager->get(\Magento\Store\Api\WebsiteRepositoryInterface::class)->get('test');
 
 $objectManager->get(\Magento\Store\Model\StoreManagerInterface::class)->reinitStores();
 
@@ -15,11 +16,12 @@ $objectManager->get(\Magento\Store\Model\StoreManagerInterface::class)->reinitSt
 $product = \Magento\TestFramework\Helper\Bootstrap::getObjectManager()
     ->create(ProductInterface::class);
 $product
+    ->setId(2)
     ->setTypeId('simple')
     ->setAttributeSetId(4)
-    ->setWebsiteIds([$website->getId()])
+    ->setWebsiteIds([$secondWebsite->getId()])
     ->setName('Simple Product 2')
-    ->setSku('unique-simple-azaza')
+    ->setSku('ddg-fixture-product')
     ->setPrice(10)
     ->setMetaTitle('meta title')
     ->setMetaKeyword('meta keyword')

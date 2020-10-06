@@ -7,6 +7,8 @@ namespace Dotdigitalgroup\Email\Model\Apiconnector;
  */
 class Test
 {
+    const DEFAULT_API_ENDPOINT = 'https://r1-api.dotmailer.com';
+
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
@@ -63,7 +65,8 @@ class Test
 
             if (isset($accountInfo->message)) {
                 $this->helper->log('VALIDATION ERROR :  ' . $accountInfo->message);
-
+                $this->helper->saveApiEndpoint(self::DEFAULT_API_ENDPOINT, $website->getId());
+                $this->config->reinit();
                 return false;
             }
 
