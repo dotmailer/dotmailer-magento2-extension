@@ -637,35 +637,42 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * Is the page tracking enabled.
-     *
+     * @param string|int $websiteId
      * @return bool
      */
-    public function isPageTrackingEnabled()
+    public function isPageTrackingEnabled($websiteId)
     {
         return $this->scopeConfig->isSetFlag(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_PAGE_TRACKING_ENABLED
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_PAGE_TRACKING_ENABLED,
+            \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
+            $websiteId
         );
     }
 
     /**
-     * Is the Roi page tracking enabled.
-     *
+     * @param string|int $websiteId
      * @return bool
      */
-    public function isRoiTrackingEnabled()
+    public function isRoiTrackingEnabled($websiteId)
     {
         return (bool)$this->scopeConfig->isSetFlag(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_ROI_TRACKING_ENABLED
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_ROI_TRACKING_ENABLED,
+            \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
+            $websiteId
         );
     }
 
     /**
+     * @param string|int $websiteId
      * @return bool
      */
-    public function isWebBehaviourTrackingEnabled()
+    public function isWebBehaviourTrackingEnabled($websiteId)
     {
-        return (bool)$this->scopeConfig->isSetFlag(Config::XML_PATH_CONNECTOR_TRACKING_PROFILE_ID);
+        return (bool)$this->scopeConfig->isSetFlag(
+            Config::XML_PATH_CONNECTOR_TRACKING_PROFILE_ID,
+            \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
+            $websiteId
+        );
     }
 
     /**

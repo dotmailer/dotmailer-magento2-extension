@@ -67,8 +67,9 @@ class WebBehaviourTracking implements ProductRenderCollectorInterface
      */
     public function collect(ProductInterface $product, ProductRenderInterface $productRender)
     {
-        if (!$this->helper->isEnabled($this->storeManager->getStore()->getWebsiteId())
-            || !$this->helper->isWebBehaviourTrackingEnabled()
+        $websiteId = $this->storeManager->getStore()->getWebsiteId();
+        if (!$this->helper->isEnabled($websiteId)
+            || !$this->helper->isWebBehaviourTrackingEnabled($websiteId)
         ) {
             return;
         }
