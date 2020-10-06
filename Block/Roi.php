@@ -21,6 +21,11 @@ class Roi extends \Magento\Framework\View\Element\Template
     public $session;
 
     /**
+     * @var int
+     */
+    private $websiteId;
+
+    /**
      * Roi constructor.
      *
      * @param \Magento\Framework\View\Element\Template\Context $context
@@ -37,6 +42,8 @@ class Roi extends \Magento\Framework\View\Element\Template
         $this->helper = $helper;
         $this->session = $session;
         parent::__construct($context, $data);
+
+        $this->websiteId = $this->_storeManager->getWebsite()->getId();
     }
 
     /**
@@ -44,7 +51,7 @@ class Roi extends \Magento\Framework\View\Element\Template
      */
     public function isRoiTrackingAvailable()
     {
-        return $this->helper->isEnabled() && $this->helper->isRoiTrackingEnabled();
+        return $this->helper->isEnabled($this->websiteId) && $this->helper->isRoiTrackingEnabled($this->websiteId);
     }
 
     /**
