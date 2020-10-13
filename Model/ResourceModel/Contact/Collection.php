@@ -164,15 +164,16 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     }
 
     /**
-     * Contact subscribers to import for website.
+     * Fetch a list of subscribers by email and store id.
      *
      * @param array $emails
-     *
+     * @param string|int $storeId
      * @return $this
      */
-    public function getSubscribersToImportFromEmails($emails)
+    public function getSubscribersToImportFromEmails($emails, $storeId)
     {
-        return $this->addFieldToFilter('email', ['in' => $emails]);
+        return $this->addFieldToFilter('email', ['in' => $emails])
+            ->addFieldToFilter('store_id', $storeId);
     }
 
     /**

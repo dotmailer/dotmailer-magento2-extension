@@ -2,8 +2,8 @@
 
 namespace Dotdigitalgroup\Email\Model\Newsletter;
 
+use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory as ContactCollectionFactory;
 use Dotdigitalgroup\Email\Model\Sync\SyncInterface;
-use Magento\Framework\Exception\LocalizedException;
 
 /**
  * Sync subscribers.
@@ -33,9 +33,9 @@ class Subscriber implements SyncInterface
     private $helper;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\ContactFactory
+     * @var ContactCollectionFactory
      */
-    private $contactFactory;
+    private $contactCollectionFactory;
 
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory
@@ -70,7 +70,6 @@ class Subscriber implements SyncInterface
     /**
      * Subscriber constructor.
      *
-     * @param \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory $orderCollection
      * @param SubscriberExporter $subscriberExporter
@@ -80,7 +79,7 @@ class Subscriber implements SyncInterface
      * @param \Dotdigitalgroup\Email\Model\DateIntervalFactory $dateIntervalFactory
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
+        ContactCollectionFactory $contactCollectionFactory,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory $orderCollection,
         \Dotdigitalgroup\Email\Model\Newsletter\SubscriberExporter $subscriberExporter,
@@ -91,7 +90,7 @@ class Subscriber implements SyncInterface
     ) {
         $this->dateIntervalFactory = $dateIntervalFactory;
         $this->helper            = $helper;
-        $this->contactFactory    = $contactFactory;
+        $this->contactCollectionFactory = $contactCollectionFactory;
         $this->orderCollection   = $orderCollection;
         $this->subscriberExporter = $subscriberExporter;
         $this->subscriberWithSalesExporter = $subscriberWithSalesExporter;
@@ -167,9 +166,10 @@ class Subscriber implements SyncInterface
             $website
         );
 
-        $emailContactModel = $this->contactFactory->create();
-        $subscribersAreCustomers = $emailContactModel->getSubscribersToImport($storeId, $limit);
-        $subscribersAreGuest = $emailContactModel->getSubscribersToImport($storeId, $limit, false);
+        $subscribersAreCustomers = $this->contactCollectionFactory->create()
+            ->getSubscribersToImport($storeId, $limit);
+        $subscribersAreGuest = $this->contactCollectionFactory->create()
+            ->getSubscribersToImport($storeId, $limit, false);
 
         $subscribersGuestEmails = $subscribersAreGuest->getColumnValues('email');
         $subscribersCustomerEmails = $subscribersAreCustomers->getColumnValues('email');
@@ -183,8 +183,8 @@ class Subscriber implements SyncInterface
 
         $subscribersWithNoSaleData = [];
         if (! empty($emailsWithNoSaleData)) {
-            $subscribersWithNoSaleData = $emailContactModel
-                ->getSubscribersToImportFromEmails($emailsWithNoSaleData);
+            $subscribersWithNoSaleData = $this->contactCollectionFactory->create()
+                ->getSubscribersToImportFromEmails($emailsWithNoSaleData, $storeId);
         }
         if (! empty($subscribersWithNoSaleData)) {
             $updated += $this->subscriberExporter->exportSubscribers(
@@ -195,7 +195,8 @@ class Subscriber implements SyncInterface
 
         $subscribersWithSaleData = [];
         if (! empty($guestsWithOrders)) {
-            $subscribersWithSaleData = $emailContactModel->getSubscribersToImportFromEmails($guestsWithOrders);
+            $subscribersWithSaleData = $this->contactCollectionFactory->create()
+                ->getSubscribersToImportFromEmails($guestsWithOrders, $storeId);
         }
 
         if (! empty($subscribersWithSaleData)) {
