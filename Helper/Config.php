@@ -76,6 +76,8 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_PATH_CONNECTOR_CUSTOMER_LAST_ORDER_DATE = 'connector_data_mapping/customer_data/last_order_date';
     const XML_PATH_CONNECTOR_CUSTOMER_LAST_ORDER_ID = 'connector_data_mapping/customer_data/last_order_id';
     const XML_PATH_CONNECTOR_CUSTOMER_TOTAL_REFUND = 'connector_data_mapping/customer_data/total_refund';
+    const XML_PATH_CONNECTOR_CUSTOMER_STORE_NAME_ADDITIONAL
+        = 'connector_data_mapping/customer_data/store_name_additional';
     const XML_PATH_CONNECTOR_CUSTOMER_LAST_ORDER_INCREMENT_ID =
         'connector_data_mapping/customer_data/last_increment_id';
     const XML_PATH_CONNECTOR_CUSTOMER_MOST_PURCHASED_CATEGORY =

@@ -676,23 +676,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * Store name datafield.
-     *
-     * @param \Magento\Store\Model\Website $website
-     *
-     * @return boolean|string
-     */
-    public function getMappedStoreName(\Magento\Store\Model\Website $website)
-    {
-        $mapped = $website->getConfig(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_MAPPING_CUSTOMER_STORENAME
-        );
-        $storeName = ($mapped) ? $mapped : '';
-
-        return $storeName;
-    }
-
-    /**
      * Get the contact id for the customer based on website id.
      *
      * @param string $email
