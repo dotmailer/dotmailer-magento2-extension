@@ -87,43 +87,6 @@ class Contact extends \Magento\Framework\Model\AbstractModel
     }
 
     /**
-     * Contact subscribers to import for store.
-     *
-     * @param int $storeId
-     * @param int $limit
-     * @param bool $isCustomerCheck
-     *
-     * @return \Dotdigitalgroup\Email\Model\ResourceModel\Contact\Collection
-     */
-    public function getSubscribersToImport(
-        $storeId,
-        $limit = 1000,
-        $isCustomerCheck = true
-    ) {
-        /** @var \Dotdigitalgroup\Email\Model\ResourceModel\Contact\Collection $collection */
-        $collection = $this->getCollection();
-        return $collection->getSubscribersToImport(
-            $storeId,
-            $limit,
-            $isCustomerCheck
-        );
-    }
-
-    /**
-     * Contact subscribers to import for website.
-     *
-     * @param array $emails
-     *
-     * @return \Dotdigitalgroup\Email\Model\ResourceModel\Contact\Collection
-     */
-    public function getSubscribersToImportFromEmails($emails)
-    {
-        /** @var \Dotdigitalgroup\Email\Model\ResourceModel\Contact\Collection $collection */
-        $collection = $this->getCollection();
-        return $collection->getSubscribersToImportFromEmails($emails);
-    }
-
-    /**
      * Get all not imported guests for a website.
      *
      * @param \Magento\Store\Model\Website $website
