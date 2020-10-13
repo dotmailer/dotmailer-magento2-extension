@@ -310,6 +310,9 @@ class OrderSaveAfter implements \Magento\Framework\Event\ObserverInterface
 
         try {
             $configStatusAutomationMap = $this->serializer->unserialize($orderStatusAutomations);
+            if (!is_array($configStatusAutomationMap)) {
+                return;
+            }
             foreach ($configStatusAutomationMap as $configMap) {
                 if ($configMap['status'] == $status) {
                     //send to automation queue
