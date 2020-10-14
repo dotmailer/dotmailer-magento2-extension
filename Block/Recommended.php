@@ -2,6 +2,9 @@
 
 namespace Dotdigitalgroup\Email\Block;
 
+use Dotdigitalgroup\Email\Model\Product\ImageFinder;
+use Dotdigitalgroup\Email\Model\Product\ImageType\Context\DynamicContent;
+
 /**
  * Recommended  block
  *
@@ -20,21 +23,37 @@ class Recommended extends \Magento\Catalog\Block\Product\AbstractProduct
     private $font;
 
     /**
+     * @var DynamicContent
+     */
+    protected $imageType;
+
+    /**
+     * @var ImageFinder
+     */
+    protected $imageFinder;
+
+    /**
      * Recommended constructor.
      *
      * @param \Magento\Catalog\Block\Product\Context $context
      * @param Helper\Font $font
      * @param \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder
+     * @param DynamicContent $imageType
+     * @param ImageFinder $imageFinder
      * @param array $data
      */
     public function __construct(
         \Magento\Catalog\Block\Product\Context $context,
         \Dotdigitalgroup\Email\Block\Helper\Font $font,
         \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder,
+        DynamicContent $imageType,
+        ImageFinder $imageFinder,
         array $data = []
     ) {
         $this->font = $font;
         $this->urlFinder = $urlFinder;
+        $this->imageType = $imageType;
+        $this->imageFinder = $imageFinder;
         parent::__construct($context, $data);
     }
 
@@ -47,7 +66,9 @@ class Recommended extends \Magento\Catalog\Block\Product\AbstractProduct
     }
 
     /**
-     * Use the UrlFinder to get a product's image URL
+     * Use the ImageFinder to get a product's image URL.
+     * If image types configuration for Dynamic Content is set to 'Default',
+     * we use the id specified in the block (or the fallback product_small_image).
      *
      * @param $product
      * @param string $imageId
@@ -57,7 +78,16 @@ class Recommended extends \Magento\Catalog\Block\Product\AbstractProduct
      */
     public function getProductImageUrl($product, $imageId = 'product_small_image')
     {
-        return $this->urlFinder->getProductImageUrl($product, $imageId);
+        $imageTypeFromConfig = $this->imageType->getImageType(
+            $this->_storeManager->getStore()->getWebsiteId()
+        );
+
+        return $this->imageFinder->getImageUrl(
+            $product,
+            $imageTypeFromConfig['id']
+                ? $imageTypeFromConfig
+                : ['id' => $imageId, 'role' => null]
+        );
     }
 
     /**
@@ -70,18 +100,5 @@ class Recommended extends \Magento\Catalog\Block\Product\AbstractProduct
     public function getConfigurableParentUrl($product)
     {
         return $this->urlFinder->fetchFor($product);
-    }
-
-    /**
-     * Return a product's image URL, if it has one.
-     *
-     * @param \Magento\Catalog\Model\Product $product
-     * @param string $imageId
-     *
-     * @return string
-     */
-    public function getSmallImageUrl($product, $imageId)
-    {
-        return $this->urlFinder->getProductImageUrl($product, $imageId);
     }
 }

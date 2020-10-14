@@ -2,7 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Block;
 
+use Dotdigitalgroup\Email\Model\Product\ImageFinder;
+use Dotdigitalgroup\Email\Model\Product\ImageType\Context\DynamicContent;
 use Magento\Catalog\Model\Product;
+use Magento\Catalog\Api\ProductRepositoryInterface;
 
 /**
  * Basket block
@@ -38,34 +41,45 @@ class Basket extends Recommended
     public $emulationFactory;
 
     /**
+     * @var ProductRepositoryInterface
+     */
+    private $productRepository;
+
+    /**
      * Basket constructor.
      *
      * @param \Magento\Catalog\Block\Product\Context $context
      * @param Helper\Font $font
      * @param \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder
+     * @param DynamicContent $imageType
+     * @param ImageFinder $imageFinder
      * @param \Magento\Store\Model\App\EmulationFactory $emulationFactory
      * @param \Magento\Quote\Model\QuoteFactory $quoteFactory
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Magento\Framework\Pricing\Helper\Data $priceHelper
-     * @param \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder
+     * @param ProductRepositoryInterface $productRepository
      * @param array $data
      */
     public function __construct(
         \Magento\Catalog\Block\Product\Context $context,
         Helper\Font $font,
         \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder,
+        DynamicContent $imageType,
+        ImageFinder $imageFinder,
         \Magento\Store\Model\App\EmulationFactory $emulationFactory,
         \Magento\Quote\Model\QuoteFactory $quoteFactory,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Framework\Pricing\Helper\Data $priceHelper,
+        ProductRepositoryInterface $productRepository,
         array $data = []
     ) {
         $this->quoteFactory     = $quoteFactory;
         $this->helper           = $helper;
         $this->priceHelper      = $priceHelper;
         $this->emulationFactory = $emulationFactory;
+        $this->productRepository = $productRepository;
 
-        parent::__construct($context, $font, $urlFinder, $data);
+        parent::__construct($context, $font, $urlFinder, $imageType, $imageFinder, $data);
     }
 
     /**
@@ -270,6 +284,39 @@ class Basket extends Recommended
     {
         return $this->quote->getStore()->getWebsite()->getConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CONTENT_LINK_TEXT
+        );
+    }
+
+    /**
+     * Use the ImageFinder to get a product's image URL.
+     *
+     * If image types configuration for Basket Dynamic Content is set to 'Default',
+     * we use the id specified in the block (or the fallback product_small_image).
+     *
+     * If a custom image role is selected, but that attribute is not available on the product
+     * loaded from the quote, we must reload the product from the product repository.
+     *
+     * @param $product
+     * @param string $imageId
+     * @return string
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
+    public function getProductImageUrl($product, $imageId = 'product_small_image')
+    {
+        $imageTypeFromConfig = $this->imageType->getImageType(
+            $this->_storeManager->getStore()->getWebsiteId()
+        );
+
+        if (!$product->getData($imageTypeFromConfig['role'])) {
+            $product = $this->productRepository->getById($product->getId());
+        }
+
+        return $this->imageFinder->getImageUrl(
+            $product,
+            $imageTypeFromConfig['id']
+                ? $imageTypeFromConfig
+                : ['id' => $imageId, 'role' => null]
         );
     }
 }

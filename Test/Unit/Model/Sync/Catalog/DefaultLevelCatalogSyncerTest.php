@@ -7,6 +7,7 @@ use Dotdigitalgroup\Email\Model\ResourceModel\Catalog;
 use Dotdigitalgroup\Email\Model\Sync\Catalog\DefaultLevelCatalogSyncer;
 use Dotdigitalgroup\Email\Model\Sync\Catalog\StoreCatalogSyncer;
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Store\Model\App\Emulation;
 use PHPUnit\Framework\TestCase;
 
 class DefaultLevelCatalogSyncerTest extends TestCase
@@ -36,15 +37,23 @@ class DefaultLevelCatalogSyncerTest extends TestCase
      */
     private $resourceCatalogMock;
 
+    /**
+     * @var Emulation
+     */
+    private $appEmulation;
+
     protected function setUp() :void
     {
         $this->helperMock = $this->createMock(Data::class);
         $this->scopeConfigInterfaceMock = $this->createMock(ScopeConfigInterface::class);
         $this->storeCatalogSyncerMock = $this->createMock(StoreCatalogSyncer::class);
         $this->resourceCatalogMock = $this->createMock(Catalog::class);
+        $this->appEmulation = $this->createMock(Emulation::class);
+
         $this->defaultCatalogSyncer = new DefaultLevelCatalogSyncer(
             $this->helperMock,
-            $this->storeCatalogSyncerMock
+            $this->storeCatalogSyncerMock,
+            $this->appEmulation
         );
     }
 

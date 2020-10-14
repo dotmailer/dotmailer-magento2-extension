@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sections xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:noNamespaceSchemaLocation="urn:magento:mftf:Page/etc/SectionObject.xsd">
+    <section name="AdminConfigurationImageTypesSection">
+        <element name="fieldsetToggle" type="button" selector="#connector_configuration_image_types-head"/>
+        <element name="fieldset" type="button" selector="#connector_configuration_image_types"/>
+        <element name="catalogSyncSelect" type="select" selector="#connector_configuration_image_types_catalog_sync" />
+        <element name="abandonedCartSelect" type="select" selector="#connector_configuration_image_types_abandoned_cart" />
+        <element name="abandonedBrowseSelect" type="select" selector="#connector_configuration_image_types_abandoned_browse" />
+        <element name="dynamicContentSelect" type="select" selector="#connector_configuration_image_types_dynamic_content" />
+        <element name="configurationSectionSaveButton" type="button" selector="#save" />
+    </section>
+</sections>

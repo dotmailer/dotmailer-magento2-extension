@@ -2,6 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Model\Sync\Catalog;
 
+use Magento\Framework\App\Area;
 use Magento\Store\Model\App\Emulation;
 
 /**
@@ -62,7 +63,11 @@ class StoreLevelCatalogSyncer implements CatalogSyncerInterface
             }
 
             $storeId = $store->getId();
-            $this->appEmulation->startEnvironmentEmulation($storeId);
+            $this->appEmulation->startEnvironmentEmulation(
+                $storeId,
+                Area::AREA_FRONTEND,
+                true
+            );
 
             $importType = 'Catalog_' . $store->getWebsite()->getCode() . '_' . $store->getCode();
             $syncedProducts += $this->storeCatalogSyncer->syncByStore(

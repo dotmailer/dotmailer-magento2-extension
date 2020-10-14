@@ -129,4 +129,14 @@
             </argument>
         </arguments>
     </type>
+    <virtualType name="smallImageRoleVirtualType" type="Dotdigitalgroup\Email\Model\Config\Configuration\ImageTypes">
+        <arguments>
+            <argument name="imageRole" xsi:type="string">Small</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="thumbnailImageRoleVirtualType" type="Dotdigitalgroup\Email\Model\Config\Configuration\ImageTypes">
+        <arguments>
+            <argument name="imageRole" xsi:type="string">Thumbnail</argument>
+        </arguments>
+    </virtualType>
 </config>

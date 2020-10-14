@@ -2,10 +2,13 @@
 
 namespace Dotdigitalgroup\Email\Model\Connector;
 
+use Dotdigitalgroup\Email\Model\Catalog\UrlFinder;
 use Dotdigitalgroup\Email\Model\Product\AttributeFactory;
+use Dotdigitalgroup\Email\Model\Product\ImageFinder;
+use Dotdigitalgroup\Email\Model\Product\ImageType\Context\CatalogSync;
 use Dotdigitalgroup\Email\Model\Product\ParentFinder;
-use Dotdigitalgroup\Email\Api\TierPriceFinderInterface;
 use Dotdigitalgroup\Email\Api\StockFinderInterface;
+use Dotdigitalgroup\Email\Api\TierPriceFinderInterface;
 
 /**
  * Transactional data for catalog products to sync.
@@ -117,7 +120,7 @@ class Product
     public $visibilityFactory;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\Catalog\UrlFinder
+     * @var UrlFinder
      */
     private $urlFinder;
 
@@ -132,6 +135,11 @@ class Product
     private $parentFinder;
 
     /**
+     * @var ImageFinder
+     */
+    private $imageFinder;
+
+    /**
      * @var TierPriceFinderInterface
      */
     private $tierPriceFinder;
@@ -142,27 +150,36 @@ class Product
     private $stockFinderInterface;
 
     /**
+     * @var CatalogSync
+     */
+    private $imageType;
+
+    /**
      * Product constructor.
      * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Magento\Catalog\Model\Product\Attribute\Source\StatusFactory $statusFactory
      * @param \Magento\Catalog\Model\Product\VisibilityFactory $visibilityFactory
-     * @param \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder
+     * @param UrlFinder $urlFinder
      * @param AttributeFactory $attributeHandler
      * @param ParentFinder $parentFinder
+     * @param ImageFinder $imageFinder
      * @param TierPriceFinderInterface $tierPriceFinder
      * @param StockFinderInterface $stockFinderInterface
+     * @param CatalogSync $imageType
      */
     public function __construct(
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Catalog\Model\Product\Attribute\Source\StatusFactory $statusFactory,
         \Magento\Catalog\Model\Product\VisibilityFactory $visibilityFactory,
-        \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder,
+        UrlFinder $urlFinder,
         AttributeFactory $attributeHandler,
         ParentFinder $parentFinder,
+        ImageFinder $imageFinder,
         TierPriceFinderInterface $tierPriceFinder,
-        StockFinderInterface $stockFinderInterface
+        StockFinderInterface $stockFinderInterface,
+        CatalogSync $imageType
     ) {
         $this->visibilityFactory = $visibilityFactory;
         $this->statusFactory = $statusFactory;
@@ -171,8 +188,10 @@ class Product
         $this->urlFinder = $urlFinder;
         $this->attributeHandler = $attributeHandler;
         $this->parentFinder = $parentFinder;
+        $this->imageFinder = $imageFinder;
         $this->tierPriceFinder = $tierPriceFinder;
         $this->stockFinderInterface = $stockFinderInterface;
+        $this->imageType = $imageType;
     }
 
     /**
@@ -202,7 +221,12 @@ class Product
 
         $this->url = $this->urlFinder->fetchFor($product);
 
-        $this->imagePath = $this->urlFinder->getProductSmallImageUrl($product);
+        $this->imagePath = $this->imageFinder->getImageUrl(
+            $product,
+            $this->imageType->getImageType(
+                $this->storeManager->getStore($storeId)->getWebsiteId()
+            )
+        );
 
         $this->stock = (float)number_format($this->stockFinderInterface->getStockQty($product), 2, '.', '');
 
@@ -245,6 +269,7 @@ class Product
             $this->storeManager,
             $this->attributeHandler,
             $this->parentFinder,
+            $this->imageFinder,
             $this->tierPriceFinder,
             $this->stockFinderInterface
         );

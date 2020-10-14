@@ -1267,6 +1267,31 @@
             <label>Configuration</label>
             <tab>ddg_automation</tab>
             <resource>Dotdigitalgroup_Email::config</resource>
+            <group id="image_types" translate="label comment" type="text" sortOrder="15" showInDefault="1" showInWebsite="1">
+                <label>Image Types</label>
+                <comment><![CDATA[Image types are defined in your theme's view.xml file. <a href="https://support.dotdigital.com/hc/en-gb/articles/360016869019" target="_blank">Learn more about the default image types used by dotdigital</a>.]]></comment>
+                <field id="catalog_sync" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Catalog Sync</label>
+                    <source_model>smallImageRoleVirtualType</source_model>
+                    <backend_model>Dotdigitalgroup\Email\Model\Config\Backend\ImageTypes\ImageRoleProcessor</backend_model>
+                    <comment><![CDATA[Warning: updating this setting will reset your catalog.]]></comment>
+                </field>
+                <field id="abandoned_cart" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Abandoned Cart</label>
+                    <source_model>thumbnailImageRoleVirtualType</source_model>
+                    <backend_model>Dotdigitalgroup\Email\Model\Config\Backend\ImageTypes\ImageRoleProcessor</backend_model>
+                </field>
+                <field id="abandoned_browse" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Abandoned Browse</label>
+                    <source_model>smallImageRoleVirtualType</source_model>
+                    <backend_model>Dotdigitalgroup\Email\Model\Config\Backend\ImageTypes\ImageRoleProcessor</backend_model>
+                </field>
+                <field id="dynamic_content" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Dynamic Content</label>
+                    <source_model>smallImageRoleVirtualType</source_model>
+                    <backend_model>Dotdigitalgroup\Email\Model\Config\Backend\ImageTypes\ImageRoleProcessor</backend_model>
+                </field>
+            </group>
             <group id="data_fields" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1"
                    showInStore="0">
                 <label>Data Fields</label>

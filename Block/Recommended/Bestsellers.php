@@ -2,6 +2,8 @@
 
 namespace Dotdigitalgroup\Email\Block\Recommended;
 
+use Dotdigitalgroup\Email\Model\Product\ImageFinder;
+use Dotdigitalgroup\Email\Model\Product\ImageType\Context\DynamicContent ;
 use Magento\Store\Model\Store;
 
 /**
@@ -32,6 +34,8 @@ class Bestsellers extends \Dotdigitalgroup\Email\Block\Recommended
      * @param \Magento\Catalog\Block\Product\Context $context
      * @param \Dotdigitalgroup\Email\Block\Helper\Font $font
      * @param \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder
+     * @param DynamicContent $imageType
+     * @param ImageFinder $imageFinder
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalog
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Dotdigitalgroup\Email\Helper\Recommended $recommended
@@ -41,6 +45,8 @@ class Bestsellers extends \Dotdigitalgroup\Email\Block\Recommended
         \Magento\Catalog\Block\Product\Context $context,
         \Dotdigitalgroup\Email\Block\Helper\Font $font,
         \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder,
+        DynamicContent $imageType,
+        ImageFinder $imageFinder,
         \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalog,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Dotdigitalgroup\Email\Helper\Recommended $recommended,
@@ -49,7 +55,7 @@ class Bestsellers extends \Dotdigitalgroup\Email\Block\Recommended
         $this->helper             = $helper;
         $this->recommendedHelper  = $recommended;
         $this->catalog            = $catalog;
-        parent::__construct($context, $font, $urlFinder, $data);
+        parent::__construct($context, $font, $urlFinder, $imageType, $imageFinder, $data);
     }
 
     /**

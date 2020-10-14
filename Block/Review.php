@@ -2,6 +2,9 @@
 
 namespace Dotdigitalgroup\Email\Block;
 
+use Dotdigitalgroup\Email\Model\Product\ImageFinder;
+use Dotdigitalgroup\Email\Model\Product\ImageType\Context\DynamicContent;
+
 /**
  * Review block
  *
@@ -40,6 +43,8 @@ class Review extends Recommended
      * @param \Magento\Catalog\Block\Product\Context $context
      * @param Helper\Font $font
      * @param \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder
+     * @param DynamicContent $imageType
+     * @param ImageFinder $imageFinder
      * @param \Magento\Sales\Model\Spi\OrderResourceInterface $orderResource
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Review $review
      * @param \Magento\Sales\Api\Data\OrderInterfaceFactory $orderFactory
@@ -51,6 +56,8 @@ class Review extends Recommended
         \Magento\Catalog\Block\Product\Context $context,
         Helper\Font $font,
         \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder,
+        DynamicContent $imageType,
+        ImageFinder $imageFinder,
         \Magento\Sales\Model\Spi\OrderResourceInterface $orderResource,
         \Dotdigitalgroup\Email\Model\ResourceModel\Review $review,
         \Magento\Sales\Api\Data\OrderInterfaceFactory $orderFactory,
@@ -64,7 +71,7 @@ class Review extends Recommended
         $this->priceHelper       = $priceHelper;
         $this->orderResource     = $orderResource;
 
-        parent::__construct($context, $font, $urlFinder, $data);
+        parent::__construct($context, $font, $urlFinder, $imageType, $imageFinder, $data);
     }
 
     /**

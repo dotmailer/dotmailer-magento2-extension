@@ -3,7 +3,8 @@
 namespace Dotdigitalgroup\Email\Ui\DataProvider;
 
 use Dotdigitalgroup\Email\Helper\Data;
-use Dotdigitalgroup\Email\Model\Catalog\UrlFinder;
+use Dotdigitalgroup\Email\Model\Product\ImageFinder;
+use Dotdigitalgroup\Email\Model\Product\ImageType\Context\AbandonedBrowse;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Api\Data\ProductRenderExtensionFactory;
 use Magento\Catalog\Api\Data\ProductRenderInterface;
@@ -21,11 +22,6 @@ class WebBehaviourTracking implements ProductRenderCollectorInterface
     private $productRenderExtensionFactory;
 
     /**
-     * @var UrlFinder
-     */
-    private $urlFinder;
-
-    /**
      * @var Data
      */
     private $helper;
@@ -41,24 +37,37 @@ class WebBehaviourTracking implements ProductRenderCollectorInterface
     private $categoryCollectionFactory;
 
     /**
+     * @var ImageFinder
+     */
+    private $imageFinder;
+
+    /**
+     * @var AbandonedBrowse
+     */
+    private $imageType;
+
+    /**
      * @param ProductRenderExtensionFactory $productRenderExtensionFactory
-     * @param UrlFinder $urlFinder
      * @param Data $helper
      * @param StoreManagerInterface $storeManager
      * @param CollectionFactory $categoryCollectionFactory
+     * @param AbandonedBrowse $imageType
+     * @param ImageFinder $imageFinder
      */
     public function __construct(
         ProductRenderExtensionFactory $productRenderExtensionFactory,
-        UrlFinder $urlFinder,
         Data $helper,
         StoreManagerInterface $storeManager,
-        CollectionFactory $categoryCollectionFactory
+        CollectionFactory $categoryCollectionFactory,
+        AbandonedBrowse $imageType,
+        ImageFinder $imageFinder
     ) {
         $this->productRenderExtensionFactory = $productRenderExtensionFactory;
-        $this->urlFinder = $urlFinder;
         $this->helper = $helper;
         $this->storeManager = $storeManager;
         $this->categoryCollectionFactory = $categoryCollectionFactory;
+        $this->imageType = $imageType;
+        $this->imageFinder = $imageFinder;
     }
 
     /**
@@ -104,7 +113,12 @@ class WebBehaviourTracking implements ProductRenderCollectorInterface
     private function getProductImage(ProductInterface $product)
     {
         try {
-            return $this->urlFinder->getProductImageUrl($product, 'product_small_image');
+            return $this->imageFinder->getImageUrl(
+                $product,
+                $this->imageType->getImageType(
+                    $this->storeManager->getStore()->getWebsiteId()
+                )
+            );
         } catch (\Exception $e) {
             return null;
         }
