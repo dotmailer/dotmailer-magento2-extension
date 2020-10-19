@@ -45,7 +45,7 @@ class Serialized extends \Magento\Framework\App\Config\Value
     {
         $value = $this->getValue();
         if (!is_array($value)) {
-            $this->setValue(empty($value) ? false : $this->serializer->unserialize($value));
+            $this->setValue(empty($value) ? false : $this->unserializeMethod($value));
         }
     }
 
@@ -55,9 +55,37 @@ class Serialized extends \Magento\Framework\App\Config\Value
     public function beforeSave()
     {
         if (is_array($this->getValue())) {
-            $this->setValue($this->serializer->serialize($this->getValue()));
+            $this->setValue($this->serializeMethod($this->getValue()));
         }
         parent::beforeSave();
         return $this;
+    }
+
+    /**
+     * @param $value
+     * @return array|string
+     */
+    private function unserializeMethod($value)
+    {
+        try {
+            return $this->serializer->unserialize($value);
+        } catch (\InvalidArgumentException $e) {
+            $this->_logger->debug((string) $e);
+            return [];
+        }
+    }
+
+    /**
+     * @param array $value
+     * @return bool|string
+     */
+    private function serializeMethod($value)
+    {
+        try {
+            return $this->serializer->serialize($value);
+        } catch (\InvalidArgumentException $e) {
+            $this->_logger->debug((string) $e);
+            return '';
+        }
     }
 }
