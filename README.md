@@ -19,6 +19,18 @@ You are welcome to contribute to Engagement Cloud for Magento! You can either:
 - Fix a bug: please clone and use our [Develop branch](https://github.com/dotmailer/dotmailer-magento2-extension/tree/develop) to submit your Pull Request
 - Request a feature on our [roadmap](https://roadmap.dotdigital.com)
 
+# 4.10.0-RC1
+
+###### What's new
+- We have a new feature that enables merchants to choose which image size they prefer to use for different contexts in Magento. Configurable via **Stores > Configuration > dotdigital > Configuration > Image Types**.
+
+###### Improvements
+- We’ve added the `email_coupon_attribute` table to the list of tables to drop in the module’s `Uninstall` class.
+- We added a new MFTF test to check the Swagger API page, in case our code had caused it to break.
+
+###### Bug fixes
+- We made a small change to improve our error handling when retrieving lists of programs from Engagement Cloud.
+
 # 4.9.1
 
 ###### Bug fixes
