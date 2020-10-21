@@ -19,6 +19,15 @@ You are welcome to contribute to Engagement Cloud for Magento! You can either:
 - Fix a bug: please clone and use our [Develop branch](https://github.com/dotmailer/dotmailer-magento2-extension/tree/develop) to submit your Pull Request
 - Request a feature on our [roadmap](https://roadmap.dotdigital.com)
 
+# 4.9.1
+
+###### Bug fixes
+- The value synced in the store name column in guest sync is now the store view name instead of the website name. We are now syncing website name, store name and store view name in guest sync - all with the correct values.
+- We fixed a problem that prevented contacts subscribing to multiple stores in the same subscriber sync.
+- We added an array check before looping over order status automations after an order is saved.
+- We adjusted the module's dependency on `magento/module-authorization`; this fixes composer upgrades for merchants on Magento 2.4.
+- We’ve added try/catch to methods in the `Serialized` backend model. This swallows exceptions thrown by unreadable data stored for any field in our configuration that stores data in JSON format.  
+
 # 4.9.0
 
 ###### What’s new
