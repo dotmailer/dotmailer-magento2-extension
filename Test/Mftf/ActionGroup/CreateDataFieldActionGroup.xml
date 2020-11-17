@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<actionGroups xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/actionGroupSchema.xsd">
+    <actionGroup name="CreateDataField">
+        <arguments>
+            <argument name="dataFieldName" defaultValue="CHAZ_FIELD" type="string"/>
+        </arguments>
+        <scrollTo selector="{{AdminDotdigitalDataMappingSection.createDataFieldHeader}}" stepKey="scrollToHeader"/>
+        <conditionalClick selector="{{AdminDotdigitalDataMappingSection.createDataFieldHeader}}" dependentSelector="{{AdminDotdigitalDataMappingSection.createDataFieldFieldset}}" visible="false" stepKey="clickToExpandActions"/>
+        <fillField selector="{{AdminDotdigitalDataMappingSection.dataFieldName}}" userInput="{{dataFieldName}}" stepKey="setDataFieldName"/>
+        <click selector="{{AdminDotdigitalDataMappingSection.createNewDataField}}" stepKey="clickCreateNewDataFieldButton" />
+        <waitForPageLoad stepKey="waitForPageLoad"/>
+        <see userInput="Data field successfully created." selector="div[data-ui-id='messages-message-success']" stepKey="seeSuccessMessage"/>
+    </actionGroup>
+</actionGroups>

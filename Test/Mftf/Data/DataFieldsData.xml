@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<entities xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:noNamespaceSchemaLocation="urn:magento:mftf:DataGenerator/etc/dataProfileSchema.xsd">
+    <entity name="DataFields">
+        <data key="dataFieldName" unique="suffix">chaz</data>
+        <data key="customerIdDataField">CUSTOMER_ID</data>
+    </entity>
+</entities>
