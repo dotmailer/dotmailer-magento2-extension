@@ -2,23 +2,12 @@
 
 <actionGroups xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
               xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/actionGroupSchema.xsd">
-    <actionGroup name="DotAdminCreateCartPriceRuleActionGroup">
-        <arguments>
-            <argument name="ruleName"/>
-        </arguments>
-        <amOnPage url="{{AdminCartPriceRulesPage.url}}" stepKey="amOnCartPriceList"/>
-        <waitForPageLoad stepKey="waitForPriceList"/>
-        <click selector="{{AdminCartPriceRulesSection.addNewRuleButton}}" stepKey="clickAddNewRule"/>
-        <fillField selector="{{AdminCartPriceRulesFormSection.ruleName}}" userInput="{{ruleName.name}}" stepKey="fillRuleName"/>
-        <selectOption selector="{{AdminCartPriceRulesFormSection.websites}}" userInput="{{ruleName.websites}}" stepKey="selectWebsites"/>
-        <selectOption selector="{{AdminCartPriceRulesFormSection.customerGroups}}" parameterArray="[{{ruleName.customerGroups}}]" stepKey="selectCustomerGroup"/>
-        <selectOption selector="{{AdminCartPriceRulesFormSection.coupon}}" parameterArray="[{{ruleName.coupon}}]" stepKey="selectCouponType"/>
-        <checkOption selector="{{AdminCartPriceRulesFormSection.useAutoGeneration}}" stepKey="checkUseAutoGeneration"/>
-        <click selector="{{AdminCartPriceRulesFormSection.actionsHeader}}" stepKey="clickToExpandActions"/>
-        <selectOption selector="{{AdminCartPriceRulesFormSection.apply}}" userInput="{{ruleName.apply}}" stepKey="selectActionType"/>
-        <fillField selector="{{AdminCartPriceRulesFormSection.discountAmount}}" userInput="{{ruleName.discountAmount}}" stepKey="fillDiscountAmount"/>
-        <click selector="{{AdminCartPriceRulesFormSection.save}}" stepKey="clickSaveButton"/>
-        <see selector="{{AdminCartPriceRulesFormSection.successMessage}}" userInput="You saved the rule." stepKey="seeSuccessMessage"/>
+    <actionGroup name="DotAdminCreateCartPriceRuleActionGroup" extends="AdminCreateCartPriceRuleActionGroup">
+        <annotations>
+            <description>Extends the core action group by adding two extra steps. Note that AdminCreateCartPriceRuleActionGroup has custom behaviour in B2B mode.</description>
+        </annotations>
+        <selectOption selector="{{AdminCartPriceRulesFormSection.coupon}}" userInput="{{ruleName.coupon}}" stepKey="selectCouponType" after="selectWebsites"/>
+        <checkOption selector="{{AdminCartPriceRulesFormSection.useAutoGeneration}}" stepKey="checkUseAutoGeneration" after="selectCouponType"/>
     </actionGroup>
 </actionGroups>
 
