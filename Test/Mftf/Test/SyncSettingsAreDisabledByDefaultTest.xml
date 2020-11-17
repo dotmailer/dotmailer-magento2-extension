@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <tests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
-    <test name="DataMappingSettingsAreNotSetByDefaultTest">
+    <test name="SyncSettingsAreDisabledByDefaultTest">
         <annotations>
             <features value="Engagement Cloud module"/>
             <stories value="Configure sync settings"/>
@@ -23,6 +23,13 @@
         <amOnPage url="{{AdminDotdigitalSyncSettingsPage.url}}" stepKey="amOnDotdigitalSyncSettingsPage"/>
         <waitForPageLoad stepKey="waitForPageLoad"/>
 
+        <!-- Check Address Book Mapping -->
+        <seeOptionIsSelected selector="{{AdminDotdigitalSyncSettingsSection.allowNonSubscribers}}" userInput="No" stepKey="seeAllowNonSubscribersIsNo"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalSyncSettingsSection.addCustomersTo}}" userInput="-- Please Select --" stepKey="seeCustomersAddressBookIsNotSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalSyncSettingsSection.addSubscribersTo}}" userInput="-- Please Select --" stepKey="seeSubscribersAddressBookIsNotSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalSyncSettingsSection.addGuestsTo}}" userInput="-- Please Select --" stepKey="seeGuestsAddressBookIsNotSet"/>
+
+        <!-- Check Sync -->
         <seeOptionIsSelected selector="{{AdminDotdigitalSyncSettingsSection.customerEnabled}}" userInput="No" stepKey="seeCustomerEnabledIsNo"/>
         <seeOptionIsSelected selector="{{AdminDotdigitalSyncSettingsSection.guestEnabled}}" userInput="No" stepKey="seeGuestEnabledIsNo"/>
         <seeOptionIsSelected selector="{{AdminDotdigitalSyncSettingsSection.subscriberEnabled}}" userInput="No" stepKey="seeSubscriberEnabledIsNo"/>

@@ -3,6 +3,7 @@
 <sections xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:noNamespaceSchemaLocation="urn:magento:mftf:Page/etc/SectionObject.xsd">
     <section name="AdminDotdigitalSyncSettingsSection">
+        <element name="allowNonSubscribers" type="select" selector="#sync_settings_addressbook_allow_non_subscribers"/>
         <element name="addCustomersTo" type="select" selector="#sync_settings_addressbook_customers"/>
         <element name="addSubscribersTo" type="select" selector="#sync_settings_addressbook_subscribers"/>
         <element name="addGuestsTo" type="select" selector="#sync_settings_addressbook_guests"/>
