@@ -1029,7 +1029,7 @@
             <resource>Dotdigitalgroup_Email::config</resource>
             <group id="ddg_transactional" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1"
                    showInStore="1">
-                <label>DDG Transactional</label>
+                <label>Transactional Email Settings</label>
                 <field id="enabled" translate="label" sortOrder="10" type="select" showInStore="1" showInWebsite="1"
                        showInDefault="1">
                     <label>Enabled</label>
@@ -1066,14 +1066,9 @@
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
             </group>
-        </section>
-        <section id="dotmailer_email_templates" translate="label" sortOrder="195" showInStore="1" showInWebsite="1" showInDefault="1">
-            <class>separator-top</class>
-            <label>Email Templates</label>
-            <tab>ddg_automation</tab>
-            <resource>Dotdigitalgroup_Email::config</resource>
             <group id="email_templates" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Email Templates</label>
+                <attribute type="expanded">1</attribute>
                 <field id="customer_title" translate="label" sortOrder="10" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Customer</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>

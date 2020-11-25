@@ -2,8 +2,8 @@
 
 namespace Dotdigitalgroup\Email\Model;
 
+use Dotdigitalgroup\Email\Model\Cron\JobChecker;
 use Dotdigitalgroup\Email\Model\Sync\IntegrationInsightsFactory;
-use Dotdigitalgroup\Email\Setup\SchemaInterface as Schema;
 
 class Cron
 {
@@ -58,21 +58,6 @@ class Cron
     private $campaignFactory;
 
     /**
-     * @var \Dotdigitalgroup\Email\Helper\File
-     */
-    private $fileHelper;
-
-    /**
-     * @var ResourceModel\Importer
-     */
-    private $importerResource;
-
-    /**
-     * @var ResourceModel\Cron\CollectionFactory
-     */
-    private $cronCollection;
-
-    /**
      * @var Cron\CronSub
      */
     private $cronHelper;
@@ -93,6 +78,11 @@ class Cron
     private $monitor;
 
     /**
+     * @var JobChecker
+     */
+    private $jobChecker;
+
+    /**
      * Cron constructor.
      *
      * @param Sync\CampaignFactory $campaignFactory
@@ -104,14 +94,12 @@ class Cron
      * @param Sync\ImporterFactory $importerFactory
      * @param Sync\AutomationFactory $automationFactory
      * @param Apiconnector\ContactFactory $contact
-     * @param \Dotdigitalgroup\Email\Helper\File $fileHelper
-     * @param ResourceModel\Importer $importerResource
      * @param Email\TemplateFactory $templateFactory
-     * @param ResourceModel\Cron\CollectionFactory $cronCollection
      * @param Cron\CronSubFactory $cronSubFactory
      * @param AbandonedCart\ProgramEnrolment\Enroller $abandonedCartProgramEnroller
      * @param IntegrationInsightsFactory $integrationInsightsFactory
      * @param MonitorFactory $monitorFactory
+     * @param JobChecker $jobChecker
      */
     public function __construct(
         Sync\CampaignFactory $campaignFactory,
@@ -123,14 +111,12 @@ class Cron
         Sync\ImporterFactory $importerFactory,
         Sync\AutomationFactory $automationFactory,
         Apiconnector\ContactFactory $contact,
-        \Dotdigitalgroup\Email\Helper\File $fileHelper,
-        ResourceModel\Importer $importerResource,
         Email\TemplateFactory $templateFactory,
-        ResourceModel\Cron\CollectionFactory $cronCollection,
         Cron\CronSubFactory $cronSubFactory,
         AbandonedCart\ProgramEnrolment\Enroller $abandonedCartProgramEnroller,
         IntegrationInsightsFactory $integrationInsightsFactory,
-        MonitorFactory $monitorFactory
+        MonitorFactory $monitorFactory,
+        JobChecker $jobChecker
     ) {
         $this->campaignFactory   = $campaignFactory;
         $this->syncOrderFactory  = $syncOrderFactory;
@@ -141,14 +127,12 @@ class Cron
         $this->importerFactory   = $importerFactory;
         $this->automationFactory = $automationFactory;
         $this->contactFactory    = $contact;
-        $this->fileHelper        = $fileHelper;
-        $this->importerResource  = $importerResource;
-        $this->cronCollection    = $cronCollection;
         $this->templateFactory   = $templateFactory;
         $this->cronHelper        = $cronSubFactory->create();
         $this->abandonedCartProgramEnroller = $abandonedCartProgramEnroller;
         $this->integrationInsights = $integrationInsightsFactory;
         $this->monitor = $monitorFactory;
+        $this->jobChecker = $jobChecker;
     }
 
     /**
@@ -157,7 +141,7 @@ class Cron
      */
     public function contactSync()
     {
-        if ($this->jobHasAlreadyBeenRun('ddg_automation_customer_subscriber_guest_sync')) {
+        if ($this->jobChecker->hasAlreadyBeenRun('ddg_automation_customer_subscriber_guest_sync')) {
             return;
         }
 
@@ -197,7 +181,7 @@ class Cron
      */
     public function catalogSync()
     {
-        if ($this->jobHasAlreadyBeenRun('ddg_automation_catalog_sync')) {
+        if ($this->jobChecker->hasAlreadyBeenRun('ddg_automation_catalog_sync')) {
             return;
         }
 
@@ -213,7 +197,7 @@ class Cron
      */
     public function emailImporter()
     {
-        if ($this->jobHasAlreadyBeenRun('ddg_automation_importer')) {
+        if ($this->jobChecker->hasAlreadyBeenRun('ddg_automation_importer')) {
             return;
         }
 
@@ -226,7 +210,7 @@ class Cron
      */
     public function sendIntegrationInsights()
     {
-        if ($this->jobHasAlreadyBeenRun('ddg_automation_integration_insights')) {
+        if ($this->jobChecker->hasAlreadyBeenRun('ddg_automation_integration_insights')) {
             return;
         }
 
@@ -241,7 +225,7 @@ class Cron
      */
     public function reviewsAndWishlist()
     {
-        if ($this->jobHasAlreadyBeenRun('ddg_automation_reviews_and_wishlist')) {
+        if ($this->jobChecker->hasAlreadyBeenRun('ddg_automation_reviews_and_wishlist')) {
             return;
         }
 
@@ -266,7 +250,7 @@ class Cron
      */
     public function abandonedCarts()
     {
-        if ($this->jobHasAlreadyBeenRun('ddg_automation_abandonedcarts')) {
+        if ($this->jobChecker->hasAlreadyBeenRun('ddg_automation_abandonedcarts')) {
             return;
         }
 
@@ -282,7 +266,7 @@ class Cron
      */
     public function syncAutomation()
     {
-        if ($this->jobHasAlreadyBeenRun('ddg_automation_status')) {
+        if ($this->jobChecker->hasAlreadyBeenRun('ddg_automation_status')) {
             return;
         }
 
@@ -297,7 +281,7 @@ class Cron
      */
     public function sendCampaigns()
     {
-        if ($this->jobHasAlreadyBeenRun('ddg_automation_campaign')) {
+        if ($this->jobChecker->hasAlreadyBeenRun('ddg_automation_campaign')) {
             return;
         }
 
@@ -310,7 +294,7 @@ class Cron
      */
     public function orderSync()
     {
-        if ($this->jobHasAlreadyBeenRun('ddg_automation_order_sync')) {
+        if ($this->jobChecker->hasAlreadyBeenRun('ddg_automation_order_sync')) {
             return;
         }
 
@@ -320,61 +304,11 @@ class Cron
     }
 
     /**
-     * Cleaning for csv files and connector tables.
-     */
-    public function cleaning()
-    {
-        if ($this->jobHasAlreadyBeenRun('ddg_automation_cleaner')) {
-            return;
-        }
-
-        //Clean tables
-        $tables = [
-            'automation' => Schema::EMAIL_AUTOMATION_TABLE,
-            'importer' => Schema::EMAIL_IMPORTER_TABLE,
-            'campaign' => Schema::EMAIL_CAMPAIGN_TABLE,
-        ];
-        $message = 'Cleaning cron job result :';
-
-        foreach ($tables as $key => $table) {
-            $this->importerResource->cleanup($table);
-        }
-
-        $archivedFolder = $this->fileHelper->getArchiveFolder();
-        $this->fileHelper->deleteDir($archivedFolder);
-    }
-
-    /**
-     * Check if already ran for same time
-     *
-     * @param string $jobCode
-     * @return bool
-     */
-    private function jobHasAlreadyBeenRun($jobCode)
-    {
-        $currentRunningJob = $this->cronCollection->create()
-            ->addFieldToFilter('job_code', $jobCode)
-            ->addFieldToFilter('status', 'running')
-            ->setPageSize(1);
-
-        if ($currentRunningJob->getSize()) {
-            $jobOfSameTypeAndScheduledAtDateAlreadyExecuted =  $this->cronCollection->create()
-                ->addFieldToFilter('job_code', $jobCode)
-                ->addFieldToFilter('scheduled_at', $currentRunningJob->getFirstItem()->getScheduledAt())
-                ->addFieldToFilter('status', ['in' => ['success', 'failed']]);
-
-            return ($jobOfSameTypeAndScheduledAtDateAlreadyExecuted->getSize()) ? true : false;
-        }
-
-        return false;
-    }
-
-    /**
      * @return void
      */
     public function syncEmailTemplates()
     {
-        if ($this->jobHasAlreadyBeenRun('ddg_automation_email_templates')) {
+        if ($this->jobChecker->hasAlreadyBeenRun('ddg_automation_email_templates')) {
             return;
         }
 
@@ -387,7 +321,7 @@ class Cron
      */
     public function monitor()
     {
-        if ($this->jobHasAlreadyBeenRun('ddg_automation_monitor')) {
+        if ($this->jobChecker->hasAlreadyBeenRun('ddg_automation_monitor')) {
             return;
         }
 

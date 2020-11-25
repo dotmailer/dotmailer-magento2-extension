@@ -104,6 +104,7 @@
                 <item name="importer_syncs" xsi:type="object">Dotdigitalgroup\Email\Console\Command\ImporterSyncsCommand</item>
                 <item name="enable_connector" xsi:type="object">Dotdigitalgroup\Email\Console\Command\EnableConnectorCommand</item>
                 <item name="automap_datafields" xsi:type="object">Dotdigitalgroup\Email\Console\Command\AutoMapDataFieldsCommand</item>
+                <item name="task_runner" xsi:type="object">Dotdigitalgroup\Email\Console\Command\TaskRunnerCommand</item>
             </argument>
         </arguments>
     </type>
