@@ -7,7 +7,7 @@
             <stories value="dotdigital Coupon URL Builder"/>
             <title value="Disable the URL Builder if the Engagement Cloud account is not active"/>
             <description value="The coupon URL builder form fields should be disabled, and warning text displayed."/>
-            <severity value="AVERAGE"/>
+            <severity value="MINOR"/>
             <group value="dotdigitalCoupon"/>
             <group value="dotmailer"/>
         </annotations>

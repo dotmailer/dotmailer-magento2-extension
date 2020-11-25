@@ -7,7 +7,7 @@
             <stories value="Test dotdigital image types settings"/>
             <title value="Test images types settings page"/>
             <description value="The dotdigital image types section can be viewed, and values stored."/>
-            <severity value="AVERAGE"/>
+            <severity value="MINOR"/>
             <group value="dotmailer"/>
         </annotations>
 

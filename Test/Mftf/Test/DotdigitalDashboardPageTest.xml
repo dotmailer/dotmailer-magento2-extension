@@ -7,7 +7,7 @@
             <stories value="Dashboard Page Test"/>
             <title value="Dashboard Page Test"/>
             <description value="The dotdigital Dashboard can be viewed."/>
-            <severity value="MAJOR"/>
+            <severity value="MINOR"/>
             <group value="FS/106771-mftf"/>
             <group value="dotmailer"/>
         </annotations>

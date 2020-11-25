@@ -7,7 +7,7 @@
             <stories value="Test dotdigital report grids"/>
             <title value="Test Campaign Status Grid"/>
             <description value="The dotdigital Campaign report can be viewed, filtered and sorted."/>
-            <severity value="MAJOR"/>
+            <severity value="MINOR"/>
             <group value="FS/106771-mftf"/>
             <group value="dotmailer"/>
         </annotations>
