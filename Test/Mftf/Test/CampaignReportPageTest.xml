@@ -47,23 +47,21 @@
         <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeaderDesc('Email')}}" stepKey="checkIfEmailDesc"/>
 
         <!-- Filtering -->
-        <actionGroup ref="FilterCampaign" stepKey="validateFilters"/>
+        <actionGroup ref="FilterReport" stepKey="validateFilters"/>
         <!--   Indicates that filter is on     -->
         <seeElementInDOM selector="div.admin__data-grid-filters-current" stepKey="seeFilterIsOn"/>
 
-
         <actionGroup ref="ClearAndNavigateFilterFields" stepKey="validateFilterFields"/>
-        <seeElement selector="{{AdminCampaignFilterFieldsSection.campaignEmailFilter}}" stepKey="seeEmailFilter"/>
-        <seeElement selector="{{AdminCampaignFilterFieldsSection.campaignId}}" stepKey="seeCampaignIdFilter"/>
-        <seeElement selector="{{AdminCampaignFilterFieldsSection.campaignCustomerIdFilter}}" stepKey="seeCustomerFilter"/>
-        <seeElement selector="{{AdminCampaignFilterFieldsSection.campaignOrderIncrementId}}" stepKey="seeOrderIncrementIdFilter"/>
-        <seeElement selector="{{AdminCampaignFilterFieldsSection.campaignQuoteId}}" stepKey="seeQuoteIdFilter"/>
-        <seeElement selector="{{AdminCampaignFilterFieldsSection.campaignEventName}}" stepKey="seeEventNameFilter"/>
-        <seeElement selector="{{AdminCampaignFilterFieldsSection.campaignMessage}}" stepKey="seeMessageFilter"/>
-        <seeElement selector="{{AdminCampaignFilterFieldsSection.campaignCheckoutMethod}}" stepKey="seeCheckoutMethodFilter"/>
-        <seeElement selector="{{AdminCampaignFilterFieldsSection.campaignSendId}}" stepKey="seeSendIdFilter"/>
-        <seeElement selector="{{AdminCampaignFilterFieldsSection.campaignSendStatus}}" stepKey="seeSendStatusFilter"/>
-        <seeElement selector="{{AdminCampaignFilterFieldsSection.campaignStoreId}}" stepKey="seeStoreIdFilter"/>
-
+        <seeElement selector="{{AdminFilterFieldsSection.filterInput('email')}}" stepKey="seeEmailFilter"/>
+        <seeElement selector="{{AdminFilterFieldsSection.filterInput('campaign_id')}}" stepKey="seeCampaignIdFilter"/>
+        <seeElement selector="{{AdminFilterFieldsSection.filterInput('customer_id')}}" stepKey="seeCustomerFilter"/>
+        <seeElement selector="{{AdminFilterFieldsSection.filterInput('order_increment_id')}}" stepKey="seeOrderIncrementIdFilter"/>
+        <seeElement selector="{{AdminFilterFieldsSection.filterInput('quote_id')}}" stepKey="seeQuoteIdFilter"/>
+        <seeElement selector="{{AdminFilterFieldsSection.filterInput('event_name')}}" stepKey="seeEventNameFilter"/>
+        <seeElement selector="{{AdminFilterFieldsSection.filterInput('message')}}" stepKey="seeMessageFilter"/>
+        <seeElement selector="{{AdminFilterFieldsSection.filterInput('checkout_method')}}" stepKey="seeCheckoutMethodFilter"/>
+        <seeElement selector="{{AdminFilterFieldsSection.filterInput('send_id')}}" stepKey="seeSendIdFilter"/>
+        <seeElement selector="{{AdminFilterFieldsSection.filterSelect('send_status')}}" stepKey="seeSendStatusFilter"/>
+        <seeElement selector="{{AdminFilterFieldsSection.filterInput('store_id')}}" stepKey="seeStoreIdFilter"/>
     </test>
 </tests>

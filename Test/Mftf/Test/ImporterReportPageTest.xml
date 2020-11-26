@@ -42,18 +42,19 @@
         <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeaderDesc('Import Type')}}" stepKey="checkIfImportDesc"/>
 
         <!-- Filtering -->
-        <actionGroup ref="FilterImporter" stepKey="validateFilters"/>
+        <actionGroup ref="FilterReport" stepKey="validateFilters">
+            <argument name="inputName" value="import_type"/>
+            <argument name="inputValue" value="Bulk"/>
+        </actionGroup>
         <!--   Indicates that filter is on     -->
         <seeElementInDOM selector="div.admin__data-grid-filters-current" stepKey="seeFilterIsOn"/>
 
-
         <actionGroup ref="ClearAndNavigateFilterFields" stepKey="validateFilterFields"/>
-        <seeElement selector="{{AdminImporterFilterFieldsSection.importIdFilter}}" stepKey="seeImportIdFilter"/>
-        <seeElement selector="{{AdminImporterFilterFieldsSection.importTypeFilter}}" stepKey="seeImportTypeFilter"/>
-        <seeElement selector="{{AdminImporterFilterFieldsSection.importModeFilter}}" stepKey="seeImportModeFilter"/>
-        <seeElement selector="{{AdminImporterFilterFieldsSection.importStatusFilter}}" stepKey="seeImportStatusFilter"/>
-        <seeElement selector="{{AdminImporterFilterFieldsSection.messageFilter}}" stepKey="seeMessageFilter"/>
-        <seeElement selector="{{AdminImporterFilterFieldsSection.websiteFilter}}" stepKey="seeWebsiteFilter"/>
-
+        <seeElement selector="{{AdminFilterFieldsSection.filterInput('import_id')}}" stepKey="seeImportIdFilter"/>
+        <seeElement selector="{{AdminFilterFieldsSection.filterInput('import_type')}}" stepKey="seeImportTypeFilter"/>
+        <seeElement selector="{{AdminFilterFieldsSection.filterSelect('import_mode')}}" stepKey="seeImportModeFilter"/>
+        <seeElement selector="{{AdminFilterFieldsSection.filterSelect('import_status')}}" stepKey="seeImportStatusFilter"/>
+        <seeElement selector="{{AdminFilterFieldsSection.filterInput('message')}}" stepKey="seeMessageFilter"/>
+        <seeElement selector="{{AdminFilterFieldsSection.filterSelect('website_id')}}" stepKey="seeWebsiteFilter"/>
     </test>
 </tests>
