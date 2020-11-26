@@ -171,7 +171,6 @@ class UpgradeData implements UpgradeDataInterface
         $this->upgradeFourFourZero($setup, $context);
         $this->upgradeFourFiveTwo($context);
         $this->upgradeFourFiveThree($context);
-        $this->upgradeFourTenZero($setup, $context);
         $installer->endSetup();
     }
 
@@ -427,36 +426,6 @@ class UpgradeData implements UpgradeDataInterface
             $this->dummyRecordsFactory
                 ->create()
                 ->sync();
-        }
-    }
-
-    /**
-     * @param ModuleDataSetupInterface $setup
-     * @param ModuleContextInterface $context
-     */
-    private function upgradeFourTenZero(
-        ModuleDataSetupInterface $setup,
-        ModuleContextInterface $context
-    ) {
-        if (version_compare($context->getVersion(), '4.10.0', '<')) {
-            $connection = $setup->getConnection();
-            $coreConfigTable = $setup->getTable('core_config_data');
-            $select = $connection->select()->from(
-                $coreConfigTable,
-                ['config_id', 'path']
-            )->where(
-                'path LIKE ?',
-                '%dotmailer_email_templates%'
-            );
-
-            foreach ($connection->fetchAll($select) as $configRow) {
-                $updatedPath = str_replace('dotmailer_email_templates', 'transactional_emails', $configRow['path']);
-                $setup->getConnection()->update(
-                    $coreConfigTable,
-                    ['path' => $updatedPath],
-                    ['config_id = ?' => $configRow['config_id']]
-                );
-            }
         }
     }
 }
