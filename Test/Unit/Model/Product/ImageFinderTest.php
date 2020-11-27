@@ -2,6 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Test\Unit\Model\Product;
 
+use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Catalog\UrlFinder;
 use Dotdigitalgroup\Email\Model\Product\ImageFinder;
 use Dotdigitalgroup\Email\Model\Product\ParentFinder;
@@ -67,6 +68,11 @@ class ImageFinderTest extends TestCase
      */
     private $imageFinder;
 
+    /**
+     * @var Logger|\PHPUnit\Framework\MockObject\MockObject
+     */
+    private $loggerMock;
+
     protected function setUp() :void
     {
         $this->urlFinderMock = $this->createMock(UrlFinder::class);
@@ -81,6 +87,7 @@ class ImageFinderTest extends TestCase
             ->setMethods(['create'])
             ->getMock();
         $this->imageHelperMock = $this->createMock(Image::class);
+        $this->loggerMock = $this->createMock(Logger::class);
 
         $this->imageFinder = new ImageFinder(
             $this->urlFinderMock,
@@ -88,7 +95,8 @@ class ImageFinderTest extends TestCase
             $this->productRepositoryMock,
             $this->scopeConfigMock,
             $this->mediaConfigFactoryMock,
-            $this->imageHelperMock
+            $this->imageHelperMock,
+            $this->loggerMock
         );
     }
 
@@ -102,11 +110,15 @@ class ImageFinderTest extends TestCase
             'role' => 'thumbnail'
         ];
 
+        $this->itemMock->expects($this->once())
+            ->method('getProductType')
+            ->willReturn('configurable');
+
         $this->scopeConfigMock->expects($this->once())
             ->method('getValue')
             ->willReturn($configurableProductImage);
 
-        $this->itemMock->expects($this->exactly(2))
+        $this->itemMock->expects($this->once())
             ->method('getProduct')
             ->willReturn($this->productMock);
 
@@ -137,13 +149,100 @@ class ImageFinderTest extends TestCase
             'role' => 'thumbnail'
         ];
 
+        $this->itemMock->expects($this->once())
+            ->method('getProductType')
+            ->willReturn('configurable');
+
         $this->scopeConfigMock->expects($this->once())
             ->method('getValue')
             ->willReturn($configurableProductImage);
 
+        $this->itemMock->expects($this->atLeastOnce())
+            ->method('getProduct')
+            ->willReturn($this->productMock);
+
+        $this->productRepositoryMock->expects($this->once())
+            ->method('getById')
+            ->willReturn($this->productMock);
+
+        $this->loadImageByRole($path, $settings);
+
+        $this->imageFinder->getCartImageUrl(
+            $this->itemMock,
+            $storeId,
+            $settings
+        );
+    }
+
+    public function testGetCartImageUrlIfGroupedProductImageIsItself()
+    {
+        $groupedProductImage = 'itself';
+        $storeId = 1;
+        $path = '/c/d/chaz.jpg';
+        $settings = [
+            'id' => null,
+            'role' => 'thumbnail'
+        ];
+
+        $this->itemMock->expects($this->once())
+            ->method('getProductType')
+            ->willReturn('grouped');
+
+        $this->scopeConfigMock->expects($this->once())
+            ->method('getValue')
+            ->willReturn($groupedProductImage);
+
         $this->itemMock->expects($this->once())
             ->method('getProduct')
             ->willReturn($this->productMock);
+
+        $this->productMock->expects($this->once())
+            ->method('getId')
+            ->willReturn(1);
+
+        $this->productRepositoryMock->expects($this->once())
+            ->method('getById')
+            ->willReturn($this->productMock);
+
+        $this->loadImageByRole($path, $settings);
+
+        $this->imageFinder->getCartImageUrl(
+            $this->itemMock,
+            $storeId,
+            $settings
+        );
+    }
+
+    public function testGetCartImageUrlIfGroupedProductImageIsParent()
+    {
+        $groupedProductImage = 'parent';
+        $storeId = 1;
+        $path = '/c/d/chaz.jpg';
+        $settings = [
+            'id' => null,
+            'role' => 'thumbnail'
+        ];
+
+        $this->itemMock->expects($this->once())
+            ->method('getProductType')
+            ->willReturn('grouped');
+
+        $this->scopeConfigMock->expects($this->once())
+            ->method('getValue')
+            ->willReturn($groupedProductImage);
+
+        $this->itemMock->expects($this->atLeastOnce())
+            ->method('getProduct')
+            ->willReturn($this->productMock);
+
+        $this->parentFinderMock->expects($this->once())
+            ->method('getParentProduct')
+            ->with($this->productMock)
+            ->willReturn($this->productMock);
+
+        $this->productMock->expects($this->once())
+            ->method('getId')
+            ->willReturn(1);
 
         $this->productRepositoryMock->expects($this->once())
             ->method('getById')
@@ -168,11 +267,15 @@ class ImageFinderTest extends TestCase
             'role' => 'thumbnail'
         ];
 
+        $this->itemMock->expects($this->once())
+            ->method('getProductType')
+            ->willReturn('configurable');
+
         $this->scopeConfigMock->expects($this->once())
             ->method('getValue')
             ->willReturn($configurableProductImage);
 
-        $this->itemMock->expects($this->once())
+        $this->itemMock->expects($this->atLeastOnce())
             ->method('getProduct')
             ->willReturn($this->productMock);
 

@@ -2,12 +2,15 @@
 
 namespace Dotdigitalgroup\Email\Model\Product;
 
+use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Catalog\UrlFinder;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Catalog\Helper\Image;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\Product\Media\ConfigFactory;
+use Magento\ConfigurableProduct\Model\Product\Configuration\Item\ItemProductResolver as ConfigurableProductResolver;
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\GroupedProduct\Model\Product\Configuration\Item\ItemProductResolver as GroupedProductResolver;
 
 class ImageFinder
 {
@@ -42,6 +45,11 @@ class ImageFinder
     private $imageHelper;
 
     /**
+     * @var Logger
+     */
+    private $logger;
+
+    /**
      * ImageFinder constructor.
      *
      * @param UrlFinder $urlFinder
@@ -50,6 +58,7 @@ class ImageFinder
      * @param ScopeConfigInterface $scopeConfig
      * @param ConfigFactory $mediaConfig
      * @param Image $imageHelper
+     * @param Logger $logger
      */
     public function __construct(
         UrlFinder $urlFinder,
@@ -57,7 +66,8 @@ class ImageFinder
         ProductRepositoryInterface $productRepository,
         ScopeConfigInterface $scopeConfig,
         ConfigFactory $mediaConfig,
-        Image $imageHelper
+        Image $imageHelper,
+        Logger $logger
     ) {
         $this->urlFinder = $urlFinder;
         $this->parentFinder = $parentFinder;
@@ -65,6 +75,7 @@ class ImageFinder
         $this->scopeConfig = $scopeConfig;
         $this->mediaConfig = $mediaConfig;
         $this->imageHelper = $imageHelper;
+        $this->logger = $logger;
     }
 
     /**
@@ -87,7 +98,7 @@ class ImageFinder
         $base = $store->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_MEDIA, true) . 'catalog/product';
 
         $configurableProductImage = $this->scopeConfig->getValue(
-            'checkout/cart/configurable_product_image',
+            ConfigurableProductResolver::CONFIG_THUMBNAIL_SOURCE,
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
             $store->getId()
         );
@@ -126,18 +137,15 @@ class ImageFinder
      */
     public function getCartImageUrl($item, $storeId, $settings)
     {
-        $configurableProductImage = $this->scopeConfig->getValue(
-            'checkout/cart/configurable_product_image',
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
-            $storeId
-        );
-
-        // Parent product id
-        $productId = $item->getProduct()->getId();
-
-        if ($configurableProductImage === "itself") {
-            // Use item SKU to retrieve properties of configurable child product
-            $productId = $item->getProduct()->getIdBySku($item->getSku());
+        switch ($item->getProductType()) {
+            case 'configurable':
+                $productId = $this->getProductIdForConfigurableType($item, $storeId);
+                break;
+            case 'grouped':
+                $productId = $this->getProductIdForGroupedType($item, $storeId);
+                break;
+            default:
+                $productId = $item->getProduct()->getId();
         }
 
         $product = $this->productRepository->getById($productId, false, $item->getStoreId());
@@ -201,5 +209,54 @@ class ImageFinder
                 $imageId
             )
             ->getUrl();
+    }
+
+    /**
+     * @param $item
+     * @param $storeId
+     * @return string|int
+     */
+    private function getProductIdForConfigurableType($item, $storeId)
+    {
+        $configurableProductImage = $this->scopeConfig->getValue(
+            ConfigurableProductResolver::CONFIG_THUMBNAIL_SOURCE,
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+            $storeId
+        );
+
+        if ($configurableProductImage === "itself") {
+            // Use item SKU to retrieve properties of configurable child product
+            return $item->getProduct()->getIdBySku($item->getSku());
+        }
+
+        // Parent product id
+        return $item->getProduct()->getId();
+    }
+
+    /**
+     * @param $item
+     * @param $storeId
+     * @return string|int
+     */
+    private function getProductIdForGroupedType($item, $storeId)
+    {
+        $groupedProductImage = $this->scopeConfig->getValue(
+            GroupedProductResolver::CONFIG_THUMBNAIL_SOURCE,
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+            $storeId
+        );
+
+        if ($groupedProductImage === 'itself') {
+            return $item->getProduct()->getId();
+        }
+
+        $parentProduct = $this->parentFinder->getParentProduct($item->getProduct(), 'grouped');
+        if (!$parentProduct) {
+            $this->logger->debug(
+                'Parent product for grouped item ID ' . $item->getProduct()->getId() . ' not found.'
+            );
+            return $item->getProduct()->getId();
+        }
+        return $parentProduct->getId();
     }
 }
