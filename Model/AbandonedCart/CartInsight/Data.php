@@ -123,7 +123,7 @@ class Data
             try {
                 $product = $this->productRepository->get($item->getSku(), false, $store->getId());
                 $discountTotal += $item->getDiscountAmount();
-                $mediaPath = $this->imageFinder->getProductImageUrl($item, $store);
+                $mediaPath = $this->imageFinder->getCartImageUrl($item, $store);
 
                 $lineItems[] = [
                     'sku' => $item->getSku(),

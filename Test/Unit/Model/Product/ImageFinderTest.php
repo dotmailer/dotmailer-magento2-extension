@@ -2,13 +2,14 @@
 
 namespace Dotdigitalgroup\Email\Test\Unit\Model\Product;
 
-use Magento\Catalog\Api\ProductRepositoryInterface;
-use Magento\Framework\App\Config\ScopeConfigInterface;
+use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Product\ImageFinder;
-use Magento\Store\Model\Store;
-use Magento\Quote\Model\Quote\Item;
+use Dotdigitalgroup\Email\Model\Product\ParentFinder;
+use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Catalog\Model\Product;
-
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Quote\Model\Quote\Item;
+use Magento\Store\Model\Store;
 use PHPUnit\Framework\TestCase;
 
 class ImageFinderTest extends TestCase
@@ -43,6 +44,16 @@ class ImageFinderTest extends TestCase
      */
     private $itemMock;
 
+    /**
+     * @var ParentFinder|\PHPUnit\Framework\MockObject\MockObject
+     */
+    private $parentFinderMock;
+    
+    /**
+     * @var Logger|\PHPUnit\Framework\MockObject\MockObject
+     */
+    private $loggerMock;
+
     protected function setUp() :void
     {
         $this->productRepositoryMock = $this->createMock(ProductRepositoryInterface::class);
@@ -50,6 +61,8 @@ class ImageFinderTest extends TestCase
         $this->storeMock = $this->createMock(Store::class);
         $this->productMock = $this->createMock(Product::class);
         $this->itemMock = $this->createMock(Item::class);
+        $this->parentFinderMock = $this->createMock(ParentFinder::class);
+        $this->loggerMock = $this->createMock(Logger::class);
 
         $this->storeMock->expects($this->once())
             ->method('getBaseUrl')
@@ -58,7 +71,9 @@ class ImageFinderTest extends TestCase
 
         $this->imageFinder = new ImageFinder(
             $this->productRepositoryMock,
-            $this->scopeConfigMock
+            $this->scopeConfigMock,
+            $this->parentFinderMock,
+            $this->loggerMock
         );
     }
 
