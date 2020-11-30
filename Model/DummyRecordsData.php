@@ -129,16 +129,16 @@ class DummyRecordsData
     private function getStaticData($store)
     {
         $data = [
-            'key' => 1,
+            'key' => '1',
             'contactIdentifier' => $this->email,
             'json' => [
-                'cartId' => 1,
+                'cartId' => '1',
                 'cartUrl' => $store->getBaseUrl(
                     UrlInterface::URL_TYPE_WEB,
                     $store->isCurrentlySecure()
                 ).'connector/email/getbasket/quote_id/1/',
-                'createdDate' => date('Y-m-d H:i:s', time()),
-                'modifiedDate' => date('Y-m-d H:i:s', time()),
+                'createdDate' => date(\Zend_Date::ISO_8601, time()),
+                'modifiedDate' => date(\Zend_Date::ISO_8601, time()),
                 'currency' => 'USD',
                 'subTotal' => round(52, 2),
                 'taxAmount' => (float) 0,
