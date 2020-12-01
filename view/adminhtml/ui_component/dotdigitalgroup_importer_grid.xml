@@ -23,6 +23,7 @@
                 </item>
             </argument>
         </argument>
+        <aclResource>Dotdigitalgroup_Email::importer</aclResource>
     </dataSource>
     <container name="listing_top">
         <argument name="data" xsi:type="array">

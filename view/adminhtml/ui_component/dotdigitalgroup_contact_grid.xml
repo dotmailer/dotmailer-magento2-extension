@@ -11,7 +11,6 @@
         <!--Declare the listing of columns which will be defined below-->
     </argument>
     <dataSource name="contact_report_grid_data_source">
-        <!--The data source-->
         <argument name="dataProvider" xsi:type="configurableObject">
             <argument name="class" xsi:type="string">Magento\Framework\View\Element\UiComponent\DataProvider\DataProvider</argument>
             <argument name="name" xsi:type="string">contact_report_grid_data_source</argument>
@@ -27,6 +26,7 @@
                 </item>
             </argument>
         </argument>
+        <aclResource>Dotdigitalgroup_Email::contact</aclResource>
     </dataSource>
     <container name="listing_top">
         <argument name="data" xsi:type="array">
