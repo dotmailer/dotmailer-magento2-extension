@@ -4,7 +4,9 @@ namespace Dotdigitalgroup\Email\Model\AbandonedCart\CartInsight;
 
 use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Product\ImageType\Context\AbandonedCart;
+use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Framework\App\Area;
+use Magento\Quote\Api\Data\CartItemInterface;
 use Magento\Store\Model\App\Emulation;
 
 class Data
@@ -148,7 +150,7 @@ class Data
 
         foreach ($quote->getAllVisibleItems() as $item) {
             try {
-                $product = $this->productRepository->get($item->getSku(), false, $store->getId());
+                $product = $this->loadProduct($item, $store->getId());
                 $discountTotal += $item->getDiscountAmount();
 
                 $lineItems[] = [
@@ -188,5 +190,33 @@ class Data
             self::CONNECTOR_BASKET_PATH,
             ['quote_id' => $quoteId]
         );
+    }
+
+    /**
+     * Fetching products by SKU is required for configurable products, in order to get
+     * the correct unit price of any child products. For other types, this is not required.
+     * For bundle products with dynamic SKUs, we *must* use getById().
+     *
+     * @param CartItemInterface $item
+     * @param string|int $storeId
+     * @return ProductInterface
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
+    private function loadProduct($item, $storeId)
+    {
+        switch ($item->getProductType()) {
+            case 'configurable':
+                return $this->productRepository->get(
+                    $item->getSku(),
+                    false,
+                    $storeId
+                );
+            default:
+                return $this->productRepository->getById(
+                    $item->getProduct()->getId(),
+                    false,
+                    $storeId
+                );
+        }
     }
 }
