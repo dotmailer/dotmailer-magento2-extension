@@ -35,11 +35,9 @@
         <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Updated Date')}}" stepKey="seeUpdatedDate"/>
 
         <!-- Sorting -->
-        <click selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Import Type')}}" stepKey="clickImportIdHeaderToSortAsc"/>
-        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeaderAsc('Import Type')}}" stepKey="checkIfImportAsc"/>
-
-        <click selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Import Type')}}" stepKey="clickImportIdHeaderToSortDesc"/>
-        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeaderDesc('Import Type')}}" stepKey="checkIfImportDesc"/>
+        <actionGroup ref="SortColumnsReportActionGroup" stepKey="sortEmailColumn">
+            <argument name="columnName" value="Email"/>
+        </actionGroup>
 
         <!-- Filtering -->
         <actionGroup ref="FilterReport" stepKey="validateFilters">

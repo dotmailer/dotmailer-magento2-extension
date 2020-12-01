@@ -40,11 +40,9 @@
         <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Updated At')}}" stepKey="seeUpdatedAt"/>
 
         <!-- Sorting -->
-        <click selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Email')}}" stepKey="clickAutomationEmailToSortAsc"/>
-        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeaderAsc('Email')}}" stepKey="checkIfEmailAsc"/>
-
-        <click selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Email')}}" stepKey="clickAutomationEmailToSortDesc"/>
-        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeaderDesc('Email')}}" stepKey="checkIfEmailDesc"/>
+        <actionGroup ref="SortColumnsReportActionGroup" stepKey="sortEmailColumn">
+            <argument name="columnName" value="Email"/>
+        </actionGroup>
 
         <!-- Filtering -->
         <actionGroup ref="FilterReport" stepKey="validateFilters"/>
