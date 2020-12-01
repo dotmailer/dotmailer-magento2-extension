@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<actionGroups xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/actionGroupSchema.xsd">
+    <actionGroup name="SelectOptionForNotSubscribedContacts">
+        <arguments>
+            <argument name="selectedOption" defaultValue="Yes" type="string"/>
+        </arguments>
+        <amOnPage url="{{AdminDotdigitalSyncSettingsPage.url}}" stepKey="navigateToSyncSettingsPage"/>
+        <scrollTo selector="{{AdminDotdigitalSyncSettingsSection.allowNonSubscribers}}" stepKey="scrollToCustomerEnabled"/>
+        <selectOption selector="{{AdminDotdigitalSyncSettingsSection.allowNonSubscribers}}" userInput="{{selectedOption}}" stepKey="selectAllowNotSubscribedToImported"/>
+        <waitForAjaxLoad stepKey="waitForReload1"/>
+        <closeAdminNotification stepKey="closeAdminNotification"/>
+        <click selector="{{AdminMainActionsSection.save}}" stepKey="saveConfig"/>
+        <waitForPageLoad stepKey="waitForPageLoad"/>
+        <see userInput="You saved the configuration." selector="div[data-ui-id='messages-message-success']" stepKey="seeSuccessMessage"/>
+    </actionGroup>
+</actionGroups>

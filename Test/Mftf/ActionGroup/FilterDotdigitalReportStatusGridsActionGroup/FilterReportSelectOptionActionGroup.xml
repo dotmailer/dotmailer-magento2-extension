@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actionGroups xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/actionGroupSchema.xsd">
+    <actionGroup name="FilterReportSelectOption">
+        <annotations>
+            <description>Filters any report grid using a single select. Takes arguments for input name and value.</description>
+        </annotations>
+        <arguments>
+            <argument name="inputName" type="string"/>
+            <argument name="inputValue" type="string"/>
+        </arguments>
+
+        <conditionalClick selector="{{AdminFilterOptionsSection.clearFilters}}" dependentSelector="{{AdminFilterOptionsSection.clearFilters}}" visible="true" stepKey="clickClearFilters"/>
+        <conditionalClick selector="{{AdminFilterOptionsSection.filters}}" dependentSelector="{{AdminFilterOptionsSection.filterFormContainer}}" visible="false" stepKey="openFilters2"/>
+
+        <selectOption selector="{{AdminFilterFieldsSection.filterSelect(inputName)}}" userInput="{{inputValue}}" stepKey="setFilter"/>
+        <click selector="{{AdminFilterOptionsSection.applyFilters}}" stepKey="clickApplyFilters"/>
+        <seeElement selector="ul.admin__current-filters-list" stepKey="seeFilterList"/>
+    </actionGroup>
+</actionGroups>

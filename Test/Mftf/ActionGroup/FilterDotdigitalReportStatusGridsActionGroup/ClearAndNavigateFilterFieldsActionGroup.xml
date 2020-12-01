@@ -8,5 +8,6 @@
 
         <conditionalClick selector="{{AdminFilterOptionsSection.clearFilters}}" dependentSelector="{{AdminFilterOptionsSection.clearFilters}}" visible="true" stepKey="clickClearFilters2"/>
         <click selector="{{AdminFilterOptionsSection.filters}}" stepKey="openFilters"/>
+        <waitForPageLoad stepKey="waitForClearFilters"/>
     </actionGroup>
 </actionGroups>
