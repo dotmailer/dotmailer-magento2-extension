@@ -12,7 +12,7 @@ use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Catalog\Model\Product;
 use Magento\Framework\Stdlib\DateTime\DateTime;
 use Magento\Quote\Model\Quote;
-use Magento\Sales\Model\Order\Item;
+use Magento\Quote\Model\Quote\Item;
 use Magento\Store\Model\App\Emulation;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
@@ -62,7 +62,7 @@ class UpdateAbandonedCartFieldsTest extends TestCase
     private $quoteMock;
 
     /**
-     * @var \Magento\Sales\Model\Order\Item|\PHPUnit_Framework_MockObject_MockObject
+     * @var Item|\PHPUnit_Framework_MockObject_MockObject
      */
     private $itemMock;
 
@@ -116,7 +116,11 @@ class UpdateAbandonedCartFieldsTest extends TestCase
         $this->storeManagerInterfaceMock = $this->createMock(StoreManagerInterface::class);
         $this->storeMock = $this->createMock(Store::class);
         $this->quoteMock = $this->createMock(Quote::class);
-        $this->itemMock = $this->createMock(Item::class);
+        $this->itemMock = $this->getMockBuilder(Item::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['getProductType', 'getSku', 'getName', 'getQty'])
+            ->addMethods(['getDiscountAmount', 'getBasePriceInclTax', 'getRowTotalInclTax'])
+            ->getMock();
         $this->dateTimeMock = $this->createMock(DateTime::class);
         $this->urlFinderMock = $this->createMock(UrlFinder::class);
         $this->imageFinderMock = $this->createMock(ImageFinder::class);
@@ -217,6 +221,10 @@ class UpdateAbandonedCartFieldsTest extends TestCase
             ->willReturn($itemsArray);
 
         $itemsArray[0]->expects($this->once())
+            ->method('getProductType')
+            ->willReturn('configurable');
+
+        $itemsArray[0]->expects($this->once())
             ->method('getDiscountAmount')
             ->willReturn($expectedPayload['json']['discountAmount']);
 
@@ -253,8 +261,7 @@ class UpdateAbandonedCartFieldsTest extends TestCase
             ->willReturn($expectedPayload['json']['lineItems'][0]['totalPrice']);
 
         $itemsArray[0]->expects($this->once())
-            ->method('__call')
-            ->with($this->equalTo('getQty'))
+            ->method('getQty')
             ->willReturn($expectedPayload['json']['lineItems'][0]['quantity']);
 
         // Client API call
