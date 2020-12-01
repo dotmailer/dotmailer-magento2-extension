@@ -3,12 +3,11 @@ define([
     'uiRegistry',
     'Magento_Ui/js/form/components/fieldset',
     'Magento_Ui/js/lib/view/utils/async',
-    'jquery',
+    'jquery'
 ], function (_, uiRegistry, fieldset, async, $) {
     'use strict';
 
     return fieldset.extend({
-        /*eslint-disable no-unused-vars*/
         /**
          * Initialize element
          *
@@ -35,14 +34,14 @@ define([
         },
 
         updateEdcCouponUrl: function () {
-            var couponAttributes = [];
-            var ddgEnabled = document.getElementById('ddg_coupons_enabled').getValue();
-            var inputCouponUrl = document.getElementById('ddg_coupons_edc_url');
-            var allowResend = parseInt(document.getElementById('ddg_coupons_allow_resend').getValue());
-            var cancelSendField = document.getElementById('ddg_coupons_cancel_send');
-            var couponUrl = inputCouponUrl.getAttribute('data-baseurl') + '/';
-            var expiresAfter = document.getElementById('ddg_coupons_expires_after');
-            var expireDays = expiresAfter.getValue();
+            var couponAttributes = [],
+                ddgEnabled = document.getElementById('ddg_coupons_enabled').getValue(),
+                inputCouponUrl = document.getElementById('ddg_coupons_edc_url'),
+                allowResend = parseInt(document.getElementById('ddg_coupons_allow_resend').getValue()),
+                cancelSendField = document.getElementById('ddg_coupons_cancel_send'),
+                couponUrl = inputCouponUrl.getAttribute('data-baseurl') + '/',
+                expiresAfter = document.getElementById('ddg_coupons_expires_after'),
+                expireDays = expiresAfter.getValue();
 
             if (!parseInt(expireDays) || parseInt(expireDays) < 1) {
                 expiresAfter.value = '';
@@ -57,6 +56,7 @@ define([
             ['prefix', 'suffix', 'format', 'allow_resend', 'cancel_send', 'expires_after']
                 .forEach(function (field) {
                     var inputField = document.getElementById('ddg_coupons_' + field);
+
                     if (!!inputField.getValue() && !inputField.hasAttribute('disabled')) {
                         couponAttributes.push('code_' + field + '/' + inputField.getValue());
                     }
@@ -73,10 +73,10 @@ define([
          * Enable/disable fields on Coupons tab
          */
         enableDisableFields: function () {
-            var ddgEnabled = document.getElementById('ddg_coupons_enabled').getValue();
-            var isExistingRule = !!document.querySelector('#ddg_coupons_rule_id').getValue();
-            var disableAuto;
-            var isUseAutoGenerationChecked = uiRegistry
+            var ddgEnabled = document.getElementById('ddg_coupons_enabled').getValue(),
+                isExistingRule = !!document.querySelector('#ddg_coupons_rule_id').getValue(),
+                disableAuto,
+                isUseAutoGenerationChecked = uiRegistry
                 .get('sales_rule_form.sales_rule_form.rule_information.use_auto_generation')
                 .checked();
 
@@ -88,7 +88,7 @@ define([
             this.disableFields(!disableAuto);
         },
 
-        disableFields : function(toDisable) {
+        disableFields: function (toDisable) {
             var selector = '#ddg-sales-rule-form-tab-coupons input,' +
                 '#ddg-sales-rule-form-tab-coupons select,' +
                 '#ddg-sales-rule-form-tab-coupons textarea';
