@@ -11,5 +11,10 @@
         <element name="columnHeader" type="button" selector="//div[@data-role='grid-wrapper']//table[contains(@class, 'data-grid')]/thead/tr/th[contains(@class, 'data-grid-th')]/span[text() = '{{label}}']" parameterized="true" timeout="30"/>
         <element name="columnHeaderAsc" type="button" selector="//div[@data-role='grid-wrapper']//table[contains(@class, 'data-grid')]/thead/tr/th[contains(@class, 'data-grid-th _sortable _draggable _ascend')]/span[text() = '{{label}}']" parameterized="true" timeout="30"/>
         <element name="columnHeaderDesc" type="button" selector="//div[@data-role='grid-wrapper']//table[contains(@class, 'data-grid')]/thead/tr/th[contains(@class, 'data-grid-th _sortable _draggable _descend')]/span[text() = '{{label}}']" parameterized="true" timeout="30"/>
+        <element name="selectRowByIndex" type="checkbox" selector="tr.data-row:nth-of-type({{var1}}) input[data-action='select-row']" parameterized="true" timeout="30"/>
+        <element name="actionMenu" type="button" selector="button.action-select" timeout="30"/>
+        <element name="deleteBtn" type="button" selector="//div[@class='action-menu-items']//*[text()='Delete']" timeout="30"/>
+        <element name="modalAcceptButton" type="button" selector="button.action-accept" timeout="30"/>
+        <element name="statusInGrid" type="select" selector="//td//div[contains(text(), '{{contactStatus}}')]" parameterized="true"/>
     </section>
 </sections>
