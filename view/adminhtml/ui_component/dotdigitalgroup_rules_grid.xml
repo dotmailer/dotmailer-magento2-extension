@@ -31,6 +31,7 @@
                 </item>
             </argument>
         </argument>
+        <aclResource>Dotdigitalgroup_Email::exclusion_rules</aclResource>
     </dataSource>
     <container name="listing_top">
         <argument name="data" xsi:type="array">
