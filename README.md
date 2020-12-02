@@ -19,6 +19,17 @@ You are welcome to contribute to Engagement Cloud for Magento! You can either:
 - Fix a bug: please clone and use our [Develop branch](https://github.com/dotmailer/dotmailer-magento2-extension/tree/develop) to submit your Pull Request
 - Request a feature on our [roadmap](https://roadmap.dotdigital.com)
 
+# 4.9.2
+
+###### Improvements
+- We've swapped `TimezoneInterface` for `DateTime` when setting the wishlist `updatedAt` date in the wishlist sync. This appeared to be causing erratic data in some versions of Magento.
+
+###### Bug Fixes
+- We’ve added caching to our coupon block. This fixes a bug that prevented coupon code generation in some setups.
+- We now respect the configuration of Stores > Configuration > Sales > Checkout > Grouped Product Image, and retrieve the parent grouped product image for cart insight data, where necessary.
+- Our cart insight dummy data schema has been updated to use the correct data types.
+- The currency code in order insight data now indicates the store currency, in line with the synced prices.
+
 # 4.9.1
 
 ###### Bug fixes
