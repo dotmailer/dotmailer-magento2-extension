@@ -193,7 +193,7 @@ class Order
             '.',
             ''
         );
-        $this->currency = $orderData->getStoreCurrencyCode();
+        $this->currency = $orderData->getOrderCurrencyCode();
         $payment = $orderData->getPayment();
 
         if ($payment) {
