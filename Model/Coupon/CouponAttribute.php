@@ -7,7 +7,7 @@ use Dotdigitalgroup\Email\Api\Data\CouponAttributeInterface;
 use Dotdigitalgroup\Email\Model\DateTimeFactory;
 use Magento\Framework\Api\AttributeValueFactory;
 use Magento\Framework\Api\ExtensionAttributesFactory;
-use \Magento\Framework\Model\AbstractExtensibleModel;
+use Magento\Framework\Model\AbstractExtensibleModel;
 
 /**
  * Class CouponAttributeRepository
