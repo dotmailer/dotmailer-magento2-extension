@@ -8,7 +8,6 @@
             <title value="Create new customer and add to report"/>
             <description value="Create a new a new customer and validate to report."/>
             <severity value="MINOR"/>
-            <group value="FS/128258-customer-mftf"/>
             <group value="dotmailer"/>
         </annotations>
 
@@ -35,7 +34,6 @@
         </before>
 
         <after>
-            <actionGroup ref="ResetDotmailerAccountData" stepKey="resetAccountData"/>
             <actionGroup ref="DisableCustomerSync" stepKey="disableCustomerSync"/>
             <actionGroup ref="SelectOptionForNotSubscribedContacts" stepKey="disableNotSubscribedContacts">
                 <argument name="selectedOption" value="No"/>
@@ -44,6 +42,7 @@
             <actionGroup ref="AdminDeleteCustomerActionGroup" stepKey="deleteCustomer">
                 <argument name="customerEmail" value="CustomerEntityOne.email"/>
             </actionGroup>
+            <actionGroup ref="ResetDotmailerAccountData" stepKey="resetAccountData"/>
             <actionGroup ref="AdminLogoutActionGroup" stepKey="logout"/>
         </after>
 
@@ -63,7 +62,7 @@
             <argument name="inputName" value="email_imported"/>
             <argument name="inputValue" value="{{ContactData.notImported}}"/>
         </actionGroup>
-        
+
         <seeElement selector="{{AdminDotdigitalReportColumnsSection.statusInGrid('Not Imported')}}" stepKey="seeRecordFound"/>
 
         <!-- Check that contact is imported After CLI -->

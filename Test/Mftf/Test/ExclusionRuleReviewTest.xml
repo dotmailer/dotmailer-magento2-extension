@@ -8,7 +8,6 @@
             <title value="Test review exclusion rules"/>
             <description value="An exclusion rule for reviews can be created with conditions."/>
             <severity value="MINOR"/>
-            <group value="AM/109294-mftf"/>
             <group value="dotmailer"/>
         </annotations>
 

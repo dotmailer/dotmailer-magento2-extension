@@ -9,7 +9,6 @@
             <title value="You should not be able to access the edc page with invalid code."/>
             <description value="You should not be able to see the edc page having invalid passcode."/>
             <severity value="CRITICAL"/>
-            <group value="dotmailer-edc-locked"/>
             <group value="dotmailer"/>
         </annotations>
         <before>

@@ -8,7 +8,6 @@
             <title value="Map custom attributes to data fields"/>
             <description value="Map a custom attribute to an Engagement Cloud data field, then delete the mapping."/>
             <severity value="MINOR"/>
-            <group value="FS/128255-mftf"/>
             <group value="dotmailer"/>
         </annotations>
 

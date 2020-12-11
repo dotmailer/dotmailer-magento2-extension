@@ -8,7 +8,6 @@
             <title value="Generate coupon URLs using the tool"/>
             <description value="The coupon URL builder is displayed if the API is enabled, and functions as expected."/>
             <severity value="MINOR"/>
-            <group value="dotdigitalCoupon"/>
             <group value="dotmailer"/>
         </annotations>
 
