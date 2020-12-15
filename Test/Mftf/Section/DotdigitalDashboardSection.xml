@@ -2,7 +2,7 @@
 
 <sections xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:noNamespaceSchemaLocation="urn:magento:mftf:Page/etc/SectionObject.xsd">
-    <section name="AdminDashboardSection">
+    <section name="DotdigitalDashboardSection">
         <element name="lockStatus" type="text" selector=".ddg-dashboard-container" />
     </section>
 </sections>
