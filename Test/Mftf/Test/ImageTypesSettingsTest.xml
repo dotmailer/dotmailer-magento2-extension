@@ -17,6 +17,7 @@
         </before>
 
         <after>
+            <actionGroup ref="ResetImageTypeSettings" stepKey="ResetImageTypeSettings"/>
             <actionGroup ref="ResetDotmailerAccountData" stepKey="resetAccountData"/>
             <actionGroup ref="AdminLogoutActionGroup" stepKey="logout"/>
         </after>

@@ -4,7 +4,7 @@
           xsi:noNamespaceSchemaLocation="urn:magento:mftf:Page/etc/SectionObject.xsd">
     <section name="AdminDotmailerAccountsSection">
         <element name="accountsFieldsetToggle" type="button" selector="#connector_api_credentials_api-head"/>
-        <element name="accountsFieldset" type="button" selector="#connector_api_credentials_api"/>
+        <element name="accountsFieldset" type="block" selector="#connector_api_credentials_api"/>
         <element name="accountsEnabledOption" type="select" selector="#connector_api_credentials_api_enabled" />
         <element name="accountsUsernameField" type="input" selector="#connector_api_credentials_api_username" />
         <element name="accountsPasswordField" type="input" selector="#connector_api_credentials_api_password" />
