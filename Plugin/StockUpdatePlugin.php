@@ -2,6 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Plugin;
 
+use Dotdigitalgroup\Email\Helper\Data;
 use Magento\CatalogInventory\Api\StockRegistryInterface;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Dotdigitalgroup\Email\Model\Catalog\UpdateCatalog;
@@ -9,6 +10,11 @@ use Dotdigitalgroup\Email\Model\Catalog\CatalogService;
 
 class StockUpdatePlugin
 {
+    /**
+     * @var Data
+     */
+    private $helper;
+
     /**
      * @var ProductRepositoryInterface
      */
@@ -26,15 +32,18 @@ class StockUpdatePlugin
 
     /**
      * StockUpdatePlugin constructor.
+     * @param Data $helper
      * @param ProductRepositoryInterface $productRepository
      * @param UpdateCatalog $catalogUpdater
      * @param CatalogService $catalogService
      */
     public function __construct(
+        Data $helper,
         ProductRepositoryInterface $productRepository,
         UpdateCatalog $catalogUpdater,
         CatalogService $catalogService
     ) {
+        $this->helper = $helper;
         $this->productRepository = $productRepository;
         $this->catalogUpdater = $catalogUpdater;
         $this->catalogService = $catalogService;
@@ -52,6 +61,10 @@ class StockUpdatePlugin
         $result,
         $productSku
     ) {
+        if (!$this->helper->isEnabled()) {
+            return $result;
+        }
+
         try {
             $product = $this->productRepository->get($productSku);
             $this->catalogUpdater->execute($product);
