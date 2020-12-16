@@ -8,7 +8,6 @@
             <title value="Test Abandoned Cart Status Grid"/>
             <description value="The dotdigital Abandoned Cart report can be viewed, filtered and sorted."/>
             <severity value="MINOR"/>
-            <group value="FS/128276-ac-mftf"/>
             <group value="dotmailer"/>
         </annotations>
 

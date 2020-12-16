@@ -8,7 +8,6 @@
             <title value="Create and confirm data fields"/>
             <description value="Create a new data field in the dotdigital admin, and confirm that data can be mapped to it."/>
             <severity value="MINOR"/>
-            <group value="FS/128255-mftf"/>
             <group value="dotmailer"/>
         </annotations>
 

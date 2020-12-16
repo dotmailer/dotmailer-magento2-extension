@@ -9,7 +9,6 @@
             <title value="You should not be able to access the edc page with invalid code."/>
             <description value="You should not be able to see the edc page having invalid passcode."/>
             <severity value="CRITICAL"/>
-            <group value="dotmailer-edc-locked"/>
             <group value="dotmailer"/>
         </annotations>
         <before>
@@ -43,13 +42,13 @@
         <amOnPage url="{{AdminDotmailerDashboardPage.url}}" stepKey="amOnDashboardPage"/>
         <waitForPageLoad stepKey="waitForPageLoad3"/>
         <seeInCurrentUrl url="{{AdminDotmailerDashboardPage.url}}" stepKey="seeDashboard"/>
-        <see userInput="Not locked" selector="{{AdminDashboardSection.lockStatus}}" stepKey="SeeLockStatus"/>
+        <see userInput="Not locked" selector="{{DotdigitalDashboardSection.lockStatus}}" stepKey="SeeLockStatus"/>
         <amOnPage url="{{StorefrontAbandonedCartPage.url}}/hacked" stepKey="amOnAbandonedCartPage_1"/>
         <amOnPage url="{{StorefrontAbandonedCartPage.url}}/hacked" stepKey="amOnAbandonedCartPage_2"/>
         <amOnPage url="{{StorefrontAbandonedCartPage.url}}/hacked" stepKey="amOnAbandonedCartPage_3"/>
         <amOnPage url="{{StorefrontAbandonedCartPage.url}}/hacked" stepKey="amOnAbandonedCartPage_4"/>
         <amOnPage url="{{StorefrontAbandonedCartPage.url}}/hacked" stepKey="amOnAbandonedCartPage_5"/>
         <amOnPage url="{{AdminDotmailerDashboardPage.url}}" stepKey="amBackOnDashboard"/>
-        <see userInput="Locked" selector="{{AdminDashboardSection.lockStatus}}" stepKey="SeeLockStatus1"/>
+        <see userInput="Locked" selector="{{DotdigitalDashboardSection.lockStatus}}" stepKey="SeeLockStatus1"/>
     </test>
 </tests>

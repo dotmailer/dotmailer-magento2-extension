@@ -8,7 +8,6 @@
             <title value="Dashboard Page Test"/>
             <description value="The dotdigital Dashboard can be viewed."/>
             <severity value="MINOR"/>
-            <group value="FS/106771-mftf"/>
             <group value="dotmailer"/>
         </annotations>
 
@@ -26,7 +25,7 @@
 
         <click selector="li.item-dashboards" stepKey="clickOnDashBoard"/>
 
-        <seeInCurrentUrl url="{{AdminDashboardPage.url}}" stepKey="confirmThatImOnDashboard"/>
+        <seeInCurrentUrl url="{{DotdigitalDashboardPage.url}}" stepKey="confirmThatImOnDashboard"/>
         <seeElement selector="div.ddg-dashboard-container" stepKey="seeDDGDescription"/>
     </test>
 </tests>

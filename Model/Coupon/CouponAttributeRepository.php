@@ -4,6 +4,7 @@ namespace Dotdigitalgroup\Email\Model\Coupon;
 
 use Dotdigitalgroup\Email\Api\Data\CouponAttributeInterface;
 use Dotdigitalgroup\Email\Api\CouponAttributeRepositoryInterface;
+use Dotdigitalgroup\Email\Model\ResourceModel\CouponAttribute as CouponAttributeResource;
 use Magento\Framework\Exception\NoSuchEntityException;
 
 class CouponAttributeRepository implements CouponAttributeRepositoryInterface
@@ -13,10 +14,22 @@ class CouponAttributeRepository implements CouponAttributeRepositoryInterface
      */
     private $couponAttributeFactory;
 
+    /**
+     * @var CouponAttributeResource
+     */
+    private $couponAttributeResource;
+
+    /**
+     * CouponAttributeRepository constructor.
+     * @param CouponAttributeFactory $couponAttributeFactory
+     * @param CouponAttributeResource $couponAttributeResource
+     */
     public function __construct(
-        CouponAttributeFactory $couponAttributeFactory
+        CouponAttributeFactory $couponAttributeFactory,
+        CouponAttributeResource $couponAttributeResource
     ) {
         $this->couponAttributeFactory = $couponAttributeFactory;
+        $this->couponAttributeResource = $couponAttributeResource;
     }
 
     /**
@@ -29,7 +42,11 @@ class CouponAttributeRepository implements CouponAttributeRepositoryInterface
     public function getById($id)
     {
         $couponAttribute = $this->couponAttributeFactory->create();
-        $couponAttribute->getResource()->load($couponAttribute, $id, CouponAttributeInterface::SALESRULE_COUPON_ID);
+        $this->couponAttributeResource->load(
+            $couponAttribute,
+            $id,
+            CouponAttributeInterface::SALESRULE_COUPON_ID
+        );
         if (! $couponAttribute->getId()) {
             throw new NoSuchEntityException(__('Unable to find coupon attribute with ID "%1"', $id));
         }
@@ -44,7 +61,7 @@ class CouponAttributeRepository implements CouponAttributeRepositoryInterface
      */
     public function save(CouponAttributeInterface $coupon)
     {
-        $coupon->getResource()->save($coupon);
+        $this->couponAttributeResource->save($coupon);
         return $coupon;
     }
 }

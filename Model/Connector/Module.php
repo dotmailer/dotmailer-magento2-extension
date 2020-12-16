@@ -11,6 +11,7 @@ class Module
     const CHAT_MODULE = 'Dotdigitalgroup_' . 'Chat';
     const ENTERPRISE_MODULE = 'Dotdigitalgroup_' . 'Enterprise';
     const B2B_MODULE = 'Dotdigitalgroup_' . 'B2b';
+    const SMS_MODULE = 'Dotdigitalgroup_' . 'Sms';
 
     /**
      * @var ModuleListInterface
@@ -89,5 +90,23 @@ class Module
     public function getB2bConnectorVersion()
     {
         return $this->fullModuleList->getOne(self::B2B_MODULE)['setup_version'];
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasSmsModule()
+    {
+        return $this->fullModuleList->has(self::SMS_MODULE);
+    }
+
+    /**
+     * Get B2b connector version.
+     *
+     * @return string
+     */
+    public function getSmsConnectorVersion()
+    {
+        return $this->fullModuleList->getOne(self::SMS_MODULE)['setup_version'];
     }
 }
