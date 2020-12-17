@@ -6,6 +6,7 @@
         <arguments>
             <argument name="customDataFieldName" defaultValue="CUSTOMER_ID" type="string"/>
         </arguments>
+        <conditionalClick stepKey="expandDataFieldsMappingTab" selector="{{AdminDotdigitalDataMappingSection.DataFieldsMappingSectionToggle}}" dependentSelector="{{AdminDotdigitalDataMappingSection.customAttributes}}" visible="false"/>
         <scrollTo selector="{{AdminDotdigitalDataMappingSection.customAttributes}}" stepKey="scrollToSection"/>
         <click selector="{{AdminDotdigitalDataMappingSection.bulkActionOption('Add New Attribute')}}" stepKey="clickToAddNewAttribute"/>
         <selectOption selector="{{AdminDotdigitalDataMappingSection.customDataFieldSelect}}" userInput="{{customDataFieldName}}" stepKey="selectTargetCondition"/>
