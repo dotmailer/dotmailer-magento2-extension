@@ -3,6 +3,9 @@
        xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
     <test name="SyncSettingsAreDisabledByDefaultTest">
         <annotations>
+            <skip>
+                <issueId value="BUNDLE-2884"/>
+            </skip>
             <features value="Engagement Cloud module"/>
             <stories value="Configure sync settings"/>
             <title value="Confirm that sync settings are disabled by default"/>
