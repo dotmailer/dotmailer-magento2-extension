@@ -4,7 +4,7 @@
               xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/actionGroupSchema.xsd">
     <actionGroup name="AdminCartPriceRuleFillMainInfoActionGroup">
         <annotations>
-            <description>Removes</description>
+            <description>Removes scroll step.</description>
         </annotations>
         <remove keyForRemoval="scrollToCustomerGroupsControl"/>
     </actionGroup>

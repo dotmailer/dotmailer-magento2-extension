@@ -6,7 +6,7 @@
         <arguments>
             <argument name="addressBookName" defaultValue="Magento" type="string"/>
         </arguments>
-        <amOnPage url="{{AdminDotdigitalSyncSettingsPage.url}}" stepKey="amOnDotdigitalTransactionalSmsReportPage"/>
+        <amOnPage url="{{AdminDotdigitalSyncSettingsPage.url}}" stepKey="amOnDotdigitalSyncSettingsPage"/>
         <scrollTo selector="#sync_settings_dynamic_addressbook-head" stepKey="scrollToSection"/>
         <conditionalClick stepKey="expandCreateAddressBookTab" selector="{{AdminDotdigitalSyncSettingsSection.createAddressBookFieldsetToggle}}" dependentSelector="{{AdminDotdigitalSyncSettingsSection.createAddressBookFieldset}}" visible="false"/>
         <fillField selector="{{AdminDotdigitalSyncSettingsSection.addressBookName}}" userInput="{{addressBookName}}" stepKey="setAddressBookName"/>
