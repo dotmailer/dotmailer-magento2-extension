@@ -4,246 +4,142 @@
     <argument name="data" xsi:type="array">
         <item name="js_config" xsi:type="array">
             <item name="provider" xsi:type="string">dotdigitalgroup_campaign_grid.campaign_report_grid_data_source</item>
-            <item name="deps" xsi:type="string">dotdigitalgroup_campaign_grid.campaign_report_grid_data_source</item>
-            <!--Declare the data source name which will be defined below-->
         </item>
-        <item name="spinner" xsi:type="string">dotdigitalgroup_campaign_columns</item>
-        <!--Declare the listing of columns which will be defined below-->
     </argument>
-    <dataSource name="campaign_report_grid_data_source">
-        <argument name="dataProvider" xsi:type="configurableObject">
-            <argument name="class" xsi:type="string">Magento\Framework\View\Element\UiComponent\DataProvider\DataProvider</argument>
-            <argument name="name" xsi:type="string">campaign_report_grid_data_source</argument>
-            <argument name="primaryFieldName" xsi:type="string">id</argument>
-            <argument name="requestFieldName" xsi:type="string">id</argument>
-            <argument name="data" xsi:type="array">
-                <item name="config" xsi:type="array">
-                    <item name="component" xsi:type="string">Magento_Ui/js/grid/provider</item>
-                    <item name="update_url" xsi:type="url" path="mui/index/render"/>
-                    <item name="storageConfig" xsi:type="array">
-                        <item name="indexField" xsi:type="string">id</item>
-                    </item>
-                </item>
-            </argument>
-        </argument>
+    <settings>
+        <spinner>dotdigitalgroup_campaign_columns</spinner>
+        <deps>
+            <dep>dotdigitalgroup_campaign_grid.campaign_report_grid_data_source</dep>
+        </deps>
+    </settings>
+    <dataSource name="campaign_report_grid_data_source" component="Magento_Ui/js/grid/provider">
+        <settings>
+            <storageConfig>
+                <param name="indexField" xsi:type="string">id</param>
+            </storageConfig>
+            <updateUrl path="mui/index/render"/>
+        </settings>
         <aclResource>Dotdigitalgroup_Email::campaign</aclResource>
+        <dataProvider class="Magento\Framework\View\Element\UiComponent\DataProvider\DataProvider" name="campaign_report_grid_data_source">
+            <settings>
+                <requestFieldName>id</requestFieldName>
+                <primaryFieldName>id</primaryFieldName>
+            </settings>
+        </dataProvider>
     </dataSource>
-    <container name="listing_top">
-        <argument name="data" xsi:type="array">
-            <item name="config" xsi:type="array">
-                <item name="template" xsi:type="string">ui/grid/toolbar</item>
-            </item>
-        </argument>
-        <bookmark name="bookmarks">
-            <argument name="data" xsi:type="array">
-                <item name="config" xsi:type="array">
-                    <item name="storageConfig" xsi:type="array">
-                        <item name="namespace" xsi:type="string">dotdigitalgroup_campaign_grid</item>
-                    </item>
-                </item>
-            </argument>
-        </bookmark>
-        <component name="columns_controls">
-            <argument name="data" xsi:type="array">
-                <item name="config" xsi:type="array">
-                    <item name="columnsData" xsi:type="array">
-                        <item name="provider" xsi:type="string">dotdigitalgroup_campaign_grid.dotdigitalgroup_campaign_grid.dotdigitalgroup_campaign_columns</item>
-                    </item>
-                    <item name="component" xsi:type="string">Magento_Ui/js/grid/controls/columns</item>
-                    <item name="displayArea" xsi:type="string">dataGridActions</item>
-                </item>
-            </argument>
-        </component>
-        <filters name="listing_filters">
-            <argument name="data" xsi:type="array">
-                <item name="config" xsi:type="array">
-                    <item name="columnsProvider" xsi:type="string">dotdigitalgroup_campaign_grid.dotdigitalgroup_campaign_grid.dotdigitalgroup_campaign_columns</item>
-                    <item name="storageConfig" xsi:type="array">
-                        <item name="provider" xsi:type="string">dotdigitalgroup_campaign_grid.dotdigitalgroup_campaign_grid.listing_top.bookmarks</item>
-                        <item name="namespace" xsi:type="string">current.filters</item>
-                    </item>
-                    <item name="childDefaults" xsi:type="array">
-                        <item name="provider" xsi:type="string">dotdigitalgroup_campaign_grid.dotdigitalgroup_campaign_grid.listing_top.listing_filters</item>
-                        <item name="imports" xsi:type="array">
-                            <item name="visible" xsi:type="string">dotdigitalgroup_campaign_grid.dotdigitalgroup_campaign_grid.dotdigitalgroup_campaign_columns.${ $.index }:visible</item>
-                        </item>
-                    </item>
-                </item>
-            </argument>
-        </filters>
-        <massaction name="listing_massaction">
-            <argument name="data" xsi:type="array">
-                <item name="config" xsi:type="array">
-                    <item name="selectProvider" xsi:type="string">dotdigitalgroup_campaign_grid.dotdigitalgroup_campaign_grid.dotdigitalgroup_campaign_columns.ids</item>
-                    <item name="component" xsi:type="string">Magento_Ui/js/grid/tree-massactions</item>
-                    <item name="indexField" xsi:type="string">id</item>
-                </item>
-            </argument>
+    <listingToolbar name="listing_top">
+        <bookmark name="bookmarks"/>
+        <columnsControls name="columns_controls"/>
+        <filters name="listing_filters"/>
+        <exportButton name="export_button"/>
+        <massaction name="listing_massaction"
+                    component="Magento_Ui/js/grid/tree-massactions">
             <action name="delete">
-                <argument name="data" xsi:type="array">
-                    <item name="config" xsi:type="array">
-                        <item name="type" xsi:type="string">delete</item>
-                        <item name="label" xsi:type="string" translate="true">Delete</item>
-                        <item name="url" xsi:type="url" path="*/*/massDelete"/>
-                        <item name="confirm" xsi:type="array">
-                            <item name="title" xsi:type="string" translate="true">Delete items</item>
-                            <item name="message" xsi:type="string" translate="true">Are you sure to delete?</item>
-                        </item>
-                    </item>
-                </argument>
+                <settings>
+                    <url path="*/*/massDelete"/>
+                    <type>delete</type>
+                    <label translate="true">Delete</label>
+                    <confirm>
+                        <title translate="true">Delete items</title>
+                        <message translate="true">Are you sure?</message>
+                    </confirm>
+                </settings>
             </action>
         </massaction>
-        <paging name="listing_paging">
-            <argument name="data" xsi:type="array">
-                <item name="config" xsi:type="array">
-                    <item name="storageConfig" xsi:type="array">
-                        <item name="provider" xsi:type="string">dotdigitalgroup_campaign_grid.dotdigitalgroup_campaign_grid.listing_top.bookmarks</item>
-                        <item name="namespace" xsi:type="string">current.paging</item>
-                    </item>
-                    <item name="selectProvider" xsi:type="string">dotdigitalgroup_campaign_grid.dotdigitalgroup_campaign_grid.dotdigitalgroup_campaign_columns.ids</item>
-                </item>
-            </argument>
-        </paging>
-        <exportButton name="export_button">
-            <argument name="data" xsi:type="array">
-                <item name="config" xsi:type="array">
-                    <item name="selectProvider" xsi:type="string">dotdigitalgroup_campaign_grid.dotdigitalgroup_campaign_grid.dotdigitalgroup_campaign_columns.ids</item>
-                </item>
-            </argument>
-        </exportButton>
-    </container>
+        <paging name="listing_paging"/>
+    </listingToolbar>
     <columns name="dotdigitalgroup_campaign_columns">
-        <!--The list of columns-->
-        <selectionsColumn name="ids">
-            <argument name="data" xsi:type="array">
-                <item name="config" xsi:type="array">
-                    <item name="indexField" xsi:type="string">id</item>
-                </item>
-            </argument>
+        <selectionsColumn name="ids" sortOrder="0">
+            <settings>
+                <indexField>id</indexField>
+            </settings>
         </selectionsColumn>
-        <column name="campaign_id">
-            <argument name="data" xsi:type="array">
-                <item name="config" xsi:type="array">
-                    <item name="filter" xsi:type="string">text</item>
-                    <item name="sorting" xsi:type="string">asc</item>
-                    <item name="label" xsi:type="string" translate="true">Campaign Id</item>
-                </item>
-            </argument>
+        <column name="campaign_id" sortOrder="10">
+            <settings>
+                <filter>text</filter>
+                <label translate="true">Campaign Id</label>
+                <sorting>asc</sorting>
+            </settings>
         </column>
-        <column name="email">
-            <argument name="data" xsi:type="array">
-                <item name="config" xsi:type="array">
-                    <item name="filter" xsi:type="string">text</item>
-                    <item name="label" xsi:type="string" translate="true">Email</item>
-                </item>
-            </argument>
+        <column name="email" sortOrder="20">
+            <settings>
+                <filter>text</filter>
+                <label translate="true">Email</label>
+            </settings>
         </column>
-        <column name="customer_id">
-            <argument name="data" xsi:type="array">
-                <item name="config" xsi:type="array">
-                    <item name="filter" xsi:type="string">text</item>
-                    <item name="label" xsi:type="string" translate="true">Customer Id</item>
-                </item>
-            </argument>
+        <column name="customer_id" sortOrder="25">
+            <settings>
+                <filter>text</filter>
+                <label translate="true">Customer Id</label>
+            </settings>
         </column>
-        <column name="order_increment_id">
-            <argument name="data" xsi:type="array">
-                <item name="config" xsi:type="array">
-                    <item name="filter" xsi:type="string">text</item>
-                    <item name="label" xsi:type="string" translate="true">Order Increment Id</item>
-                </item>
-            </argument>
+        <column name="order_increment_id" sortOrder="30">
+            <settings>
+                <filter>text</filter>
+                <label translate="true">Order Increment Id</label>
+            </settings>
         </column>
-        <column name="quote_id">
-            <argument name="data" xsi:type="array">
-                <item name="config" xsi:type="array">
-                    <item name="filter" xsi:type="string">text</item>
-                    <item name="label" xsi:type="string" translate="true">Quote Id</item>
-                </item>
-            </argument>
+        <column name="quote_id" sortOrder="40">
+            <settings>
+                <filter>text</filter>
+                <label translate="true">Quote Id</label>
+            </settings>
         </column>
-        <column name="event_name">
-            <argument name="data" xsi:type="array">
-                <item name="config" xsi:type="array">
-                    <item name="filter" xsi:type="string">text</item>
-                    <item name="label" xsi:type="string" translate="true">Event Name</item>
-                </item>
-            </argument>
+        <column name="event_name" sortOrder="50">
+            <settings>
+                <filter>text</filter>
+                <label translate="true">Event Name</label>
+            </settings>
         </column>
-        <column name="message">
-            <argument name="data" xsi:type="array">
-                <item name="config" xsi:type="array">
-                    <item name="filter" xsi:type="string">text</item>
-                    <item name="label" xsi:type="string" translate="true">Message</item>
-                </item>
-            </argument>
+        <column name="message" sortOrder="60">
+            <settings>
+                <filter>text</filter>
+                <label translate="true">Message</label>
+            </settings>
         </column>
-        <column name="checkout_method">
-            <argument name="data" xsi:type="array">
-                <item name="config" xsi:type="array">
-                    <item name="filter" xsi:type="string">text</item>
-                    <item name="label" xsi:type="string" translate="true">Checkout Method</item>
-                </item>
-            </argument>
+        <column name="checkout_method" sortOrder="70">
+            <settings>
+                <filter>text</filter>
+                <label translate="true">Checkout Method</label>
+            </settings>
         </column>
-        <column name="sent_at" class="Magento\Ui\Component\Listing\Columns\Date">
-            <argument name="data" xsi:type="array">
-                <item name="config" xsi:type="array">
-                    <item name="filter" xsi:type="string">dateRange</item>
-                    <item name="component" xsi:type="string">Magento_Ui/js/grid/columns/date</item>
-                    <item name="dataType" xsi:type="string">date</item>
-                    <item name="label" xsi:type="string" translate="true">Send At</item>
-                </item>
-            </argument>
+        <column name="sent_at" class="Magento\Ui\Component\Listing\Columns\Date" component="Magento_Ui/js/grid/columns/date" sortOrder="80">
+            <settings>
+                <filter>dateRange</filter>
+                <label translate="true">Sent At</label>
+            </settings>
         </column>
-        <column name="send_id">
-            <argument name="data" xsi:type="array">
-                <item name="config" xsi:type="array">
-                    <item name="filter" xsi:type="string">text</item>
-                    <item name="label" xsi:type="string" translate="true">Send Id</item>
-                </item>
-            </argument>
+        <column name="send_id" sortOrder="90">
+            <settings>
+                <filter>text</filter>
+                <label translate="true">Send Id</label>
+            </settings>
         </column>
-        <column name="send_status">
-            <argument name="data" xsi:type="array">
-                <item name="options" xsi:type="object">Dotdigitalgroup\Email\Model\Adminhtml\Source\Campaign\Status</item>
-                <item name="config" xsi:type="array">
-                    <item name="filter" xsi:type="string">select</item>
-                    <item name="component" xsi:type="string">Magento_Ui/js/grid/columns/select</item>
-                    <item name="dataType" xsi:type="string">select</item>
-                    <item name="editor" xsi:type="string">select</item>
-                    <item name="label" xsi:type="string" translate="true">Send Status</item>
-                </item>
-            </argument>
+        <column name="send_status" component="Magento_Ui/js/grid/columns/select" sortOrder="100">
+            <settings>
+                <options class="Dotdigitalgroup\Email\Model\Adminhtml\Source\Campaign\Status"/>
+                <filter>select</filter>
+                <dataType>select</dataType>
+                <label translate="true">Send Status</label>
+            </settings>
         </column>
-        <column name="store_id">
-            <argument name="data" xsi:type="array">
-                <item name="config" xsi:type="array">
-                    <item name="filter" xsi:type="string">text</item>
-                    <item name="label" xsi:type="string" translate="true">Store Id</item>
-                </item>
-            </argument>
+        <column name="store_id" sortOrder="110">
+            <settings>
+                <filter>text</filter>
+                <label translate="true">Store Id</label>
+            </settings>
         </column>
-        <column name="created_at" class="Magento\Ui\Component\Listing\Columns\Date">
-            <argument name="data" xsi:type="array">
-                <item name="config" xsi:type="array">
-                    <item name="filter" xsi:type="string">dateRange</item>
-                    <item name="component" xsi:type="string">Magento_Ui/js/grid/columns/date</item>
-                    <item name="dataType" xsi:type="string">date</item>
-                    <item name="sorting" xsi:type="string">desc</item>
-                    <item name="label" xsi:type="string" translate="true">Created At</item>
-                </item>
-            </argument>
+        <column name="created_at" class="Magento\Ui\Component\Listing\Columns\Date" component="Magento_Ui/js/grid/columns/date" sortOrder="110">
+            <settings>
+                <filter>dateRange</filter>
+                <label translate="true">Created At</label>
+            </settings>
         </column>
-        <column name="updated_at" class="Magento\Ui\Component\Listing\Columns\Date">
-            <argument name="data" xsi:type="array">
-                <item name="config" xsi:type="array">
-                    <item name="filter" xsi:type="string">dateRange</item>
-                    <item name="component" xsi:type="string">Magento_Ui/js/grid/columns/date</item>
-                    <item name="dataType" xsi:type="string">date</item>
-                    <item name="label" xsi:type="string" translate="true">Updated At</item>
-                </item>
-            </argument>
+        <column name="updated_at" class="Magento\Ui\Component\Listing\Columns\Date" component="Magento_Ui/js/grid/columns/date" sortOrder="120">
+            <settings>
+                <filter>dateRange</filter>
+                <label translate="true">Updated At</label>
+            </settings>
         </column>
     </columns>
 </listing>

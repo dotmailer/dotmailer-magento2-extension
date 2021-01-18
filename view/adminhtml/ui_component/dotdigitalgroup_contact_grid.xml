@@ -4,243 +4,140 @@
     <argument name="data" xsi:type="array">
         <item name="js_config" xsi:type="array">
             <item name="provider" xsi:type="string">dotdigitalgroup_contact_grid.contact_report_grid_data_source</item>
-            <item name="deps" xsi:type="string">dotdigitalgroup_contact_grid.contact_report_grid_data_source</item>
-            <!--Declare the data source name which will be defined below-->
         </item>
-        <item name="spinner" xsi:type="string">dotdigitalgroup_contact_columns</item>
-        <!--Declare the listing of columns which will be defined below-->
     </argument>
-    <dataSource name="contact_report_grid_data_source">
-        <argument name="dataProvider" xsi:type="configurableObject">
-            <argument name="class" xsi:type="string">Magento\Framework\View\Element\UiComponent\DataProvider\DataProvider</argument>
-            <argument name="name" xsi:type="string">contact_report_grid_data_source</argument>
-            <argument name="primaryFieldName" xsi:type="string">email_contact_id</argument>
-            <argument name="requestFieldName" xsi:type="string">id</argument>
-            <argument name="data" xsi:type="array">
-                <item name="config" xsi:type="array">
-                    <item name="component" xsi:type="string">Magento_Ui/js/grid/provider</item>
-                    <item name="update_url" xsi:type="url" path="mui/index/render"/>
-                    <item name="storageConfig" xsi:type="array">
-                        <item name="indexField" xsi:type="string">email_contact_id</item>
-                    </item>
-                </item>
-            </argument>
-        </argument>
+    <settings>
+        <spinner>dotdigitalgroup_contact_columns</spinner>
+        <deps>
+            <dep>dotdigitalgroup_contact_grid.contact_report_grid_data_source</dep>
+        </deps>
+    </settings>
+    <dataSource name="contact_report_grid_data_source" component="Magento_Ui/js/grid/provider">
+        <settings>
+            <storageConfig>
+                <param name="indexField" xsi:type="string">email_contact_id</param>
+            </storageConfig>
+            <updateUrl path="mui/index/render"/>
+        </settings>
         <aclResource>Dotdigitalgroup_Email::contact</aclResource>
+        <dataProvider class="Magento\Framework\View\Element\UiComponent\DataProvider\DataProvider" name="contact_report_grid_data_source">
+            <settings>
+                <requestFieldName>email_contact_id</requestFieldName>
+                <primaryFieldName>email_contact_id</primaryFieldName>
+            </settings>
+        </dataProvider>
     </dataSource>
-    <container name="listing_top">
-        <argument name="data" xsi:type="array">
-            <item name="config" xsi:type="array">
-                <item name="template" xsi:type="string">ui/grid/toolbar</item>
-            </item>
-        </argument>
-        <bookmark name="bookmarks">
-            <argument name="data" xsi:type="array">
-                <item name="config" xsi:type="array">
-                    <item name="storageConfig" xsi:type="array">
-                        <item name="namespace" xsi:type="string">dotdigitalgroup_contact_grid</item>
-                    </item>
-                </item>
-            </argument>
-        </bookmark>
-        <component name="columns_controls">
-            <argument name="data" xsi:type="array">
-                <item name="config" xsi:type="array">
-                    <item name="columnsData" xsi:type="array">
-                        <item name="provider" xsi:type="string">dotdigitalgroup_contact_grid.dotdigitalgroup_contact_grid.dotdigitalgroup_contact_columns</item>
-                    </item>
-                    <item name="component" xsi:type="string">Magento_Ui/js/grid/controls/columns</item>
-                    <item name="displayArea" xsi:type="string">dataGridActions</item>
-                </item>
-            </argument>
-        </component>
-        <filters name="listing_filters">
-            <argument name="data" xsi:type="array">
-                <item name="config" xsi:type="array">
-                    <item name="columnsProvider" xsi:type="string">dotdigitalgroup_contact_grid.dotdigitalgroup_contact_grid.dotdigitalgroup_contact_columns</item>
-                    <item name="storageConfig" xsi:type="array">
-                        <item name="provider" xsi:type="string">dotdigitalgroup_contact_grid.dotdigitalgroup_contact_grid.listing_top.bookmarks</item>
-                        <item name="namespace" xsi:type="string">current.filters</item>
-                    </item>
-                    <item name="childDefaults" xsi:type="array">
-                        <item name="provider" xsi:type="string">dotdigitalgroup_contact_grid.dotdigitalgroup_contact_grid.listing_top.listing_filters</item>
-                        <item name="imports" xsi:type="array">
-                            <item name="visible" xsi:type="string">dotdigitalgroup_contact_grid.dotdigitalgroup_contact_grid.dotdigitalgroup_contact_columns.${ $.index }:visible</item>
-                        </item>
-                    </item>
-                </item>
-            </argument>
-        </filters>
-        <massaction name="listing_massaction">
-            <argument name="data" xsi:type="array">
-                <item name="config" xsi:type="array">
-                    <item name="selectProvider" xsi:type="string">dotdigitalgroup_contact_grid.dotdigitalgroup_contact_grid.dotdigitalgroup_contact_columns.ids</item>
-                    <item name="component" xsi:type="string">Magento_Ui/js/grid/tree-massactions</item>
-                    <item name="indexField" xsi:type="string">email_contact_id</item>
-                </item>
-            </argument>
+    <listingToolbar name="listing_top">
+        <bookmark name="bookmarks"/>
+        <columnsControls name="columns_controls"/>
+        <filters name="listing_filters"/>
+        <exportButton name="export_button"/>
+        <massaction name="listing_massaction"
+                    component="Magento_Ui/js/grid/tree-massactions"
+                    class="\Magento\Catalog\Ui\Component\Product\MassAction">
             <action name="delete">
-                <argument name="data" xsi:type="array">
-                    <item name="config" xsi:type="array">
-                        <item name="type" xsi:type="string">delete</item>
-                        <item name="label" xsi:type="string" translate="true">Delete</item>
-                        <item name="url" xsi:type="url" path="*/*/massDelete"/>
-                        <item name="confirm" xsi:type="array">
-                            <item name="title" xsi:type="string" translate="true">Delete items</item>
-                            <item name="message" xsi:type="string" translate="true">Are you sure to delete?</item>
-                        </item>
-                    </item>
-                </argument>
+                <settings>
+                    <url path="*/*/massDelete"/>
+                    <type>delete</type>
+                    <label translate="true">Delete</label>
+                    <confirm>
+                        <title translate="true">Delete items</title>
+                        <message translate="true">Are you sure?</message>
+                    </confirm>
+                </settings>
             </action>
         </massaction>
-        <paging name="listing_paging">
-            <argument name="data" xsi:type="array">
-                <item name="config" xsi:type="array">
-                    <item name="storageConfig" xsi:type="array">
-                        <item name="provider" xsi:type="string">dotdigitalgroup_contact_grid.dotdigitalgroup_contact_grid.listing_top.bookmarks</item>
-                        <item name="namespace" xsi:type="string">current.paging</item>
-                    </item>
-                    <item name="selectProvider" xsi:type="string">dotdigitalgroup_contact_grid.dotdigitalgroup_contact_grid.dotdigitalgroup_contact_columns.ids</item>
-                </item>
-            </argument>
-        </paging>
-        <exportButton name="export_button">
-            <argument name="data" xsi:type="array">
-                <item name="config" xsi:type="array">
-                    <item name="selectProvider" xsi:type="string">dotdigitalgroup_contact_grid.dotdigitalgroup_contact_grid.dotdigitalgroup_contact_columns.ids</item>
-                </item>
-            </argument>
-        </exportButton>
-    </container>
+        <paging name="listing_paging"/>
+    </listingToolbar>
     <columns name="dotdigitalgroup_contact_columns">
         <!--The list of columns-->
-        <selectionsColumn name="ids">
-            <argument name="data" xsi:type="array">
-                <item name="config" xsi:type="array">
-                    <item name="indexField" xsi:type="string">email_contact_id</item>
-                </item>
-            </argument>
+        <selectionsColumn name="ids" sortOrder="0">
+            <settings>
+                <indexField>email_contact_id</indexField>
+            </settings>
         </selectionsColumn>
-        <column name="contact_id">
-            <argument name="data" xsi:type="array">
-                <item name="config" xsi:type="array">
-                    <item name="filter" xsi:type="string">text</item>
-                    <item name="label" xsi:type="string" translate="true">Contact Id</item>
-                </item>
-            </argument>
+
+        <column name="contact_id" sortOrder="10">
+            <settings>
+                <filter>text</filter>
+                <label translate="true">Contact Id</label>
+            </settings>
         </column>
-        <column name="email">
-            <argument name="data" xsi:type="array">
-                <item name="config" xsi:type="array">
-                    <item name="filter" xsi:type="string">text</item>
-                    <item name="label" xsi:type="string" translate="true">Email</item>
-                </item>
-            </argument>
+        <column name="email" sortOrder="20">
+            <settings>
+                <filter>text</filter>
+                <label translate="true">Email</label>
+            </settings>
         </column>
-        <column name="customer_id">
-            <argument name="data" xsi:type="array">
-                <item name="config" xsi:type="array">
-                    <item name="filter" xsi:type="string">text</item>
-                    <item name="label" xsi:type="string" translate="true">Customer Id</item>
-                </item>
-            </argument>
+        <column name="customer_id" sortOrder="30">
+            <settings>
+                <filter>text</filter>
+                <label translate="true">Customer Id</label>
+            </settings>
         </column>
-        <column name="is_subscriber">
-            <argument name="data" xsi:type="array">
-                <item name="options" xsi:type="object">Dotdigitalgroup\Email\Model\Adminhtml\Source\Contact\Subscriber</item>
-                <item name="config" xsi:type="array">
-                    <item name="filter" xsi:type="string">select</item>
-                    <item name="component" xsi:type="string">Magento_Ui/js/grid/columns/select</item>
-                    <item name="dataType" xsi:type="string">select</item>
-                    <item name="editor" xsi:type="string">select</item>
-                    <item name="label" xsi:type="string" translate="true">Subscriber</item>
-                </item>
-            </argument>
+        <column name="is_subscriber" component="Magento_Ui/js/grid/columns/select" sortOrder="40">
+            <settings>
+                <options class="Dotdigitalgroup\Email\Model\Adminhtml\Source\Contact\Subscriber"/>
+                <filter>select</filter>
+                <dataType>select</dataType>
+                <label translate="true">Subscriber</label>
+            </settings>
         </column>
-        <column name="subscriber_status">
-            <argument name="data" xsi:type="array">
-                <item name="options" xsi:type="object">Dotdigitalgroup\Email\Model\Adminhtml\Source\Contact\Status</item>
-                <item name="config" xsi:type="array">
-                    <item name="filter" xsi:type="string">select</item>
-                    <item name="component" xsi:type="string">Magento_Ui/js/grid/columns/select</item>
-                    <item name="dataType" xsi:type="string">select</item>
-                    <item name="editor" xsi:type="string">select</item>
-                    <item name="label" xsi:type="string" translate="true">Status</item>
-                </item>
-            </argument>
+        <column name="subscriber_status" component="Magento_Ui/js/grid/columns/select" sortOrder="50">
+            <settings>
+                <options class="Dotdigitalgroup\Email\Model\Adminhtml\Source\Contact\Status"/>
+                <filter>select</filter>
+                <dataType>select</dataType>
+                <label translate="true">Subscriber Status</label>
+            </settings>
         </column>
-        <column name="is_guest">
-            <argument name="data" xsi:type="array">
-                <item name="options" xsi:type="object">Dotdigitalgroup\Email\Model\Adminhtml\Source\Contact\Guest</item>
-                <item name="config" xsi:type="array">
-                    <item name="filter" xsi:type="string">select</item>
-                    <item name="component" xsi:type="string">Magento_Ui/js/grid/columns/select</item>
-                    <item name="dataType" xsi:type="string">select</item>
-                    <item name="editor" xsi:type="string">select</item>
-                    <item name="label" xsi:type="string" translate="true">Guest</item>
-                </item>
-            </argument>
+        <column name="is_guest" component="Magento_Ui/js/grid/columns/select" sortOrder="60">
+            <settings>
+                <options class="Dotdigitalgroup\Email\Model\Adminhtml\Source\Contact\Guest"/>
+                <filter>select</filter>
+                <dataType>select</dataType>
+                <label translate="true">Guest</label>
+            </settings>
         </column>
-        <column name="email_imported">
-            <argument name="data" xsi:type="array">
-                <item name="options" xsi:type="object">Dotdigitalgroup\Email\Model\Adminhtml\Source\Contact\Imported</item>
-                <item name="config" xsi:type="array">
-                    <item name="filter" xsi:type="string">select</item>
-                    <item name="component" xsi:type="string">Magento_Ui/js/grid/columns/select</item>
-                    <item name="dataType" xsi:type="string">select</item>
-                    <item name="editor" xsi:type="string">select</item>
-                    <item name="label" xsi:type="string" translate="true">Imported</item>
-                </item>
-            </argument>
+        <column name="email_imported" component="Magento_Ui/js/grid/columns/select" sortOrder="70">
+            <settings>
+                <options class="Dotdigitalgroup\Email\Model\Adminhtml\Source\Contact\Imported"/>
+                <filter>select</filter>
+                <dataType>select</dataType>
+                <label translate="true">Imported</label>
+            </settings>
         </column>
-        <column name="subscriber_imported">
-            <argument name="data" xsi:type="array">
-                <item name="options" xsi:type="object">\Dotdigitalgroup\Email\Model\Adminhtml\Source\Contact\Imported</item>
-                <item name="config" xsi:type="array">
-                    <item name="filter" xsi:type="string">select</item>
-                    <item name="component" xsi:type="string">Magento_Ui/js/grid/columns/select</item>
-                    <item name="dataType" xsi:type="string">select</item>
-                    <item name="editor" xsi:type="string">select</item>
-                    <item name="label" xsi:type="string" translate="true">Subscriber Imported</item>
-                </item>
-            </argument>
+        <column name="subscriber_imported" component="Magento_Ui/js/grid/columns/select" sortOrder="80">
+            <settings>
+                <options class="Dotdigitalgroup\Email\Model\Adminhtml\Source\Contact\Imported"/>
+                <filter>select</filter>
+                <dataType>select</dataType>
+                <label translate="true">Subscriber Imported</label>
+            </settings>
         </column>
-        <column name="suppressed">
-            <argument name="data" xsi:type="array">
-                <item name="options" xsi:type="object">\Dotdigitalgroup\Email\Model\Adminhtml\Source\Contact\Suppressed</item>
-                <item name="config" xsi:type="array">
-                    <item name="filter" xsi:type="string">select</item>
-                    <item name="component" xsi:type="string">Magento_Ui/js/grid/columns/select</item>
-                    <item name="dataType" xsi:type="string">select</item>
-                    <item name="editor" xsi:type="string">select</item>
-                    <item name="label" xsi:type="string" translate="true">Suppressed</item>
-                </item>
-            </argument>
+        <column name="suppressed" component="Magento_Ui/js/grid/columns/select" sortOrder="90">
+            <settings>
+                <options class="Dotdigitalgroup\Email\Model\Adminhtml\Source\Contact\Suppressed"/>
+                <filter>select</filter>
+                <dataType>select</dataType>
+                <label translate="true">Suppressed</label>
+            </settings>
         </column>
-        <column name="website_id">
-            <argument name="data" xsi:type="array">
-                <item name="options" xsi:type="object">Magento\Store\Model\ResourceModel\Website\Collection</item>
-                <item name="config" xsi:type="array">
-                    <item name="filter" xsi:type="string">select</item>
-                    <item name="component" xsi:type="string">Magento_Ui/js/grid/columns/select</item>
-                    <item name="dataType" xsi:type="string">select</item>
-                    <item name="editor" xsi:type="string">select</item>
-                    <item name="label" xsi:type="string" translate="true">Website</item>
-                </item>
-            </argument>
+        <column name="website_id" component="Magento_Ui/js/grid/columns/select" sortOrder="100">
+            <settings>
+                <options class="Magento\Store\Model\ResourceModel\Website\Collection"/>
+                <filter>select</filter>
+                <dataType>select</dataType>
+                <label translate="true">Website</label>
+            </settings>
         </column>
-        <column name="store_id">
-            <argument name="data" xsi:type="array">
-                <item name="options" xsi:type="object">Magento\Store\Model\ResourceModel\Store\Collection</item>
-                <item name="config" xsi:type="array">
-                    <item name="filter" xsi:type="string">select</item>
-                    <item name="component" xsi:type="string">Magento_Ui/js/grid/columns/select</item>
-                    <item name="dataType" xsi:type="string">select</item>
-                    <item name="editor" xsi:type="string">select</item>
-                    <item name="sortOrder" xsi:type="number">90</item>
-                    <item name="label" xsi:type="string" translate="true">Store</item>
-                </item>
-            </argument>
+        <column name="store_id" component="Magento_Ui/js/grid/columns/select" sortOrder="110">
+            <settings>
+                <options class="Magento\Store\Model\ResourceModel\Store\Collection"/>
+                <filter>select</filter>
+                <dataType>select</dataType>
+                <label translate="true">Store</label>
+            </settings>
         </column>
     </columns>
 </listing>
