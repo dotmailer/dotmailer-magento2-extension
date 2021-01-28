@@ -18,9 +18,6 @@
     <type name="Magento\Framework\Mail\TransportInterface">
         <plugin name="ddg_mail_transport" type="Dotdigitalgroup\Email\Plugin\TransportPlugin" sortOrder="1" disabled="false" />
     </type>
-    <type name="Magento\Reports\Model\ResourceModel\Product\Collection">
-        <plugin name="ddg_reports_product_collection" type="Dotdigitalgroup\Email\Plugin\ReportsProductCollectionPlugin"/>
-    </type>
     <type name="Magento\Framework\Mail\Template\TransportBuilder">
         <plugin name="Ddg_TransportBuilderPlugin" type="Dotdigitalgroup\Email\Plugin\TransportBuilderPlugin" sortOrder="1" disabled="false" />
     </type>
