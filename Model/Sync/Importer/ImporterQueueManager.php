@@ -157,12 +157,6 @@ class ImporterQueueManager
         $updateCartInsightTd['mode'] = ImporterModel::MODE_SINGLE;
         $updateCartInsightTd['type'] = ImporterModel::IMPORT_TYPE_CART_INSIGHT_CART_PHASE;
 
-        //Update Other TD
-        $updateOtherTd = $defaultSingleUpdate;
-        $updateOtherTd['model'] = $this->updateFactory;
-        $updateOtherTd['mode'] = ImporterModel::MODE_SINGLE;
-        $updateOtherTd['type'] = ImporterModel::IMPORT_TYPE_WISHLIST;
-
         /*
         * Delete
         */
@@ -196,7 +190,6 @@ class ImporterQueueManager
             $emailChange,
             $orderUpdate,
             $updateCartInsightTd,
-            $updateOtherTd,
             $contactDelete,
             $tdDelete,
         ];

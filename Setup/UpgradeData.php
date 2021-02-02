@@ -171,6 +171,8 @@ class UpgradeData implements UpgradeDataInterface
         $this->upgradeFourFourZero($setup, $context);
         $this->upgradeFourFiveTwo($context);
         $this->upgradeFourFiveThree($context);
+        $this->upgradeFourElevenZero($setup, $context);
+
         $installer->endSetup();
     }
 
@@ -426,6 +428,32 @@ class UpgradeData implements UpgradeDataInterface
             $this->dummyRecordsFactory
                 ->create()
                 ->sync();
+        }
+    }
+
+    /**
+     * Translate wishlist modified 1 > imported 0
+     *
+     * @param ModuleDataSetupInterface $setup
+     * @param ModuleContextInterface $context
+     */
+    private function upgradeFourElevenZero(
+        ModuleDataSetupInterface $setup,
+        ModuleContextInterface $context
+    ) {
+        if (version_compare($context->getVersion(), '4.11.0', '<')) {
+            $wishlistTable = $setup->getTable(Schema::EMAIL_WISHLIST_TABLE);
+
+            $setup->getConnection()->update(
+                $wishlistTable,
+                [
+                    'wishlist_imported' => 0,
+                    'wishlist_modified' => new \Zend_Db_Expr('null')
+                ],
+                [
+                    'wishlist_modified' => 1
+                ]
+            );
         }
     }
 }

@@ -64,6 +64,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
         $this->upgradeFourThreeFour($setup, $context, $connection);
         $this->upgradeFourThreeSix($setup, $connection, $context);
         $this->upgradeFourFiveTwo($setup, $connection, $context);
+        $this->upgradeFourElevenZero($setup, $connection, $context);
 
         $setup->endSetup();
     }
@@ -667,6 +668,34 @@ class UpgradeSchema implements UpgradeSchemaInterface
 
             if ($connection->tableColumnExists($emailCatalogTable, 'modified')) {
                 $connection->dropColumn($emailCatalogTable, 'modified');
+            }
+        }
+    }
+
+    /**
+     * @param SchemaSetupInterface $setup
+     * @param AdapterInterface $connection
+     * @param ModuleContextInterface $context
+     */
+    private function upgradeFourElevenZero(
+        SchemaSetupInterface $setup,
+        AdapterInterface $connection,
+        ModuleContextInterface $context
+    ) {
+        if (version_compare($context->getVersion(), '4.11.0', '<')) {
+            $emailWishlistTable = $setup->getTable(Schema::EMAIL_WISHLIST_TABLE);
+
+            if ($connection->tableColumnExists($emailWishlistTable, 'wishlist_modified')) {
+                $connection->modifyColumn(
+                    $emailWishlistTable,
+                    'wishlist_modified',
+                    [
+                        'type' => \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
+                        'unsigned' => true,
+                        'nullable' => true,
+                        'comment' => 'Wishlist Modified [deprecated]'
+                    ]
+                );
             }
         }
     }

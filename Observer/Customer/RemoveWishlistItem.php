@@ -51,9 +51,8 @@ class RemoveWishlistItem implements \Magento\Framework\Event\ObserverInterface
 
             if ($emailWishlist) {
                 $count = $emailWishlist->getItemCount();
-                //update wishlist count and set to modified
                 $emailWishlist->setItemCount(--$count);
-                $emailWishlist->setWishlistModified(1);
+                $emailWishlist->setWishlistImported(0);
                 $this->emailWishlistResource->save($emailWishlist);
             }
         } catch (\Exception $e) {

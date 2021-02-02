@@ -898,7 +898,7 @@ class InstallSchema implements InstallSchemaInterface
             \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
             null,
             ['unsigned' => true, 'nullable' => true],
-            'Wishlist Modified'
+            'Wishlist Modified [deprecated]'
         )
         ->addColumn(
             'created_at',

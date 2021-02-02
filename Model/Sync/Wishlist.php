@@ -2,13 +2,13 @@
 
 namespace Dotdigitalgroup\Email\Model\Sync;
 
+use Dotdigitalgroup\Email\Helper\Config;
 use Dotdigitalgroup\Email\Model\Importer;
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Store\Api\Data\WebsiteInterface;
 
 /**
  * Sync Wishlists.
- *
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 class Wishlist implements SyncInterface
 {
@@ -18,11 +18,6 @@ class Wishlist implements SyncInterface
     private $helper;
 
     /**
-     * @var \Magento\Customer\Model\CustomerFactory
-     */
-    private $customerFactory;
-
-    /**
      * @var \Dotdigitalgroup\Email\Model\ImporterFactory
      */
     private $importerFactory;
@@ -30,7 +25,7 @@ class Wishlist implements SyncInterface
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\WishlistFactory
      */
-    private $wishlist;
+    private $wishlistResourceFactory;
 
     /**
      * @var \Dotdigitalgroup\Email\Model\Customer\WishlistFactory
@@ -45,17 +40,12 @@ class Wishlist implements SyncInterface
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist\CollectionFactory
      */
-    private $wishlistCollection;
+    private $wishlistCollectionFactory;
 
     /**
      * @var \Magento\Wishlist\Model\ResourceModel\Item\CollectionFactory
      */
     private $itemCollection;
-
-    /**
-     * @var \Magento\Framework\Stdlib\DateTime\DateTime
-     */
-    private $datetime;
 
     /**
      * @var \Magento\Store\Model\App\EmulationFactory
@@ -70,40 +60,34 @@ class Wishlist implements SyncInterface
     /**
      * Wishlist constructor.
      * @param \Magento\Wishlist\Model\ResourceModel\Item\CollectionFactory $itemCollection
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist\CollectionFactory $wishlistCollection
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist\CollectionFactory $wishlistCollectionFactory
      * @param \Dotdigitalgroup\Email\Model\Customer\Wishlist\ItemFactory $itemFactory
      * @param \Dotdigitalgroup\Email\Model\Customer\WishlistFactory $wishlistFactory
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\WishlistFactory $wishlist
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\WishlistFactory $wishlistResourceFactory
      * @param \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
-     * @param \Magento\Customer\Model\CustomerFactory $customerFactory
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
-     * @param \Magento\Framework\Stdlib\DateTime\DateTime $datetime
      * @param \Magento\Store\Model\App\EmulationFactory $emulationFactory
      * @param ScopeConfigInterface $scopeConfig
      */
     public function __construct(
         \Magento\Wishlist\Model\ResourceModel\Item\CollectionFactory $itemCollection,
-        \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist\CollectionFactory $wishlistCollection,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist\CollectionFactory $wishlistCollectionFactory,
         \Dotdigitalgroup\Email\Model\Customer\Wishlist\ItemFactory $itemFactory,
         \Dotdigitalgroup\Email\Model\Customer\WishlistFactory $wishlistFactory,
-        \Dotdigitalgroup\Email\Model\ResourceModel\WishlistFactory $wishlist,
+        \Dotdigitalgroup\Email\Model\ResourceModel\WishlistFactory $wishlistResourceFactory,
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
-        \Magento\Customer\Model\CustomerFactory $customerFactory,
         \Dotdigitalgroup\Email\Helper\Data $helper,
-        \Magento\Framework\Stdlib\DateTime\DateTime $datetime,
         \Magento\Store\Model\App\EmulationFactory $emulationFactory,
         ScopeConfigInterface $scopeConfig
     ) {
-        $this->itemCollection     = $itemCollection;
-        $this->wishlistCollection = $wishlistCollection;
-        $this->itemFactory        = $itemFactory;
-        $this->wishlistFactory    = $wishlistFactory;
-        $this->wishlist           = $wishlist;
-        $this->importerFactory    = $importerFactory;
-        $this->customerFactory    = $customerFactory;
-        $this->helper             = $helper;
-        $this->datetime           = $datetime;
-        $this->emulationFactory   = $emulationFactory;
+        $this->itemCollection = $itemCollection;
+        $this->wishlistCollectionFactory = $wishlistCollectionFactory;
+        $this->itemFactory = $itemFactory;
+        $this->wishlistFactory = $wishlistFactory;
+        $this->wishlistResourceFactory = $wishlistResourceFactory;
+        $this->importerFactory = $importerFactory;
+        $this->helper = $helper;
+        $this->emulationFactory = $emulationFactory;
         $this->scopeConfig = $scopeConfig;
     }
 
@@ -119,7 +103,7 @@ class Wishlist implements SyncInterface
         $syncSummary = '';
         $totalWishlists = 0;
         $limit = $this->scopeConfig->getValue(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_TRANSACTIONAL_DATA_SYNC_LIMIT
+            Config::XML_PATH_CONNECTOR_TRANSACTIONAL_DATA_SYNC_LIMIT
         );
 
         $websites = $this->helper->getWebsites();
@@ -128,18 +112,17 @@ class Wishlist implements SyncInterface
 
         foreach ($websites as $website) {
             $wishlistEnabled = $this->helper->getWebsiteConfig(
-                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_WISHLIST_ENABLED,
+                Config::XML_PATH_CONNECTOR_SYNC_WISHLIST_ENABLED,
                 $website
             );
-            $apiEnabled      = $this->helper->isEnabled($website);
-            $storeIds        = $website->getStoreIds();
+            $apiEnabled = $this->helper->isEnabled($website);
+            $storeIds = $website->getStoreIds();
 
-            if ($wishlistEnabled && $apiEnabled && ! empty($storeIds)) {
-                //using bulk api
-                $wishlists = $this->exportWishlistForWebsite($website, $limit);
-                //send wishlist as transactional data
+            if ($wishlistEnabled && $apiEnabled && !empty($storeIds)) {
+                $wishlistIds = $this->getWishlistIdsToImport($website, $limit);
+                $wishlists = $this->exportWishlistsForWebsite($website, $wishlistIds);
+
                 if ($wishlists) {
-                    //register in queue with importer
                     $this->importerFactory->create()
                         ->registerQueue(
                             Importer::IMPORT_TYPE_WISHLIST,
@@ -147,14 +130,12 @@ class Wishlist implements SyncInterface
                             Importer::MODE_BULK,
                             $website->getId()
                         );
-                    //mark connector wishlist as  imported
-                    $this->setImported(array_column($wishlists, 'id'));
                 }
+
+                $this->setImported($wishlistIds);
+
                 $syncSummary .= ' Website id ' . $website->getId() . ' (' . count($wishlists) . ') --';
                 $totalWishlists += count($wishlists);
-
-                //using single api
-                $this->exportWishlistForWebsiteInSingle($website, $limit);
             }
         }
 
@@ -170,28 +151,19 @@ class Wishlist implements SyncInterface
     }
 
     /**
-     *
-     * @param \Magento\Store\Api\Data\WebsiteInterface $website
-     * @param string|int $limit
+     * @param WebsiteInterface $website
+     * @param array $wishlistIds
      * @return array
      */
-    public function exportWishlistForWebsite(\Magento\Store\Api\Data\WebsiteInterface $website, $limit)
+    private function exportWishlistsForWebsite(WebsiteInterface $website, $wishlistIds)
     {
-        $wishlists   = [];
-        $wishlistIds = $this->getWishlistToImport($website, $limit)
-            ->getColumnValues('wishlist_id');
+        $wishlists = [];
 
-        if (! empty($wishlistIds)) {
-            $collection = $this->wishlist->create()
-                ->getWishlistByIds($wishlistIds);
+        if (!empty($wishlistIds)) {
+            $collection = $this->wishlistResourceFactory->create()
+                ->getMagentoWishlistsByIds($wishlistIds);
 
             foreach ($collection as $wishlist) {
-                $connectorWishlist = $this->wishlistFactory->create();
-                $connectorWishlist->setId($wishlist->getId())
-                                  ->setUpdatedAt($wishlist->getUpdatedAt())
-                                  ->setCustomerId($wishlist->getCustomerId())
-                                  ->setEmail($wishlist->getEmail());
-
                 $appEmulation = $this->emulationFactory->create();
                 $appEmulation->startEnvironmentEmulation($wishlist->getStoreId());
 
@@ -199,22 +171,15 @@ class Wishlist implements SyncInterface
                     ->addWishlistFilter($wishlist);
 
                 if ($wishListItemCollection->getSize()) {
-                    foreach ($wishListItemCollection as $item) {
-                        try {
-                            $product = $item->getProduct();
-                            $wishlistItem = $this->itemFactory->create();
-                            $wishlistItem->setProduct($product)
-                                ->setQty($item->getQty())
-                                ->setPrice($product);
-                            //store for wishlists
-                            $connectorWishlist->setItem($wishlistItem);
-                        } catch (\Exception $e) {
-                            //Product does not exist. Continue to next item
-                            continue;
-                        }
-                    }
-                    //set wishlists for later use
-                    $wishlists[] = $connectorWishlist->expose();
+                    $wishlists[] = $this->buildWishlistData($wishlist, $wishListItemCollection);
+                } else {
+                    $this->importerFactory->create()
+                        ->registerQueue(
+                            Importer::IMPORT_TYPE_WISHLIST,
+                            [$wishlist->getId()],
+                            Importer::MODE_SINGLE_DELETE,
+                            $website->getId()
+                        );
                 }
                 $appEmulation->stopEnvironmentEmulation();
             }
@@ -224,126 +189,69 @@ class Wishlist implements SyncInterface
     }
 
     /**
-     *
-     * @param \Magento\Store\Api\Data\WebsiteInterface $website
+     * @param WebsiteInterface $website
      * @param int $limit
-     *
-     * @return \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist\Collection
+     * @return array
      */
-    public function getWishlistToImport(\Magento\Store\Api\Data\WebsiteInterface $website, $limit = 100)
+    private function getWishlistIdsToImport(WebsiteInterface $website, $limit = 100)
     {
-        return $this->wishlistCollection->create()
-                                        ->getWishlistToImportByWebsite($website, $limit);
-    }
-
-    /**
-     * Export single wishlist for website.
-     *
-     * @param \Magento\Store\Api\Data\WebsiteInterface $website
-     * @param string|int $limit
-     * @return void
-     */
-    public function exportWishlistForWebsiteInSingle(\Magento\Store\Api\Data\WebsiteInterface $website, $limit)
-    {
-        $wishlistIds = [];
-        $wishlistIdsToSync = $this->getModifiedWishlistToImport($website, $limit)
+        return $this->wishlistCollectionFactory->create()
+            ->getWishlistsToImportByWebsite($website, $limit)
             ->getColumnValues('wishlist_id');
-
-        $wishlistCollection = $this->wishlist->create()
-            ->getWishlistByIds($wishlistIdsToSync);
-
-        foreach ($wishlistCollection as $wishlist) {
-            $wishlistId    = $wishlist->getid();
-            $wishlistItems = $this->itemCollection->create()
-                                                  ->addWishlistFilter($wishlist);
-
-            $connectorWishlist = $this->wishlistFactory->create();
-            $connectorWishlist->setId($wishlistId)
-                              ->setUpdatedAt($wishlist->getUpdatedAt())
-                              ->setCustomerId($wishlist->getCustomerId())
-                              ->setEmail($wishlist->getEmail());
-
-            if ($wishlistItems->getSize()) {
-                /** @var \Magento\Wishlist\Model\Item $item */
-                foreach ($wishlistItems as $item) {
-                    try {
-                        $product = $item->getProduct();
-                        $connectorWishlistItem = $this->createConnectorWishlistItem($product, $item);
-                        if ($connectorWishlistItem) {
-                            $connectorWishlist->setItem($connectorWishlistItem);
-                        }
-                    } catch (\Exception $e) {
-                        //Product does not exist. Continue to next item
-                        continue;
-                    }
-                }
-                //register in queue with importer
-                $check = $this->importerFactory->create()
-                    ->registerQueue(
-                        Importer::IMPORT_TYPE_WISHLIST,
-                        $connectorWishlist->expose(),
-                        Importer::MODE_SINGLE,
-                        $website->getId()
-                    );
-            } else {
-                //register in queue with importer
-                $check = $this->importerFactory->create()
-                    ->registerQueue(
-                        Importer::IMPORT_TYPE_WISHLIST,
-                        [$wishlistId],
-                        Importer::MODE_SINGLE_DELETE,
-                        $website->getId()
-                    );
-            }
-            if ($check) {
-                $wishlistIds[] = $wishlistId;
-            }
-        }
-        if (! empty($wishlistIds)) {
-            $this->setImported($wishlistIds, true);
-        }
     }
 
     /**
-     * Get wishlists marked as modified for website.
-     *
-     * @param \Magento\Store\Api\Data\WebsiteInterface $website
-     * @param int $limit
-     *
-     * @return mixed
-     */
-    public function getModifiedWishlistToImport(\Magento\Store\Api\Data\WebsiteInterface $website, $limit = 100)
-    {
-        return $this->wishlistCollection->create()
-                                        ->getModifiedWishlistToImportByWebsite($website, $limit);
-    }
-
-    /**
-     *
      * @param array $ids
-     * @param bool $modified
-     *
-     * @return null
      */
-    public function setImported($ids, $modified = false)
+    private function setImported($ids)
     {
-        $now = $this->datetime->gmtDate();
-        $this->wishlist->create()
-                       ->setImported($ids, $now, $modified);
+        $this->wishlistResourceFactory->create()
+            ->setImported($ids);
     }
 
     /**
-     *
-     * @param \Magento\Catalog\Model\Product $product
-     * @param \Magento\Wishlist\Model\Item $item
-     *
-     * @return mixed
+     * @param \Magento\Wishlist\Model\Wishlist $wishlist
+     * @param \Magento\Wishlist\Model\ResourceModel\Item\Collection $wishListItemCollection
+     * @return array
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
-    private function createConnectorWishlistItem($product, $item)
+    private function buildWishlistData($wishlist, $wishListItemCollection)
     {
-        return $this->itemFactory->create()
-            ->setProduct($product)
-            ->setQty($item->getQty())
-            ->setPrice($product);
+        $connectorWishlist = $this->wishlistFactory->create();
+        $connectorWishlist->setId($wishlist->getId())
+            ->setCustomerId($wishlist->getCustomerId())
+            ->setEmail($wishlist->getEmail())
+            ->setUpdatedAt($this->getWishlistUpdatedAt($wishlist->getId()));
+
+        foreach ($wishListItemCollection as $item) {
+            try {
+                $product = $item->getProduct();
+                $connectorWishlistItem = $this->itemFactory->create()
+                    ->setProduct($product)
+                    ->setQty($item->getQty())
+                    ->setPrice($product);
+                $connectorWishlist->setItem($connectorWishlistItem);
+            } catch (\Exception $e) {
+                //Product does not exist. Continue to next item
+                continue;
+            }
+        }
+
+        return $connectorWishlist->expose();
+    }
+
+    /**
+     * Magento's core wishlist table's updated_at column does not update when items are added
+     * or removed from the wishlist. Therefore we rely on our own table.
+     *
+     * @param string|int $id
+     * @return string
+     */
+    private function getWishlistUpdatedAt($id)
+    {
+        $connectorWishlist = $this->wishlistCollectionFactory->create()
+            ->getWishlistById($id);
+
+        return $connectorWishlist->getUpdatedAt();
     }
 }
