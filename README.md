@@ -19,6 +19,28 @@ You are welcome to contribute to Engagement Cloud for Magento! You can either:
 - Fix a bug: please clone and use our [Develop branch](https://github.com/dotmailer/dotmailer-magento2-extension/tree/develop) to submit your Pull Request
 - Request a feature on our [roadmap](https://roadmap.dotdigital.com)
 
+# 4.11.0
+
+###### What's new
+- We have a new feature that enables merchants to choose which image size they prefer to use for different contexts in Magento. Configurable via **Stores > Configuration > dotdigital > Configuration > Image Types**.
+
+###### Improvements
+- We’ve added the `email_coupon_attribute` table to the list of tables to drop in the module's `Uninstall` class.
+- We removed some unnecessary configuration steps from our install script. 
+- The UI component XML for our report grids has been restructured in line with Magento’s latest standards. 
+- We removed a legacy plugin for handling 'most viewed' product report data.
+- We removed some unused methods relating to fetching a customer’s last order id and last quote id.
+
+###### Bug fixes
+- Wishlist insight data was showing the wrong updated at date, and modified wishlists were syncing without product data. Both these problems have been addressed. This release simplifies wishlist sync by removing 'single' wishlist imports, and handling all required updates in bulk.
+- We made a small change to improve our error handling when retrieving lists of programs from Engagement Cloud.
+- The OAuth Connect button in **Stores > Configuration > dotdigital > Developer > OAuth Credentials** is now fixed.
+- We fixed a regression introduced in 4.5.1, which excluded bundle products with dynamic SKUs from cart insight data.
+- Customers who subscribe during registration, but need to confirm their subscription, will now be added to a subscriber automation, if configured.
+- Failed cURL requests will now always return an object.
+- Data field mappings are now retrieved in website scope, instead of store scope.
+- We now fetch values for **Disable Customer Success** and **Disable Newsletter Success** in the correct (website) scope. 
+
 # 4.9.3
 
 ###### Bug fixes
@@ -34,18 +56,6 @@ You are welcome to contribute to Engagement Cloud for Magento! You can either:
 - We now respect the configuration of Stores > Configuration > Sales > Checkout > Grouped Product Image, and retrieve the parent grouped product image for cart insight data, where necessary.
 - Our cart insight dummy data schema has been updated to use the correct data types.
 - The currency code in order insight data now indicates the store currency, in line with the synced prices.
-
-# 4.10.0-RC1
-
-###### What's new
-- We have a new feature that enables merchants to choose which image size they prefer to use for different contexts in Magento. Configurable via **Stores > Configuration > dotdigital > Configuration > Image Types**.
-
-###### Improvements
-- We’ve added the `email_coupon_attribute` table to the list of tables to drop in the module’s `Uninstall` class.
-- We added a new MFTF test to check the Swagger API page, in case our code had caused it to break.
-
-###### Bug fixes
-- We made a small change to improve our error handling when retrieving lists of programs from Engagement Cloud.
 
 # 4.9.1
 
@@ -97,18 +107,6 @@ You are welcome to contribute to Engagement Cloud for Magento! You can either:
 - The subscriber status data field could have an empty value when customer sync was run using cron. We fixed this using App Emulation.
 - We've fixed an issue with address book mapping if a dotdigital account is enabled at default level but disabled for the main website.
 
-# 4.8.0-RC2
-
-###### Improvements
-- In-app system messages for system alerts are now enabled by default.
-- We've added new API methods to fetch pages and forms from Engagement Cloud.
-- dotdigital forms embedded in CMS pages and blocks can now add email addresses to Magento’s newsletter subscribers list. 
-- _Easy Email Capture_ for newsletter subscriptions now happens on the server side after submit (this supports our forms integration for Page Builder).
-- We've added a helper method to check if Magento has an active Engagement Cloud account enabled at any level. 
-- The program select in **dotdigital > Abandoned Carts > Abandoned Cart Program** now lists all programs, even those with a status of 'Draft' or 'Deactivated'. 
-- We've fixed a small omission in the install schema script, by adding a `nullable` property to the `last_subscribed_at`  column in `email_contact`.
-- Our MFTF test suite has been updated.
-
 # 4.5.7
 
 ###### Bug fixes
@@ -119,16 +117,6 @@ You are welcome to contribute to Engagement Cloud for Magento! You can either:
 ###### Improvements
 - We are moving the `ddg_automation_abandonedcarts` cron job to its own cron group, in order to protect it from scheduling delays caused by over-running sync jobs. 
 - We've added a Content Security Policy whitelist for specific domains used by this module.
-
-# 4.8.0-RC1
-
-###### What’s new
-- System alerts now report on transactional email send failures. 
-- Our unit tests have been updated to be compatible with PHPUnit v9+. This change was required for Magento 2.4.
-- Module dependencies have been updated in line with Magento 2.4 requirements. 
-- Cart insight data is now sent for the Engagement Cloud account owner’s email address when validating API credentials, and at upgrade. This allows the Abandoned cart block to be visible in EasyEditor before customer data is received.
-- All active dotdigital modules are now displayed with their version numbers in the Email module dashboard (**Reports > Customer Engagement > Dashboard**).
-- We’ve added a new API method to fetch surveys and forms from Engagement Cloud.
 
 # 4.5.5
 
