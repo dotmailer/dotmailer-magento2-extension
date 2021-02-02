@@ -2,6 +2,9 @@
 
 namespace Dotdigitalgroup\Email\Plugin;
 
+use Dotdigitalgroup\Email\Helper\Config;
+use Magento\Store\Model\ScopeInterface;
+
 /**
  * Disable customer email depending on settings value.
  *
@@ -40,7 +43,7 @@ class CustomerEmailNotificationPlugin
      * @param string|int $storeId
      * @param string|null $sendemailStoreId
      *
-     * @return mixed
+     * @return void
      */
     public function aroundNewAccount(
         \Magento\Customer\Model\EmailNotificationInterface $emailNotification,
@@ -51,14 +54,16 @@ class CustomerEmailNotificationPlugin
         $storeId = 0,
         $sendemailStoreId = null
     ) {
-        if (! $storeId) {
+        if (!$storeId) {
             $storeId = $this->getWebsiteStoreId($customer, $sendemailStoreId);
         }
 
-        if (! $this->scopeConfig->getValue(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DISABLE_CUSTOMER_SUCCESS,
-            'store',
-            $storeId
+        $websiteId = $this->storeManager->getStore($storeId)->getWebsiteId();
+
+        if (!$this->scopeConfig->getValue(
+            Config::XML_PATH_CONNECTOR_DISABLE_CUSTOMER_SUCCESS,
+            ScopeInterface::SCOPE_WEBSITES,
+            $websiteId
         )
         ) {
             return $proceed($customer, $type, $backUrl, $storeId, $sendemailStoreId);
@@ -67,6 +72,7 @@ class CustomerEmailNotificationPlugin
 
     /**
      * Get either first store ID from a set website or the provided as default
+     * @see \Magento\Customer\Model\EmailNotification
      *
      * @param \Magento\Customer\Api\Data\CustomerInterface $customer
      * @param int|string|null $defaultStoreId
