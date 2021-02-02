@@ -8,8 +8,7 @@
             <stories value="If API enabled and one of the preferences enabled, plugin should redirect to dotmailer preference page."/>
             <title value="You should be able to see dotmailer preferences page if api is enabled and one of the preferences are enabled."/>
             <description value="You should be able to see dotmailer preferences page if api is enabled and one of the preferences are enabled."/>
-            <severity value="CRITICAL"/>
-            <group value="dotmailer-preference-page"/>
+            <severity value="AVERAGE"/>
             <group value="dotmailer"/>
         </annotations>
         <before>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
+    <test name="LogViewerTest">
+        <annotations>
+            <features value="Engagement Cloud module"/>
+            <stories value="Test Log Viewer"/>
+            <title value="Test dotdigital integrated Log Viewer"/>
+            <description value="Confirm that log files can be viewed."/>
+            <severity value="MINOR"/>
+            <group value="dotmailer"/>
+        </annotations>
+
+        <before>
+            <actionGroup ref="AdminLoginActionGroup" stepKey="AdminLoginActionGroup1"/>
+            <actionGroup ref="SetDotmailerAccountData" stepKey="SetDotmailerAccountData"/>
+        </before>
+
+        <after>
+            <actionGroup ref="ResetDotmailerAccountData" stepKey="resetAccountData"/>
+            <actionGroup ref="AdminLogoutActionGroup" stepKey="logout"/>
+        </after>
+
+        <amOnPage url="{{LogViewerPage.url}}" stepKey="amOnLogViewerPage"/>
+        <waitForPageLoad stepKey="waitForPageLoad"/>
+
+        <seeElement selector="{{LogViewerSection.window}}" stepKey="seeLogWindow"/>
+
+        <!-- Marketing Automation Log -->
+        <selectOption selector="{{LogViewerSection.switcher}}" userInput="connector" stepKey="setSwitcherToMarketingAutomationLog"/>
+        <click selector="{{LogViewerSection.reloader}}" stepKey="reload1" />
+        <waitForAjaxLoad stepKey="waitForReload1"/>
+        <seeInSource html="dotdigital&#46;INFO&#58; ----VALIDATING ACCOUNT---" stepKey="checkWindowForDotdigitalLog"/>
+        <grabTextFrom selector="{{LogViewerSection.window}}" stepKey="grabDotdigitalLog"/>
+
+        <!-- System Log -->
+        <selectOption selector="{{LogViewerSection.switcher}}" userInput="system" stepKey="setSwitcherToSystemLog"/>
+        <click selector="{{LogViewerSection.reloader}}" stepKey="reload2" />
+        <waitForAjaxLoad stepKey="waitForReload2"/>
+        <dontSeeInSource html="{$grabDotdigitalLog}" stepKey="checkDotdigitalLogRemoved"/>
+        <grabTextFrom selector="{{LogViewerSection.window}}" stepKey="grabSystemLog"/>
+
+        <!-- Exception Log -->
+        <selectOption selector="{{LogViewerSection.switcher}}" userInput="exception" stepKey="setSwitcherToExceptionLog"/>
+        <click selector="{{LogViewerSection.reloader}}" stepKey="reload3" />
+        <waitForAjaxLoad stepKey="waitForReload3"/>
+        <dontSeeInSource html="{$grabSystemLog}" stepKey="checkSystemLogRemoved"/>
+        <grabTextFrom selector="{{LogViewerSection.window}}" stepKey="grabExceptionLog"/>
+
+        <!-- Debug Log -->
+        <selectOption selector="{{LogViewerSection.switcher}}" userInput="debug" stepKey="setSwitcherToDebugLog"/>
+        <click selector="{{LogViewerSection.reloader}}" stepKey="reload4" />
+        <waitForAjaxLoad stepKey="waitForReload4"/>
+        <dontSeeInSource html="{$grabExceptionLog}" stepKey="checkExceptionLogRemoved"/>
+
+    </test>
+</tests>

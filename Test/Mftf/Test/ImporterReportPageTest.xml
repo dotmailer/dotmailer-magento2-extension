@@ -7,8 +7,7 @@
             <stories value="Test dotdigital report grids"/>
             <title value="Test Importer Status Grid"/>
             <description value="The dotdigital Import report can be viewed, filtered and sorted."/>
-            <severity value="MAJOR"/>
-            <group value="FS/106771-mftf"/>
+            <severity value="MINOR"/>
             <group value="dotmailer"/>
         </annotations>
 
@@ -35,25 +34,59 @@
         <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Updated Date')}}" stepKey="seeUpdatedDate"/>
 
         <!-- Sorting -->
-        <click selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Import Type')}}" stepKey="clickImportIdHeaderToSortAsc"/>
-        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeaderAsc('Import Type')}}" stepKey="checkIfImportAsc"/>
+        <actionGroup ref="SortColumnsReportActionGroup" stepKey="sortImportIdColumn">
+            <argument name="columnName" value="Import Id"/>
+        </actionGroup>
 
-        <click selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Import Type')}}" stepKey="clickImportIdHeaderToSortDesc"/>
-        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeaderDesc('Import Type')}}" stepKey="checkIfImportDesc"/>
+        <actionGroup ref="SortColumnsReportActionGroup" stepKey="sortImportTypeColumn">
+            <argument name="columnName" value="Import Type"/>
+        </actionGroup>
 
+        <actionGroup ref="SortColumnsReportActionGroup" stepKey="sortImportModeColumn">
+            <argument name="columnName" value="Import Mode"/>
+        </actionGroup>
+
+        <actionGroup ref="SortColumnsReportActionGroup" stepKey="sortImportStatusColumn">
+            <argument name="columnName" value="Import Status"/>
+        </actionGroup>
+
+        <actionGroup ref="SortColumnsReportActionGroup" stepKey="sortMessageColumn">
+            <argument name="columnName" value="Message"/>
+        </actionGroup>
+
+        <actionGroup ref="SortColumnsReportActionGroup" stepKey="sortStartedAtColumn">
+            <argument name="columnName" value="Started At"/>
+        </actionGroup>
+
+        <actionGroup ref="SortColumnsReportActionGroup" stepKey="sortFinishedAtColumn">
+            <argument name="columnName" value="Finished At"/>
+        </actionGroup>
+
+        <actionGroup ref="SortColumnsReportActionGroup" stepKey="sortWebsiteColumn">
+            <argument name="columnName" value="Website"/>
+        </actionGroup>
+
+        <actionGroup ref="SortColumnsReportActionGroup" stepKey="sortCreatedDateColumn">
+            <argument name="columnName" value="Created Date"/>
+        </actionGroup>
+
+        <actionGroup ref="SortColumnsReportActionGroup" stepKey="sortUpdatedDateColumn">
+            <argument name="columnName" value="Updated Date"/>
+        </actionGroup>
         <!-- Filtering -->
-        <actionGroup ref="FilterImporter" stepKey="validateFilters"/>
+        <actionGroup ref="FilterReport" stepKey="validateFilters">
+            <argument name="inputName" value="import_type"/>
+            <argument name="inputValue" value="Bulk"/>
+        </actionGroup>
         <!--   Indicates that filter is on     -->
         <seeElementInDOM selector="div.admin__data-grid-filters-current" stepKey="seeFilterIsOn"/>
 
-
         <actionGroup ref="ClearAndNavigateFilterFields" stepKey="validateFilterFields"/>
-        <seeElement selector="{{AdminImporterFilterFieldsSection.importIdFilter}}" stepKey="seeImportIdFilter"/>
-        <seeElement selector="{{AdminImporterFilterFieldsSection.importTypeFilter}}" stepKey="seeImportTypeFilter"/>
-        <seeElement selector="{{AdminImporterFilterFieldsSection.importModeFilter}}" stepKey="seeImportModeFilter"/>
-        <seeElement selector="{{AdminImporterFilterFieldsSection.importStatusFilter}}" stepKey="seeImportStatusFilter"/>
-        <seeElement selector="{{AdminImporterFilterFieldsSection.messageFilter}}" stepKey="seeMessageFilter"/>
-        <seeElement selector="{{AdminImporterFilterFieldsSection.websiteFilter}}" stepKey="seeWebsiteFilter"/>
-
+        <seeElement selector="{{AdminFilterFieldsSection.filterInput('import_id')}}" stepKey="seeImportIdFilter"/>
+        <seeElement selector="{{AdminFilterFieldsSection.filterInput('import_type')}}" stepKey="seeImportTypeFilter"/>
+        <seeElement selector="{{AdminFilterFieldsSection.filterSelect('import_mode')}}" stepKey="seeImportModeFilter"/>
+        <seeElement selector="{{AdminFilterFieldsSection.filterSelect('import_status')}}" stepKey="seeImportStatusFilter"/>
+        <seeElement selector="{{AdminFilterFieldsSection.filterInput('message')}}" stepKey="seeMessageFilter"/>
+        <seeElement selector="{{AdminFilterFieldsSection.filterSelect('website_id')}}" stepKey="seeWebsiteFilter"/>
     </test>
 </tests>

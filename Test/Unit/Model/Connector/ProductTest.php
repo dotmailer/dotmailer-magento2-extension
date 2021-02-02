@@ -8,6 +8,8 @@ use Dotdigitalgroup\Email\Model\Catalog\UrlFinder;
 use Dotdigitalgroup\Email\Model\Connector\Product;
 use Dotdigitalgroup\Email\Model\Product\Attribute;
 use Dotdigitalgroup\Email\Model\Product\AttributeFactory;
+use Dotdigitalgroup\Email\Model\Product\ImageFinder;
+use Dotdigitalgroup\Email\Model\Product\ImageType\Context\CatalogSync;
 use Dotdigitalgroup\Email\Model\Product\ParentFinder;
 use Dotdigitalgroup\Email\Model\Product\TierPriceFinder;
 use Dotdigitalgroup\Email\Api\StockFinderInterface;
@@ -168,6 +170,16 @@ class ProductTest extends TestCase
      */
     private $stockFinderInterfaceMock;
 
+    /**
+     * @var ImageFinder|\PHPUnit\Framework\MockObject\MockObject
+     */
+    private $imageFinderMock;
+
+    /**
+     * @var CatalogSync|\PHPUnit\Framework\MockObject\MockObject
+     */
+    private $imageTypeMock;
+
     protected function setUp() :void
     {
         $this->storeManagerMock = $this->createMock(StoreManagerInterface::class);
@@ -192,6 +204,8 @@ class ProductTest extends TestCase
         $this->parentMock = $this->createMock(\Magento\Catalog\Model\Product::class);
         $this->tierPriceFinderMock = $this->createMock(TierPriceFinderInterface::class);
         $this->stockFinderInterfaceMock = $this->createMock(StockFinderInterface::class);
+        $this->imageFinderMock = $this->createMock(ImageFinder::class);
+        $this->imageTypeMock = $this->createMock(CatalogSync::class);
         $this->visibility = new Visibility(
             $this->createMock(\Magento\Eav\Model\ResourceModel\Entity\Attribute::class)
         );
@@ -203,13 +217,20 @@ class ProductTest extends TestCase
             $this->urlFinderMock,
             $this->attributeFactoryMock,
             $this->parentFinderMock,
+            $this->imageFinderMock,
             $this->tierPriceFinderMock,
-            $this->stockFinderInterfaceMock
+            $this->stockFinderInterfaceMock,
+            $this->imageTypeMock
         );
 
         $status = 1;
         $visibility = 1;
+        $websiteId = 1;
         $websiteIds = [];
+        $imageType = [
+            'id' => null,
+            'role' => 'small_image'
+        ];
 
         $this->statusFactoryMock->expects($this->once())
             ->method('create')
@@ -244,6 +265,15 @@ class ProductTest extends TestCase
             ->method('getWebsiteIds')
             ->willReturn($websiteIds);
 
+        $this->imageTypeMock->expects($this->once())
+            ->method('getImageType')
+            ->with($websiteId)
+            ->willReturn($imageType);
+
+        $this->imageFinderMock->expects($this->once())
+            ->method('getImageUrl')
+            ->with($this->mageProductMock, $imageType);
+
         $this->stockFinderInterfaceMock->expects($this->atLeastOnce())
             ->method('getStockQty');
 
@@ -252,7 +282,8 @@ class ProductTest extends TestCase
             ->willReturn($this->storeMock);
 
         $this->storeMock->expects($this->atLeastOnce())
-            ->method('getWebsiteId');
+            ->method('getWebsiteId')
+            ->willReturn($websiteId);
 
         $this->attributeFactoryMock->expects($this->once())
             ->method('create')

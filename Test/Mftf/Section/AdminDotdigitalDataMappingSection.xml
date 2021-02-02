@@ -3,9 +3,12 @@
 <sections xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:noNamespaceSchemaLocation="urn:magento:mftf:Page/etc/SectionObject.xsd">
     <section name="AdminDotdigitalDataMappingSection">
+        <element name="DataFieldsMappingSectionToggle" type="button" selector="#connector_data_mapping_customer_data-head" />
+
         <element name="customerTitle" type="select" selector="#connector_data_mapping_customer_data_title" />
         <element name="customerId" type="select" selector="#connector_data_mapping_customer_data_customer_id" />
         <element name="customerFirstname" type="select" selector="#connector_data_mapping_customer_data_firstname" />
+        <element name="customerFirstnameOptions" type="select" selector="#connector_data_mapping_customer_data_firstname option"/>
         <element name="customerLastname" type="select" selector="#connector_data_mapping_customer_data_lastname" />
         <element name="customerDob" type="select" selector="#connector_data_mapping_customer_data_dob" />
         <element name="customerGender" type="select" selector="#connector_data_mapping_customer_data_gender" />
@@ -53,6 +56,18 @@
         <element name="systemLastOrderId" type="select" selector="#connector_data_mapping_customer_data_last_order_id" />
         <element name="systemLastQuoteId" type="select" selector="#connector_data_mapping_customer_data_last_quote_id" />
         <element name="systemAbandonedProductName" type="select" selector="#connector_data_mapping_customer_data_abandoned_prod_name" />
+
+        <element name="dataFieldName" type="input" selector="#connector_data_mapping_dynamic_datafield_datafield_name"/>
+        <element name="createNewDataField" type="button" selector="#connector_data_mapping_dynamic_datafield_datafield_button"/>
+        <element name="createDataFieldHeader" type="button" selector="#connector_data_mapping_dynamic_datafield-head" timeout="30"/>
+        <element name="createDataFieldFieldset" type="block" selector="#connector_data_mapping_dynamic_datafield"/>
+
+        <element name="customAttributes" type="block" selector="#row_connector_data_mapping_customer_data_custom_attributes" timeout="30"/>
+        <element name="addNewAttribute" type="button" selector="#connector_data_mapping_customer_data_custom_attributes .action-add"/>
+        <element name="deleteAttributeMapping" type="button" selector="#connector_data_mapping_customer_data_custom_attributes .action-delete"/>
+
+        <element name="customDataFieldSelect" type="text" selector="select[data-ui-id=system-config-form-0-element-select-groups-customer-data-fields-custom-attributes-value-lt-id-gt-datafield]"/>
+        <element name="bulkActionOption" type="button" selector="//td[contains(@class,'col-actions-add')]//button[contains(@class, 'action-add')]//span[text() = '{{label}}']" parameterized="true"/>
 
         <element name="save" type="button" selector="#save" />
     </section>

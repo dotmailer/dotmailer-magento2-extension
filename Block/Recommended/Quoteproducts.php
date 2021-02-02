@@ -2,6 +2,9 @@
 
 namespace Dotdigitalgroup\Email\Block\Recommended;
 
+use Dotdigitalgroup\Email\Model\Product\ImageFinder;
+use Dotdigitalgroup\Email\Model\Product\ImageType\Context\DynamicContent;
+
 /**
  * Quote products block
  *
@@ -25,6 +28,8 @@ class Quoteproducts extends \Dotdigitalgroup\Email\Block\Recommended
      * @param \Magento\Catalog\Block\Product\Context $context
      * @param \Dotdigitalgroup\Email\Block\Helper\Font $font
      * @param \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder
+     * @param DynamicContent $imageType
+     * @param ImageFinder $imageFinder
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Dotdigitalgroup\Email\Helper\Recommended $recommendedHelper
      * @param array $data
@@ -33,6 +38,8 @@ class Quoteproducts extends \Dotdigitalgroup\Email\Block\Recommended
         \Magento\Catalog\Block\Product\Context $context,
         \Dotdigitalgroup\Email\Block\Helper\Font $font,
         \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder,
+        DynamicContent $imageType,
+        ImageFinder $imageFinder,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Dotdigitalgroup\Email\Helper\Recommended $recommendedHelper,
         array $data = []
@@ -40,7 +47,7 @@ class Quoteproducts extends \Dotdigitalgroup\Email\Block\Recommended
         $this->helper            = $helper;
         $this->recommendedHelper = $recommendedHelper;
 
-        parent::__construct($context, $font, $urlFinder, $data);
+        parent::__construct($context, $font, $urlFinder, $imageType, $imageFinder, $data);
     }
 
     /**

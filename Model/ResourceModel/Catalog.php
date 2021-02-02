@@ -2,6 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Model\ResourceModel;
 
+use Dotdigitalgroup\Email\Model\Product\AttributeFactory;
 use Dotdigitalgroup\Email\Setup\SchemaInterface as Schema;
 
 /**
@@ -24,6 +25,7 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      * @var \Magento\Catalog\Model\Config
      */
     private $config;
+
     /**
      * @var \Magento\Catalog\Model\ProductFactory
      */
@@ -60,6 +62,11 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     private $categoryResource;
 
     /**
+     * @var AttributeFactory $attributeHandler
+     */
+    private $attributeHandler;
+
+    /**
      * Initialize resource.
      *
      * @return null
@@ -82,6 +89,7 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      * @param \Magento\Reports\Model\ResourceModel\Product\CollectionFactory $reportProductCollection
      * @param \Magento\Catalog\Model\ProductFactory $productFactory
      * @param \Magento\Reports\Model\ResourceModel\Product\Sold\CollectionFactory $productSoldFactory
+     * @param AttributeFactory $attributeHandler
      * @param null $connectionName
      */
     public function __construct(
@@ -95,6 +103,7 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         \Magento\Reports\Model\ResourceModel\Product\CollectionFactory $reportProductCollection,
         \Magento\Catalog\Model\ProductFactory $productFactory,
         \Magento\Reports\Model\ResourceModel\Product\Sold\CollectionFactory $productSoldFactory,
+        AttributeFactory $attributeHandler,
         $connectionName = null
     ) {
         $this->helper                   = $helper;
@@ -106,6 +115,7 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         $this->reportProductCollection  = $reportProductCollection;
         $this->productSoldFactory       = $productSoldFactory;
         $this->categoryResource         = $categoryResource;
+        $this->attributeHandler = $attributeHandler;
         parent::__construct(
             $context,
             $connectionName
@@ -214,11 +224,23 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         $productCollection = [];
 
         if (! empty($ids)) {
+            $collectionAttributes = [
+                'product_url',
+                'name',
+                'store_id',
+                'price'
+            ];
+            $mediaAttributes = $this->attributeHandler->create()
+                ->getMediaImageAttributes();
+            foreach ($mediaAttributes->getItems() as $item) {
+                $collectionAttributes[] = $item->getAttributeCode();
+            }
+
             $productCollection = $this->productFactory->create()
                 ->getCollection()
                 ->addIdFilter($ids)
                 ->addAttributeToSelect(
-                    ['product_url', 'name', 'store_id', 'small_image', 'price']
+                    $collectionAttributes
                 );
 
             if ($limit) {
@@ -257,6 +279,48 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
+     * Get product collection from sku.
+     * Collection includes all media_image attributes.
+     *
+     * @param array $productsSku
+     * @param int|bool $limit
+     *
+     * @return array|\Magento\Catalog\Model\ResourceModel\Product\Collection
+     */
+    public function getProductsCollectionBySkuWithMedia($productsSku, $limit = false)
+    {
+        $productCollection = [];
+
+        if (! empty($productsSku)) {
+            $collectionAttributes = [
+                'product_url',
+                'name',
+                'store_id',
+                'price',
+                'visibility'
+            ];
+            $mediaAttributes = $this->attributeHandler->create()
+                ->getMediaImageAttributes();
+            foreach ($mediaAttributes->getItems() as $item) {
+                $collectionAttributes[] = $item->getAttributeCode();
+            }
+
+            $productCollection = $this->productFactory->create()
+                ->getCollection()
+                ->addFieldToFilter('sku', ['in' => $productsSku])
+                ->addAttributeToSelect(
+                    $collectionAttributes
+                );
+
+            if ($limit) {
+                $productCollection->getSelect()->limit($limit);
+            }
+        }
+
+        return $productCollection;
+    }
+
+    /**
      * Get bestseller collection.
      *
      * @param string $from
@@ -277,7 +341,7 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 
         $productsSku = $reportProductCollection->getColumnValues('order_items_sku');
 
-        return $this->getProductsCollectionBySku($productsSku);
+        return $this->getProductsCollectionBySkuWithMedia($productsSku);
     }
 
     /**

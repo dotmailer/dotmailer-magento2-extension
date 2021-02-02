@@ -15,4 +15,7 @@
     <event name="view_block_abstract_to_html_before">
         <observer name="ddg_add_column_expiration_date" instance="Dotdigitalgroup\Email\Observer\Html\BeforeBlockToHtml"/>
     </event>
+    <event name="admin_system_config_changed_section_connector_configuration">
+        <observer name="admin_connector_image_types" instance="Dotdigitalgroup\Email\Observer\Adminhtml\ImageTypes"/>
+    </event>
 </config>

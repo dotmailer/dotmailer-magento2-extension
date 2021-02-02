@@ -3,13 +3,14 @@
 namespace Dotdigitalgroup\Email\Model\ResourceModel;
 
 use Dotdigitalgroup\Email\Setup\SchemaInterface as Schema;
+use Magento\Wishlist\Model\ResourceModel\Wishlist\CollectionFactory;
 
 class Wishlist extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
     /**
-     * @var \Magento\Wishlist\Model\WishlistFactory
+     * @var CollectionFactory
      */
-    public $wishlist;
+    private $coreWishlistCollectionFactory;
 
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
@@ -30,15 +31,15 @@ class Wishlist extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      * Wishlist constructor.
      *
      * @param \Magento\Framework\Model\ResourceModel\Db\Context $context
-     * @param \Magento\Wishlist\Model\WishlistFactory $wishlist
+     * @param CollectionFactory $coreWishlistCollectionFactory
      * @param \Dotdigitalgroup\Email\Helper\Data $data
      */
     public function __construct(
         \Magento\Framework\Model\ResourceModel\Db\Context $context,
-        \Magento\Wishlist\Model\WishlistFactory $wishlist,
+        CollectionFactory $coreWishlistCollectionFactory,
         \Dotdigitalgroup\Email\Helper\Data $data
     ) {
-        $this->wishlist = $wishlist;
+        $this->coreWishlistCollectionFactory = $coreWishlistCollectionFactory;
         $this->helper = $data;
         parent::__construct($context);
     }
@@ -67,8 +68,7 @@ class Wishlist extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         $num = $conn->update(
             $this->getTable(Schema::EMAIL_WISHLIST_TABLE),
             [
-                'wishlist_imported' => 0,
-                'wishlist_modified' => new \Zend_Db_Expr('null'),
+                'wishlist_imported' => 0
             ],
             $where
         );
@@ -84,8 +84,7 @@ class Wishlist extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     public function getWishlistsForCustomer($customerId)
     {
         if ($customerId) {
-            $collection = $this->wishlist->create()
-                ->getCollection()
+            $collection = $this->coreWishlistCollectionFactory->create()
                 ->addFieldToFilter('customer_id', $customerId)
                 ->setOrder('updated_at', 'DESC')
                 ->setPageSize(1);
@@ -100,13 +99,11 @@ class Wishlist extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 
     /**
      * @param array $ids
-     *
-     * @return mixed
+     * @return \Magento\Wishlist\Model\ResourceModel\Wishlist\Collection
      */
-    public function getWishlistByIds($ids)
+    public function getMagentoWishlistsByIds($ids)
     {
-        $collection = $this->wishlist->create()
-            ->getCollection()
+        $collection = $this->coreWishlistCollectionFactory->create()
             ->addFieldToFilter('main_table.wishlist_id', ['in' => $ids])
             ->addFieldToFilter('customer_id', ['notnull' => 'true']);
 
@@ -122,34 +119,18 @@ class Wishlist extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 
     /**
      * @param array $ids
-     * @param string $updatedAt
-     * @param bool $modified
-     *
-     * @return null
      */
-    public function setImported($ids, $updatedAt, $modified = false)
+    public function setImported($ids)
     {
         try {
             $coreResource = $this->getConnection();
             $tableName = $this->getTable(Schema::EMAIL_WISHLIST_TABLE);
 
-            //mark imported modified wishlists
-            if ($modified) {
-                $coreResource->update(
-                    $tableName,
-                    [
-                        'wishlist_modified' => 'null',
-                        'updated_at' => $updatedAt,
-                    ],
-                    ["wishlist_id IN (?)" => $ids]
-                );
-            } else {
-                $coreResource->update(
-                    $tableName,
-                    ['wishlist_imported' => 1, 'updated_at' => $updatedAt],
-                    ["wishlist_id IN (?)" => $ids]
-                );
-            }
+            $coreResource->update(
+                $tableName,
+                ['wishlist_imported' => 1],
+                ["wishlist_id IN (?)" => $ids]
+            );
         } catch (\Exception $e) {
             $this->helper->debug((string)$e, []);
         }

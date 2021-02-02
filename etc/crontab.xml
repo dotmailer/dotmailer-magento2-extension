@@ -22,7 +22,7 @@
         <job name="ddg_automation_order_sync" instance="Dotdigitalgroup\Email\Model\Cron" method="orderSync">
             <config_path>connector_developer_settings/cron_schedules/order</config_path>
         </job>
-        <job name="ddg_automation_cleaner" instance="Dotdigitalgroup\Email\Model\Cron" method="cleaning">
+        <job name="ddg_automation_cleaner" instance="Dotdigitalgroup\Email\Model\Cron\Cleaner" method="cleanUp">
             <schedule>0 0 1 * *</schedule>
         </job>
         <job name="ddg_automation_catalog_sync" instance="Dotdigitalgroup\Email\Model\Cron" method="catalogSync">

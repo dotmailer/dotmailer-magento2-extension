@@ -7,8 +7,7 @@
             <stories value="Test dotdigital report grids"/>
             <title value="Test Automation Status Grid"/>
             <description value="The dotdigital Automation report can be viewed, filtered and sorted."/>
-            <severity value="MAJOR"/>
-            <group value="FS/106771-mftf"/>
+            <severity value="MINOR"/>
             <group value="dotmailer"/>
         </annotations>
 
@@ -35,26 +34,23 @@
         <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Updated At')}}" stepKey="seeUpdatedAt"/>
 
         <!-- Sorting -->
-        <click selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Email')}}" stepKey="clickAutomationEmailToSortAsc"/>
-        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeaderAsc('Email')}}" stepKey="checkIfEmailAsc"/>
-
-        <click selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Email')}}" stepKey="clickAutomationEmailToSortDesc"/>
-        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeaderDesc('Email')}}" stepKey="checkIfEmailDesc"/>
+        <actionGroup ref="SortColumnsReportActionGroup" stepKey="sortEmailColumn">
+            <argument name="columnName" value="Email"/>
+        </actionGroup>
 
         <!-- Filtering -->
-        <actionGroup ref="FilterAutomation" stepKey="validateFilters"/>
-        <!--   Indicates that filter is on     -->
+        <actionGroup ref="FilterReport" stepKey="validateFilters"/>
+        <!--   Indicates that filter is on -->
         <seeElementInDOM selector="div.admin__data-grid-filters-current" stepKey="seeFilterIsOn"/>
 
-
         <actionGroup ref="ClearAndNavigateFilterFields" stepKey="validateFilterFields"/>
-        <seeElement selector="{{AdminAutomationFilterFieldsSection.automationEmailFilter}}" stepKey="seeEmailFilter"/>
-        <seeElement selector="{{AdminAutomationFilterFieldsSection.automationProgramIdFilter}}" stepKey="seeProgramIdFilter"/>
-        <seeElement selector="{{AdminAutomationFilterFieldsSection.automationTypeFilter}}" stepKey="seeTypeFilter"/>
-        <seeElement selector="{{AdminAutomationFilterFieldsSection.automationEnrolmentStatusFilter}}" stepKey="seeEnrolmentStatusFilter"/>
-        <seeElement selector="{{AdminAutomationFilterFieldsSection.automationWebsiteFilter}}" stepKey="seeWebsiteFilter"/>
-        <seeElement selector="{{AdminAutomationFilterFieldsSection.automationMessageFilter}}" stepKey="seeMessageFilter"/>
-        <seeElement selector="{{AdminAutomationFilterFieldsSection.automationStoreNameFilter}}" stepKey="seeStoreNameFilter"/>
+        <seeElement selector="{{AdminFilterFieldsSection.filterInput('email')}}" stepKey="seeEmailFilter"/>
+        <seeElement selector="{{AdminFilterFieldsSection.filterInput('program_id')}}" stepKey="seeProgramIdFilter"/>
+        <seeElement selector="{{AdminFilterFieldsSection.filterInput('automation_type')}}" stepKey="seeTypeFilter"/>
+        <seeElement selector="{{AdminFilterFieldsSection.filterSelect('enrolment_status')}}" stepKey="seeEnrolmentStatusFilter"/>
+        <seeElement selector="{{AdminFilterFieldsSection.filterSelect('website_id')}}" stepKey="seeWebsiteFilter"/>
+        <seeElement selector="{{AdminFilterFieldsSection.filterInput('message')}}" stepKey="seeMessageFilter"/>
+        <seeElement selector="{{AdminFilterFieldsSection.filterInput('store_name')}}" stepKey="seeStoreNameFilter"/>
 
     </test>
 </tests>

@@ -18,13 +18,14 @@ define(['jquery', 'domReady!'], function ($) {
      * For checkout, post email to emailCapture controller
      * For all types, de-anonymise the user in the tracking script (if present)
      *
-     * @param selectors
-     * @param type (checkout, newsletter, login)
-     * @param url
+     * @param {Array} selectors
+     * @param {String} type - (checkout, newsletter, login)
+     * @param {String} url
      */
     function emailCapture(selectors, type, url) {
-        $(document).on('blur', selectors.join(', '), function() {
+        $(document).on('blur', selectors.join(', '), function () {
             var email = $(this).val();
+
             if (!email || email === previousEmail || !validateEmail(email)) {
                 return;
             }
@@ -47,6 +48,7 @@ define(['jquery', 'domReady!'], function ($) {
      */
     return function (config) {
         let selectors = [];
+
         switch (config.type) {
             case 'checkout' :
                 selectors.push('input[id="customer-email"]');

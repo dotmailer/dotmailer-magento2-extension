@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
+    <test name="AbandonedCartReportPageTest">
+        <annotations>
+            <features value="Engagement Cloud module"/>
+            <stories value="Test dotdigital report grids"/>
+            <title value="Test Abandoned Cart Status Grid"/>
+            <description value="The dotdigital Abandoned Cart report can be viewed, filtered and sorted."/>
+            <severity value="MINOR"/>
+            <group value="dotmailer"/>
+        </annotations>
+
+        <before>
+            <actionGroup ref="AdminLoginActionGroup" stepKey="AdminLoginActionGroup1"/>
+            <actionGroup ref="SetDotmailerAccountData" stepKey="SetDotmailerAccountData"/>
+        </before>
+
+        <after>
+            <actionGroup ref="ResetDotmailerAccountData" stepKey="resetAccountData"/>
+            <actionGroup ref="AdminLogoutActionGroup" stepKey="logout"/>
+        </after>
+
+        <amOnPage url="{{AdminAbandonedCartReportPage.url}}" stepKey="amOnAbandonedReportPage"/>
+        <waitForPageLoad stepKey="waitForPageLoad"/>
+
+        <!-- Confirm That Columns Exist -->
+        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Id')}}" stepKey="seeId"/>
+        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Quote Id')}}" stepKey="seeQuoteId"/>
+        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Customer Id')}}" stepKey="seeCustomerId"/>
+        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Email')}}" stepKey="seeEmail"/>
+        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Contact Status')}}" stepKey="seeContactStatus"/>
+        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Is Active')}}" stepKey="seeIsActive"/>
+        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Quote Updated At')}}" stepKey="seeQuoteUpdatedAt"/>
+        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Abandoned Cart Number')}}" stepKey="seeAbandonedCartNumber"/>
+        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Item Count')}}" stepKey="seeItemCount"/>
+        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Item Ids')}}" stepKey="seeItemIds"/>
+        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Store')}}" stepKey="seeStore"/>
+        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Created At')}}" stepKey="seeCreatedAt"/>
+        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Updated At')}}" stepKey="seeUpdatedAt"/>
+
+        <!-- Sort Columns -->
+        <actionGroup ref="SortColumnsReportActionGroup" stepKey="sortEmailColumn">
+            <argument name="columnName" value="Email"/>
+        </actionGroup>
+
+        <actionGroup ref="SortColumnsReportActionGroup" stepKey="sortIdColumn">
+            <argument name="columnName" value="Id"/>
+        </actionGroup>
+
+        <actionGroup ref="SortColumnsReportActionGroup" stepKey="sortQuoteIdColumn">
+            <argument name="columnName" value="Quote Id"/>
+        </actionGroup>
+
+        <actionGroup ref="SortColumnsReportActionGroup" stepKey="sortContactStatusColumn">
+            <argument name="columnName" value="Contact Status"/>
+        </actionGroup>
+
+        <actionGroup ref="SortColumnsReportActionGroup" stepKey="sortIsActiveColumn">
+            <argument name="columnName" value="Is Active"/>
+        </actionGroup>
+
+        <actionGroup ref="SortColumnsReportActionGroup" stepKey="sortQuoteUpdatedAtColumn">
+            <argument name="columnName" value="Quote Updated At"/>
+        </actionGroup>
+
+        <actionGroup ref="SortColumnsReportActionGroup" stepKey="sortAbandonedCartNumnerColumn">
+            <argument name="columnName" value="Abandoned Cart Number"/>
+        </actionGroup>
+
+        <actionGroup ref="SortColumnsReportActionGroup" stepKey="sortItemCountColumn">
+            <argument name="columnName" value="Item Count"/>
+        </actionGroup>
+
+        <actionGroup ref="SortColumnsReportActionGroup" stepKey="sortItemIdsColumn">
+            <argument name="columnName" value="Item Ids"/>
+        </actionGroup>
+
+        <actionGroup ref="SortColumnsReportActionGroup" stepKey="sortSortColumn">
+            <argument name="columnName" value="Store"/>
+        </actionGroup>
+
+        <actionGroup ref="SortColumnsReportActionGroup" stepKey="sortCreatedAtColumn">
+            <argument name="columnName" value="Created At"/>
+        </actionGroup>
+
+        <actionGroup ref="SortColumnsReportActionGroup" stepKey="sortUpdatedAtColumn">
+            <argument name="columnName" value="Updated At"/>
+        </actionGroup>
+
+        <!-- Filtering -->
+        <actionGroup ref="FilterReport" stepKey="validateFilters"/>
+        <!--   Indicates that filter is on -->
+        <seeElementInDOM selector="div.admin__data-grid-filters-current" stepKey="seeFilterIsOn"/>
+
+        <actionGroup ref="ClearAndNavigateFilterFields" stepKey="validateFilterFields"/>
+        <seeElement selector="{{AdminFilterFieldsSection.filterInput('quote_updated_at[from]')}}" stepKey="seeQuoteUpdatedAtFromFilter"/>
+        <seeElement selector="{{AdminFilterFieldsSection.filterInput('quote_updated_at[to]')}}" stepKey="seeQuoteUpdatedAtToFilter"/>
+        <seeElement selector="{{AdminFilterFieldsSection.filterInput('created_at[from]')}}" stepKey="seeCreatedAtFromFilter"/>
+        <seeElement selector="{{AdminFilterFieldsSection.filterInput('created_at[to]')}}" stepKey="seeCreatedAtToFilter"/>
+        <seeElement selector="{{AdminFilterFieldsSection.filterInput('updated_at[from]')}}" stepKey="seeUpdatedAtFromFilter"/>
+        <seeElement selector="{{AdminFilterFieldsSection.filterInput('updated_at[to]')}}" stepKey="seeUpdatedAtToFilter"/>
+        <seeElement selector="{{AdminFilterFieldsSection.filterInput('id')}}" stepKey="seeIdFilter"/>
+        <seeElement selector="{{AdminFilterFieldsSection.filterInput('quote_id')}}" stepKey="seeQuoteIdFilter"/>
+        <seeElement selector="{{AdminFilterFieldsSection.filterInput('customer_id')}}" stepKey="seeCustomerIdFilter"/>
+        <seeElement selector="{{AdminFilterFieldsSection.filterInput('email')}}" stepKey="seeEmailFilter"/>
+        <seeElement selector="{{AdminFilterFieldsSection.filterInput('status')}}" stepKey="seeContactStatusFilter"/>
+        <seeElement selector="{{AdminFilterFieldsSection.filterInput('is_active')}}" stepKey="seeIsActiveFilter"/>
+        <seeElement selector="{{AdminFilterFieldsSection.filterInput('abandoned_cart_number')}}" stepKey="seeAbandonedCartNumberFilter"/>
+        <seeElement selector="{{AdminFilterFieldsSection.filterInput('items_count')}}" stepKey="seeItemCountFilter"/>
+        <seeElement selector="{{AdminFilterFieldsSection.filterInput('items_ids')}}" stepKey="seeItemsIdsFilter"/>
+        <seeElement selector="{{AdminFilterFieldsSection.filterSelect('store_id')}}" stepKey="seeStoreIdFilter"/>
+
+    </test>
+</tests>

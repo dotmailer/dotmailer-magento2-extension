@@ -33,6 +33,7 @@ class Uninstall implements UninstallInterface
         $this->dropTable($setup, Schema::EMAIL_AUTOMATION_TABLE);
         $this->dropTable($setup, Schema::EMAIL_ABANDONED_CART_TABLE);
         $this->dropTable($setup, Schema::EMAIL_FAILED_AUTH_TABLE);
+        $this->dropTable($setup, Schema::EMAIL_COUPON_TABLE);
 
         $defaultConnection->dropColumn(
             $this->getTableNameWithPrefix($setup, 'admin_user'),

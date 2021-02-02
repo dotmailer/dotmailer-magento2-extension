@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
+    <test name="DataMappingCustomAttributesTest">
+        <annotations>
+            <features value="Engagement Cloud module"/>
+            <stories value="Configure custom data mapping"/>
+            <title value="Map custom attributes to data fields"/>
+            <description value="Map a custom attribute to an Engagement Cloud data field, then delete the mapping."/>
+            <severity value="MINOR"/>
+            <group value="dotmailer"/>
+        </annotations>
+
+        <before>
+            <actionGroup ref="AdminLoginActionGroup" stepKey="AdminLoginActionGroup1"/>
+            <actionGroup ref="SetDotmailerAccountData" stepKey="SetDotmailerAccountData"/>
+        </before>
+
+        <after>
+            <actionGroup ref="DeleteCustomAttributeMapping" stepKey="deleteCustomAttributeMapping"/>
+            <actionGroup ref="ResetDotmailerAccountData" stepKey="resetAccountData"/>
+            <actionGroup ref="AdminLogoutActionGroup" stepKey="logout"/>
+        </after>
+
+        <amOnPage url="{{AdminDotdigitalDataMappingPage.url}}" stepKey="amOnDotdigitalDataMappingPage"/>
+        <waitForPageLoad stepKey="waitForPageLoad"/>
+
+        <actionGroup ref="CreateCustomAttributeMapping" stepKey="createCustomAttributeMapping">
+            <argument name="dataFieldName" value="{{DataFields.customerIdDataField}}"/>
+        </actionGroup>
+    </test>
+</tests>

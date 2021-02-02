@@ -7,8 +7,7 @@
             <stories value="Configure address books"/>
             <title value="Create and map address books"/>
             <description value="Use the Create Address Books panel to create address books in Engagement Cloud, and then map them to Magento user types."/>
-            <severity value="MAJOR"/>
-            <group value="AM/106077-mftf"/>
+            <severity value="MINOR"/>
             <group value="dotmailer"/>
         </annotations>
 
@@ -21,11 +20,6 @@
             <actionGroup ref="ResetDotmailerAccountData" stepKey="resetAccountData"/>
             <actionGroup ref="AdminLogoutActionGroup" stepKey="logout"/>
         </after>
-
-        <amOnPage url="{{AdminDotdigitalSyncSettingsPage.url}}" stepKey="amOnDotdigitalSyncSettingsPage"/>
-        <waitForPageLoad stepKey="waitForPageLoad"/>
-
-        <conditionalClick stepKey="expandCreateAddressBookTab" selector="{{AdminDotdigitalSyncSettingsSection.createAddressBookFieldsetToggle}}" dependentSelector="{{AdminDotdigitalSyncSettingsSection.createAddressBookFieldset}}" visible="false"/>
 
         <comment userInput="Creating address books" stepKey="creatingAddressBooksComment"/>
         <actionGroup ref="CreateAddressBook" stepKey="createCustomersAddressBook">

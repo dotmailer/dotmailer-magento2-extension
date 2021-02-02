@@ -3,6 +3,9 @@
 namespace Dotdigitalgroup\Email\Model\Product;
 
 use Dotdigitalgroup\Email\Helper;
+use Magento\Catalog\Api\ProductAttributeRepositoryInterface;
+use Magento\Framework\Api\SearchCriteriaBuilder;
+use Magento\Framework\Api\FilterBuilder;
 
 class Attribute
 {
@@ -27,6 +30,21 @@ class Attribute
     private $productResource;
 
     /**
+     * @var ProductAttributeRepositoryInterface
+     */
+    private $productAttributeRepository;
+
+    /**
+     * @var SearchCriteriaBuilder
+     */
+    private $searchCriteriaBuilder;
+
+    /**
+     * @var FilterBuilder
+     */
+    private $filterBuilder;
+
+    /**
      * @var
      */
     private $hasValues;
@@ -38,17 +56,26 @@ class Attribute
      * @param \Magento\Catalog\Model\ResourceModel\Product\Attribute\CollectionFactory $attributeCollection
      * @param \Magento\Eav\Api\AttributeSetRepositoryInterface $attributeSet
      * @param \Magento\Catalog\Model\ResourceModel\Product $productResource
+     * @param ProductAttributeRepositoryInterface $productAttributeRepository
+     * @param SearchCriteriaBuilder $searchCriteriaBuilder
+     * @param FilterBuilder $filterBuilder
      */
     public function __construct(
         Helper\Data $helper,
         \Magento\Catalog\Model\ResourceModel\Product\Attribute\CollectionFactory $attributeCollection,
         \Magento\Eav\Api\AttributeSetRepositoryInterface $attributeSet,
-        \Magento\Catalog\Model\ResourceModel\Product $productResource
+        \Magento\Catalog\Model\ResourceModel\Product $productResource,
+        ProductAttributeRepositoryInterface $productAttributeRepository,
+        SearchCriteriaBuilder $searchCriteriaBuilder,
+        FilterBuilder $filterBuilder
     ) {
         $this->helper = $helper;
         $this->attributeCollection = $attributeCollection;
         $this->attributeSet = $attributeSet;
         $this->productResource = $productResource;
+        $this->productAttributeRepository = $productAttributeRepository;
+        $this->searchCriteriaBuilder = $searchCriteriaBuilder;
+        $this->filterBuilder = $filterBuilder;
     }
 
     /**
@@ -170,5 +197,17 @@ class Attribute
     public function hasValues()
     {
         return $this->hasValues;
+    }
+
+    /**
+     * @return \Magento\Catalog\Api\Data\ProductAttributeSearchResultsInterface
+     */
+    public function getMediaImageAttributes()
+    {
+        $searchCriteria = $this->searchCriteriaBuilder
+            ->addFilter('frontend_input', 'media_image')
+            ->create();
+
+        return $this->productAttributeRepository->getList($searchCriteria);
     }
 }

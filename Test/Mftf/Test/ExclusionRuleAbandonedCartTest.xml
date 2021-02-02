@@ -7,8 +7,7 @@
             <stories value="Test exclusion rules"/>
             <title value="Test abandoned cart exclusion rules"/>
             <description value="An exclusion rule for abandoned carts can be created with conditions."/>
-            <severity value="MAJOR"/>
-            <group value="AM/109294-mftf"/>
+            <severity value="AVERAGE"/>
             <group value="dotmailer"/>
         </annotations>
 

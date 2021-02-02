@@ -79,7 +79,7 @@ class Connect extends AbstractDeveloper
      */
     protected function getButtonUrl()
     {
-        $url = $this->escapeUrl($this->getAuthoriseUrl());
+        $url = $this->getAuthoriseUrl();
 
         return $this->getRefreshToken()
             ? $this->escapeUrl($this->getUrl('dotdigitalgroup_email/studio/disconnect'))
@@ -131,7 +131,7 @@ class Connect extends AbstractDeveloper
         $authorizeBaseUrl = $this->configHelper
             ->getAuthorizeLink();
         $url = $authorizeBaseUrl . http_build_query($params)
-            . '&client_id=' . $clientId;
+            . '&client_id=' . $this->escapeUrl($clientId);
 
         return $url;
     }

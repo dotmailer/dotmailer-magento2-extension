@@ -155,15 +155,8 @@ class RegisterWishlist implements \Magento\Framework\Event\ObserverInterface
     private function updateWishlistAndReset($emailWishlist, $itemCount)
     {
         try {
-            $originalItemCount = $emailWishlist->getItemCount();
             $emailWishlist->setItemCount($itemCount);
-
-            //first item added to wishlist
-            if ($itemCount == 1 && $originalItemCount == 0) {
-                $emailWishlist->setWishlistImported(0);
-            } elseif ($emailWishlist->getWishlistImported()) {
-                $emailWishlist->setWishlistModified(1);
-            }
+            $emailWishlist->setWishlistImported(0);
 
             $this->emailWishlistResource->save($emailWishlist);
         } catch (\Exception $e) {

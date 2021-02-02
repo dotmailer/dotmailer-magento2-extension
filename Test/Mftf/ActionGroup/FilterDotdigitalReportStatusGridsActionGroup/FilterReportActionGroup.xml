@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actionGroups xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/actionGroupSchema.xsd">
+    <actionGroup name="FilterReport">
+        <annotations>
+            <description>Tests basic filtering for any report grid, using a single input. Defaults to filtering by email but can take arguments for input name and value.</description>
+        </annotations>
+        <arguments>
+            <argument name="inputName" defaultValue="email" type="string"/>
+            <argument name="inputValue" defaultValue="chaz@emailsim.io" type="string"/>
+        </arguments>
+
+        <conditionalClick selector="{{AdminFilterOptionsSection.clearFilters}}" dependentSelector="{{AdminFilterOptionsSection.clearFilters}}" visible="true" stepKey="clickClearFilters"/>
+        <conditionalClick selector="{{AdminFilterOptionsSection.filters}}" dependentSelector="{{AdminFilterOptionsSection.filterFormContainer}}" visible="false" stepKey="openFilters2"/>
+
+        <fillField selector="{{AdminFilterFieldsSection.filterInput(inputName)}}" userInput="{{inputValue}}" stepKey="setFilter"/>
+        <click selector="{{AdminFilterOptionsSection.applyFilters}}" stepKey="clickApplyFilters"/>
+        <seeElement selector="ul.admin__current-filters-list" stepKey="seeFilterList"/>
+    </actionGroup>
+</actionGroups>

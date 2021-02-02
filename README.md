@@ -19,6 +19,28 @@ You are welcome to contribute to Engagement Cloud for Magento! You can either:
 - Fix a bug: please clone and use our [Develop branch](https://github.com/dotmailer/dotmailer-magento2-extension/tree/develop) to submit your Pull Request
 - Request a feature on our [roadmap](https://roadmap.dotdigital.com)
 
+# 4.11.0
+
+###### What's new
+- We have a new feature that enables merchants to choose which image size they prefer to use for different contexts in Magento. Configurable via **Stores > Configuration > dotdigital > Configuration > Image Types**.
+
+###### Improvements
+- We’ve added the `email_coupon_attribute` table to the list of tables to drop in the module's `Uninstall` class.
+- We removed some unnecessary configuration steps from our install script. 
+- The UI component XML for our report grids has been restructured in line with Magento’s latest standards. 
+- We removed a legacy plugin for handling 'most viewed' product report data.
+- We removed some unused methods relating to fetching a customer’s last order id and last quote id.
+
+###### Bug fixes
+- Wishlist insight data was showing the wrong updated at date, and modified wishlists were syncing without product data. Both these problems have been addressed. This release simplifies wishlist sync by removing 'single' wishlist imports, and handling all required updates in bulk.
+- We made a small change to improve our error handling when retrieving lists of programs from Engagement Cloud.
+- The OAuth Connect button in **Stores > Configuration > dotdigital > Developer > OAuth Credentials** is now fixed.
+- We fixed a regression introduced in 4.5.1, which excluded bundle products with dynamic SKUs from cart insight data.
+- Customers who subscribe during registration, but need to confirm their subscription, will now be added to a subscriber automation, if configured.
+- Failed cURL requests will now always return an object.
+- Data field mappings are now retrieved in website scope, instead of store scope.
+- We now fetch values for **Disable Customer Success** and **Disable Newsletter Success** in the correct (website) scope. 
+
 # 4.9.3
 
 ###### Bug fixes

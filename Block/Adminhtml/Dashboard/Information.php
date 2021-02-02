@@ -165,6 +165,22 @@ class Information extends \Magento\Backend\Block\Template
     }
 
     /**
+     * @return bool
+     */
+    public function hasSmsModule()
+    {
+        return $this->moduleList->hasSmsModule();
+    }
+
+    /**
+     * @return string
+     */
+    public function getSmsConnectorVersion()
+    {
+        return $this->escapeHtml(__('v. %1', $this->moduleList->getSmsConnectorVersion()));
+    }
+
+    /**
      * Return HTML indicating the validity of stored API credentials.
      * @return string
      */

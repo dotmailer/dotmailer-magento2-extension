@@ -4,14 +4,19 @@ require(['jquery',
     'mage/translate'], function ($) {
     'use strict';
 
-    function removeTooltip(element)
-    {
-        element.css('position','');
+    /**
+     * @param {Object} element
+     */
+    function removeTooltip(element) {
+        element.css('position', '');
         $('.ddg-tooltip').remove();
     }
 
-    function addTooltip(toolTipText,element)
-    {
+    /**
+     * @param {String} toolTipText
+     * @param {Object} element
+     */
+    function addTooltip(toolTipText, element) {
         var $toolTip = $('<div class="ddg-tooltip">' + toolTipText + '</div>');
         $toolTip.css({
             position: 'absolute',
@@ -29,29 +34,33 @@ require(['jquery',
             .append($toolTip);
     }
 
-    $(document).on('click', '.ddg-dynamic-content', function() {
-        if ($(this).val() == '') return;
+    $(document).on('click', '.ddg-dynamic-content', function () {
+        if ($(this).val() == '') {
+            return;
+        }
 
         var toolTipText = $.mage.__('Copied!');
 
         $(this).select();
         removeTooltip($(this));
-        addTooltip(toolTipText,$(this));
+        addTooltip(toolTipText, $(this));
 
-        setTimeout(function() {
+        setTimeout(function () {
             removeTooltip($(this));
         }.bind(this), 850);
 
-        document.execCommand("copy");
+        document.execCommand('copy');
     });
 
-    $(document).on('mouseenter', '.ddg-dynamic-content', function() {
-        if ($(this).val() == '') return;
+    $(document).on('mouseenter', '.ddg-dynamic-content', function () {
+        if ($(this).val() == '') {
+            return;
+        }
 
         var toolTipText = $.mage.__('Click to copy URL');
-        addTooltip(toolTipText,$(this));
+        addTooltip(toolTipText, $(this));
     });
-    $(document).on('mouseleave', '.ddg-dynamic-content', function() {
+    $(document).on('mouseleave', '.ddg-dynamic-content', function () {
         removeTooltip($(this));
     });
 });

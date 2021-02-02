@@ -2,6 +2,9 @@
 
 namespace Dotdigitalgroup\Email\Block;
 
+use Dotdigitalgroup\Email\Model\Product\ImageFinder;
+use Dotdigitalgroup\Email\Model\Product\ImageType\Context\DynamicContent;
+
 /**
  * Wishlist block
  *
@@ -9,7 +12,6 @@ namespace Dotdigitalgroup\Email\Block;
  */
 class Wishlist extends Recommended
 {
-
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
@@ -41,6 +43,8 @@ class Wishlist extends Recommended
      * @param \Magento\Catalog\Block\Product\Context $context
      * @param Helper\Font $font
      * @param \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder
+     * @param DynamicContent $imageType
+     * @param ImageFinder $imageFinder
      * @param \Magento\Customer\Model\ResourceModel\Customer $customerResource
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist $wishlist
      * @param \Magento\Customer\Model\CustomerFactory $customerFactory
@@ -52,6 +56,8 @@ class Wishlist extends Recommended
         \Magento\Catalog\Block\Product\Context $context,
         Helper\Font $font,
         \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder,
+        DynamicContent $imageType,
+        ImageFinder $imageFinder,
         \Magento\Customer\Model\ResourceModel\Customer $customerResource,
         \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist $wishlist,
         \Magento\Customer\Model\CustomerFactory $customerFactory,
@@ -65,7 +71,7 @@ class Wishlist extends Recommended
         $this->priceHelper     = $priceHelper;
         $this->customerResource = $customerResource;
 
-        parent::__construct($context, $font, $urlFinder, $data);
+        parent::__construct($context, $font, $urlFinder, $imageType, $imageFinder, $data);
     }
 
     /**

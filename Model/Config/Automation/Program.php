@@ -62,7 +62,7 @@ class Program implements \Magento\Framework\Data\OptionSourceInterface
                     $client = $this->helper->getWebsiteApiClient($website);
                     $programResponse = $client->getPrograms(count($programs));
 
-                    if (isset($programResponse->message)) {
+                    if (is_object($programResponse)) {
                         $programs = $programResponse;
                         break;
                     }

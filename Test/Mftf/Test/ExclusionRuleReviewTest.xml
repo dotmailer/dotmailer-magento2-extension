@@ -7,8 +7,7 @@
             <stories value="Test exclusion rules"/>
             <title value="Test review exclusion rules"/>
             <description value="An exclusion rule for reviews can be created with conditions."/>
-            <severity value="MAJOR"/>
-            <group value="AM/109294-mftf"/>
+            <severity value="MINOR"/>
             <group value="dotmailer"/>
         </annotations>
 

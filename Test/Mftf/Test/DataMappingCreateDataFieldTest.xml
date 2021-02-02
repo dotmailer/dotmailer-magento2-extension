@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
+    <test name="DataMappingCreateDataFieldTest">
+        <annotations>
+            <skip>
+                <issueId value="BUNDLE-2884"/>
+            </skip>
+            <features value="Engagement Cloud module"/>
+            <stories value="Configure data mapping"/>
+            <title value="Create and confirm data fields"/>
+            <description value="Create a new data field in the dotdigital admin, and confirm that data can be mapped to it."/>
+            <severity value="MINOR"/>
+            <group value="dotmailer"/>
+        </annotations>
+
+        <before>
+            <actionGroup ref="AdminLoginActionGroup" stepKey="AdminLoginActionGroup1"/>
+            <actionGroup ref="SetDotmailerAccountData" stepKey="SetDotmailerAccountData"/>
+        </before>
+
+        <after>
+            <actionGroup ref="ResetDotmailerAccountData" stepKey="resetAccountData"/>
+            <actionGroup ref="AdminLogoutActionGroup" stepKey="logout"/>
+        </after>
+
+        <amOnPage url="{{AdminDotdigitalDataMappingPage.url}}" stepKey="amOnDotdigitalDataMappingPage"/>
+        <waitForPageLoad stepKey="waitForPageLoad"/>
+
+        <!-- Get the data field options currently selectable -->
+        <grabMultiple selector="{{AdminDotdigitalDataMappingSection.customerFirstnameOptions}}" userInput="value" stepKey="grabExistingOptions"/>
+
+        <actionGroup ref="CreateDataField" stepKey="createDataField">
+            <argument name="dataFieldName" value="{{DataFields.dataFieldName}}"/>
+        </actionGroup>
+
+        <scrollToTopOfPage stepKey="scrollToTopOfPage"/>
+
+        <!-- Now compare with the new option list -->
+        <grabMultiple selector="{{AdminDotdigitalDataMappingSection.customerFirstnameOptions}}" userInput="value" stepKey="grabUpdatedOptions"/>
+
+        <assertNotEquals stepKey="compareOptions">
+            <expectedResult type="variable">grabExistingOptions</expectedResult>
+            <actualResult type="variable">grabUpdatedOptions</actualResult>
+        </assertNotEquals>
+
+        <!-- Transform the data field to uppercase to match the field returned from EC. -->
+        <executeJS function="return '{{DataFields.dataFieldName}}'.toUpperCase()" stepKey="upperCaseDataFieldWithSuffix"/>
+        <selectOption selector="{{AdminDotdigitalDataMappingSection.customerFirstname}}" userInput="{$upperCaseDataFieldWithSuffix}" stepKey="selectDataField"/>
+
+    </test>
+</tests>

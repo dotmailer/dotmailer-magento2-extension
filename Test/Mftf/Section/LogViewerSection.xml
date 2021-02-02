@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sections xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:noNamespaceSchemaLocation="urn:magento:mftf:Page/etc/SectionObject.xsd">
+    <section name="LogViewerSection">
+        <element name="switcher" type="select" selector="#connector-log-selector"/>
+        <element name="reloader" type="button" selector="#connector-log-reloader"/>
+        <element name="window" type="block" selector="#log_data"/>
+    </section>
+</sections>

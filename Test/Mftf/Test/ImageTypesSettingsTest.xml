@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
+    <test name="ImageTypesSettingsTest">
+        <annotations>
+            <features value="Engagement Cloud module"/>
+            <stories value="Test dotdigital image types settings"/>
+            <title value="Test images types settings page"/>
+            <description value="The dotdigital image types section can be viewed, and values stored."/>
+            <severity value="MINOR"/>
+            <group value="dotmailer"/>
+        </annotations>
+
+        <before>
+            <actionGroup ref="AdminLoginActionGroup" stepKey="AdminLoginActionGroup1"/>
+            <actionGroup ref="SetDotmailerAccountData" stepKey="SetDotmailerAccountData"/>
+        </before>
+
+        <after>
+            <actionGroup ref="ResetImageTypeSettings" stepKey="ResetImageTypeSettings"/>
+            <actionGroup ref="ResetDotmailerAccountData" stepKey="resetAccountData"/>
+            <actionGroup ref="AdminLogoutActionGroup" stepKey="logout"/>
+        </after>
+
+        <amOnPage url="{{AdminDotmailerConfigurationPage.url}}" stepKey="amOnConfigurationPage"/>
+        <waitForPageLoad stepKey="waitForPageLoad"/>
+
+        <conditionalClick stepKey="expandImageTypesTab" selector="{{AdminConfigurationImageTypesSection.fieldsetToggle}}" dependentSelector="{{AdminConfigurationImageTypesSection.fieldset}}" visible="false"/>
+
+        <!-- Confirm That Fields Exist -->
+        <seeElement selector="{{AdminConfigurationImageTypesSection.catalogSyncSelect}}" stepKey="seeCatalogSyncSelect"/>
+        <seeElement selector="{{AdminConfigurationImageTypesSection.abandonedCartSelect}}" stepKey="seeAbandonedCartSelect"/>
+        <seeElement selector="{{AdminConfigurationImageTypesSection.abandonedBrowseSelect}}" stepKey="seeAbandonedBrowseSelect"/>
+        <seeElement selector="{{AdminConfigurationImageTypesSection.dynamicContentSelect}}" stepKey="seeDynamicContentSelect"/>
+
+        <!-- Confirm that values are Default -->
+        <seeOptionIsSelected selector="{{AdminConfigurationImageTypesSection.catalogSyncSelect}}" userInput="Default" stepKey="seeDefaultForCatalogSyncSelect"/>
+        <seeOptionIsSelected selector="{{AdminConfigurationImageTypesSection.abandonedCartSelect}}" userInput="Default" stepKey="seeDefaultForAbandonedCartSelect"/>
+        <seeOptionIsSelected selector="{{AdminConfigurationImageTypesSection.abandonedBrowseSelect}}" userInput="Default" stepKey="seeDefaultForAbandonedBrowseSelect"/>
+        <seeOptionIsSelected selector="{{AdminConfigurationImageTypesSection.dynamicContentSelect}}" userInput="Default" stepKey="seeDefaultForDynamicContentSelect"/>
+
+        <!-- Change some values -->
+        <selectOption selector="{{AdminConfigurationImageTypesSection.catalogSyncSelect}}" userInput="{{ImageType.imageId}}" stepKey="setProductSmallImageForCatalogSync"/>
+        <selectOption selector="{{AdminConfigurationImageTypesSection.abandonedCartSelect}}" userInput="{{ImageType.imageId}}" stepKey="setProductSmallImageForAbandonedCartSelect"/>
+        <selectOption selector="{{AdminConfigurationImageTypesSection.abandonedBrowseSelect}}" userInput="{{ImageType.imageId}}" stepKey="setProductSmallImageForAbandonedBrowseSelect"/>
+        <selectOption selector="{{AdminConfigurationImageTypesSection.dynamicContentSelect}}" userInput="{{ImageType.imageId}}" stepKey="setProductSmallImageForDynamicContentSelect"/>
+
+        <!-- Save options -->
+        <click selector="{{AdminConfigurationImageTypesSection.configurationSectionSaveButton}}" stepKey="clickSave"/>
+
+        <!-- Confirm values are updated -->
+        <seeOptionIsSelected selector="{{AdminConfigurationImageTypesSection.catalogSyncSelect}}" userInput="{{ImageType.imageId}}" stepKey="seeUpdatedSelectionForCatalogSyncSelect"/>
+        <seeOptionIsSelected selector="{{AdminConfigurationImageTypesSection.abandonedCartSelect}}" userInput="{{ImageType.imageId}}" stepKey="seeUpdatedSelectionForAbandonedCartSelect"/>
+        <seeOptionIsSelected selector="{{AdminConfigurationImageTypesSection.abandonedBrowseSelect}}" userInput="{{ImageType.imageId}}" stepKey="seeUpdatedSelectionForAbandonedBrowseSelect"/>
+        <seeOptionIsSelected selector="{{AdminConfigurationImageTypesSection.dynamicContentSelect}}" userInput="{{ImageType.imageId}}" stepKey="seeUpdatedSelectionForDynamicContentSelect"/>
+    </test>
+</tests>

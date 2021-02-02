@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<actionGroups xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/actionGroupSchema.xsd">
+    <actionGroup name="DeleteContactsReportRows">
+        <amOnPage url="{{AdminContactReportPage.url}}" stepKey="amOnDotdigitalContactReportPage"/>
+        <checkOption selector="{{AdminDotdigitalReportColumnsSection.selectRowByIndex('1')}}" stepKey="selectRule"/>
+        <click selector="{{AdminDotdigitalReportColumnsSection.actionMenu}}" stepKey="clickActionMenu"/>
+        <click selector="{{AdminDotdigitalReportColumnsSection.deleteBtn}}" stepKey="clickDelete"/>
+        <click selector="{{AdminDotdigitalReportColumnsSection.modalAcceptButton}}" stepKey="confirmDelete"/>
+        <waitForPageLoad stepKey="waitForDelete"/>
+    </actionGroup>
+</actionGroups>

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
+    <test name="NewCustomerAddedToReportTest">
+        <annotations>
+            <features value="Engagement Cloud module"/>
+            <stories value="Add new customer"/>
+            <title value="Create new customer and add to report"/>
+            <description value="Create a new a new customer and validate to report."/>
+            <severity value="MINOR"/>
+            <group value="dotmailer"/>
+        </annotations>
+
+        <before>
+            <actionGroup ref="AdminLoginActionGroup" stepKey="AdminLoginActionGroup1"/>
+            <actionGroup ref="SetDotmailerAccountData" stepKey="SetDotmailerAccountData"/>
+            <actionGroup ref="EnableCustomerSync" stepKey="enableCustomerSync"/>
+
+            <actionGroup ref="CreateAddressBook" stepKey="createCustomersAddressBook">
+                <argument name="addressBookName" value="{{AddressBooks.customerAddressBookName}}"/>
+            </actionGroup>
+
+            <actionGroup ref="SelectOptionForNotSubscribedContacts" stepKey="enableNotSubscribedContacts">
+                <argument name="selectedOption" value="Yes"/>
+            </actionGroup>
+
+            <amOnPage url="{{AdminDotdigitalSyncSettingsPage.url}}" stepKey="amOnDotdigitalSyncSettingsPage"/>
+            <waitForPageLoad stepKey="waitForPageLoad"/>
+
+            <comment userInput="Mapping address books" stepKey="mappingAddressBooksComment"/>
+            <scrollTo selector="#sync_settings_dynamic_addressbook-head" stepKey="scrollToSection"/>
+            <selectOption selector="{{AdminDotdigitalSyncSettingsSection.addCustomersTo}}" userInput="{{AddressBooks.customerAddressBookName}}" stepKey="setCustomersAddressBook"/>
+            <click selector="{{AdminMainActionsSection.save}}" stepKey="saveConfig"/>
+        </before>
+
+        <after>
+            <actionGroup ref="DisableCustomerSync" stepKey="disableCustomerSync"/>
+            <actionGroup ref="SelectOptionForNotSubscribedContacts" stepKey="disableNotSubscribedContacts">
+                <argument name="selectedOption" value="No"/>
+            </actionGroup>
+            <actionGroup ref="DeleteContactsReportRows" stepKey="deleteContactReportRows"/>
+            <actionGroup ref="AdminDeleteCustomerActionGroup" stepKey="deleteCustomer">
+                <argument name="customerEmail" value="CustomerEntityOne.email"/>
+            </actionGroup>
+            <actionGroup ref="ResetDotmailerAccountData" stepKey="resetAccountData"/>
+            <actionGroup ref="AdminLogoutActionGroup" stepKey="logout"/>
+        </after>
+
+        <!-- Create new customer on frontend -->
+        <actionGroup ref="StorefrontCreateCustomerSignedUpNewsletterActionGroup" stepKey="createCustomer"/>
+
+        <!-- Check that contact is not imported -->
+
+        <amOnPage url="{{AdminContactReportPage.url}}" stepKey="amOnDotdigitalContactReportPage"/>
+
+        <actionGroup ref="FilterReport" stepKey="filterEmail1">
+            <argument name="inputName" value="email"/>
+            <argument name="inputValue" value="CustomerEntityOne.email"/>
+        </actionGroup>
+
+        <actionGroup ref="FilterReportSelectOption" stepKey="selectStatusNotImported">
+            <argument name="inputName" value="email_imported"/>
+            <argument name="inputValue" value="{{ContactData.notImported}}"/>
+        </actionGroup>
+
+        <seeElement selector="{{AdminDotdigitalReportColumnsSection.statusInGrid('Not Imported')}}" stepKey="seeRecordFound"/>
+
+        <!-- Check that contact is imported After CLI -->
+
+        <magentoCLI command="dotdigital:sync Contact" stepKey="runContactSync1"/>
+        <magentoCLI command="dotdigital:sync Importer" stepKey="runImporterSync"/>
+
+        <actionGroup ref="FilterReport" stepKey="filterEmail2">
+            <argument name="inputName" value="email"/>
+            <argument name="inputValue" value="CustomerEntityOne.email"/>
+        </actionGroup>
+
+        <actionGroup ref="FilterReportSelectOption" stepKey="selectStatusImported">
+            <argument name="inputName" value="email_imported"/>
+            <argument name="inputValue" value="{{ContactData.imported}}"/>
+        </actionGroup>
+
+        <seeElement selector="{{AdminDotdigitalReportColumnsSection.statusInGrid('Imported')}}" stepKey="seeRecordFound2"/>
+
+        <actionGroup ref="ClearAndNavigateFilterFields" stepKey="clearFilterFields"/>
+    </test>
+</tests>

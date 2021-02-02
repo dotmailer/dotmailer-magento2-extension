@@ -2,12 +2,9 @@
 
 namespace Dotdigitalgroup\Email\Setup\Install;
 
-use Psr\Log\LoggerInterface;
+use Dotdigitalgroup\Email\Logger\Logger;
 use Magento\Framework\Math\Random;
-use Magento\Sales\Model\Order\Config;
 use Magento\Config\Model\ResourceModel\Config as ConfigResource;
-use Magento\Catalog\Model\Product\TypeFactory;
-use Magento\Catalog\Model\Product\VisibilityFactory;
 use Magento\Framework\App\ResourceConnection;
 use Symfony\Component\Console\Output\OutputInterface;
 use Dotdigitalgroup\Email\Setup\Install\Type\AbstractDataMigration;
@@ -20,21 +17,6 @@ class DataMigrationHelper
     private $config;
 
     /**
-     * @var TypeFactory
-     */
-    private $typeFactory;
-
-    /**
-     * @var VisibilityFactory
-     */
-    private $visibilityFactory;
-
-    /**
-     * @var Config
-     */
-    private $orderConfig;
-
-    /**
      * @var Random
      */
     private $randomMath;
@@ -45,7 +27,7 @@ class DataMigrationHelper
     private $resourceConnection;
 
     /**
-     * @var LoggerInterface
+     * @var Logger
      */
     private $logger;
 
@@ -63,28 +45,19 @@ class DataMigrationHelper
     /**
      * MigrateData constructor
      * @param ConfigResource $config
-     * @param TypeFactory $typeFactory
-     * @param VisibilityFactory $visibilityFactory
-     * @param Config $orderConfig
      * @param Random $random
      * @param ResourceConnection $resourceConnection
-     * @param LoggerInterface $logger
+     * @param Logger $logger
      * @param DataMigrationTypeProvider $dataMigrationTypeProvider
      */
     public function __construct(
         ConfigResource $config,
-        TypeFactory $typeFactory,
-        VisibilityFactory $visibilityFactory,
-        Config $orderConfig,
         Random $random,
         ResourceConnection $resourceConnection,
-        LoggerInterface $logger,
+        Logger $logger,
         DataMigrationTypeProvider $dataMigrationTypeProvider
     ) {
         $this->config = $config;
-        $this->typeFactory = $typeFactory;
-        $this->visibilityFactory = $visibilityFactory;
-        $this->orderConfig = $orderConfig;
         $this->randomMath = $random;
         $this->resourceConnection = $resourceConnection;
         $this->logger = $logger;
@@ -109,9 +82,6 @@ class DataMigrationHelper
         /**
          * Save config value
          */
-        $this->saveAllOrderStatusesAsString();
-        $this->saveAllProductTypesAsString();
-        $this->saveAllProductVisibilitiesAsString();
         $this->generateAndSaveCode();
     }
 
@@ -159,63 +129,6 @@ class DataMigrationHelper
             $this->resourceConnection->getConnection()
                 ->query(sprintf('ALTER TABLE %s AUTO_INCREMENT = 1', $tableName));
         }
-    }
-
-    /**
-     * Get all order statuses and save in config
-     */
-    private function saveAllOrderStatusesAsString()
-    {
-        $options = array_keys($this->orderConfig->getStatuses());
-        $statusString = implode(',', $options);
-        $this->config->saveConfig(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_ORDER_STATUS,
-            $statusString,
-            'website',
-            0
-        );
-    }
-
-    /**
-     * Get all product types and save in config
-     */
-    private function saveAllProductTypesAsString()
-    {
-        $types = $this->typeFactory
-            ->create()
-            ->toOptionArray();
-        $options = [];
-        foreach ($types as $type) {
-            $options[] = $type['value'];
-        }
-        $typeString = implode(',', $options);
-        $this->config->saveConfig(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_CATALOG_TYPE,
-            $typeString,
-            'website',
-            '0'
-        );
-    }
-
-    /**
-     * Get all product visibility types and save in config
-     */
-    private function saveAllProductVisibilitiesAsString()
-    {
-        $visibilities = $this->visibilityFactory
-            ->create()
-            ->toOptionArray();
-        $options = [];
-        foreach ($visibilities as $visibility) {
-            $options[] = $visibility['value'];
-        }
-        $visibilityString = implode(',', $options);
-        $this->config->saveConfig(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_CATALOG_VISIBILITY,
-            $visibilityString,
-            'website',
-            '0'
-        );
     }
 
     /**

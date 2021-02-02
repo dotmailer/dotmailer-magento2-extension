@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <tests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
-    <test name="DataMappingSettingsAreNotSetByDefaultTest">
+    <test name="SyncSettingsAreDisabledByDefaultTest">
         <annotations>
+            <skip>
+                <issueId value="BUNDLE-2884"/>
+            </skip>
             <features value="Engagement Cloud module"/>
             <stories value="Configure sync settings"/>
             <title value="Confirm that sync settings are disabled by default"/>
             <description value="Sync settings in the dotdigital > Sync Settings tab should be disabled by default."/>
-            <severity value="MAJOR"/>
-            <group value="AM/106077-mftf"/>
+            <severity value="MINOR"/>
             <group value="dotmailer"/>
         </annotations>
 
@@ -23,6 +25,13 @@
         <amOnPage url="{{AdminDotdigitalSyncSettingsPage.url}}" stepKey="amOnDotdigitalSyncSettingsPage"/>
         <waitForPageLoad stepKey="waitForPageLoad"/>
 
+        <!-- Check Address Book Mapping -->
+        <seeOptionIsSelected selector="{{AdminDotdigitalSyncSettingsSection.allowNonSubscribers}}" userInput="No" stepKey="seeAllowNonSubscribersIsNo"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalSyncSettingsSection.addCustomersTo}}" userInput="-- Please Select --" stepKey="seeCustomersAddressBookIsNotSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalSyncSettingsSection.addSubscribersTo}}" userInput="-- Please Select --" stepKey="seeSubscribersAddressBookIsNotSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalSyncSettingsSection.addGuestsTo}}" userInput="-- Please Select --" stepKey="seeGuestsAddressBookIsNotSet"/>
+
+        <!-- Check Sync -->
         <seeOptionIsSelected selector="{{AdminDotdigitalSyncSettingsSection.customerEnabled}}" userInput="No" stepKey="seeCustomerEnabledIsNo"/>
         <seeOptionIsSelected selector="{{AdminDotdigitalSyncSettingsSection.guestEnabled}}" userInput="No" stepKey="seeGuestEnabledIsNo"/>
         <seeOptionIsSelected selector="{{AdminDotdigitalSyncSettingsSection.subscriberEnabled}}" userInput="No" stepKey="seeSubscriberEnabledIsNo"/>

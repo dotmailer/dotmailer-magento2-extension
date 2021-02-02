@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sections xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:noNamespaceSchemaLocation="urn:magento:mftf:Page/etc/SectionObject.xsd">
+    <section name="AdminFilterFieldsSection">
+        <element name="filterInput" type="input" selector=".admin__control-text[name='{{name}}']" parameterized="true" timeout="30"/>
+        <element name="filterDate" type="date" selector=".admin__control-text[name='{{name}}[from]']" parameterized="true" timeout="30"/>
+        <element name="filterSelect" type="select" selector=".admin__control-select[name='{{id}}']" parameterized="true" timeout="30"/>
+        <element name="activeFilterList" type="block" selector="ul.admin__current-filters-list"/>
+    </section>
+</sections>

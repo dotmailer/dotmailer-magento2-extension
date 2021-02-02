@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
+    <test name="CronReportPageTest">
+        <annotations>
+            <features value="Engagement Cloud module"/>
+            <stories value="Test dotdigital report grids"/>
+            <title value="Test Cron Tasks Report"/>
+            <description value="The dotdigital Cron Tasks report can be viewed, filtered and sorted."/>
+            <severity value="MINOR"/>
+            <group value="dotmailer"/>
+        </annotations>
+
+        <before>
+            <actionGroup ref="AdminLoginActionGroup" stepKey="AdminLoginActionGroup1"/>
+        </before>
+
+        <after>
+            <actionGroup ref="AdminLogoutActionGroup" stepKey="logout"/>
+        </after>
+
+        <amOnPage url="{{AdminCronTasksReportPage.url}}" stepKey="amOnCronTasksReportPage"/>
+        <waitForPageLoad stepKey="waitForPageLoad"/>
+
+        <!-- Confirm that columns exist -->
+        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('ID')}}" stepKey="seeId"/>
+        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Job Code')}}" stepKey="seeJobCode"/>
+        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Status')}}" stepKey="seeStatus"/>
+        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Messages')}}" stepKey="seeMessages"/>
+        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Created Date')}}" stepKey="seeCreatedDate"/>
+        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Scheduled At')}}" stepKey="seeScheduledAt"/>
+        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Executed At')}}" stepKey="seeExecutedAt"/>
+        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Finished At')}}" stepKey="seeFinishedAt"/>
+
+        <!-- Sorting -->
+        <click selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Status')}}" stepKey="clickStatusToSortAsc"/>
+        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeaderAsc('Status')}}" stepKey="checkIfStatusSortsAsc"/>
+        <click selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Scheduled At')}}" stepKey="clickScheduledAtToSortAsc"/>
+        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeaderAsc('Scheduled At')}}" stepKey="checkIfDateSortsAsc"/>
+
+        <!-- Filtering -->
+        <actionGroup ref="ClearAndNavigateFilterFields" stepKey="clearAndShowFilters"/>
+
+        <seeElement selector="{{AdminFilterFieldsSection.filterInput('job_code')}}" stepKey="seeJobCodeFilter"/>
+        <seeElement selector="{{AdminFilterFieldsSection.filterInput('status')}}" stepKey="seeStatusFilter"/>
+        <seeElement selector="{{AdminFilterFieldsSection.filterInput('messages')}}" stepKey="seeMessagesFilter"/>
+        <seeElement selector="{{AdminFilterFieldsSection.filterDate('created_at')}}" stepKey="seeCreatedAtFilter"/>
+        <seeElement selector="{{AdminFilterFieldsSection.filterDate('scheduled_at')}}" stepKey="seeScheduledAtFilter"/>
+        <seeElement selector="{{AdminFilterFieldsSection.filterDate('executed_at')}}" stepKey="seeExecutedAtFilter"/>
+        <seeElement selector="{{AdminFilterFieldsSection.filterDate('finished_at')}}" stepKey="seeFinishedAtFilter"/>
+
+        <fillField selector="{{AdminFilterFieldsSection.filterInput('job_code')}}" userInput="ddg" stepKey="fillJobCodeFilter"/>
+        <click selector="{{AdminFilterOptionsSection.applyFilters}}" stepKey="clickApplyFilters"/>
+        <seeElement selector="{{AdminFilterFieldsSection.activeFilterList}}" stepKey="seeFilterList"/>
+        <seeElementInDOM selector="div.admin__data-grid-filters-current" stepKey="seeFilterIsOn"/>
+    </test>
+</tests>

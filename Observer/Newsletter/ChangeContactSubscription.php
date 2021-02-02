@@ -4,6 +4,7 @@ namespace Dotdigitalgroup\Email\Observer\Newsletter;
 
 use Dotdigitalgroup\Email\Model\Newsletter\Subscriber;
 use Dotdigitalgroup\Email\Model\ResourceModel\Automation;
+use Magento\Newsletter\Model\Subscriber as CoreSubscriber;
 
 /**
  * Contact newsletter subscription change.
@@ -158,7 +159,7 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
                 //save contact
                 $this->contactResource->save($contactEmail);
 
-                //not subscribed
+            //not subscribed
             } else {
                 //skip if contact is suppressed
                 if ($contactEmail->getSuppressed()) {
@@ -261,7 +262,10 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
         $subscriberStatusNow = $subscriber->getSubscriberStatus();
         $subscriberStatusBefore = $subscriber->getOrigData('subscriber_status');
 
-        return $subscriberStatusNow == 1 && $subscriberStatusBefore == 2;
+        $expectedStatusNow = $subscriberStatusNow == CoreSubscriber::STATUS_SUBSCRIBED;
+        $expectedStatusBefore = $subscriberStatusBefore != CoreSubscriber::STATUS_SUBSCRIBED;
+
+        return $expectedStatusNow && $expectedStatusBefore;
     }
 
     /**

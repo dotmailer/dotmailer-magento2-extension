@@ -115,6 +115,14 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_PATH_CONNECTOR_SYNC_DATA_FIELDS_STATUS = 'connector_configuration/data_fields/order_status';
     const XML_PATH_CONNECTOR_SYNC_DATA_FIELDS_BRAND_ATTRIBUTE = 'connector_configuration/data_fields/brand_attribute';
 
+    /**
+     * IMAGE TYPES SECTION
+     */
+    const XML_PATH_CONNECTOR_IMAGE_TYPES_CATALOG_SYNC = 'connector_configuration/image_types/catalog_sync';
+    const XML_PATH_CONNECTOR_IMAGE_TYPES_ABANDONED_CART = 'connector_configuration/image_types/abandoned_cart';
+    const XML_PATH_CONNECTOR_IMAGE_TYPES_ABANDONED_BROWSE = 'connector_configuration/image_types/abandoned_browse';
+    const XML_PATH_CONNECTOR_IMAGE_TYPES_DYNAMIC_CONTENT = 'connector_configuration/image_types/dynamic_content';
+
     //Transactional Data
     const XML_PATH_CONNECTOR_SYNC_ORDER_STATUS = 'connector_configuration/transactional_data/order_statuses';
     const XML_PATH_CONNECTOR_CUSTOM_ORDER_ATTRIBUTES =

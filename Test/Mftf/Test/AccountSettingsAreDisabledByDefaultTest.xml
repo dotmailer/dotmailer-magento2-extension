@@ -7,8 +7,7 @@
             <stories value="Configure account settings"/>
             <title value="Confirm that API settings are disabled by default"/>
             <description value="Account settings in the dotdigital > Settings tab should be disabled by default."/>
-            <severity value="MAJOR"/>
-            <group value="AM/106077-mftf"/>
+            <severity value="MINOR"/>
             <group value="dotmailer"/>
         </annotations>
 

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
+    <test name="SwaggerTest">
+        <annotations>
+            <features value="Engagement Cloud module"/>
+            <stories value="Test API validation"/>
+            <title value="Test Swagger Interactive API page"/>
+            <description value="Confirm that we haven't broken the /swagger page."/>
+            <severity value="MINOR"/>
+            <group value="dotmailer"/>
+        </annotations>
+
+        <amOnPage url="swagger" stepKey="amOnSwaggerPage"/>
+        <waitForPageLoad stepKey="waitForPageLoad"/>
+
+        <dontSeeInSource html="Failed to load API definition&#46;" stepKey="dontSeeErrorMessage"/>
+    </test>
+</tests>

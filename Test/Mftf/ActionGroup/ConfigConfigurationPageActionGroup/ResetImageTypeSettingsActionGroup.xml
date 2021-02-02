@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actionGroups xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/actionGroupSchema.xsd">
+    <actionGroup name="ResetImageTypeSettings">
+        <amOnPage url="{{AdminDotmailerConfigurationPage.url}}" stepKey="navigateToDotdigitalConfigurationPage"/>
+        <waitForPageLoad stepKey="waitForPageLoad"/>
+        <selectOption selector="{{AdminConfigurationImageTypesSection.catalogSyncSelect}}" userInput="Default" stepKey="resetSelectionForCatalogSync"/>
+        <selectOption selector="{{AdminConfigurationImageTypesSection.abandonedCartSelect}}" userInput="Default" stepKey="resetSelectionForAbandonedCartSelect"/>
+        <selectOption selector="{{AdminConfigurationImageTypesSection.abandonedBrowseSelect}}" userInput="Default" stepKey="resetSelectionForAbandonedBrowseSelect"/>
+        <selectOption selector="{{AdminConfigurationImageTypesSection.dynamicContentSelect}}" userInput="Default" stepKey="resetSelectionForDynamicContentSelect"/>
+        <click selector="{{AdminMainActionsSection.save}}" stepKey="saveConfig3"/>
+        <waitForPageLoad stepKey="waitForPageLoad2"/>
+    </actionGroup>
+</actionGroups>

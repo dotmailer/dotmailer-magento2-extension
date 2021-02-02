@@ -86,6 +86,25 @@ class ParentFinder
     }
 
     /**
+     * @param Product $product
+     * @param string $imageRole
+     * @return \Magento\Catalog\Api\Data\ProductInterface|Product|null
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
+    public function getParentProductForNoImageSelection(Product $product, $imageRole = 'small_image')
+    {
+        $imageRole = $imageRole ?? 'small_image';
+        if ($product->getTypeId() == \Magento\Catalog\Model\Product\Type::TYPE_SIMPLE
+            && (empty($product->getData($imageRole)) || $product->getData($imageRole) == 'no_selection')
+            && $parentProduct = $this->getParentProduct($product)
+        ) {
+            return $parentProduct;
+        }
+
+        return $product;
+    }
+
+    /**
      * @param $product
      * @return int|null
      */

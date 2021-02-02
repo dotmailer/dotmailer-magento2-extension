@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<actionGroups xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/actionGroupSchema.xsd">
+    <actionGroup name="CreateCustomAttributeMapping">
+        <arguments>
+            <argument name="customDataFieldName" defaultValue="CUSTOMER_ID" type="string"/>
+        </arguments>
+        <conditionalClick stepKey="expandDataFieldsMappingTab" selector="{{AdminDotdigitalDataMappingSection.DataFieldsMappingSectionToggle}}" dependentSelector="{{AdminDotdigitalDataMappingSection.customAttributes}}" visible="false"/>
+        <scrollTo selector="{{AdminDotdigitalDataMappingSection.customAttributes}}" stepKey="scrollToSection"/>
+        <click selector="{{AdminDotdigitalDataMappingSection.bulkActionOption('Add New Attribute')}}" stepKey="clickToAddNewAttribute"/>
+        <selectOption selector="{{AdminDotdigitalDataMappingSection.customDataFieldSelect}}" userInput="{{customDataFieldName}}" stepKey="selectTargetCondition"/>
+
+        <click selector="{{AdminDotdigitalDataMappingSection.save}}" stepKey="savePage" />
+        <waitForPageLoad stepKey="waitForPageLoad"/>
+        <see userInput="You saved the configuration." selector="div[data-ui-id='messages-message-success']" stepKey="seeSuccessMessage"/>
+        <scrollTo selector="{{AdminDotdigitalDataMappingSection.createDataFieldHeader}}" stepKey="scrollToHeader2"/>
+        <seeOptionIsSelected userInput="{{DataFields.customerIdDataField}}" selector="{{AdminDotdigitalDataMappingSection.customDataFieldSelect}}" stepKey="seeCustomDataField"/>
+    </actionGroup>
+</actionGroups>

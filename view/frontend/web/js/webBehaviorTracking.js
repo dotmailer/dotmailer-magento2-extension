@@ -15,17 +15,28 @@ define([
             className: 'DataStorage'
         },
 
+        /**
+         *
+         */
         initIdsStorage: function () {
             storage.onStorageInit(this.identifiersConfig.namespace, this.idsStorageHandler.bind(this));
+
             return this;
         },
 
+        /**
+         * @param {Object} idsStorage
+         */
         idsStorageHandler: function (idsStorage) {
             this.productStorage = storage.createStorage(this.productStorageConfig);
             this.productStorage.data.subscribe(this.dataCollectionHandler.bind(this));
+
             return this;
         },
 
+        /**
+         * @param {Array} data
+         */
         dataCollectionHandler: function (data) {
             let productData;
             let productId;
@@ -62,22 +73,31 @@ define([
             }
         },
 
+        /**
+         * @param {String} id
+         */
         initWbt: function (id) {
             window.dm_insight_id = id;
 
-            (function(w,d,u,t,o,c){w['dmtrackingobjectname']=o;c=d.createElement(t);c.async=1;c.src=u;t=d.getElementsByTagName
-            (t)[0];t.parentNode.insertBefore(c,t);w[o]=w[o]||function(){(w[o].q=w[o].q||[]).push(arguments);};
+            (function (w, d, u, t, o, c) {
+                w['dmtrackingobjectname'] = o;c = d.createElement(t);c.async = 1;c.src = u;t = d.getElementsByTagName
+            (t)[0];t.parentNode.insertBefore(c, t);w[o] = w[o] || function () {
+                    (w[o].q = w[o].q || []).push(arguments);
+                };
             })(window, document, '//static.trackedweb.net/js/_dmptv4.js', 'script', 'dmPt');
 
             return this;
         },
 
+        /**
+         * @param {Array} data
+         */
         wbtTrack: function (data) {
             window.dmPt('track', data || {});
         },
 
         /**
-         * @param settings
+         * @param {Object} settings
          * @constructor
          */
         'Dotdigitalgroup_Email/js/webBehaviorTracking': function (settings) {
@@ -89,7 +109,7 @@ define([
             if (body.classList.contains('catalogsearch-result-index')) {
                 var search = document.getElementById('search');
                 this.wbtTrack({
-                    'searched_term' : search.getAttribute('value')
+                    'searched_term': search.getAttribute('value')
                 });
             } else if (!body.classList.contains('catalog-product-view')) {
                 this.wbtTrack();

@@ -59,32 +59,9 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
      *
      * @return $this
      */
-    public function getWishlistToImportByWebsite(\Magento\Store\Api\Data\WebsiteInterface $website, $limit = 100)
+    public function getWishlistsToImportByWebsite(\Magento\Store\Api\Data\WebsiteInterface $website, $limit = 100)
     {
         $collection = $this->addFieldToFilter('wishlist_imported', 0)
-            ->addFieldToFilter(
-                'store_id',
-                ['in' => $website->getStoreIds()]
-            )
-            ->addFieldToFilter('item_count', ['gt' => 0]);
-        $collection->getSelect()->limit($limit);
-
-        return $collection;
-    }
-
-    /**
-     * Get wishlists marked as modified for website.
-     *
-     * @param \Magento\Store\Api\Data\WebsiteInterface $website
-     * @param int $limit
-     * @return $this
-     */
-    public function getModifiedWishlistToImportByWebsite(
-        \Magento\Store\Api\Data\WebsiteInterface $website,
-        $limit = 100
-    ) {
-
-        $collection = $this->addFieldToFilter('wishlist_modified', 1)
             ->addFieldToFilter(
                 'store_id',
                 ['in' => $website->getStoreIds()]

@@ -18,9 +18,6 @@
     <type name="Magento\Framework\Mail\TransportInterface">
         <plugin name="ddg_mail_transport" type="Dotdigitalgroup\Email\Plugin\TransportPlugin" sortOrder="1" disabled="false" />
     </type>
-    <type name="Magento\Reports\Model\ResourceModel\Product\Collection">
-        <plugin name="ddg_reports_product_collection" type="Dotdigitalgroup\Email\Plugin\ReportsProductCollectionPlugin"/>
-    </type>
     <type name="Magento\Framework\Mail\Template\TransportBuilder">
         <plugin name="Ddg_TransportBuilderPlugin" type="Dotdigitalgroup\Email\Plugin\TransportBuilderPlugin" sortOrder="1" disabled="false" />
     </type>
@@ -104,6 +101,7 @@
                 <item name="importer_syncs" xsi:type="object">Dotdigitalgroup\Email\Console\Command\ImporterSyncsCommand</item>
                 <item name="enable_connector" xsi:type="object">Dotdigitalgroup\Email\Console\Command\EnableConnectorCommand</item>
                 <item name="automap_datafields" xsi:type="object">Dotdigitalgroup\Email\Console\Command\AutoMapDataFieldsCommand</item>
+                <item name="task_runner" xsi:type="object">Dotdigitalgroup\Email\Console\Command\TaskRunnerCommand</item>
             </argument>
         </arguments>
     </type>
@@ -129,4 +127,14 @@
             </argument>
         </arguments>
     </type>
+    <virtualType name="smallImageRoleVirtualType" type="Dotdigitalgroup\Email\Model\Config\Configuration\ImageTypes">
+        <arguments>
+            <argument name="imageRole" xsi:type="string">Small</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="thumbnailImageRoleVirtualType" type="Dotdigitalgroup\Email\Model\Config\Configuration\ImageTypes">
+        <arguments>
+            <argument name="imageRole" xsi:type="string">Thumbnail</argument>
+        </arguments>
+    </virtualType>
 </config>

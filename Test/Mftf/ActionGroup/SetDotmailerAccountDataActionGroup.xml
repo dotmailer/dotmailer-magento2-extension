@@ -4,8 +4,8 @@
               xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/actionGroupSchema.xsd">
     <actionGroup name="SetDotmailerAccountData">
         <arguments>
-            <argument name="ecApiUser" defaultValue="{{_CREDS.ec_api_user}}"/>
-            <argument name="ecApiPassword" defaultValue="{{_CREDS.ec_api_password}}"/>
+            <argument name="ecApiUser" defaultValue="{{_CREDS.dotmailer/ec_api_user}}"/>
+            <argument name="ecApiPassword" defaultValue="{{_CREDS.dotmailer/ec_api_password}}"/>
         </arguments>
         <amOnPage url="{{AdminDotmailerAccountsPage.url}}" stepKey="navigateToDotmailerAccountPage"/>
         <comment userInput="Setting API credentials in dotdigital account settings" stepKey="apiCredentialsEnteredComment"/>

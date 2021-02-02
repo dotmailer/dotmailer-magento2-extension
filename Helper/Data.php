@@ -1695,11 +1695,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             'last_brand_pur' => ''
         ];
 
-        $store = $website->getDefaultStore();
         $mappedData = $this->scopeConfig->getValue(
             'connector_data_mapping/customer_data',
-            ScopeInterface::SCOPE_STORE,
-            $store->getId()
+            ScopeInterface::SCOPE_WEBSITES,
+            $website->getId()
         );
 
         $mappedData = array_intersect_key($mappedData, $subscriberDataFields);

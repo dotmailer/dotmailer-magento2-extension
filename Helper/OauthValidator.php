@@ -2,9 +2,9 @@
 
 namespace Dotdigitalgroup\Email\Helper;
 
+use Dotdigitalgroup\Email\Helper\Config as EmailConfig;
 use Magento\Backend\Model\Auth;
 use Magento\Framework\Encryption\EncryptorInterface;
-use Dotdigitalgroup\Email\Helper\Config as EmailConfig;
 
 class OauthValidator
 {
@@ -43,14 +43,15 @@ class OauthValidator
 
     /**
      * @param $url
+     * @param string $suppressFooter
      * @return string
      */
-    public function createAuthorisedEcUrl($url)
+    public function createAuthorisedEcUrl($url, $suppressFooter = 'true')
     {
         $generatedToken = $this->generateToken();
 
         $query = [
-            EmailConfig::API_CONNECTOR_SUPPRESS_FOOTER => 'true',
+            EmailConfig::API_CONNECTOR_SUPPRESS_FOOTER => $suppressFooter,
             EmailConfig::API_CONNECTOR_OAUTH_URL_LOG_USER => $generatedToken,
         ];
 

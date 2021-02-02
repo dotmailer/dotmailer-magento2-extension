@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actionGroups xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/actionGroupSchema.xsd">
+    <actionGroup name="SortColumnsReportActionGroup">
+        <annotations>
+            <description>Tests ASC and DESC sorting for report grid columns.</description>
+        </annotations>
+        <arguments>
+            <argument name="columnName"  type="string"/>
+        </arguments>
+
+        <!-- Sorting -->
+        <click selector="{{AdminDotdigitalReportColumnsSection.columnHeader(columnName)}}" stepKey="clickToSortAsc"/>
+        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeaderAsc(columnName)}}" stepKey="checkIfColumnAsc"/>
+
+        <click selector="{{AdminDotdigitalReportColumnsSection.columnHeader(columnName)}}" stepKey="clickToSortDesc"/>
+        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeaderDesc(columnName)}}" stepKey="checkIfColumnDesc"/>
+    </actionGroup>
+</actionGroups>

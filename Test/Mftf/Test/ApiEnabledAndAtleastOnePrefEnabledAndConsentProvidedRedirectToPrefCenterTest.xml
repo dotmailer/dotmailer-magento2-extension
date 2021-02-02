@@ -8,8 +8,7 @@
             <stories value="If API enabled and one of the preferences enabled, plugin should redirect to dotmailer preference page and general subscription text should display the content text"/>
             <title value="You should be able to see dotmailer preferences page with consent text if api is enabled, consent provided and one of the preferences are enabled."/>
             <description value="You should be able to see dotmailer preferences page with consent text if api is enabled, consent provided and one of the preferences are enabled."/>
-            <severity value="CRITICAL"/>
-            <group value="dotmailer-preference-page"/>
+            <severity value="AVERAGE"/>
             <group value="dotmailer"/>
         </annotations>
         <before>

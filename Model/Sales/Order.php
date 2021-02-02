@@ -219,38 +219,4 @@ class Order
             }
         }
     }
-
-    /**
-     * Get customer last order id.
-     *
-     * @param \Magento\Customer\Model\Customer $customer
-     *
-     * @return bool|mixed
-     */
-    public function getCustomerLastOrderId(\Magento\Customer\Model\Customer $customer)
-    {
-        $storeIds = $this->storeManager->getWebsite(
-            $customer->getWebsiteId()
-        )->getStoreIds();
-
-        return $this->orderCollection->create()
-            ->getCustomerLastOrderId($customer, $storeIds);
-    }
-
-    /**
-     * Get customer last quote id.
-     *
-     * @param \Magento\Customer\Model\Customer $customer
-     *
-     * @return bool|mixed
-     */
-    public function getCustomerLastQuoteId(\Magento\Customer\Model\Customer $customer)
-    {
-        $storeIds = $this->storeManager->getWebsite(
-            $customer->getWebsiteId()
-        )->getStoreIds();
-
-        return $this->orderCollection->create()
-            ->getCustomerLastQuoteId($customer, $storeIds);
-    }
 }

@@ -6,6 +6,7 @@ use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Helper\File;
 use Dotdigitalgroup\Email\Logger\Logger;
 use Magento\Framework\Filesystem\DriverInterface;
+use stdClass;
 
 /**
  * Rest class to make cURL requests.
@@ -242,7 +243,7 @@ class Rest
     /**
      * @throws \Exception
      *
-     * @return mixed
+     * @return array|stdClass
      */
     public function execute()
     {
@@ -287,6 +288,12 @@ class Rest
         $this->processDebugApi();
 
         $response = $this->responseBody;
+
+        if (!$response) {
+            $response = new stdClass();
+            $response->message = $this->getCurlError();
+        }
+
         $this->responseMessage = $response->message ?? null;
 
         return $response;
