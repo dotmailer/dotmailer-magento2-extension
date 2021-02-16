@@ -394,7 +394,9 @@ class Order
             /**
              * Price
              */
-            if (isset($parentLineItem) && $parentLineItem->getProduct()->getTypeId() === 'configurable') {
+            if (isset($parentLineItem) &&
+                $parentLineItem->getId() === $productItem->getParentItemId() &&
+                $parentLineItem->getProduct()->getTypeId() === 'configurable') {
                 $price = $parentLineItem->getPrice();
             } else {
                 $price = $productItem->getPrice();
