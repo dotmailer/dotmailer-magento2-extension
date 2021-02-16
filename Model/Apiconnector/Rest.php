@@ -291,7 +291,9 @@ class Rest
 
         if (!$response) {
             $response = new stdClass();
-            $response->message = $this->getCurlError();
+            if ($curlError = $this->getCurlError()) {
+                $response->message = $curlError;
+            }
         }
 
         $this->responseMessage = $response->message ?? null;
