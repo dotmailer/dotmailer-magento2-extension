@@ -29,7 +29,7 @@
         <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Quote Id')}}" stepKey="seeQuoteId"/>
         <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Customer Id')}}" stepKey="seeCustomerId"/>
         <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Email')}}" stepKey="seeEmail"/>
-        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Contact Status')}}" stepKey="seeContactStatus"/>
+        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Status')}}" stepKey="seeACSendStatus"/>
         <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Is Active')}}" stepKey="seeIsActive"/>
         <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Quote Updated At')}}" stepKey="seeQuoteUpdatedAt"/>
         <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Abandoned Cart Number')}}" stepKey="seeAbandonedCartNumber"/>

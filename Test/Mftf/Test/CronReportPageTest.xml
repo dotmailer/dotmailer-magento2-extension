@@ -23,11 +23,11 @@
         <waitForPageLoad stepKey="waitForPageLoad"/>
 
         <!-- Confirm that columns exist -->
-        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('ID')}}" stepKey="seeId"/>
+        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Schedule Id')}}" stepKey="seeId"/>
         <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Job Code')}}" stepKey="seeJobCode"/>
         <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Status')}}" stepKey="seeStatus"/>
         <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Messages')}}" stepKey="seeMessages"/>
-        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Created Date')}}" stepKey="seeCreatedDate"/>
+        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Created At')}}" stepKey="seeCreatedAt"/>
         <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Scheduled At')}}" stepKey="seeScheduledAt"/>
         <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Executed At')}}" stepKey="seeExecutedAt"/>
         <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Finished At')}}" stepKey="seeFinishedAt"/>

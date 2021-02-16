@@ -31,7 +31,7 @@
         <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Event Name')}}" stepKey="seeEventName"/>
         <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Message')}}" stepKey="seeMessage"/>
         <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Checkout Method')}}" stepKey="seeCheckoutMethod"/>
-        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Send At')}}" stepKey="seeSendAt"/>
+        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Sent At')}}" stepKey="seeSendAt"/>
         <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Send Id')}}" stepKey="seeSendId"/>
         <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Send Status')}}" stepKey="seeSendStatus"/>
         <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Store Id')}}" stepKey="seeStoreId"/>
