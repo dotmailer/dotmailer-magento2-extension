@@ -73,7 +73,7 @@
         </column>
         <column name="enrolment_status" component="Magento_Ui/js/grid/columns/select">
             <settings>
-                <filter>text</filter>
+                <filter>select</filter>
                 <label translate="true">Enrolment Status</label>
                 <options class="Dotdigitalgroup\Email\Model\Automation\Status\Options"/>
                 <dataType>select</dataType>
