@@ -19,6 +19,13 @@ You are welcome to contribute to Engagement Cloud for Magento! You can either:
 - Fix a bug: please clone and use our [Develop branch](https://github.com/dotmailer/dotmailer-magento2-extension/tree/develop) to submit your Pull Request
 - Request a feature on our [roadmap](https://roadmap.dotdigital.com)
 
+# 4.11.1
+
+###### Bug fixes
+- We fixed a bug which could cause incorrect prices for simple and grouped products in order insight data. 
+- Some client methods were generating `Apiconnector Client` warning and error logs, inaccurately. This has been fixed.
+- The duplicated column for _Import Started_ in the Import Report has been amended.
+
 # 4.11.0
 
 ###### What's new
@@ -39,7 +46,7 @@ You are welcome to contribute to Engagement Cloud for Magento! You can either:
 - Customers who subscribe during registration, but need to confirm their subscription, will now be added to a subscriber automation, if configured.
 - Failed cURL requests will now always return an object.
 - Data field mappings are now retrieved in website scope, instead of store scope.
-- We now fetch values for **Disable Customer Success** and **Disable Newsletter Success** in the correct (website) scope. 
+- We now fetch values for _Disable Customer Success_ and _Disable Newsletter Success_ in the correct (website) scope. 
 
 # 4.9.3
 
