@@ -23,18 +23,6 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     }
 
     /**
-     * Join the customer email and store id.
-     * @return \Magento\Framework\DB\Select
-     */
-    public function joinLeftCustomer()
-    {
-        return $this->getSelect()
-            ->joinLeft([
-                'c' => $this->_resource->getTable('customer_entity')
-            ], 'c.entity_id = customer_id', ['email', 'store_id']);
-    }
-
-    /**
      * Get the collection first item.
      *
      * @param int $wishListId
@@ -44,6 +32,26 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     public function getWishlistById($wishListId)
     {
         $collection = $this->addFieldToFilter('wishlist_id', $wishListId)
+            ->setPageSize(1);
+
+        if ($collection->getSize()) {
+            return $collection->getFirstItem();
+        }
+
+        return false;
+    }
+
+    /**
+     * Get the collection first item.
+     *
+     * @param int $wishListId
+     * @param string|int $storeId
+     * @return bool|\Magento\Framework\DataObject
+     */
+    public function getWishlistByIdAndStoreId($wishListId, $storeId)
+    {
+        $collection = $this->addFieldToFilter('wishlist_id', $wishListId)
+            ->addFieldToFilter('store_id', $storeId)
             ->setPageSize(1);
 
         if ($collection->getSize()) {

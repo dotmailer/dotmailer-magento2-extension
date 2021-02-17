@@ -132,7 +132,7 @@ class OrderSyncTest extends \Magento\TestFramework\TestCase\AbstractController
         $this->orderSync->sync();
 
         $this->assertNotEmpty($this->orderSync->guests, 'Failed no guests found to sync.');
-        $this->assertArrayHasKey('is_guest', reset($this->orderSync->guests));
+        $this->assertArrayHasKey('is_guest', $this->orderSync->guests[1]["customer@null.com"]);
     }
 
     /**

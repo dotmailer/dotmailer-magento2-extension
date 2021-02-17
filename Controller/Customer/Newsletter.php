@@ -2,11 +2,12 @@
 
 namespace Dotdigitalgroup\Email\Controller\Customer;
 
+use Dotdigitalgroup\Email\Model\ContactFactory;
+use Dotdigitalgroup\Email\Model\Customer\DataField\Date;
+use Dotdigitalgroup\Email\Model\Newsletter\CsvGenerator;
 use Magento\Customer\Api\CustomerRepositoryInterface as CustomerRepository;
 use Magento\Newsletter\Model\Subscriber;
-use Dotdigitalgroup\Email\Model\Newsletter\CsvGenerator;
 use Magento\Store\Model\StoreManagerInterface;
-use Dotdigitalgroup\Email\Model\Customer\DataField\Date;
 
 class Newsletter extends \Magento\Framework\App\Action\Action
 {
@@ -14,6 +15,11 @@ class Newsletter extends \Magento\Framework\App\Action\Action
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     private $helper;
+
+    /**
+     * @var ContactFactory
+     */
+    private $contactFactory;
 
     /**
      * @var \Magento\Customer\Model\Session
@@ -59,6 +65,7 @@ class Newsletter extends \Magento\Framework\App\Action\Action
      * Newsletter constructor.
      *
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
+     * @param ContactFactory $contactFactory
      * @param \Magento\Customer\Model\Session $session
      * @param \Dotdigitalgroup\Email\Model\ConsentFactory $consentFactory
      * @param \Magento\Framework\App\Action\Context $context
@@ -71,6 +78,7 @@ class Newsletter extends \Magento\Framework\App\Action\Action
      */
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $helper,
+        ContactFactory $contactFactory,
         \Magento\Customer\Model\Session $session,
         \Dotdigitalgroup\Email\Model\ConsentFactory $consentFactory,
         \Magento\Framework\App\Action\Context $context,
@@ -82,6 +90,7 @@ class Newsletter extends \Magento\Framework\App\Action\Action
         CsvGenerator $csvGenerator
     ) {
         $this->helper           = $helper;
+        $this->contactFactory = $contactFactory;
         $this->customerSession  = $session;
         $this->consentFactory   = $consentFactory;
         $this->formKeyValidator = $formKeyValidator;
@@ -103,13 +112,15 @@ class Newsletter extends \Magento\Framework\App\Action\Action
         }
 
         $this->processGeneralSubscription();
-        $store = $this->customerSession->getCustomer()->getStore();
+
+        $store = $this->storeManager->getStore();
         $website = $store->getWebsite();
 
         //if enabled
-        if ($this->helper->isEnabled($website)) {
+        if ($this->helper->isEnabled($website->getId())) {
             $customerEmail = $this->customerSession->getCustomer()->getEmail();
-            $contactFromTable = $this->helper->getContactByEmail($customerEmail, $website->getId());
+            $contactFromTable = $this->contactFactory->create()
+                ->loadByCustomerEmail($customerEmail, $website->getId());
             $contactId = $this->getContactId($contactFromTable);
 
             $client = $this->helper->getWebsiteApiClient($website);
@@ -184,7 +195,6 @@ class Newsletter extends \Magento\Framework\App\Action\Action
                 $contactData,
                 $consentData
             );
-
         } else {
             $contact = $apiClient->postContacts(
                 $customerEmail
@@ -359,8 +369,7 @@ class Newsletter extends \Magento\Framework\App\Action\Action
                     $data[$idsArray[0]] = [
                         "id" => $idsArray[0],
                         "isPreference" => false,
-                        "preferences" => [$idsArray[1] =>
-                            [
+                        "preferences" => [$idsArray[1] => [
                                 "id" => $idsArray[1],
                                 "isPreference" => true,
                                 "isOptedIn" => true
@@ -428,6 +437,7 @@ class Newsletter extends \Magento\Framework\App\Action\Action
 
     /**
      * Process general subscription
+     * See Magento\Newsletter\Controller\Manage\Save
      */
     private function processGeneralSubscription()
     {
@@ -441,12 +451,10 @@ class Newsletter extends \Magento\Framework\App\Action\Action
         } else {
             try {
                 $customer = $this->customerRepository->getById($customerId);
-                $storeId = $this->helper->storeManager->getStore()->getId();
+                $storeId = $this->storeManager->getStore()->getId();
                 $customer->setStoreId($storeId);
 
-                $isSubscribedState = $customer->getExtensionAttributes()
-                    ->getIsSubscribed();
-
+                $isSubscribedState = $this->getIsSubscribedState($customerId);
                 $isSubscribedParam = (bool) $this->getRequest()->getParam('is_subscribed', false);
 
                 if ($isSubscribedParam !== $isSubscribedState) {
@@ -478,5 +486,20 @@ class Newsletter extends \Magento\Framework\App\Action\Action
         } else {
             $this->messageManager->addErrorMessage($message);
         }
+    }
+
+    /**
+     * With Global Account Sharing, $customer->getExtensionAttributes()->getIsSubscribed() is not reliable,
+     * because we can have multiple subscriptions per customer ID
+     *
+     * @param string|int $customerId
+     * @return bool
+     */
+    private function getIsSubscribedState($customerId)
+    {
+        $subscriber = $this->subscriberFactory->create()
+            ->loadByCustomerId($customerId);
+
+        return $subscriber->isSubscribed();
     }
 }

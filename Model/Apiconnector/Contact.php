@@ -56,7 +56,7 @@ class Contact implements SyncInterface
     /**
      * @var array
      */
-    private $additionalCustomerData = [];
+    private $customerScopeData = [];
 
     /**
      * @var array
@@ -75,7 +75,7 @@ class Contact implements SyncInterface
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contactResource
      * @param ContactImportQueueExport $contactImportQueueExport
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory $contactCollectionFactory
-     * @param CustomerDataFieldProvider $customerDataFieldProvider
+     * @param CustomerDataFieldProviderFactory $customerDataFieldProviderFactory
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\Apiconnector\CustomerFactory $customerFactory,
@@ -88,7 +88,6 @@ class Contact implements SyncInterface
     ) {
         $this->file = $file;
         $this->helper = $helper;
-        //email contact
         $this->emailCustomer = $customerFactory;
         $this->contactResource = $contactResource;
         $this->contactImportQueueExport = $contactImportQueueExport;
@@ -165,12 +164,16 @@ class Contact implements SyncInterface
         //customer collection
         $customerCollection = $this->contactResource->buildCustomerCollection($customerIds);
 
+        // Set website_id and store_id as per our table
+        $this->setCustomerScopeData($customerIds, $website->getId());
+
         //Customer sales data
-        $this->addAdditionalCustomerData($this->getCustomerSalesData($customerIds, $website->getId()));
+        $additionalCustomerData = $this->getCustomerSalesData($customerIds, $website);
 
         $this->createCsvFile(
             $customerCollection,
             $columns,
+            $additionalCustomerData,
             $customersFile
         );
 
@@ -210,16 +213,6 @@ class Contact implements SyncInterface
     }
 
     /**
-     * @param array $additionalCustomerData
-     * @return $this
-     */
-    public function addAdditionalCustomerData(array $additionalCustomerData)
-    {
-        $this->additionalCustomerData += $additionalCustomerData;
-        return $this;
-    }
-
-    /**
      * Get fields to be exported
      *
      * @param WebsiteInterface $website
@@ -244,19 +237,29 @@ class Contact implements SyncInterface
     /**
      * @param CustomerCollection $customerCollection
      * @param array $columns
+     * @param array $additionalCustomerData
      * @param string $customersFile
      */
     private function createCsvFile(
         CustomerCollection $customerCollection,
         array $columns,
+        array $additionalCustomerData,
         string $customersFile
     ) {
         // write headings row
         $this->file->outputCSV($this->file->getFilePath($customersFile), $columns);
 
         foreach ($customerCollection as $customer) {
-            if (isset($this->additionalCustomerData[$customer->getId()])) {
-                $this->setAdditionalDataOnCustomer($customer);
+            if (isset($this->customerScopeData[$customer->getId()])) {
+                $customer->setData('website_id', $this->customerScopeData[$customer->getId()]['website_id']);
+                $customer->setData('store_id', $this->customerScopeData[$customer->getId()]['store_id']);
+            }
+
+            if (isset($additionalCustomerData[$customer->getId()])) {
+                $this->setAdditionalDataOnCustomer(
+                    $customer,
+                    $additionalCustomerData[$customer->getId()]
+                );
             }
 
             $connectorCustomer = $this->emailCustomer->create()
@@ -275,30 +278,54 @@ class Contact implements SyncInterface
 
     /**
      * @param \Magento\Customer\Model\Customer $customer
+     * @param array $data
      */
-    private function setAdditionalDataOnCustomer(\Magento\Customer\Model\Customer $customer)
+    private function setAdditionalDataOnCustomer(\Magento\Customer\Model\Customer $customer, array $data)
     {
-        foreach ($this->additionalCustomerData[$customer->getId()] as $column => $value) {
+        foreach ($data as $column => $value) {
             $customer->setData($column, $value);
         }
     }
 
     /**
      * @param array $customerIds
-     * @param int $websiteId
+     * @param WebsiteInterface $website
      * @return array
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    private function getCustomerSalesData(array $customerIds, $websiteId = 0)
+    private function getCustomerSalesData(array $customerIds, $website)
     {
         $statuses = $this->helper->getWebsiteConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_DATA_FIELDS_STATUS,
-            $websiteId
+            $website->getId()
         );
 
         return $this->contactResource->getSalesDataForCustomersWithOrderStatusesAndBrand(
             $customerIds,
-            explode(',', $statuses)
+            explode(',', $statuses),
+            $website->getStoreIds()
         );
+    }
+
+    /**
+     * Fetch the store_id for this customer and website.
+     * Builds an array with scope values from our table, to be used in createCsvFile().
+     * In this way we are overriding the values from customer_entity. This is required when Account Sharing
+     * is set to Global, since there is one customer entity with multiple scoped rows in our table.
+     *
+     * @param array $customerIds
+     * @param int $websiteId
+     */
+    private function setCustomerScopeData(array $customerIds, $websiteId = 0)
+    {
+        $collection = $this->contactCollectionFactory->create()
+            ->getCustomerScopeData($customerIds, $websiteId);
+
+        foreach ($collection->getItems() as $contact) {
+            $this->customerScopeData[$contact->getCustomerId()] = [
+                'website_id' => $websiteId,
+                'store_id' => $contact->getStoreId()
+            ];
+        }
     }
 }

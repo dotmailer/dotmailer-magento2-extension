@@ -216,20 +216,27 @@ class Order implements SyncInterface
         /**
          * Add guests to contact table.
          */
-        if (! empty($this->guests)) {
-            $orderEmails = array_keys($this->guests);
-            $guestsEmailFound = $this->contactCollectionFactory->create()
-                ->addFieldToFilter('email', ['in' => $orderEmails])
-                ->getColumnValues('email');
-            //remove the contacts that already exists
-            foreach ($guestsEmailFound as $email) {
-                unset($this->guests[strtolower($email)]);
+        if (!empty($this->guests)) {
+            $guestsToInsert = [];
+
+            foreach ($this->guests as $websiteId => $guests) {
+                $guestEmails = array_keys($guests);
+
+                $matchingContacts = $this->contactCollectionFactory->create()
+                    ->addFieldToFilter('email', ['in' => $guestEmails])
+                    ->addFieldToFilter('website_id', $websiteId)
+                    ->getColumnValues('email');
+
+                foreach (array_diff($guestEmails, $matchingContacts) as $email) {
+                    $guestsToInsert[] = $this->guests[$websiteId][strtolower($email)];
+                }
+
+                //mark existing contacts with is_guest, by website
+                $this->contactResource->updateContactsAsGuests($matchingContacts, $websiteId);
             }
 
-            //insert new guests contacts
-            $this->contactResource->insertGuests($this->guests);
-            //mark the existing contacts with is guest in bulk
-            $this->contactResource->updateContactsAsGuests($guestsEmailFound);
+            //insert new guest contacts
+            $this->contactResource->insertGuests($guestsToInsert);
         }
 
         $totalOrders = $this->countOrders['orders'] + $this->countOrders['single_sync'];
@@ -379,7 +386,7 @@ class Order implements SyncInterface
                  */
                 if ($order->getCustomerIsGuest() && $order->getCustomerEmail()) {
                     $email = $order->getCustomerEmail();
-                    $this->guests[strtolower($email)] = [
+                    $this->guests[$websiteId][strtolower($email)] = [
                         'email' => $email,
                         'website_id' => $websiteId,
                         'store_id' => $storeId,

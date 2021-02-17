@@ -276,8 +276,9 @@ class ContactData
     public function getStoreNameAdditional()
     {
         try {
-            $storeGroup = $this->storeManager->getGroup($this->model->getGroupId());
-            return $storeGroup->getName();
+            return $this->storeManager->getStore($this->model->getStoreId())
+                ->getGroup()
+                ->getName();
         } catch (\Magento\Framework\Exception\NoSuchEntityException $e) {
             $this->logger->debug(
                 'Requested store is not found. Store id: ' . $this->model->getStoreId(),

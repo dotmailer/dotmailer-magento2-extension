@@ -2,8 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Setup\Install\Type;
 
-use Magento\Framework\DB\Select;
+use Magento\Customer\Model\Config\Share;
+use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\ResourceConnection;
+use Magento\Framework\DB\Select;
 
 abstract class AbstractDataMigration
 {
@@ -43,12 +45,21 @@ abstract class AbstractDataMigration
     protected $rowsAffected = 0;
 
     /**
+     * @var ScopeConfigInterface
+     */
+    private $scopeConfig;
+
+    /**
      * AbstractType constructor
      * @param ResourceConnection $resourceConnection
+     * @param ScopeConfigInterface $scopeConfig
      */
-    public function __construct(ResourceConnection $resourceConnection)
-    {
+    public function __construct(
+        ResourceConnection $resourceConnection,
+        ScopeConfigInterface $scopeConfig
+    ) {
         $this->resourceConnection = $resourceConnection;
+        $this->scopeConfig = $scopeConfig;
     }
 
     /**
@@ -63,6 +74,8 @@ abstract class AbstractDataMigration
             $this->batchInsert($this->getSelectStatement());
         } elseif ($this instanceof UpdateTypeInterface) {
             $this->update($this->getSelectStatement());
+        } elseif ($this instanceof BulkUpdateTypeInterface) {
+            $this->bulkUpdate();
         }
 
         return $this;
@@ -85,6 +98,22 @@ abstract class AbstractDataMigration
     public function getTableName()
     {
         return $this->tableName;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isAccountSharingGlobal(): bool
+    {
+        $config = $this->scopeConfig->getValue(
+            Share::XML_PATH_CUSTOMER_ACCOUNT_SHARE
+        );
+
+        if ($config == Share::SHARE_GLOBAL) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -111,6 +140,24 @@ abstract class AbstractDataMigration
     }
 
     /**
+     * Run a bulk update statement
+     *
+     * @return void
+     */
+    private function bulkUpdate()
+    {
+        foreach ($this->fetchRecords() as $record) {
+            $this->rowsAffected += $this->resourceConnection
+                ->getConnection()
+                ->update(
+                    $this->resourceConnection->getTableName($this->tableName),
+                    $this->getUpdateBindings($record[$this->getBindKey()]),
+                    $this->getUpdateWhereClause($record[$this->getWhereKey()])
+                );
+        }
+    }
+
+    /**
      * @param Select $selectStatement
      * @return void
      * @throws \Zend_Db_Statement_Exception
@@ -132,7 +179,6 @@ abstract class AbstractDataMigration
             if ($iterations++ === 0 && $rowCount < self::BATCH_SIZE) {
                 break;
             }
-
         } while ($rowCount > 0);
     }
 
@@ -154,5 +200,13 @@ abstract class AbstractDataMigration
             ->getConnection()
             ->query($query)
             ->rowCount();
+    }
+
+    /**
+     * @return bool
+     */
+    public function isEnabled(): bool
+    {
+        return true;
     }
 }

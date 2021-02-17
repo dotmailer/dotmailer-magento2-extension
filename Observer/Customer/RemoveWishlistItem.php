@@ -2,6 +2,8 @@
 
 namespace Dotdigitalgroup\Email\Observer\Customer;
 
+use Dotdigitalgroup\Email\Logger\Logger;
+
 /**
  * Remove wishlist items.
  */
@@ -10,7 +12,7 @@ class RemoveWishlistItem implements \Magento\Framework\Event\ObserverInterface
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist\CollectionFactory
      */
-    private $emailWishlistCollection;
+    private $emailWishlistCollectionFactory;
 
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist
@@ -18,24 +20,24 @@ class RemoveWishlistItem implements \Magento\Framework\Event\ObserverInterface
     private $emailWishlistResource;
 
     /**
-     * @var \Dotdigitalgroup\Email\Helper\Data
+     * @var Logger
      */
-    private $helper;
+    private $logger;
 
     /**
      * RemoveWishlistItem constructor.
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist\CollectionFactory $emailWishlistCollection
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist\CollectionFactory $emailWishlistCollectionFactory
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist $emailWishlistResource
-     * @param \Dotdigitalgroup\Email\Helper\Data $data
+     * @param Logger $logger
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist\CollectionFactory $emailWishlistCollection,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist\CollectionFactory $emailWishlistCollectionFactory,
         \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist $emailWishlistResource,
-        \Dotdigitalgroup\Email\Helper\Data $data
+        Logger $logger
     ) {
-        $this->helper          = $data;
+        $this->logger = $logger;
         $this->emailWishlistResource = $emailWishlistResource;
-        $this->emailWishlistCollection = $emailWishlistCollection;
+        $this->emailWishlistCollectionFactory = $emailWishlistCollectionFactory;
     }
 
     /**
@@ -46,8 +48,11 @@ class RemoveWishlistItem implements \Magento\Framework\Event\ObserverInterface
     {
         try {
             $wishlistItem = $observer->getEvent()->getItem();
-            $emailWishlist = $this->emailWishlistCollection->create()
-                ->getWishlistById($wishlistItem->getWishlistId());
+            $emailWishlist = $this->emailWishlistCollectionFactory->create()
+                ->getWishlistByIdAndStoreId(
+                    $wishlistItem->getWishlistId(),
+                    $wishlistItem->getStoreId()
+                );
 
             if ($emailWishlist) {
                 $count = $emailWishlist->getItemCount();
@@ -56,7 +61,7 @@ class RemoveWishlistItem implements \Magento\Framework\Event\ObserverInterface
                 $this->emailWishlistResource->save($emailWishlist);
             }
         } catch (\Exception $e) {
-            $this->helper->log((string)$e, []);
+            $this->logger->debug((string) $e);
         }
     }
 }

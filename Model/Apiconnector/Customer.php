@@ -60,7 +60,7 @@ class Customer extends ContactData
     /**
      * @var \Magento\Sales\Model\ResourceModel\Order\CollectionFactory
      */
-    public $orderCollection;
+    public $orderCollectionFactory;
 
     /**
      * @var object
@@ -120,7 +120,7 @@ class Customer extends ContactData
         Emulation $appEmulation
     ) {
         $this->reviewCollection  = $reviewCollectionFactory;
-        $this->orderCollection   = $collectionFactory;
+        $this->orderCollectionFactory = $collectionFactory;
         $this->groupFactory      = $groupFactory;
         $this->subscriberFactory = $subscriberFactory;
         $this->groupResource     = $groupResource;
@@ -186,6 +186,7 @@ class Customer extends ContactData
     {
         $this->reviewCollection = $this->reviewCollection->create()
             ->addCustomerFilter($this->model->getId())
+            ->addStoreFilter($this->model->getStoreId())
             ->setOrder('review_id', 'DESC');
 
         return $this;
@@ -476,9 +477,9 @@ class Customer extends ContactData
      */
     public function getTotalRefund()
     {
-        //filter by customer id
-        $customerOrders = $this->orderCollection->create()
-            ->addAttributeToFilter('customer_id', $this->model->getId());
+        $customerOrders = $this->orderCollectionFactory->create()
+            ->addFieldToFilter('customer_id', $this->model->getId())
+            ->addFieldToFilter('store_id', $this->model->getStoreId());
 
         $totalRefunded = 0;
         //calculate total refunded

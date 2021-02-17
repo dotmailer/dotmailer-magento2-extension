@@ -35,8 +35,7 @@ class InsertEmailContactTableSubscribers extends AbstractDataMigration implement
             )
             ->where('subscriber.customer_id = ?', 0)
             ->where('subscriber.subscriber_status = ?', 1)
-            ->order('subscriber.subscriber_id')
-        ;
+            ->order('subscriber.subscriber_id');
     }
 
     /**

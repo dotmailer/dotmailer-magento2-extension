@@ -26,8 +26,7 @@ class UpdateContactsWithSubscriberCustomers extends AbstractDataMigration implem
             )
             ->where('subscriber_status = ?', 1)
             ->where('customer_id > ?', 0)
-            ->order('customer_id')
-        ;
+            ->order('customer_id');
     }
 
     /**

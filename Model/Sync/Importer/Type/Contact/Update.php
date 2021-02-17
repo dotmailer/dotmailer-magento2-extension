@@ -111,7 +111,7 @@ class Update extends AbstractItemSyncer
 
         switch ($item->getImportMode()) {
             case Importer::MODE_CONTACT_EMAIL_UPDATE:
-                $result = $this->syncItemContactEmailUpdateMode($importData, $websiteId);
+                $result = $this->syncItemContactEmailUpdateMode($importData);
                 break;
 
             case Importer::MODE_SUBSCRIBER_RESUBSCRIBED:
@@ -132,20 +132,12 @@ class Update extends AbstractItemSyncer
 
     /**
      * @param mixed $importData
-     * @param mixed $websiteId
-     *
      * @return mixed
      */
-    private function syncItemContactEmailUpdateMode($importData, $websiteId)
+    private function syncItemContactEmailUpdateMode($importData)
     {
         $emailBefore = $importData['emailBefore'];
         $email = $importData['email'];
-        $isSubscribed = $importData['isSubscribed'];
-        $subscribersAddressBook = $this->helper->getWebsiteConfig(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SUBSCRIBERS_ADDRESS_BOOK_ID,
-            $websiteId
-        );
-
         $result = $this->client->postContacts($emailBefore);
 
         //check for matching email
@@ -157,9 +149,6 @@ class Update extends AbstractItemSyncer
                 ];
                 //update the contact with same id - different email
                 $this->client->updateContact($result->id, $data);
-            }
-            if (!$isSubscribed && $result->status == 'Subscribed') {
-                $this->client->deleteAddressBookContact($subscribersAddressBook, $result->id);
             }
         }
         return $result;

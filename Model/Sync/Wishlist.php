@@ -119,8 +119,8 @@ class Wishlist implements SyncInterface
             $storeIds = $website->getStoreIds();
 
             if ($wishlistEnabled && $apiEnabled && !empty($storeIds)) {
-                $wishlistIds = $this->getWishlistIdsToImport($website, $limit);
-                $wishlists = $this->exportWishlistsForWebsite($website, $wishlistIds);
+                $emailWishlists = $this->getEmailWishlistsToImport($website, $limit);
+                $wishlists = $this->exportWishlistsForWebsite($website, $emailWishlists);
 
                 if ($wishlists) {
                     $this->importerFactory->create()
@@ -132,7 +132,7 @@ class Wishlist implements SyncInterface
                         );
                 }
 
-                $this->setImported($wishlistIds);
+                $this->setImported(array_column($emailWishlists, 'row_id'));
 
                 $syncSummary .= ' Website id ' . $website->getId() . ' (' . count($wishlists) . ') --';
                 $totalWishlists += count($wishlists);
@@ -152,23 +152,24 @@ class Wishlist implements SyncInterface
 
     /**
      * @param WebsiteInterface $website
-     * @param array $wishlistIds
+     * @param array $emailWishlists
      * @return array
      */
-    private function exportWishlistsForWebsite(WebsiteInterface $website, $wishlistIds)
+    private function exportWishlistsForWebsite(WebsiteInterface $website, $emailWishlists)
     {
         $wishlists = [];
 
-        if (!empty($wishlistIds)) {
+        if (!empty($emailWishlists)) {
             $collection = $this->wishlistResourceFactory->create()
-                ->getMagentoWishlistsByIds($wishlistIds);
+                ->getMagentoWishlistsByIds(array_keys($emailWishlists));
 
             foreach ($collection as $wishlist) {
                 $appEmulation = $this->emulationFactory->create();
-                $appEmulation->startEnvironmentEmulation($wishlist->getStoreId());
+                $appEmulation->startEnvironmentEmulation($emailWishlists[$wishlist->getId()]['store_id']);
 
                 $wishListItemCollection = $this->itemCollection->create()
-                    ->addWishlistFilter($wishlist);
+                    ->addWishlistFilter($wishlist)
+                    ->addStoreFilter($website->getStoreIds());
 
                 if ($wishListItemCollection->getSize()) {
                     $wishlists[] = $this->buildWishlistData($wishlist, $wishListItemCollection);
@@ -193,11 +194,19 @@ class Wishlist implements SyncInterface
      * @param int $limit
      * @return array
      */
-    private function getWishlistIdsToImport(WebsiteInterface $website, $limit = 100)
+    private function getEmailWishlistsToImport(WebsiteInterface $website, $limit = 100)
     {
-        return $this->wishlistCollectionFactory->create()
-            ->getWishlistsToImportByWebsite($website, $limit)
-            ->getColumnValues('wishlist_id');
+        $wishlists = [];
+        $collection = $this->wishlistCollectionFactory->create()
+            ->getWishlistsToImportByWebsite($website, $limit);
+
+        foreach ($collection as $wishlist) {
+            $wishlists[$wishlist->getWishlistId()] = [
+                "row_id" => $wishlist->getId(),
+                "store_id" => $wishlist->getStoreId()
+            ];
+        }
+        return $wishlists;
     }
 
     /**

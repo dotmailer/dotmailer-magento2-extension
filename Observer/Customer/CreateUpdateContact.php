@@ -2,15 +2,19 @@
 
 namespace Dotdigitalgroup\Email\Observer\Customer;
 
+use Dotdigitalgroup\Email\Model\Contact;
+use Dotdigitalgroup\Email\Model\Importer;
+use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory;
+use Magento\Store\Model\StoreManagerInterface;
+
 /**
  * Creates and updates the contact for customer. Monitor the email change for customer.
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
 {
-
     /**
-     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Catalog
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Contact
      */
     private $contactResource;
 
@@ -25,19 +29,14 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
     private $registry;
 
     /**
-     * @var \Magento\Customer\Model\CustomerFactory
-     */
-    private $customerFactory;
-
-    /**
      * @var \Dotdigitalgroup\Email\Model\ContactFactory
      */
     private $contactFactory;
 
     /**
-     * @var \Magento\Wishlist\Model\WishlistFactory
+     * @var CollectionFactory
      */
-    private $wishlist;
+    private $contactCollectionFactory;
 
     /**
      * @var \Dotdigitalgroup\Email\Model\ImporterFactory
@@ -45,73 +44,61 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
     private $importerFactory;
 
     /**
-     * @var \Magento\Newsletter\Model\SubscriberFactory
-     */
-    private $subscriberFactory;
-
-    /**
      * @var \Magento\Framework\Stdlib\DateTime
      */
     private $dateTime;
 
     /**
+     * @var StoreManagerInterface
+     */
+    private $storeManager;
+
+    /**
      * CreateUpdateContact constructor.
-     * @param \Magento\Wishlist\Model\WishlistFactory $wishlist
      * @param \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
-     * @param \Magento\Customer\Model\CustomerFactory $customerFactory
+     * @param CollectionFactory $contactCollectionFactory
      * @param \Magento\Framework\Registry $registry
      * @param \Dotdigitalgroup\Email\Helper\Data $data
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contactResource
      * @param \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
-     * @param \Magento\Newsletter\Model\SubscriberFactory $subscriberFactory
      * @param \Magento\Framework\Stdlib\DateTime $dateTime
+     * @param StoreManagerInterface $storeManager
      */
     public function __construct(
-        \Magento\Wishlist\Model\WishlistFactory $wishlist,
         \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
-        \Magento\Customer\Model\CustomerFactory $customerFactory,
+        CollectionFactory $contactCollectionFactory,
         \Magento\Framework\Registry $registry,
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contactResource,
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
-        \Magento\Newsletter\Model\SubscriberFactory $subscriberFactory,
-        \Magento\Framework\Stdlib\DateTime $dateTime
+        \Magento\Framework\Stdlib\DateTime $dateTime,
+        StoreManagerInterface $storeManager
     ) {
-        $this->wishlist = $wishlist;
         $this->contactFactory = $contactFactory;
+        $this->contactCollectionFactory = $contactCollectionFactory;
         $this->contactResource = $contactResource;
-        $this->customerFactory = $customerFactory;
         $this->helper = $data;
         $this->registry = $registry;
         $this->importerFactory = $importerFactory;
-        $this->subscriberFactory = $subscriberFactory;
         $this->dateTime = $dateTime;
+        $this->storeManager = $storeManager;
     }
 
     /**
-     * If it's configured to capture on shipment - do this.
-     *
      * @param \Magento\Framework\Event\Observer $observer
-     *
      * @return $this
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
+        $storeManagerWebsiteId = $this->storeManager->getWebsite()->getId();
         $customer = $observer->getEvent()->getCustomer();
-        $websiteId = $customer->getWebsiteId();
-        $storeId = $customer->getStoreId();
-
-        //check if enabled
-        if (!$this->helper->isEnabled($websiteId)) {
-            return $this;
-        }
         $email = $customer->getEmail();
         $customerId = $customer->getEntityId();
-        $subscriber = $this->subscriberFactory->create()
-            ->loadByCustomerId($customerId);
-        $isSubscribed = $subscriber->isSubscribed();
 
-        $emailBefore = '';
+        if (!$this->helper->isEnabled($storeManagerWebsiteId) &&
+            !$this->helper->isEnabled($customer->getWebsiteId())) {
+            return $this;
+        }
 
         try {
             // fix for a multiple hit of the observer
@@ -122,49 +109,54 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
             $this->registry->unregister($email . '_customer_save'); // additional measure
             $this->registry->register($email . '_customer_save', $email);
 
-            $isContactExist = $this->contactFactory->create()
-                ->loadByCustomerId($customerId);
+            $matchingCustomers = $this->contactCollectionFactory->create()
+                ->loadCustomersById($customerId);
 
-            if ($isContactExist->getId()) {
-                $emailBefore = $isContactExist->getEmail();
+            // Create
+            if ($matchingCustomers->getSize() == 0) {
+                // Contact exists, is not yet a customer
+                $contactModel = $this->contactCollectionFactory->create()
+                    ->loadByCustomerEmail($email, $customer->getWebsiteId());
+
+                if ($contactModel) {
+                    $contactModel->setCustomerId($customerId);
+                } else {
+                    $contactModel = $this->contactFactory->create()
+                        ->setEmail($email)
+                        ->setWebsiteId($customer->getWebsiteId())
+                        ->setStoreId($customer->getStoreId())
+                        ->setCustomerId($customerId);
+                }
+
+                $contactModel->setEmailImported(Contact::EMAIL_CONTACT_NOT_IMPORTED);
+                $this->contactResource->save($contactModel);
+                return $this;
             }
 
-            $emailAddress = empty($emailBefore) ? $email : $emailBefore;
+            // Update matching customers
+            foreach ($matchingCustomers as $contactModel) {
+                $emailBefore = $contactModel->getEmail();
+                // email change detected
+                if ($email != $emailBefore) {
+                    $contactModel->setEmail($email);
 
-            $contactModel = $this->contactFactory->create()
-                ->loadByCustomerEmail($emailAddress, $websiteId);
+                    $data = [
+                        'emailBefore' => $emailBefore,
+                        'email' => $email
+                    ];
 
-            //email change detection
-            if ($emailBefore && $email != $emailBefore) {
-                // update email
-                $contactModel->setEmail($email);
+                    $this->importerFactory->create()
+                        ->registerQueue(
+                            Importer::IMPORT_TYPE_CONTACT_UPDATE,
+                            $data,
+                            Importer::MODE_CONTACT_EMAIL_UPDATE,
+                            $contactModel->getWebsiteId()
+                        );
+                }
 
-                $data = [
-                    'emailBefore' => $emailBefore,
-                    'email' => $email,
-                    'isSubscribed' => $isSubscribed,
-                ];
-
-                $this->importerFactory->create()->registerQueue(
-                    \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_CONTACT_UPDATE,
-                    $data,
-                    \Dotdigitalgroup\Email\Model\Importer::MODE_CONTACT_EMAIL_UPDATE,
-                    $websiteId
-                );
-            } elseif (!$emailBefore) {
-                //for new contacts update email
-                $contactModel->setEmail($email);
+                $contactModel->setEmailImported(Contact::EMAIL_CONTACT_NOT_IMPORTED);
+                $this->contactResource->save($contactModel);
             }
-
-            $contactModel->setEmailImported(\Dotdigitalgroup\Email\Model\Contact::EMAIL_CONTACT_NOT_IMPORTED)
-                ->setStoreId($storeId)
-                ->setCustomerId($customerId);
-
-            if ($isSubscribed) {
-                $contactModel->setLastSubscribedAt($this->dateTime->formatDate(true));
-            }
-
-            $this->contactResource->save($contactModel);
         } catch (\Exception $e) {
             $this->helper->debug((string)$e, []);
         }

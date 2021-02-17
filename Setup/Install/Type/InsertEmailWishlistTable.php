@@ -19,6 +19,7 @@ class InsertEmailWishlistTable extends AbstractDataMigration implements InsertTy
         return $this->resourceConnection
             ->getConnection()
             ->select()
+            ->distinct()
             ->from([
                 'wishlist' => $this->resourceConnection->getTableName('wishlist'),
             ], [
@@ -27,18 +28,12 @@ class InsertEmailWishlistTable extends AbstractDataMigration implements InsertTy
                 'created_at' => 'updated_at',
             ])
             ->joinInner(
-                ['ce' => $this->resourceConnection->getTableName('customer_entity')],
-                'wishlist.customer_id = ce.entity_id',
-                ['store_id']
-            )
-            ->joinInner(
                 ['wi' => $this->resourceConnection->getTableName('wishlist_item')],
                 'wishlist.wishlist_id = wi.wishlist_id',
-                ['item_count' => 'count(wi.wishlist_id)']
+                ['store_id', 'item_count' => 'count(wi.wishlist_id)']
             )
-            ->group('wi.wishlist_id')
-            ->order('wi.wishlist_id')
-        ;
+            ->group(['wi.wishlist_id', 'wi.store_id'])
+            ->order('wi.wishlist_id');
     }
 
     /**

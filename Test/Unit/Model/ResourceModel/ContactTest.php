@@ -115,7 +115,7 @@ class ContactTest extends TestCase
                      \Dotdigitalgroup\Email\Model\Sql\ExpressionFactory::class,
                      \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory::class,
                      \Magento\Sales\Model\ResourceModel\Order\CollectionFactory::class,
-                     \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory::class,
+                     \Magento\Quote\Model\ResourceModel\QuoteFactory::class,
                      \Dotdigitalgroup\Email\Helper\Config::class,
                  ] as $class) {
             $this->constructorMocks[$class] = $this->getMockBuilder($class)->disableOriginalConstructor()->getMock();

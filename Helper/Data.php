@@ -1113,23 +1113,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * Mark contact for reimport.
-     *
-     * @param int $customerId
-     *
-     * @return null
-     */
-    public function setConnectorContactToReImport($customerId)
-    {
-        $contactModel = $this->contactFactory->create();
-        $contactModel->loadByCustomerId($customerId)
-            ->setEmailImported(
-                \Dotdigitalgroup\Email\Model\Contact::EMAIL_CONTACT_NOT_IMPORTED
-            );
-        $this->contactResource->save($contactModel);
-    }
-
-    /**
      * Disable website config when the request is made admin area only!
      *
      * @param string $path
