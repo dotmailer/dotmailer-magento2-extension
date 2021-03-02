@@ -19,6 +19,11 @@ You are welcome to contribute to Engagement Cloud for Magento! You can either:
 - Fix a bug: please clone and use our [Develop branch](https://github.com/dotmailer/dotmailer-magento2-extension/tree/develop) to submit your Pull Request
 - Request a feature on our [roadmap](https://roadmap.dotdigital.com)
 
+# 4.11.2
+
+###### Bug fixes
+- We've replaced the `ItemProductResolver` class constants in our `ImageFinder` class with older constants, for compatibility with Magento v2.2.0 to v2.2.6.
+
 # 4.12.0-RC1
 
 ###### What's new
