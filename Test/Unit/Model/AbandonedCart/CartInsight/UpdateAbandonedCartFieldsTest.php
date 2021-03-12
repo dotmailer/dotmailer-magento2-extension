@@ -8,8 +8,10 @@ use Dotdigitalgroup\Email\Model\AbandonedCart\CartInsight\Data as CartInsightDat
 use Dotdigitalgroup\Email\Model\Apiconnector\Client;
 use Dotdigitalgroup\Email\Model\Catalog\UrlFinder;
 use Dotdigitalgroup\Email\Model\Product\ImageFinder;
+use Dotdigitalgroup\Email\Model\Product\ImageType\Context\AbandonedCart;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Catalog\Model\Product;
+use Magento\Framework\Pricing\PriceCurrencyInterface;
 use Magento\Framework\Stdlib\DateTime\DateTime;
 use Magento\Quote\Model\Quote;
 use Magento\Quote\Model\Quote\Item;
@@ -17,7 +19,6 @@ use Magento\Store\Model\App\Emulation;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
 use PHPUnit\Framework\TestCase;
-use Dotdigitalgroup\Email\Model\Product\ImageType\Context\AbandonedCart;
 
 class UpdateAbandonedCartFieldsTest extends TestCase
 {
@@ -106,6 +107,11 @@ class UpdateAbandonedCartFieldsTest extends TestCase
      */
     private $imageTypeMock;
 
+    /**
+     * @var PriceCurrencyInterface|\PHPUnit\Framework\MockObject\MockObject
+     */
+    private $priceCurrencyInterfaceMock;
+
     protected function setUp() :void
     {
         $this->helperMock = $this->createMock(Data::class);
@@ -118,7 +124,7 @@ class UpdateAbandonedCartFieldsTest extends TestCase
         $this->quoteMock = $this->createMock(Quote::class);
         $this->itemMock = $this->getMockBuilder(Item::class)
             ->disableOriginalConstructor()
-            ->onlyMethods(['getProductType', 'getSku', 'getName', 'getQty'])
+            ->onlyMethods(['getProductType', 'getSku', 'getName', 'getQty','getPrice'])
             ->addMethods(['getDiscountAmount', 'getBasePriceInclTax', 'getRowTotalInclTax'])
             ->getMock();
         $this->dateTimeMock = $this->createMock(DateTime::class);
@@ -126,6 +132,7 @@ class UpdateAbandonedCartFieldsTest extends TestCase
         $this->imageFinderMock = $this->createMock(ImageFinder::class);
         $this->loggerMock = $this->createMock(Logger::class);
         $this->imageTypeMock = $this->createMock(AbandonedCart::class);
+        $this->priceCurrencyInterfaceMock = $this->createMock(PriceCurrencyInterface::class);
 
         $this->class = new CartInsightData(
             $this->storeManagerInterfaceMock,
@@ -136,7 +143,8 @@ class UpdateAbandonedCartFieldsTest extends TestCase
             $this->urlFinderMock,
             $this->imageFinderMock,
             $this->loggerMock,
-            $this->imageTypeMock
+            $this->imageTypeMock,
+            $this->priceCurrencyInterfaceMock
         );
     }
 
@@ -158,17 +166,21 @@ class UpdateAbandonedCartFieldsTest extends TestCase
         $this->quoteMock->expects($this->atLeastOnce())
             ->method('__call')
             ->withConsecutive(
-                [$this->equalTo('getCustomerEmail')],
                 [$this->equalTo('getQuoteCurrencyCode')],
+                [$this->equalTo('getCustomerEmail')],
                 [$this->equalTo('getSubtotal')],
                 [$this->equalTo('getGrandTotal')]
             )
             ->willReturnOnConsecutiveCalls(
-                $expectedPayload['contactIdentifier'],
                 $expectedPayload['json']['currency'],
+                $expectedPayload['contactIdentifier'],
                 $expectedPayload['json']['subTotal'],
                 $expectedPayload['json']['grandTotal']
             );
+
+        $this->storeMock->expects($this->atLeastOnce())
+            ->method('getId')
+            ->willReturn($this->storeId);
 
         $this->storeMock->expects($this->once())
             ->method('getUrl')
@@ -230,7 +242,7 @@ class UpdateAbandonedCartFieldsTest extends TestCase
 
         $this->productMock->expects($this->once())
             ->method('getPrice')
-            ->willReturn($expectedPayload['json']['lineItems'][0]['unitPrice']);
+            ->willReturn($productPrice = $expectedPayload['json']['lineItems'][0]['unitPrice']);
 
         $this->urlFinderMock->expects($this->once())
             ->method('fetchFor')
@@ -253,7 +265,7 @@ class UpdateAbandonedCartFieldsTest extends TestCase
             ->willReturn($expectedPayload['json']['lineItems'][0]['name']);
 
         $itemsArray[0]->expects($this->once())
-            ->method('getBasePriceInclTax')
+            ->method('getPrice')
             ->willReturn($expectedPayload['json']['lineItems'][0]['salePrice']);
 
         $itemsArray[0]->expects($this->once())
@@ -264,6 +276,12 @@ class UpdateAbandonedCartFieldsTest extends TestCase
             ->method('getQty')
             ->willReturn($expectedPayload['json']['lineItems'][0]['quantity']);
 
+        $this->priceCurrencyInterfaceMock
+            ->expects($this->atLeastOnce())
+            ->method('convertAndRound')
+            ->with($productPrice, $this->storeId, $expectedPayload['json']['currency'])
+            ->willReturn($expectedPayload['json']['lineItems'][0]['unitPrice']);
+
         // Client API call
         $this->clientMock->expects($this->once())
             ->method('postAbandonedCartCartInsight')
@@ -273,7 +291,7 @@ class UpdateAbandonedCartFieldsTest extends TestCase
                 }
             ));
 
-        $this->class->send($this->quoteMock, $this->storeId, $this->websiteId);
+        $this->class->send($this->quoteMock, $this->storeId);
 
         $this->assertJsonStringEqualsJsonString(json_encode($expectedPayload), json_encode($actualPayload));
     }
