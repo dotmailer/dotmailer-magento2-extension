@@ -3,7 +3,7 @@
 namespace Dotdigitalgroup\Email\Block\Recommended;
 
 use Dotdigitalgroup\Email\Model\Product\ImageFinder;
-use Dotdigitalgroup\Email\Model\Product\ImageType\Context\DynamicContent ;
+use Dotdigitalgroup\Email\Model\Product\ImageType\Context\DynamicContent;
 use Magento\Store\Model\Store;
 
 /**

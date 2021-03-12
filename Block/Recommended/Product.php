@@ -2,6 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Block\Recommended;
 
+use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Product\ImageFinder;
 use Dotdigitalgroup\Email\Model\Product\ImageType\Context\DynamicContent;
 
@@ -33,6 +34,11 @@ class Product extends \Dotdigitalgroup\Email\Block\Recommended
     private $orderResource;
 
     /**
+     * @var Logger
+     */
+    private $logger;
+
+    /**
      * Product constructor.
      *
      * @param \Magento\Catalog\Block\Product\Context $context
@@ -40,6 +46,7 @@ class Product extends \Dotdigitalgroup\Email\Block\Recommended
      * @param \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder
      * @param DynamicContent $imageType
      * @param ImageFinder $imageFinder
+     * @param Logger $logger
      * @param \Magento\Sales\Model\ResourceModel\Order $orderResource
      * @param \Magento\Sales\Model\OrderFactory $orderFactory
      * @param \Dotdigitalgroup\Email\Helper\Recommended $recommended
@@ -52,6 +59,7 @@ class Product extends \Dotdigitalgroup\Email\Block\Recommended
         \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder,
         DynamicContent $imageType,
         ImageFinder $imageFinder,
+        Logger $logger,
         \Magento\Sales\Model\ResourceModel\Order $orderResource,
         \Magento\Sales\Model\OrderFactory $orderFactory,
         \Dotdigitalgroup\Email\Helper\Recommended $recommended,
@@ -62,6 +70,7 @@ class Product extends \Dotdigitalgroup\Email\Block\Recommended
         $this->recommendedHelper = $recommended;
         $this->helper            = $helper;
         $this->orderResource     = $orderResource;
+        $this->logger = $logger;
 
         parent::__construct($context, $font, $urlFinder, $imageType, $imageFinder, $data);
     }
@@ -92,7 +101,17 @@ class Product extends \Dotdigitalgroup\Email\Block\Recommended
         //number of product items to be displayed
         $limit = $this->recommendedHelper
             ->getDisplayLimitByMode($mode);
-        $orderItems = $orderModel->getAllItems();
+
+        try {
+            $orderItems = $orderModel->getAllItems();
+        } catch (\Exception $e) {
+            $orderItems = [];
+            $this->logger->debug(
+                'Error fetching items for order ID: ' . $orderId,
+                [(string) $e]
+            );
+        }
+
         $numItems = count($orderItems);
 
         //no product found to display
