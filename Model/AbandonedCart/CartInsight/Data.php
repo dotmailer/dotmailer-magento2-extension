@@ -170,9 +170,12 @@ class Data
                     'productUrl' => $this->urlFinder->fetchFor($product),
                     'name' => $item->getName(),
                     'unitPrice' => $this->getConvertedPrice($product->getPrice(), $store->getId(), $quoteCurrency),
+                    'unitPrice_incl_tax' => $this->getUnitPriceIncTax($item, $product),
                     'quantity' => $item->getQty(),
                     'salePrice' => round($item->getPrice(), 2),
-                    'totalPrice' => round($item->getRowTotalInclTax(), 2)
+                    'salePrice_incl_tax' => round($item->getPriceInclTax(), 2),
+                    'totalPrice' => round($item->getRowTotal(), 2),
+                    'totalPrice_incl_tax' => round($item->getRowTotalInclTax(), 2)
                 ];
             } catch (\Exception $e) {
                 $this->logger->debug('Exception thrown when fetching CartInsight data', [(string) $e]);
@@ -229,6 +232,16 @@ class Data
                     $storeId
                 );
         }
+    }
+
+    /**
+     * @param CartItemInterface $item
+     * @param ProductInterface $product
+     * @return float
+     */
+    private function getUnitPriceIncTax($item, $product)
+    {
+        return round($product->getPrice() + ($product->getPrice() * ($item->getTaxPercent() / 100)), 2);
     }
 
     /**

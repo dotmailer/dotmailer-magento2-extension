@@ -124,8 +124,8 @@ class UpdateAbandonedCartFieldsTest extends TestCase
         $this->quoteMock = $this->createMock(Quote::class);
         $this->itemMock = $this->getMockBuilder(Item::class)
             ->disableOriginalConstructor()
-            ->onlyMethods(['getProductType', 'getSku', 'getName', 'getQty','getPrice'])
-            ->addMethods(['getDiscountAmount', 'getBasePriceInclTax', 'getRowTotalInclTax'])
+            ->onlyMethods(['getProductType', 'getSku', 'getName', 'getQty', 'getPrice'])
+            ->addMethods(['getDiscountAmount', 'getRowTotal', 'getRowTotalInclTax', 'getTaxPercent', 'getPriceInclTax'])
             ->getMock();
         $this->dateTimeMock = $this->createMock(DateTime::class);
         $this->urlFinderMock = $this->createMock(UrlFinder::class);
@@ -240,7 +240,7 @@ class UpdateAbandonedCartFieldsTest extends TestCase
             ->method('getDiscountAmount')
             ->willReturn($expectedPayload['json']['discountAmount']);
 
-        $this->productMock->expects($this->once())
+        $this->productMock->expects($this->atLeastOnce())
             ->method('getPrice')
             ->willReturn($productPrice = $expectedPayload['json']['lineItems'][0]['unitPrice']);
 
@@ -256,6 +256,10 @@ class UpdateAbandonedCartFieldsTest extends TestCase
             ->method('get')
             ->willReturn($this->productMock);
 
+        $itemsArray[0]->expects($this->once())
+            ->method('getTaxPercent')
+            ->willReturn(20);
+
         $itemsArray[0]->expects($this->atLeastOnce())
             ->method('getSku')
             ->willReturn($expectedPayload['json']['lineItems'][0]['sku']);
@@ -269,8 +273,16 @@ class UpdateAbandonedCartFieldsTest extends TestCase
             ->willReturn($expectedPayload['json']['lineItems'][0]['salePrice']);
 
         $itemsArray[0]->expects($this->once())
-            ->method('getRowTotalInclTax')
+            ->method('getPriceInclTax')
+            ->willReturn($expectedPayload['json']['lineItems'][0]['salePrice_incl_tax']);
+
+        $itemsArray[0]->expects($this->once())
+            ->method('getRowTotal')
             ->willReturn($expectedPayload['json']['lineItems'][0]['totalPrice']);
+
+        $itemsArray[0]->expects($this->once())
+            ->method('getRowTotalInclTax')
+            ->willReturn($expectedPayload['json']['lineItems'][0]['totalPrice_incl_tax']);
 
         $itemsArray[0]->expects($this->once())
             ->method('getQty')
@@ -348,9 +360,12 @@ class UpdateAbandonedCartFieldsTest extends TestCase
                         "productUrl" => "https://magentostore.com/product/PRODUCT-SKU",
                         "name" => "Test Product",
                         "unitPrice" => 49.2,
+                        "unitPrice_incl_tax" => 59.04,
                         "quantity" => "2",
                         "salePrice" => 46.15,
-                        "totalPrice" => 92.3
+                        "salePrice_incl_tax" => 50.25,
+                        "totalPrice" => 92.3,
+                        "totalPrice_incl_tax" => 110.76
                     ]
                 ],
                 "cartPhase" => "ORDER_PENDING"

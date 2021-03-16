@@ -2,6 +2,8 @@
 
 namespace Dotdigitalgroup\Email\Model\Sync\Catalog;
 
+use Dotdigitalgroup\Email\Model\Connector\Product;
+
 class Exporter
 {
     /**
@@ -51,7 +53,7 @@ class Exporter
         foreach ($products as $product) {
             $connectorProduct = $this->connectorProductFactory->create()
                 ->setProduct($product, $storeId);
-            $connectorProducts[$product->getId()] = $connectorProduct->expose();
+            $connectorProducts[$product->getId()] = $this->expose($connectorProduct);
         }
 
         return $connectorProducts;
@@ -69,5 +71,14 @@ class Exporter
     {
         return $this->catalogCollectionFactory->create()
             ->filterProductsByStoreTypeAndVisibility($storeId, $productIds);
+    }
+
+    /**
+     * @param Product $connectorProduct
+     * @return array
+     */
+    private function expose($connectorProduct)
+    {
+        return get_object_vars($connectorProduct);
     }
 }

@@ -2,13 +2,14 @@
 
 namespace Dotdigitalgroup\Email\Model\Connector;
 
+use Dotdigitalgroup\Email\Api\StockFinderInterface;
+use Dotdigitalgroup\Email\Api\TierPriceFinderInterface;
 use Dotdigitalgroup\Email\Model\Catalog\UrlFinder;
 use Dotdigitalgroup\Email\Model\Product\AttributeFactory;
 use Dotdigitalgroup\Email\Model\Product\ImageFinder;
 use Dotdigitalgroup\Email\Model\Product\ImageType\Context\CatalogSync;
 use Dotdigitalgroup\Email\Model\Product\ParentFinder;
-use Dotdigitalgroup\Email\Api\StockFinderInterface;
-use Dotdigitalgroup\Email\Api\TierPriceFinderInterface;
+use Magento\Tax\Api\TaxCalculationInterface;
 
 /**
  * Transactional data for catalog products to sync.
@@ -57,7 +58,17 @@ class Product
     /**
      * @var float
      */
+    public $price_incl_tax = 0;
+
+    /**
+     * @var float
+     */
     public $specialPrice = 0;
+
+    /**
+     * @var float
+     */
+    public $specialPrice_incl_tax = 0;
 
     /**
      * @var array
@@ -102,7 +113,7 @@ class Product
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    public $helper;
+    private $helper;
 
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
@@ -112,12 +123,12 @@ class Product
     /**
      * @var \Magento\Catalog\Model\Product\Attribute\Source\StatusFactory
      */
-    public $statusFactory;
+    private $statusFactory;
 
     /**
      * @var \Magento\Catalog\Model\Product\VisibilityFactory
      */
-    public $visibilityFactory;
+    private $visibilityFactory;
 
     /**
      * @var UrlFinder
@@ -155,6 +166,11 @@ class Product
     private $imageType;
 
     /**
+     * @var TaxCalculationInterface
+     */
+    private $taxCalculation;
+
+    /**
      * Product constructor.
      * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
@@ -167,6 +183,7 @@ class Product
      * @param TierPriceFinderInterface $tierPriceFinder
      * @param StockFinderInterface $stockFinderInterface
      * @param CatalogSync $imageType
+     * @param TaxCalculationInterface $taxCalculation
      */
     public function __construct(
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
@@ -179,7 +196,8 @@ class Product
         ImageFinder $imageFinder,
         TierPriceFinderInterface $tierPriceFinder,
         StockFinderInterface $stockFinderInterface,
-        CatalogSync $imageType
+        CatalogSync $imageType,
+        TaxCalculationInterface $taxCalculation
     ) {
         $this->visibilityFactory = $visibilityFactory;
         $this->statusFactory = $statusFactory;
@@ -192,6 +210,7 @@ class Product
         $this->tierPriceFinder = $tierPriceFinder;
         $this->stockFinderInterface = $stockFinderInterface;
         $this->imageType = $imageType;
+        $this->taxCalculation = $taxCalculation;
     }
 
     /**
@@ -217,7 +236,10 @@ class Product
             ->getOptionArray();
         $this->visibility = (string)$options[$product->getVisibility()];
 
-        $this->getMinPrices($product);
+        $this->setPrices($product);
+        $this->setPricesIncTax($product, $storeId);
+
+        $this->tierPrices = $this->tierPriceFinder->getTierPrices($product);
 
         $this->url = $this->urlFinder->fetchFor($product);
 
@@ -261,18 +283,6 @@ class Product
 
         $this->processProductOptions($product, $storeId);
         $this->processParentProducts($product);
-
-        unset(
-            $this->visibilityFactory,
-            $this->statusFactory,
-            $this->helper,
-            $this->storeManager,
-            $this->attributeHandler,
-            $this->parentFinder,
-            $this->imageFinder,
-            $this->tierPriceFinder,
-            $this->stockFinderInterface
-        );
 
         return $this;
     }
@@ -318,38 +328,12 @@ class Product
     }
 
     /**
-     * Exposes the class as an array of objects.
-     *
-     * @return array
-     */
-    public function expose()
-    {
-        return array_diff_key(
-            get_object_vars($this),
-            array_flip([
-                'storeManager',
-                'helper',
-                'visibilityFactory',
-                'statusFactory',
-                'storeManager',
-                'urlFinder',
-                'stockFinderInterface',
-                'attributeHandler',
-                'parentFinder',
-                'tierPriceFinder'
-            ])
-        );
-    }
-
-    /**
-     * Set the Minimum Prices for Configurable and Bundle products.
+     * Set prices for all product types.
      *
      * @param \Magento\Catalog\Model\Product $product
-     *
-     * @return null
+     * @return void
      */
-
-    private function getMinPrices($product)
+    private function setPrices($product)
     {
         if ($product->getTypeId() == 'configurable') {
             foreach ($product->getTypeInstance()->getUsedProducts($product) as $childProduct) {
@@ -363,7 +347,7 @@ class Product
         } elseif ($product->getTypeId() == 'bundle') {
             $this->price = $product->getPriceInfo()->getPrice('regular_price')->getMinimalPrice()->getValue();
             $this->specialPrice = $product->getPriceInfo()->getPrice('final_price')->getMinimalPrice()->getValue();
-            //if special price equals to price then its wrong.)
+            //if special price equals to price then its wrong.
             $this->specialPrice = ($this->specialPrice === $this->price) ? null : $this->specialPrice;
         } elseif ($product->getTypeId() == 'grouped') {
             foreach ($product->getTypeInstance()->getAssociatedProducts($product) as $childProduct) {
@@ -379,13 +363,33 @@ class Product
             $this->specialPrice = $product->getSpecialPrice();
         }
         $this->formatPriceValues();
-        $this->tierPrices = $this->tierPriceFinder->getTierPrices($product);
+    }
+
+    /**
+     * Set prices including tax.
+     * In catalog sync, the rate is based on the (scoped) tax origin, as configured in
+     * Default Tax Destination Calculation > Default Country.
+     * Here we calculate the 'inc' figures with the rate and the prices we already obtained.
+     *
+     * @param \Magento\Catalog\Model\Product $product
+     * @param string|int $storeId
+     * @return void
+     */
+    private function setPricesIncTax($product, $storeId)
+    {
+        $rate = $this->taxCalculation->getCalculatedRate(
+            $product->getTaxClassId(),
+            null,
+            $storeId
+        );
+        $this->price_incl_tax = $this->price + ($this->price * ($rate / 100));
+        $this->specialPrice_incl_tax = $this->specialPrice + ($this->specialPrice * ($rate / 100));
     }
 
     /**
      * Formats the price values.
      *
-     * @return null
+     * @return void
      */
     private function formatPriceValues()
     {
