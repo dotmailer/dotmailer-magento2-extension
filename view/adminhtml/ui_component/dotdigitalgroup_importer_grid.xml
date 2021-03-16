@@ -104,7 +104,7 @@
                 <options class="Magento\Store\Model\ResourceModel\Website\Collection"/>
                 <filter>select</filter>
                 <dataType>select</dataType>
-                <label translate="true">Website Id</label>
+                <label translate="true">Website</label>
             </settings>
         </column>
         <column name="created_at" class="Magento\Ui\Component\Listing\Columns\Date" component="Magento_Ui/js/grid/columns/date" sortOrder="90">
