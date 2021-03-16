@@ -2,6 +2,9 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config;
 
+use Dotdigitalgroup\Email\Helper\Data;
+use Magento\Backend\Block\Template\Context;
+
 class Createaddressbook extends \Magento\Config\Block\System\Config\Form\Field
 {
     /**
@@ -10,6 +13,26 @@ class Createaddressbook extends \Magento\Config\Block\System\Config\Form\Field
      * @var string
      */
     public $vatButtonLabel = 'New Addressbook';
+
+    /**
+     * @var Data
+     */
+    private $helper;
+
+    /**
+     * Createaddressbook constructor.
+     * @param Context $context
+     * @param Data $helper
+     * @param array $data
+     */
+    public function __construct(
+        Context $context,
+        Data $helper,
+        array $data = []
+    ) {
+        $this->helper = $helper;
+        parent::__construct($context, $data);
+    }
 
     /**
      * @param string $vatButtonLabel
@@ -65,14 +88,15 @@ class Createaddressbook extends \Magento\Config\Block\System\Config\Form\Field
         $buttonLabel = !empty($originalData['button_label'])
             ? $originalData['button_label'] : $this->vatButtonLabel;
         $url = $this->_urlBuilder->getUrl(
-            'dotdigitalgroup_email/addressbook/save'
+            'dotdigitalgroup_email/addressbook/save',
+            ['website' => $this->helper->getWebsiteForSelectedScopeInAdmin()->getId()]
         );
 
         $this->addData(
             [
                 'button_label' => $buttonLabel,
                 'html_id' => $element->getHtmlId(),
-                'ajax_url' => $url,
+                'ajax_url' => $url
             ]
         );
 
