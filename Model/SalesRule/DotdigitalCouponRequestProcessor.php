@@ -137,11 +137,11 @@ class DotdigitalCouponRequestProcessor
             if ($activeCoupon = $this->getActiveCouponForEmail($rule, $email)) {
                 if ($allowResend) {
                     if ($cancelSend) {
-                        if ($activeCoupon->is_used) {
+                        if ($activeCoupon->is_expired) {
+                            return $this->generateNewCoupon($params, $rule, $email);
+                        } elseif ($activeCoupon->is_used) {
                             $this->couponGeneratorStatus = self::STATUS_USED_EXPIRED;
                             return $this;
-                        } elseif ($activeCoupon->is_expired) {
-                            return $this->generateNewCoupon($params, $rule, $email);
                         }
                     } else {
                         if ($activeCoupon->is_used || $activeCoupon->is_expired) {

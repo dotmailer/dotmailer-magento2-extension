@@ -154,8 +154,8 @@ EOT;
             'value' => $this->couponHelper->getDefaultFormat(),
             'onchange' => 'window.updateEdcCouponUrl()',
             'after_element_html' => __('Enable this to ensure the send will be cancelled ' .
-                'if the coupon has been used. If set to no, the latest generated coupon ' .
-                'will be displayed.'),
+                '(if the coupon has been used) or regenerated (if the coupon has expired). ' .
+                'If set to no, the latest generated coupon will be displayed.'),
         ]);
 
         $couponBaseUrl = sprintf(
