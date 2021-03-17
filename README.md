@@ -19,6 +19,19 @@ You are welcome to contribute to Engagement Cloud for Magento! You can either:
 - Fix a bug: please clone and use our [Develop branch](https://github.com/dotmailer/dotmailer-magento2-extension/tree/develop) to submit your Pull Request
 - Request a feature on our [roadmap](https://roadmap.dotdigital.com)
 
+# 4.12.0-RC2
+
+###### What's new
+- Product prices in cart, catalog and web insight data now have separate figures that include tax. 
+
+###### Improvements
+- We’ve updated the handling of coupon codes to better enable recurring campaigns.  
+- Line items in cart insight data now display prices in the quote currency, rather than the website’s base currency.
+- We’ve added error handling when calling `$order→getAllItems()`. This protects order and contact syncs against problems related to legacy product option data.
+
+###### Bug fixes
+- We fixed a problem with creating address books in the correct admin scope.
+
 # 4.11.2
 
 ###### Bug fixes
