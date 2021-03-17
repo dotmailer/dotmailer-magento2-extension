@@ -172,7 +172,7 @@ class Data
                     'unitPrice' => $this->getConvertedPrice($product->getPrice(), $store->getId(), $quoteCurrency),
                     'unitPrice_incl_tax' => $this->getUnitPriceIncTax($item, $product),
                     'quantity' => $item->getQty(),
-                    'salePrice' => round($item->getPrice(), 2),
+                    'salePrice' => $this->getConvertedPrice($item->getBasePrice(), $store->getId(), $quoteCurrency),
                     'salePrice_incl_tax' => round($item->getPriceInclTax(), 2),
                     'totalPrice' => round($item->getRowTotal(), 2),
                     'totalPrice_incl_tax' => round($item->getRowTotalInclTax(), 2)

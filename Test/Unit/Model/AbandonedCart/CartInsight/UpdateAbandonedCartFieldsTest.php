@@ -124,8 +124,25 @@ class UpdateAbandonedCartFieldsTest extends TestCase
         $this->quoteMock = $this->createMock(Quote::class);
         $this->itemMock = $this->getMockBuilder(Item::class)
             ->disableOriginalConstructor()
-            ->onlyMethods(['getProductType', 'getSku', 'getName', 'getQty', 'getPrice'])
-            ->addMethods(['getDiscountAmount', 'getRowTotal', 'getRowTotalInclTax', 'getTaxPercent', 'getPriceInclTax'])
+            ->onlyMethods(
+                [
+                    'getProductType',
+                    'getSku',
+                    'getName',
+                    'getQty',
+                    'getPrice'
+                ]
+            )
+            ->addMethods(
+                [
+                    'getBasePrice',
+                    'getDiscountAmount',
+                    'getRowTotal',
+                    'getRowTotalInclTax',
+                    'getTaxPercent',
+                    'getPriceInclTax'
+                ]
+            )
             ->getMock();
         $this->dateTimeMock = $this->createMock(DateTime::class);
         $this->urlFinderMock = $this->createMock(UrlFinder::class);
@@ -269,8 +286,8 @@ class UpdateAbandonedCartFieldsTest extends TestCase
             ->willReturn($expectedPayload['json']['lineItems'][0]['name']);
 
         $itemsArray[0]->expects($this->once())
-            ->method('getPrice')
-            ->willReturn($expectedPayload['json']['lineItems'][0]['salePrice']);
+            ->method('getBasePrice')
+            ->willReturn($itemBasePrice = $expectedPayload['json']['lineItems'][0]['salePrice']);
 
         $itemsArray[0]->expects($this->once())
             ->method('getPriceInclTax')
@@ -289,10 +306,16 @@ class UpdateAbandonedCartFieldsTest extends TestCase
             ->willReturn($expectedPayload['json']['lineItems'][0]['quantity']);
 
         $this->priceCurrencyInterfaceMock
-            ->expects($this->atLeastOnce())
+            ->expects($this->atLeast(2))
             ->method('convertAndRound')
-            ->with($productPrice, $this->storeId, $expectedPayload['json']['currency'])
-            ->willReturn($expectedPayload['json']['lineItems'][0]['unitPrice']);
+            ->withConsecutive(
+                [$productPrice, $this->storeId, $expectedPayload['json']['currency']],
+                [$itemBasePrice, $this->storeId, $expectedPayload['json']['currency']]
+            )
+            ->willReturnOnConsecutiveCalls(
+                $productPrice,
+                $itemBasePrice
+            );
 
         // Client API call
         $this->clientMock->expects($this->once())
