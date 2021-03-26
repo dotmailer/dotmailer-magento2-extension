@@ -68,12 +68,13 @@
             </order_status_automation>
             <review_settings>
                 <enabled>0</enabled>
+                <allow_non_subscribers>0</allow_non_subscribers>
                 <status></status>
                 <delay></delay>
-                <new_product></new_product>
                 <campaign></campaign>
+                <link_to_product_page>0</link_to_product_page>
                 <anchor></anchor>
-                <allow_non_subscribers>0</allow_non_subscribers>
+                <new_product></new_product>
             </review_settings>
             <feefo_feedback_engine>
                 <logon></logon>

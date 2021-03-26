@@ -1584,33 +1584,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * Get review anchor value.
-     *
-     * @param int $website
-     *
-     * @return string
-     */
-    public function getAnchor($website)
-    {
-        return $this->getReviewWebsiteSettings(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_REVIEW_ANCHOR, $website);
-    }
-
-    /**
-     * Get review display type.
-     *
-     * @param int $website
-     *
-     * @return string
-     */
-    public function getDisplayType($website)
-    {
-        return $this->getReviewWebsiteSettings(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_REVIEW_DISPLAY_TYPE,
-            $website
-        );
-    }
-
-    /**
      * Check if both frontend and backend are secure (HTTPS).
      *
      * @return bool

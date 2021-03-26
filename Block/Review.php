@@ -4,6 +4,7 @@ namespace Dotdigitalgroup\Email\Block;
 
 use Dotdigitalgroup\Email\Model\Product\ImageFinder;
 use Dotdigitalgroup\Email\Model\Product\ImageType\Context\DynamicContent;
+use Dotdigitalgroup\Email\Helper\Config;
 
 /**
  * Review block
@@ -181,6 +182,13 @@ class Review extends Recommended
      */
     public function getReviewItemUrl($productId)
     {
-        return $this->_urlBuilder->getUrl('review/product/list', ['id' => $productId]);
+        $linkToProductPage = $this->_scopeConfig->getValue(
+            Config::XML_PATH_AUTOMATION_REVIEW_PRODUCT_PAGE,
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+            $this->_storeManager->getStore()->getId()
+        );
+
+        $routePath = $linkToProductPage ? 'catalog/product/view' : 'review/product/list';
+        return $this->_urlBuilder->getUrl($routePath, ['id' => $productId]);
     }
 }
