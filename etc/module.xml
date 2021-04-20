@@ -33,6 +33,7 @@
             <module name="Magento_GroupedProduct" />
             <module name="Magento_Theme" />
             <module name="Magento_Authorization" />
+            <module name="Magento_Tax" />
         </sequence>
     </module>
 </config>

@@ -43,7 +43,8 @@
     "magento/module-bundle": ">=100 <102",
     "magento/module-grouped-product": "100.*",
     "magento/module-url-rewrite": ">=100 <103",
-    "magento/module-authorization": "100.*"
+    "magento/module-authorization": "100.*",
+    "magento/module-tax": "100.*"
   },
   "autoload": {
     "files": [ "registration.php" ],
