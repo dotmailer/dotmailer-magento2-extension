@@ -278,6 +278,7 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_PATH_CONNECTOR_SYSTEM_ALERTS_FREQUENCY = 'connector_developer_settings/system_alerts/frequency';
     const XML_PATH_CONNECTOR_SYSTEM_ALERTS_EMAIL_NOTIFICATION_TEMPLATE =
         'connector_developer_settings/system_alerts/email_notification_template';
+    const XML_PATH_PWA_URL = 'connector_developer_settings/pwa_settings/pwa_url';
 
     /*
      * Cron schedules

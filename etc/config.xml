@@ -325,6 +325,9 @@
                 <frequency>24</frequency>
                 <email_notification_template>system_alert_email_template</email_notification_template>
             </system_alerts>
+            <pwa_settings>
+                <pwa_url></pwa_url>
+            </pwa_settings>
         </connector_developer_settings>
     </default>
 </config>

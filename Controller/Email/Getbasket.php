@@ -3,6 +3,7 @@
 namespace Dotdigitalgroup\Email\Controller\Email;
 
 use Dotdigitalgroup\Email\Helper\Config;
+use Magento\Store\Model\StoreManagerInterface;
 
 class Getbasket extends \Magento\Framework\App\Action\Action
 {
@@ -31,7 +32,17 @@ class Getbasket extends \Magento\Framework\App\Action\Action
      */
     private $customerSessionFactory;
 
+    /**
+     * @var \Magento\Framework\App\Config\ScopeConfigInterface
+     */
+    private $scopeConfig;
+
     private $params = [];
+
+    /**
+     * @var StoreManagerInterface
+     */
+    private $storeManager;
 
     /**
      * Getbasket constructor.
@@ -41,18 +52,23 @@ class Getbasket extends \Magento\Framework\App\Action\Action
      * @param \Magento\Quote\Model\QuoteFactory $quoteFactory
      * @param \Magento\Framework\App\Action\Context $context
      * @param \Magento\Customer\Model\SessionFactory $customerSessionFactory
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      */
     public function __construct(
         \Magento\Quote\Model\ResourceModel\Quote $quoteResource,
         \Magento\Checkout\Model\SessionFactory $checkoutSessionFactory,
         \Magento\Quote\Model\QuoteFactory $quoteFactory,
         \Magento\Framework\App\Action\Context $context,
-        \Magento\Customer\Model\SessionFactory $customerSessionFactory
+        \Magento\Customer\Model\SessionFactory $customerSessionFactory,
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
+        StoreManagerInterface $storeManager
     ) {
         $this->checkoutSession = $checkoutSessionFactory;
         $this->quoteFactory    = $quoteFactory;
         $this->quoteResource = $quoteResource;
         $this->customerSessionFactory = $customerSessionFactory;
+        $this->scopeConfig = $scopeConfig;
+        $this->storeManager = $storeManager;
         parent::__construct($context);
     }
 
@@ -61,6 +77,18 @@ class Getbasket extends \Magento\Framework\App\Action\Action
      */
     public function execute()
     {
+        $websiteId = $this->storeManager->getWebsite()->getId();
+
+        $pwaUrl = $this->scopeConfig->getValue(
+            Config::XML_PATH_PWA_URL,
+            \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
+            $websiteId
+        );
+
+        if ($pwaUrl) {
+            return $this->handlePwaBasket($pwaUrl, $websiteId);
+        }
+
         $quoteId = $this->getRequest()->getParam('quote_id');
         //no quote id redirect to base url
         if (!$quoteId) {
@@ -246,5 +274,23 @@ class Getbasket extends \Magento\Framework\App\Action\Action
         }
 
         return $redirectWithParams;
+    }
+
+    /**
+     * @param string $pwaUrl
+     * @param int $websiteId
+     * @return \Magento\Framework\App\ResponseInterface
+     */
+    private function handlePwaBasket($pwaUrl, $websiteId)
+    {
+        $cartRoute = $this->scopeConfig->getValue(
+            Config::XML_PATH_CONNECTOR_CONTENT_CART_URL,
+            \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
+            $websiteId
+        );
+
+        return $this->_redirect(
+            $this->getRedirectWithParams($pwaUrl . $cartRoute)
+        );
     }
 }

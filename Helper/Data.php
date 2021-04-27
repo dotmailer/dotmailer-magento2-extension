@@ -1489,21 +1489,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * Product review from config to link the product link.
-     *
-     * @param int $website
-     *
-     * @return boolean|string
-     */
-    public function getReviewReminderAnchor($website)
-    {
-        return $this->getWebsiteConfig(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_AUTOMATION_REVIEW_ANCHOR,
-            $website
-        );
-    }
-
-    /**
      * Get display type for review product.
      *
      * @param int $website

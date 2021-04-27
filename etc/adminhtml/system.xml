@@ -1910,6 +1910,13 @@
                     <comment><![CDATA[This setting controls both email notification frequency and the time period in which we report errors. e.g. Select "24 Hours" to receive an email every 24 hours reporting any errors that may have occurred in the last 24 hours.]]></comment>
                 </field>
             </group>
+            <group id="pwa_settings" translate="label" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="0">
+                <label>PWA Settings</label>
+                <field id="pwa_url" translate="label" type="text" sortOrder="10" showInDefault="1" showInStore="0" showInWebsite="1">
+                    <label>PWA Storefront Base URL</label>
+                    <comment><![CDATA[ Specify this if you use a PWA storefront URL which is different from Magento's default frontend base URL.]]></comment>
+                </field>
+            </group>
         </section>
     </system>
 </config>
