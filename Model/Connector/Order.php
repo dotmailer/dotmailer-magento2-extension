@@ -583,8 +583,11 @@ class Order
                 case 'timestamp':
                 case 'datetime':
                 case 'date':
-                    $date = new \DateTime($orderData->$function());
-                    $value = $date->format(\DateTime::ISO8601);
+                    $value = null;
+                    if ($orderData->$function() !== null) {
+                        $date = new \DateTime($orderData->$function());
+                        $value = $date->format(\DateTime::ISO8601);
+                    }
                     break;
 
                 default:
