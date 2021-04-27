@@ -1855,9 +1855,7 @@
                 <field id="ip_addresses" translate="label" type="textarea" sortOrder="10" showInStore="0"
                        showInWebsite="1" showInDefault="1">
                     <label>Dynamic Pages IP Restriction</label>
-                    <comment><![CDATA[Enter IP addresses separated by comma (,). An empty list will ignore any security check.
-                        Please ensure you keep the latest dotdigital IP ranges included
-                        <a href="https://support.dotdigital.com/hc/en-gb/articles/216282318-Security-settings#ip" target="_blank"> here</a>.]]></comment>
+                    <comment><![CDATA[Enter IP addresses separated by comma (,). An empty list will ignore any security check. Please ensure you keep <a href="https://support.dotdigital.com/hc/en-gb/articles/212217348-What-IP-addresses-does-the-application-use-to-send-email-so-I-can-add-them-to-my-allow-list-" target="_blank">the latest dotdigital IP ranges</a> included.]]></comment>
                 </field>
             </group>
             <group id="cron_schedules" translate="label" sortOrder="70" showInDefault="1" showInWebsite="1"
