@@ -19,6 +19,11 @@ You are welcome to contribute to Engagement Cloud for Magento! You can either:
 - Fix a bug: please clone and use our [Develop branch](https://github.com/dotmailer/dotmailer-magento2-extension/tree/develop) to submit your Pull Request
 - Request a feature on our [roadmap](https://roadmap.dotdigital.com)
 
+# 4.12.0-RC4
+
+###### What's new
+- We've added an extra configuration field (in **Developer > PWA Settings**) to allow merchants running a PWA storefront to define a separate storefront url. This can be used to re-route the 'Take me to my basket' link in the basket EDC and the ‘Leave a review’ link in the review EDC.
+
 # 4.11.4
 
 ###### What's new
