@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <tests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
-    <test name="SyncSettingsAreDisabledByDefaultTest">
+    <test name="CheckSyncSettingsAreDisabledByDefaultTest">
         <annotations>
             <features value="Engagement Cloud module"/>
             <stories value="Configure sync settings"/>
@@ -9,6 +9,7 @@
             <description value="Sync settings in the dotdigital > Sync Settings tab should be disabled by default."/>
             <severity value="MINOR"/>
             <group value="dotmailer"/>
+            <testCaseId value="BUNDLE-4"/>
         </annotations>
 
         <before>
