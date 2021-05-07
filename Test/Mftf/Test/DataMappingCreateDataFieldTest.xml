@@ -9,6 +9,7 @@
             <description value="Create a new data field in the dotdigital admin, and confirm that data can be mapped to it."/>
             <severity value="MINOR"/>
             <group value="dotmailer"/>
+            <testCaseId value="BUNDLE-16"/>
         </annotations>
 
         <before>

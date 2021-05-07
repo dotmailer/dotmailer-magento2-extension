@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
+    <test name="DataMappingEditSettingsTest">
+        <annotations>
+            <features value="Engagement Cloud module"/>
+            <stories value="Configure data mapping"/>
+            <title value="Test editing of data field mappings."/>
+            <description value="Data field mappings can be amended and saved."/>
+            <severity value="MINOR"/>
+            <group value="dotmailer"/>
+            <testCaseId value="BUNDLE-19"/>
+        </annotations>
+
+        <before>
+            <actionGroup ref="AdminLoginActionGroup" stepKey="AdminLoginActionGroup"/>
+            <actionGroup ref="SetDotmailerAccountData" stepKey="SetDotmailerAccountData"/>
+        </before>
+
+        <after>
+            <actionGroup ref="ResetDataFields" stepKey="resetDataFieldsAfter"/>
+            <actionGroup ref="ResetDotmailerAccountData" stepKey="resetAccountData"/>
+            <actionGroup ref="AdminLogoutActionGroup" stepKey="logout"/>
+        </after>
+
+        <amOnPage url="{{AdminDotdigitalDataMappingPage.url}}" stepKey="amOnDotdigitalDataMappingPage"/>
+        <waitForPageLoad stepKey="waitForPageLoad"/>
+
+        <selectOption selector="{{AdminDotdigitalDataMappingSection.customerFirstname}}" userInput="FIRSTNAME" stepKey="mapFirstName"/>
+        <selectOption selector="{{AdminDotdigitalDataMappingSection.customerLastname}}" userInput="LASTNAME" stepKey="mapLastName"/>
+
+        <click selector="{{AdminDotdigitalDataMappingSection.save}}" stepKey="saveMapping"/>
+        <waitForPageLoad stepKey="waitForPageLoad2"/>
+        <see userInput="You saved the configuration." selector="div[data-ui-id='messages-message-success']" stepKey="seeSuccessMessage"/>
+
+    </test>
+</tests>
