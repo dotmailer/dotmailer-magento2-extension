@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
+    <test name="DeveloperSettingsTest">
+        <annotations>
+            <features value="Engagement Cloud module"/>
+            <stories value="Test dotdigital developer section settings"/>
+            <title value="Test all Developer section settings"/>
+            <description value="The dotdigital Developer section can be viewed, and its subsections expanded."/>
+            <severity value="AVERAGE"/>
+            <group value="dotmailer"/>
+            <testCaseId value="BUNDLE-81"/>
+        </annotations>
+
+        <before>
+            <actionGroup ref="AdminLoginActionGroup" stepKey="AdminLoginActionGroup"/>
+        </before>
+
+        <after>
+            <actionGroup ref="AdminLogoutActionGroup" stepKey="logout"/>
+        </after>
+
+        <amOnPage url="{{AdminDotmailerDeveloperSettingPage.url}}" stepKey="amOnDeveloperSettingsPage"/>
+        <waitForPageLoad stepKey="waitForPageLoad"/>
+
+        <!-- Import Settings -->
+        <conditionalClick stepKey="expandImportSettingsTab" selector="{{AdminDeveloperSettingsSection.developerImportSettingsFieldsetToggle}}" dependentSelector="{{AdminDeveloperSettingsSection.developerImportSettingsFieldset}}" visible="false"/>
+        <seeElement selector="{{AdminDeveloperSettingsSection.developerImportSettingsFieldset}}" stepKey="seeImportSettingsFieldset"/>
+
+        <!-- Sync Settings -->
+        <conditionalClick stepKey="expandSyncSettingsTab" selector="{{AdminDeveloperSettingsSection.developerSyncSettingsFieldsetToggle}}" dependentSelector="{{AdminDeveloperSettingsSection.developerSyncSettingsFieldset}}" visible="false"/>
+        <seeElement selector="{{AdminDeveloperSettingsSection.developerSyncSettingsFieldset}}" stepKey="seeSyncSettingsFieldset"/>
+
+        <!-- Debug -->
+        <conditionalClick stepKey="expandDebugTab" selector="{{AdminDeveloperSettingsSection.developerDebugFieldsetToggle}}" dependentSelector="{{AdminDeveloperSettingsSection.developerDebugFieldset}}" visible="false"/>
+        <seeElement selector="{{AdminDeveloperSettingsSection.developerDebugFieldset}}" stepKey="seeDebugFieldset"/>
+
+        <!-- OAuth Credentials -->
+        <conditionalClick stepKey="expandOAuthCredentialsTab" selector="{{AdminDeveloperSettingsSection.developerOAuthCredentialsFieldsetToggle}}" dependentSelector="{{AdminDeveloperSettingsSection.developerOAuthCredentialsFieldset}}" visible="false"/>
+        <seeElement selector="{{AdminDeveloperSettingsSection.developerOAuthCredentialsFieldset}}" stepKey="seeOAuthCredentialsFieldset"/>
+
+        <!-- PWA Settings -->
+        <conditionalClick stepKey="expandPWASettingsTab" selector="{{AdminDeveloperSettingsSection.developerPWASettingsFieldsetToggle}}" dependentSelector="{{AdminDeveloperSettingsSection.developerPWASettingsFieldset}}" visible="false"/>
+        <seeElement selector="{{AdminDeveloperSettingsSection.developerPWASettingsFieldset}}" stepKey="seePWASettingsFieldset"/>
+
+        <!-- Note: Manage Cron Timings, Dynamic Pages IP Restriction and System Alerts are covered by other tests. -->
+    </test>
+</tests>

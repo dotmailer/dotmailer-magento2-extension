@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
+    <test name="CronSettingsTest">
+        <annotations>
+            <features value="Engagement Cloud module"/>
+            <stories value="Test dotdigital developer section settings"/>
+            <title value="Test cron frequency settings"/>
+            <description value="The Manage Cron Timings section can be viewed, and its settings updated."/>
+            <severity value="AVERAGE"/>
+            <group value="dotmailer"/>
+            <testCaseId value="BUNDLE-82"/>
+        </annotations>
+
+        <before>
+            <actionGroup ref="AdminLoginActionGroup" stepKey="AdminLoginActionGroup"/>
+        </before>
+
+        <after>
+            <selectOption selector="{{AdminDeveloperSettingsSection.cronSchedulesReviewWishlist}}" userInput="Every 15 Minutes" stepKey="resetReviewAndWishlistCronFrequency"/>
+            <click selector="{{AdminDeveloperSettingsSection.developerSettingSaveButton}}" stepKey="saveConfig2"/>
+            <waitForPageLoad stepKey="waitForPageLoad3"/>
+            <actionGroup ref="AdminLogoutActionGroup" stepKey="logout"/>
+        </after>
+
+        <amOnPage url="{{AdminDotmailerDeveloperSettingPage.url}}" stepKey="amOnDeveloperSettingsPage"/>
+        <waitForPageLoad stepKey="waitForPageLoad1"/>
+
+        <!-- Expand tab and see fieldset -->
+        <conditionalClick stepKey="expandManageCronTimingsTab" selector="{{AdminDeveloperSettingsSection.developerManageCronTimingsFieldsetToggle}}" dependentSelector="{{AdminDeveloperSettingsSection.developerManageCronTimingsFieldset}}" visible="false"/>
+        <seeElement selector="{{AdminDeveloperSettingsSection.developerManageCronTimingsFieldset}}" stepKey="seeManageCronTimingsFieldset"/>
+
+        <!-- Modify a value and save. -->
+        <selectOption selector="{{AdminDeveloperSettingsSection.cronSchedulesReviewWishlist}}" userInput="Every 30 Minutes" stepKey="setReviewAndWishlistCronFrequency"/>
+        <click selector="{{AdminDeveloperSettingsSection.developerSettingSaveButton}}" stepKey="saveConfig"/>
+        <waitForPageLoad stepKey="waitForPageLoad2"/>
+        <see userInput="You saved the configuration." selector="div[data-ui-id='messages-message-success']" stepKey="seeSuccessMessage"/>
+    </test>
+</tests>
+
