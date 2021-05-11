@@ -66,11 +66,11 @@ class ExporterTest extends TestCase
             ->method('create')
             ->willReturn($this->collectionMock);
 
-        $productMock1 = $this->getMockProducts($storeId, $product1Id);
-        $productMock2 = $this->getMockProducts($storeId, $product2Id);
+        $productMock1 = $this->getMockProducts($product1Id);
+        $productMock2 = $this->getMockProducts($product2Id);
 
-        $exposedProduct1 = ['name' => 'product1'];
-        $exposedProduct2 = ['name' => 'product2'];
+        $exposedProduct1 = $this->getExposedProduct($product1Id);
+        $exposedProduct2 = $this->getExposedProduct($product2Id);
 
         $connectorProductMock1 = $this->getMockConnectorProducts($productMock1, $exposedProduct1);
         $connectorProductMock2 = $this->getMockConnectorProducts($productMock2, $exposedProduct2);
@@ -104,7 +104,7 @@ class ExporterTest extends TestCase
      * @param $productId
      * @return \PHPUnit\Framework\MockObject\MockObject
      */
-    private function getMockProducts($storeId, $productId)
+    private function getMockProducts($productId)
     {
         $product = $this->createMock(Product::class);
         $product->expects($this->once())
@@ -127,9 +127,9 @@ class ExporterTest extends TestCase
             ->method('setProduct')
             ->with($productMock)
             ->willReturnSelf();
-        $connectorProduct->expects($this->once())
-            ->method('expose')
-            ->willReturn($exposedMock);
+
+        $connectorProduct->name = $exposedMock['name'];
+        $connectorProduct->id = $exposedMock['id'];
 
         return $connectorProduct;
     }
@@ -141,9 +141,9 @@ class ExporterTest extends TestCase
     public function getProductAndStoreIds()
     {
         return [
-            [1254,337,1],
-            [2234,554,2],
-            [332,2445,4]
+            [1, 1254, 337],
+            [2, 2234, 554],
+            [4, 332, 2445]
         ];
     }
 
@@ -152,7 +152,7 @@ class ExporterTest extends TestCase
      *
      * @return array
      */
-    public function getMockProductsToProcess()
+    private function getMockProductsToProcess()
     {
         return [
             0 => '1205',
@@ -165,6 +165,34 @@ class ExporterTest extends TestCase
             7 => '1212',
             8 => '1213',
             9 => '1214'
+        ];
+    }
+
+    /**
+     * @param $id
+     * @return array
+     */
+    private function getExposedProduct($id)
+    {
+        return [
+            'id' => (int) $id,
+            'name' => 'product' . $id,
+            'parent_id' => '',
+            'sku' => '',
+            'status' => '',
+            'visibility' => '',
+            'price' => 0,
+            'price_incl_tax' => 0,
+            'specialPrice' => 0,
+            'specialPrice_incl_tax' => 0,
+            'tierPrices' => [],
+            'categories' => [],
+            'url' => '',
+            'imagePath' => '',
+            'shortDescription' => '',
+            'stock' => 0,
+            'websites' => [],
+            'type' => ''
         ];
     }
 }
