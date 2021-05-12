@@ -2,13 +2,21 @@
 
 namespace Dotdigitalgroup\Email\Model\Catalog;
 
+use Dotdigitalgroup\Email\Logger\Logger;
+use Dotdigitalgroup\Email\Model\Frontend\PwaUrlConfig;
 use Dotdigitalgroup\Email\Model\Product\ParentFinder;
 use Magento\Catalog\Block\Product\ImageBuilder;
 use Magento\Catalog\Model\Product;
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\Exception\NoSuchEntityException;
 
 class UrlFinder
 {
+    /**
+     * @var Logger
+     */
+    private $logger;
+
     /**
      * @var \Magento\Catalog\Api\ProductRepositoryInterface
      */
@@ -35,20 +43,31 @@ class UrlFinder
     private $parentFinder;
 
     /**
+     * @var PwaUrlConfig
+     */
+    private $pwaUrlConfig;
+
+    /**
      * UrlFinder constructor.
+     * @param Logger $logger
      * @param \Magento\Catalog\Api\ProductRepositoryInterface $productRepository
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      * @param \Magento\Catalog\Block\Product\ImageBuilderFactory $imageBuilderFactory
      * @param ScopeConfigInterface $scopeConfig
      * @param ParentFinder $parentFinder
+     * @param PwaUrlConfig $pwaUrlConfig
      */
     public function __construct(
+        Logger $logger,
+        PwaUrlConfig $pwaUrlConfig,
         \Magento\Catalog\Api\ProductRepositoryInterface $productRepository,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Magento\Catalog\Block\Product\ImageBuilderFactory $imageBuilderFactory,
         ScopeConfigInterface $scopeConfig,
         ParentFinder $parentFinder
     ) {
+        $this->logger = $logger;
+        $this->pwaUrlConfig = $pwaUrlConfig;
         $this->productRepository = $productRepository;
         $this->storeManager = $storeManager;
         $this->imageBuilder = $imageBuilderFactory->create();
@@ -57,7 +76,7 @@ class UrlFinder
     }
 
     /**
-     * @param $product
+     * @param Product $product
      * @return string
      * @throws \Magento\Framework\Exception\LocalizedException
      * @throws \Magento\Framework\Exception\NoSuchEntityException
@@ -70,10 +89,31 @@ class UrlFinder
             && $product->getTypeId() == Product\Type::TYPE_SIMPLE
             && $parentProduct = $this->parentFinder->getParentProduct($product)
         ) {
-            return $parentProduct->getProductUrl();
+            return $this->getProductUrl($parentProduct);
         }
 
-        return $product->getProductUrl();
+        return $this->getProductUrl($product);
+    }
+
+    /**
+     * @param Product $product
+     * @return string
+     */
+    private function getProductUrl($product)
+    {
+        try {
+            $pwaUrl = $this->pwaUrlConfig->getPwaUrl(
+                $this->storeManager->getStore($product->getStoreId())->getWebsite()->getId()
+            );
+        } catch (NoSuchEntityException $e) {
+            $pwaUrl = '';
+            $this->logger->debug(
+                'Requested store is not found. Store id: ' . $product->getStoreId(),
+                [(string) $e]
+            );
+        }
+
+        return ($pwaUrl) ? $pwaUrl . $product->getUrlKey() . '.html' : $product->getProductUrl();
     }
 
     /**

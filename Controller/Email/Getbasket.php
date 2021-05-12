@@ -3,6 +3,7 @@
 namespace Dotdigitalgroup\Email\Controller\Email;
 
 use Dotdigitalgroup\Email\Helper\Config;
+use Dotdigitalgroup\Email\Model\Frontend\PwaUrlConfig;
 use Magento\Store\Model\StoreManagerInterface;
 
 class Getbasket extends \Magento\Framework\App\Action\Action
@@ -37,12 +38,20 @@ class Getbasket extends \Magento\Framework\App\Action\Action
      */
     private $scopeConfig;
 
-    private $params = [];
+    /**
+     * @var PwaUrlConfig
+     */
+    private $pwaUrlConfig;
 
     /**
      * @var StoreManagerInterface
      */
     private $storeManager;
+
+    /**
+     * @var array
+     */
+    private $params = [];
 
     /**
      * Getbasket constructor.
@@ -53,6 +62,8 @@ class Getbasket extends \Magento\Framework\App\Action\Action
      * @param \Magento\Framework\App\Action\Context $context
      * @param \Magento\Customer\Model\SessionFactory $customerSessionFactory
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+     * @param PwaUrlConfig $pwaUrlConfig
+     * @param StoreManagerInterface $storeManager
      */
     public function __construct(
         \Magento\Quote\Model\ResourceModel\Quote $quoteResource,
@@ -61,6 +72,7 @@ class Getbasket extends \Magento\Framework\App\Action\Action
         \Magento\Framework\App\Action\Context $context,
         \Magento\Customer\Model\SessionFactory $customerSessionFactory,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
+        PwaUrlConfig $pwaUrlConfig,
         StoreManagerInterface $storeManager
     ) {
         $this->checkoutSession = $checkoutSessionFactory;
@@ -68,22 +80,20 @@ class Getbasket extends \Magento\Framework\App\Action\Action
         $this->quoteResource = $quoteResource;
         $this->customerSessionFactory = $customerSessionFactory;
         $this->scopeConfig = $scopeConfig;
+        $this->pwaUrlConfig = $pwaUrlConfig;
         $this->storeManager = $storeManager;
         parent::__construct($context);
     }
 
     /**
-     * Wishlist page to display the user items with specific email.
+     * Handles redirection from e.g. /connector/email/getbasket/quote_id/1/
+     * to a re-populated basket for customers,
+     * and a generic basket path for guests and PWA carts.
      */
     public function execute()
     {
         $websiteId = $this->storeManager->getWebsite()->getId();
-
-        $pwaUrl = $this->scopeConfig->getValue(
-            Config::XML_PATH_PWA_URL,
-            \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
-            $websiteId
-        );
+        $pwaUrl = $this->pwaUrlConfig->getPwaUrl($websiteId);
 
         if ($pwaUrl) {
             return $this->handlePwaBasket($pwaUrl, $websiteId);

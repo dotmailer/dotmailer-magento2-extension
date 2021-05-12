@@ -228,7 +228,8 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
                 'product_url',
                 'name',
                 'store_id',
-                'price'
+                'price',
+                'url_key'
             ];
             $mediaAttributes = $this->attributeHandler->create()
                 ->getMediaImageAttributes();
@@ -297,7 +298,8 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
                 'name',
                 'store_id',
                 'price',
-                'visibility'
+                'visibility',
+                'url_key'
             ];
             $mediaAttributes = $this->attributeHandler->create()
                 ->getMediaImageAttributes();
