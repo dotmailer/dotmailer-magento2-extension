@@ -2,6 +2,8 @@
 
 namespace Dotdigitalgroup\Email\Test\Unit\Model\Catalog\UrlFinder;
 
+use Dotdigitalgroup\Email\Logger\Logger;
+use Dotdigitalgroup\Email\Model\Frontend\PwaUrlConfig;
 use Dotdigitalgroup\Email\Model\Catalog\UrlFinder as UrlFinder;
 use Dotdigitalgroup\Email\Model\Product\ParentFinder;
 use Magento\Catalog\Api\ProductRepositoryInterface;
@@ -15,6 +17,16 @@ use PHPUnit\Framework\TestCase;
 
 class UrlFinderTest extends TestCase
 {
+    /**
+     * @var \PHPUnit\Framework\MockObject\MockObject
+     */
+    private $loggerMock;
+
+    /**
+     * @var \PHPUnit\Framework\MockObject\MockObject
+     */
+    private $pwaUrlConfigMock;
+
     /**
      * @var ProductRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
      */
@@ -57,8 +69,15 @@ class UrlFinderTest extends TestCase
 
     protected function setUp() :void
     {
+        $this->loggerMock = $this->createMock(Logger::class);
+        $this->pwaUrlConfigMock = $this->createMock(PwaUrlConfig::class);
         $this->productRepositoryMock = $this->createMock(ProductRepositoryInterface::class);
-        $this->productMock = $this->createMock(Product::class);
+        //$this->productMock = $this->createMock(Product::class);
+        $this->productMock = $this->getMockBuilder(Product::class)
+            ->addMethods(['getUrlKey'])
+            ->onlyMethods(['getVisibility', 'getData', 'getProductUrl', 'getWebsiteIds', 'getStoreId', 'getStoreIds'])
+            ->disableOriginalConstructor()
+            ->getMock();
         $this->storeManagerMock = $this->createMock(StoreManagerInterface::class);
         $this->websiteMock = $this->createMock(Website::class);
         $this->imageBuilderMock = $this->createMock(ImageBuilder::class);
@@ -75,6 +94,8 @@ class UrlFinderTest extends TestCase
         $this->scopeConfigInterfaceMock = $this->createMock(ScopeConfigInterface::class);
 
         $this->urlFinder = new UrlFinder(
+            $this->loggerMock,
+            $this->pwaUrlConfigMock,
             $this->productRepositoryMock,
             $this->storeManagerMock,
             $imageBuilderFactory,
@@ -94,6 +115,8 @@ class UrlFinderTest extends TestCase
             ->method('getVisibility')
             ->willReturn($visibleInCatalogAndSearchInt);
 
+        $this->checksForPwaUrl($this->productMock);
+
         $this->productMock->expects($this->once())
             ->method('getProductUrl');
 
@@ -101,25 +124,6 @@ class UrlFinderTest extends TestCase
             ->method('getById');
 
         $this->urlFinder->fetchFor($this->productMock);
-    }
-
-    private function getInScopeProduct($product)
-    {
-        $productStoreId = 1;
-        $storeIdsOfWebsite = [
-            0 => 1,
-            1 => 2
-        ];
-
-        $this->productMock->expects($this->atLeastOnce())
-            ->method('getStoreId')
-            ->willReturn($productStoreId);
-
-        $this->productMock->expects($this->once())
-            ->method('getStoreIds')
-            ->willReturn($storeIdsOfWebsite);
-
-        return $product;
     }
 
     public function testFetchForProductNotInScope()
@@ -163,6 +167,8 @@ class UrlFinderTest extends TestCase
         $this->productRepositoryMock->expects($this->once())
             ->method('getById')
             ->willReturn($newProduct);
+
+        $this->checksForPwaUrl($newProduct);
 
         $this->urlFinder->fetchFor($this->productMock);
     }
@@ -261,7 +267,7 @@ class UrlFinderTest extends TestCase
         $this->assertEquals($returnedUrl, $path);
     }
 
-    public function testThatremovePubRemovesOnlyPubDirectoryAndnotAllSubstrings()
+    public function testThatRemovePubRemovesOnlyPubDirectoryAndNotAllSubstrings()
     {
         $path = 'https://simons-pub.com/pub/pub-location/pub-beautifulImage.jpg';
 
@@ -275,5 +281,73 @@ class UrlFinderTest extends TestCase
         $returnedUrl = $this->urlFinder->getPath($path);
 
         $this->assertEquals($expected, $returnedUrl);
+    }
+
+    public function testPwaUrlIsReturnedIfSet()
+    {
+        $pwaUrl = 'https://pwa.engagementcloudformagento.com/';
+        $urlKey = 'chaz-kangeroo-hoodie';
+        $visibleInCatalogAndSearchInt = 4;
+
+        $this->productMock = $this->getInScopeProduct($this->productMock);
+
+        $this->productMock->expects($this->once())
+            ->method('getVisibility')
+            ->willReturn($visibleInCatalogAndSearchInt);
+
+        $this->checksForPwaUrl($this->productMock, $pwaUrl);
+
+        $this->productMock->expects($this->never())
+            ->method('getProductUrl');
+
+        $this->productMock->expects($this->once())
+            ->method('getUrlKey')
+            ->willReturn($urlKey);
+
+        $returnedUrl = $this->urlFinder->fetchFor($this->productMock);
+
+        $this->assertEquals($pwaUrl . $urlKey . '.html', $returnedUrl);
+    }
+
+    private function checksForPwaUrl($productMock, $pwaUrl = '')
+    {
+        $storeMock = $this->createMock(\Magento\Store\Model\Store::class);
+        $websiteMock = $this->createMock(\Magento\Store\Model\Website::class);
+
+        $this->storeManagerMock->expects($this->once())
+            ->method('getStore')
+            ->with($productMock->getStoreId())
+            ->willReturn($storeMock);
+
+        $storeMock->expects($this->once())
+            ->method('getWebsite')
+            ->willReturn($websiteMock);
+
+        $websiteMock->expects($this->once())
+            ->method('getId')
+            ->willReturn(1);
+
+        $this->pwaUrlConfigMock->expects($this->once())
+            ->method('getPwaUrl')
+            ->willReturn($pwaUrl);
+    }
+
+    private function getInScopeProduct($product)
+    {
+        $productStoreId = 1;
+        $storeIdsOfWebsite = [
+            0 => 1,
+            1 => 2
+        ];
+
+        $this->productMock->expects($this->atLeastOnce())
+            ->method('getStoreId')
+            ->willReturn($productStoreId);
+
+        $this->productMock->expects($this->once())
+            ->method('getStoreIds')
+            ->willReturn($storeIdsOfWebsite);
+
+        return $product;
     }
 }

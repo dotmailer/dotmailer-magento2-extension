@@ -1914,7 +1914,7 @@
                 <label>PWA Settings</label>
                 <field id="pwa_url" translate="label" type="text" sortOrder="10" showInDefault="1" showInStore="0" showInWebsite="1">
                     <label>PWA Storefront Base URL</label>
-                    <comment><![CDATA[ Specify this if you use a PWA storefront URL which is different from Magento's default frontend base URL.]]></comment>
+                    <comment><![CDATA[ Specify this if you use a PWA storefront URL which is different from Magento's default frontend base URL. e.g. https://pwa.yourdomain.com/]]></comment>
                 </field>
             </group>
         </section>

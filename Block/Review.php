@@ -192,32 +192,15 @@ class Review extends Recommended
     }
 
     /**
+     * If 'Link to product page' is 'Yes', fetch the URL.
+     * If that fails, or if set to 'No', fall back to the review list URL.
+     *
      * @param int|string $productId
      *
      * @return string
      */
     public function getReviewItemUrl($productId)
     {
-        $pwaUrl = $this->_scopeConfig->getValue(
-            Config::XML_PATH_PWA_URL,
-            \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
-            $this->_storeManager->getStore($this->getStoreIdFromOrder())->getWebsite()->getId()
-        );
-
-        try {
-            $product = $this->productRepository->getById($productId);
-            $productUrl = $product->getProductUrl();
-            // @codingStandardsIgnoreLine
-            $urlSlug = str_replace("/", "", parse_url($productUrl)['path']);
-        } catch (\Exception $exception) {
-            $this->logger->error(sprintf('Could not fetch the product with id %s', $productId));
-            $urlSlug = '';
-        }
-
-        if ($pwaUrl) {
-            return $pwaUrl . $urlSlug;
-        }
-
         $linkToProductPage = $this->_scopeConfig->getValue(
             Config::XML_PATH_AUTOMATION_REVIEW_PRODUCT_PAGE,
             \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
@@ -225,7 +208,12 @@ class Review extends Recommended
         );
 
         if ($linkToProductPage) {
-            return $this->_urlBuilder->getUrl($urlSlug);
+            try {
+                $product = $this->productRepository->getById($productId);
+                return $this->urlFinder->fetchFor($product);
+            } catch (\Exception $exception) {
+                $this->logger->error(sprintf('Could not fetch the product with id %s', $productId));
+            }
         }
 
         return $this->_urlBuilder->getUrl('review/product/list', ['id' => $productId]);
