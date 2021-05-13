@@ -43,6 +43,7 @@
         </assertNotEquals>
 
         <!-- Transform the data field to uppercase to match the field returned from EC. -->
+        <conditionalClick selector="{{AdminDotdigitalDataMappingSection.DataFieldsMappingSectionToggle}}" dependentSelector="{{AdminDotdigitalDataMappingSection.DataFieldMappingSectionFieldset}}" visible="false" stepKey="clickToExpandActions"/>
         <executeJS function="return '{{DataFields.dataFieldName}}'.toUpperCase()" stepKey="upperCaseDataFieldWithSuffix"/>
         <selectOption selector="{{AdminDotdigitalDataMappingSection.customerFirstname}}" userInput="{$upperCaseDataFieldWithSuffix}" stepKey="selectDataField"/>
 
