@@ -2,6 +2,8 @@
 
 namespace Dotdigitalgroup\Email\Model\Catalog;
 
+use Magento\Catalog\Model\ResourceModel\Product;
+
 class UpdateCatalogBulk
 {
     /**
@@ -20,27 +22,27 @@ class UpdateCatalogBulk
     private $dateTime;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\Product\Bunch
-     */
-    private $bunch;
-
-    /**
      * @var \Dotdigitalgroup\Email\Model\Product\ParentFinder
      */
     private $parentFinder;
+
+    /**
+     * @var Product
+     */
+    private $productResource;
 
     public function __construct(
         \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalogResource,
         \Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory $catalogFactory,
         \Magento\Framework\Stdlib\DateTime $dateTime,
-        \Dotdigitalgroup\Email\Model\Product\Bunch $bunch,
-        \Dotdigitalgroup\Email\Model\Product\ParentFinder $parentFinder
+        \Dotdigitalgroup\Email\Model\Product\ParentFinder $parentFinder,
+        Product $productResource
     ) {
         $this->catalogResource = $catalogResource;
         $this->catalogFactory = $catalogFactory;
         $this->dateTime = $dateTime;
-        $this->bunch = $bunch;
         $this->parentFinder = $parentFinder;
+        $this->productResource = $productResource;
     }
 
     /**
@@ -57,36 +59,38 @@ class UpdateCatalogBulk
     }
 
     /**
-     * Process creates or updates a catalog with products
-     * @param $bunch
+     * Adds products to email_catalog or
+     * marks existing products (and their parents) as unprocessed.
+     *
+     * @param array $bunch
      */
     private function processBatch($bunch)
     {
-        $mergedWithConfigurableParents = array_merge(
-            $bunch,
-            $this->parentFinder->getConfigurableParentsFromBunchOfProducts($bunch)
+        $bunchProductIds = $this->productResource->getProductsIdsBySkus(
+            array_unique(array_column($bunch, 'sku'))
         );
+        $existingProductIds = $this->getExistingProductIds($bunchProductIds);
+        $newEntryIds = array_diff($bunchProductIds, $existingProductIds);
 
-        $productIds = $this->bunch->getProductIdsBySkuInBunch($mergedWithConfigurableParents);
-        $existingProductIds = $this->getExistingProductIds($productIds);
+        if (!empty($newEntryIds)) {
+            $createdAt = $this->dateTime->formatDate(true);
 
-        $newEntryIds = array_diff($productIds, $existingProductIds);
-        $createdAt = $this->dateTime->formatDate(true);
+            $newEntries = array_map(function ($id) use ($createdAt) {
+                return [
+                    'product_id' => $id,
+                    'processed' => 0,
+                    'created_at' => $createdAt
+                ];
+            }, $newEntryIds);
 
-        $newEntries = array_map(function ($id) use ($createdAt) {
-            return [
-                'product_id' => $id,
-                'processed' => 0,
-                'created_at' => $createdAt
-            ];
-        }, $newEntryIds);
-
-        if (!empty($newEntries)) {
             $this->catalogResource->bulkProductImport($newEntries);
         }
 
         if (!empty($existingProductIds)) {
-            $this->catalogResource->setUnprocessedByIds($existingProductIds);
+            $parentProductIds = $this->parentFinder->getConfigurableParentsFromProductIds($existingProductIds);
+            $this->catalogResource->setUnprocessedByIds(
+                array_merge($existingProductIds, $parentProductIds)
+            );
         }
     }
 

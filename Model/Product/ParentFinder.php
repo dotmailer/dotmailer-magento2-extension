@@ -96,6 +96,10 @@ class ParentFinder
     {
         $parentId = $this->getFirstConfigurableParentId($product);
 
+        if (!$parentId) {
+            return null;
+        }
+
         try {
             return $this->productRepository->getById($parentId, false, $product->getStoreId());
         } catch (\Magento\Framework\Exception\NoSuchEntityException $e) {
@@ -144,25 +148,23 @@ class ParentFinder
     }
 
     /**
-     * @param array $products
+     * @param array $productIds
      * @return array
      */
-    public function getConfigurableParentsFromBunchOfProducts($products)
+    public function getConfigurableParentsFromProductIds($productIds)
     {
         $configurableParents = [];
 
-        foreach ($products as $product) {
-            if (is_array($product) && isset($product['sku'])) {
-                try {
-                    $product = $this->productRepository->get($product['sku']);
-                } catch (\Magento\Framework\Exception\NoSuchEntityException $e) {
-                    $this->logger->debug(
-                        $e->getMessage() .
-                        ' SKU not found: ' . $product['sku']
-                    );
-                    continue;
-                }
+        foreach ($productIds as $productId) {
+            try {
+                $product = $this->productRepository->getById($productId);
+            } catch (\Magento\Framework\Exception\NoSuchEntityException $e) {
+                $this->logger->debug(
+                    $e->getMessage() . ' Product ID: ' . $productId
+                );
+                continue;
             }
+
             if ($product instanceof Product) {
                 $parentProduct = $this->getConfigurableParentProduct($product);
                 if (isset($parentProduct)) {

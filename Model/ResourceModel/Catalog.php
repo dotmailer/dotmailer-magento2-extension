@@ -497,7 +497,7 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
-     * @param $products
+     * @param array $products
      */
     public function bulkProductImport($products)
     {

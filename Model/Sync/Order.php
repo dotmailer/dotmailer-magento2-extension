@@ -97,11 +97,6 @@ class Order implements SyncInterface
     private $catalogResource;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\Product\Bunch
-     */
-    private $bunch;
-
-    /**
      * @var \Dotdigitalgroup\Email\Model\Catalog\UpdateCatalogBulk
      */
     private $bulkUpdate;
@@ -123,7 +118,6 @@ class Order implements SyncInterface
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Magento\Sales\Model\OrderFactory $salesOrderFactory
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalogResource
-     * @param \Dotdigitalgroup\Email\Model\Product\Bunch $bunch
      * @param \Dotdigitalgroup\Email\Model\Catalog\UpdateCatalogBulk $bulkUpdate
      * @param ScopeConfigInterface $scopeConfig
      */
@@ -138,7 +132,6 @@ class Order implements SyncInterface
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Sales\Model\OrderFactory $salesOrderFactory,
         \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalogResource,
-        \Dotdigitalgroup\Email\Model\Product\Bunch $bunch,
         \Dotdigitalgroup\Email\Model\Catalog\UpdateCatalogBulk $bulkUpdate,
         ScopeConfigInterface $scopeConfig
     ) {
@@ -152,7 +145,6 @@ class Order implements SyncInterface
         $this->salesOrderFactory     = $salesOrderFactory;
         $this->contactCollectionFactory = $contactCollectionFactory;
         $this->catalogResource = $catalogResource;
-        $this->bunch = $bunch;
         $this->bulkUpdate = $bulkUpdate;
         $this->scopeConfig = $scopeConfig;
     }
