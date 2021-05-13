@@ -1841,7 +1841,8 @@
                 <field id="custom_domain" translate="comment label" sortOrder="40" showInStore="0" showInWebsite="1"
                        showInDefault="1">
                     <label>Custom OAUTH Domain</label>
-                    <comment><![CDATA[Enter the custom domain for authorization. Make sure that base URL ends with '/' (slash), e.g. http://yourdomain/magento/]]></comment>
+                    <backend_model>Dotdigitalgroup\Email\Model\Config\Backend\OauthSecurityCheck</backend_model>
+                    <comment><![CDATA[Enter the custom domain for authorization. Make sure that base URL ends with '/' (slash), e.g. https://yourdomain/magento/]]></comment>
                 </field>
                 <field id="custom_authorization" translate="label" sortOrder="50" showInStore="0" showInWebsite="1"
                        showInDefault="1">
