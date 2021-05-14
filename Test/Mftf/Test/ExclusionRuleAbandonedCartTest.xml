@@ -9,6 +9,7 @@
             <description value="An exclusion rule for abandoned carts can be created with conditions."/>
             <severity value="AVERAGE"/>
             <group value="dotmailer"/>
+            <testCaseId value="BUNDLE-63, BUNDLE-64, BUNDLE-65"/>
         </annotations>
 
         <before>

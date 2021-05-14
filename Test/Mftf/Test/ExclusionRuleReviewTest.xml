@@ -9,6 +9,7 @@
             <description value="An exclusion rule for reviews can be created with conditions."/>
             <severity value="MINOR"/>
             <group value="dotmailer"/>
+            <testCaseId value="BUNDLE-54, BUNDLE-55"/>
         </annotations>
 
         <before>

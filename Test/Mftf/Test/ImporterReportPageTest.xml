@@ -9,6 +9,7 @@
             <description value="The dotdigital Import report can be viewed, filtered and sorted."/>
             <severity value="MINOR"/>
             <group value="dotmailer"/>
+            <testCaseId value="BUNDLE-69"/>
         </annotations>
 
         <before>

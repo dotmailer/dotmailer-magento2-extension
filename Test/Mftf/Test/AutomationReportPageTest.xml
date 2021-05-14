@@ -9,6 +9,7 @@
             <description value="The dotdigital Automation report can be viewed, filtered and sorted."/>
             <severity value="MINOR"/>
             <group value="dotmailer"/>
+            <testCaseId value="BUNDLE-70"/>
         </annotations>
 
         <before>
