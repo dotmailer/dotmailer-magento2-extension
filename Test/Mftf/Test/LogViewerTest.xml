@@ -9,6 +9,7 @@
             <description value="Confirm that log files can be viewed."/>
             <severity value="MINOR"/>
             <group value="dotmailer"/>
+            <testCaseId value="BUNDLE-73"/>
         </annotations>
 
         <before>

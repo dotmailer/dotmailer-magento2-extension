@@ -9,6 +9,7 @@
             <description value="The dotdigital Abandoned Cart report can be viewed, filtered and sorted."/>
             <severity value="MINOR"/>
             <group value="dotmailer"/>
+            <testCaseId value="BUNDLE-834"/>
         </annotations>
 
         <before>

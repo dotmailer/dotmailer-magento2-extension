@@ -9,6 +9,7 @@
             <description value="The coupon URL builder is displayed if the API is enabled, and functions as expected."/>
             <severity value="MINOR"/>
             <group value="dotmailer"/>
+            <testCaseId value="BUNDLE-2431"/>
         </annotations>
 
         <before>
@@ -32,6 +33,9 @@
             <actionGroup ref="ResetDotmailerAccountData" stepKey="resetAccountData"/>
             <actionGroup ref="AdminLogoutActionGroup" stepKey="logout"/>
         </after>
+
+        <!-- Confirm section is visible -->
+        <seeElement selector="{{EngagementCloudCouponUrlBuilderSection.couponUrlBuilderHeader}}" stepKey="seeCouponUrlBuilder"/>
 
         <!-- Test configuration of URL builder -->
         <click selector="{{AdminCartPriceRulesSection.rowContainingText(DotSalesRule.name)}}" stepKey="goToEditRule"/>

@@ -9,6 +9,7 @@
             <description value="The dotdigital image types section can be viewed, and values stored."/>
             <severity value="MINOR"/>
             <group value="dotmailer"/>
+            <testCaseId value="BUNDLE-2859"/>
         </annotations>
 
         <before>

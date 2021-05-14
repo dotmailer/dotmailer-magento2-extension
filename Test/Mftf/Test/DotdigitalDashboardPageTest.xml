@@ -9,6 +9,7 @@
             <description value="The dotdigital Dashboard can be viewed."/>
             <severity value="MINOR"/>
             <group value="dotmailer"/>
+            <testCaseId value="BUNDLE-74"/>
         </annotations>
 
         <before>
