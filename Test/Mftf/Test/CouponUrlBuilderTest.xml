@@ -34,11 +34,9 @@
             <actionGroup ref="AdminLogoutActionGroup" stepKey="logout"/>
         </after>
 
-        <!-- Confirm section is visible -->
-        <seeElement selector="{{EngagementCloudCouponUrlBuilderSection.couponUrlBuilderHeader}}" stepKey="seeCouponUrlBuilder"/>
-
         <!-- Test configuration of URL builder -->
         <click selector="{{AdminCartPriceRulesSection.rowContainingText(DotSalesRule.name)}}" stepKey="goToEditRule"/>
+        <seeElement selector="{{EngagementCloudCouponUrlBuilderSection.couponUrlBuilderHeader}}" stepKey="seeCouponUrlBuilder"/>
         <click selector="{{EngagementCloudCouponUrlBuilderSection.couponUrlBuilderHeader}}" stepKey="clickToExpandCouponUrlBuilder"/>
 
         <!-- Verify default value -->
