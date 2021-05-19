@@ -10,6 +10,9 @@
             <severity value="MINOR"/>
             <group value="dotmailer"/>
             <testCaseId value="BUNDLE-16"/>
+            <skip>
+                <issueId value="BUNDLE-2973"/>
+            </skip>
         </annotations>
 
         <before>
