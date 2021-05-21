@@ -1,0 +1,333 @@
+{
+    "email_contact": {
+        "column": {
+            "email_contact_id": true,
+            "is_guest": true,
+            "contact_id": true,
+            "customer_id": true,
+            "website_id": true,
+            "store_id": true,
+            "email": true,
+            "is_subscriber": true,
+            "subscriber_status": true,
+            "email_imported": true,
+            "subscriber_imported": true,
+            "suppressed": true,
+            "last_subscribed_at": true
+        },
+        "index": {
+            "EMAIL_CONTACT_EMAIL_CONTACT_ID": true,
+            "EMAIL_CONTACT_IS_GUEST": true,
+            "EMAIL_CONTACT_CUSTOMER_ID": true,
+            "EMAIL_CONTACT_WEBSITE_ID": true,
+            "EMAIL_CONTACT_IS_SUBSCRIBER": true,
+            "EMAIL_CONTACT_SUBSCRIBER_STATUS": true,
+            "EMAIL_CONTACT_EMAIL_IMPORTED": true,
+            "EMAIL_CONTACT_SUBSCRIBER_IMPORTED": true,
+            "EMAIL_CONTACT_SUPPRESSED": true,
+            "EMAIL_CONTACT_EMAIL": true,
+            "EMAIL_CONTACT_CONTACT_ID": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "EMAIL_CONTACT_WEBSITE_ID_STORE_WEBSITE_WEBSITE_ID": true
+        }
+    },
+    "email_order": {
+        "column": {
+            "email_order_id": true,
+            "order_id": true,
+            "order_status": true,
+            "quote_id": true,
+            "store_id": true,
+            "email_imported": true,
+            "modified": true,
+            "created_at": true,
+            "updated_at": true
+        },
+        "index": {
+            "EMAIL_ORDER_STORE_ID": true,
+            "EMAIL_ORDER_QUOTE_ID": true,
+            "EMAIL_ORDER_EMAIL_IMPORTED": true,
+            "EMAIL_ORDER_ORDER_STATUS": true,
+            "EMAIL_ORDER_MODIFIED": true,
+            "EMAIL_ORDER_UPDATED_AT": true,
+            "EMAIL_ORDER_CREATED_AT": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "EMAIL_ORDER_STORE_ID_STORE_STORE_ID": true,
+            "EMAIL_ORDER_ORDER_ID_SALES_ORDER_ENTITY_ID": true
+        }
+    },
+    "email_campaign": {
+        "column": {
+            "id": true,
+            "campaign_id": true,
+            "email": true,
+            "customer_id": true,
+            "sent_at": true,
+            "order_increment_id": true,
+            "quote_id": true,
+            "message": true,
+            "checkout_method": true,
+            "store_id": true,
+            "event_name": true,
+            "send_id": true,
+            "send_status": true,
+            "created_at": true,
+            "updated_at": true
+        },
+        "index": {
+            "EMAIL_CAMPAIGN_STORE_ID": true,
+            "EMAIL_CAMPAIGN_CAMPAIGN_ID": true,
+            "EMAIL_CAMPAIGN_EMAIL": true,
+            "EMAIL_CAMPAIGN_SEND_ID": true,
+            "EMAIL_CAMPAIGN_SEND_STATUS": true,
+            "EMAIL_CAMPAIGN_CREATED_AT": true,
+            "EMAIL_CAMPAIGN_UPDATED_AT": true,
+            "EMAIL_CAMPAIGN_SENT_AT": true,
+            "EMAIL_CAMPAIGN_EVENT_NAME": true,
+            "EMAIL_CAMPAIGN_MESSAGE": true,
+            "EMAIL_CAMPAIGN_QUOTE_ID": true,
+            "EMAIL_CAMPAIGN_CUSTOMER_ID": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "EMAIL_CAMPAIGN_STORE_ID_STORE_STORE_ID": true
+        }
+    },
+    "email_review": {
+        "column": {
+            "id": true,
+            "review_id": true,
+            "customer_id": true,
+            "store_id": true,
+            "review_imported": true,
+            "created_at": true,
+            "updated_at": true
+        },
+        "index": {
+            "EMAIL_REVIEW_REVIEW_ID": true,
+            "EMAIL_REVIEW_CUSTOMER_ID": true,
+            "EMAIL_REVIEW_STORE_ID": true,
+            "EMAIL_REVIEW_REVIEW_IMPORTED": true,
+            "EMAIL_REVIEW_CREATED_AT": true,
+            "EMAIL_REVIEW_UPDATED_AT": true
+        },
+        "constraint": {
+            "PRIMARY": true
+        }
+    },
+    "email_wishlist": {
+        "column": {
+            "id": true,
+            "wishlist_id": true,
+            "item_count": true,
+            "customer_id": true,
+            "store_id": true,
+            "wishlist_imported": true,
+            "wishlist_modified": true,
+            "created_at": true,
+            "updated_at": true
+        },
+        "index": {
+            "EMAIL_WISHLIST_WISHLIST_ID": true,
+            "EMAIL_WISHLIST_ITEM_COUNT": true,
+            "EMAIL_WISHLIST_CUSTOMER_ID": true,
+            "EMAIL_WISHLIST_WISHLIST_MODIFIED": true,
+            "EMAIL_WISHLIST_WISHLIST_IMPORTED": true,
+            "EMAIL_WISHLIST_CREATED_AT": true,
+            "EMAIL_WISHLIST_UPDATED_AT": true,
+            "EMAIL_WISHLIST_STORE_ID": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "EMAIL_WISHLIST_CUSTOMER_ID_CUSTOMER_ENTITY_ENTITY_ID": true,
+            "EMAIL_WISHLIST_WISHLIST_ID_WISHLIST_WISHLIST_ID": true
+        }
+    },
+    "email_catalog": {
+        "column": {
+            "id": true,
+            "product_id": true,
+            "processed": true,
+            "created_at": true,
+            "updated_at": true,
+            "last_imported_at": true
+        },
+        "index": {
+            "EMAIL_CATALOG_PRODUCT_ID": true,
+            "EMAIL_CATALOG_PROCESSED": true,
+            "EMAIL_CATALOG_CREATED_AT": true,
+            "EMAIL_CATALOG_UPDATED_AT": true,
+            "EMAIL_CATALOG_LAST_IMPORTED_AT": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "EMAIL_CATALOG_PRODUCT_ID_CATALOG_PRODUCT_ENTITY_ENTITY_ID": true
+        }
+    },
+    "email_rules": {
+        "column": {
+            "id": true,
+            "name": true,
+            "website_ids": true,
+            "type": true,
+            "status": true,
+            "combination": true,
+            "condition": true,
+            "created_at": true,
+            "updated_at": true,
+            "conditions": true
+        },
+        "constraint": {
+            "PRIMARY": true
+        }
+    },
+    "email_importer": {
+        "column": {
+            "id": true,
+            "import_type": true,
+            "website_id": true,
+            "import_status": true,
+            "import_id": true,
+            "import_data": true,
+            "import_mode": true,
+            "import_file": true,
+            "message": true,
+            "created_at": true,
+            "updated_at": true,
+            "import_started": true,
+            "import_finished": true
+        },
+        "index": {
+            "EMAIL_IMPORTER_IMPORT_TYPE": true,
+            "EMAIL_IMPORTER_WEBSITE_ID": true,
+            "EMAIL_IMPORTER_IMPORT_STATUS": true,
+            "EMAIL_IMPORTER_IMPORT_MODE": true,
+            "EMAIL_IMPORTER_CREATED_AT": true,
+            "EMAIL_IMPORTER_UPDATED_AT": true,
+            "EMAIL_IMPORTER_IMPORT_ID": true,
+            "EMAIL_IMPORTER_IMPORT_STARTED": true,
+            "EMAIL_IMPORTER_IMPORT_FINISHED": true
+        },
+        "constraint": {
+            "PRIMARY": true
+        }
+    },
+    "email_automation": {
+        "column": {
+            "id": true,
+            "automation_type": true,
+            "store_name": true,
+            "enrolment_status": true,
+            "email": true,
+            "type_id": true,
+            "program_id": true,
+            "website_id": true,
+            "message": true,
+            "created_at": true,
+            "updated_at": true
+        },
+        "index": {
+            "EMAIL_AUTOMATION_AUTOMATION_TYPE": true,
+            "EMAIL_AUTOMATION_ENROLMENT_STATUS": true,
+            "EMAIL_AUTOMATION_TYPE_ID": true,
+            "EMAIL_AUTOMATION_EMAIL": true,
+            "EMAIL_AUTOMATION_PROGRAM_ID": true,
+            "EMAIL_AUTOMATION_CREATED_AT": true,
+            "EMAIL_AUTOMATION_UPDATED_AT": true,
+            "EMAIL_AUTOMATION_WEBSITE_ID": true
+        },
+        "constraint": {
+            "PRIMARY": true
+        }
+    },
+    "email_abandoned_cart": {
+        "column": {
+            "id": true,
+            "quote_id": true,
+            "store_id": true,
+            "customer_id": true,
+            "email": true,
+            "status": true,
+            "is_active": true,
+            "quote_updated_at": true,
+            "abandoned_cart_number": true,
+            "items_count": true,
+            "items_ids": true,
+            "created_at": true,
+            "updated_at": true
+        },
+        "index": {
+            "EMAIL_ABANDONED_CART_QUOTE_ID": true,
+            "EMAIL_ABANDONED_CART_STORE_ID": true,
+            "EMAIL_ABANDONED_CART_CUSTOMER_ID": true,
+            "EMAIL_ABANDONED_CART_EMAIL": true
+        },
+        "constraint": {
+            "PRIMARY": true
+        }
+    },
+    "email_contact_consent": {
+        "column": {
+            "id": true,
+            "email_contact_id": true,
+            "consent_url": true,
+            "consent_datetime": true,
+            "consent_ip": true,
+            "consent_user_agent": true
+        },
+        "index": {
+            "EMAIL_CONTACT_CONSENT_EMAIL_CONTACT_ID": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "FK_17E9EA0C469163E550BC6B732AC49FDB": true
+        }
+    },
+    "email_failed_auth": {
+        "column": {
+            "id": true,
+            "failures_num": true,
+            "first_attempt_date": true,
+            "last_attempt_date": true,
+            "url": true,
+            "store_id": true
+        },
+        "index": {
+            "EMAIL_FAILED_AUTH_STORE_ID": true
+        },
+        "constraint": {
+            "PRIMARY": true
+        }
+    },
+    "email_coupon_attribute": {
+        "column": {
+            "id": true,
+            "salesrule_coupon_id": true,
+            "email": true,
+            "expires_at": true
+        },
+        "index": {
+            "EMAIL_COUPON_ATTRIBUTE_SALESRULE_COUPON_ID": true,
+            "EMAIL_COUPON_ATTRIBUTE_EMAIL": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "EMAIL_COUPON_ATTR_SALESRULE_COUPON_ID_SALESRULE_COUPON_COUPON_ID": true
+        }
+    },
+    "admin_user": {
+        "column": {
+            "refresh_token": true
+        }
+    },
+    "email_quote": [],
+    "salesrule_coupon": {
+        "column": {
+            "generated_by_dotmailer": true
+        }
+    }
+}

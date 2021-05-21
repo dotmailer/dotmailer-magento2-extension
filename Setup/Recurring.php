@@ -70,7 +70,6 @@ class Recurring implements InstallSchemaInterface
             SchemaInterface::EMAIL_CATALOG_TABLE,
             'product_id'
         );
-        $this->checkAndCreateAbandonedCart($setup, $context);
 
         $setup->endSetup();
 
@@ -86,24 +85,6 @@ class Recurring implements InstallSchemaInterface
             $this->integrationInsightsFactory->create()->sync();
         } catch (LocalizedException $e) {
             $this->logger->debug((string) $e);
-        }
-    }
-
-    /**
-     * Create table for abandoned carts if doesn't exists between two versions.
-     *
-     * @param SchemaSetupInterface $setup
-     * @param ModuleContextInterface $context
-     */
-    private function checkAndCreateAbandonedCart($setup, $context)
-    {
-        $connection = $setup->getConnection();
-        $abandonedCartTableName = $setup->getTable(SchemaInterface::EMAIL_ABANDONED_CART_TABLE);
-
-        if (version_compare($context->getVersion(), '2.3.8', '>') &&
-            ! $connection->isTableExists($abandonedCartTableName)
-        ) {
-            $this->shared->createAbandonedCartTable($setup, $abandonedCartTableName);
         }
     }
 }

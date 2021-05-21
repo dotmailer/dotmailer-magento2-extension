@@ -1,0 +1,428 @@
+<?xml version="1.0"?>
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
+    <table name="email_contact" resource="default" engine="innodb" comment="Connector Contacts">
+        <column xsi:type="int" name="email_contact_id" padding="10" unsigned="true" nullable="false" identity="true" comment="Primary Key"/>
+        <column xsi:type="smallint" name="is_guest" padding="5" unsigned="true" nullable="true" identity="false" comment="Is Guest"/>
+        <column xsi:type="varchar" name="contact_id" nullable="true" length="15" comment="Connector Contact ID"/>
+        <column xsi:type="int" name="customer_id" padding="10" unsigned="true" nullable="false" identity="false" comment="Customer ID"/>
+        <column xsi:type="smallint" name="website_id" padding="5" unsigned="true" nullable="false" identity="false" default="0" comment="Website ID"/>
+        <column xsi:type="smallint" name="store_id" padding="5" unsigned="true" nullable="false" identity="false" default="0" comment="Store ID"/>
+        <column xsi:type="varchar" name="email" nullable="false" length="255" default="" comment="Customer Email"/>
+        <column xsi:type="smallint" name="is_subscriber" padding="5" unsigned="true" nullable="true" identity="false" comment="Is Subscriber"/>
+        <column xsi:type="smallint" name="subscriber_status" padding="5" unsigned="true" nullable="true" identity="false" comment="Subscriber status"/>
+        <column xsi:type="smallint" name="email_imported" padding="5" unsigned="true" nullable="false" identity="false" default="0" comment="Is Imported"/>
+        <column xsi:type="smallint" name="subscriber_imported" padding="5" unsigned="true" nullable="false" identity="false" default="0" comment="Is Subscriber Imported"/>
+        <column xsi:type="smallint" name="suppressed" padding="5" unsigned="true" nullable="true" identity="false" comment="Is Suppressed"/>
+        <column xsi:type="timestamp" name="last_subscribed_at" on_update="false" nullable="true" comment="Last subscribed date"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="email_contact_id"/>
+        </constraint>
+        <constraint xsi:type="foreign" referenceId="EMAIL_CONTACT_WEBSITE_ID_STORE_WEBSITE_WEBSITE_ID" table="email_contact" column="website_id" referenceTable="store_website" referenceColumn="website_id" onDelete="CASCADE"/>
+        <index referenceId="EMAIL_CONTACT_EMAIL_CONTACT_ID" indexType="btree">
+            <column name="email_contact_id"/>
+        </index>
+        <index referenceId="EMAIL_CONTACT_IS_GUEST" indexType="btree">
+            <column name="is_guest"/>
+        </index>
+        <index referenceId="EMAIL_CONTACT_CUSTOMER_ID" indexType="btree">
+            <column name="customer_id"/>
+        </index>
+        <index referenceId="EMAIL_CONTACT_WEBSITE_ID" indexType="btree">
+            <column name="website_id"/>
+        </index>
+        <index referenceId="EMAIL_CONTACT_IS_SUBSCRIBER" indexType="btree">
+            <column name="is_subscriber"/>
+        </index>
+        <index referenceId="EMAIL_CONTACT_SUBSCRIBER_STATUS" indexType="btree">
+            <column name="subscriber_status"/>
+        </index>
+        <index referenceId="EMAIL_CONTACT_EMAIL_IMPORTED" indexType="btree">
+            <column name="email_imported"/>
+        </index>
+        <index referenceId="EMAIL_CONTACT_SUBSCRIBER_IMPORTED" indexType="btree">
+            <column name="subscriber_imported"/>
+        </index>
+        <index referenceId="EMAIL_CONTACT_SUPPRESSED" indexType="btree">
+            <column name="suppressed"/>
+        </index>
+        <index referenceId="EMAIL_CONTACT_EMAIL" indexType="btree">
+            <column name="email"/>
+        </index>
+        <index referenceId="EMAIL_CONTACT_CONTACT_ID" indexType="btree">
+            <column name="contact_id"/>
+        </index>
+    </table>
+    <table name="email_order" resource="default" engine="innodb" comment="Transactional Order Data">
+        <column xsi:type="int" name="email_order_id" padding="10" unsigned="true" nullable="false" identity="true" comment="Primary Key"/>
+        <column xsi:type="int" name="order_id" padding="10" unsigned="true" nullable="false" identity="false" comment="Order ID"/>
+        <column xsi:type="varchar" name="order_status" nullable="false" length="255" comment="Order Status"/>
+        <column xsi:type="int" name="quote_id" padding="10" unsigned="true" nullable="false" identity="false" comment="Sales Quote ID"/>
+        <column xsi:type="smallint" name="store_id" padding="5" unsigned="true" nullable="false" identity="false" default="0" comment="Store ID"/>
+        <column xsi:type="smallint" name="email_imported" padding="5" unsigned="true" nullable="false" identity="false" default="0" comment="Is Order Imported"/>
+        <column xsi:type="smallint" name="modified" padding="5" unsigned="true" nullable="true" identity="false" comment="Is Order Modified"/>
+        <column xsi:type="timestamp" name="created_at" on_update="false" nullable="true" comment="Creation Time"/>
+        <column xsi:type="timestamp" name="updated_at" on_update="false" nullable="true" comment="Update Time"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="email_order_id"/>
+        </constraint>
+        <constraint xsi:type="foreign" referenceId="EMAIL_ORDER_STORE_ID_STORE_STORE_ID" table="email_order" column="store_id" referenceTable="store" referenceColumn="store_id" onDelete="CASCADE"/>
+        <constraint xsi:type="foreign" referenceId="EMAIL_ORDER_ORDER_ID_SALES_ORDER_ENTITY_ID" table="email_order" column="order_id" referenceTable="sales_order" referenceColumn="entity_id" onDelete="CASCADE"/>
+        <index referenceId="EMAIL_ORDER_STORE_ID" indexType="btree">
+            <column name="store_id"/>
+        </index>
+        <index referenceId="EMAIL_ORDER_QUOTE_ID" indexType="btree">
+            <column name="quote_id"/>
+        </index>
+        <index referenceId="EMAIL_ORDER_EMAIL_IMPORTED" indexType="btree">
+            <column name="email_imported"/>
+        </index>
+        <index referenceId="EMAIL_ORDER_ORDER_STATUS" indexType="btree">
+            <column name="order_status"/>
+        </index>
+        <index referenceId="EMAIL_ORDER_MODIFIED" indexType="btree">
+            <column name="modified"/>
+        </index>
+        <index referenceId="EMAIL_ORDER_UPDATED_AT" indexType="btree">
+            <column name="updated_at"/>
+        </index>
+        <index referenceId="EMAIL_ORDER_CREATED_AT" indexType="btree">
+            <column name="created_at"/>
+        </index>
+    </table>
+    <table name="email_campaign" resource="default" engine="innodb" comment="Connector Campaigns">
+        <column xsi:type="int" name="id" padding="10" unsigned="true" nullable="false" identity="true" comment="Primary Key"/>
+        <column xsi:type="int" name="campaign_id" padding="10" unsigned="true" nullable="false" identity="false" comment="Campaign ID"/>
+        <column xsi:type="varchar" name="email" nullable="false" length="255" default="" comment="Contact Email"/>
+        <column xsi:type="int" name="customer_id" padding="10" unsigned="true" nullable="false" identity="false" comment="Customer ID"/>
+        <column xsi:type="timestamp" name="sent_at" on_update="false" nullable="true" comment="Send Date"/>
+        <column xsi:type="varchar" name="order_increment_id" nullable="false" length="50" comment="Order Increment ID"/>
+        <column xsi:type="int" name="quote_id" padding="10" unsigned="true" nullable="false" identity="false" comment="Sales Quote ID"/>
+        <column xsi:type="varchar" name="message" nullable="false" length="255" default="" comment="Error Message"/>
+        <column xsi:type="varchar" name="checkout_method" nullable="false" length="255" default="" comment="Checkout Method Used"/>
+        <column xsi:type="smallint" name="store_id" padding="5" unsigned="true" nullable="false" identity="false" default="0" comment="Store ID"/>
+        <column xsi:type="varchar" name="event_name" nullable="false" length="255" default="" comment="Event Name"/>
+        <column xsi:type="varchar" name="send_id" nullable="false" length="255" default="" comment="Campaign Send Id"/>
+        <column xsi:type="smallint" name="send_status" padding="6" unsigned="false" nullable="false" identity="false" default="0" comment="Send Status"/>
+        <column xsi:type="timestamp" name="created_at" on_update="false" nullable="true" comment="Creation Time"/>
+        <column xsi:type="timestamp" name="updated_at" on_update="false" nullable="true" comment="Update Time"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="id"/>
+        </constraint>
+        <constraint xsi:type="foreign" referenceId="EMAIL_CAMPAIGN_STORE_ID_STORE_STORE_ID" table="email_campaign" column="store_id" referenceTable="store" referenceColumn="store_id" onDelete="CASCADE"/>
+        <index referenceId="EMAIL_CAMPAIGN_STORE_ID" indexType="btree">
+            <column name="store_id"/>
+        </index>
+        <index referenceId="EMAIL_CAMPAIGN_CAMPAIGN_ID" indexType="btree">
+            <column name="campaign_id"/>
+        </index>
+        <index referenceId="EMAIL_CAMPAIGN_EMAIL" indexType="btree">
+            <column name="email"/>
+        </index>
+        <index referenceId="EMAIL_CAMPAIGN_SEND_ID" indexType="btree">
+            <column name="send_id"/>
+        </index>
+        <index referenceId="EMAIL_CAMPAIGN_SEND_STATUS" indexType="btree">
+            <column name="send_status"/>
+        </index>
+        <index referenceId="EMAIL_CAMPAIGN_CREATED_AT" indexType="btree">
+            <column name="created_at"/>
+        </index>
+        <index referenceId="EMAIL_CAMPAIGN_UPDATED_AT" indexType="btree">
+            <column name="updated_at"/>
+        </index>
+        <index referenceId="EMAIL_CAMPAIGN_SENT_AT" indexType="btree">
+            <column name="sent_at"/>
+        </index>
+        <index referenceId="EMAIL_CAMPAIGN_EVENT_NAME" indexType="btree">
+            <column name="event_name"/>
+        </index>
+        <index referenceId="EMAIL_CAMPAIGN_MESSAGE" indexType="btree">
+            <column name="message"/>
+        </index>
+        <index referenceId="EMAIL_CAMPAIGN_QUOTE_ID" indexType="btree">
+            <column name="quote_id"/>
+        </index>
+        <index referenceId="EMAIL_CAMPAIGN_CUSTOMER_ID" indexType="btree">
+            <column name="customer_id"/>
+        </index>
+    </table>
+    <table name="email_review" resource="default" engine="innodb" comment="Connector Reviews">
+        <column xsi:type="int" name="id" padding="10" unsigned="true" nullable="false" identity="true" comment="Primary Key"/>
+        <column xsi:type="int" name="review_id" padding="10" unsigned="true" nullable="false" identity="false" comment="Review Id"/>
+        <column xsi:type="int" name="customer_id" padding="10" unsigned="true" nullable="false" identity="false" comment="Customer ID"/>
+        <column xsi:type="smallint" name="store_id" padding="5" unsigned="true" nullable="false" identity="false" comment="Store Id"/>
+        <column xsi:type="smallint" name="review_imported" padding="5" unsigned="true" nullable="false" identity="false" default="0" comment="Review Imported"/>
+        <column xsi:type="timestamp" name="created_at" on_update="false" nullable="true" comment="Creation Time"/>
+        <column xsi:type="timestamp" name="updated_at" on_update="false" nullable="true" comment="Update Time"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="id"/>
+        </constraint>
+        <index referenceId="EMAIL_REVIEW_REVIEW_ID" indexType="btree">
+            <column name="review_id"/>
+        </index>
+        <index referenceId="EMAIL_REVIEW_CUSTOMER_ID" indexType="btree">
+            <column name="customer_id"/>
+        </index>
+        <index referenceId="EMAIL_REVIEW_STORE_ID" indexType="btree">
+            <column name="store_id"/>
+        </index>
+        <index referenceId="EMAIL_REVIEW_REVIEW_IMPORTED" indexType="btree">
+            <column name="review_imported"/>
+        </index>
+        <index referenceId="EMAIL_REVIEW_CREATED_AT" indexType="btree">
+            <column name="created_at"/>
+        </index>
+        <index referenceId="EMAIL_REVIEW_UPDATED_AT" indexType="btree">
+            <column name="updated_at"/>
+        </index>
+    </table>
+    <table name="email_wishlist" resource="default" engine="innodb" comment="Connector Wishlist">
+        <column xsi:type="int" name="id" padding="10" unsigned="true" nullable="false" identity="true" comment="Primary Key"/>
+        <column xsi:type="int" name="wishlist_id" padding="10" unsigned="true" nullable="false" identity="false" comment="Wishlist Id"/>
+        <column xsi:type="int" name="item_count" padding="10" unsigned="true" nullable="false" identity="false" comment="Item Count"/>
+        <column xsi:type="int" name="customer_id" padding="10" unsigned="true" nullable="true" identity="false" comment="Customer ID" onCreate="migrateDataFrom(customer_id)"/>
+        <column xsi:type="smallint" name="store_id" padding="5" unsigned="true" nullable="false" identity="false" comment="Store Id"/>
+        <column xsi:type="smallint" name="wishlist_imported" padding="5" unsigned="true" nullable="false" identity="false" default="0" comment="Wishlist Imported"/>
+        <column xsi:type="smallint" name="wishlist_modified" padding="5" unsigned="true" nullable="true" identity="false" comment="Wishlist Modified [deprecated]"/>
+        <column xsi:type="timestamp" name="created_at" on_update="false" nullable="true" comment="Creation Time"/>
+        <column xsi:type="timestamp" name="updated_at" on_update="false" nullable="true" comment="Update Time"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="id"/>
+        </constraint>
+        <constraint xsi:type="foreign" referenceId="EMAIL_WISHLIST_CUSTOMER_ID_CUSTOMER_ENTITY_ENTITY_ID" table="email_wishlist" column="customer_id" referenceTable="customer_entity" referenceColumn="entity_id" onDelete="CASCADE"/>
+        <constraint xsi:type="foreign" referenceId="EMAIL_WISHLIST_WISHLIST_ID_WISHLIST_WISHLIST_ID" table="email_wishlist" column="wishlist_id" referenceTable="wishlist" referenceColumn="wishlist_id" onDelete="CASCADE"/>
+        <index referenceId="EMAIL_WISHLIST_WISHLIST_ID" indexType="btree">
+            <column name="wishlist_id"/>
+        </index>
+        <index referenceId="EMAIL_WISHLIST_ITEM_COUNT" indexType="btree">
+            <column name="item_count"/>
+        </index>
+        <index referenceId="EMAIL_WISHLIST_CUSTOMER_ID" indexType="btree">
+            <column name="customer_id"/>
+        </index>
+        <index referenceId="EMAIL_WISHLIST_WISHLIST_MODIFIED" indexType="btree">
+            <column name="wishlist_modified"/>
+        </index>
+        <index referenceId="EMAIL_WISHLIST_WISHLIST_IMPORTED" indexType="btree">
+            <column name="wishlist_imported"/>
+        </index>
+        <index referenceId="EMAIL_WISHLIST_CREATED_AT" indexType="btree">
+            <column name="created_at"/>
+        </index>
+        <index referenceId="EMAIL_WISHLIST_UPDATED_AT" indexType="btree">
+            <column name="updated_at"/>
+        </index>
+        <index referenceId="EMAIL_WISHLIST_STORE_ID" indexType="btree">
+            <column name="store_id"/>
+        </index>
+    </table>
+    <table name="email_catalog" resource="default" engine="innodb" comment="Connector Catalog">
+        <column xsi:type="int" name="id" padding="10" unsigned="true" nullable="false" identity="true" comment="Primary Key"/>
+        <column xsi:type="int" name="product_id" padding="10" unsigned="true" nullable="false" identity="false" comment="Product Id"/>
+        <column xsi:type="smallint" name="processed" padding="5" unsigned="true" nullable="false" identity="false" comment="Product processed"/>
+        <column xsi:type="timestamp" name="created_at" on_update="false" nullable="true" comment="Creation Time"/>
+        <column xsi:type="timestamp" name="updated_at" on_update="false" nullable="true" comment="Update Time"/>
+        <column xsi:type="timestamp" name="last_imported_at" on_update="false" nullable="true" comment="Last imported date"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="id"/>
+        </constraint>
+        <constraint xsi:type="foreign" referenceId="EMAIL_CATALOG_PRODUCT_ID_CATALOG_PRODUCT_ENTITY_ENTITY_ID" table="email_catalog" column="product_id" referenceTable="catalog_product_entity" referenceColumn="entity_id" onDelete="CASCADE"/>
+        <index referenceId="EMAIL_CATALOG_PRODUCT_ID" indexType="btree">
+            <column name="product_id"/>
+        </index>
+        <index referenceId="EMAIL_CATALOG_PROCESSED" indexType="btree">
+            <column name="processed"/>
+        </index>
+        <index referenceId="EMAIL_CATALOG_CREATED_AT" indexType="btree">
+            <column name="created_at"/>
+        </index>
+        <index referenceId="EMAIL_CATALOG_UPDATED_AT" indexType="btree">
+            <column name="updated_at"/>
+        </index>
+        <index referenceId="EMAIL_CATALOG_LAST_IMPORTED_AT" indexType="btree">
+            <column name="last_imported_at"/>
+        </index>
+    </table>
+    <table name="email_rules" resource="default" engine="innodb" comment="Connector Rules">
+        <column xsi:type="int" name="id" padding="10" unsigned="true" nullable="false" identity="true" comment="Primary Key"/>
+        <column xsi:type="varchar" name="name" nullable="false" length="255" default="" comment="Rule Name"/>
+        <column xsi:type="varchar" name="website_ids" nullable="false" length="255" default="0" comment="Website Id"/>
+        <column xsi:type="smallint" name="type" padding="6" unsigned="false" nullable="false" identity="false" default="0" comment="Rule Type"/>
+        <column xsi:type="smallint" name="status" padding="6" unsigned="false" nullable="false" identity="false" default="0" comment="Status"/>
+        <column xsi:type="smallint" name="combination" padding="6" unsigned="false" nullable="false" identity="false" default="1" comment="Rule Condition"/>
+        <column xsi:type="blob" name="condition" nullable="false" comment="Rule Condition" disabled="true"/>
+        <column xsi:type="timestamp" name="created_at" on_update="false" nullable="true" comment="Creation Time"/>
+        <column xsi:type="timestamp" name="updated_at" on_update="false" nullable="true" comment="Update Time"/>
+        <column xsi:type="blob" name="conditions" nullable="false" comment="Rule Conditions" onCreate="migrateDataFrom(condition)"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="id"/>
+        </constraint>
+    </table>
+    <table name="email_importer" resource="default" engine="innodb" comment="Email Importer">
+        <column xsi:type="int" name="id" padding="10" unsigned="true" nullable="false" identity="true" comment="Primary Key"/>
+        <column xsi:type="varchar" name="import_type" nullable="false" length="255" default="" comment="Import Type"/>
+        <column xsi:type="smallint" name="website_id" padding="6" unsigned="false" nullable="false" identity="false" default="0" comment="Website Id"/>
+        <column xsi:type="smallint" name="import_status" padding="6" unsigned="false" nullable="false" identity="false" default="0" comment="Import Status"/>
+        <column xsi:type="varchar" name="import_id" nullable="false" length="255" default="" comment="Import Id"/>
+        <column xsi:type="mediumblob" name="import_data" nullable="false" comment="Import Data"/>
+        <column xsi:type="varchar" name="import_mode" nullable="false" length="255" default="" comment="Import Mode"/>
+        <column xsi:type="text" name="import_file" nullable="false" comment="Import File"/>
+        <column xsi:type="varchar" name="message" nullable="false" length="255" default="" comment="Error Message"/>
+        <column xsi:type="timestamp" name="created_at" on_update="false" nullable="true" comment="Creation Time"/>
+        <column xsi:type="timestamp" name="updated_at" on_update="false" nullable="true" comment="Update Time"/>
+        <column xsi:type="timestamp" name="import_started" on_update="false" nullable="true" comment="Import Started"/>
+        <column xsi:type="timestamp" name="import_finished" on_update="false" nullable="true" comment="Import Finished"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="id"/>
+        </constraint>
+        <index referenceId="EMAIL_IMPORTER_IMPORT_TYPE" indexType="btree">
+            <column name="import_type"/>
+        </index>
+        <index referenceId="EMAIL_IMPORTER_WEBSITE_ID" indexType="btree">
+            <column name="website_id"/>
+        </index>
+        <index referenceId="EMAIL_IMPORTER_IMPORT_STATUS" indexType="btree">
+            <column name="import_status"/>
+        </index>
+        <index referenceId="EMAIL_IMPORTER_IMPORT_MODE" indexType="btree">
+            <column name="import_mode"/>
+        </index>
+        <index referenceId="EMAIL_IMPORTER_CREATED_AT" indexType="btree">
+            <column name="created_at"/>
+        </index>
+        <index referenceId="EMAIL_IMPORTER_UPDATED_AT" indexType="btree">
+            <column name="updated_at"/>
+        </index>
+        <index referenceId="EMAIL_IMPORTER_IMPORT_ID" indexType="btree">
+            <column name="import_id"/>
+        </index>
+        <index referenceId="EMAIL_IMPORTER_IMPORT_STARTED" indexType="btree">
+            <column name="import_started"/>
+        </index>
+        <index referenceId="EMAIL_IMPORTER_IMPORT_FINISHED" indexType="btree">
+            <column name="import_finished"/>
+        </index>
+    </table>
+    <table name="email_automation" resource="default" engine="innodb" comment="Automation Status">
+        <column xsi:type="int" name="id" padding="10" unsigned="true" nullable="false" identity="true" comment="Primary Key"/>
+        <column xsi:type="varchar" name="automation_type" nullable="true" length="255" comment="Automation Type"/>
+        <column xsi:type="varchar" name="store_name" nullable="true" length="255" comment="Automation Type"/>
+        <column xsi:type="varchar" name="enrolment_status" nullable="false" length="255" comment="Enrolment Status"/>
+        <column xsi:type="varchar" name="email" nullable="true" length="255" comment="Email"/>
+        <column xsi:type="varchar" name="type_id" nullable="true" length="255" comment="Type ID"/>
+        <column xsi:type="varchar" name="program_id" nullable="true" length="255" comment="Program ID"/>
+        <column xsi:type="smallint" name="website_id" padding="5" unsigned="true" nullable="false" identity="false" comment="Website Id"/>
+        <column xsi:type="varchar" name="message" nullable="false" length="255" comment="Message"/>
+        <column xsi:type="timestamp" name="created_at" on_update="false" nullable="true" comment="Creation Time"/>
+        <column xsi:type="timestamp" name="updated_at" on_update="false" nullable="true" comment="Update Time"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="id"/>
+        </constraint>
+        <index referenceId="EMAIL_AUTOMATION_AUTOMATION_TYPE" indexType="btree">
+            <column name="automation_type"/>
+        </index>
+        <index referenceId="EMAIL_AUTOMATION_ENROLMENT_STATUS" indexType="btree">
+            <column name="enrolment_status"/>
+        </index>
+        <index referenceId="EMAIL_AUTOMATION_TYPE_ID" indexType="btree">
+            <column name="type_id"/>
+        </index>
+        <index referenceId="EMAIL_AUTOMATION_EMAIL" indexType="btree">
+            <column name="email"/>
+        </index>
+        <index referenceId="EMAIL_AUTOMATION_PROGRAM_ID" indexType="btree">
+            <column name="program_id"/>
+        </index>
+        <index referenceId="EMAIL_AUTOMATION_CREATED_AT" indexType="btree">
+            <column name="created_at"/>
+        </index>
+        <index referenceId="EMAIL_AUTOMATION_UPDATED_AT" indexType="btree">
+            <column name="updated_at"/>
+        </index>
+        <index referenceId="EMAIL_AUTOMATION_WEBSITE_ID" indexType="btree">
+            <column name="website_id"/>
+        </index>
+    </table>
+    <table name="email_abandoned_cart" resource="default" engine="innodb" comment="Abandoned Carts Table">
+        <column xsi:type="int" name="id" padding="10" unsigned="true" nullable="false" identity="true" comment="Primary Key"/>
+        <column xsi:type="int" name="quote_id" padding="10" unsigned="true" nullable="true" identity="false" comment="Quote Id"/>
+        <column xsi:type="smallint" name="store_id" padding="5" unsigned="true" nullable="true" identity="false" comment="Store Id"/>
+        <column xsi:type="int" name="customer_id" padding="10" unsigned="true" nullable="true" identity="false" comment="Customer ID"/>
+        <column xsi:type="varchar" name="email" nullable="false" length="255" default="" comment="Email"/>
+        <column xsi:type="varchar" name="status" nullable="false" length="255" default="" comment="Contact Status"/>
+        <column xsi:type="smallint" name="is_active" padding="5" unsigned="true" nullable="false" identity="false" default="1" comment="Quote Active"/>
+        <column xsi:type="timestamp" name="quote_updated_at" on_update="false" nullable="true" comment="Quote updated at"/>
+        <column xsi:type="smallint" name="abandoned_cart_number" padding="5" unsigned="true" nullable="false" identity="false" default="0" comment="Abandoned Cart number"/>
+        <column xsi:type="smallint" name="items_count" padding="5" unsigned="true" nullable="true" identity="false" default="0" comment="Quote items count"/>
+        <column xsi:type="varchar" name="items_ids" nullable="true" length="255" comment="Quote item ids"/>
+        <column xsi:type="timestamp" name="created_at" on_update="false" nullable="true" comment="Created At"/>
+        <column xsi:type="timestamp" name="updated_at" on_update="false" nullable="true" comment="Updated at"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="id"/>
+        </constraint>
+        <index referenceId="EMAIL_ABANDONED_CART_QUOTE_ID" indexType="btree">
+            <column name="quote_id"/>
+        </index>
+        <index referenceId="EMAIL_ABANDONED_CART_STORE_ID" indexType="btree">
+            <column name="store_id"/>
+        </index>
+        <index referenceId="EMAIL_ABANDONED_CART_CUSTOMER_ID" indexType="btree">
+            <column name="customer_id"/>
+        </index>
+        <index referenceId="EMAIL_ABANDONED_CART_EMAIL" indexType="btree">
+            <column name="email"/>
+        </index>
+    </table>
+    <table name="email_contact_consent" resource="default" engine="innodb" comment="Email contact consent table.">
+        <column xsi:type="int" name="id" padding="10" unsigned="true" nullable="false" identity="true" comment="Primary Key"/>
+        <column xsi:type="int" name="email_contact_id" padding="10" unsigned="true" nullable="true" identity="false" comment="Email Contact Id"/>
+        <column xsi:type="varchar" name="consent_url" nullable="true" length="255" comment="Contact consent url"/>
+        <column xsi:type="datetime" name="consent_datetime" on_update="false" nullable="true" comment="Contact consent datetime"/>
+        <column xsi:type="varchar" name="consent_ip" nullable="true" length="255" comment="Contact consent ip"/>
+        <column xsi:type="varchar" name="consent_user_agent" nullable="true" length="255" comment="Contact consent user agent"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="id"/>
+        </constraint>
+        <constraint xsi:type="foreign" referenceId="FK_17E9EA0C469163E550BC6B732AC49FDB" table="email_contact_consent" column="email_contact_id" referenceTable="email_contact" referenceColumn="email_contact_id" onDelete="CASCADE"/>
+        <index referenceId="EMAIL_CONTACT_CONSENT_EMAIL_CONTACT_ID" indexType="btree">
+            <column name="email_contact_id"/>
+        </index>
+    </table>
+    <table name="email_failed_auth" resource="default" engine="innodb" comment="Email Failed Auth Table.">
+        <column xsi:type="int" name="id" padding="10" unsigned="true" nullable="false" identity="true" comment="Primary Key"/>
+        <column xsi:type="int" name="failures_num" padding="10" unsigned="true" nullable="true" identity="false" comment="Number of fails"/>
+        <column xsi:type="datetime" name="first_attempt_date" on_update="false" nullable="true" comment="First attempt date"/>
+        <column xsi:type="datetime" name="last_attempt_date" on_update="false" nullable="true" comment="Last attempt date"/>
+        <column xsi:type="varchar" name="url" nullable="true" length="255" comment="URL"/>
+        <column xsi:type="int" name="store_id" padding="10" unsigned="true" nullable="true" identity="false" comment="Store Id"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="id"/>
+        </constraint>
+        <index referenceId="EMAIL_FAILED_AUTH_STORE_ID" indexType="btree">
+            <column name="store_id"/>
+        </index>
+    </table>
+    <table name="email_coupon_attribute" resource="default" engine="innodb" comment="Dotdigital coupon attributes table">
+        <column xsi:type="int" name="id" padding="10" unsigned="true" nullable="false" identity="true" comment="Primary Key"/>
+        <column xsi:type="int" name="salesrule_coupon_id" padding="10" unsigned="true" nullable="false" identity="false" comment="Coupon ID"/>
+        <column xsi:type="varchar" name="email" nullable="true" length="255" comment="Email"/>
+        <column xsi:type="timestamp" name="expires_at" on_update="false" nullable="true" comment="Coupon expiration date"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="id"/>
+        </constraint>
+        <constraint xsi:type="foreign" referenceId="EMAIL_COUPON_ATTRIBUTE_COUPON_ID_SALESRULE_COUPON_COUPON_ID" table="email_coupon_attribute" column="salesrule_coupon_id" referenceTable="salesrule_coupon" referenceColumn="coupon_id" onDelete="CASCADE"/>
+        <index referenceId="EMAIL_COUPON_ATTRIBUTE_SALESRULE_COUPON_ID" indexType="btree">
+            <column name="salesrule_coupon_id"/>
+        </index>
+        <index referenceId="EMAIL_COUPON_ATTRIBUTE_EMAIL" indexType="btree">
+            <column name="email"/>
+        </index>
+    </table>
+    <table name="admin_user" resource="default">
+        <column xsi:type="text" name="refresh_token" nullable="true" comment="Email connector refresh token"/>
+    </table>
+    <table name="email_quote" disabled="true" resource="default"/>
+    <table name="salesrule_coupon" resource="default">
+        <column xsi:type="smallint" name="generated_by_dotmailer" padding="6" unsigned="false" nullable="true" identity="false" comment="1 = Generated by dotmailer"/>
+    </table>
+</schema>
