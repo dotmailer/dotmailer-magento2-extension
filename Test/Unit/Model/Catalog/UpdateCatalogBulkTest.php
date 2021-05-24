@@ -2,28 +2,17 @@
 
 namespace Dotdigitalgroup\Email\Test\Unit\Model\Catalog;
 
-use Dotdigitalgroup\Email\Model\Product\Bunch;
-use Magento\Catalog\Api\ProductRepositoryInterface;
-use Dotdigitalgroup\Email\Model\ResourceModel\Catalog;
-use Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory;
-use Dotdigitalgroup\Email\Model\ResourceModel\Catalog\Collection;
-use Magento\Framework\Stdlib\DateTime;
-use Magento\Framework\Api\SearchCriteriaInterface;
-use Magento\Framework\Api\Search\FilterGroup;
-use Magento\Framework\Api\FilterBuilder;
 use Dotdigitalgroup\Email\Model\Catalog\UpdateCatalogBulk;
-use Magento\Catalog\Api\Data\ProductSearchResultsInterface;
-use Magento\Catalog\Model\Product;
 use Dotdigitalgroup\Email\Model\Product\ParentFinder;
+use Dotdigitalgroup\Email\Model\ResourceModel\Catalog;
+use Dotdigitalgroup\Email\Model\ResourceModel\Catalog\Collection;
+use Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory;
+use Magento\Catalog\Model\ResourceModel\Product as ProductResource;
+use Magento\Framework\Stdlib\DateTime;
 use PHPUnit\Framework\TestCase;
 
 class UpdateCatalogBulkTest extends TestCase
 {
-    /**
-     * @var ProductRepositoryInterface
-     */
-    private $productRepositoryMock;
-
     /**
      * @var Catalog
      */
@@ -40,34 +29,9 @@ class UpdateCatalogBulkTest extends TestCase
     private $dateTimeMock;
 
     /**
-     * @var SearchCriteriaInterface
-     */
-    private $searchCriteriaMock;
-
-    /**
-     * @var FilterGroup
-     */
-    private $filterGroupMock;
-
-    /**
-     * @var FilterBuilder
-     */
-    private $filterBuilderMock;
-
-    /**
      * @var UpdateCatalogBulk
      */
     private $bulkUpdate;
-
-    /**
-     * @var ProductSearchResultsInterface
-     */
-    private $productSearchResultsMock;
-
-    /**
-     * @var Product
-     */
-    private $productMock;
 
     /**
      * @var Collection
@@ -75,37 +39,31 @@ class UpdateCatalogBulkTest extends TestCase
     private $collectionMock;
 
     /**
-     * @var Bunch
-     */
-    private $bunchMock;
-
-    /**
      * @var \PHPUnit\Framework\MockObject\MockObject
      */
     private $parentFinderMock;
 
+    /**
+     * @var \PHPUnit\Framework\MockObject\MockObject
+     */
+    private $productResourceMock;
+
     protected function setUp() :void
     {
-        $this->productRepositoryMock = $this->createMock(ProductRepositoryInterface::class);
         $this->resourceCatalogMock = $this->createMock(Catalog::class);
         $this->collectionFactoryMock = $this->createMock(CollectionFactory::class);
         $this->dateTimeMock = $this->createMock(DateTime::class);
-        $this->searchCriteriaMock = $this->createMock(SearchCriteriaInterface::class);
-        $this->filterGroupMock = $this->createMock(FilterGroup::class);
-        $this->filterBuilderMock = $this->createMock(FilterBuilder::class);
         $this->bulkUpdate = $this->createMock(UpdateCatalogBulk::class);
-        $this->productSearchResultsMock = $this->createMock(ProductSearchResultsInterface::class);
-        $this->productMock = $this->createMock(Product::class);
         $this->collectionMock = $this->createMock(Collection::class);
-        $this->bunchMock = $this->createMock(Bunch::class);
         $this->parentFinderMock = $this->createMock(ParentFinder::class);
+        $this->productResourceMock = $this->createMock(ProductResource::class);
 
         $this->bulkUpdate = new UpdateCatalogBulk(
             $this->resourceCatalogMock,
             $this->collectionFactoryMock,
             $this->dateTimeMock,
-            $this->bunchMock,
-            $this->parentFinderMock
+            $this->parentFinderMock,
+            $this->productResourceMock
         );
     }
 
@@ -113,13 +71,19 @@ class UpdateCatalogBulkTest extends TestCase
      * @dataProvider getProductCount
      * @param $numberOfProducts
      */
-    public function testThatifWeHaveOnlyNewProducts($numberOfProducts)
+    public function testIfWeHaveOnlyNewProducts($numberOfProducts)
     {
-
         $scope = 0;
         $this->prepareTests($scope, $numberOfProducts);
 
-        $this->resourceCatalogMock->expects($this->atLeastOnce())
+        $this->dateTimeMock->expects($this->once())
+            ->method('formatDate')
+            ->willReturn('randomDate');
+
+        $this->parentFinderMock->expects($this->never())
+            ->method('getConfigurableParentsFromProductIds');
+
+        $this->resourceCatalogMock->expects($this->once())
             ->method('bulkProductImport');
 
         $this->resourceCatalogMock->expects($this->never())
@@ -132,15 +96,23 @@ class UpdateCatalogBulkTest extends TestCase
      * $numberOfProducts;
      * @dataProvider getProductCount
      */
-    public function testThatifWeHaveNotNewProducts($numberOfProducts)
+    public function testIfWeHaveNoNewProducts($numberOfProducts)
     {
         $scope = 1;
         $this->prepareTests($scope, $numberOfProducts);
 
+        $this->dateTimeMock->expects($this->never())
+            ->method('formatDate')
+            ->willReturn('randomDate');
+
+        $this->parentFinderMock->expects($this->once())
+            ->method('getConfigurableParentsFromProductIds')
+            ->willReturn(['sku' => 'chaz-kangaroo']);
+
         $this->resourceCatalogMock->expects($this->never())
             ->method('bulkProductImport');
 
-        $this->resourceCatalogMock->expects($this->atLeastOnce())
+        $this->resourceCatalogMock->expects($this->once())
             ->method('setUnprocessedByIds');
 
         $this->bulkUpdate->execute($this->generateBunches($numberOfProducts));
@@ -150,16 +122,24 @@ class UpdateCatalogBulkTest extends TestCase
      * $numberOfProducts;
      * @dataProvider getProductCount
      */
-    public function testThatWeHaveBothNewAndAlreadyExistingEntries($numberOfProducts)
+    public function testIfWeHaveBothNewAndAlreadyExistingEntries($numberOfProducts)
     {
         $scope = 2;
 
         $this->prepareTests($scope, $numberOfProducts);
 
-        $this->resourceCatalogMock->expects($this->atLeastOnce())
+        $this->dateTimeMock->expects($this->once())
+            ->method('formatDate')
+            ->willReturn('randomDate');
+
+        $this->parentFinderMock->expects($this->once())
+            ->method('getConfigurableParentsFromProductIds')
+            ->willReturn(['sku' => 'chaz-kangaroo']);
+
+        $this->resourceCatalogMock->expects($this->once())
             ->method('bulkProductImport');
 
-        $this->resourceCatalogMock->expects($this->atLeastOnce())
+        $this->resourceCatalogMock->expects($this->once())
             ->method('setUnprocessedByIds');
 
         $this->bulkUpdate->execute($this->generateBunches($numberOfProducts));
@@ -178,8 +158,8 @@ class UpdateCatalogBulkTest extends TestCase
     {
         $values = $this->getMinMaxValues($scope, $numberOfProducts);
 
-        $this->bunchMock->expects($this->once())
-            ->method('getProductIdsBySkuInBunch')
+        $this->productResourceMock->expects($this->once())
+            ->method('getProductsIdsBySkus')
             ->willReturn($this->getIdsForProductMock($values, $numberOfProducts));
 
         $this->collectionFactoryMock->expects($this->atLeastOnce())
@@ -198,14 +178,6 @@ class UpdateCatalogBulkTest extends TestCase
             ->method('getColumnValues')
             ->with('product_id')
             ->willReturn($this->getCatalogIds($values, $numberOfProducts));
-
-        $this->dateTimeMock->expects($this->atLeastOnce())
-            ->method('formatDate')
-            ->willReturn('randomDate');
-
-        $this->parentFinderMock->expects($this->once())
-            ->method('getConfigurableParentsFromBunchOfProducts')
-            ->willReturn(['sku' => 'chaz-kangaroo']);
     }
 
     /**
@@ -240,6 +212,7 @@ class UpdateCatalogBulkTest extends TestCase
 
         return $values;
     }
+
     /**
      * Generates Random Sku's
      * @param $numberOfProducts
@@ -249,12 +222,12 @@ class UpdateCatalogBulkTest extends TestCase
     {
         $bunch = [];
 
-        for ($i=0; $i<$numberOfProducts; $i++) {
+        for ($i = 0; $i < $numberOfProducts; $i++) {
             $bunch[] = [
                 'sku' => substr(hash("sha256", random_int(1, 9)), 0, 8)
             ];
         }
-        return$bunch;
+        return $bunch;
     }
 
     /**
@@ -283,8 +256,8 @@ class UpdateCatalogBulkTest extends TestCase
     private function getIdsForProductMock($value, $numberOfProducts)
     {
         $productIds = [];
-        for ($i=0; $i<$numberOfProducts; $i++) {
-            $productIds[]= (int) ($value['productMin'] === $value['productMax']) ?: $value['productMin'] + $i;
+        for ($i = 0; $i < $numberOfProducts; $i++) {
+            $productIds[] = (int) ($value['productMin'] === $value['productMax']) ?: $value['productMin'] + $i;
         }
         return $productIds;
     }
