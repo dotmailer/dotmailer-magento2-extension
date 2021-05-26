@@ -4,6 +4,7 @@ namespace Dotdigitalgroup\Email\Test\Unit\Model\AbandonedCart\ProgramEnrolment;
 
 use Dotdigitalgroup\Email\Helper\Config;
 use Dotdigitalgroup\Email\Helper\Data;
+use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\AbandonedCart\CartInsight\Data as CartInsight;
 use Dotdigitalgroup\Email\Model\AbandonedCart\ProgramEnrolment\Enroller;
 use Dotdigitalgroup\Email\Model\AbandonedCart\ProgramEnrolment\Interval;
@@ -83,6 +84,11 @@ class ProgramEnrolmentEnrollerTest extends TestCase
      */
     private $quoteMock;
 
+    /**
+     * @var Logger|\PHPUnit\Framework\MockObject\MockObject
+     */
+    private $loggerMock;
+
     protected function setUp() :void
     {
         $this->orderCollectionFactoryMock = $this->getMockBuilder(CollectionFactory::class)
@@ -111,10 +117,12 @@ class ProgramEnrolmentEnrollerTest extends TestCase
             ->getMock();
 
         $this->timeLimitMock = $this->createMock(TimeLimit::class);
+        $this->loggerMock = $this->createMock(Logger::class);
 
         $this->prepare();
 
         $this->model = new Enroller(
+            $this->loggerMock,
             $this->orderCollectionFactoryMock,
             $this->dataHelperMock,
             $this->interval,

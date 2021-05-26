@@ -3,6 +3,7 @@
 namespace Dotdigitalgroup\Email\Test\Unit\Model\Automation\UpdateFields;
 
 use Dotdigitalgroup\Email\Helper\Data;
+use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Automation\UpdateFields\Update;
 use Dotdigitalgroup\Email\Model\Sales\QuoteFactory as DdgQuoteFactory;
 use Magento\Quote\Model\QuoteFactory as MagentoQuoteFactory;
@@ -71,6 +72,11 @@ class UpdateTest extends TestCase
     private $ddgQuoteMock;
 
     /**
+     * @var Logger|\PHPUnit\Framework\MockObject\MockObject
+     */
+    private $loggerMock;
+
+    /**
      * Prepare data
      */
     protected function setUp() :void
@@ -116,6 +122,7 @@ class UpdateTest extends TestCase
             ->willReturn($this->quoteMock);
 
         $this->engagementCloudApi = $this->createMock(\Dotdigitalgroup\Email\Model\Apiconnector\Client::class);
+        $this->loggerMock = $this->createMock(Logger::class);
 
         $this->helperMock->method("getWebsiteApiClient")
             ->with($this->websiteMock)
@@ -123,6 +130,7 @@ class UpdateTest extends TestCase
 
         $this->class = new Update(
             $this->helperMock,
+            $this->loggerMock,
             $this->magentoQuoteFactoryMock,
             $this->ddgQuoteFactoryMock,
             $this->storeManagerMock

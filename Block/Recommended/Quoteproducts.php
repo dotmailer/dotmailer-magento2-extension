@@ -2,8 +2,11 @@
 
 namespace Dotdigitalgroup\Email\Block\Recommended;
 
+use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Product\ImageFinder;
 use Dotdigitalgroup\Email\Model\Product\ImageType\Context\DynamicContent;
+use Magento\Quote\Model\QuoteFactory;
+use Magento\Quote\Model\ResourceModel\Quote;
 
 /**
  * Quote products block
@@ -13,14 +16,29 @@ use Dotdigitalgroup\Email\Model\Product\ImageType\Context\DynamicContent;
 class Quoteproducts extends \Dotdigitalgroup\Email\Block\Recommended
 {
     /**
+     * @var Logger
+     */
+    private $logger;
+
+    /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    public $helper;
+    private $helper;
 
     /**
      * @var \Dotdigitalgroup\Email\Helper\Recommended
      */
-    public $recommendedHelper;
+    private $recommendedHelper;
+
+    /**
+     * @var QuoteFactory
+     */
+    private $quoteFactory;
+
+    /**
+     * @var Quote
+     */
+    private $quoteResource;
 
     /**
      * Quoteproducts constructor.
@@ -30,8 +48,11 @@ class Quoteproducts extends \Dotdigitalgroup\Email\Block\Recommended
      * @param \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder
      * @param DynamicContent $imageType
      * @param ImageFinder $imageFinder
+     * @param Logger $logger
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Dotdigitalgroup\Email\Helper\Recommended $recommendedHelper
+     * @param QuoteFactory $quoteFactory
+     * @param Quote $quoteResource
      * @param array $data
      */
     public function __construct(
@@ -40,12 +61,18 @@ class Quoteproducts extends \Dotdigitalgroup\Email\Block\Recommended
         \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder,
         DynamicContent $imageType,
         ImageFinder $imageFinder,
+        Logger $logger,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Dotdigitalgroup\Email\Helper\Recommended $recommendedHelper,
+        QuoteFactory $quoteFactory,
+        Quote $quoteResource,
         array $data = []
     ) {
+        $this->logger = $logger;
         $this->helper            = $helper;
         $this->recommendedHelper = $recommendedHelper;
+        $this->quoteFactory = $quoteFactory;
+        $this->quoteResource = $quoteResource;
 
         parent::__construct($context, $font, $urlFinder, $imageType, $imageFinder, $data);
     }
@@ -71,7 +98,7 @@ class Quoteproducts extends \Dotdigitalgroup\Email\Block\Recommended
         $quoteId = (int) $this->getRequest()->getParam('quote_id');
         //display mode based on the action name
         $mode = $this->getRequest()->getActionName();
-        $quoteItems = $this->helper->getQuoteAllItemsFor($quoteId);
+        $quoteItems = $this->getQuoteAllItemsFor($quoteId);
         //number of product items to be displayed
         $limit = $this->recommendedHelper->getDisplayLimitByMode($mode);
         $numItems = count($quoteItems);
@@ -150,5 +177,24 @@ class Quoteproducts extends \Dotdigitalgroup\Email\Block\Recommended
         return $store->getConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_CONTENT_LINK_TEXT
         );
+    }
+
+    /**
+     * @param int $quoteId
+     * @return array
+     */
+    private function getQuoteAllItemsFor($quoteId)
+    {
+        try {
+            $quoteModel = $this->quoteFactory->create();
+            $this->quoteResource->load($quoteModel, $quoteId);
+            return $quoteModel->getAllItems();
+        } catch (\Exception $e) {
+            $this->logger->debug(
+                sprintf('Error fetching items for quote ID: %s', $quoteId),
+                [(string) $e]
+            );
+            return [];
+        }
     }
 }

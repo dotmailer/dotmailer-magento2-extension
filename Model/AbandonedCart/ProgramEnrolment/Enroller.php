@@ -2,6 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Model\AbandonedCart\ProgramEnrolment;
 
+use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\ResourceModel\Automation\CollectionFactory as AutomationCollectionFactory;
 use Dotdigitalgroup\Email\Model\Sync\SetsSyncFromTime;
 use Dotdigitalgroup\Email\Model\AbandonedCart\TimeLimit;
@@ -9,6 +10,11 @@ use Dotdigitalgroup\Email\Model\AbandonedCart\TimeLimit;
 class Enroller
 {
     use SetsSyncFromTime;
+
+    /**
+     * @var Logger
+     */
+    private $logger;
 
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory
@@ -52,6 +58,7 @@ class Enroller
 
     /**
      * Enroller constructor.
+     * @param Logger $logger
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory $collectionFactory
      * @param \Dotdigitalgroup\Email\Helper\Data $data
      * @param Interval $interval
@@ -62,6 +69,7 @@ class Enroller
      * @param TimeLimit $timeLimit
      */
     public function __construct(
+        Logger $logger,
         \Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory $collectionFactory,
         \Dotdigitalgroup\Email\Helper\Data $data,
         Interval $interval,
@@ -71,6 +79,7 @@ class Enroller
         AutomationCollectionFactory $automationFactory,
         TimeLimit $timeLimit
     ) {
+        $this->logger = $logger;
         $this->orderCollection = $collectionFactory;
         $this->helper = $data;
         $this->interval = $interval;
@@ -115,8 +124,15 @@ class Enroller
 
         foreach ($quoteCollection as $batchQuoteCollection) {
             foreach ($batchQuoteCollection as $quote) {
-                if ($quote->hasItems()) {
-                    $this->saveIfNotAlreadyInDatabase($quote, $store, $programId);
+                try {
+                    if ($quote->hasItems()) {
+                        $this->saveIfNotAlreadyInDatabase($quote, $store, $programId);
+                    }
+                } catch (\Exception $e) {
+                    $this->logger->debug(
+                        sprintf('Error checking items for quote ID: %s', $quote->getId()),
+                        [(string) $e]
+                    );
                 }
 
                 // Confirm that a contact has been created on EC
