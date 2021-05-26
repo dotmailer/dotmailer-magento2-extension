@@ -90,16 +90,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public $contactResource;
 
     /**
-     * @var \Magento\Quote\Model\ResourceModel\Quote
-     */
-    private $quoteResource;
-
-    /**
-     * @var \Magento\Quote\Model\QuoteFactory
-     */
-    private $quoteFactory;
-
-    /**
      * @var \Magento\User\Model\ResourceModel\User
      */
     private $userResource;
@@ -152,8 +142,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param \Magento\Framework\Stdlib\DateTime\DateTime $dateTime
      * @param \Magento\Framework\Stdlib\DateTime\TimezoneInterface $timezone
      * @param \Dotdigitalgroup\Email\Model\DateIntervalFactory $dateIntervalFactory
-     * @param \Magento\Quote\Model\ResourceModel\Quote $quoteResource
-     * @param \Magento\Quote\Model\QuoteFactory $quoteFactory
      * @param \Magento\User\Model\ResourceModel\User $userResource
      * @param Logger $logger
      * @param RequestInterface $request
@@ -177,8 +165,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         \Magento\Framework\Stdlib\DateTime\DateTime $dateTime,
         \Magento\Framework\Stdlib\DateTime\TimezoneInterface $timezone,
         \Dotdigitalgroup\Email\Model\DateIntervalFactory $dateIntervalFactory,
-        \Magento\Quote\Model\ResourceModel\Quote $quoteResource,
-        \Magento\Quote\Model\QuoteFactory $quoteFactory,
         \Magento\User\Model\ResourceModel\User $userResource,
         Logger $logger,
         RequestInterface $request,
@@ -199,8 +185,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $this->datetime = $dateTime;
         $this->timezone = $timezone;
         $this->dateIntervalFactory = $dateIntervalFactory;
-        $this->quoteResource = $quoteResource;
-        $this->quoteFactory = $quoteFactory;
         $this->userResource = $userResource;
         $this->contactResource = $contactResource;
         $this->logger = $logger;
@@ -1721,19 +1705,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     {
         $adminUser = $adminUser->setRefreshToken($token);
         $this->userResource->save($adminUser);
-    }
-
-    /**
-     * @param int $quoteId
-     * @return array
-     */
-    public function getQuoteAllItemsFor($quoteId)
-    {
-        $quoteModel = $this->quoteFactory->create();
-        $this->quoteResource->load($quoteModel, $quoteId);
-        $quoteItems = $quoteModel->getAllItems();
-
-        return $quoteItems;
     }
 
     /** Get brand attribute selected from config by website id

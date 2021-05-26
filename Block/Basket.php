@@ -2,6 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Block;
 
+use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Product\ImageFinder;
 use Dotdigitalgroup\Email\Model\Product\ImageType\Context\DynamicContent;
 use Magento\Catalog\Model\Product;
@@ -14,6 +15,10 @@ use Magento\Catalog\Api\ProductRepositoryInterface;
  */
 class Basket extends Recommended
 {
+    /**
+     * @var Logger
+     */
+    private $logger;
 
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
@@ -48,6 +53,7 @@ class Basket extends Recommended
     /**
      * Basket constructor.
      *
+     * @param Logger $logger
      * @param \Magento\Catalog\Block\Product\Context $context
      * @param Helper\Font $font
      * @param \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder
@@ -66,6 +72,7 @@ class Basket extends Recommended
         \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder,
         DynamicContent $imageType,
         ImageFinder $imageFinder,
+        Logger $logger,
         \Magento\Store\Model\App\EmulationFactory $emulationFactory,
         \Magento\Quote\Model\QuoteFactory $quoteFactory,
         \Dotdigitalgroup\Email\Helper\Data $helper,
@@ -73,6 +80,7 @@ class Basket extends Recommended
         ProductRepositoryInterface $productRepository,
         array $data = []
     ) {
+        $this->logger = $logger;
         $this->quoteFactory     = $quoteFactory;
         $this->helper           = $helper;
         $this->priceHelper      = $priceHelper;
@@ -123,7 +131,15 @@ class Basket extends Recommended
         $appEmulation = $this->emulationFactory->create();
         $appEmulation->startEnvironmentEmulation($storeId);
 
-        $quoteItems = $quoteModel->getAllItems();
+        try {
+            $quoteItems = $quoteModel->getAllItems();
+        } catch (\Exception $e) {
+            $quoteItems = [];
+            $this->logger->debug(
+                sprintf('Error fetching items for quote ID: %s', $quoteId),
+                [(string) $e]
+            );
+        }
 
         $itemsData = [];
 
@@ -143,7 +159,7 @@ class Basket extends Recommended
                 if ($quoteItem->getParentItem()->getProductType() == 'bundle') {
                     continue;
                 }
-                $itemsData[] =  $this->getItemDataForChildProducts($quoteItem);
+                $itemsData[] = $this->getItemDataForChildProducts($quoteItem);
                 //Signal that we added a child product, so its parent must be ignored later.
                 if (in_array($quoteItem->getParentItem()->getProduct()->getId(), $parentProductIds)) {
                     $key = array_search($quoteItem->getParentItem()->getProduct()->getId(), $parentProductIds);

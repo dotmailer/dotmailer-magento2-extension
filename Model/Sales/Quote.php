@@ -2,6 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Model\Sales;
 
+use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\AbandonedCart\PendingContactUpdater;
 use Dotdigitalgroup\Email\Model\ResourceModel\Campaign;
 use Dotdigitalgroup\Email\Model\Sync\SetsSyncFromTime;
@@ -75,6 +76,11 @@ class Quote
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     private $helper;
+
+    /**
+     * @var Logger
+     */
+    private $logger;
 
     /**
      * @var \Magento\Framework\App\Config\ScopeConfigInterface
@@ -173,7 +179,8 @@ class Quote
         \Dotdigitalgroup\Email\Model\DateIntervalFactory $dateIntervalFactory,
         PendingContactUpdater $pendingContactUpdater,
         \Dotdigitalgroup\Email\Model\AbandonedCart\CartInsight\Data $cartInsight,
-        TimeLimit $timeLimit
+        TimeLimit $timeLimit,
+        Logger $logger
     ) {
         $this->timeZone = $timezone;
         $this->rulesFactory = $rulesFactory;
@@ -191,6 +198,7 @@ class Quote
         $this->acPendingContactUpdater = $pendingContactUpdater;
         $this->cartInsight = $cartInsight;
         $this->timeLimit = $timeLimit;
+        $this->logger = $logger;
     }
 
     /**
@@ -573,11 +581,22 @@ class Quote
      * @param int $storeId
      *
      * @return bool
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     private function updateDataFieldAndCreateAc($quote, $websiteId, $storeId)
     {
         $quoteId = $quote->getId();
-        $items = $quote->getAllItems();
+
+        try {
+            $items = $quote->getAllItems();
+        } catch (\Exception $e) {
+            $items = [];
+            $this->logger->debug(
+                sprintf('Error fetching items for quote ID: %s', $quoteId),
+                [(string) $e]
+            );
+        }
+
         $email = $quote->getCustomerEmail();
         $itemIds = $this->getQuoteItemIds($items);
         $abandonedModel = $this->abandonedFactory->create()
@@ -658,7 +677,17 @@ class Quote
             return true;
         } else {
             //number of items matches
-            $quoteItemIds = $this->getQuoteItemIds($quote->getAllItems());
+            try {
+                $quoteItems = $quote->getAllItems();
+            } catch (\Exception $e) {
+                $quoteItems = [];
+                $this->logger->debug(
+                    sprintf('Error fetching items for quote ID: %s', $quote->getId()),
+                    [(string) $e]
+                );
+            }
+
+            $quoteItemIds = $this->getQuoteItemIds($quoteItems);
             $abandonedItemIds = explode(',', $abandonedModel->getItemsIds());
 
             //quote items not same
@@ -880,7 +909,17 @@ class Quote
             $quoteId = $quote->getId();
             $email = $quote->getCustomerEmail();
 
-            if ($mostExpensiveItem = $this->getMostExpensiveItems($quote->getAllItems())) {
+            try {
+                $quoteItems = $quote->getAllItems();
+            } catch (\Exception $e) {
+                $quoteItems = [];
+                $this->logger->debug(
+                    sprintf('Error fetching items for quote ID: %s', $quoteId),
+                    [(string) $e]
+                );
+            }
+
+            if ($mostExpensiveItem = $this->getMostExpensiveItems($quoteItems)) {
                 $this->helper->updateAbandonedProductName(
                     $mostExpensiveItem->getName(),
                     $email,

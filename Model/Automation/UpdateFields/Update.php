@@ -2,13 +2,19 @@
 
 namespace Dotdigitalgroup\Email\Model\Automation\UpdateFields;
 
+use Dotdigitalgroup\Email\Logger\Logger;
+
 class Update
 {
-
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     private $helper;
+
+    /**
+     * @var Logger
+     */
+    private $logger;
 
     /**
      * @var \Magento\Quote\Model\QuoteFactory
@@ -34,11 +40,13 @@ class Update
      */
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $helper,
+        Logger $logger,
         \Magento\Quote\Model\QuoteFactory $magentoQuoteFactory,
         \Dotdigitalgroup\Email\Model\Sales\QuoteFactory $ddgQuoteFactory,
         \Magento\Store\Model\StoreManagerInterface $storeManager
     ) {
         $this->helper = $helper;
+        $this->logger = $logger;
         $this->magentoQuoteFactory = $magentoQuoteFactory;
         $this->ddgQuoteFactory = $ddgQuoteFactory;
         $this->storeManager = $storeManager;
@@ -62,7 +70,16 @@ class Update
         // Load the origin quote
         $quoteModel = $this->magentoQuoteFactory->create()
             ->loadByIdWithoutStore($quoteId);
-        $items = $quoteModel->getAllItems();
+
+        try {
+            $items = $quoteModel->getAllItems();
+        } catch (\Exception $e) {
+            $items = [];
+            $this->logger->debug(
+                sprintf('Error fetching items for quote ID: %s', $quoteId),
+                [(string) $e]
+            );
+        }
 
         if (count($items) === 0) {
             return false;

@@ -159,7 +159,17 @@ class Data
         $lineItems = [];
         $imageType = $this->imageType->getImageType($store->getWebsiteId());
 
-        foreach ($quote->getAllVisibleItems() as $item) {
+        try {
+            $visibleItems = $quote->getAllVisibleItems();
+        } catch (\Exception $e) {
+            $visibleItems = [];
+            $this->logger->debug(
+                sprintf('Error fetching items for quote ID: %s', $quote->getId()),
+                [(string) $e]
+            );
+        }
+
+        foreach ($visibleItems as $item) {
             try {
                 $product = $this->loadProduct($item, $store->getId());
                 $discountTotal += $item->getDiscountAmount();
