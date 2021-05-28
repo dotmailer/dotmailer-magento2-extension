@@ -2,6 +2,8 @@
 
 namespace Dotdigitalgroup\Email\Model;
 
+use Dotdigitalgroup\Email\Model\ResourceModel\Review as ReviewResource;
+
 class Review extends \Magento\Framework\Model\AbstractModel
 {
     const EMAIL_REVIEW_IMPORTED = 1;
@@ -10,6 +12,11 @@ class Review extends \Magento\Framework\Model\AbstractModel
      * @var \Magento\Framework\Stdlib\DateTime
      */
     private $dateTime;
+
+    /**
+     * @var ReviewResource
+     */
+    private $reviewResource;
 
     /**
      * Review constructor.
@@ -25,10 +32,12 @@ class Review extends \Magento\Framework\Model\AbstractModel
         \Magento\Framework\Model\Context $context,
         \Magento\Framework\Registry $registry,
         \Magento\Framework\Stdlib\DateTime $dateTime,
+        ReviewResource $reviewResource,
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         array $data = []
     ) {
+        $this->reviewResource = $reviewResource;
         $this->dateTime = $dateTime;
         parent::__construct(
             $context,
@@ -64,5 +73,15 @@ class Review extends \Magento\Framework\Model\AbstractModel
         $this->setUpdatedAt($this->dateTime->formatDate(true));
 
         return $this;
+    }
+
+    /**
+     * @param string|null $from
+     * @param string|null $to
+     * @return int
+     */
+    public function reset(string $from = null, string $to = null)
+    {
+        return $this->reviewResource->resetReviews($from, $to);
     }
 }

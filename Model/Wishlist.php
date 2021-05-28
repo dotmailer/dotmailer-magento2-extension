@@ -2,12 +2,19 @@
 
 namespace Dotdigitalgroup\Email\Model;
 
+use Dotdigitalgroup\Email\Model\ResourceModel\Wishlist as WishlistResource;
+
 class Wishlist extends \Magento\Framework\Model\AbstractModel
 {
     /**
      * @var \Magento\Framework\Stdlib\DateTime
      */
     private $dateTime;
+
+    /**
+     * @var WishlistResource
+     */
+    private $wishlistResource;
 
     /**
      * Wishlist constructor.
@@ -23,11 +30,13 @@ class Wishlist extends \Magento\Framework\Model\AbstractModel
         \Magento\Framework\Model\Context $context,
         \Magento\Framework\Registry $registry,
         \Magento\Framework\Stdlib\DateTime $dateTime,
+        WishlistResource $wishlistResource,
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         array $data = []
     ) {
         $this->dateTime = $dateTime;
+        $this->wishlistResource = $wishlistResource;
         parent::__construct(
             $context,
             $registry,
@@ -62,5 +71,15 @@ class Wishlist extends \Magento\Framework\Model\AbstractModel
         $this->setUpdatedAt($this->dateTime->formatDate(true));
 
         return $this;
+    }
+
+    /**
+     * @param string|null $from
+     * @param string|null $to
+     * @return int
+     */
+    public function reset(string $from = null, string $to = null)
+    {
+        return $this->wishlistResource->resetWishlists($from, $to);
     }
 }

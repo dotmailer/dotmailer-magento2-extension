@@ -1772,42 +1772,41 @@
                     <label>Reset Sync Options</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
-                <field id="reset_customers" translate="label" sortOrder="150" showInStore="0" showInWebsite="1"
+                <field id="reimport_dates" translate="label" sortOrder="145" showInStore="0" showInWebsite="1"
                        showInDefault="1">
-                    <label>Reset Customers</label>
-                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Resetcustomers</frontend_model>
+                    <label>Date Range</label>
+                    <comment><![CDATA[If any of the data range is not selected then a full data refresh will be done.]]></comment>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Daterange</frontend_model>
+                </field>
+                <field id="reset_contacts" translate="label" sortOrder="150" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
+                    <label>Reset Contacts</label>
+                    <frontend_model>resetContactsVirtualType</frontend_model>
                 </field>
                 <field id="reset_subscribers" translate="label" sortOrder="160" showInStore="0" showInWebsite="1"
                        showInDefault="1">
                     <label>Reset Subscribers</label>
-                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Resetsubscribers</frontend_model>
-                </field>
-                <field id="reimport_dates" translate="label" sortOrder="165" showInStore="0" showInWebsite="1"
-                       showInDefault="1">
-                    <label>Date Range</label>
-                    <comment>
-                        <![CDATA[If any of the data range is not selected then full data refresh will be done. This Date Range does not apply on Customer and Subscribers refresh.]]></comment>
-                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Daterange</frontend_model>
+                    <frontend_model>resetSubscribersVirtualType</frontend_model>
                 </field>
                 <field id="reset_orders" translate="label" sortOrder="170" showInStore="0" showInWebsite="1"
                        showInDefault="1">
                     <label>Reset Order Data</label>
-                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Resetorders</frontend_model>
+                    <frontend_model>resetOrdersVirtualType</frontend_model>
                 </field>
                 <field id="reset_reviews" translate="label" sortOrder="180" showInStore="0" showInWebsite="1"
                        showInDefault="1">
                     <label>Reset Review Data</label>
-                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Resetreviews</frontend_model>
+                    <frontend_model>resetReviewsVirtualType</frontend_model>
                 </field>
                 <field id="reset_wishlists" translate="label" sortOrder="190" showInStore="0" showInWebsite="1"
                        showInDefault="1">
                     <label>Reset Wishlist Data</label>
-                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Resetwishlists</frontend_model>
+                    <frontend_model>resetWishlistsVirtualType</frontend_model>
                 </field>
                 <field id="reset_catalog" translate="label" sortOrder="210" showInStore="0" showInWebsite="1"
                        showInDefault="1">
                     <label>Reset Catalog Data</label>
-                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Resetcatalog</frontend_model>
+                    <frontend_model>resetCatalogVirtualType</frontend_model>
                 </field>
             </group>
             <group id="debug" translate="label" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="0">

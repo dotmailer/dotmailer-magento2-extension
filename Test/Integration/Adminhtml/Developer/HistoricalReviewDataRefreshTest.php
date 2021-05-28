@@ -20,7 +20,7 @@ class HistoricalReviewDataRefreshTest extends \Magento\TestFramework\TestCase\Ab
     /**
      * @var string
      */
-    public $url = 'backend/dotdigitalgroup_email/run/reviewsreset';
+    public $url = 'backend/dotdigitalgroup_email/run/reset';
 
     /**
      * @return void
@@ -34,7 +34,8 @@ class HistoricalReviewDataRefreshTest extends \Magento\TestFramework\TestCase\Ab
         $this->resource = 'Dotdigitalgroup_Email::config';
         $params = [
             'from' => '',
-            'to' => ''
+            'to' => '',
+            'reset-type' => 'review'
         ];
         $this->getRequest()->setParams($params);
     }

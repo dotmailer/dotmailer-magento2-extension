@@ -118,14 +118,24 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 
     /**
      * Reset the imported contacts.
-     *
+     * @param string|null $from
+     * @param string|null $to
      * @return int
-     *
      */
-    public function resetAllContacts()
+    public function resetAllContacts(string $from = null, string $to = null)
     {
         $conn = $this->getConnection();
-        $where = ['email_imported = ?' => 1];
+
+        if ($from && $to) {
+            $where = [
+                'created_at >= ?' => $from . ' 00:00:00',
+                'created_at <= ?' => $to . ' 23:59:59',
+                'email_imported = ?' => 1
+            ];
+        } else {
+            $where = ['email_imported = ?' => 1];
+        }
+
         $num = $conn->update(
             $this->getTable(Schema::EMAIL_CONTACT_TABLE),
             ['email_imported' => 0],
@@ -153,18 +163,28 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 
     /**
      * Set all imported subscribers for reimport.
-     *
+     * @param string|null $from
+     * @param string|null $to
      * @return int
-     *
      */
-    public function resetSubscribers()
+    public function resetSubscribers(string $from = null, string $to = null)
     {
         $conn = $this->getConnection();
+
+        if ($from && $to) {
+            $where = [
+                'created_at >= ?' => $from . ' 00:00:00',
+                'created_at <= ?' => $to . ' 23:59:59',
+                'subscriber_imported = ?' => 1
+            ];
+        } else {
+            $where = ['subscriber_imported = ?' => 1];
+        }
 
         $num = $conn->update(
             $this->getTable(Schema::EMAIL_CONTACT_TABLE),
             ['subscriber_imported' => 0],
-            ['subscriber_imported = ?' => 1]
+            $where
         );
 
         return $num;

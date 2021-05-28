@@ -14,6 +14,8 @@
         <column xsi:type="smallint" name="subscriber_imported" padding="5" unsigned="true" nullable="false" identity="false" default="0" comment="Is Subscriber Imported"/>
         <column xsi:type="smallint" name="suppressed" padding="5" unsigned="true" nullable="true" identity="false" comment="Is Suppressed"/>
         <column xsi:type="timestamp" name="last_subscribed_at" on_update="false" nullable="true" comment="Last subscribed date"/>
+        <column xsi:type="timestamp" name="created_at" on_update="false" nullable="true" comment="Creation Time"/>
+        <column xsi:type="timestamp" name="updated_at" on_update="false" nullable="true" comment="Update Time"/>
         <constraint xsi:type="primary" referenceId="PRIMARY">
             <column name="email_contact_id"/>
         </constraint>
@@ -50,6 +52,12 @@
         </index>
         <index referenceId="EMAIL_CONTACT_CONTACT_ID" indexType="btree">
             <column name="contact_id"/>
+        </index>
+        <index referenceId="EMAIL_CONTACT_CREATED_AT" indexType="btree">
+            <column name="created_at"/>
+        </index>
+        <index referenceId="EMAIL_CONTACT_UPDATED_AT" indexType="btree">
+            <column name="updated_at"/>
         </index>
     </table>
     <table name="email_order" resource="default" engine="innodb" comment="Transactional Order Data">

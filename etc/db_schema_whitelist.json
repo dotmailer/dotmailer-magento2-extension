@@ -13,7 +13,9 @@
             "email_imported": true,
             "subscriber_imported": true,
             "suppressed": true,
-            "last_subscribed_at": true
+            "last_subscribed_at": true,
+            "created_at": true,
+            "updated_at": true
         },
         "index": {
             "EMAIL_CONTACT_EMAIL_CONTACT_ID": true,
@@ -26,7 +28,9 @@
             "EMAIL_CONTACT_SUBSCRIBER_IMPORTED": true,
             "EMAIL_CONTACT_SUPPRESSED": true,
             "EMAIL_CONTACT_EMAIL": true,
-            "EMAIL_CONTACT_CONTACT_ID": true
+            "EMAIL_CONTACT_CONTACT_ID": true,
+            "EMAIL_CONTACT_CREATED_AT": true,
+            "EMAIL_CONTACT_UPDATED_AT": true
         },
         "constraint": {
             "PRIMARY": true,

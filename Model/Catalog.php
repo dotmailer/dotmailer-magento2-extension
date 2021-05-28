@@ -13,7 +13,7 @@ class Catalog extends \Magento\Framework\Model\AbstractModel
      * @var ResourceModel\Catalog
      */
     public $catalogResource;
-    
+
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory
      */
@@ -98,5 +98,15 @@ class Catalog extends \Magento\Framework\Model\AbstractModel
             ->setPageSize(1);
 
         return $collection->getFirstItem();
+    }
+
+    /**
+     * @param string|null $from
+     * @param string|null $to
+     * @return int
+     */
+    public function reset(string $from = null, string $to = null)
+    {
+        return $this->catalogResource->resetCatalog($from, $to);
     }
 }

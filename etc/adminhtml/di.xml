@@ -66,6 +66,36 @@
             <argument name="resourceModel" xsi:type="string">Dotdigitalgroup\Email\Model\ResourceModel\Abandoned</argument>
         </arguments>
     </virtualType>
+    <virtualType name="resetCatalogVirtualType" type="Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\ButtonReset">
+        <arguments>
+            <argument name="resetType" xsi:type="string">catalog</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="resetOrdersVirtualType" type="Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\ButtonReset">
+        <arguments>
+            <argument name="resetType" xsi:type="string">order</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="resetReviewsVirtualType" type="Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\ButtonReset">
+        <arguments>
+            <argument name="resetType" xsi:type="string">review</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="resetWishlistsVirtualType" type="Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\ButtonReset">
+        <arguments>
+            <argument name="resetType" xsi:type="string">wishlist</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="resetContactsVirtualType" type="Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\ButtonReset">
+        <arguments>
+            <argument name="resetType" xsi:type="string">contact</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="resetSubscribersVirtualType" type="Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\ButtonReset">
+        <arguments>
+            <argument name="resetType" xsi:type="string">subscriber</argument>
+        </arguments>
+    </virtualType>
     <type name="Magento\Catalog\Controller\Adminhtml\Product\Action\Attribute\Save">
         <plugin name="Ddg_UpdateProductAttribute_MassActionPlugin" type="Dotdigitalgroup\Email\Plugin\CatalogProductAttributeSavePlugin" sortOrder="1"/>
     </type>
@@ -77,6 +107,18 @@
                 <item name="campaignErrorMessage" xsi:type="string">Dotdigitalgroup\Email\Model\System\Message\CampaignError</item>
                 <item name="automationErrorMessage" xsi:type="string">Dotdigitalgroup\Email\Model\System\Message\AutomationError</item>
                 <item name="smtpErrorMessage" xsi:type="string">Dotdigitalgroup\Email\Model\System\Message\SmtpError</item>
+            </argument>
+        </arguments>
+    </type>
+    <type name="Dotdigitalgroup\Email\Model\Resetter">
+        <arguments>
+            <argument name="resetModels" xsi:type="array">
+                <item name="catalog" xsi:type="object">Dotdigitalgroup\Email\Model\Catalog</item>
+                <item name="order" xsi:type="object">Dotdigitalgroup\Email\Model\Order</item>
+                <item name="review" xsi:type="object">Dotdigitalgroup\Email\Model\Review</item>
+                <item name="wishlist" xsi:type="object">Dotdigitalgroup\Email\Model\Wishlist</item>
+                <item name="contact" xsi:type="object">Dotdigitalgroup\Email\Model\Contact</item>
+                <item name="subscriber" xsi:type="object">Dotdigitalgroup\Email\Model\Subscriber</item>
             </argument>
         </arguments>
     </type>

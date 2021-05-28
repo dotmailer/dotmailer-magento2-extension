@@ -25,7 +25,7 @@ class HistoricalCatalogDataRefreshTest extends \Magento\TestFramework\TestCase\A
     /**
      * @var string
      */
-    public $url = 'backend/dotdigitalgroup_email/run/catalogreset';
+    public $url = 'backend/dotdigitalgroup_email/run/reset';
 
     /**
      * @return void
@@ -39,7 +39,8 @@ class HistoricalCatalogDataRefreshTest extends \Magento\TestFramework\TestCase\A
         $this->resource = 'Dotdigitalgroup_Email::config';
         $params = [
             'from' => '',
-            'to' => ''
+            'to' => '',
+            'reset-type' => 'catalog'
         ];
         $this->getRequest()->setParams($params);
     }
