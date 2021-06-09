@@ -13,6 +13,10 @@ use Dotdigitalgroup\Email\Model\Monitor\Smtp\Monitor;
  */
 class TransportPlugin
 {
+    const EXCLUDED_ERRORS = [
+        'Requested action not taken: mailbox unavailable'
+    ];
+
     /**
      * @var \Dotdigitalgroup\Email\Model\Mail\SmtpTransportAdapter
      */
@@ -64,8 +68,6 @@ class TransportPlugin
      * @param TransportInterface $subject
      * @param \Closure $proceed
      * @throws \Exception
-     *
-     * @return null
      */
     public function aroundSendMessage(
         TransportInterface $subject,
@@ -76,6 +78,15 @@ class TransportPlugin
             try {
                 $this->smtpTransportAdapter->send($subject, $storeId);
             } catch (\Exception $e) {
+                if (in_array(str_replace("\r\n", "", $e->getMessage()), self::EXCLUDED_ERRORS)) {
+                    $to = $subject->getMessage()->getTo();
+                    $this->dataHelper->log(
+                        "Unable to deliver transactional email to " . reset($to)->getEmail(),
+                        [(string) $e]
+                    );
+                    return $proceed();
+                }
+
                 $now = new \DateTime('now', new \DateTimezone('UTC'));
                 $errorData = [
                     'date' => $now->format("Y-m-d H:i:s"),
@@ -93,8 +104,8 @@ class TransportPlugin
                 $this->dataHelper->log("TransportPlugin send exception: " . $e->getMessage());
                 return $proceed();
             }
-        } else {
-            return $proceed();
         }
+
+        return $proceed();
     }
 }
