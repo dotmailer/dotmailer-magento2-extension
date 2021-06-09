@@ -80,7 +80,8 @@
             "send_id": true,
             "send_status": true,
             "created_at": true,
-            "updated_at": true
+            "updated_at": true,
+            "is_sent": true
         },
         "index": {
             "EMAIL_CAMPAIGN_STORE_ID": true,
@@ -158,14 +159,18 @@
             "processed": true,
             "created_at": true,
             "updated_at": true,
-            "last_imported_at": true
+            "last_imported_at": true,
+            "imported": true,
+            "modified": true
         },
         "index": {
             "EMAIL_CATALOG_PRODUCT_ID": true,
             "EMAIL_CATALOG_PROCESSED": true,
             "EMAIL_CATALOG_CREATED_AT": true,
             "EMAIL_CATALOG_UPDATED_AT": true,
-            "EMAIL_CATALOG_LAST_IMPORTED_AT": true
+            "EMAIL_CATALOG_LAST_IMPORTED_AT": true,
+            "EMAIL_CATALOG_IMPORTED": true,
+            "EMAIL_CATALOG_MODIFIED": true
         },
         "constraint": {
             "PRIMARY": true,
@@ -181,9 +186,9 @@
             "status": true,
             "combination": true,
             "condition": true,
+            "conditions": true,
             "created_at": true,
-            "updated_at": true,
-            "conditions": true
+            "updated_at": true
         },
         "constraint": {
             "PRIMARY": true
@@ -310,6 +315,7 @@
     "email_coupon_attribute": {
         "column": {
             "id": true,
+            "coupon_id": true,
             "salesrule_coupon_id": true,
             "email": true,
             "expires_at": true

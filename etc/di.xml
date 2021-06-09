@@ -137,4 +137,12 @@
             <argument name="imageRole" xsi:type="string">Thumbnail</argument>
         </arguments>
     </virtualType>
+    <type name="Magento\Framework\Setup\Declaration\Schema\Operations\AddColumn">
+        <arguments>
+            <argument name="triggers" xsi:type="array">
+                <item name="combineColumnsForProcessing" xsi:type="object">Dotdigitalgroup\Email\Setup\Schema\Triggers\CombineColumnsForProcessing</item>
+                <item name="migrateIsSent" xsi:type="object">Dotdigitalgroup\Email\Setup\Schema\Triggers\MigrateIsSent</item>
+            </argument>
+        </arguments>
+    </type>
 </config>
