@@ -2,11 +2,20 @@
 
 namespace Dotdigitalgroup\Email\Model;
 
+use Dotdigitalgroup\Email\Helper\Config;
 use Dotdigitalgroup\Email\Model\Cron\JobChecker;
 use Dotdigitalgroup\Email\Model\Sync\IntegrationInsightsFactory;
 
 class Cron
 {
+    const CRON_PATHS = [
+        Config::XML_PATH_CRON_SCHEDULE_IMPORTER => 5,
+        Config::XML_PATH_CRON_SCHEDULE_ORDERS => 15,
+        Config::XML_PATH_CRON_SCHEDULE_REVIEWS => 15,
+        Config::XML_PATH_CRON_SCHEDULE_CONTACT => 15,
+        Config::XML_PATH_CRON_SCHEDULE_CATALOG => 15,
+    ];
+
     /**
      * @var Email\TemplateFactory
      */

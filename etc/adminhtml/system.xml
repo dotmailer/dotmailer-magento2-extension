@@ -1865,26 +1865,31 @@
                        showInDefault="1">
                     <label>Importer</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Developer\Cronexpressionsone</source_model>
+                    <backend_model>Dotdigitalgroup\Email\Model\Adminhtml\Backend\CronOffset</backend_model>
                 </field>
                 <field id="contact" translate="label" sortOrder="20" type="select" showInStore="0" showInWebsite="1"
                        showInDefault="1">
                     <label>Contact</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Developer\Cronexpressionstwo</source_model>
+                    <backend_model>Dotdigitalgroup\Email\Model\Adminhtml\Backend\CronOffset</backend_model>
                 </field>
                 <field id="order" translate="label" sortOrder="30" type="select" showInStore="0" showInWebsite="1"
                        showInDefault="1">
                     <label>Order</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Developer\Cronexpressionstwo</source_model>
+                    <backend_model>Dotdigitalgroup\Email\Model\Adminhtml\Backend\CronOffset</backend_model>
                 </field>
                 <field id="catalog" translate="label" sortOrder="40" type="select" showInStore="0" showInWebsite="1"
                        showInDefault="1">
                     <label>Catalog</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Developer\Cronexpressionstwo</source_model>
+                    <backend_model>Dotdigitalgroup\Email\Model\Adminhtml\Backend\CronOffset</backend_model>
                 </field>
                 <field id="review_wishlist" translate="label" sortOrder="50" type="select" showInStore="0"
                        showInWebsite="1" showInDefault="1">
                     <label>Review And Wishlist</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Developer\Cronexpressionstwo</source_model>
+                    <backend_model>Dotdigitalgroup\Email\Model\Adminhtml\Backend\CronOffset</backend_model>
                 </field>
             </group>
             <group id="system_alerts" translate="label" sortOrder="80" showInDefault="1" showInWebsite="0" showInStore="0">

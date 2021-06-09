@@ -8,6 +8,7 @@ use Dotdigitalgroup\Email\Helper\File;
 use Dotdigitalgroup\Email\Model\Apiconnector\Client;
 use Dotdigitalgroup\Email\Model\Importer as ImporterModel;
 use Dotdigitalgroup\Email\Model\ImporterFactory;
+use Dotdigitalgroup\Email\Model\Cron\CronOffsetter;
 use Magento\Framework\DataObject;
 use Magento\Framework\Stdlib\DateTime;
 
@@ -69,6 +70,11 @@ class ImporterProgressHandler extends DataObject
         ];
 
     /**
+     * @var CronOffsetter
+     */
+    private $cronOffsetter;
+
+    /**
      * Importer constructor.
      *
      * @param Data $helper
@@ -82,12 +88,14 @@ class ImporterProgressHandler extends DataObject
         File $fileHelper,
         ImporterFactory $importerFactory,
         DateTime $dateTime,
+        CronOffsetter $cronOffsetter,
         array $data = []
     ) {
         $this->helper = $helper;
         $this->fileHelper = $fileHelper;
         $this->importerFactory = $importerFactory;
         $this->dateTime = $dateTime;
+        $this->cronOffsetter = $cronOffsetter;
 
         parent::__construct($data);
     }
@@ -238,7 +246,9 @@ class ImporterProgressHandler extends DataObject
 
                 // get a time period for the last contact sync
                 $cronMinutes = filter_var(
-                    $this->helper->getConfigValue(Config::XML_PATH_CRON_SCHEDULE_CONTACT),
+                    $this->cronOffsetter->getDecodedCronValue(
+                        $this->helper->getConfigValue(Config::XML_PATH_CRON_SCHEDULE_CONTACT)
+                    ),
                     FILTER_SANITIZE_NUMBER_INT
                 );
                 $lastSyncPeriod = new \DateTime($this->dateTime->formatDate(true), new \DateTimeZone('UTC'));
