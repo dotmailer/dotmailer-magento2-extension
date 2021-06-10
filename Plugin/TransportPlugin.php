@@ -81,7 +81,7 @@ class TransportPlugin
                 if (in_array(str_replace("\r\n", "", $e->getMessage()), self::EXCLUDED_ERRORS)) {
                     $to = $subject->getMessage()->getTo();
                     $this->dataHelper->log(
-                        "Unable to deliver transactional email to " . reset($to)->getEmail(),
+                        "Unable to deliver transactional email. Invalid email address: " . reset($to)->getEmail(),
                         [(string) $e]
                     );
                     return $proceed();
