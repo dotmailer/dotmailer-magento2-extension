@@ -65,15 +65,20 @@ class DataMigrationHelper
     }
 
     /**
-     * Run all install methods
+     * @param string|null $table
+     * @throws \ErrorException
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Zend_Db_Statement_Exception
      */
-    public function run()
+    public function run($table = null)
     {
+        $types = $this->dataMigrationTypeProvider->getEnabledTypes($table);
+
         // truncate any tables which are about to be updated
-        $this->emptyTables();
+        $this->emptyTables($types);
 
         // loop through types and execute
-        foreach ($this->dataMigrationTypeProvider->getTypes() as $dataMigration) {
+        foreach ($types as $dataMigration) {
             /** @var AbstractDataMigration $dataMigration */
             $dataMigration->execute();
             $this->logActions($dataMigration);
@@ -94,6 +99,19 @@ class DataMigrationHelper
     {
         $this->output = $output;
         return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getTablesFromAvailableTypes()
+    {
+        $tables = [];
+        foreach ($this->dataMigrationTypeProvider->getTypes() as $migrationType) {
+            $tables[] = $migrationType->getTableName();
+        }
+
+        return array_unique($tables);
     }
 
     /**
@@ -119,9 +137,9 @@ class DataMigrationHelper
     /**
      * Truncate relevant tables before running
      */
-    private function emptyTables()
+    private function emptyTables($types)
     {
-        foreach ($this->dataMigrationTypeProvider->getTypes() as $migrationType) {
+        foreach ($types as $migrationType) {
             /** @var AbstractDataMigration $migrationType */
             $tableName = $this->resourceConnection->getTableName($migrationType->getTableName());
             $this->resourceConnection->getConnection()->delete($tableName);
