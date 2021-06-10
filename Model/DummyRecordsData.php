@@ -4,7 +4,6 @@ namespace Dotdigitalgroup\Email\Model;
 
 use Dotdigitalgroup\Email\Helper\Data;
 use Magento\Store\Model\StoreManagerInterface;
-use Dotdigitalgroup\Email\Model\Catalog\UrlFinder;
 use Dotdigitalgroup\Email\Logger\Logger;
 use Magento\Framework\UrlInterface;
 
@@ -24,11 +23,6 @@ class DummyRecordsData
     private $storeManager;
 
     /**
-     * @var UrlFinder
-     */
-    private $urlFinder;
-
-    /**
      * @var string
      */
     private $email;
@@ -42,18 +36,15 @@ class DummyRecordsData
      * DummyRecordsData constructor.
      * @param Data $helper
      * @param StoreManagerInterface $storeManager
-     * @param UrlFinder $urlFinder
      * @param Logger $logger
      */
     public function __construct(
         Data $helper,
         StoreManagerInterface $storeManager,
-        UrlFinder $urlFinder,
         Logger $logger
     ) {
         $this->helper = $helper;
         $this->storeManager = $storeManager;
-        $this->urlFinder = $urlFinder;
         $this->logger = $logger;
     }
 
@@ -142,6 +133,7 @@ class DummyRecordsData
                 'currency' => 'USD',
                 'subTotal' => round(52, 2),
                 'taxAmount' => (float) 0,
+                'shipping' => (float) 0,
                 'grandTotal' => round(52, 2)
             ]
         ];

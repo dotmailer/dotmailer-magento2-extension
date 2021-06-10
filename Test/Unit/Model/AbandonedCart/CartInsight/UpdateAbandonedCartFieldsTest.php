@@ -235,10 +235,15 @@ class UpdateAbandonedCartFieldsTest extends TestCase
             ->method('getShippingAddress')
             ->willReturn($addressMock);
 
-        $addressMock->expects($this->once())
+        $addressMock->expects($this->at(0))
             ->method('__call')
             ->with($this->equalTo('getTaxAmount'))
             ->willReturn($expectedPayload['json']['taxAmount']);
+
+        $addressMock->expects($this->at(1))
+            ->method('__call')
+            ->with($this->equalTo('getShippingAmount'))
+            ->willReturn($expectedPayload['json']['shipping']);
 
         // Line items loop
         $itemsArray = [
@@ -375,6 +380,7 @@ class UpdateAbandonedCartFieldsTest extends TestCase
                 "subTotal" => 98.4,
                 "discountAmount" => 8.4,
                 "taxAmount" => 12.34,
+                "shipping" => 11.43,
                 "grandTotal" => 90,
                 "lineItems" => [
                     [
