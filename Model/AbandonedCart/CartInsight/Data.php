@@ -151,6 +151,7 @@ class Data
                 'currency' => $quoteCurrency,
                 'subTotal' => round($quote->getSubtotal(), 2),
                 'taxAmount' => round($quote->getShippingAddress()->getTaxAmount(), 2),
+                'shipping' => round($quote->getShippingAddress()->getShippingAmount(), 2),
                 'grandTotal' => round($quote->getGrandTotal(), 2)
             ]
         ];
