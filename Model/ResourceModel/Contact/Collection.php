@@ -380,4 +380,15 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
             ->addFieldToFilter('website_id', $websiteId)
             ->addFieldToSelect(['customer_id', 'store_id']);
     }
+
+    /**
+     * @param array $emails
+     * @param string|int $websiteId
+     * @return $this
+     */
+    public function getContactsByEmailsAndWebsiteId($emails, $websiteId)
+    {
+        return $this->addFieldToFilter('email', ['in' => $emails])
+            ->addFieldToFilter('website_id', $websiteId);
+    }
 }
