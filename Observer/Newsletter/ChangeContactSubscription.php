@@ -228,7 +228,7 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
          * 1. The subscriber is confirming their subscription for Need to Confirm, and hasn't been processed already OR
          * 2. The subscriber is not confirming - and they aren't new
          */
-        if (($isSubscriberConfirming && $this->hasSubscriberAutomation($email)) ||
+        if (($isSubscriberConfirming && $this->hasSubscriberAutomation($email, $websiteId)) ||
             (!$isSubscriberConfirming && !$this->isSubscriberNew)
         ) {
             return;
@@ -269,16 +269,15 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
     }
 
     /**
-     * Check if a subscriber_automation has already been processed for an email address.
-     *
+     * Check if a subscriber_automation has already been processed for an email address
      * @param string $email
-     *
+     * @param string|int $websiteId
      * @return bool
      */
-    private function hasSubscriberAutomation($email)
+    private function hasSubscriberAutomation($email, $websiteId)
     {
         $matching = $this->automationCollectionFactory->create()
-            ->getSubscriberAutomationByEmail($email);
+            ->getSubscriberAutomationByEmail($email, $websiteId);
 
         return $matching->getSize() ? true : false;
     }

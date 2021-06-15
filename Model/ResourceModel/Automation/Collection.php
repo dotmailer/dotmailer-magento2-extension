@@ -119,12 +119,13 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
 
     /**
      * @param string $email
-     *
+     * @param string|int $websiteId
      * @return Collection
      */
-    public function getSubscriberAutomationByEmail($email)
+    public function getSubscriberAutomationByEmail($email, $websiteId)
     {
         $collection = $this->addFieldToFilter('email', $email)
+            ->addFieldToFilter('website_id', $websiteId)
             ->addFieldToFilter('automation_type', Automation::AUTOMATION_TYPE_NEW_SUBSCRIBER);
 
         return $collection;
