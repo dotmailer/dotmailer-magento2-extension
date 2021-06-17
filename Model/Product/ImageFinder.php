@@ -226,7 +226,15 @@ class ImageFinder
 
         if ($configurableProductImage === "itself") {
             // Use item SKU to retrieve properties of configurable child product
-            return $item->getProduct()->getIdBySku($item->getSku());
+            $productId = $item->getProduct()->getIdBySku($item->getSku());
+            if (!$productId) {
+                $this->logger->debug(
+                    sprintf("Unable to get product ID for SKU %s. Parent ID returned", $item->getSku())
+                );
+
+                return $item->getProduct()->getId();
+            }
+            return $productId;
         }
 
         // Parent product id

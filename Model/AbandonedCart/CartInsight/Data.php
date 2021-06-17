@@ -219,19 +219,23 @@ class Data
      */
     private function loadProduct($item, $storeId)
     {
-        switch ($item->getProductType()) {
-            case 'configurable':
-                return $this->productRepository->get(
-                    $item->getSku(),
-                    false,
-                    $storeId
-                );
-            default:
-                return $this->productRepository->getById(
-                    $item->getProduct()->getId(),
-                    false,
-                    $storeId
-                );
+        try {
+            switch ($item->getProductType()) {
+                case 'configurable':
+                    return $this->productRepository->get(
+                        $item->getSku(),
+                        false,
+                        $storeId
+                    );
+                default:
+                    return $this->productRepository->getById(
+                        $item->getProduct()->getId(),
+                        false,
+                        $storeId
+                    );
+            }
+        } catch (\Exception $exception) {
+            return $item->getProduct();
         }
     }
 
