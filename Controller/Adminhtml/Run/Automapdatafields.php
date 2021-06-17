@@ -50,20 +50,23 @@ class Automapdatafields extends \Magento\Backend\App\AbstractAction
      */
     public function execute()
     {
-        $website = $this->getRequest()->getParam('website', 0);
+        $websiteId = $this->getRequest()->getParam('website', 0);
         $redirectUrl = $this->getUrl('adminhtml/system_config/edit', [
             'section' => 'connector_developer_settings',
-            'website' => $website
+            'website' => $websiteId
         ]);
 
-        if (!$this->data->isEnabled()) {
-            $this->messageManager->addNoticeMessage('Please enable the Engagement Cloud API first.');
+        if (!$this->data->isEnabled($websiteId)) {
+            $this->messageManager->addNoticeMessage(
+                sprintf('Your API connection is not enabled for website %s.
+                If you have an account configured at website level, try changing scope.', $websiteId)
+            );
             return $this->_redirect($redirectUrl);
         }
 
         try {
             $dataFieldAutoMapper = $this->dataFieldAutoMapperFactory->create()
-                ->run($website);
+                ->run($websiteId);
         } catch (\Exception $e) {
             $this->messageManager
                 ->addNoticeMessage('Dotdigital connector API endpoint cannot be empty.');
