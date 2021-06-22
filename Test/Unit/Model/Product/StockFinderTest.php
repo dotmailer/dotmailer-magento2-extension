@@ -3,20 +3,22 @@
 namespace Dotdigitalgroup\Email\Test\Unit\Model\Product;
 
 use Dotdigitalgroup\Email\Logger\Logger;
+use Dotdigitalgroup\Email\Model\Product\Stock\SalableQuantity;
 use Dotdigitalgroup\Email\Model\Product\StockFinder;
 use Magento\Catalog\Model\Product;
-use Magento\CatalogInventory\Api\Data\StockItemCollectionInterface;
-use Magento\CatalogInventory\Api\Data\StockItemInterface;
-use Magento\CatalogInventory\Api\StockItemCriteriaInterface;
-use Magento\CatalogInventory\Api\StockItemCriteriaInterfaceFactory;
-use Magento\CatalogInventory\Api\StockItemRepositoryInterface;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
+use Magento\Framework\Api\SearchCriteriaBuilder;
+use Magento\Framework\Api\SearchCriteriaInterface;
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\InventoryApi\Api\Data\SourceItemInterface;
+use Magento\InventoryApi\Api\Data\SourceItemSearchResultsInterface;
+use Magento\InventoryApi\Api\SourceItemRepositoryInterface;
 use PHPUnit\Framework\TestCase;
 
 class StockFinderTest extends TestCase
 {
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject
+     * @var Logger|\PHPUnit\Framework\MockObject\MockObject
      */
     private $loggerMock;
 
@@ -26,19 +28,19 @@ class StockFinderTest extends TestCase
     private $stockFinder;
 
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject
+     * @var SalableQuantity|\PHPUnit\Framework\MockObject\MockObject
      */
-    private $stockItemRepositoryMock;
+    private $salableQuantityMock;
 
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject
+     * @var SourceItemRepositoryInterface|\PHPUnit\Framework\MockObject\MockObject
+     */
+    private $sourceItemRepositoryMock;
+
+    /**
+     * @var Product|\PHPUnit\Framework\MockObject\MockObject
      */
     private $productMock;
-
-    /**
-     * @var \PHPUnit\Framework\MockObject\MockObject
-     */
-    private $stockItemInterfaceMock;
 
     /**
      * @var \PHPUnit\Framework\MockObject\MockObject
@@ -46,47 +48,51 @@ class StockFinderTest extends TestCase
     private $typeInstanceMock;
 
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject
+     * @var SearchCriteriaInterface|\PHPUnit\Framework\MockObject\MockObject
      */
-    private $stockItemCollectionInterfaceMock;
+    private $searchCriteriaMock;
 
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject
+     * @var SearchCriteriaBuilder|\PHPUnit\Framework\MockObject\MockObject
      */
-    private $stockItemCriteriaFactoryMock;
+    private $searchCriteriaBuilderMock;
 
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject
+     * @var ScopeConfigInterface|\PHPUnit\Framework\MockObject\MockObject
      */
-    private $stockItemCriteriaMock;
+    private $scopeConfigInterfaceMock;
+
+    /**
+     * @var SourceItemInterface|\PHPUnit\Framework\MockObject\MockObject
+     */
+    private $sourceItemInterfaceMock;
+
+    /**
+     * @var SourceItemSearchResultsInterface|\PHPUnit\Framework\MockObject\MockObject
+     */
+    private $sourceItemSearchResultsInterfaceMock;
 
     protected function setUp() :void
     {
         $this->loggerMock = $this->createMock(Logger::class);
-        $this->stockItemRepositoryMock = $this->getMockBuilder(StockItemRepositoryInterface::class)
+        $this->salableQuantityMock = $this->createMock(SalableQuantity::class);
+        $this->sourceItemRepositoryMock = $this->createMock(SourceItemRepositoryInterface::class);
+        $this->searchCriteriaBuilderMock = $this->getMockBuilder(SearchCriteriaBuilder::class)
             ->disableOriginalConstructor()
             ->getMock();
-
+        $this->searchCriteriaMock = $this->createMock(SearchCriteriaInterface::class);
+        $this->scopeConfigInterfaceMock = $this->createMock(ScopeConfigInterface::class);
         $this->productMock = $this->createMock(Product::class);
-        $this->stockItemInterfaceMock = $this->getMockBuilder(StockItemInterface::class);
+        $this->sourceItemInterfaceMock = $this->createMock(SourceItemInterface::class);
         $this->typeInstanceMock = $this->createMock(Configurable::class);
-
-        $this->stockItemCriteriaFactoryMock = $this->getMockBuilder(StockItemCriteriaInterfaceFactory::class)
-            ->disableOriginalConstructor()
-            ->setMethods(['create','setProductsFilter'])
-            ->getMock();
-
-        $this->stockItemCriteriaMock = $this->createMock(StockItemCriteriaInterface::class);
-
-        $this->stockItemCollectionInterfaceMock = $this->getMockBuilder(StockItemCollectionInterface::class)
-            ->disableOriginalConstructor()
-            ->setMethods(array_merge(get_class_methods(StockItemCollectionInterface::class), ['getSize']))
-            ->getMock();
+        $this->sourceItemSearchResultsInterfaceMock = $this->createMock(SourceItemSearchResultsInterface::class);
 
         $this->stockFinder = new StockFinder(
-            $this->stockItemRepositoryMock,
             $this->loggerMock,
-            $this->stockItemCriteriaFactoryMock
+            $this->salableQuantityMock,
+            $this->searchCriteriaBuilderMock,
+            $this->scopeConfigInterfaceMock,
+            $this->sourceItemRepositoryMock
         );
     }
 
@@ -98,28 +104,16 @@ class StockFinderTest extends TestCase
             ->method('getTypeId')
             ->willReturn('simple');
 
-        $this->stockItemCriteriaFactoryMock->expects($this->atLeastOnce())
-            ->method('create')
-            ->willReturn($this->stockItemCriteriaMock);
-
-        $this->stockItemRepositoryMock->expects($this->once())
-            ->method('getList')
-            ->with($this->stockItemCriteriaMock)
-            ->willReturn($this->stockItemCollectionInterfaceMock);
-
-        $this->stockItemCollectionInterfaceMock->expects($this->once())
-            ->method('getSize')
+        // manage stock = 1
+        $this->scopeConfigInterfaceMock->expects($this->once())
+            ->method('getValue')
             ->willReturn(1);
 
-        $this->stockItemCollectionInterfaceMock->expects($this->atLeastOnce())
-            ->method('getItems')
-            ->willReturn([$this->productMock]);
-
-        $this->productMock->expects($this->once())
-            ->method('getQty')
+        $this->salableQuantityMock->expects($this->once())
+            ->method('getSalableQuantity')
             ->willReturn($qty);
 
-        $stock = $this->stockFinder->getStockQty($this->productMock);
+        $stock = $this->stockFinder->getStockQty($this->productMock, 1);
 
         $this->assertEquals($stock, $qty);
     }
@@ -142,30 +136,130 @@ class StockFinderTest extends TestCase
             ->with($this->productMock)
             ->willReturn($this->getSimpleProducts($numberOfChildren));
 
-        $this->stockItemCriteriaFactoryMock->expects($this->atLeastOnce())
-            ->method('create')
-            ->willReturn($this->stockItemCriteriaMock);
+        // manage stock (global) = 1
+        $this->scopeConfigInterfaceMock->expects($this->once())
+            ->method('getValue')
+            ->willReturn(1);
 
-        $this->stockItemRepositoryMock->expects($this->once())
-            ->method('getList')
-            ->with($this->stockItemCriteriaMock)
-            ->willReturn($this->stockItemCollectionInterfaceMock);
-
-        $this->stockItemCollectionInterfaceMock->expects($this->once())
-            ->method('getSize')
-            ->willReturn($numberOfChildren);
-
-        $this->stockItemCollectionInterfaceMock->expects($this->atLeastOnce())
-            ->method('getItems')
-            ->willReturn($this->getSimpleProducts($numberOfChildren));
-
-        $this->productMock->expects($this->atLeastOnce())
-            ->method('getQty')
+        $this->salableQuantityMock->expects($this->atLeast($numberOfChildren))
+            ->method('getSalableQuantity')
             ->willReturn($qty);
 
-        $stock = $this->stockFinder->getStockQty($this->productMock);
+        $stock = $this->stockFinder->getStockQty($this->productMock, 1);
 
         $this->assertEquals($stock, $numberOfChildren * $qty);
+    }
+
+    public function testSimpleProductWithGlobalNotManageStock()
+    {
+        $qty = 10.0;
+
+        $this->productMock->expects($this->atLeastOnce())
+            ->method('getTypeId')
+            ->willReturn('simple');
+
+        // manage stock = 0
+        $this->scopeConfigInterfaceMock->expects($this->once())
+            ->method('getValue')
+            ->willReturn(0);
+
+        $this->productMock->expects($this->atLeastOnce())
+            ->method('getSku')
+            ->willReturn('CHAZ-SKU-001');
+
+        $this->salableQuantityMock->expects($this->never())
+            ->method('getSalableQuantity');
+
+        $this->loadInventorySourceItems();
+
+        // single source item returned
+        $this->sourceItemSearchResultsInterfaceMock->expects($this->once())
+            ->method('getItems')
+            ->willReturn([$this->sourceItemInterfaceMock]);
+
+        $this->sourceItemInterfaceMock->expects($this->once())
+            ->method('getQuantity')
+            ->willReturn($qty);
+
+        $stock = $this->stockFinder->getStockQty($this->productMock, 1);
+
+        $this->assertEquals($stock, $qty);
+    }
+
+    public function testGetStockQtyForDefaultLevelCatalogSync()
+    {
+        $websiteId = 0;
+        $qty = 10.0;
+
+        $this->productMock->expects($this->atLeastOnce())
+            ->method('getTypeId')
+            ->willReturn('simple');
+
+        $this->scopeConfigInterfaceMock->expects($this->once())
+            ->method('getValue')
+            ->willReturn(1);
+
+        $this->productMock->expects($this->atLeastOnce())
+            ->method('getSku')
+            ->willReturn('CHAZ-SKU-001');
+
+        $this->salableQuantityMock->expects($this->never())
+            ->method('getSalableQuantity');
+
+        $this->loadInventorySourceItems();
+
+        // single source item returned
+        $this->sourceItemSearchResultsInterfaceMock->expects($this->once())
+            ->method('getItems')
+            ->willReturn([$this->sourceItemInterfaceMock]);
+
+        $this->sourceItemInterfaceMock->expects($this->once())
+            ->method('getQuantity')
+            ->willReturn($qty);
+
+        $stock = $this->stockFinder->getStockQty($this->productMock, $websiteId);
+
+        $this->assertEquals($stock, $qty);
+    }
+
+    public function testSimpleProductWithMultipleFallbackSources()
+    {
+        $qty = 25.2;
+
+        $this->productMock->expects($this->atLeastOnce())
+            ->method('getTypeId')
+            ->willReturn('simple');
+
+        // manage stock = 1
+        $this->scopeConfigInterfaceMock->expects($this->once())
+            ->method('getValue')
+            ->willReturn(1);
+
+        $this->productMock->expects($this->atLeastOnce())
+            ->method('getSku')
+            ->willReturn('CHAZ-SKU-001');
+
+        $this->salableQuantityMock->expects($this->once())
+            ->method('getSalableQuantity')
+            ->willThrowException(new \Exception());
+
+        $this->loadInventorySourceItems();
+
+        // multiple source items returned
+        $this->sourceItemSearchResultsInterfaceMock->expects($this->once())
+            ->method('getItems')
+            ->willReturn([
+                $this->sourceItemInterfaceMock,
+                $this->sourceItemInterfaceMock
+            ]);
+
+        $this->sourceItemInterfaceMock->expects($this->atLeastOnce())
+            ->method('getQuantity')
+            ->willReturnOnConsecutiveCalls(10.0, 15.2);
+
+        $stock = $this->stockFinder->getStockQty($this->productMock, 1);
+
+        $this->assertEquals($stock, $qty);
     }
 
     /**
@@ -181,5 +275,21 @@ class StockFinderTest extends TestCase
         }
 
         return $simpleProducts;
+    }
+
+    private function loadInventorySourceItems()
+    {
+        $this->searchCriteriaBuilderMock->expects($this->once())
+            ->method('addFilter')
+            ->willReturn($this->searchCriteriaBuilderMock);
+
+        $this->searchCriteriaBuilderMock->expects($this->once())
+            ->method('create')
+            ->willReturn($this->searchCriteriaMock);
+
+        $this->sourceItemRepositoryMock->expects($this->once())
+            ->method('getList')
+            ->with($this->searchCriteriaMock)
+            ->willReturn($this->sourceItemSearchResultsInterfaceMock);
     }
 }

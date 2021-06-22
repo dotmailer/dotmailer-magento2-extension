@@ -2,96 +2,158 @@
 
 namespace Dotdigitalgroup\Email\Model\Product;
 
-use Magento\CatalogInventory\Api\StockItemRepositoryInterface;
 use Dotdigitalgroup\Email\Api\StockFinderInterface;
-use Magento\CatalogInventory\Api\StockItemCriteriaInterfaceFactory;
 use Dotdigitalgroup\Email\Logger\Logger;
+use Dotdigitalgroup\Email\Model\Product\Stock\SalableQuantity;
+use Magento\CatalogInventory\Model\Configuration;
+use Magento\Framework\Api\SearchCriteriaBuilder;
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\InventoryApi\Api\SourceItemRepositoryInterface;
 
 class StockFinder implements StockFinderInterface
 {
-    /**
-     * @var StockItemRepositoryInterface
-     */
-    private $stockItemRepository;
-
     /**
      * @var Logger
      */
     private $logger;
 
     /**
-     * @var StockItemCriteriaInterfaceFactory
+     * @var SalableQuantity
      */
-    private $stockItemCriteria;
+    private $salableQuantity;
+
+    /**
+     * @var SearchCriteriaBuilder
+     */
+    private $searchCriteriaBuilder;
+
+    /**
+     * @var ScopeConfigInterface
+     */
+    private $scopeConfig;
+
+    /**
+     * @var SourceItemRepositoryInterface
+     */
+    private $sourceItemRepository;
 
     /**
      * StockFinder constructor.
-     * @param StockItemRepositoryInterface $stockItemRepository
+     * @param SourceItemRepositoryInterface $sourceItemRepository
      * @param Logger $logger
-     * @param StockItemCriteriaInterfaceFactory $stockItemCriteria
+     * @param SalableQuantity $salableQuantity
+     * @param SearchCriteriaBuilder $searchCriteriaBuilder
+     * @param GetProductSalableQtyInterface $getProductSalableQty
+     * @param GetAssignedStockIdsBySku $getAssignedStockIdsBySku
+     * @param GetStockItemConfigurationInterface $getStockItemConfiguration
+     * @param GetAssignedSalesChannelsForStockInterface $getAssignedSalesChannelsForStock
+     * @param ScopeConfigInterface $scopeConfig
+     * @param WebsiteRepositoryInterface $websiteRepository
      */
     public function __construct(
-        StockItemRepositoryInterface $stockItemRepository,
         Logger $logger,
-        StockItemCriteriaInterfaceFactory $stockItemCriteria
+        SalableQuantity $salableQuantity,
+        SearchCriteriaBuilder $searchCriteriaBuilder,
+        ScopeConfigInterface $scopeConfig,
+        SourceItemRepositoryInterface $sourceItemRepository
     ) {
-        $this->stockItemRepository = $stockItemRepository;
         $this->logger = $logger;
-        $this->stockItemCriteria = $stockItemCriteria;
+        $this->salableQuantity = $salableQuantity;
+        $this->searchCriteriaBuilder = $searchCriteriaBuilder;
+        $this->scopeConfig = $scopeConfig;
+        $this->sourceItemRepository = $sourceItemRepository;
     }
 
     /**
-     * @param \Magento\Catalog\Model\Product $product
+     * @param \Magento\Catalog\Api\Data\ProductInterface $product
+     * @param int $websiteId
      * @return float|\Magento\CatalogInventory\Api\Data\StockItemInterface
      */
-    public function getStockQty($product)
+    public function getStockQty($product, int $websiteId)
     {
         try {
             switch ($product->getTypeId()) {
                 case 'configurable':
-                    return $this->getStockQtyForConfigurableProduct($product);
+                    return $this->getStockQtyForConfigurableProduct($product, $websiteId);
                 default:
-                    return $this->getStockQtyForProducts($product);
+                    return $this->getStockQtyForProducts([$product], $websiteId);
             }
         } catch (\Exception $e) {
             $this->logger->debug(
                 'Stock qty not found for ' . $product->getTypeId() . ' product id ' . $product->getId(),
                 [(string) $e]
             );
+            return 0;
         }
     }
 
     /**
-     * @param $configurableProduct
+     * @param \Magento\Catalog\Api\Data\ProductInterface $configurableProduct
+     * @param int $websiteId
      * @return float|int
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
-    private function getStockQtyForConfigurableProduct($configurableProduct)
+    private function getStockQtyForConfigurableProduct($configurableProduct, $websiteId)
     {
         $simpleProducts = $configurableProduct->getTypeInstance()->getUsedProducts($configurableProduct);
-        return $this->getStockQtyForProducts($simpleProducts);
+        return $this->getStockQtyForProducts($simpleProducts, $websiteId);
     }
 
     /**
-     * @param $products
+     * Calculate available stock for an array of products.
+     *
+     * If Manage Stock is disabled globally, or disabled for individual SKUs,
+     * or if catalog sync is running at default level, we cannot use
+     * salable quantity (stock is allocated to website sales channels).
+     * In these cases we fall back to the 'Quantity per Source'.
+     *
+     * @param \Magento\Catalog\Api\Data\ProductInterface[] $products
+     * @param int $websiteId
      * @return float|int
      */
-    private function getStockQtyForProducts($products)
+    private function getStockQtyForProducts($products, $websiteId)
     {
-        $stock = 0;
+        $qty = 0;
+        $skusWithNotManageStock = [];
 
-        $searchCriteria = $this->stockItemCriteria->create();
-        $searchCriteria->setProductsFilter($products);
-        $stockProducts = $this->stockItemRepository->getList(
-            $searchCriteria
+        $manageStock = $this->scopeConfig->getValue(
+            Configuration::XML_PATH_MANAGE_STOCK
         );
 
-        if ($stockProducts->getSize()) {
-            foreach ($stockProducts->getItems() as $product) {
-                $stock += $product->getQty();
+        if (!$manageStock || $websiteId === 0) {
+            foreach ($products as $product) {
+                $skusWithNotManageStock[] = $product->getSku();
+            }
+        } else {
+            foreach ($products as $product) {
+                try {
+                    $qty += $this->salableQuantity->getSalableQuantity($product, $websiteId);
+                } catch (\Exception $e) {
+                    $skusWithNotManageStock[] = $product->getSku();
+                    continue;
+                }
             }
         }
 
-        return $stock;
+        if ($skusWithNotManageStock) {
+            $sourceItems = $this->loadInventorySourceItems($skusWithNotManageStock);
+            foreach ($sourceItems as $item) {
+                $qty += $item->getQuantity();
+            }
+        }
+
+        return $qty;
+    }
+
+    /**
+     * @param array $skus
+     * @return \Magento\InventoryApi\Api\Data\SourceItemInterface[]
+     */
+    private function loadInventorySourceItems($skus)
+    {
+        $searchCriteria = $this->searchCriteriaBuilder
+            ->addFilter('sku', $skus, 'in')
+            ->create();
+
+        return $this->sourceItemRepository->getList($searchCriteria)->getItems();
     }
 }
