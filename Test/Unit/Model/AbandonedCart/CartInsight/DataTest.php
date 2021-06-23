@@ -20,7 +20,7 @@ use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
 use PHPUnit\Framework\TestCase;
 
-class UpdateAbandonedCartFieldsTest extends TestCase
+class DataTest extends TestCase
 {
     /**
      * @var Data|\PHPUnit_Framework_MockObject_MockObject
@@ -222,8 +222,8 @@ class UpdateAbandonedCartFieldsTest extends TestCase
         $this->dateTimeMock
             ->method('date')
             ->withConsecutive(
-                ['c', $createdAt],
-                ['c', $updatedAt]
+                [\DateTime::ATOM, $createdAt],
+                [\DateTime::ATOM, $updatedAt]
             )
             ->willReturnOnConsecutiveCalls(
                 $expectedPayload['json']['createdDate'],

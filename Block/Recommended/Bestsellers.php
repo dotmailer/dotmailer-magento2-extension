@@ -77,7 +77,7 @@ class Bestsellers extends \Dotdigitalgroup\Email\Block\Recommended
         $limit = $this->recommendedHelper->getDisplayLimitByMode($mode);
         //date range
         $from = $this->recommendedHelper->getTimeFromConfig($mode);
-        $to = $this->_localeDate->date()->format(\Zend_Date::ISO_8601);
+        $to = $this->_localeDate->date()->format(\DateTime::ATOM);
         $storeId = $this->_storeManager->getStore()->getId();
 
         return $this->catalog->getBestsellerCollection($from, $to, $limit, $storeId);

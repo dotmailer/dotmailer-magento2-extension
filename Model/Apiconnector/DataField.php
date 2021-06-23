@@ -59,7 +59,7 @@ class DataField
                 $default = (int)$default;
                 break;
             case 'Date':
-                $default = $this->datetime->create()->date(\Zend_Date::ISO_8601, $default);
+                $default = $this->datetime->create()->date(\DateTime::ATOM, $default);
                 break;
             case 'Boolean':
                 $default = (bool)$default;

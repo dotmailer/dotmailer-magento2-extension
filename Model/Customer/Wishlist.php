@@ -147,7 +147,7 @@ class Wishlist
      */
     public function setUpdatedAt($date)
     {
-        $this->updatedAt = $this->dateTime->date(\Zend_Date::ISO_8601, $date);
+        $this->updatedAt = $this->dateTime->date(\DateTime::ATOM, $date);
 
         return $this;
     }

@@ -54,7 +54,7 @@ class Date
 
         // For locales east of GMT i.e. +01:00 and up, return the date, formatted
         if ($timezoneOffset > 0) {
-            return $adjustedDate->format(\Zend_Date::ISO_8601);
+            return $adjustedDate->format(\DateTime::ATOM);
         }
 
         // For locales west of GMT i.e. -01:00 and below, adjust date by adding the current timezone offset
@@ -62,6 +62,6 @@ class Date
             ['interval_spec' => 'PT' . abs($timezoneOffset) . 'S']
         );
 
-        return $adjustedDate->add($offset)->format(\Zend_Date::ISO_8601);
+        return $adjustedDate->add($offset)->format(\DateTime::ATOM);
     }
 }

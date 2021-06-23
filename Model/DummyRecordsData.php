@@ -128,8 +128,8 @@ class DummyRecordsData
                     UrlInterface::URL_TYPE_WEB,
                     $store->isCurrentlySecure()
                 ).'connector/email/getbasket/quote_id/1/',
-                'createdDate' => date(\Zend_Date::ISO_8601, time()),
-                'modifiedDate' => date(\Zend_Date::ISO_8601, time()),
+                'createdDate' => date(\DateTime::ATOM, time()),
+                'modifiedDate' => date(\DateTime::ATOM, time()),
                 'currency' => 'USD',
                 'subTotal' => round(52, 2),
                 'taxAmount' => (float) 0,

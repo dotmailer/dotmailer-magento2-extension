@@ -146,8 +146,8 @@ class Data
             'json' => [
                 'cartId' => $quote->getId(),
                 'cartUrl' => $this->getBasketUrl($quote->getId(), $store),
-                'createdDate' => $this->dateTime->date(\Zend_Date::ISO_8601, $quote->getCreatedAt()),
-                'modifiedDate' => $this->dateTime->date(\Zend_Date::ISO_8601, $quote->getUpdatedAt()),
+                'createdDate' => $this->dateTime->date(\DateTime::ATOM, $quote->getCreatedAt()),
+                'modifiedDate' => $this->dateTime->date(\DateTime::ATOM, $quote->getUpdatedAt()),
                 'currency' => $quoteCurrency,
                 'subTotal' => round($quote->getSubtotal(), 2),
                 'taxAmount' => round($quote->getShippingAddress()->getTaxAmount(), 2),

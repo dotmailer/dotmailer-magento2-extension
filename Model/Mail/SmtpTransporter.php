@@ -3,8 +3,10 @@
 namespace Dotdigitalgroup\Email\Model\Mail;
 
 use Dotdigitalgroup\Email\Helper\Transactional;
+use Magento\Framework\Mail\TransportInterface;
+use Zend\Mail\Message;
 
-class SmtpTransportZend2
+class SmtpTransporter
 {
     /**
      * @var Transactional
@@ -22,7 +24,7 @@ class SmtpTransportZend2
     const ENCODING = 'utf-8';
 
     /**
-     * SmtpTransportZend2 constructor.
+     * SmtpTransporter constructor.
      * @param Transactional $transactionalEmailSettings
      * @param ZendMailTransportSmtp2Factory $zendMailTransportSmtp2Factory
      */
@@ -35,11 +37,32 @@ class SmtpTransportZend2
     }
 
     /**
-     * @param \Zend\Mail\Message $message
+     * @param TransportInterface $subject
      * @param int $storeId
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function send($message, $storeId)
+    public function send($subject, $storeId)
+    {
+        $message = $this->extractZendMailMessage($subject);
+        $this->sendMessage($message, $storeId);
+    }
+
+    /**
+     * @param TransportInterface $subject
+     * @return Message
+     */
+    private function extractZendMailMessage($subject)
+    {
+        $message = $subject->getMessage();
+        return Message::fromString($message->getRawMessage());
+    }
+
+    /**
+     * @param Message $message
+     * @param int $storeId
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    private function sendMessage($message, $storeId)
     {
         $smtpOptions = $this->transactionalEmailSettings->getSmtpOptions($storeId);
         $smtp = $this->zendMailTransportSmtp2Factory->create($smtpOptions);

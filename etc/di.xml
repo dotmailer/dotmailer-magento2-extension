@@ -60,23 +60,6 @@
             <argument name="target" xsi:type="object">Magento\Catalog\Pricing\Price\Pool</argument>
         </arguments>
     </virtualType>
-    <virtualType name="dotdigitalgroupZendDate" type="Zend_Date">
-        <arguments>
-            <argument name="date" xsi:type="null"/>
-            <argument name="part" xsi:type="null"/>
-            <argument name="locale" xsi:type="null"/>
-        </arguments>
-    </virtualType>
-    <type name="Dotdigitalgroup\Email\Helper\Recommended">
-        <arguments>
-            <argument name="date" xsi:type="object">dotdigitalgroupZendDate</argument>
-        </arguments>
-    </type>
-    <virtualType name="dotdigitalgroupZendMailTransportSendmail" type="Zend_Mail_Transport_Sendmail">
-        <arguments>
-            <argument name="parameters" xsi:type="null"/>
-        </arguments>
-    </virtualType>
     <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
         <arguments>
             <argument name="collections" xsi:type="array">

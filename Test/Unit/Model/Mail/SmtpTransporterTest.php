@@ -3,12 +3,13 @@
 namespace Dotdigitalgroup\Email\Test\Unit\Model\Mail;
 
 use Dotdigitalgroup\Email\Helper\Transactional;
-use Dotdigitalgroup\Email\Model\Mail\SmtpTransportZend2;
+use Dotdigitalgroup\Email\Model\Mail\SmtpTransporter;
 use Dotdigitalgroup\Email\Model\Mail\ZendMailTransportSmtp2Factory;
+use Magento\Framework\Mail\TransportInterface;
 use Zend\Mail\Message;
 use Zend\Mail\Transport\Smtp;
 
-class SmtpTransportZend2Test extends \PHPUnit\Framework\TestCase
+class SmtpTransporterTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var Transactional|\PHPUnit_Framework_MockObject_MockObject
@@ -21,15 +22,25 @@ class SmtpTransportZend2Test extends \PHPUnit\Framework\TestCase
     private $zendMailTransportSmtp2Factory;
 
     /**
-     * @var SmtpTransportZend2
+     * @var SmtpTransporter
      */
-    private $smtpTransportZend2;
+    private $smtpTransporter;
+
+    /**
+     * @var TransportInterface|PHPUnit_Framework_MockObject_MockObject
+     */
+    private $subject;
 
     /**
      * Prepare data
      */
     protected function setUp() :void
     {
+        $this->subject = $this->getMockBuilder(
+            TransportInterface::class
+        )->disableOriginalConstructor(
+        )->getMock();
+
         $this->transactionalEmailSettings = $this->getMockBuilder(
             Transactional::class
         )->disableOriginalConstructor(
@@ -40,7 +51,7 @@ class SmtpTransportZend2Test extends \PHPUnit\Framework\TestCase
         )->disableOriginalConstructor(
         )->getMock();
 
-        $this->smtpTransportZend2 = new SmtpTransportZend2(
+        $this->smtpTransporter = new SmtpTransporter(
             $this->transactionalEmailSettings,
             $this->zendMailTransportSmtp2Factory
         );
@@ -48,11 +59,24 @@ class SmtpTransportZend2Test extends \PHPUnit\Framework\TestCase
 
     /**
      */
-    public function testSendUsesZend2MailTransportSmtp()
+    public function testSendViaSmtpTransporter()
     {
         $message = new Message();
         $storeId = 224;
         $smtpOptions = [];
+
+        $magentoFrameworkMessage = $this->getMockBuilder(
+            \Magento\Framework\Mail\EmailMessageInterface::class
+        )->disableOriginalConstructor(
+        )->getMock();
+
+        $magentoFrameworkMessage->expects($this->once())
+            ->method('getRawMessage')
+            ->willReturn($message->toString());
+
+        $this->subject->expects($this->once())
+            ->method('getMessage')
+            ->willReturn($magentoFrameworkMessage);
 
         $this->transactionalEmailSettings->expects($this->once())
             ->method('getSmtpOptions')
@@ -69,10 +93,10 @@ class SmtpTransportZend2Test extends \PHPUnit\Framework\TestCase
             ->with($smtpOptions)
             ->willReturn($zendMail2TransportSmtp);
 
+        // Not checking args passed in. Can't mock static Message::fromString
         $zendMail2TransportSmtp->expects($this->once())
-            ->method('send')
-            ->with($message);
+            ->method('send');
 
-        $this->smtpTransportZend2->send($message, $storeId);
+        $this->smtpTransporter->send($this->subject, $storeId);
     }
 }

@@ -4,6 +4,7 @@ namespace Dotdigitalgroup\Email\Plugin;
 
 use Magento\Framework\Mail\TransportInterface;
 use Magento\Framework\FlagManager;
+use Dotdigitalgroup\Email\Model\Mail\SmtpTransporter;
 use Dotdigitalgroup\Email\Model\Monitor\Smtp\Monitor;
 
 /**
@@ -18,9 +19,9 @@ class TransportPlugin
     ];
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\Mail\SmtpTransportAdapter
+     * @var SmtpTransporter
      */
-    private $smtpTransportAdapter;
+    private $smtpTransporter;
 
     /**
      * @var \Dotdigitalgroup\Email\Helper\Transactional
@@ -44,20 +45,20 @@ class TransportPlugin
 
     /**
      * TransportPlugin constructor.
-     * @param \Dotdigitalgroup\Email\Model\Mail\SmtpTransportAdapter $smtpTransportAdapter
+     * @param SmtpTransporter $smtpTransporter
      * @param \Dotdigitalgroup\Email\Helper\Transactional $helper
      * @param \Dotdigitalgroup\Email\Helper\Data $dataHelper
      * @param \Magento\Framework\Registry $registry
      * @param FlagManager $flagManager
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\Mail\SmtpTransportAdapter $smtpTransportAdapter,
+        SmtpTransporter $smtpTransporter,
         \Dotdigitalgroup\Email\Helper\Transactional $helper,
         \Dotdigitalgroup\Email\Helper\Data $dataHelper,
         \Magento\Framework\Registry $registry,
         FlagManager $flagManager
     ) {
-        $this->smtpTransportAdapter = $smtpTransportAdapter;
+        $this->smtpTransporter = $smtpTransporter;
         $this->helper = $helper;
         $this->dataHelper = $dataHelper;
         $this->registry = $registry;
@@ -76,7 +77,7 @@ class TransportPlugin
         $storeId = $this->registry->registry('transportBuilderPluginStoreId');
         if ($this->helper->isEnabled($storeId)) {
             try {
-                $this->smtpTransportAdapter->send($subject, $storeId);
+                $this->smtpTransporter->send($subject, $storeId);
             } catch (\Exception $e) {
                 if (in_array(str_replace("\r\n", "", $e->getMessage()), self::EXCLUDED_ERRORS)) {
                     $to = $subject->getMessage()->getTo();

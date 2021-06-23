@@ -175,7 +175,7 @@ class SubscriberWithSalesExporter
             if ($isConsentSubscriberEnabled && $consentUrl) {
                 $outputData[] = $consentModel->getConsentTextForWebsite($consentUrl, $websiteId);
                 $outputData[] = $consentUrl;
-                $outputData[] = $this->dateTime->date(\Zend_Date::ISO_8601, $subscriber->getConsentDatetime());
+                $outputData[] = $this->dateTime->date(\DateTime::ATOM, $subscriber->getConsentDatetime());
                 $outputData[] = $subscriber->getConsentIp();
                 $outputData[] = $subscriber->getConsentUserAgent();
             }
