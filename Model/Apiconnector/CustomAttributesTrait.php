@@ -9,9 +9,9 @@ trait CustomAttributesTrait
     /**
      * @param Attribute|Attribute\AbstractAttribute $attribute
      * @param $attributeCode
-     * @return mixed
+     * @return string
      */
-    private function getDropDownValues(Attribute $attribute, $attributeCode)
+    private function getSelectedDropDownValue(Attribute $attribute, $attributeCode)
     {
         $options = $this->getOptions($attribute);
 
@@ -20,10 +20,11 @@ trait CustomAttributesTrait
         }
 
         foreach ($options as $option) {
-            if ($option['value'] === $this->model->getData($attributeCode)) {
+            if ($option['value'] == $this->model->getData($attributeCode)) {
                 return $option['label'];
             }
         }
+        return '';
     }
 
     /**
