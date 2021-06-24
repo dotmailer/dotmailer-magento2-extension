@@ -659,7 +659,7 @@ class ContactData
 
         switch ($attribute->getData('frontend_input')) {
             case 'select':
-                return $this->getDropDownValues($attribute, $attributeCode);
+                return $this->getSelectedDropDownValue($attribute, $attributeCode);
 
             case 'multiselect':
                 return $this->getMultiSelectValues($attribute, $attributeCode);
