@@ -4,7 +4,7 @@ namespace Dotdigitalgroup\Email\Model;
 
 use Dotdigitalgroup\Email\Helper\Config;
 use Dotdigitalgroup\Email\Model\Cron\JobChecker;
-use Dotdigitalgroup\Email\Model\Sync\IntegrationInsightsFactory;
+use Dotdigitalgroup\Email\Model\Sync\Integration\IntegrationInsightsFactory;
 
 class Cron
 {

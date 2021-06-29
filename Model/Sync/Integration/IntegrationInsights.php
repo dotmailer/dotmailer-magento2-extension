@@ -1,10 +1,10 @@
 <?php
 
-namespace Dotdigitalgroup\Email\Model\Sync;
+namespace Dotdigitalgroup\Email\Model\Sync\Integration;
 
 use Dotdigitalgroup\Email\Helper\Config;
 use Dotdigitalgroup\Email\Helper\Data;
-use Dotdigitalgroup\Email\Model\IntegrationInsightData;
+use Dotdigitalgroup\Email\Model\Sync\SyncInterface;
 
 class IntegrationInsights implements SyncInterface
 {

@@ -3,8 +3,6 @@
 namespace Dotdigitalgroup\Email\Setup;
 
 use Dotdigitalgroup\Email\Logger\Logger;
-use Dotdigitalgroup\Email\Model\Sync\IntegrationInsightsFactory;
-use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Setup\ExternalFKSetup;
 use Magento\Framework\Setup\InstallSchemaInterface;
 use Magento\Framework\Setup\ModuleContextInterface;
@@ -21,11 +19,6 @@ class Recurring implements InstallSchemaInterface
     protected $externalFKSetup;
 
     /**
-     * @var IntegrationInsightsFactory
-     */
-    private $integrationInsightsFactory;
-
-    /**
      * @var Logger
      */
     private $logger;
@@ -33,16 +26,13 @@ class Recurring implements InstallSchemaInterface
     /**
      * Recurring constructor.
      * @param ExternalFKSetup $externalFKSetup
-     * @param IntegrationInsightsFactory $integrationInsightsFactory
      * @param Logger $logger
      */
     public function __construct(
         ExternalFKSetup $externalFKSetup,
-        IntegrationInsightsFactory $integrationInsightsFactory,
         Logger $logger
     ) {
         $this->externalFKSetup = $externalFKSetup;
-        $this->integrationInsightsFactory = $integrationInsightsFactory;
         $this->logger = $logger;
     }
 
@@ -63,19 +53,5 @@ class Recurring implements InstallSchemaInterface
         );
 
         $setup->endSetup();
-
-        $this->syncIntegrationData();
-    }
-
-    /**
-     * Sync integration data with Engagement Cloud
-     */
-    private function syncIntegrationData()
-    {
-        try {
-            $this->integrationInsightsFactory->create()->sync();
-        } catch (LocalizedException $e) {
-            $this->logger->debug((string) $e);
-        }
     }
 }

@@ -2,7 +2,6 @@
 
 namespace Dotdigitalgroup\Email\Observer\Adminhtml;
 
-use Dotdigitalgroup\Email\Model\Sync\IntegrationInsightsFactory;
 use Dotdigitalgroup\Email\Model\Sync\DummyRecordsFactory;
 
 /**
@@ -36,11 +35,6 @@ class ApiValidate implements \Magento\Framework\Event\ObserverInterface
     private $test;
 
     /**
-     * @var IntegrationInsightsFactory
-     */
-    private $integrationInsightsFactory;
-
-    /**
      * @var DummyRecordsFactory
      */
     private $dummyRecordsFactory;
@@ -52,7 +46,6 @@ class ApiValidate implements \Magento\Framework\Event\ObserverInterface
      * @param \Dotdigitalgroup\Email\Model\Apiconnector\Test $test
      * @param \Magento\Backend\App\Action\Context $context
      * @param \Magento\Framework\App\Config\Storage\Writer $writer
-     * @param IntegrationInsightsFactory $integrationInsightsFactory
      * @param DummyRecordsFactory $dummyRecordsFactory
      */
     public function __construct(
@@ -60,7 +53,6 @@ class ApiValidate implements \Magento\Framework\Event\ObserverInterface
         \Dotdigitalgroup\Email\Model\Apiconnector\Test $test,
         \Magento\Backend\App\Action\Context $context,
         \Magento\Framework\App\Config\Storage\Writer $writer,
-        IntegrationInsightsFactory $integrationInsightsFactory,
         DummyRecordsFactory $dummyRecordsFactory
     ) {
         $this->test           = $test;
@@ -68,7 +60,6 @@ class ApiValidate implements \Magento\Framework\Event\ObserverInterface
         $this->writer         = $writer;
         $this->context        = $context;
         $this->messageManager = $context->getMessageManager();
-        $this->integrationInsightsFactory = $integrationInsightsFactory;
         $this->dummyRecordsFactory = $dummyRecordsFactory;
     }
 
@@ -96,10 +87,6 @@ class ApiValidate implements \Magento\Framework\Event\ObserverInterface
         if ($apiUsername && $apiPassword) {
             $isValidAccount = $this->isValidAccount($apiUsername, $apiPassword);
             if ($isValidAccount) {
-                // send integration data
-                $this->integrationInsightsFactory->create()
-                    ->sync();
-
                 $websiteId = $this->context->getRequest()->getParam('website');
 
                 if ($websiteId) {

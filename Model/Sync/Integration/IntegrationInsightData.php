@@ -1,12 +1,14 @@
 <?php
 
-namespace Dotdigitalgroup\Email\Model;
+namespace Dotdigitalgroup\Email\Model\Sync\Integration;
 
 use Dotdigitalgroup\Email\Helper\Data;
+use Magento\Store\Model\StoreManagerInterface;
 use Magento\Framework\App\ProductMetadataInterface;
 use Magento\Framework\Module\ModuleListInterface;
 use Magento\Framework\UrlInterface;
 use Magento\Store\Model\Store;
+use Magento\Framework\App\Config\ScopeConfigInterface;
 
 class IntegrationInsightData
 {
@@ -31,18 +33,42 @@ class IntegrationInsightData
     private $integrationMetaData;
 
     /**
+     * @var DotdigitalConfig
+     */
+    private $dotdigitalConfig;
+
+    /**
+     * @var ScopeConfigInterface
+     */
+    private $scopeConfig;
+
+    /**
+     * @var StoreManagerInterface
+     */
+    private $storeManager;
+
+    /**
+     * IntegrationInsightData constructor.
      * @param Data $helper
      * @param ProductMetadataInterface $productMetadata
      * @param ModuleListInterface $moduleList
+     * @param DotdigitalConfig $dotdigitalConfig
+     * @param ScopeConfigInterface $scopeConfig
      */
     public function __construct(
         Data $helper,
         ProductMetadataInterface $productMetadata,
-        ModuleListInterface $moduleList
+        ModuleListInterface $moduleList,
+        DotdigitalConfig $dotdigitalConfig,
+        ScopeConfigInterface $scopeConfig,
+        StoreManagerInterface $storeManager
     ) {
         $this->helper = $helper;
         $this->productMetadata = $productMetadata;
         $this->moduleList = $moduleList;
+        $this->dotdigitalConfig = $dotdigitalConfig;
+        $this->scopeConfig = $scopeConfig;
+        $this->storeManager = $storeManager;
     }
 
     /**
@@ -52,7 +78,7 @@ class IntegrationInsightData
     public function getIntegrationInsightData(): array
     {
         $websiteData = [];
-        foreach ($this->helper->getStores(true) as $store) {
+        foreach ($this->storeManager->getStores() as $store) {
             /** @var Store $store */
             if (!$this->helper->isEnabled($store->getWebsiteId()) || isset($websiteData[$store->getWebsiteId()])) {
                 continue;
@@ -64,7 +90,7 @@ class IntegrationInsightData
                     $store->getBaseUrl(UrlInterface::URL_TYPE_LINK, $store->isCurrentlySecure()),
                     PHP_URL_HOST
                 ),
-            ] + $this->getIntegrationMetaData();
+            ] + $this->getIntegrationMetaData() + ['configuration' => $this->getConfiguration($store->getWebsiteId())];
             // @codingStandardsIgnoreEnd
         }
 
@@ -72,6 +98,7 @@ class IntegrationInsightData
     }
 
     /**
+     * @param $store
      * @return array
      * @throws \Exception
      */
@@ -87,8 +114,17 @@ class IntegrationInsightData
             'version' => $this->productMetadata->getVersion(),
             'phpVersion' => implode('.', [PHP_MAJOR_VERSION, PHP_MINOR_VERSION, PHP_RELEASE_VERSION]),
             'connectorVersion' => $this->getConnectorVersion(),
-            'lastUpdated' => (new \DateTime('now', new \DateTimeZone('UTC')))->format(\DateTime::W3C),
+            'lastUpdated' => (new \DateTime('now', new \DateTimeZone('UTC')))->format(\DateTime::W3C)
         ];
+    }
+
+    /**
+     * @param $websiteId
+     * @return array
+     */
+    private function getConfiguration($websiteId)
+    {
+        return $this->dotdigitalConfig->getConfig($websiteId);
     }
 
     /**

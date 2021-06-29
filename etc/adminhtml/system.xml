@@ -1339,6 +1339,10 @@
             </group>
             <group id="tracking" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="0">
                 <label>Tracking</label>
+                <field id="integration_insights" translate="label" sortOrder="5" type="select" showInStore="0"
+                       showInWebsite="0" showInDefault="0">
+                    <label>Integration Insights</label>
+                </field>
                 <field id="roi_enabled" translate="label" sortOrder="10" type="select" showInStore="0" showInWebsite="1"
                        showInDefault="1">
                     <label>ROI Tracking</label>

@@ -3,9 +3,11 @@
 namespace Dotdigitalgroup\Email\Model;
 
 use Dotdigitalgroup\Email\Helper\Data;
+use Dotdigitalgroup\Email\Model\DotdigitalConfig;
 use Magento\Framework\App\ProductMetadataInterface;
 use Magento\Framework\Module\ModuleListInterface;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
+use Magento\Framework\App\Config\ScopeConfigInterface;
 use PHPUnit\Framework\TestCase;
 
 class IntegrationInsightDataUnitTest extends TestCase
@@ -40,12 +42,24 @@ class IntegrationInsightDataUnitTest extends TestCase
      */
     private $timezoneMock;
 
+    /**
+     * @var \Dotdigitalgroup\Email\Model\DotdigitalConfig|\PHPUnit\Framework\MockObject\MockObject
+     */
+    private $dotdigitalConfigMock;
+
+    /**
+     * @var ScopeConfigInterface|\PHPUnit\Framework\MockObject\MockObject
+     */
+    private $scopeConfigMock;
+
     public function setUp() :void
     {
         $this->helperMock = $this->createMock(Data::class);
         $this->productMetadataMock = $this->createMock(ProductMetadataInterface::class);
         $this->moduleListMock = $this->createMock(ModuleListInterface::class);
         $this->timezoneMock = $this->createMock(TimezoneInterface::class);
+        $this->dotdigitalConfigMock = $this->createMock(DotdigitalConfig::class);
+        $this->scopeConfigMock = $this->createMock(ScopeConfigInterface::class);
 
         // set up metadata
         $this->productMetadataMock
@@ -79,7 +93,9 @@ class IntegrationInsightDataUnitTest extends TestCase
         $this->integrationInsightData = new IntegrationInsightData(
             $this->helperMock,
             $this->productMetadataMock,
-            $this->moduleListMock
+            $this->moduleListMock,
+            $this->dotdigitalConfigMock,
+            $this->scopeConfigMock
         );
     }
 
@@ -106,8 +122,8 @@ class IntegrationInsightDataUnitTest extends TestCase
 
         // assert 2 records were returned, with separate integration IDs based on the API hash
         $this->assertCount(2, $data);
-        $this->assertEquals('www.chaz-kangaroo.com', reset($data)['recordId']);
-        $this->assertEquals('www.bye-bye-man.com', end($data)['recordId']);
+        $this->assertEquals('www.chaz-kangaroo.com', reset($data)['url']);
+        $this->assertEquals('www.bye-bye-man.com', end($data)['url']);
     }
 
     /**
@@ -131,6 +147,7 @@ class IntegrationInsightDataUnitTest extends TestCase
         $this->assertArrayHasKey('connectorVersion', $toAssert);
 
         $this->assertArrayHasKey('phpVersion', $toAssert);
+        $this->assertArrayHasKey('configuration', $toAssert);
     }
 
     /**
