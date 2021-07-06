@@ -1348,18 +1348,16 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Customer sync size limit.
      *
-     * @param int $website
+     * @param int|string $websiteId
      *
      * @return string|boolean
      */
-    public function getSyncLimit($website = 0)
+    public function getSyncLimit($websiteId = 0)
     {
-        $website = $this->storeManager->getWebsite($website);
-
         return $this->scopeConfig->getValue(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_LIMIT,
             \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
-            $website
+            $websiteId
         );
     }
 
