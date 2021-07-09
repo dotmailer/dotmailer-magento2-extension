@@ -6,6 +6,7 @@ use Dotdigitalgroup\Email\Helper;
 use Magento\Catalog\Api\ProductAttributeRepositoryInterface;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\Api\FilterBuilder;
+use Magento\Framework\Stdlib\DateTime\DateTimeFactory;
 
 class Attribute
 {
@@ -50,8 +51,12 @@ class Attribute
     private $hasValues;
 
     /**
+     * @var DateTimeFactory
+     */
+    private $dateTimeFactory;
+
+    /**
      * Attribute constructor.
-     *
      * @param Helper\Data $helper
      * @param \Magento\Catalog\Model\ResourceModel\Product\Attribute\CollectionFactory $attributeCollection
      * @param \Magento\Eav\Api\AttributeSetRepositoryInterface $attributeSet
@@ -59,6 +64,7 @@ class Attribute
      * @param ProductAttributeRepositoryInterface $productAttributeRepository
      * @param SearchCriteriaBuilder $searchCriteriaBuilder
      * @param FilterBuilder $filterBuilder
+     * @param DateTimeFactory $dateTimeFactory
      */
     public function __construct(
         Helper\Data $helper,
@@ -67,7 +73,8 @@ class Attribute
         \Magento\Catalog\Model\ResourceModel\Product $productResource,
         ProductAttributeRepositoryInterface $productAttributeRepository,
         SearchCriteriaBuilder $searchCriteriaBuilder,
-        FilterBuilder $filterBuilder
+        FilterBuilder $filterBuilder,
+        DateTimeFactory $dateTimeFactory
     ) {
         $this->helper = $helper;
         $this->attributeCollection = $attributeCollection;
@@ -76,6 +83,7 @@ class Attribute
         $this->productAttributeRepository = $productAttributeRepository;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
         $this->filterBuilder = $filterBuilder;
+        $this->dateTimeFactory = $dateTimeFactory;
     }
 
     /**
@@ -138,7 +146,11 @@ class Attribute
                         $value = $productModel->getAttributeText($attributeCode);
                         break;
                     case 'date':
-                        $value = $productModel->getData($attributeCode);
+                    case 'datetime':
+                        $value = $this->dateTimeFactory->create()->date(
+                            \DateTime::ATOM,
+                            $productModel->getData($attributeCode)
+                        );
                         break;
                     default:
                         $value = $productModel->getData($attributeCode);
