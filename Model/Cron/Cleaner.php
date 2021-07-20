@@ -8,8 +8,9 @@ use Dotdigitalgroup\Email\Model\DateIntervalFactory;
 use Dotdigitalgroup\Email\Setup\SchemaInterface;
 use Magento\Framework\App\ResourceConnection;
 use Magento\Framework\Intl\DateTimeFactory;
+use Dotdigitalgroup\Email\Model\Task\TaskRunInterface;
 
-class Cleaner
+class Cleaner implements TaskRunInterface
 {
     /**
      * @var File
@@ -71,7 +72,7 @@ class Cleaner
     /**
      * Cleaning for csv files and connector tables.
      */
-    public function cleanUp()
+    public function run()
     {
         if ($this->jobChecker->hasAlreadyBeenRun('ddg_automation_cleaner')) {
             return;
