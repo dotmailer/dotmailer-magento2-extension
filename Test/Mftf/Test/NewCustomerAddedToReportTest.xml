@@ -9,6 +9,7 @@
             <description value="Create a new a new customer and validate to report."/>
             <severity value="MINOR"/>
             <group value="dotmailer"/>
+            <testCaseId value="BUNDLE-24"/>
         </annotations>
 
         <before>
@@ -51,7 +52,7 @@
 
         <!-- Check that contact is not imported -->
 
-        <amOnPage url="{{AdminContactReportPage.url}}" stepKey="amOnDotdigitalContactReportPage"/>
+        <amOnPage url="{{AdminContactReportPage.url}}" stepKey="amOnDotdigitalContactReportPage1"/>
 
         <actionGroup ref="FilterReport" stepKey="filterEmail1">
             <argument name="inputName" value="email"/>
@@ -65,10 +66,14 @@
 
         <seeElement selector="{{AdminDotdigitalReportColumnsSection.statusInGrid('Not Imported')}}" stepKey="seeRecordFound"/>
 
-        <!-- Check that contact is imported After CLI -->
-
+        <!-- Run Contact and Importer syncs -->
         <magentoCLI command="dotdigital:sync Contact" stepKey="runContactSync1"/>
+        <wait time="5" stepKey="waitFiveSeconds"/>
         <magentoCLI command="dotdigital:sync Importer" stepKey="runImporterSync"/>
+        <wait time="5" stepKey="waitFiveSeconds2"/>
+
+        <!-- Check that contact is imported After CLI -->
+        <amOnPage url="{{AdminContactReportPage.url}}" stepKey="amOnDotdigitalContactReportPage2"/>
 
         <actionGroup ref="FilterReport" stepKey="filterEmail2">
             <argument name="inputName" value="email"/>

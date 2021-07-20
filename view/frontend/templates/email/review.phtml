@@ -3,10 +3,8 @@
 ?>
 <?php
 $i = 0;
-$helper = $block->helper;
 $order = $block->getOrder();
 $mode = $block->getMode();
-$website = $block->getWebsite();
 ?>
 <?php if ($order): ?>
     <?php $dynamicStyle = $block->getDynamicStyles(); ?>
@@ -94,7 +92,7 @@ $website = $block->getWebsite();
             <div class="product-name" align="center"><b>
                     <?= mb_substr($block->escapeHtml($item->getName()), 0, 40); ?></b></div>
             <div align="center">
-                <?php $url = $block->getReviewItemUrl($item->getId()) . $helper->getReviewReminderAnchor($website); ?>
+                <?php $url = $block->getReviewItemUrl($item->getId()) . $block->getReviewReminderAnchor(); ?>
                 <a class="product-url" href="<?= $block->escapeUrl($url); ?>">
                     <?= $block->escapeHtml(__('Leave a review')); ?>
                 </a>

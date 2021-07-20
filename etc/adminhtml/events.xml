@@ -18,4 +18,7 @@
     <event name="admin_system_config_changed_section_connector_configuration">
         <observer name="admin_connector_image_types" instance="Dotdigitalgroup\Email\Observer\Adminhtml\ImageTypes"/>
     </event>
+    <event name="catalog_product_import_bunch_save_after">
+        <observer name="ddg_catalog_product_import_bunch_save_after" instance="Dotdigitalgroup\Email\Observer\Catalog\ReimportBunch"/>
+    </event>
 </config>

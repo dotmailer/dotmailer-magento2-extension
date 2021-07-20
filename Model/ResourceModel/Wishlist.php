@@ -111,7 +111,7 @@ class Wishlist extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             ->joinLeft(
                 ['c' => $this->getTable('customer_entity')],
                 'c.entity_id = customer_id',
-                ['email', 'store_id']
+                ['email']
             );
 
         return $collection;
@@ -129,7 +129,7 @@ class Wishlist extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             $coreResource->update(
                 $tableName,
                 ['wishlist_imported' => 1],
-                ["wishlist_id IN (?)" => $ids]
+                ["id IN (?)" => $ids]
             );
         } catch (\Exception $e) {
             $this->helper->debug((string)$e, []);

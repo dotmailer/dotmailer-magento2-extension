@@ -30,7 +30,7 @@ use Magento\Framework\Pricing\Amount\Base as AmountBase;
 use Magento\Framework\Pricing\PriceInfo\Base;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Store\Model\Store;
-use Magento\CatalogInventory\Api\StockStateInterface;
+use Magento\Tax\Api\TaxCalculationInterface;
 use PHPUnit\Framework\TestCase;
 
 class ProductTest extends TestCase
@@ -44,11 +44,6 @@ class ProductTest extends TestCase
      * @var StoreManagerInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private $storeManagerMock;
-
-    /**
-     * @var ConfigFactory|\PHPUnit_Framework_MockObject_MockObject
-     */
-    private $mediaConfigFactoryMock;
 
     /**
      * @var VisibilityFactory|\PHPUnit_Framework_MockObject_MockObject
@@ -74,11 +69,6 @@ class ProductTest extends TestCase
      * @var Phrase|\PHPUnit_Framework_MockObject_MockObject
      */
     private $phraseMock;
-
-    /**
-     * @var Config|\PHPUnit_Framework_MockObject_MockObject
-     */
-    private $configMock;
 
     /**
      * @var Collection|\PHPUnit_Framework_MockObject_MockObject
@@ -126,17 +116,12 @@ class ProductTest extends TestCase
     private $visibility;
 
     /**
-     * @var StockStateInterface
-     */
-    private $stockStateMock;
-
-    /**
      * @var Product
      */
     private $product;
 
     /**
-     * @var Store;
+     * @var Store
      */
     private $storeMock;
 
@@ -151,7 +136,7 @@ class ProductTest extends TestCase
     private $attributeFactoryMock;
 
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject
+     * @var ParentFinder\PHPUnit\Framework\MockObject\MockObject
      */
     private $parentFinderMock;
 
@@ -161,7 +146,7 @@ class ProductTest extends TestCase
     private $parentMock;
 
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject
+     * @var TierPriceFinder\PHPUnit\Framework\MockObject\MockObject
      */
     private $tierPriceFinderMock;
 
@@ -180,13 +165,33 @@ class ProductTest extends TestCase
      */
     private $imageTypeMock;
 
+    /**
+     * @var TaxCalculationInterface|\PHPUnit\Framework\MockObject\MockObject
+     */
+    private $taxCalculationInterfaceMock;
+
     protected function setUp() :void
     {
         $this->storeManagerMock = $this->createMock(StoreManagerInterface::class);
         $this->helperMock = $this->createMock(Data::class);
         $this->statusFactoryMock = $this->createMock(StatusFactory::class);
         $this->visibilityFactoryMock = $this->createMock(VisibilityFactory::class);
-        $this->mageProductMock = $this->createMock(MageProduct::class);
+        $this->mageProductMock = $this->getMockBuilder(MageProduct::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods([
+                'getTypeInstance',
+                'getSku',
+                'getStatus',
+                'getTypeId',
+                'getPrice',
+                'getSpecialPrice',
+                'getPriceInfo',
+                'getVisibility',
+                'getCategoryCollection',
+                'getWebsiteIds'
+            ])
+            ->addMethods(['getTaxClassId'])
+            ->getMock();
         $this->statusMock = $this->createMock(Status::class);
         $this->phraseMock = $this->createMock(Phrase::class);
         $this->collectionMock = $this->createMock(Collection::class);
@@ -209,6 +214,8 @@ class ProductTest extends TestCase
         $this->visibility = new Visibility(
             $this->createMock(\Magento\Eav\Model\ResourceModel\Entity\Attribute::class)
         );
+        $this->taxCalculationInterfaceMock = $this->createMock(TaxCalculationInterface::class);
+
         $this->product = new Product(
             $this->storeManagerMock,
             $this->helperMock,
@@ -220,7 +227,8 @@ class ProductTest extends TestCase
             $this->imageFinderMock,
             $this->tierPriceFinderMock,
             $this->stockFinderInterfaceMock,
-            $this->imageTypeMock
+            $this->imageTypeMock,
+            $this->taxCalculationInterfaceMock
         );
 
         $status = 1;
@@ -477,6 +485,38 @@ class ProductTest extends TestCase
 
         $this->assertTrue(isset($this->product->parent_id));
         $this->assertNotEquals($this->product->type, 'Variant');
+    }
+
+    public function testSetPricesIncTax()
+    {
+        $price = '20.00';
+        $price_incl_tax = '24.00';
+        $specialPrice = '15.00';
+        $specialPrice_incl_tax = '18.00';
+        $taxableGoodsClassId = 2;
+        $taxRate = 20.0;
+
+        $this->mageProductMock->expects($this->once())
+            ->method('getTaxClassId')
+            ->willReturn($taxableGoodsClassId);
+
+        $this->mageProductMock->expects($this->once())
+            ->method('getPrice')
+            ->willReturn($price);
+
+        $this->mageProductMock->expects($this->atLeastOnce())
+            ->method('getSpecialPrice')
+            ->willReturn($specialPrice);
+
+        $this->taxCalculationInterfaceMock->expects($this->once())
+            ->method('getCalculatedRate')
+            ->with($taxableGoodsClassId, null, 1)
+            ->willReturn($taxRate);
+
+        $this->product->setProduct($this->mageProductMock, 1);
+
+        $this->assertEquals($price_incl_tax, $this->product->price_incl_tax);
+        $this->assertEquals($specialPrice_incl_tax, $this->product->specialPrice_incl_tax);
     }
 
     private function getArrayPrices()

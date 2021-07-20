@@ -3,15 +3,16 @@
        xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
     <test name="DataMappingCreateDataFieldTest">
         <annotations>
-            <skip>
-                <issueId value="BUNDLE-2884"/>
-            </skip>
             <features value="Engagement Cloud module"/>
             <stories value="Configure data mapping"/>
             <title value="Create and confirm data fields"/>
             <description value="Create a new data field in the dotdigital admin, and confirm that data can be mapped to it."/>
             <severity value="MINOR"/>
             <group value="dotmailer"/>
+            <testCaseId value="BUNDLE-16"/>
+            <skip>
+                <issueId value="BUNDLE-2973"/>
+            </skip>
         </annotations>
 
         <before>
@@ -45,6 +46,7 @@
         </assertNotEquals>
 
         <!-- Transform the data field to uppercase to match the field returned from EC. -->
+        <conditionalClick selector="{{AdminDotdigitalDataMappingSection.DataFieldsMappingSectionToggle}}" dependentSelector="{{AdminDotdigitalDataMappingSection.DataFieldMappingSectionFieldset}}" visible="false" stepKey="clickToExpandActions"/>
         <executeJS function="return '{{DataFields.dataFieldName}}'.toUpperCase()" stepKey="upperCaseDataFieldWithSuffix"/>
         <selectOption selector="{{AdminDotdigitalDataMappingSection.customerFirstname}}" userInput="{$upperCaseDataFieldWithSuffix}" stepKey="selectDataField"/>
 

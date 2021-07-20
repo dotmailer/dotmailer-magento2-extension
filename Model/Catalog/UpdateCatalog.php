@@ -57,7 +57,7 @@ class UpdateCatalog
      */
     private function updateEmailCatalog($product)
     {
-        $productsToUpdate = $this->parentFinder->getConfigurableParentsFromBunchOfProducts([$product]);
+        $productsToUpdate = $this->parentFinder->getConfigurableParentsFromProductIds([$product->getId()]);
         array_push($productsToUpdate, $product->getData());
 
         $idsToUpdate = array_map(function ($products) {

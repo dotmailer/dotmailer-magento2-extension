@@ -4,11 +4,12 @@
     <test name="DataMappingCustomAttributesTest">
         <annotations>
             <features value="Engagement Cloud module"/>
-            <stories value="Configure custom data mapping"/>
+            <stories value="Configure data mapping"/>
             <title value="Map custom attributes to data fields"/>
             <description value="Map a custom attribute to an Engagement Cloud data field, then delete the mapping."/>
             <severity value="MINOR"/>
             <group value="dotmailer"/>
+            <testCaseId value="BUNDLE-17, BUNDLE-18"/>
         </annotations>
 
         <before>

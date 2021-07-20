@@ -67,7 +67,7 @@ class ContactImportQueueExport
                     );
 
                 //set imported
-                $resource->setImportedByIds($customerIds);
+                $resource->setImportedByIds($customerIds, $website->getId());
             }
         }
     }

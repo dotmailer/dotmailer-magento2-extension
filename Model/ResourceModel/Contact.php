@@ -4,6 +4,7 @@ namespace Dotdigitalgroup\Email\Model\ResourceModel;
 
 use Dotdigitalgroup\Email\Helper\Config;
 use Dotdigitalgroup\Email\Setup\SchemaInterface as Schema;
+use Magento\Store\Api\Data\WebsiteInterface;
 
 class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
@@ -33,9 +34,9 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     private $expressionFactory;
 
     /**
-     * @var \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory
+     * @var \Magento\Quote\Model\ResourceModel\QuoteFactory
      */
-    private $quoteCollectionFactory;
+    private $quoteResourceFactory;
 
     /**
      * @var \Magento\Sales\Model\ResourceModel\Order\CollectionFactory
@@ -67,8 +68,8 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      * @param \Dotdigitalgroup\Email\Model\Sql\ExpressionFactory $expressionFactory
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory $contactCollectionFactory
      * @param \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollectionFactory
-     * @param \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory $quoteCollectionFactory,
-     * @param \Dotdigitalgroup\Email\Helper\Data $config
+     * @param \Magento\Quote\Model\ResourceModel\QuoteFactory $quoteResourceFactory
+     * @param Config $config
      * @param null $connectionName
      */
     public function __construct(
@@ -79,7 +80,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         \Dotdigitalgroup\Email\Model\Sql\ExpressionFactory $expressionFactory,
         \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory $contactCollectionFactory,
         \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollectionFactory,
-        \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory $quoteCollectionFactory,
+        \Magento\Quote\Model\ResourceModel\QuoteFactory $quoteResourceFactory,
         Config $config,
         $connectionName = null
     ) {
@@ -90,7 +91,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         $this->subscribersCollection    = $subscriberCollection;
         $this->contactCollectionFactory = $contactCollectionFactory;
         $this->orderCollectionFactory   = $orderCollectionFactory;
-        $this->quoteCollectionFactory   = $quoteCollectionFactory;
+        $this->quoteResourceFactory = $quoteResourceFactory;
         parent::__construct($context, $connectionName);
     }
 
@@ -246,12 +247,15 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * @param array $guests
      */
-    public function updateContactsAsGuests($guests)
+    public function updateContactsAsGuests($guests, $websiteId)
     {
         $write = $this->getConnection();
         if (! empty($guests)) {
-            //make sure the contact are marked as guests if already exists
-            $where = ['email IN (?)' => $guests, 'is_guest IS NULL'];
+            $where = [
+                'email IN (?)' => $guests,
+                'website_id = ?' => $websiteId,
+                'is_guest IS NULL'
+            ];
             $data = ['is_guest' => 1];
             $write->update($this->getMainTable(), $data, $where);
         }
@@ -306,15 +310,15 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      * Get collection for subscribers by emails.
      *
      * @param array $emails
-     * @param int $websiteId
+     * @param WebsiteInterface $website
      *
      * @return array
      */
-    public function getSalesDataForSubscribersWithOrderStatusesAndBrand($emails, $websiteId)
+    public function getSalesDataForSubscribersWithOrderStatusesAndBrand($emails, $website)
     {
         $orderStatuses = $this->config->getWebsiteConfig(
             Config::XML_PATH_CONNECTOR_SYNC_DATA_FIELDS_STATUS,
-            $websiteId
+            $website->getId()
         );
         $orderStatuses = explode(',', $orderStatuses);
 
@@ -323,9 +327,12 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             ->addExpressionFieldToSelect('total_spend', 'SUM({{grand_total}})', 'grand_total')
             ->addExpressionFieldToSelect('number_of_orders', 'COUNT({{*}})', '*')
             ->addExpressionFieldToSelect('average_order_value', 'AVG({{grand_total}})', 'grand_total')
-            ->addFieldToFilter('customer_email', ['in' => $emails]);
+            ->addFieldToFilter('customer_email', ['in' => $emails])
+            ->addFieldToFilter('store_id', $website->getStoreIds());
 
-        $columns = $this->buildCollectionColumns();
+        $columns = $this->buildCollectionColumns(
+            implode(',', $website->getStoreIds())
+        );
         $orderCollection->getSelect()
             ->columns($columns)
             ->group('customer_email');
@@ -404,22 +411,35 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
+     * @param string $storeIds
      * @return array
      */
-    private function buildCollectionColumns()
+    private function buildCollectionColumns($storeIds)
     {
         $salesOrder = $this->getTable('sales_order');
         $salesOrderItem = $this->getTable('sales_order_item');
         $columns = [
-            'last_order_date' => $this->createLastOrderDataColumn($salesOrder),
-            'first_order_id' => $this->createFirstOrderIdColumn($salesOrder),
-            'last_order_id' => $this->createLastOrderIdColumn($salesOrder),
-            'last_increment_id' => $this->createLastIncrementIdColumn($salesOrder),
-            'product_id_for_first_brand' => $this->createProductIdForFirstBrandColumn($salesOrder, $salesOrderItem),
-            'product_id_for_last_brand' => $this->createProductIdForLastBrandColumn($salesOrder, $salesOrderItem),
-            'week_day' => $this->createWeekDayColumn($salesOrder),
-            'month_day' => $this->createMonthDayColumn($salesOrder),
-            'product_id_for_most_sold_product' => $this->createMostCategoryIdColumn($salesOrder, $salesOrderItem)
+            'last_order_date' => $this->createLastOrderDataColumn($salesOrder, $storeIds),
+            'first_order_id' => $this->createFirstOrderIdColumn($salesOrder, $storeIds),
+            'last_order_id' => $this->createLastOrderIdColumn($salesOrder, $storeIds),
+            'last_increment_id' => $this->createLastIncrementIdColumn($salesOrder, $storeIds),
+            'product_id_for_first_brand' => $this->createProductIdForFirstBrandColumn(
+                $salesOrder,
+                $salesOrderItem,
+                $storeIds
+            ),
+            'product_id_for_last_brand' => $this->createProductIdForLastBrandColumn(
+                $salesOrder,
+                $salesOrderItem,
+                $storeIds
+            ),
+            'week_day' => $this->createWeekDayColumn($salesOrder, $storeIds),
+            'month_day' => $this->createMonthDayColumn($salesOrder, $storeIds),
+            'product_id_for_most_sold_product' => $this->createProductIdForMostSoldProductColumn(
+                $salesOrder,
+                $salesOrderItem,
+                $storeIds
+            )
         ];
 
         return $columns;
@@ -427,15 +447,16 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 
     /**
      * @param string $salesOrder
-     *
+     * @param string $storeIds
      * @return \Zend_Db_Expr
      */
-    private function createLastOrderDataColumn($salesOrder)
+    private function createLastOrderDataColumn($salesOrder, $storeIds)
     {
         return $this->expressionFactory->create(
             ["expression" => "(
                 SELECT created_at FROM $salesOrder
                 WHERE customer_email = main_table.customer_email
+                AND store_id IN ($storeIds)
                 ORDER BY created_at DESC
                 LIMIT 1
             )"]
@@ -444,15 +465,16 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 
     /**
      * @param string $salesOrder
-     *
+     * @param string $storeIds
      * @return \Zend_Db_Expr
      */
-    private function createLastOrderIdColumn($salesOrder)
+    private function createLastOrderIdColumn($salesOrder, $storeIds)
     {
         return $this->expressionFactory->create(
             ["expression" => "(
                 SELECT entity_id FROM $salesOrder
                 WHERE customer_email = main_table.customer_email
+                AND store_id IN ($storeIds)
                 ORDER BY created_at DESC
                 LIMIT 1
             )"]
@@ -460,15 +482,17 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
-     * @param $salesOrder
+     * @param string $salesOrder
+     * @param string $storeIds
      * @return \Dotdigitalgroup\Email\Model\Sql\Expression
      */
-    private function createFirstOrderIdColumn($salesOrder)
+    private function createFirstOrderIdColumn($salesOrder, $storeIds)
     {
         return $this->expressionFactory->create(
             ["expression" => "(
                 SELECT entity_id FROM $salesOrder
                 WHERE customer_email = main_table.customer_email
+                AND store_id IN ($storeIds)
                 ORDER BY created_at ASC
                 LIMIT 1
             )"]
@@ -477,15 +501,16 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 
     /**
      * @param string $salesOrder
-     *
+     * @param string $storeIds
      * @return \Zend_Db_Expr
      */
-    private function createLastIncrementIdColumn($salesOrder)
+    private function createLastIncrementIdColumn($salesOrder, $storeIds)
     {
         return $this->expressionFactory->create(
             ["expression" => "(
                 SELECT increment_id FROM $salesOrder
                 WHERE customer_email = main_table.customer_email
+                AND store_id IN ($storeIds)
                 ORDER BY created_at DESC
                 LIMIT 1
             )"]
@@ -495,16 +520,18 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * @param string $salesOrder
      * @param string $salesOrderItem
-     *
+     * @param string $storeIds
      * @return \Zend_Db_Expr
      */
-    private function createProductIdForFirstBrandColumn($salesOrder, $salesOrderItem)
+    private function createProductIdForFirstBrandColumn($salesOrder, $salesOrderItem, $storeIds)
     {
         return $this->expressionFactory->create(
             ["expression" => "(
                 SELECT sfoi.product_id FROM $salesOrder as sfo
                 left join $salesOrderItem as sfoi on sfoi.order_id = sfo.entity_id
-                WHERE sfoi.product_type = 'simple' and customer_email = main_table.customer_email
+                WHERE sfoi.product_type = 'simple'
+                AND customer_email = main_table.customer_email
+                AND sfo.store_id IN ($storeIds)
                 ORDER BY sfo.created_at ASC
                 LIMIT 1
             )"]
@@ -514,16 +541,18 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * @param string $salesOrder
      * @param string $salesOrderItem
-     *
+     * @param string $storeIds
      * @return \Zend_Db_Expr
      */
-    private function createProductIdForLastBrandColumn($salesOrder, $salesOrderItem)
+    private function createProductIdForLastBrandColumn($salesOrder, $salesOrderItem, $storeIds)
     {
         return $this->expressionFactory->create(
             ["expression" => "(
                 SELECT sfoi.product_id FROM $salesOrder as sfo
                 left join $salesOrderItem as sfoi on sfoi.order_id = sfo.entity_id
-                WHERE sfoi.product_type = 'simple' and customer_email = main_table.customer_email
+                WHERE sfoi.product_type = 'simple'
+                AND customer_email = main_table.customer_email
+                AND sfo.store_id IN ($storeIds)
                 ORDER BY sfo.created_at DESC
                 LIMIT 1
             )"]
@@ -532,16 +561,17 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 
     /**
      * @param string $salesOrder
-     *
+     * @param string $storeIds
      * @return \Zend_Db_Expr
      */
-    private function createWeekDayColumn($salesOrder)
+    private function createWeekDayColumn($salesOrder, $storeIds)
     {
         return $this->expressionFactory->create(
             ["expression" => "(
                 SELECT dayname(created_at) as week_day
                 FROM $salesOrder
                 WHERE customer_email = main_table.customer_email
+                AND store_id IN ($storeIds)
                 GROUP BY week_day
                 HAVING COUNT(*) > 0
                 ORDER BY (COUNT(*)) DESC
@@ -552,16 +582,17 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 
     /**
      * @param string $salesOrder
-     *
+     * @param string $storeIds
      * @return \Zend_Db_Expr
      */
-    private function createMonthDayColumn($salesOrder)
+    private function createMonthDayColumn($salesOrder, $storeIds)
     {
         return $this->expressionFactory->create(
             ["expression" => "(
                 SELECT monthname(created_at) as month_day
                 FROM $salesOrder
                 WHERE customer_email = main_table.customer_email
+                AND store_id IN ($storeIds)
                 GROUP BY month_day
                 HAVING COUNT(*) > 0
                 ORDER BY (COUNT(*)) DESC
@@ -571,40 +602,20 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
-     * @param array $emails
-     * @return Contact\Collection
-     */
-    public function getContactCollectionByEmail($emails)
-    {
-        $contactCollection = $this->contactCollectionFactory->create()
-            ->addFieldToSelect([
-                'email',
-                'website_id',
-                'store_id',
-                'subscriber_status'
-            ]);
-
-        //only when subscriber emails are set
-        if (!empty($emails)) {
-            $contactCollection->addFieldToFilter('email', ["in" => [$emails]]);
-        }
-
-        return $contactCollection;
-    }
-
-    /**
      * @param string $salesOrder
      * @param string $salesOrderItem
-     *
+     * @param string $storeIds
      * @return \Zend_Db_Expr
      */
-    private function createMostCategoryIdColumn($salesOrder, $salesOrderItem)
+    private function createProductIdForMostSoldProductColumn($salesOrder, $salesOrderItem, $storeIds)
     {
         return $this->expressionFactory->create(
             ["expression" => "(
                 SELECT sfoi.product_id FROM $salesOrder as sfo
                 LEFT JOIN $salesOrderItem as sfoi on sfoi.order_id = sfo.entity_id
-                WHERE sfo.customer_email = main_table.customer_email
+                WHERE customer_email = main_table.customer_email
+                AND sfo.store_id IN ($storeIds)
+                GROUP BY sfoi.product_id
                 HAVING COUNT(sfoi.product_id) > 0
                 ORDER BY COUNT(sfoi.product_id) DESC
                 LIMIT 1
@@ -615,14 +626,14 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Customer collection with all data ready for export.
      *
-     * @param  array $customerIds
-     * @param  array $statuses
-     *
+     * @param array $customerIds
+     * @param array $statuses
+     * @param array $storeIds
      * @return array
      *
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function getSalesDataForCustomersWithOrderStatusesAndBrand($customerIds, $statuses)
+    public function getSalesDataForCustomersWithOrderStatusesAndBrand($customerIds, $statuses, $storeIds)
     {
         $orderCollection = $this->orderCollectionFactory->create();
         $salesOrder = $orderCollection->getTable('sales_order');
@@ -633,9 +644,16 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             ->addExpressionFieldToSelect('total_spend', 'SUM({{grand_total}})', 'grand_total')
             ->addExpressionFieldToSelect('number_of_orders', 'COUNT({{*}})', '*')
             ->addExpressionFieldToSelect('average_order_value', 'AVG({{grand_total}})', 'grand_total')
-            ->addFieldToFilter('customer_id', ['in' => $customerIds]);
+            ->addFieldToFilter('customer_id', ['in' => $customerIds])
+            ->addFieldToFilter('store_id', $storeIds);
 
-        $columnData = $this->buildColumnData($salesOrderGrid, $salesOrder, $salesOrderItem);
+        $columnData = $this->buildColumnData(
+            $salesOrderGrid,
+            $salesOrder,
+            $salesOrderItem,
+            implode(', ', $storeIds)
+        );
+
         $orderCollection->getSelect()
             ->columns($columnData)
             ->group('customer_id');
@@ -664,7 +682,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             );
         }
 
-        return $this->getCollectionWithLastQuoteId($customerIds, $orderArray);
+        return $this->getCollectionWithLastQuoteId($customerIds, $orderArray, $storeIds);
     }
 
     /**
@@ -702,11 +720,11 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      * @param string $salesOrderGrid
      * @param string $salesOrder
      * @param string $salesOrderItem
-     *
+     * @param string $storeIds
      * @return array
      * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
      */
-    private function buildColumnData($salesOrderGrid, $salesOrder, $salesOrderItem)
+    private function buildColumnData($salesOrderGrid, $salesOrder, $salesOrderItem, $storeIds)
     {
         $columnData = [
             'last_order_date' => $this->expressionFactory->create(
@@ -714,6 +732,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
                     SELECT created_at
                     FROM $salesOrderGrid
                     WHERE customer_id = main_table.customer_id
+                    AND store_id IN ($storeIds)
                     ORDER BY created_at DESC
                     LIMIT 1
                 )"]
@@ -723,6 +742,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
                     SELECT entity_id
                     FROM $salesOrderGrid
                     WHERE customer_id = main_table.customer_id
+                    AND store_id IN ($storeIds)
                     ORDER BY created_at ASC
                     LIMIT 1
                 )"]
@@ -732,6 +752,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
                     SELECT entity_id
                     FROM $salesOrderGrid
                     WHERE customer_id = main_table.customer_id
+                    AND store_id IN ($storeIds)
                     ORDER BY created_at DESC
                     LIMIT 1
                 )"]
@@ -741,6 +762,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
                     SELECT increment_id
                     FROM $salesOrderGrid
                     WHERE customer_id = main_table.customer_id
+                    AND store_id IN ($storeIds)
                     ORDER BY created_at DESC
                     LIMIT 1
                 )"]
@@ -749,7 +771,9 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
                 ["expression" => "(
                     SELECT sfoi.product_id FROM $salesOrder as sfo
                     left join $salesOrderItem as sfoi on sfoi.order_id = sfo.entity_id
-                    WHERE sfo.customer_id = main_table.customer_id and sfoi.product_type = 'simple'
+                    WHERE sfo.customer_id = main_table.customer_id
+                    AND sfoi.product_type = 'simple'
+                    AND sfo.store_id IN ($storeIds)
                     ORDER BY sfo.created_at ASC
                     LIMIT 1
                 )"]
@@ -758,7 +782,9 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
                 ["expression" => "(
                     SELECT sfoi.product_id FROM $salesOrder as sfo
                     left join $salesOrderItem as sfoi on sfoi.order_id = sfo.entity_id
-                    WHERE sfo.customer_id = main_table.customer_id and sfoi.product_type = 'simple'
+                    WHERE sfo.customer_id = main_table.customer_id
+                    AND sfoi.product_type = 'simple'
+                    AND sfo.store_id IN ($storeIds)
                     ORDER BY sfo.created_at DESC
                     LIMIT 1
                 )"]
@@ -768,6 +794,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
                     SELECT dayname(created_at) as week_day
                     FROM $salesOrder
                     WHERE customer_id = main_table.customer_id
+                    AND store_id IN ($storeIds)
                     GROUP BY week_day
                     HAVING COUNT(*) > 0
                     ORDER BY (COUNT(*)) DESC
@@ -779,6 +806,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
                     SELECT monthname(created_at) as month_day
                     FROM $salesOrder
                     WHERE customer_id = main_table.customer_id
+                    AND store_id IN ($storeIds)
                     GROUP BY month_day
                     HAVING COUNT(*) > 0
                     ORDER BY (COUNT(*)) DESC
@@ -790,6 +818,8 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
                     SELECT sfoi.product_id FROM $salesOrder as sfo
                     LEFT JOIN $salesOrderItem as sfoi on sfoi.order_id = sfo.entity_id
                     WHERE sfo.customer_id = main_table.customer_id
+                    AND sfo.store_id IN ($storeIds)
+                    GROUP BY sfoi.product_id
                     HAVING COUNT(sfoi.product_id) > 0
                     ORDER BY COUNT(sfoi.product_id) DESC
                     LIMIT 1
@@ -913,18 +943,21 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
-     * Set imported by id.
+     * Set imported by ids.
      *
      * @param array $ids
-     *
-     * @return null
+     * @param string|int $websiteId
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function setImportedByIds($ids)
+    public function setImportedByIds($ids, $websiteId = 0)
     {
         $this->getConnection()->update(
             $this->getMainTable(),
             ['email_imported' => 1],
-            ["customer_id IN (?)" => $ids]
+            [
+                "customer_id IN (?)" => $ids,
+                "website_id = ?" => $websiteId
+            ]
         );
     }
 
@@ -971,27 +1004,34 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * @param array $customerIds
      * @param array $orderArray
-     *
+     * @param array $storeIds
      * @return array
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
-    private function getCollectionWithLastQuoteId($customerIds, $orderArray)
+    private function getCollectionWithLastQuoteId($customerIds, $orderArray, $storeIds)
     {
-        $quoteCollection = $this->quoteCollectionFactory->create()
-            ->addFieldToSelect(['last_quote_id' => 'entity_id', 'customer_id'])
-            ->addFieldToFilter('customer_id', ['in' => $customerIds])
-            ->setOrder('created_at');
+        $quoteResource = $this->quoteResourceFactory->create();
 
-        $quoteCollection->getSelect()
-            ->group('customer_id');
+        $subQuery = new \Zend_Db_Expr(sprintf(
+            "(SELECT customer_id, MAX(entity_id) `last_quote_id` FROM %s
+	        WHERE (`customer_id` IN(%s))
+	        AND (`store_id` IN(%s))
+	        GROUP BY customer_id)",
+            $quoteResource->getMainTable(),
+            implode(',', $customerIds),
+            implode(',', $storeIds)
+        ));
 
-        $quoteArray = [];
-        foreach ($quoteCollection as $quote) {
-            $quoteArray[$quote->getCustomerId()] = $quote->toArray(['last_quote_id']);
-        }
+        $quoteQuery = $quoteResource->getConnection()
+            ->select()
+            ->from($subQuery, ['customer_id', 'last_quote_id'])
+            ->group('customer_id')
+            ->assemble();
 
-        foreach ($quoteArray as $k => $v) {
-            if (isset($orderArray[$k])) {
-                $orderArray[$k]['last_quote_id'] = $v['last_quote_id'];
+        foreach ($quoteResource->getConnection()->query($quoteQuery) as $quote) {
+            $customerId = $quote['customer_id'];
+            if (isset($orderArray[$customerId])) {
+                $orderArray[$customerId]['last_quote_id'] = $quote['last_quote_id'];
             }
         }
 

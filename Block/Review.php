@@ -2,8 +2,11 @@
 
 namespace Dotdigitalgroup\Email\Block;
 
+use Dotdigitalgroup\Email\Helper\Config;
+use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Product\ImageFinder;
 use Dotdigitalgroup\Email\Model\Product\ImageType\Context\DynamicContent;
+use Magento\Catalog\Model\ProductRepository;
 
 /**
  * Review block
@@ -38,8 +41,17 @@ class Review extends Recommended
     private $orderResource;
 
     /**
+     * @var ProductRepository
+     */
+    private $productRepository;
+
+    /**
+     * @var Logger
+     */
+    private $logger;
+
+    /**
      * Review constructor.
-     *
      * @param \Magento\Catalog\Block\Product\Context $context
      * @param Helper\Font $font
      * @param \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder
@@ -50,6 +62,8 @@ class Review extends Recommended
      * @param \Magento\Sales\Api\Data\OrderInterfaceFactory $orderFactory
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Magento\Framework\Pricing\Helper\Data $priceHelper
+     * @param ProductRepository $productRepository
+     * @param Logger $logger
      * @param array $data
      */
     public function __construct(
@@ -63,6 +77,8 @@ class Review extends Recommended
         \Magento\Sales\Api\Data\OrderInterfaceFactory $orderFactory,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Framework\Pricing\Helper\Data $priceHelper,
+        ProductRepository $productRepository,
+        Logger $logger,
         array $data = []
     ) {
         $this->review     = $review;
@@ -70,7 +86,8 @@ class Review extends Recommended
         $this->helper            = $helper;
         $this->priceHelper       = $priceHelper;
         $this->orderResource     = $orderResource;
-
+        $this->productRepository = $productRepository;
+        $this->logger = $logger;
         parent::__construct($context, $font, $urlFinder, $imageType, $imageFinder, $data);
     }
 
@@ -175,12 +192,51 @@ class Review extends Recommended
     }
 
     /**
+     * If 'Link to product page' is 'Yes', fetch the URL.
+     * If that fails, or if set to 'No', fall back to the review list URL.
+     *
      * @param int|string $productId
      *
      * @return string
      */
     public function getReviewItemUrl($productId)
     {
+        $linkToProductPage = $this->_scopeConfig->getValue(
+            Config::XML_PATH_AUTOMATION_REVIEW_PRODUCT_PAGE,
+            \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
+            $this->_storeManager->getStore($this->getStoreIdFromOrder())->getWebsite()->getId()
+        );
+
+        if ($linkToProductPage) {
+            try {
+                $product = $this->productRepository->getById($productId);
+                return $this->urlFinder->fetchFor($product);
+            } catch (\Exception $exception) {
+                $this->logger->error(sprintf('Could not fetch the product with id %s', $productId));
+            }
+        }
+
         return $this->_urlBuilder->getUrl('review/product/list', ['id' => $productId]);
+    }
+
+    /**
+     * @return string|null
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
+    public function getReviewReminderAnchor()
+    {
+        return $this->_scopeConfig->getValue(
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_AUTOMATION_REVIEW_ANCHOR,
+            \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
+            $this->_storeManager->getStore($this->getStoreIdFromOrder())->getWebsite()->getId()
+        );
+    }
+
+    /**
+     * @return int
+     */
+    private function getStoreIdFromOrder()
+    {
+        return $this->getOrder() ? $this->getOrder()->getStoreId() : 0;
     }
 }

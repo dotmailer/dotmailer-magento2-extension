@@ -9,6 +9,7 @@
             <description value="The dotdigital Import report can be viewed, filtered and sorted."/>
             <severity value="MINOR"/>
             <group value="dotmailer"/>
+            <testCaseId value="BUNDLE-69"/>
         </annotations>
 
         <before>
@@ -27,11 +28,11 @@
         <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Import Mode')}}" stepKey="seeImportMode"/>
         <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Import Status')}}" stepKey="seeImportStatus"/>
         <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Message')}}" stepKey="seeMessage"/>
-        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Started At')}}" stepKey="seeStartedAt"/>
-        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Finished At')}}" stepKey="seeFinishedAt"/>
+        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Import Started')}}" stepKey="seeStartedAt"/>
+        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Import Finished')}}" stepKey="seeFinishedAt"/>
         <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Website')}}" stepKey="seeWebsite"/>
-        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Created Date')}}" stepKey="seeCreatedDate"/>
-        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Updated Date')}}" stepKey="seeUpdatedDate"/>
+        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Created At')}}" stepKey="seeCreatedDate"/>
+        <seeElement selector="{{AdminDotdigitalReportColumnsSection.columnHeader('Updated At')}}" stepKey="seeUpdatedDate"/>
 
         <!-- Sorting -->
         <actionGroup ref="SortColumnsReportActionGroup" stepKey="sortImportIdColumn">
@@ -55,11 +56,11 @@
         </actionGroup>
 
         <actionGroup ref="SortColumnsReportActionGroup" stepKey="sortStartedAtColumn">
-            <argument name="columnName" value="Started At"/>
+            <argument name="columnName" value="Import Started"/>
         </actionGroup>
 
         <actionGroup ref="SortColumnsReportActionGroup" stepKey="sortFinishedAtColumn">
-            <argument name="columnName" value="Finished At"/>
+            <argument name="columnName" value="Import Finished"/>
         </actionGroup>
 
         <actionGroup ref="SortColumnsReportActionGroup" stepKey="sortWebsiteColumn">
@@ -67,11 +68,11 @@
         </actionGroup>
 
         <actionGroup ref="SortColumnsReportActionGroup" stepKey="sortCreatedDateColumn">
-            <argument name="columnName" value="Created Date"/>
+            <argument name="columnName" value="Created At"/>
         </actionGroup>
 
         <actionGroup ref="SortColumnsReportActionGroup" stepKey="sortUpdatedDateColumn">
-            <argument name="columnName" value="Updated Date"/>
+            <argument name="columnName" value="Updated At"/>
         </actionGroup>
         <!-- Filtering -->
         <actionGroup ref="FilterReport" stepKey="validateFilters">

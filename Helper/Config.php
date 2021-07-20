@@ -108,6 +108,7 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
         'connector_dynamic_content/products/wishlist_display_type';
     const XML_PATH_CONNECTOR_DYNAMIC_CONTENT_REVIEW_DISPLAY_TYPE =
         'connector_dynamic_content/products/review_display_type';
+    const XML_PATH_REVIEW_DISPLAY_TYPE = 'connector_dynamic_content/products/review_display_type';
 
     /**
      * CONFIGURATION SECTION.
@@ -158,14 +159,6 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_PATH_CONNECTOR_DYNAMIC_COUPON_FONT = 'connector_configuration/dynamic_content_style/coupon_font_picker';
     const XML_PATH_CONNECTOR_DYNAMIC_COUPON_BG_COLOR =
         'connector_configuration/dynamic_content_style/coupon_background_color';
-    //dynamic content product review
-    const XML_PATH_REVIEW_STATUS = 'connector_automation/review_settings/status';
-    const XML_PATH_REVIEW_DELAY = 'connector_automation/review_settings/delay';
-    const XML_PATH_REVIEW_NEW_PRODUCT = 'connector_automation/review_settings/new_product';
-    const XML_PATH_REVIEW_CAMPAIGN = 'connector_automation/review_settings/campaign';
-    const XML_PATH_REVIEW_ANCHOR = 'connector_automation/review_settings/anchor';
-    const XML_PATH_REVIEW_DISPLAY_TYPE = 'connector_dynamic_content/products/review_display_type';
-    const XML_PATH_REVIEW_ALLOW_NON_SUBSCRIBERS = 'connector_automation/review_settings/allow_non_subscribers';
 
     //Catalog
     const XML_PATH_CONNECTOR_SYNC_CATALOG_VALUES = 'connector_configuration/catalog_sync/catalog_values';
@@ -214,6 +207,21 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
         'connector_automation/visitor_automation/first_order_automation';
 
     /**
+     * Automation > Review Settings
+     */
+    const XML_PATH_REVIEWS_ENABLED = 'connector_automation/review_settings/enabled';
+    const XML_PATH_REVIEW_ALLOW_NON_SUBSCRIBERS = 'connector_automation/review_settings/allow_non_subscribers';
+    const XML_PATH_REVIEW_STATUS = 'connector_automation/review_settings/status';
+    const XML_PATH_REVIEW_DELAY = 'connector_automation/review_settings/delay';
+    const XML_PATH_REVIEW_NEW_PRODUCT = 'connector_automation/review_settings/new_product';
+    const XML_PATH_REVIEW_CAMPAIGN = 'connector_automation/review_settings/campaign';
+    const XML_PATH_AUTOMATION_REVIEW_PRODUCT_PAGE = 'connector_automation/review_settings/link_to_product_page';
+    const XML_PATH_AUTOMATION_REVIEW_ANCHOR = 'connector_automation/review_settings/anchor';
+    const XML_PATH_REVIEWS_FEEFO_LOGON = 'connector_automation/feefo_feedback_engine/logon';
+    const XML_PATH_REVIEWS_FEEFO_REVIEWS = 'connector_automation/feefo_feedback_engine/reviews_per_product';
+    const XML_PATH_REVIEWS_FEEFO_TEMPLATE = 'connector_automation/feefo_feedback_engine/template';
+
+    /**
      * Abandoned cart program enrolment.
      */
     const XML_PATH_LOSTBASKET_ENROL_TO_PROGRAM_ID = 'abandoned_carts/program/id';
@@ -246,19 +254,6 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     const API_CONNECTOR_SUPPRESS_FOOTER = 'suppressfooter';
 
     /**
-     * Reviews SECTION.
-     */
-    const XML_PATH_REVIEWS_ENABLED = 'connector_automation/review_settings/enabled';
-    //PRODUCT REVIEW REMINDER.
-    const XML_PATH_AUTOMATION_REVIEW_STATUS = 'connector_automation_studio/review_settings/status';
-    const XML_PATH_AUTOMATION_REVIEW_DELAY = 'connector_automation_studio/review_settings/delay';
-    const XML_PATH_AUTOMATION_REVIEW_CAMPAIGN = 'connector_automation_studio/review_settings/campaign';
-    const XML_PATH_AUTOMATION_REVIEW_ANCHOR = 'connector_automation_studio/review_settings/anchor';
-    const XML_PATH_REVIEWS_FEEFO_LOGON = 'connector_automation/feefo_feedback_engine/logon';
-    const XML_PATH_REVIEWS_FEEFO_REVIEWS = 'connector_automation/feefo_feedback_engine/reviews_per_product';
-    const XML_PATH_REVIEWS_FEEFO_TEMPLATE = 'connector_automation/feefo_feedback_engine/template';
-
-    /**
      * Developer SECTION.
      */
     const XML_PATH_CONNECTOR_CLIENT_ID = 'connector_developer_settings/oauth/client_id';
@@ -283,6 +278,7 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_PATH_CONNECTOR_SYSTEM_ALERTS_FREQUENCY = 'connector_developer_settings/system_alerts/frequency';
     const XML_PATH_CONNECTOR_SYSTEM_ALERTS_EMAIL_NOTIFICATION_TEMPLATE =
         'connector_developer_settings/system_alerts/email_notification_template';
+    const XML_PATH_PWA_URL = 'connector_developer_settings/pwa_settings/pwa_url';
 
     /*
      * Cron schedules

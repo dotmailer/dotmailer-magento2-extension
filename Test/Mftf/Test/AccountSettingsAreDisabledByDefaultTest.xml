@@ -9,6 +9,7 @@
             <description value="Account settings in the dotdigital > Settings tab should be disabled by default."/>
             <severity value="MINOR"/>
             <group value="dotmailer"/>
+            <testCaseId value="BUNDLE-1"/>
         </annotations>
 
         <before>

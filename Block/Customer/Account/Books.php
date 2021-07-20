@@ -69,7 +69,7 @@ class Books extends \Magento\Framework\View\Element\Template
     public function getCustomerConsentText()
     {
         return $this->helper->configHelperFactory->create()
-            ->getConsentCustomerText($this->getCustomer()->getWebsiteId());
+            ->getConsentCustomerText($this->_storeManager->getWebsite()->getId());
     }
 
     /**
@@ -111,7 +111,7 @@ class Books extends \Magento\Framework\View\Element\Template
     private function _getApiClient()
     {
         if (empty($this->client)) {
-            $website = $this->getCustomer()->getStore()->getWebsite();
+            $website = $this->_storeManager->getWebsite();
             $client = $this->helper->getWebsiteApiClient($website);
             $this->client = $client;
         }
@@ -127,7 +127,7 @@ class Books extends \Magento\Framework\View\Element\Template
     public function getCanShowAdditionalBooks()
     {
         return $this->helper->getCanShowAdditionalSubscriptions(
-            $this->getCustomer()->getStore()->getWebsite()
+            $this->_storeManager->getWebsite()
         );
     }
 
@@ -140,7 +140,7 @@ class Books extends \Magento\Framework\View\Element\Template
     {
         $additionalBooksToShow = [];
         $processedAddressBooks = [];
-        $additionalFromConfig = $this->helper->getAddressBookIdsToShow($this->getCustomer()->getStore()->getWebsite());
+        $additionalFromConfig = $this->helper->getAddressBookIdsToShow($this->_storeManager->getWebsite());
         $contactFromTable = $this->getContactFromTable();
         if (! empty($additionalFromConfig) && $contactFromTable->getContactId()) {
             $contact = $this->getConnectorContact();
@@ -173,7 +173,7 @@ class Books extends \Magento\Framework\View\Element\Template
     public function getCanShowDataFields()
     {
         return $this->helper->getCanShowDataFields(
-            $this->getCustomer()->getStore()->getWebsite()
+            $this->_storeManager->getWebsite()
         );
     }
 
@@ -185,7 +185,7 @@ class Books extends \Magento\Framework\View\Element\Template
     public function getDataFieldsToShow()
     {
         $datafieldsToShow = [];
-        $website = $this->getCustomer()->getStore()->getWebsite();
+        $website = $this->_storeManager->getWebsite();
         $dataFieldsFromConfig = $this->_getWebsiteConfigFromHelper(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_ADDRESSBOOK_PREF_SHOW_FIELDS,
             $website
@@ -226,7 +226,9 @@ class Books extends \Magento\Framework\View\Element\Template
      */
     public function canShowAnything()
     {
-        if (! $this->isCustomerSubscriber() || ! $this->helper->isEnabled($this->getCustomer()->getWebsiteId())) {
+        if (! $this->isCustomerSubscriber() ||
+            ! $this->helper->isEnabled($this->_storeManager->getWebsite()->getId())
+        ) {
             return false;
         }
 
@@ -280,7 +282,7 @@ class Books extends \Magento\Framework\View\Element\Template
         if (! isset($this->contactFromTable)) {
             $this->contactFromTable = $this->helper->getContactByEmail(
                 $this->getCustomer()->getEmail(),
-                $this->getCustomer()->getStore()->getWebsite()->getId()
+                $this->_storeManager->getWebsite()->getId()
             );
         }
 
@@ -321,7 +323,7 @@ class Books extends \Magento\Framework\View\Element\Template
     {
         return $this->_getWebsiteConfigFromHelper(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SHOW_PREFERENCES,
-            $this->getCustomer()->getStore()->getWebsite()
+            $this->_storeManager->getWebsite()
         );
     }
 

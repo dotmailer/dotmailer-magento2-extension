@@ -55,18 +55,25 @@ define([
             productData = data[productId];
 
             if (productData != null) {
-                var trackingData = {
-                    product_name: productData.name || '',
-                    product_url: productData.url || '',
-                    product_currency: productData.currency_code || '',
-                    product_status: parseInt(productData.is_salable) === 1 ? 'In stock' : 'Out of stock',
-                    product_price: productData.price_info.final_price || 0,
-                    product_specialPrice: productData.price_info.special_price || 0,
-                    product_sku: productData.extension_attributes.ddg_sku || '',
-                    product_brand: productData.extension_attributes.ddg_brand || '',
-                    product_categories: (productData.extension_attributes.ddg_categories || []).join(','),
-                    product_image_path: productData.extension_attributes.ddg_image || '',
-                    product_description: productData.extension_attributes.ddg_description || ''
+                var specialPriceBeforeTax = productData.price_info.extension_attributes.tax_adjustments.final_price,
+                    specialPriceAfterTax = Math.round(productData.price_info.final_price * 100) / 100,
+                    regularPriceBeforeTax = productData.price_info.extension_attributes.tax_adjustments.regular_price,
+                    regularPriceAfterTax = Math.round(productData.price_info.regular_price * 100) / 100,
+                    hasDiscountedPrice = specialPriceBeforeTax < regularPriceBeforeTax,
+                    trackingData = {
+                        product_name: productData.name || '',
+                        product_url: productData.url || '',
+                        product_currency: productData.currency_code || '',
+                        product_status: parseInt(productData.is_salable) === 1 ? 'In stock' : 'Out of stock',
+                        product_price: regularPriceBeforeTax || 0,
+                        product_price_incl_tax: regularPriceAfterTax || 0,
+                        product_specialPrice: hasDiscountedPrice ? specialPriceBeforeTax : 0,
+                        product_specialPrice_incl_tax: hasDiscountedPrice ? specialPriceAfterTax : 0,
+                        product_sku: productData.extension_attributes.ddg_sku || '',
+                        product_brand: productData.extension_attributes.ddg_brand || '',
+                        product_categories: (productData.extension_attributes.ddg_categories || []).join(','),
+                        product_image_path: productData.extension_attributes.ddg_image || '',
+                        product_description: productData.extension_attributes.ddg_description || '',
                 };
 
                 this.wbtTrack(trackingData);
@@ -81,7 +88,7 @@ define([
 
             (function (w, d, u, t, o, c) {
                 w['dmtrackingobjectname'] = o;c = d.createElement(t);c.async = 1;c.src = u;t = d.getElementsByTagName
-            (t)[0];t.parentNode.insertBefore(c, t);w[o] = w[o] || function () {
+                (t)[0];t.parentNode.insertBefore(c, t);w[o] = w[o] || function () {
                     (w[o].q = w[o].q || []).push(arguments);
                 };
             })(window, document, '//static.trackedweb.net/js/_dmptv4.js', 'script', 'dmPt');

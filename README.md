@@ -19,6 +19,23 @@ You are welcome to contribute to Engagement Cloud for Magento! You can either:
 - Fix a bug: please clone and use our [Develop branch](https://github.com/dotmailer/dotmailer-magento2-extension/tree/develop) to submit your Pull Request
 - Request a feature on our [roadmap](https://roadmap.dotdigital.com)
 
+# 4.12.0
+
+###### What's new
+- This release brings support for merchants running Magento with **Customers > Customer Configuration > Account Sharing Options > Share Customer Accounts** set to 'Global'.
+- We've added an extra configuration field (in **Developer > PWA Settings**) to allow merchants running a PWA storefront to define a separate storefront url. This can be used to re-route the 'Take me to my basket' link in the basket EDC and the ‘Leave a review’ link in the review EDC.
+- Product prices in cart, catalog and web insight data now have separate figures that include tax. 
+
+###### Improvements
+- ‘Leave a review’ links in the Reviews EDC can now link to product pages instead of review pages. Configurable via **Stores > Configuration > dotdigital > Automation > Review Settings**.
+- We’ve updated the handling of coupon codes to better enable recurring campaigns.  
+- Line items in cart insight data now display prices in the quote currency, rather than the website’s base currency.
+- We’ve added error handling when calling `$order→getAllItems()`. This protects order and contact syncs against problems related to legacy product option data.
+- Custom OAuth domains configured in **Stores > Configuration > dotdigital > Developer** must now start 'https://'.
+
+###### Bug fixes
+- We fixed a problem with creating address books in the correct admin scope.
+
 # 4.11.4
 
 ###### What's new

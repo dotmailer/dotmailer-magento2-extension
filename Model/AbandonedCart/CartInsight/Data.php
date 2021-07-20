@@ -6,6 +6,7 @@ use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Product\ImageType\Context\AbandonedCart;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Framework\App\Area;
+use Magento\Framework\Pricing\PriceCurrencyInterface;
 use Magento\Quote\Api\Data\CartItemInterface;
 use Magento\Store\Model\App\Emulation;
 
@@ -62,6 +63,11 @@ class Data
     private $appEmulation;
 
     /**
+     * @var PriceCurrencyInterface
+     */
+    private $priceCurrencyInterface;
+
+    /**
      * Data constructor.
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      * @param \Magento\Catalog\Api\ProductRepositoryInterface $productRepository
@@ -72,6 +78,7 @@ class Data
      * @param \Dotdigitalgroup\Email\Model\Product\ImageFinder $imageFinder
      * @param Logger $logger
      * @param AbandonedCart $imageType
+     * @param PriceCurrencyInterface $priceCurrencyInterface
      */
     public function __construct(
         \Magento\Store\Model\StoreManagerInterface $storeManager,
@@ -82,7 +89,8 @@ class Data
         \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder,
         \Dotdigitalgroup\Email\Model\Product\ImageFinder $imageFinder,
         Logger $logger,
-        AbandonedCart $imageType
+        AbandonedCart $imageType,
+        PriceCurrencyInterface $priceCurrencyInterface
     ) {
         $this->storeManager = $storeManager;
         $this->productRepository = $productRepository;
@@ -93,6 +101,7 @@ class Data
         $this->imageFinder = $imageFinder;
         $this->logger = $logger;
         $this->imageType = $imageType;
+        $this->priceCurrencyInterface = $priceCurrencyInterface;
     }
 
     /**
@@ -129,6 +138,8 @@ class Data
      */
     public function getPayload($quote, $store)
     {
+        $quoteCurrency = $quote->getQuoteCurrencyCode();
+
         $data = [
             'key' => $quote->getId(),
             'contactIdentifier' => $quote->getCustomerEmail(),
@@ -137,7 +148,7 @@ class Data
                 'cartUrl' => $this->getBasketUrl($quote->getId(), $store),
                 'createdDate' => $this->dateTime->date(\Zend_Date::ISO_8601, $quote->getCreatedAt()),
                 'modifiedDate' => $this->dateTime->date(\Zend_Date::ISO_8601, $quote->getUpdatedAt()),
-                'currency' => $quote->getQuoteCurrencyCode(),
+                'currency' => $quoteCurrency,
                 'subTotal' => round($quote->getSubtotal(), 2),
                 'taxAmount' => round($quote->getShippingAddress()->getTaxAmount(), 2),
                 'grandTotal' => round($quote->getGrandTotal(), 2)
@@ -158,10 +169,13 @@ class Data
                     'imageUrl' => $this->imageFinder->getCartImageUrl($item, $store->getId(), $imageType),
                     'productUrl' => $this->urlFinder->fetchFor($product),
                     'name' => $item->getName(),
-                    'unitPrice' => round($product->getPrice(), 2),
+                    'unitPrice' => $this->getConvertedPrice($product->getPrice(), $store->getId(), $quoteCurrency),
+                    'unitPrice_incl_tax' => $this->getUnitPriceIncTax($item, $product),
                     'quantity' => $item->getQty(),
-                    'salePrice' => round($item->getBasePriceInclTax(), 2),
-                    'totalPrice' => round($item->getRowTotalInclTax(), 2)
+                    'salePrice' => $this->getConvertedPrice($item->getBasePrice(), $store->getId(), $quoteCurrency),
+                    'salePrice_incl_tax' => round($item->getPriceInclTax(), 2),
+                    'totalPrice' => round($item->getRowTotal(), 2),
+                    'totalPrice_incl_tax' => round($item->getRowTotalInclTax(), 2)
                 ];
             } catch (\Exception $e) {
                 $this->logger->debug('Exception thrown when fetching CartInsight data', [(string) $e]);
@@ -218,5 +232,31 @@ class Data
                     $storeId
                 );
         }
+    }
+
+    /**
+     * @param CartItemInterface $item
+     * @param ProductInterface $product
+     * @return float
+     */
+    private function getUnitPriceIncTax($item, $product)
+    {
+        return round($product->getPrice() + ($product->getPrice() * ($item->getTaxPercent() / 100)), 2);
+    }
+
+    /**
+     * @param string $price
+     * @param string $storeId
+     * @param string $currencyCode
+     * @return float
+     */
+    private function getConvertedPrice(string $price, string $storeId, string $currencyCode)
+    {
+        return $this->priceCurrencyInterface
+            ->convertAndRound(
+                $price,
+                $storeId,
+                $currencyCode
+            );
     }
 }

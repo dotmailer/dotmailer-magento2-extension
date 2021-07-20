@@ -8,8 +8,10 @@ use Dotdigitalgroup\Email\Model\AbandonedCart\CartInsight\Data as CartInsightDat
 use Dotdigitalgroup\Email\Model\Apiconnector\Client;
 use Dotdigitalgroup\Email\Model\Catalog\UrlFinder;
 use Dotdigitalgroup\Email\Model\Product\ImageFinder;
+use Dotdigitalgroup\Email\Model\Product\ImageType\Context\AbandonedCart;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Catalog\Model\Product;
+use Magento\Framework\Pricing\PriceCurrencyInterface;
 use Magento\Framework\Stdlib\DateTime\DateTime;
 use Magento\Quote\Model\Quote;
 use Magento\Quote\Model\Quote\Item;
@@ -17,7 +19,6 @@ use Magento\Store\Model\App\Emulation;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
 use PHPUnit\Framework\TestCase;
-use Dotdigitalgroup\Email\Model\Product\ImageType\Context\AbandonedCart;
 
 class UpdateAbandonedCartFieldsTest extends TestCase
 {
@@ -106,6 +107,11 @@ class UpdateAbandonedCartFieldsTest extends TestCase
      */
     private $imageTypeMock;
 
+    /**
+     * @var PriceCurrencyInterface|\PHPUnit\Framework\MockObject\MockObject
+     */
+    private $priceCurrencyInterfaceMock;
+
     protected function setUp() :void
     {
         $this->helperMock = $this->createMock(Data::class);
@@ -118,14 +124,32 @@ class UpdateAbandonedCartFieldsTest extends TestCase
         $this->quoteMock = $this->createMock(Quote::class);
         $this->itemMock = $this->getMockBuilder(Item::class)
             ->disableOriginalConstructor()
-            ->onlyMethods(['getProductType', 'getSku', 'getName', 'getQty'])
-            ->addMethods(['getDiscountAmount', 'getBasePriceInclTax', 'getRowTotalInclTax'])
+            ->onlyMethods(
+                [
+                    'getProductType',
+                    'getSku',
+                    'getName',
+                    'getQty',
+                    'getPrice'
+                ]
+            )
+            ->addMethods(
+                [
+                    'getBasePrice',
+                    'getDiscountAmount',
+                    'getRowTotal',
+                    'getRowTotalInclTax',
+                    'getTaxPercent',
+                    'getPriceInclTax'
+                ]
+            )
             ->getMock();
         $this->dateTimeMock = $this->createMock(DateTime::class);
         $this->urlFinderMock = $this->createMock(UrlFinder::class);
         $this->imageFinderMock = $this->createMock(ImageFinder::class);
         $this->loggerMock = $this->createMock(Logger::class);
         $this->imageTypeMock = $this->createMock(AbandonedCart::class);
+        $this->priceCurrencyInterfaceMock = $this->createMock(PriceCurrencyInterface::class);
 
         $this->class = new CartInsightData(
             $this->storeManagerInterfaceMock,
@@ -136,7 +160,8 @@ class UpdateAbandonedCartFieldsTest extends TestCase
             $this->urlFinderMock,
             $this->imageFinderMock,
             $this->loggerMock,
-            $this->imageTypeMock
+            $this->imageTypeMock,
+            $this->priceCurrencyInterfaceMock
         );
     }
 
@@ -158,17 +183,21 @@ class UpdateAbandonedCartFieldsTest extends TestCase
         $this->quoteMock->expects($this->atLeastOnce())
             ->method('__call')
             ->withConsecutive(
-                [$this->equalTo('getCustomerEmail')],
                 [$this->equalTo('getQuoteCurrencyCode')],
+                [$this->equalTo('getCustomerEmail')],
                 [$this->equalTo('getSubtotal')],
                 [$this->equalTo('getGrandTotal')]
             )
             ->willReturnOnConsecutiveCalls(
-                $expectedPayload['contactIdentifier'],
                 $expectedPayload['json']['currency'],
+                $expectedPayload['contactIdentifier'],
                 $expectedPayload['json']['subTotal'],
                 $expectedPayload['json']['grandTotal']
             );
+
+        $this->storeMock->expects($this->atLeastOnce())
+            ->method('getId')
+            ->willReturn($this->storeId);
 
         $this->storeMock->expects($this->once())
             ->method('getUrl')
@@ -228,9 +257,9 @@ class UpdateAbandonedCartFieldsTest extends TestCase
             ->method('getDiscountAmount')
             ->willReturn($expectedPayload['json']['discountAmount']);
 
-        $this->productMock->expects($this->once())
+        $this->productMock->expects($this->atLeastOnce())
             ->method('getPrice')
-            ->willReturn($expectedPayload['json']['lineItems'][0]['unitPrice']);
+            ->willReturn($productPrice = $expectedPayload['json']['lineItems'][0]['unitPrice']);
 
         $this->urlFinderMock->expects($this->once())
             ->method('fetchFor')
@@ -244,6 +273,10 @@ class UpdateAbandonedCartFieldsTest extends TestCase
             ->method('get')
             ->willReturn($this->productMock);
 
+        $itemsArray[0]->expects($this->once())
+            ->method('getTaxPercent')
+            ->willReturn(20);
+
         $itemsArray[0]->expects($this->atLeastOnce())
             ->method('getSku')
             ->willReturn($expectedPayload['json']['lineItems'][0]['sku']);
@@ -253,16 +286,36 @@ class UpdateAbandonedCartFieldsTest extends TestCase
             ->willReturn($expectedPayload['json']['lineItems'][0]['name']);
 
         $itemsArray[0]->expects($this->once())
-            ->method('getBasePriceInclTax')
-            ->willReturn($expectedPayload['json']['lineItems'][0]['salePrice']);
+            ->method('getBasePrice')
+            ->willReturn($itemBasePrice = $expectedPayload['json']['lineItems'][0]['salePrice']);
+
+        $itemsArray[0]->expects($this->once())
+            ->method('getPriceInclTax')
+            ->willReturn($expectedPayload['json']['lineItems'][0]['salePrice_incl_tax']);
+
+        $itemsArray[0]->expects($this->once())
+            ->method('getRowTotal')
+            ->willReturn($expectedPayload['json']['lineItems'][0]['totalPrice']);
 
         $itemsArray[0]->expects($this->once())
             ->method('getRowTotalInclTax')
-            ->willReturn($expectedPayload['json']['lineItems'][0]['totalPrice']);
+            ->willReturn($expectedPayload['json']['lineItems'][0]['totalPrice_incl_tax']);
 
         $itemsArray[0]->expects($this->once())
             ->method('getQty')
             ->willReturn($expectedPayload['json']['lineItems'][0]['quantity']);
+
+        $this->priceCurrencyInterfaceMock
+            ->expects($this->atLeast(2))
+            ->method('convertAndRound')
+            ->withConsecutive(
+                [$productPrice, $this->storeId, $expectedPayload['json']['currency']],
+                [$itemBasePrice, $this->storeId, $expectedPayload['json']['currency']]
+            )
+            ->willReturnOnConsecutiveCalls(
+                $productPrice,
+                $itemBasePrice
+            );
 
         // Client API call
         $this->clientMock->expects($this->once())
@@ -273,7 +326,7 @@ class UpdateAbandonedCartFieldsTest extends TestCase
                 }
             ));
 
-        $this->class->send($this->quoteMock, $this->storeId, $this->websiteId);
+        $this->class->send($this->quoteMock, $this->storeId);
 
         $this->assertJsonStringEqualsJsonString(json_encode($expectedPayload), json_encode($actualPayload));
     }
@@ -330,9 +383,12 @@ class UpdateAbandonedCartFieldsTest extends TestCase
                         "productUrl" => "https://magentostore.com/product/PRODUCT-SKU",
                         "name" => "Test Product",
                         "unitPrice" => 49.2,
+                        "unitPrice_incl_tax" => 59.04,
                         "quantity" => "2",
                         "salePrice" => 46.15,
-                        "totalPrice" => 92.3
+                        "salePrice_incl_tax" => 50.25,
+                        "totalPrice" => 92.3,
+                        "totalPrice_incl_tax" => 110.76
                     ]
                 ],
                 "cartPhase" => "ORDER_PENDING"

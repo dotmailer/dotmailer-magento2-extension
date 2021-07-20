@@ -4,6 +4,7 @@
           xsi:noNamespaceSchemaLocation="urn:magento:mftf:Page/etc/SectionObject.xsd">
     <section name="AdminDotdigitalDataMappingSection">
         <element name="DataFieldsMappingSectionToggle" type="button" selector="#connector_data_mapping_customer_data-head" />
+        <element name="DataFieldMappingSectionFieldset" type="block" selector="#connector_data_mapping_customer_data"/>
 
         <element name="customerTitle" type="select" selector="#connector_data_mapping_customer_data_title" />
         <element name="customerId" type="select" selector="#connector_data_mapping_customer_data_customer_id" />

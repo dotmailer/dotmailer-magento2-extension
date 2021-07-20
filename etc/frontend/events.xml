@@ -6,4 +6,7 @@
     <event name="newsletter_subscriber_save_after">
         <observer name="ddg_observer_subscriber_save_after" instance="Dotdigitalgroup\Email\Observer\Newsletter\NewsletterSubscriberSaveAfter"/>
     </event>
+    <event name="customer_login">
+        <observer name="customer_login_observer" instance="Dotdigitalgroup\Email\Observer\Customer\CustomerLogin" />
+    </event>
 </config>

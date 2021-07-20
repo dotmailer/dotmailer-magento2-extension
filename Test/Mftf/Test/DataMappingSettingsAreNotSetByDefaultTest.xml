@@ -9,6 +9,7 @@
             <description value="Data Mapping settings in the dotdigital > Data Mapping tab should be empty by default."/>
             <severity value="MINOR"/>
             <group value="dotmailer"/>
+            <testCaseId value="BUNDLE-3"/>
         </annotations>
 
         <before>

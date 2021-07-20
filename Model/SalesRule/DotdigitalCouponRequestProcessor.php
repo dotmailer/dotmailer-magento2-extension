@@ -136,36 +136,27 @@ class DotdigitalCouponRequestProcessor
             // an existing coupon for the email address exists
             if ($activeCoupon = $this->getActiveCouponForEmail($rule, $email)) {
                 if ($allowResend) {
-                    if ($cancelSend && $activeCoupon->is_used) {
-                        $this->couponGeneratorStatus = self::STATUS_USED_EXPIRED;
-                        return $this;
+                    if ($cancelSend) {
+                        if ($activeCoupon->is_expired) {
+                            return $this->generateNewCoupon($params, $rule, $email);
+                        } elseif ($activeCoupon->is_used) {
+                            $this->couponGeneratorStatus = self::STATUS_USED_EXPIRED;
+                            return $this;
+                        }
                     } else {
-                        $this->couponGeneratorStatus = self::STATUS_RESENT;
-                        $this->couponCode = $activeCoupon->code;
-                        return $this;
+                        if ($activeCoupon->is_used || $activeCoupon->is_expired) {
+                            return $this->generateNewCoupon($params, $rule, $email);
+                        }
                     }
+                    $this->couponGeneratorStatus = self::STATUS_RESENT;
+                    $this->couponCode = $activeCoupon->code;
+                    return $this;
                 }
-
                 $this->couponGeneratorStatus = self::STATUS_REGENERATED;
             }
         }
 
-        $expireDays = $params['code_expires_after'] ?? null;
-
-        try {
-            $this->couponCode = $this->dotdigitalCouponGenerator->generateCoupon(
-                $rule,
-                $params['code_format'] ?? null,
-                $params['code_prefix'] ?? null,
-                $params['code_suffix'] ?? null,
-                $email,
-                $expireDays ? (int) $expireDays : null
-            );
-        } catch (LocalizedException $e) {
-            throw new \ErrorException('Coupon cannot be created for the rule specified');
-        }
-
-        return $this;
+        return $this->generateNewCoupon($params, $rule, $email);
     }
 
     /**
@@ -185,6 +176,33 @@ class DotdigitalCouponRequestProcessor
     }
 
     /**
+     * @param array $params
+     * @param RuleModel $rule
+     * @param string|null $email
+     * @return $this
+     * @throws \ErrorException
+     */
+    private function generateNewCoupon(array $params, RuleModel $rule, ?string $email)
+    {
+        $expireDays = $params['code_expires_after'] ?? null;
+
+        try {
+            $this->couponCode = $this->dotdigitalCouponGenerator->generateCoupon(
+                $rule,
+                $params['code_format'] ?? null,
+                $params['code_prefix'] ?? null,
+                $params['code_suffix'] ?? null,
+                $email,
+                $expireDays ? (int) $expireDays : null
+            );
+        } catch (LocalizedException $e) {
+            throw new \ErrorException('Coupon cannot be created for the rule specified');
+        }
+
+        return $this;
+    }
+
+    /**
      * @param RuleModel $rule
      * @param string $email
      * @return object|null
@@ -194,7 +212,7 @@ class DotdigitalCouponRequestProcessor
     {
         $couponData = $this->getCouponAttributeCollection()
             ->getActiveCouponsForEmail($rule->getRuleId(), $email)
-            ->getFirstItem()
+            ->getLastItem()
             ->toArray();
 
         if (empty($couponData)) {
@@ -204,6 +222,7 @@ class DotdigitalCouponRequestProcessor
         return (object) [
             'code' => $couponData['code'],
             'is_used' => (int) $couponData['times_used'] > 0,
+            'is_expired' => $this->isCouponExpired($couponData)
         ];
     }
 
@@ -245,5 +264,15 @@ class DotdigitalCouponRequestProcessor
     {
         return $this->couponAttributeCollection
             ?: $this->couponAttributeCollection = $this->couponAttributeCollectionFactory->create();
+    }
+
+    /**
+     * @param array $couponData
+     * @return bool
+     * @throws \Exception
+     */
+    private function isCouponExpired($couponData)
+    {
+        return $couponData['expires_at'] ? new \DateTime($couponData['expires_at']) < $this->localeDate->date() : false;
     }
 }

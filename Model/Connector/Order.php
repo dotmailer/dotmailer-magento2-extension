@@ -256,7 +256,7 @@ class Order
             $this->processOrderItems($orderData, $syncCustomOption);
         } catch (\InvalidArgumentException $e) {
             $this->logger->debug(
-                'Could not process order items for order id ' . $orderData->getRealOrderId(),
+                'Error processing items for order ID: ' . $orderData->getId(),
                 [(string) $e]
             );
             $this->products = [];

@@ -3,15 +3,36 @@
 <sections xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:noNamespaceSchemaLocation="urn:magento:mftf:Page/etc/SectionObject.xsd">
     <section name="AdminDeveloperSettingsSection">
-        <element name="developerIpRestrictionFieldsetToggle" type="button" selector="#connector_developer_settings_ip_restriction-head"/>
-        <element name="developerIpRestrictionFieldset" type="button" selector="#connector_developer_settings_ip_restriction"/>
-        <element name="developerIpAddresses" type="textarea" selector="#connector_developer_settings_ip_restriction_ip_addresses" />
         <element name="developerSettingSaveButton" type="button" selector="#save" />
+
+        <element name="developerImportSettingsFieldsetToggle" type="button" selector="#connector_developer_settings_import_settings-head"/>
+        <element name="developerImportSettingsFieldset" type="block" selector="#connector_developer_settings_import_settings"/>
+
+        <element name="developerSyncSettingsFieldsetToggle" type="button" selector="#connector_developer_settings_sync_settings-head"/>
+        <element name="developerSyncSettingsFieldset" type="block" selector="#connector_developer_settings_sync_settings"/>
+
+        <element name="developerDebugFieldsetToggle" type="button" selector="#connector_developer_settings_debug-head"/>
+        <element name="developerDebugFieldset" type="block" selector="#connector_developer_settings_debug"/>
+
+        <element name="developerOAuthCredentialsFieldsetToggle" type="button" selector="#connector_developer_settings_oauth-head"/>
+        <element name="developerOAuthCredentialsFieldset" type="block" selector="#connector_developer_settings_oauth"/>
+
+        <element name="developerIpRestrictionFieldsetToggle" type="button" selector="#connector_developer_settings_ip_restriction-head"/>
+        <element name="developerIpRestrictionFieldset" type="block" selector="#connector_developer_settings_ip_restriction"/>
+        <element name="developerIpAddresses" type="textarea" selector="#connector_developer_settings_ip_restriction_ip_addresses" />
+
+        <element name="developerManageCronTimingsFieldsetToggle" type="button" selector="#connector_developer_settings_cron_schedules-head"/>
+        <element name="developerManageCronTimingsFieldset" type="block" selector="#connector_developer_settings_cron_schedules"/>
+        <element name="cronSchedulesReviewWishlist" type="select" selector="#connector_developer_settings_cron_schedules_review_wishlist" />
+
         <element name="developerSystemAlertsToggle" type="button" selector="#connector_developer_settings_system_alerts-head"/>
-        <element name="developerSystemAlertsFieldset" type="button" selector="#connector_developer_settings_system_alerts"/>
+        <element name="developerSystemAlertsFieldset" type="block" selector="#connector_developer_settings_system_alerts"/>
         <element name="developerEnableSystemMessages" type="select" selector="#connector_developer_settings_system_alerts_system_messages" />
         <element name="developerEnableEmailNotifications" type="select" selector="#connector_developer_settings_system_alerts_email_notifications" />
         <element name="developerSelectUserRoles" type="select" selector="#connector_developer_settings_system_alerts_user_roles" />
         <element name="developerAlertFrequency" type="select" selector="#connector_developer_settings_system_alerts_frequency" />
+
+        <element name="developerPWASettingsFieldsetToggle" type="button" selector="#connector_developer_settings_pwa_settings-head"/>
+        <element name="developerPWASettingsFieldset" type="block" selector="#connector_developer_settings_pwa_settings"/>
     </section>
 </sections>

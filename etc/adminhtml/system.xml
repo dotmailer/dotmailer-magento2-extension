@@ -682,10 +682,14 @@
                     <label>Campaign to send</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns</source_model>
                 </field>
-                <field id="anchor" translate="comment label" sortOrder="60" showInStore="0" showInWebsite="1"
-                       showInDefault="1">
+                <field id="link_to_product_page" type="select" sortOrder="60" showInDefault="1" showInStore="0" showInWebsite="1">
+                    <label>Link to product page</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment><![CDATA[Enable this if your reviews are displayed on your product pages.]]></comment>
+                </field>
+                <field id="anchor" translate="comment label" sortOrder="70" showInStore="0" showInWebsite="1" showInDefault="1">
                     <label>Reviews Anchor</label>
-                    <comment><![CDATA[Please provide the anchor used on product pages for reviews e.g. #reviews]]></comment>
+                    <comment><![CDATA[(Optional) Provide the anchor used on product or review pages e.g. #reviews.]]></comment>
                 </field>
             </group>
             <group id="feefo_feedback_engine" translate="label" sortOrder="40" showInDefault="1" showInWebsite="1"
@@ -1837,7 +1841,8 @@
                 <field id="custom_domain" translate="comment label" sortOrder="40" showInStore="0" showInWebsite="1"
                        showInDefault="1">
                     <label>Custom OAUTH Domain</label>
-                    <comment><![CDATA[Enter the custom domain for authorization. Make sure that base URL ends with '/' (slash), e.g. http://yourdomain/magento/]]></comment>
+                    <backend_model>Dotdigitalgroup\Email\Model\Config\Backend\OauthSecurityCheck</backend_model>
+                    <comment><![CDATA[Enter the custom domain for authorization. Make sure that base URL ends with '/' (slash), e.g. https://yourdomain/magento/]]></comment>
                 </field>
                 <field id="custom_authorization" translate="label" sortOrder="50" showInStore="0" showInWebsite="1"
                        showInDefault="1">
@@ -1904,6 +1909,13 @@
                     <label>Alert Frequency</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Developer\AlertFrequency</source_model>
                     <comment><![CDATA[This setting controls both email notification frequency and the time period in which we report errors. e.g. Select "24 Hours" to receive an email every 24 hours reporting any errors that may have occurred in the last 24 hours.]]></comment>
+                </field>
+            </group>
+            <group id="pwa_settings" translate="label" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="0">
+                <label>PWA Settings</label>
+                <field id="pwa_url" translate="label" type="text" sortOrder="10" showInDefault="1" showInStore="0" showInWebsite="1">
+                    <label>PWA Storefront Base URL</label>
+                    <comment><![CDATA[ Specify this if you use a PWA storefront URL which is different from Magento's default frontend base URL. e.g. https://pwa.yourdomain.com/]]></comment>
                 </field>
             </group>
         </section>

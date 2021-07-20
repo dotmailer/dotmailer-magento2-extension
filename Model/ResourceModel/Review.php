@@ -224,7 +224,7 @@ class Review extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             ->joinLeft(
                 ['c' => $this->getTable('customer_entity')],
                 'c.entity_id = customer_id',
-                ['email', 'store_id']
+                ['email']
             );
 
         return $reviews;

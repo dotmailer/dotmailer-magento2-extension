@@ -92,6 +92,7 @@ class CustomerGuestAbandonedTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * @magentoConfigFixture default_store connector_configuration/abandoned_carts/allow_non_subscribers 1
      * @magentoConfigFixture default_store abandoned_carts/customers/enabled_1 1
      * @magentoConfigFixture default_store abandoned_carts/customers/send_after_1 0
      * @magentoConfigFixture default_store abandoned_carts/customers/campaign_1 1234
@@ -128,6 +129,7 @@ class CustomerGuestAbandonedTest extends \PHPUnit\Framework\TestCase
      * @magentoConfigFixture default_store abandoned_carts/customers/send_after_1 15
      * @magentoConfigFixture default_store abandoned_carts/customers/campaign_2 1234
      * @magentoConfigFixture default_store connector/api/endpoint https://r1-api.dotmailer.com
+     * @magentoConfigFixture default_store connector_configuration/abandoned_carts/allow_non_subscribers 1
      */
     public function testExistingCustomerAbandonedCart()
     {
@@ -155,6 +157,7 @@ class CustomerGuestAbandonedTest extends \PHPUnit\Framework\TestCase
      * @magentoConfigFixture default_store abandoned_carts/guests/send_after_1 0
      * @magentoConfigFixture default_store abandoned_carts/guests/campaign_1 1234
      * @magentoConfigFixture default_store connector/api/endpoint https://r1-api.dotmailer.com
+     * @magentoConfigFixture default_store connector_configuration/abandoned_carts/allow_non_subscribers 1
      */
     public function testGuestAbandonedCartOne()
     {
@@ -173,6 +176,7 @@ class CustomerGuestAbandonedTest extends \PHPUnit\Framework\TestCase
      * @magentoConfigFixture default_store abandoned_carts/guests/send_after_2 1
      * @magentoConfigFixture default_store abandoned_carts/guests/send_after_1 15
      * @magentoConfigFixture default_store abandoned_carts/guests/campaign_2 1234
+     * @magentoConfigFixture default_store connector_configuration/abandoned_carts/allow_non_subscribers 1
      */
     public function testExistingAbandonedCartGuest()
     {
@@ -192,6 +196,7 @@ class CustomerGuestAbandonedTest extends \PHPUnit\Framework\TestCase
      * @magentoConfigFixture default_store abandoned_carts/guests/send_after_2 1
      * @magentoConfigFixture default_store abandoned_carts/guests/send_after_1 15
      * @magentoConfigFixture default_store abandoned_carts/guests/campaign_2 1234
+     * @magentoConfigFixture default_store connector_configuration/abandoned_carts/allow_non_subscribers 1
      */
     public function testExistingGuestAbandonedCartItemsChanged()
     {

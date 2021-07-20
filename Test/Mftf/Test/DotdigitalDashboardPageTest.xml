@@ -9,6 +9,7 @@
             <description value="The dotdigital Dashboard can be viewed."/>
             <severity value="MINOR"/>
             <group value="dotmailer"/>
+            <testCaseId value="BUNDLE-74"/>
         </annotations>
 
         <before>
@@ -19,11 +20,13 @@
             <actionGroup ref="AdminLogoutActionGroup" stepKey="logout"/>
         </after>
 
-        <click selector="li#menu-magento-reports-report" stepKey="clickReportsButton"/>
-        <seeElement selector="div.submenu" stepKey="seeReportsAccordion"/>
-        <seeElement selector="li.item-dashboards" stepKey="seeDDGDashboard"/>
+        <!-- We need enough viewport to view the expanding menu. -->
+        <resizeWindow width="1400" height="600" stepKey="resizeWindow"/>
 
-        <click selector="li.item-dashboards" stepKey="clickOnDashBoard"/>
+        <click selector="li#menu-magento-reports-report" stepKey="clickReportsButton"/>
+        <seeElement selector="li[data-ui-id='menu-dotdigitalgroup-email-marketing-automation-report']" stepKey="seeCustomerEngagementSubMenu"/>
+        <seeElement selector="li.item-dashboards" stepKey="seeDDGDashboard"/>
+        <click selector="li.item-dashboards a" stepKey="clickOnDashboard"/>
 
         <seeInCurrentUrl url="{{DotdigitalDashboardPage.url}}" stepKey="confirmThatImOnDashboard"/>
         <seeElement selector="div.ddg-dashboard-container" stepKey="seeDDGDescription"/>

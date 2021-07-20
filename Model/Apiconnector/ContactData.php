@@ -2,9 +2,9 @@
 
 namespace Dotdigitalgroup\Email\Model\Apiconnector;
 
-use Magento\Framework\Model\AbstractModel;
 use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Customer\DataField\Date;
+use Magento\Framework\Model\AbstractModel;
 
 /**
  * Manages data synced as contact.
@@ -276,8 +276,9 @@ class ContactData
     public function getStoreNameAdditional()
     {
         try {
-            $storeGroup = $this->storeManager->getGroup($this->model->getGroupId());
-            return $storeGroup->getName();
+            return $this->storeManager->getStore($this->model->getStoreId())
+                ->getGroup()
+                ->getName();
         } catch (\Magento\Framework\Exception\NoSuchEntityException $e) {
             $this->logger->debug(
                 'Requested store is not found. Store id: ' . $this->model->getStoreId(),
@@ -323,7 +324,17 @@ class ContactData
         $firstOrderId = $this->model->getFirstOrderId();
         $order = $this->orderFactory->create();
         $this->orderResource->load($order, $firstOrderId);
-        $categoryIds = $this->getCategoriesFromOrderItems($order->getAllItems());
+        try {
+            $orderItems = $order->getAllItems();
+        } catch (\Exception $e) {
+            $orderItems = [];
+            $this->logger->debug(
+                'Error fetching items for order ID: ' . $firstOrderId,
+                [(string) $e]
+            );
+        }
+
+        $categoryIds = $this->getCategoriesFromOrderItems($orderItems);
 
         return $this->getCategoryNames($categoryIds);
     }
@@ -363,7 +374,18 @@ class ContactData
         $lastOrderId = $this->model->getLastOrderId();
         $order = $this->orderFactory->create();
         $this->orderResource->load($order, $lastOrderId);
-        $categoryIds = $this->getCategoriesFromOrderItems($order->getAllItems());
+
+        try {
+            $orderItems = $order->getAllItems();
+        } catch (\Exception $e) {
+            $orderItems = [];
+            $this->logger->debug(
+                'Error fetching items for order ID: ' . $lastOrderId,
+                [(string) $e]
+            );
+        }
+
+        $categoryIds = $this->getCategoriesFromOrderItems($orderItems);
 
         return $this->getCategoryNames($categoryIds);
     }

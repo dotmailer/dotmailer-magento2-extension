@@ -698,7 +698,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      *
      * @param string $email
      *
-     * @return null
+     * @return \stdClass
      * @throws \Exception
      */
     public function postContacts($email)

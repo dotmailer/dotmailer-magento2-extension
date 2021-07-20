@@ -2,6 +2,8 @@
 
 namespace Dotdigitalgroup\Email\Observer\Customer;
 
+use Dotdigitalgroup\Email\Model\ContactFactory;
+
 /**
  * New review automation.
  */
@@ -48,16 +50,22 @@ class ReviewSaveAutomation implements \Magento\Framework\Event\ObserverInterface
     private $customerResource;
 
     /**
+     * @var ContactFactory
+     */
+    private $contactFactory;
+
+    /**
      * ReviewSaveAutomation constructor.
      *
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Review $reviewResource
      * @param \Magento\Customer\Model\ResourceModel\Customer $customerResource
-     * @param \Dotdigitalgroup\Email\Model\ReviewFactory     $reviewFactory
+     * @param \Dotdigitalgroup\Email\Model\ReviewFactory $reviewFactory
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Review $reviewResource
      * @param \Dotdigitalgroup\Email\Model\AutomationFactory $automationFactory
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Automation $automationResource
      * @param \Magento\Customer\Model\CustomerFactory $customerFactory
      * @param \Dotdigitalgroup\Email\Helper\Data $data
      * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
+     * @param ContactFactory $contactFactory
      */
     public function __construct(
         \Magento\Customer\Model\ResourceModel\Customer $customerResource,
@@ -67,7 +75,8 @@ class ReviewSaveAutomation implements \Magento\Framework\Event\ObserverInterface
         \Dotdigitalgroup\Email\Model\ResourceModel\Automation $automationResource,
         \Magento\Customer\Model\CustomerFactory $customerFactory,
         \Dotdigitalgroup\Email\Helper\Data $data,
-        \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
+        \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
+        ContactFactory $contactFactory
     ) {
         $this->reviewFactory     = $reviewFactory;
         $this->reviewResource = $reviewResource;
@@ -77,12 +86,14 @@ class ReviewSaveAutomation implements \Magento\Framework\Event\ObserverInterface
         $this->helper            = $data;
         $this->storeManager      = $storeManagerInterface;
         $this->customerResource  = $customerResource;
+        $this->contactFactory    = $contactFactory;
     }
 
     /**
      *
      * @param \Magento\Framework\Event\Observer $observer
      * @return $this
+     * @throws \Magento\Framework\Exception\AlreadyExistsException
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
@@ -93,7 +104,6 @@ class ReviewSaveAutomation implements \Magento\Framework\Event\ObserverInterface
             == \Magento\Review\Model\Review::STATUS_APPROVED
         ) {
             $customerId = $dataObject->getCustomerId();
-            $this->helper->setConnectorContactToReImport($customerId);
 
             //save review info in the table
             $storeId = $dataObject->getStoreId()
@@ -102,6 +112,9 @@ class ReviewSaveAutomation implements \Magento\Framework\Event\ObserverInterface
 
             $store = $this->storeManager->getStore($storeId);
             $websiteId = $store->getWebsiteId();
+
+            $this->contactFactory->create()
+                ->setConnectorContactToReImport($customerId, $websiteId);
 
             if (!$this->helper->isEnabled($websiteId)) {
                 return $this;

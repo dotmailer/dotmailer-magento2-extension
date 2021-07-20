@@ -2,7 +2,7 @@
   "name": "dotmailer/dotmailer-magento2-extension",
   "description": "dotmailer integration for magento 2",
   "type": "magento2-module",
-  "version": "4.11.4",
+  "version": "4.12.0",
   "license": "MIT",
   "repositories": [
     {
@@ -43,7 +43,8 @@
     "magento/module-bundle": ">=100 <102",
     "magento/module-grouped-product": "100.*",
     "magento/module-url-rewrite": ">=100 <103",
-    "magento/module-authorization": "100.*"
+    "magento/module-authorization": "100.*",
+    "magento/module-tax": "100.*"
   },
   "autoload": {
     "files": [ "registration.php" ],

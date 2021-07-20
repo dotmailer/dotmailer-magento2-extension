@@ -12,7 +12,6 @@ use Dotdigitalgroup\Email\Model\Catalog as ModelCatalog;
 
 class UpdateCatalogTest extends TestCase
 {
-
     /**
      * @var Catalog
      */
@@ -85,7 +84,7 @@ class UpdateCatalogTest extends TestCase
             ]);
 
         $this->parentFinderMock->expects($this->once())
-            ->method('getConfigurableParentsFromBunchOfProducts')
+            ->method('getConfigurableParentsFromProductIds')
             ->willReturn([]);
 
         $this->catalogResourceMock->expects($this->once())

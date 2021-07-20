@@ -109,75 +109,11 @@ class Information extends \Magento\Backend\Block\Template
     }
 
     /**
-     * @return string
+     * @return array|array[]
      */
-    public function getConnectorVersion()
+    public function fetchActiveModules()
     {
-        return $this->escapeHtml(__('v. %1', $this->moduleList->getConnectorVersion()));
-    }
-
-    /**
-     * @return bool
-     */
-    public function hasChatModule()
-    {
-        return $this->moduleList->hasChatModule();
-    }
-
-    /**
-     * @return string
-     */
-    public function getChatConnectorVersion()
-    {
-        return $this->escapeHtml(__('v. %1', $this->moduleList->getChatConnectorVersion()));
-    }
-
-    /**
-     * @return bool
-     */
-    public function hasEnterpriseModule()
-    {
-        return $this->moduleList->hasEnterpriseModule();
-    }
-
-    /**
-     * @return string
-     */
-    public function getEnterpriseConnectorVersion()
-    {
-        return $this->escapeHtml(__('v. %1', $this->moduleList->getEnterpriseConnectorVersion()));
-    }
-
-    /**
-     * @return bool
-     */
-    public function hasB2bModule()
-    {
-        return $this->moduleList->hasB2bModule();
-    }
-
-    /**
-     * @return string
-     */
-    public function getB2bConnectorVersion()
-    {
-        return $this->escapeHtml(__('v. %1', $this->moduleList->getB2bConnectorVersion()));
-    }
-
-    /**
-     * @return bool
-     */
-    public function hasSmsModule()
-    {
-        return $this->moduleList->hasSmsModule();
-    }
-
-    /**
-     * @return string
-     */
-    public function getSmsConnectorVersion()
-    {
-        return $this->escapeHtml(__('v. %1', $this->moduleList->getSmsConnectorVersion()));
+        return $this->moduleList->fetchActiveModules();
     }
 
     /**

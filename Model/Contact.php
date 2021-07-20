@@ -2,11 +2,54 @@
 
 namespace Dotdigitalgroup\Email\Model;
 
+use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory as ContactCollectionFactory;
+
 class Contact extends \Magento\Framework\Model\AbstractModel
 {
     const EMAIL_CONTACT_IMPORTED = 1;
     const EMAIL_CONTACT_NOT_IMPORTED = 0;
     const EMAIL_SUBSCRIBER_NOT_IMPORTED = 0;
+
+    /**
+     * @var ContactCollectionFactory
+     */
+    private $contactCollectionFactory;
+
+    /**
+     * @var ResourceModel\Contact
+     */
+    private $contactResource;
+
+    /**
+     * Contact constructor.
+     * @param \Magento\Framework\Model\Context $context
+     * @param \Magento\Framework\Registry $registry
+     * @param \Magento\Framework\Model\ResourceModel\AbstractResource|null $resource
+     * @param \Magento\Framework\Data\Collection\AbstractDb|null $resourceCollection
+     * @param ResourceModel\Contact $contactResource
+     * @param ContactCollectionFactory $contactCollectionFactory
+     * @param array $data
+     */
+    public function __construct(
+        \Magento\Framework\Model\Context $context,
+        \Magento\Framework\Registry $registry,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contactResource,
+        ContactCollectionFactory $contactCollectionFactory,
+        \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
+        \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
+        array $data = []
+    ) {
+        $this->contactCollectionFactory = $contactCollectionFactory;
+        $this->contactResource = $contactResource;
+
+        parent::__construct(
+            $context,
+            $registry,
+            $resource,
+            $resourceCollection,
+            $data
+        );
+    }
 
     /**
      * Constructor.
@@ -174,5 +217,25 @@ class Contact extends \Magento\Framework\Model\AbstractModel
     {
         return $this->getCollection()
             ->getNumberSubscribers($websiteId);
+    }
+
+    /**
+     * Mark contact for reimport.
+     *
+     * @param $customerId
+     * @param $websiteId
+     * @throws \Magento\Framework\Exception\AlreadyExistsException
+     */
+    public function setConnectorContactToReImport($customerId, $websiteId)
+    {
+        $contactModel = $this->contactCollectionFactory->create()
+            ->loadByCustomerIdAndWebsiteId($customerId, $websiteId);
+
+        if ($contactModel) {
+            $contactModel->setEmailImported(
+                \Dotdigitalgroup\Email\Model\Contact::EMAIL_CONTACT_NOT_IMPORTED
+            );
+            $this->contactResource->save($contactModel);
+        }
     }
 }

@@ -9,6 +9,7 @@
             <description value="Use the Create Address Books panel to create address books in Engagement Cloud, and then map them to Magento user types."/>
             <severity value="MINOR"/>
             <group value="dotmailer"/>
+            <testCaseId value="BUNDLE-21, BUNDLE-22"/>
         </annotations>
 
         <before>

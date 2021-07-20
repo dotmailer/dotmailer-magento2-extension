@@ -76,6 +76,26 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     }
 
     /**
+     * Load contact by customer id and website id.
+     *
+     * @param string|int $customerId
+     * @param string|int $websiteId
+     * @return bool|\Dotdigitalgroup\Email\Model\Contact
+     */
+    public function loadByCustomerIdAndWebsiteId($customerId, $websiteId)
+    {
+        $collection = $this->addFieldToFilter('customer_id', $customerId)
+            ->addFieldToFilter('website_id', $websiteId)
+            ->setPageSize(1);
+
+        if ($collection->getSize()) {
+            return $collection->getFirstItem();
+        }
+
+        return false;
+    }
+
+    /**
      * Get all customer contacts not imported for a website.
      *
      * @param int $websiteId
@@ -132,6 +152,17 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
         }
 
         return false;
+    }
+
+    /**
+     * Load all customers matching the supplied customer id.
+     *
+     * @param string $id
+     * @return $this
+     */
+    public function loadCustomersById($id)
+    {
+        return $this->addFieldToFilter('customer_id', $id);
     }
 
     /**
@@ -336,5 +367,17 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
         }
 
         return $collection;
+    }
+
+    /**
+     * @param array $customerIds
+     * @param string|int $websiteId
+     * @return Collection
+     */
+    public function getCustomerScopeData(array $customerIds, $websiteId = 0)
+    {
+        return $this->addFieldToFilter('customer_id', ['in' => $customerIds])
+            ->addFieldToFilter('website_id', $websiteId)
+            ->addFieldToSelect(['customer_id', 'store_id']);
     }
 }

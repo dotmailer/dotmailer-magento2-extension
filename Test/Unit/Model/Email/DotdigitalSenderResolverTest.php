@@ -11,6 +11,7 @@ use Magento\Email\Model\Template\SenderResolver;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Registry;
 use PHPUnit\Framework\TestCase;
+use Dotdigitalgroup\Email\Logger\Logger;
 
 class DotdigitalSenderResolverTest extends TestCase
 {
@@ -55,6 +56,11 @@ class DotdigitalSenderResolverTest extends TestCase
     private $templateServiceMock;
 
     /**
+     * @var Logger|\PHPUnit\Framework\MockObject\MockObject
+     */
+    private $loggerMock;
+
+    /**
      * @return void
      */
     protected function setUp() :void
@@ -66,13 +72,15 @@ class DotdigitalSenderResolverTest extends TestCase
         $this->templateModelMock = $this->createMock(Template::class);
         $this->templateFactoryMock = $this->createMock(TemplateFactory::class);
         $this->templateServiceMock = $this->createMock(TemplateService::class);
+        $this->loggerMock = $this->createMock(Logger::class);
 
         $this->dotdigitalSenderResolver = new DotdigitalSenderResolver(
             $this->scopeConfigMock,
             $this->registryMock,
             $this->templateFactoryMock,
             $this->transactionalHelperMock,
-            $this->templateServiceMock
+            $this->templateServiceMock,
+            $this->loggerMock
         );
     }
 

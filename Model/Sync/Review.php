@@ -189,22 +189,27 @@ class Review implements SyncInterface
      *
      * @param \Magento\Store\Model\Website $website
      * @param string|int $limit
-     * @return null
+     * @return void
      */
     public function _exportReviewsForWebsite(\Magento\Store\Model\Website $website, $limit)
     {
-        $emailReviews    = $this->_getReviewsToExport($website, $limit);
+        $emailReviews = $this->_getReviewsToExport($website, $limit);
         $this->reviewIds = [];
 
-        if ($emailReviews->getSize()) {
-            $ids = $emailReviews->getColumnValues('review_id');
+        if (!empty($emailReviews)) {
             $reviewResourceFactory = $this->reviewResourceFactory->create();
-            $reviews = $reviewResourceFactory->getMageReviewsByIds($ids);
+            $reviews = $reviewResourceFactory->getMageReviewsByIds(array_keys($emailReviews));
 
             foreach ($reviews as $mageReview) {
                 try {
+                    $storeId = $emailReviews[$mageReview->getId()]['store_id'];
+                    $mageReview->setStoreId($storeId);
+
                     $product = $reviewResourceFactory
-                        ->getProductByIdAndStore($mageReview->getEntityPkValue(), $mageReview->getStoreId());
+                        ->getProductByIdAndStore(
+                            $mageReview->getEntityPkValue(),
+                            $storeId
+                        );
 
                     $connectorReview = $this->connectorReviewFactory->create()
                         ->setReviewData($mageReview)
@@ -235,13 +240,20 @@ class Review implements SyncInterface
      *
      * @param \Magento\Store\Model\Website $website
      * @param int $limit
-     *
-     * @return \Dotdigitalgroup\Email\Model\ResourceModel\Review\Collection
+     * @return array
      */
-    public function _getReviewsToExport(\Magento\Store\Model\Website $website, $limit = 100)
+    private function _getReviewsToExport(\Magento\Store\Model\Website $website, $limit = 100)
     {
-        return $this->reviewCollection->create()
+        $reviews = [];
+        $collection = $this->reviewCollection->create()
             ->getReviewsToExportByWebsite($website, $limit);
+
+        foreach ($collection as $review) {
+            $reviews[$review->getReviewId()] = [
+                "store_id" => $review->getStoreId()
+            ];
+        }
+        return $reviews;
     }
 
     /**

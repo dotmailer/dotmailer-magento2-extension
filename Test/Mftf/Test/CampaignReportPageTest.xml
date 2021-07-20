@@ -9,6 +9,7 @@
             <description value="The dotdigital Campaign report can be viewed, filtered and sorted."/>
             <severity value="MINOR"/>
             <group value="dotmailer"/>
+            <testCaseId value="BUNDLE-71"/>
         </annotations>
 
         <before>

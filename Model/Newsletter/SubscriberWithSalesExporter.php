@@ -110,6 +110,11 @@ class SubscriberWithSalesExporter
     public function exportSubscribersWithSales($store, $contactSubscribers)
     {
         $updated = 0;
+        //no subscribers found
+        if ($contactSubscribers->getSize() == 0) {
+            return $updated;
+        }
+
         $website = $store->getWebsite();
         $websiteId = $website->getId();
         $consentModel = $this->consentFactory->create();
@@ -119,12 +124,6 @@ class SubscriberWithSalesExporter
         $emailContactIds = $contactSubscribers->getColumnValues('email_contact_id');
         $subscribersFile = strtolower($store->getCode() . '_subscribers_with_sales_' . date('d_m_Y_His') . '.csv');
         $this->helper->log('Subscriber file with sales : ' . $subscribersFile);
-        $contactSubscriberCollection = $this->emailContactResource->getContactCollectionByEmail($emails);
-
-        //no subscribers found
-        if ($contactSubscriberCollection->getSize() == 0) {
-            return $updated;
-        }
 
         $csv = $this->csvGeneratorFactory->create()
             ->createCsv($subscribersFile)
@@ -134,9 +133,9 @@ class SubscriberWithSalesExporter
         //consent data append
         if ($isConsentSubscriberEnabled) {
             $csv->mergeHeaders(\Dotdigitalgroup\Email\Model\Consent::$bulkFields);
-            $contactSubscriberCollection->getSelect()
+            $contactSubscribers->getSelect()
                 ->joinLeft(
-                    ['ecc' => $contactSubscriberCollection->getTable(Schema::EMAIL_CONTACT_CONSENT_TABLE)],
+                    ['ecc' => $contactSubscribers->getTable(Schema::EMAIL_CONTACT_CONSENT_TABLE)],
                     "ecc.email_contact_id = main_table.email_contact_id",
                     ['consent_url', 'consent_datetime', 'consent_ip', 'consent_user_agent']
                 )->group('email_contact_id');
@@ -145,13 +144,13 @@ class SubscriberWithSalesExporter
         //subscribers sales data
         $salesDataForSubscribers = $this->emailContactResource->getSalesDataForSubscribersWithOrderStatusesAndBrand(
             $emails,
-            $websiteId
+            $website
         );
 
         $csv->outputHeadersToFile();
         $optInType = $csv->isOptInTypeDouble($store);
 
-        foreach ($contactSubscriberCollection as $subscriber) {
+        foreach ($contactSubscribers as $subscriber) {
             if (isset($salesDataForSubscribers[$subscriber->getEmail()])) {
                 $subscriber = $this->setSalesDataOnItem(
                     $salesDataForSubscribers[$subscriber->getEmail()],

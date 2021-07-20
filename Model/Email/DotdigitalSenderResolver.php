@@ -6,6 +6,7 @@ use Dotdigitalgroup\Email\Helper\Transactional;
 use Magento\Email\Model\Template\SenderResolver;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Registry;
+use Dotdigitalgroup\Email\Logger\Logger;
 
 /**
  * Class SenderResolver
@@ -35,25 +36,32 @@ class DotdigitalSenderResolver extends SenderResolver
     private $templateService;
 
     /**
-     * SenderResolver constructor.
-     *
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
-     * @param \Magento\Framework\Registry $registry
+     * @var Logger
+     */
+    private $logger;
+
+    /**
+     * DotdigitalSenderResolver constructor.
+     * @param ScopeConfigInterface $scopeConfig
+     * @param Registry $registry
      * @param TemplateFactory $templateFactory
      * @param Transactional $transactionalHelper
      * @param TemplateService $templateService
+     * @param Logger $logger
      */
     public function __construct(
         ScopeConfigInterface $scopeConfig,
         Registry $registry,
         TemplateFactory $templateFactory,
         Transactional $transactionalHelper,
-        TemplateService $templateService
+        TemplateService $templateService,
+        Logger $logger
     ) {
         $this->registry = $registry;
         $this->templateFactory = $templateFactory;
         $this->transactionalHelper = $transactionalHelper;
         $this->templateService = $templateService;
+        $this->logger = $logger;
         parent::__construct(
             $scopeConfig
         );
@@ -91,8 +99,13 @@ class DotdigitalSenderResolver extends SenderResolver
      */
     private function shouldIntercept()
     {
-        $storeId = $this->registry->registry('transportBuilderPluginStoreId');
-        return $this->transactionalHelper->isEnabled($storeId);
+        try {
+            $storeId = $this->registry->registry('transportBuilderPluginStoreId');
+            return $this->transactionalHelper->isEnabled($storeId);
+        } catch (\Exception $exception) {
+            $this->logger->error((string) $exception);
+            return false;
+        }
     }
 
     /**
