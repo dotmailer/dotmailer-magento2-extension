@@ -19,6 +19,20 @@ You are welcome to contribute to Engagement Cloud for Magento! You can either:
 - Fix a bug: please clone and use our [Develop branch](https://github.com/dotmailer/dotmailer-magento2-extension/tree/develop) to submit your Pull Request
 - Request a feature on our [roadmap](https://roadmap.dotdigital.com)
 
+# 4.13.0
+
+###### Improvements
+- A specific error exception, relating to transactional email sends to invalid email addresses, will no longer be surfaced in system messages.
+
+###### Bug fixes
+- We've added a _shipping_ property to cart insight data.
+- Subscriber automation was failing for contacts who enrolled across multiple websites; this has been fixed.
+- We've fixed a problem with automapping data fields if the connector wasn't enabled at default level.
+- We added a workaround for displaying configurable products with customizable options in cart insight data.
+- We've added try/catch to all the times we call `quote→getAllItems()` in our code.
+- We've fixed a problem with mismatching types when syncing custom customer attributes.
+- Catalog insight data now sends a correctly-formatted date string for date-type product attributes.
+
 # 4.12.0
 
 ###### What's new
