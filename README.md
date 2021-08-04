@@ -19,6 +19,24 @@ You are welcome to contribute to Engagement Cloud for Magento! You can either:
 - Fix a bug: please clone and use our [Develop branch](https://github.com/dotmailer/dotmailer-magento2-extension/tree/develop) to submit your Pull Request
 - Request a feature on our [roadmap](https://roadmap.dotdigital.com)
 
+# 4.14.0-RC1
+
+###### What's new
+- We have adopted declarative schema for our module's database structure.
+- Integration insight data has been extended to collect additional dotdigital configuration values, via a weekly cron.
+- The ‘cleaner’ cron can now be run on demand from the CLI.
+
+###### Improvements
+- The configurable dotdigital cron jobs are now scheduled using a random offset. 
+- Data migration can now be performed on a per-table basis via the CLI.
+- Catalog sync now supports Multi Source Inventory in Magento. 
+- We've improved our handling of the contact import report; to be resubscribed, contacts must now be subscribed, and not suppressed.
+- Unused Fancybox JS files have been removed.
+- We've removed, or updated, various bits of code relating to the Zend Framework.
+
+###### Bug fixes
+- We've fixed date-based resetting in **Developer > Sync Settings**.
+
 # 4.13.0
 
 ###### Improvements
