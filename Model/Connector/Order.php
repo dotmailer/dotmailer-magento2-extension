@@ -636,17 +636,14 @@ class Order
         $options = [];
 
         foreach ($orderItemOptions as $orderItemOption) {
-            if (array_key_exists('value', $orderItemOption)
-                && array_key_exists(
-                    'label',
-                    $orderItemOption
-                )
+            if (array_key_exists('value', $orderItemOption) &&
+                array_key_exists('label', $orderItemOption)
             ) {
                 $label = $this->validator->cleanLabel(
                     $orderItemOption['label'],
                     '-',
                     '-',
-                    $orderItemOption['option_id']
+                    isset($orderItemOption['option_id']) ? $orderItemOption['option_id'] : null
                 );
                 if (empty($label)) {
                     continue;
