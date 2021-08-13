@@ -3,11 +3,13 @@
 namespace Dotdigitalgroup\Email\Model;
 
 use Dotdigitalgroup\Email\Helper\Data;
-use Dotdigitalgroup\Email\Model\DotdigitalConfig;
+use Dotdigitalgroup\Email\Model\Sync\Integration\DotdigitalConfig;
+use Dotdigitalgroup\Email\Model\Sync\Integration\IntegrationInsightData;
 use Magento\Framework\App\ProductMetadataInterface;
 use Magento\Framework\Module\ModuleListInterface;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Store\Model\StoreManagerInterface;
 use PHPUnit\Framework\TestCase;
 
 class IntegrationInsightDataUnitTest extends TestCase
@@ -43,7 +45,7 @@ class IntegrationInsightDataUnitTest extends TestCase
     private $timezoneMock;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\DotdigitalConfig|\PHPUnit\Framework\MockObject\MockObject
+     * @var \Dotdigitalgroup\Email\Model\Sync\Integration\DotdigitalConfig|\PHPUnit\Framework\MockObject\MockObject
      */
     private $dotdigitalConfigMock;
 
@@ -51,6 +53,11 @@ class IntegrationInsightDataUnitTest extends TestCase
      * @var ScopeConfigInterface|\PHPUnit\Framework\MockObject\MockObject
      */
     private $scopeConfigMock;
+
+    /**
+     * @var StoreManagerInterface|mixed|\PHPUnit\Framework\MockObject\MockObject
+     */
+    private $storeManagerInterfaceMock;
 
     public function setUp() :void
     {
@@ -60,6 +67,7 @@ class IntegrationInsightDataUnitTest extends TestCase
         $this->timezoneMock = $this->createMock(TimezoneInterface::class);
         $this->dotdigitalConfigMock = $this->createMock(DotdigitalConfig::class);
         $this->scopeConfigMock = $this->createMock(ScopeConfigInterface::class);
+        $this->storeManagerInterfaceMock = $this->createMock(StoreManagerInterface::class);
 
         // set up metadata
         $this->productMetadataMock
@@ -82,7 +90,7 @@ class IntegrationInsightDataUnitTest extends TestCase
                 'setup_version' => self::CONNECTOR_VERSION,
             ]);
 
-        $this->helperMock->expects($this->once())
+        $this->storeManagerInterfaceMock->expects($this->once())
             ->method('getStores')
             ->willReturn([
                 $this->getTestStore(1, 'Default', 'https://www.chaz-kangaroo.com', true),
@@ -95,7 +103,8 @@ class IntegrationInsightDataUnitTest extends TestCase
             $this->productMetadataMock,
             $this->moduleListMock,
             $this->dotdigitalConfigMock,
-            $this->scopeConfigMock
+            $this->scopeConfigMock,
+            $this->storeManagerInterfaceMock
         );
     }
 
@@ -122,8 +131,8 @@ class IntegrationInsightDataUnitTest extends TestCase
 
         // assert 2 records were returned, with separate integration IDs based on the API hash
         $this->assertCount(2, $data);
-        $this->assertEquals('www.chaz-kangaroo.com', reset($data)['url']);
-        $this->assertEquals('www.bye-bye-man.com', end($data)['url']);
+        $this->assertEquals('www.chaz-kangaroo.com', reset($data)['recordId']);
+        $this->assertEquals('www.bye-bye-man.com', end($data)['recordId']);
     }
 
     /**
