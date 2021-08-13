@@ -134,11 +134,13 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     /**
      * @param string $email
      * @param array $updated
-     * @return $this
+     * @param string|int $websiteId
+     * @return Collection
      */
-    public function getAbandonedCartAutomationsForContactByInterval($email, $updated)
+    public function getAbandonedCartAutomationsForContactByInterval($email, $updated, $websiteId)
     {
         return $this->addFieldToFilter('email', $email)
+            ->addFieldToFilter('website_id', $websiteId)
             ->addFieldToFilter('automation_type', Automation::AUTOMATION_TYPE_ABANDONED_CART_PROGRAM_ENROLMENT)
             ->addFieldToFilter('updated_at', $updated);
     }
