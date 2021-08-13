@@ -44,7 +44,11 @@
     "magento/module-grouped-product": "100.*",
     "magento/module-url-rewrite": ">=100 <103",
     "magento/module-authorization": "100.*",
-    "magento/module-tax": "100.*"
+    "magento/module-tax": "100.*",
+    "magento/module-inventory-api": "*",
+    "magento/module-inventory-configuration-api": "*",
+    "magento/module-inventory-sales-admin-ui": "*",
+    "magento/module-inventory-sales-api": "*"
   },
   "autoload": {
     "files": [ "registration.php" ],

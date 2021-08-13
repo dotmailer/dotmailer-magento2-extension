@@ -34,6 +34,10 @@
             <module name="Magento_Theme" />
             <module name="Magento_Authorization" />
             <module name="Magento_Tax" />
+            <module name="Magento_InventoryApi" />
+            <module name="Magento_InventoryConfigurationApi" />
+            <module name="Magento_InventorySalesAdminUi" />
+            <module name="Magento_InventorySalesApi" />
         </sequence>
     </module>
 </config>
