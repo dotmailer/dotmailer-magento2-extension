@@ -22,11 +22,10 @@ class UpdateContactsWithSubscriberCustomers extends AbstractDataMigration implem
             ->select()
             ->from(
                 $this->resourceConnection->getTableName('newsletter_subscriber'),
-                'customer_id'
+                'subscriber_email'
             )
             ->where('subscriber_status = ?', 1)
-            ->where('customer_id > ?', 0)
-            ->order('customer_id');
+            ->order('subscriber_email');
     }
 
     /**
@@ -46,12 +45,12 @@ class UpdateContactsWithSubscriberCustomers extends AbstractDataMigration implem
     public function getUpdateWhereClause()
     {
         // get customer IDs
-        $customerIds = $this->resourceConnection
+        $emails = $this->resourceConnection
             ->getConnection()
             ->fetchCol($this->getSelectStatement());
 
         return [
-            'customer_id in (?)' => $customerIds,
+            'email in (?)' => $emails,
         ];
     }
 }
