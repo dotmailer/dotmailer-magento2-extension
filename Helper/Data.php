@@ -95,16 +95,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     private $userResource;
 
     /**
-     * @var \Magento\Framework\Stdlib\DateTime\TimezoneInterface
-     */
-    private $timezone;
-
-    /**
-     * @var \Dotdigitalgroup\Email\Model\DateIntervalFactory
-     */
-    private $dateIntervalFactory;
-
-    /**
      * @var Logger
      */
     private $logger;
@@ -140,8 +130,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param ConfigFactory $configHelperFactory
      * @param SerializerInterface $serializer
      * @param \Magento\Framework\Stdlib\DateTime\DateTime $dateTime
-     * @param \Magento\Framework\Stdlib\DateTime\TimezoneInterface $timezone
-     * @param \Dotdigitalgroup\Email\Model\DateIntervalFactory $dateIntervalFactory
      * @param \Magento\User\Model\ResourceModel\User $userResource
      * @param Logger $logger
      * @param RequestInterface $request
@@ -163,8 +151,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         \Dotdigitalgroup\Email\Helper\ConfigFactory $configHelperFactory,
         SerializerInterface $serializer,
         \Magento\Framework\Stdlib\DateTime\DateTime $dateTime,
-        \Magento\Framework\Stdlib\DateTime\TimezoneInterface $timezone,
-        \Dotdigitalgroup\Email\Model\DateIntervalFactory $dateIntervalFactory,
         \Magento\User\Model\ResourceModel\User $userResource,
         Logger $logger,
         RequestInterface $request,
@@ -183,8 +169,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $this->clientFactory = $clientFactory;
         $this->configHelperFactory = $configHelperFactory;
         $this->datetime = $dateTime;
-        $this->timezone = $timezone;
-        $this->dateIntervalFactory = $dateIntervalFactory;
         $this->userResource = $userResource;
         $this->contactResource = $contactResource;
         $this->logger = $logger;
@@ -729,52 +713,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         }
 
         return $response;
-    }
-
-    /**
-     * @param \Magento\Store\Api\Data\WebsiteInterface $website
-     * @param string $intervalSpec
-     * @return array
-     */
-    public function getSuppressedContacts($website, $intervalSpec = 'PT24H')
-    {
-        $limit = 5;
-        $maxToSelect = 1000;
-        $skip = $i = 0;
-        $contacts = [];
-        $suppressedEmails = [];
-        $date = $this->timezone->date()->sub($this->dateIntervalFactory->create(['interval_spec' => $intervalSpec]));
-        $dateString = $date->format(\DateTime::W3C);
-        $client = $this->getWebsiteApiClient($website);
-
-        //there is a maximum of request we need to loop to get more suppressed contacts
-        for ($i = 0; $i <= $limit; $i++) {
-            $apiContacts = $client->getContactsSuppressedSinceDate($dateString, $maxToSelect, $skip);
-
-            // skip no more contacts or the api request failed
-            if (empty($apiContacts) || isset($apiContacts->message)) {
-                break;
-            }
-            foreach ($apiContacts as $apiContact) {
-                $contacts[] = $apiContact;
-            }
-            $skip += 1000;
-        }
-
-        // Contacts to un-subscribe
-        foreach ($contacts as $apiContact) {
-            if (isset($apiContact->suppressedContact)) {
-                $suppressedContactEmail = $apiContact->suppressedContact->email;
-                if (!array_key_exists($suppressedContactEmail, $suppressedEmails)) {
-                    $suppressedEmails[$suppressedContactEmail] = [
-                        'email' => $apiContact->suppressedContact->email,
-                        'removed_at' => $apiContact->dateRemoved,
-                    ];
-                }
-            }
-        }
-
-        return array_values($suppressedEmails);
     }
 
     /**

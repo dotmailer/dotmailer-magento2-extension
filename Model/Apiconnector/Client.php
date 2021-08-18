@@ -728,7 +728,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      * @param int $select
      * @param int $skip
      *
-     * @return object
+     * @return array|object
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getContactsSuppressedSinceDate(

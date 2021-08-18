@@ -38,6 +38,11 @@ class Cron
     private $subscriberFactory;
 
     /**
+     * @var Newsletter\UnsubscriberFactory
+     */
+    private $unsubscriberFactory;
+
+    /**
      * @var Customer\GuestFactory
      */
     private $guestFactory;
@@ -107,6 +112,7 @@ class Cron
         Sales\QuoteFactory $quoteFactory,
         Customer\GuestFactory $guestFactory,
         Newsletter\SubscriberFactory $subscriberFactory,
+        Newsletter\UnsubscriberFactory $unsubscriberFactory,
         Sync\CatalogFactory $catalogFactory,
         Sync\ImporterFactory $importerFactory,
         Sync\AutomationFactory $automationFactory,
@@ -123,6 +129,7 @@ class Cron
         $this->quoteFactory      = $quoteFactory;
         $this->guestFactory      = $guestFactory;
         $this->subscriberFactory = $subscriberFactory;
+        $this->unsubscriberFactory = $unsubscriberFactory;
         $this->catalogFactory    = $catalogFactory;
         $this->importerFactory   = $importerFactory;
         $this->automationFactory = $automationFactory;
@@ -168,7 +175,8 @@ class Cron
         $result = $subscriberModel->runExport();
 
         //un-subscribe suppressed contacts
-        $subscriberModel->unsubscribe();
+        $unsubscriberModel = $this->unsubscriberFactory->create();
+        $unsubscriberModel->unsubscribe();
 
         //sync guests
         $this->guestFactory->create()->sync();
