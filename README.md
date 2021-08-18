@@ -19,6 +19,14 @@ You are welcome to contribute to Engagement Cloud for Magento! You can either:
 - Fix a bug: please clone and use our [Develop branch](https://github.com/dotmailer/dotmailer-magento2-extension/tree/develop) to submit your Pull Request
 - Request a feature on our [roadmap](https://roadmap.dotdigital.com)
 
+# 4.13.1
+
+###### Bug fixes
+- The subscriber sync's unsubscribe step could globally unsubscribe an email address subscribed on multiple websites; it now respects the website scope. 
+- Order sync will now not break if product custom options have no `option_id`  key.
+- Abandoned cart automation enrolments now function correctly if a time limit is configured, and the same contact drops a cart on multiple websites. 
+- Migrating subscribers at install (or `dotdigital:migrate`) could create duplicate contacts instead of updating an existing row; this has been fixed.
+
 # 4.13.0
 
 ###### Improvements
