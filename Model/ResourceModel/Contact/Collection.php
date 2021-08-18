@@ -391,4 +391,26 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
         return $this->addFieldToFilter('email', ['in' => $emails])
             ->addFieldToFilter('website_id', $websiteId);
     }
+
+    /**
+     * Get current contact records to check when they last subscribed.
+     *
+     * @param array $emails
+     * @param array $websiteIds
+     *
+     * @return array
+     */
+    public function getContactsWithScopeAndLastSubscribedAtDate(array $emails, $websiteIds)
+    {
+        return $this
+            ->addFieldToSelect([
+                'email',
+                'last_subscribed_at',
+                'website_id',
+                'store_id'
+            ])
+            ->addFieldToFilter('email', ['in' => $emails])
+            ->addFieldToFilter('website_id', ['in' => $websiteIds])
+            ->getData();
+    }
 }

@@ -2,8 +2,9 @@
 
 namespace Dotdigitalgroup\Email\Model\Sync;
 
-use Dotdigitalgroup\Email\Model\Sync\Importer\ImporterQueueManager;
+use Dotdigitalgroup\Email\Model\Connector\AccountHandler;
 use Dotdigitalgroup\Email\Model\Sync\Importer\ImporterProgressHandlerFactory;
+use Dotdigitalgroup\Email\Model\Sync\Importer\ImporterQueueManager;
 use Magento\Store\Model\StoreManagerInterface;
 
 class Importer implements SyncInterface
@@ -37,21 +38,29 @@ class Importer implements SyncInterface
     private $progressHandler;
 
     /**
+     * @var AccountHandler
+     */
+    private $accountHandler;
+
+    /**
      * Importer constructor.
      *
+     * @param AccountHandler $accountHandler
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
      * @param StoreManagerInterface $storeManager
      * @param ImporterQueueManager $queueManager
-     * @param ImporterProgressHandlerFactory $progressHandlerFactory
+     * @param ImporterProgressHandlerFactory $progressHandler
      */
     public function __construct(
+        AccountHandler $accountHandler,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
         StoreManagerInterface $storeManager,
         ImporterQueueManager $queueManager,
         ImporterProgressHandlerFactory $progressHandler
     ) {
+        $this->accountHandler = $accountHandler;
         $this->helper = $helper;
         $this->importerFactory = $importerFactory;
         $this->storeManager = $storeManager;
@@ -67,7 +76,7 @@ class Importer implements SyncInterface
      */
     public function sync(\DateTime $from = null)
     {
-        $activeApiUsers = $this->getAPIUsersForECEnabledWebsites();
+        $activeApiUsers = $this->accountHandler->getAPIUsersForECEnabledWebsites();
         if (!$activeApiUsers) {
             return;
         }
@@ -124,24 +133,5 @@ class Importer implements SyncInterface
                 }
             }
         }
-    }
-
-    /**
-     * Retrieve a list of active API users with the websites they are associated with.
-     *
-     * @return array
-     */
-    private function getAPIUsersForECEnabledWebsites()
-    {
-        $websites = $this->storeManager->getWebsites(true);
-        $apiUsers = [];
-        foreach ($websites as $website) {
-            $websiteId = $website->getId();
-            if ($this->helper->isEnabled($websiteId)) {
-                $apiUser = $this->helper->getApiUsername($websiteId);
-                $apiUsers[$apiUser]['websites'][] = $websiteId;
-            }
-        }
-        return $apiUsers;
     }
 }

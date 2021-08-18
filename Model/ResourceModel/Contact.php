@@ -14,11 +14,6 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     public $subscribersCollection;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory
-     */
-    public $contactCollectionFactory;
-
-    /**
      * @var \Magento\Customer\Model\ResourceModel\Customer\CollectionFactory
      */
     private $customerCollection;
@@ -66,7 +61,6 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      * @param \Magento\Customer\Model\ResourceModel\Customer\CollectionFactory $customerCollectionFactory
      * @param \Magento\Cron\Model\ScheduleFactory $schedule
      * @param \Dotdigitalgroup\Email\Model\Sql\ExpressionFactory $expressionFactory
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory $contactCollectionFactory
      * @param \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollectionFactory
      * @param \Magento\Quote\Model\ResourceModel\QuoteFactory $quoteResourceFactory
      * @param Config $config
@@ -78,7 +72,6 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         \Magento\Customer\Model\ResourceModel\Customer\CollectionFactory $customerCollectionFactory,
         \Magento\Cron\Model\ScheduleFactory $schedule,
         \Dotdigitalgroup\Email\Model\Sql\ExpressionFactory $expressionFactory,
-        \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory $contactCollectionFactory,
         \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollectionFactory,
         \Magento\Quote\Model\ResourceModel\QuoteFactory $quoteResourceFactory,
         Config $config,
@@ -89,7 +82,6 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         $this->scheduleFactory         = $schedule;
         $this->customerCollection       = $customerCollectionFactory;
         $this->subscribersCollection    = $subscriberCollection;
-        $this->contactCollectionFactory = $contactCollectionFactory;
         $this->orderCollectionFactory   = $orderCollectionFactory;
         $this->quoteResourceFactory = $quoteResourceFactory;
         parent::__construct($context, $connectionName);
@@ -192,6 +184,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 
     /**
      * Unsubscribe a contact from email_contact/newsletter table.
+     * @deprecated 4.13.1 Unsubcribe should restrict by scope.
      *
      * @param array $emails
      * @return int
@@ -227,27 +220,52 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
-     * Process unsubscribes from EC, checking whether the user has resubscribed more recently in Magento
+     * Unsubscribe a batch of contacts from email_contact/newsletter table,
+     * supplying website and store ids to restrict the unsubscribe.
      *
-     * @param array $unsubscribes
+     * @param array $emails
+     * @param array $websiteIds
+     * @param array $storeIds
      * @return int
      */
-    public function unsubscribeWithResubscriptionCheck(array $unsubscribes)
+    public function unsubscribeByWebsiteAndStore(array $emails, array $websiteIds, array $storeIds = [])
     {
-        if (empty($unsubscribes)) {
-            return 0;
+        if (! empty($emails) && is_array($emails)) {
+            $write = $this->getConnection();
+
+            //un-subscribe from the email contact table.
+            $updated = $write->update(
+                $this->getMainTable(),
+                [
+                    'is_subscriber' => $this->expressionFactory->create(["expression" => 'null']),
+                    'subscriber_status' => \Magento\Newsletter\Model\Subscriber::STATUS_UNSUBSCRIBED,
+                    'suppressed' => '1',
+                    'last_subscribed_at' => $this->expressionFactory->create(['expression' => 'null']),
+                ],
+                [
+                    "email IN (?)" => $emails,
+                    "website_id IN (?)" => $websiteIds
+                ]
+            );
+
+            // un-subscribe newsletter subscribers
+            $newsletterWhereConditions = (empty($storeIds)) ?
+                ["subscriber_email IN (?)" => $emails] :
+                [
+                    "subscriber_email IN (?)" => $emails,
+                    "store_id IN (?)" => $storeIds
+                ];
+
+            $write->update(
+                $this->getTable('newsletter_subscriber'),
+                ['subscriber_status' => \Magento\Newsletter\Model\Subscriber::STATUS_UNSUBSCRIBED],
+                $newsletterWhereConditions
+            );
+
+            return $updated;
         }
 
-        // get emails which either have no last_subscribed_at date, or were more recently removed in EC
-        $localContacts = $this->getLastSubscribedAtDates(array_column($unsubscribes, 'email'));
-        $unsubscribeEmails = $this->filterRecentlyResubscribedEmails($localContacts, $unsubscribes);
-
-        // no emails to unsubscribe?
-        if (empty($unsubscribeEmails)) {
-            return 0;
-        }
-
-        return $this->unsubscribe($unsubscribeEmails);
+        return 0;
     }
 
     /**
@@ -382,52 +400,6 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         }
 
         return $orderArray;
-    }
-
-    public function getLastSubscribedAtDates(array $emails)
-    {
-        // get current contact records to check when they last subscribed
-        return $this->contactCollectionFactory->create()
-            ->addFieldToSelect([
-                'email',
-                'last_subscribed_at',
-            ])
-            ->addFieldToFilter('email', ['in' => $emails])
-            ->getData();
-    }
-
-    /**
-     * Filter out any unsubscribes from EC which have recently resubscribed in Magento
-     *
-     * @param array $localContacts
-     * @param array $unsubscribes
-     * @return array
-     */
-    public function filterRecentlyResubscribedEmails(array $localContacts, array $unsubscribes)
-    {
-        // get emails which either have no last_subscribed_at date, or were more recently removed in EC
-        return array_filter(array_map(function ($email) use ($localContacts) {
-            // get corresponding local contact
-            $contactKey = array_search($email['email'], array_column($localContacts, 'email'));
-
-            // if there is no local contact, or last subscribed value, continue with unsubscribe
-            if ($contactKey === false || $localContacts[$contactKey]['last_subscribed_at'] === null) {
-                return $email['email'];
-            }
-
-            // convert both timestamps to DateTime
-            $lastSubscribedMagento = new \DateTime(
-                $localContacts[$contactKey]['last_subscribed_at'],
-                new \DateTimeZone('UTC')
-            );
-            $removedAtEc = new \DateTime($email['removed_at'], new \DateTimeZone('UTC'));
-
-            // user recently resubscribed in Magento, do not unsubscribe them
-            if ($lastSubscribedMagento > $removedAtEc) {
-                return null;
-            }
-            return $email['email'];
-        }, $unsubscribes));
     }
 
     /**

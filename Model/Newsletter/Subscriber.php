@@ -68,8 +68,14 @@ class Subscriber implements SyncInterface
     private $subscriberExporter;
 
     /**
+     * @var Unsubscriber
+     */
+    private $unsubscriber;
+
+    /**
      * Subscriber constructor.
      *
+     * @param ContactCollectionFactory $contactCollectionFactory
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory $orderCollection
      * @param SubscriberExporter $subscriberExporter
@@ -77,6 +83,7 @@ class Subscriber implements SyncInterface
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contactResource
      * @param \Magento\Framework\Stdlib\DateTime\TimezoneInterface $timezone
      * @param \Dotdigitalgroup\Email\Model\DateIntervalFactory $dateIntervalFactory
+     * @param Unsubscriber $unsubscriber
      */
     public function __construct(
         ContactCollectionFactory $contactCollectionFactory,
@@ -86,7 +93,8 @@ class Subscriber implements SyncInterface
         \Dotdigitalgroup\Email\Model\Newsletter\SubscriberWithSalesExporter $subscriberWithSalesExporter,
         \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contactResource,
         \Magento\Framework\Stdlib\DateTime\TimezoneInterface $timezone,
-        \Dotdigitalgroup\Email\Model\DateIntervalFactory $dateIntervalFactory
+        \Dotdigitalgroup\Email\Model\DateIntervalFactory $dateIntervalFactory,
+        Unsubscriber $unsubscriber
     ) {
         $this->dateIntervalFactory = $dateIntervalFactory;
         $this->helper            = $helper;
@@ -96,6 +104,7 @@ class Subscriber implements SyncInterface
         $this->subscriberWithSalesExporter = $subscriberWithSalesExporter;
         $this->emailContactResource = $contactResource;
         $this->timezone = $timezone;
+        $this->unsubscriber = $unsubscriber;
     }
 
     /**
@@ -104,7 +113,7 @@ class Subscriber implements SyncInterface
     public function sync(\DateTime $from = null)
     {
         $this->runExport();
-        $this->unsubscribe();
+        $this->unsubscriber->unsubscribe();
     }
 
     /**
@@ -219,45 +228,5 @@ class Subscriber implements SyncInterface
     {
         return $this->orderCollection->create()
             ->checkInSales($emails);
-    }
-
-    /**
-     * Un-subscribe suppressed contacts.
-     *
-     * @return array
-     */
-    public function unsubscribe()
-    {
-        $result['customers'] = 0;
-        $suppressedEmails = [];
-
-        /**
-         * Sync all suppressed for each store
-         */
-        $websites = $this->helper->getWebsites(true);
-
-        foreach ($websites as $website) {
-            //not enabled
-            if (! $this->helper->isEnabled($website)) {
-                continue;
-            }
-
-            // add unique contact emails
-            foreach ($this->helper->getSuppressedContacts($website) as $suppressedContact) {
-                if (!array_key_exists($suppressedContact['email'], $suppressedEmails)) {
-                    $suppressedEmails[$suppressedContact['email']] = [
-                        'email' => $suppressedContact['email'],
-                        'removed_at' => $suppressedContact['removed_at'],
-                    ];
-                }
-            }
-        }
-
-        //Mark suppressed contacts
-        if (! empty($suppressedEmails)) {
-            $result['customers'] = $this->emailContactResource
-                ->unsubscribeWithResubscriptionCheck(array_values($suppressedEmails));
-        }
-        return $result;
     }
 }
