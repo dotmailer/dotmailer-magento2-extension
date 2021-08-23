@@ -174,7 +174,7 @@ class Unsubscriber
         return $this->contactResource->unsubscribeByWebsiteAndStore(
             array_column($filteredContacts, 'email'),
             $scopeData['websiteIds'],
-            $scopeData['storeIds'],
+            $scopeData['storeIds']
         );
     }
 
