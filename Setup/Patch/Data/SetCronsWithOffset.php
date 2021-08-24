@@ -71,7 +71,7 @@ class SetCronsWithOffset implements DataPatchInterface
             ->select()
             ->from(
                 $configTable,
-                ['path','scope_id','value'],
+                ['path','scope_id','value']
             )
             ->where('path in (?)', array_keys(Cron::CRON_PATHS));
 
