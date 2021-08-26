@@ -14,6 +14,11 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     public $subscribersCollection;
 
     /**
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory
+     */
+    public $contactCollectionFactory;
+
+    /**
      * @var \Magento\Customer\Model\ResourceModel\Customer\CollectionFactory
      */
     private $customerCollection;
@@ -61,6 +66,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      * @param \Magento\Customer\Model\ResourceModel\Customer\CollectionFactory $customerCollectionFactory
      * @param \Magento\Cron\Model\ScheduleFactory $schedule
      * @param \Dotdigitalgroup\Email\Model\Sql\ExpressionFactory $expressionFactory
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory $contactCollectionFactory
      * @param \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollectionFactory
      * @param \Magento\Quote\Model\ResourceModel\QuoteFactory $quoteResourceFactory
      * @param Config $config
@@ -72,6 +78,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         \Magento\Customer\Model\ResourceModel\Customer\CollectionFactory $customerCollectionFactory,
         \Magento\Cron\Model\ScheduleFactory $schedule,
         \Dotdigitalgroup\Email\Model\Sql\ExpressionFactory $expressionFactory,
+        \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory $contactCollectionFactory,
         \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollectionFactory,
         \Magento\Quote\Model\ResourceModel\QuoteFactory $quoteResourceFactory,
         Config $config,
@@ -82,6 +89,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         $this->scheduleFactory         = $schedule;
         $this->customerCollection       = $customerCollectionFactory;
         $this->subscribersCollection    = $subscriberCollection;
+        $this->contactCollectionFactory = $contactCollectionFactory;
         $this->orderCollectionFactory   = $orderCollectionFactory;
         $this->quoteResourceFactory = $quoteResourceFactory;
         parent::__construct($context, $connectionName);
@@ -380,6 +388,22 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         }
 
         return $orderArray;
+    }
+
+    /**
+     * @param array $emails
+     * @return array|null
+     */
+    public function getLastSubscribedAtDates(array $emails)
+    {
+        // get current contact records to check when they last subscribed
+        return $this->contactCollectionFactory->create()
+            ->addFieldToSelect([
+                'email',
+                'last_subscribed_at',
+            ])
+            ->addFieldToFilter('email', ['in' => $emails])
+            ->getData();
     }
 
     /**
