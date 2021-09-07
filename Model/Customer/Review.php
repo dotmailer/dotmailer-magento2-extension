@@ -2,6 +2,8 @@
 
 namespace Dotdigitalgroup\Email\Model\Customer;
 
+use Magento\Framework\Stdlib\DateTime\DateTimeFactory;
+
 /**
  * Transactional data for customer review.
  */
@@ -53,22 +55,20 @@ class Review
     public $storeManager;
 
     /**
-     * @var \Dotdigitalgroup\Email\Helper\Data
+     * @var DateTimeFactory
      */
-    public $helper;
+    private $dateTimeFactory;
 
     /**
-     * Review constructor.
-     *
-     * @param \Dotdigitalgroup\Email\Helper\Data $data
      * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
+     * @param DateTimeFactory $dateTimeFactory
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Helper\Data $data,
-        \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
+        \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
+        DateTimeFactory $dateTimeFactory
     ) {
-        $this->helper       = $data;
         $this->storeManager = $storeManagerInterface;
+        $this->dateTimeFactory = $dateTimeFactory;
     }
 
     /**
@@ -187,7 +187,12 @@ class Review
         $this->setId($review->getReviewId())
             ->setWebsiteName($websiteName)
             ->setStoreName($storeName)
-            ->setReviewDate($review->getCreatedAt())
+            ->setReviewDate(
+                $this->dateTimeFactory->create()->date(
+                    \DateTime::ATOM,
+                    $review->getCreatedAt()
+                )
+            )
             ->setCustomerId($review->getCustomerId())
             ->setEmail($review->getEmail());
 
@@ -299,7 +304,7 @@ class Review
     {
         return array_diff_key(
             get_object_vars($this),
-            array_flip(['storeManager', 'helper'])
+            array_flip(['storeManager', 'dateTimeFactory'])
         );
     }
 
@@ -309,7 +314,7 @@ class Review
     public function __sleep()
     {
         $properties = array_keys(get_object_vars($this));
-        $properties = array_diff($properties, ['storeManager', 'helper']);
+        $properties = array_diff($properties, ['storeManager', 'dateTimeFactory']);
 
         return $properties;
     }
