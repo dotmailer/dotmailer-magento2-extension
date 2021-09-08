@@ -56,6 +56,7 @@ class AutomationProcessor
 
             $contact = $this->helper->getOrCreateContact($email, $websiteId);
             //contact id is valid, can update data fields
+            /** @var \stdClass $contact */
             if ($contact && isset($contact->id)) {
                 if ($contact->status === StatusInterface::PENDING_OPT_IN) {
                     $this->automationResource->setStatusAndSaveAutomation(

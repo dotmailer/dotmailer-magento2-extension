@@ -4,6 +4,7 @@ namespace Dotdigitalgroup\Email\Helper;
 
 use Dotdigitalgroup\Email\Helper\Config as EmailConfig;
 use Dotdigitalgroup\Email\Logger\Logger;
+use Dotdigitalgroup\Email\Model\StatusInterface;
 use Magento\Framework\App\Config\ReinitableConfigInterface;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\RequestInterface;
@@ -675,7 +676,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param int $websiteId
      * @param boolean $contactFromTable
      *
-     * @return bool|object
+     * @return bool|\stdClass
      */
     public function getOrCreateContact($email, $websiteId, $contactFromTable = false)
     {
@@ -696,7 +697,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             $response = $client->postContacts($email);
         }
 
-        if (isset($response->status) && $response->status !== 'Subscribed') {
+        if (isset($response->status) &&
+            !in_array($response->status, [StatusInterface::SUBSCRIBED, StatusInterface::PENDING_OPT_IN])
+        ) {
             $contact->setEmailImported(1);
             $contact->setSuppressed(1);
             $this->saveContact($contact);
