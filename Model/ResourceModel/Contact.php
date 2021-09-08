@@ -183,43 +183,6 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
-     * Unsubscribe a contact from email_contact/newsletter table.
-     * @deprecated 4.13.1 Unsubcribe should restrict by scope.
-     *
-     * @param array $emails
-     * @return int
-     */
-    public function unsubscribe($emails)
-    {
-        if (! empty($emails) && is_array($emails)) {
-            $write = $this->getConnection();
-
-            //un-subscribe from the email contact table.
-            $updated = $write->update(
-                $this->getMainTable(),
-                [
-                    'is_subscriber' => $this->expressionFactory->create(["expression" => 'null']),
-                    'subscriber_status' => \Magento\Newsletter\Model\Subscriber::STATUS_UNSUBSCRIBED,
-                    'suppressed' => '1',
-                    'last_subscribed_at' => $this->expressionFactory->create(['expression' => 'null']),
-                ],
-                ["email IN (?)" => $emails]
-            );
-
-            // un-subscribe newsletter subscribers
-            $write->update(
-                $this->getTable('newsletter_subscriber'),
-                ['subscriber_status' => \Magento\Newsletter\Model\Subscriber::STATUS_UNSUBSCRIBED],
-                ["subscriber_email IN (?)" => $emails]
-            );
-
-            return $updated;
-        }
-
-        return 0;
-    }
-
-    /**
      * Unsubscribe a batch of contacts from email_contact/newsletter table,
      * supplying website and store ids to restrict the unsubscribe.
      *

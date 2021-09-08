@@ -130,7 +130,7 @@ class ImporterReportHandler
                 }
 
                 $this->doResubscribes($contactsToResubscribe, $websiteId);
-                $this->doUnsubscribes($contactsToUnsubscribe);
+                $this->doUnsubscribes($contactsToUnsubscribe, $websiteId);
             }
         }
     }
@@ -197,7 +197,7 @@ class ImporterReportHandler
      * Queue resubscription jobs
      *
      * @param array $contacts
-     * @param int $websiteId
+     * @param string|int $websiteId
      */
     private function doResubscribes($contacts, $websiteId)
     {
@@ -219,9 +219,10 @@ class ImporterReportHandler
      * Unsubscribe any non-resubscribes
      *
      * @param array $contacts
+     * @param string|int $websiteId
      */
-    private function doUnsubscribes($contacts)
+    private function doUnsubscribes($contacts, $websiteId)
     {
-        $this->contactResource->unsubscribe($contacts);
+        $this->contactResource->unsubscribeByWebsiteAndStore($contacts, [$websiteId]);
     }
 }
