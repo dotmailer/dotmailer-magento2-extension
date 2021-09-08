@@ -596,56 +596,52 @@
                 </field>
             </group>
         </section>
-        <section id="connector_automation" translate="label" sortOrder="170" showInStore="0" showInWebsite="1"
-                 showInDefault="1">
+        <section id="connector_automation" translate="label" sortOrder="170" showInStore="1" showInWebsite="1" showInDefault="1">
             <class>separator-top</class>
             <label>Automation</label>
             <tab>ddg_automation</tab>
             <resource>Dotdigitalgroup_Email::config</resource>
-            <group id="visitor_automation" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1"
-                   showInStore="0">
+            <group id="visitor_automation" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Visitor action automation enrolment</label>
-                <field id="customer_automation" translate="label" type="select" sortOrder="10" showInStore="0"
+                <field id="customer_automation" translate="label" type="select" sortOrder="10" showInStore="1"
                        showInWebsite="1" showInDefault="1">
                     <label>New Customer</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Automation\Program</source_model>
                 </field>
-                <field id="subscriber_automation" translate="label" type="select" sortOrder="20" showInStore="0"
+                <field id="subscriber_automation" translate="label" type="select" sortOrder="20" showInStore="1"
                        showInWebsite="1" showInDefault="1">
                     <label>New Subscriber</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Automation\Program</source_model>
                 </field>
-                <field id="first_order_automation" translate="label" type="select" sortOrder="25" showInStore="0"
+                <field id="first_order_automation" translate="label" type="select" sortOrder="25" showInStore="1"
                        showInWebsite="1" showInDefault="1">
                     <label>First Customer Order</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Automation\Program</source_model>
                 </field>
-                <field id="order_automation" translate="label" type="select" sortOrder="30" showInStore="0"
+                <field id="order_automation" translate="label" type="select" sortOrder="30" showInStore="1"
                        showInWebsite="1" showInDefault="1">
                     <label>Customer Order</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Automation\Program</source_model>
                 </field>
-                <field id="guest_order_automation" translate="label" type="select" sortOrder="40" showInStore="0"
+                <field id="guest_order_automation" translate="label" type="select" sortOrder="40" showInStore="1"
                        showInWebsite="1" showInDefault="1">
                     <label>Guest Order</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Automation\Program</source_model>
                 </field>
-                <field id="review_automation" translate="label" type="select" sortOrder="50" showInStore="0"
+                <field id="review_automation" translate="label" type="select" sortOrder="50" showInStore="1"
                        showInWebsite="1" showInDefault="1">
                     <label>Approved Review</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Automation\Program</source_model>
                 </field>
-                <field id="wishlist_automation" translate="label" type="select" sortOrder="60" showInStore="0"
+                <field id="wishlist_automation" translate="label" type="select" sortOrder="60" showInStore="1"
                        showInWebsite="1" showInDefault="1">
                     <label>New Wishlist</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Automation\Program</source_model>
                 </field>
             </group>
-            <group id="order_status_automation" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1"
-                   showInStore="0">
+            <group id="order_status_automation" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Order Status Automation Enrolment</label>
-                <field id="program" translate="label" sortOrder="490" showInDefault="1" showInWebsite="1"
-                       showInStore="0">
+                <field id="program" translate="label" sortOrder="490" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Customer</label>
                     <backend_model>Dotdigitalgroup\Email\Model\Config\Backend\ArraySerialized</backend_model>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Orderstatus</source_model>

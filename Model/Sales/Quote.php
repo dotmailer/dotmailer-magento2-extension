@@ -3,10 +3,17 @@
 namespace Dotdigitalgroup\Email\Model\Sales;
 
 use Dotdigitalgroup\Email\Logger\Logger;
-use Dotdigitalgroup\Email\Model\AbandonedCart\PendingContactUpdater;
+use Dotdigitalgroup\Email\Model\AbandonedFactory;
+use Dotdigitalgroup\Email\Model\ResourceModel\Abandoned\CollectionFactory as AbandonedCollectionFactory;
+use Dotdigitalgroup\Email\Model\ResourceModel\Campaign\CollectionFactory as CampaignCollectionFactory;
+use Dotdigitalgroup\Email\Model\Sync\PendingContact\PendingContactUpdater;
+use Dotdigitalgroup\Email\Model\StatusInterface;
 use Dotdigitalgroup\Email\Model\ResourceModel\Campaign;
 use Dotdigitalgroup\Email\Model\Sync\SetsSyncFromTime;
 use Dotdigitalgroup\Email\Model\AbandonedCart\TimeLimit;
+use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\Updater\AbandonedCart as AbandonedCartUpdater;
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Store\Model\StoreManagerInterface;
 
 /**
  * Customer and guest Abandoned Carts.
@@ -47,25 +54,22 @@ class Quote
     const GUEST_LOST_BASKET_TWO = 2;
     const GUEST_LOST_BASKET_THREE = 3;
 
-    const STATUS_PENDING = 'PendingOptIn';
-    const STATUS_CONFIRMED = 'Confirmed';
     const STATUS_SENT = 'Sent';
-    const STATUS_EXPIRED = 'Expired';
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\AbandonedFactory
+     * @var AbandonedFactory
      */
-    public $abandonedFactory;
+    private $abandonedFactory;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Abandoned\CollectionFactory
+     * @var AbandonedCollectionFactory
      */
-    public $abandonedCollectionFactory;
+    private $abandonedCollectionFactory;
 
     /**
      * @var \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory
      */
-    public $quoteCollectionFactory;
+    private $quoteCollectionFactory;
 
     /**
      * @var Campaign
@@ -83,7 +87,7 @@ class Quote
     private $logger;
 
     /**
-     * @var \Magento\Framework\App\Config\ScopeConfigInterface
+     * @var ScopeConfigInterface
      */
     private $scopeConfig;
 
@@ -98,9 +102,9 @@ class Quote
     private $campaignFactory;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Campaign\CollectionFactory
+     * @var CampaignCollectionFactory
      */
-    private $campaignCollection;
+    private $campaignCollectionFactory;
 
     /**
      * @var \Dotdigitalgroup\Email\Model\RulesFactory
@@ -137,7 +141,7 @@ class Quote
     /**
      * @var PendingContactUpdater
      */
-    private $acPendingContactUpdater;
+    private $pendingContactUpdater;
 
     /**
      * @var \Dotdigitalgroup\Email\Model\AbandonedCart\CartInsight\Data
@@ -150,12 +154,24 @@ class Quote
     private $timeLimit;
 
     /**
+     * @var AbandonedCartUpdater
+     */
+    private $dataFieldUpdater;
+
+    /**
+     * @var StoreManagerInterface
+     */
+    private $storeManager;
+
+    /**
      * Quote constructor.
      *
-     * @param \Dotdigitalgroup\Email\Model\AbandonedFactory $abandonedFactory
+     * @param AbandonedFactory $abandonedFactory
+     * @param AbandonedCollectionFactory $abandonedCollectionFactory
      * @param \Dotdigitalgroup\Email\Model\RulesFactory $rulesFactory
      * @param Campaign $campaignResource
      * @param \Dotdigitalgroup\Email\Model\CampaignFactory $campaignFactory
+     * @param CampaignCollectionFactory $campaignCollectionFactory
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Abandoned $abandonedResource
      * @param \Dotdigitalgroup\Email\Helper\Data $data
      * @param \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory $quoteCollectionFactory
@@ -165,12 +181,18 @@ class Quote
      * @param PendingContactUpdater $pendingContactUpdater
      * @param \Dotdigitalgroup\Email\Model\AbandonedCart\CartInsight\Data $cartInsight
      * @param TimeLimit $timeLimit
+     * @param Logger $logger
+     * @param AbandonedCartUpdater $dataFieldUpdater
+     * @param StoreManagerInterface $storeManager
+     * @param ScopeConfigInterface $scopeConfig
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\AbandonedFactory $abandonedFactory,
+        AbandonedFactory $abandonedFactory,
+        AbandonedCollectionFactory $abandonedCollectionFactory,
         \Dotdigitalgroup\Email\Model\RulesFactory $rulesFactory,
         Campaign $campaignResource,
         \Dotdigitalgroup\Email\Model\CampaignFactory $campaignFactory,
+        CampaignCollectionFactory $campaignCollectionFactory,
         \Dotdigitalgroup\Email\Model\ResourceModel\Abandoned $abandonedResource,
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory $quoteCollectionFactory,
@@ -180,7 +202,10 @@ class Quote
         PendingContactUpdater $pendingContactUpdater,
         \Dotdigitalgroup\Email\Model\AbandonedCart\CartInsight\Data $cartInsight,
         TimeLimit $timeLimit,
-        Logger $logger
+        Logger $logger,
+        AbandonedCartUpdater $dataFieldUpdater,
+        StoreManagerInterface $storeManager,
+        ScopeConfigInterface $scopeConfig
     ) {
         $this->timeZone = $timezone;
         $this->rulesFactory = $rulesFactory;
@@ -191,14 +216,16 @@ class Quote
         $this->orderCollection = $collectionFactory;
         $this->abandonedResource = $abandonedResource;
         $this->dateIntervalFactory = $dateIntervalFactory;
-        $this->scopeConfig = $this->helper->getScopeConfig();
+        $this->scopeConfig = $scopeConfig;
         $this->quoteCollectionFactory = $quoteCollectionFactory;
-        $this->campaignCollection = $campaignFactory->create()->campaignCollection;
-        $this->abandonedCollectionFactory = $abandonedFactory->create()->abandonedCollectionFactory;
-        $this->acPendingContactUpdater = $pendingContactUpdater;
+        $this->campaignCollectionFactory = $campaignCollectionFactory;
+        $this->abandonedCollectionFactory = $abandonedCollectionFactory;
+        $this->pendingContactUpdater = $pendingContactUpdater;
         $this->cartInsight = $cartInsight;
         $this->timeLimit = $timeLimit;
         $this->logger = $logger;
+        $this->dataFieldUpdater = $dataFieldUpdater;
+        $this->storeManager = $storeManager;
     }
 
     /**
@@ -209,8 +236,8 @@ class Quote
     public function processAbandonedCarts()
     {
         $result = [];
-        $stores = $this->helper->getStores();
-        $this->acPendingContactUpdater->update();
+        $stores = $this->storeManager->getStores();
+        $this->pendingContactUpdater->update();
 
         foreach ($stores as $store) {
             $storeId = $store->getId();
@@ -363,7 +390,7 @@ class Quote
 
         //process rules on collection
         $ruleModel = $this->rulesFactory->create();
-        $websiteId = $this->helper->storeManager->getStore($storeId)
+        $websiteId = $this->storeManager->getStore($storeId)
             ->getWebsiteId();
 
         $salesCollection = $ruleModel->process(
@@ -406,7 +433,7 @@ class Quote
         }
 
         //total campaigns sent for this interval of time
-        $campaignLimit = $this->campaignCollection->create()
+        $campaignLimit = $this->campaignCollectionFactory->create()
             ->getNumberOfCampaignsForContactByInterval($email, $updated);
 
         //found campaign
@@ -552,7 +579,7 @@ class Quote
     {
         $result = 0;
         foreach ($quoteCollection as $quote) {
-            $websiteId = $this->helper->storeManager->getStore($storeId)->getWebsiteId();
+            $websiteId = $this->storeManager->getStore($storeId)->getWebsiteId();
             if (! $this->updateDataFieldAndCreateAc($quote, $websiteId, $storeId)) {
                 continue;
             }
@@ -608,8 +635,8 @@ class Quote
 
         $this->cartInsight->send($quote, $storeId);
 
-        if ($contact->status === self::STATUS_PENDING) {
-            $this->createAbandonedCart($abandonedModel, $quote, $itemIds, self::STATUS_PENDING);
+        if ($contact->status === StatusInterface::PENDING_OPT_IN) {
+            $this->createAbandonedCart($abandonedModel, $quote, $itemIds, StatusInterface::PENDING_OPT_IN);
             return false;
         }
         if ($this->abandonedCartAlreadyExists($abandonedModel) &&
@@ -621,14 +648,15 @@ class Quote
             }
             return false;
         } else {
-            if ($mostExpensiveItem = $this->getMostExpensiveItems($items)) {
-                $this->helper->updateAbandonedProductName(
-                    $mostExpensiveItem->getName(),
-                    $email,
-                    $websiteId
-                );
-            }
             $this->createAbandonedCart($abandonedModel, $quote, $itemIds, self::STATUS_SENT);
+            $this->dataFieldUpdater->setDatafields(
+                $email,
+                $websiteId,
+                $quoteId,
+                $this->storeManager->getStore($storeId)->getName(),
+                $this->getMostExpensiveItem($items)
+            )->updateDataFields();
+
             return true;
         }
     }
@@ -648,10 +676,10 @@ class Quote
     }
 
     /**
-     * @param array $items
+     * @param \Magento\Quote\Model\Quote\Item[] $items
      * @return bool|\Magento\Quote\Model\Quote\Item
      */
-    public function getMostExpensiveItems($items)
+    public function getMostExpensiveItem($items)
     {
         $mostExpensiveItem = false;
         foreach ($items as $item) {
@@ -789,7 +817,7 @@ class Quote
     {
         $result = 0;
         foreach ($quoteCollection as $quote) {
-            $websiteId = $this->helper->storeManager->getStore($storeId)->getWebsiteId();
+            $websiteId = $this->storeManager->getStore($storeId)->getWebsiteId();
             if (! $this->updateDataFieldAndCreateAc($quote, $websiteId, $storeId)) {
                 continue;
             }
@@ -919,13 +947,13 @@ class Quote
                 );
             }
 
-            if ($mostExpensiveItem = $this->getMostExpensiveItems($quoteItems)) {
-                $this->helper->updateAbandonedProductName(
-                    $mostExpensiveItem->getName(),
-                    $email,
-                    $websiteId
-                );
-            }
+            $this->dataFieldUpdater->setDatafields(
+                $email,
+                $websiteId,
+                $quoteId,
+                $this->storeManager->getStore($storeId)->getName(),
+                $this->getMostExpensiveItem($quoteItems)
+            )->updateDataFields();
 
             $abandonedModel = $this->abandonedFactory->create()
                 ->loadByQuoteId($quoteId);
@@ -991,7 +1019,7 @@ class Quote
         $quoteCollection = $ruleModel->process(
             $quoteCollection,
             \Dotdigitalgroup\Email\Model\Rules::ABANDONED,
-            $this->helper->storeManager->getStore($storeId)->getWebsiteId()
+            $this->storeManager->getStore($storeId)->getWebsiteId()
         );
 
         return $quoteCollection;
@@ -1054,6 +1082,6 @@ class Quote
 
     private function isNotAConfirmedContact($abandonedModel)
     {
-        return $abandonedModel->getStatus() !== self::STATUS_CONFIRMED;
+        return $abandonedModel->getStatus() !== StatusInterface::CONFIRMED;
     }
 }

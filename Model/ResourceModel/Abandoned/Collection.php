@@ -2,7 +2,8 @@
 
 namespace Dotdigitalgroup\Email\Model\ResourceModel\Abandoned;
 
-use \Dotdigitalgroup\Email\Model\Sync\Automation;
+use Dotdigitalgroup\Email\Model\Sync\Automation;
+use Dotdigitalgroup\Email\Model\StatusInterface;
 
 class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection
 {
@@ -60,7 +61,7 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     {
         $collection = $this->addFieldToFilter(
             'status',
-            \Dotdigitalgroup\Email\Model\Sync\Automation::CONTACT_STATUS_PENDING
+            StatusInterface::PENDING_OPT_IN
         )->setOrder("updated_at")->setPageSize(1);
 
         return $collection->getFirstItem()->getUpdatedAt();
@@ -73,7 +74,7 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     {
         return $this->addFieldToFilter(
             'status',
-            \Dotdigitalgroup\Email\Model\Sync\Automation::CONTACT_STATUS_PENDING
+            StatusInterface::PENDING_OPT_IN
         );
     }
 
@@ -85,7 +86,7 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
      */
     public function getCollectionByConfirmedStatus($storeId, $guest = false)
     {
-        $collection =  $this->addFieldToFilter('status', Automation::CONTACT_STATUS_CONFIRMED)
+        $collection =  $this->addFieldToFilter('status', StatusInterface::CONFIRMED)
             ->addFieldToFilter('store_id', $storeId)
             ->addFieldToFilter('abandoned_cart_number', '1');
 

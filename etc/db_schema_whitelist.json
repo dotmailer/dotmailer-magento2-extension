@@ -235,6 +235,7 @@
             "type_id": true,
             "program_id": true,
             "website_id": true,
+            "store_id": true,
             "message": true,
             "created_at": true,
             "updated_at": true
@@ -247,10 +248,12 @@
             "EMAIL_AUTOMATION_PROGRAM_ID": true,
             "EMAIL_AUTOMATION_CREATED_AT": true,
             "EMAIL_AUTOMATION_UPDATED_AT": true,
-            "EMAIL_AUTOMATION_WEBSITE_ID": true
+            "EMAIL_AUTOMATION_WEBSITE_ID": true,
+            "EMAIL_AUTOMATION_STORE_ID": true
         },
         "constraint": {
-            "PRIMARY": true
+            "PRIMARY": true,
+            "EMAIL_AUTOMATION_STORE_ID_STORE_STORE_ID": true
         }
     },
     "email_abandoned_cart": {

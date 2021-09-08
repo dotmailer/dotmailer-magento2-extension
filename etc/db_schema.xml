@@ -317,12 +317,14 @@
         <column xsi:type="varchar" name="type_id" nullable="true" length="255" comment="Type ID"/>
         <column xsi:type="varchar" name="program_id" nullable="true" length="255" comment="Program ID"/>
         <column xsi:type="smallint" name="website_id" padding="5" unsigned="true" nullable="false" identity="false" comment="Website Id"/>
+        <column xsi:type="smallint" name="store_id" padding="5" unsigned="true" nullable="true" identity="false" comment="Store Id"/>
         <column xsi:type="varchar" name="message" nullable="false" length="255" comment="Message"/>
         <column xsi:type="timestamp" name="created_at" on_update="false" nullable="true" comment="Creation Time"/>
         <column xsi:type="timestamp" name="updated_at" on_update="false" nullable="true" comment="Update Time"/>
         <constraint xsi:type="primary" referenceId="PRIMARY">
             <column name="id"/>
         </constraint>
+        <constraint xsi:type="foreign" referenceId="EMAIL_AUTOMATION_STORE_ID_STORE_STORE_ID" table="email_automation" column="store_id" referenceTable="store" referenceColumn="store_id" onDelete="CASCADE"/>
         <index referenceId="EMAIL_AUTOMATION_AUTOMATION_TYPE" indexType="btree">
             <column name="automation_type"/>
         </index>
@@ -346,6 +348,9 @@
         </index>
         <index referenceId="EMAIL_AUTOMATION_WEBSITE_ID" indexType="btree">
             <column name="website_id"/>
+        </index>
+        <index referenceId="EMAIL_AUTOMATION_STORE_ID" indexType="btree">
+            <column name="store_id"/>
         </index>
     </table>
     <table name="email_abandoned_cart" resource="default" engine="innodb" comment="Abandoned Carts Table">

@@ -2,9 +2,14 @@
 
 namespace Dotdigitalgroup\Email\Observer\Newsletter;
 
+use Dotdigitalgroup\Email\Helper\Config;
 use Dotdigitalgroup\Email\Model\Newsletter\Subscriber;
 use Dotdigitalgroup\Email\Model\ResourceModel\Automation;
+use Dotdigitalgroup\Email\Model\StatusInterface;
+use Dotdigitalgroup\Email\Model\Sync\Automation\AutomationTypeHandler;
+use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Newsletter\Model\Subscriber as CoreSubscriber;
+use Magento\Store\Model\ScopeInterface;
 
 /**
  * Contact newsletter subscription change.
@@ -63,6 +68,11 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
     private $dateTime;
 
     /**
+     * @var ScopeConfigInterface
+     */
+    private $scopeConfig;
+
+    /**
      * @var bool
      */
     private $isSubscriberNew;
@@ -78,6 +88,8 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
      * @param \Dotdigitalgroup\Email\Helper\Data $data
      * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
      * @param \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
+     * @param \Magento\Framework\Stdlib\DateTime $dateTime
+     * @param ScopeConfigInterface $scopeConfig
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\AutomationFactory $automationFactory,
@@ -89,7 +101,8 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
-        \Magento\Framework\Stdlib\DateTime $dateTime
+        \Magento\Framework\Stdlib\DateTime $dateTime,
+        ScopeConfigInterface $scopeConfig
     ) {
         $this->contactResource = $contactResource;
         $this->automationFactory = $automationFactory;
@@ -101,6 +114,7 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
         $this->registry = $registry;
         $this->importerFactory = $importerFactory;
         $this->dateTime = $dateTime;
+        $this->scopeConfig = $scopeConfig;
     }
 
     /**
@@ -193,7 +207,7 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
             $this->registry->unregister($email . '_subscriber_save'); // additional measure
             $this->registry->register($email . '_subscriber_save', $email);
             //add subscriber to automation
-            $this->addSubscriberToAutomation($email, $subscriber, $websiteId);
+            $this->addSubscriberToAutomation($email, $subscriber, $websiteId, $storeId);
         } catch (\Exception $e) {
             $this->helper->debug((string)$e, []);
         }
@@ -206,15 +220,15 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
      *
      * @param string $email
      * @param \Magento\Newsletter\Model\Subscriber $subscriber
-     * @param string|int|null $websiteId
-     *
-     * @return void
+     * @param string|int $websiteId
+     * @param string|int $storeId
      */
-    private function addSubscriberToAutomation($email, $subscriber, $websiteId)
+    private function addSubscriberToAutomation($email, $subscriber, $websiteId, $storeId)
     {
-        $programId = $this->helper->getWebsiteConfig(
-            'connector_automation/visitor_automation/subscriber_automation',
-            $websiteId
+        $programId = $this->scopeConfig->getValue(
+            Config::XML_PATH_CONNECTOR_AUTOMATION_STUDIO_SUBSCRIBER,
+            ScopeInterface::SCOPE_STORE,
+            $storeId
         );
 
         // If no New Subscriber automation is set, ignore
@@ -234,20 +248,19 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
             return;
         }
 
-        $store = $this->storeManager->getStore($subscriber->getStoreId());
-
         //save subscriber to the queue
         $automation = $this->automationFactory->create()
             ->setEmail($email)
             ->setAutomationType(
-                \Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_TYPE_NEW_SUBSCRIBER
+                AutomationTypeHandler::AUTOMATION_TYPE_NEW_SUBSCRIBER
             )
             ->setEnrolmentStatus(
-                \Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_STATUS_PENDING
+                StatusInterface::PENDING
             )
             ->setTypeId($subscriber->getId())
             ->setWebsiteId($websiteId)
-            ->setStoreName($store->getName())
+            ->setStoreId($storeId)
+            ->setStoreName($this->storeManager->getStore($storeId)->getName())
             ->setProgramId($programId);
         $this->automationResource->save($automation);
     }

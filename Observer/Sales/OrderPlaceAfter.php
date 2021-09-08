@@ -3,6 +3,8 @@
 namespace Dotdigitalgroup\Email\Observer\Sales;
 
 use Dotdigitalgroup\Email\Model\Sales\CartInsight\Update as CartInsightUpdater;
+use Dotdigitalgroup\Email\Model\Sync\Automation\AutomationTypeHandler;
+use Dotdigitalgroup\Email\Model\StatusInterface;
 
 /**
  * Send cart phase flag as CartInsight for some orders.
@@ -83,13 +85,11 @@ class OrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
         if ($order->getCustomerIsGuest()) {
             // guest to automation mapped
             $programType = 'XML_PATH_CONNECTOR_AUTOMATION_STUDIO_GUEST_ORDER';
-            $automationType
-                         = \Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_TYPE_NEW_GUEST_ORDER;
+            $automationType = AutomationTypeHandler::AUTOMATION_TYPE_NEW_GUEST_ORDER;
         } else {
             // customer to automation mapped
             $programType = 'XML_PATH_CONNECTOR_AUTOMATION_STUDIO_ORDER';
-            $automationType
-                         = \Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_TYPE_NEW_ORDER;
+            $automationType = AutomationTypeHandler::AUTOMATION_TYPE_NEW_ORDER;
         }
         $programId = $this->helper->getAutomationIdByType(
             $programType,
@@ -104,9 +104,10 @@ class OrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
             $automation = $this->automationFactory->create()
                 ->setEmail($order->getCustomerEmail())
                 ->setAutomationType($automationType)
-                ->setEnrolmentStatus(\Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_STATUS_PENDING)
+                ->setEnrolmentStatus(StatusInterface::PENDING)
                 ->setTypeId($order->getIncrementId())
                 ->setWebsiteId($website->getId())
+                ->setStoreId($store->getId())
                 ->setStoreName($store->getName())
                 ->setProgramId($programId);
             $this->automationResource->save($automation);

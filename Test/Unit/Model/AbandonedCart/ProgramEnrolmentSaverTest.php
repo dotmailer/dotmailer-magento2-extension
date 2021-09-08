@@ -78,6 +78,7 @@ class ProgramEnrolmentSaverTest extends TestCase
                 [$this->equalTo('setEnrolmentStatus')],
                 [$this->equalTo('setTypeId')],
                 [$this->equalTo('setWebsiteId')],
+                [$this->equalTo('setStoreId')],
                 [$this->equalTo('setStoreName')],
                 [$this->equalTo('setProgramId')]
             )

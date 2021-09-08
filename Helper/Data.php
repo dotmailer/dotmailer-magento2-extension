@@ -1157,45 +1157,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * Update data fields.
-     *
-     * @param string $email
-     * @param \Magento\Store\Api\Data\WebsiteInterface $website
-     * @param string $storeName
-     *
-     * @return null
-     */
-    public function updateDataFields($email, $website, $storeName)
-    {
-        $data = [];
-        if ($storeNameKey = $website->getConfig(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CUSTOMER_STORE_NAME
-        )
-        ) {
-            $data[] = [
-                'Key' => $storeNameKey,
-                'Value' => $storeName,
-            ];
-        }
-        if ($websiteName = $website->getConfig(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CUSTOMER_WEBSITE_NAME
-        )
-        ) {
-            $data[] = [
-                'Key' => $websiteName,
-                'Value' => $website->getName(),
-            ];
-        }
-        if (!empty($data)) {
-            //update data fields
-            if ($this->isEnabled($website)) {
-                $client = $this->getWebsiteApiClient($website);
-                $client->updateContactDatafieldsByEmail($email, $data);
-            }
-        }
-    }
-
-    /**
      * Update last quote id datafield.
      *
      * @param int $quoteId
@@ -1350,45 +1311,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         );
 
         return $automationCampaignId;
-    }
-
-    /**
-     * Api- update the product name most expensive.
-     *
-     * @param string $name
-     * @param string $email
-     * @param int $websiteId
-     *
-     * @return null
-     */
-    public function updateAbandonedProductName($name, $email, $websiteId)
-    {
-        if ($this->isEnabled($websiteId)) {
-            $client = $this->getWebsiteApiClient($websiteId);
-            // id config data mapped
-            $field = $this->getAbandonedProductName();
-
-            if ($field) {
-                $data[] = [
-                    'Key' => $field,
-                    'Value' => $name,
-                ];
-                //update data field for contact
-                $client->updateContactDatafieldsByEmail($email, $data);
-            }
-        }
-    }
-
-    /**
-     * Get mapped product name.
-     *
-     * @return boolean|string
-     */
-    public function getAbandonedProductName()
-    {
-        return $this->scopeConfig->getValue(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_ABANDONED_PRODUCT_NAME
-        );
     }
 
     /**
