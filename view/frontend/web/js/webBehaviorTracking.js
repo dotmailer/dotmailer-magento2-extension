@@ -42,15 +42,8 @@ define([
             let productId;
 
             productId = parseInt(
-                document.querySelector('[data-product-id]')
-                    .getAttribute('data-product-id')
+                $('[name=product]').val()
             );
-
-            if (typeof data[productId] === 'undefined') {
-                productId = parseInt(
-                    $('[name=product]').val()
-                );
-            }
 
             productData = data[productId];
 
@@ -108,17 +101,17 @@ define([
          * @constructor
          */
         'Dotdigitalgroup_Email/js/webBehaviorTracking': function (settings) {
-            this.initWbt(settings.id)
-                .initIdsStorage();
-
-            var body = document.getElementsByTagName('body')[0];
+            var wbt = this.initWbt(settings.id),
+                body = document.getElementsByTagName('body')[0];
 
             if (body.classList.contains('catalogsearch-result-index')) {
                 var search = document.getElementById('search');
                 this.wbtTrack({
                     'searched_term': search.getAttribute('value')
                 });
-            } else if (!body.classList.contains('catalog-product-view')) {
+            } else if (body.classList.contains('catalog-product-view')) {
+                wbt.initIdsStorage();
+            } else {
                 this.wbtTrack();
             }
         }
