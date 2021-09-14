@@ -19,7 +19,19 @@ You are welcome to contribute to Engagement Cloud for Magento! You can either:
 - Fix a bug: please clone and use our [Develop branch](https://github.com/dotmailer/dotmailer-magento2-extension/tree/develop) to submit your Pull Request
 - Request a feature on our [roadmap](https://roadmap.dotdigital.com)
 
+# 4.13.4
+
+##### Bug fixes
+- We now send review dates as correctly formatted date strings in review sync, to enable full use of segmentation in dotdigital.
+- We fixed a problem with our web behaviour tracking script collecting product data outside of product pages. 
+
+# 4.13.3
+
+##### Bug fixes
+- We fixed an exception thrown error during contact import sync.
+
 # 4.13.2
+
 ###### Bug fixes
 - Compile error for php versions prior to 7.3 has been fixed.
 
