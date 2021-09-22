@@ -127,12 +127,13 @@ class PendingContactUpdater
                 $this->getWebsiteIdFromStoreId($item->getStoreId()) :
                 $item->getWebsiteId();
             $contact = $this->helper->getOrCreateContact($item->getEmail(), $websiteId);
-            if (isset($contact->id) && $contact->status !== StatusInterface::PENDING_OPT_IN) {
-                $this->idsToUpdateStatus[] = $item->getId();
-            } elseif (($item->getCreatedAt() < $expiryDate) &&
-                $contact->status === StatusInterface::PENDING_OPT_IN
+            if (!$contact ||
+                ($contact->status === StatusInterface::PENDING_OPT_IN &&
+                    ($item->getCreatedAt() < $expiryDate))
             ) {
                 $this->idsToExpire[] = $item->getId();
+            } elseif (isset($contact->id) && $contact->status !== StatusInterface::PENDING_OPT_IN) {
+                $this->idsToUpdateStatus[] = $item->getId();
             } else {
                 $this->idsToUpdateDate[] = $item->getId();
             }
