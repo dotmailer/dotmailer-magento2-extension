@@ -675,7 +675,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param int $websiteId
      * @param boolean $contactFromTable
      *
-     * @return bool|object
+     * @return bool|\stdClass
      */
     public function getOrCreateContact($email, $websiteId, $contactFromTable = false)
     {
@@ -696,7 +696,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             $response = $client->postContacts($email);
         }
 
-        if (isset($response->status) && $response->status !== 'Subscribed') {
+        if (isset($response->status) &&
+            !in_array($response->status, ['Subscribed', 'PendingOptIn'])
+        ) {
             $contact->setEmailImported(1);
             $contact->setSuppressed(1);
             $this->saveContact($contact);
