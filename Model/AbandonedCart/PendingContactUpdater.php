@@ -105,12 +105,13 @@ class PendingContactUpdater
         foreach ($collection as $item) {
             $websiteId = $this->helper->storeManager->getStore($item->getStoreId())->getWebsiteId();
             $contact   = $this->helper->getOrCreateContact($item->getEmail(), $websiteId);
-            if (isset($contact->id) && $contact->status !== Automation::CONTACT_STATUS_PENDING) {
-                $idsToUpdateStatus[] = $item->getId();
-            } elseif (($item->getCreatedAt() < $expiryDate) &&
-                      $contact->status === Automation::CONTACT_STATUS_PENDING
+            if (!$contact ||
+                ($contact->status === Automation::CONTACT_STATUS_PENDING &&
+                    ($item->getCreatedAt() < $expiryDate))
             ) {
                 $idsToExpire[] = $item->getId();
+            } elseif (isset($contact->id) && $contact->status !== Automation::CONTACT_STATUS_PENDING) {
+                $idsToUpdateStatus[] = $item->getId();
             } else {
                 $idsToUpdateDate[] = $item->getId();
             }

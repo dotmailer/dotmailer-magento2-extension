@@ -243,16 +243,28 @@ class Automation implements SyncInterface
                 ->getCollectionByPendingStatus();
             $idsToUpdateStatus = [];
             $idsToUpdateDate = [];
+            $idsToExpire = [];
 
             foreach ($collection as $item) {
                 $contact = $this->helper->getOrCreateContact($item->getEmail(), $item->getWebsiteId());
-                if (isset($contact->id) && $contact->status !== self::CONTACT_STATUS_PENDING) {
+                if (!$contact) {
+                    $idsToExpire[] = $item->getId();
+                } elseif (isset($contact->id) && $contact->status !== self::CONTACT_STATUS_PENDING) {
                     //add to array for update status
                     $idsToUpdateStatus[] = $item->getId();
                 } else {
                     //add to array for update date
                     $idsToUpdateDate[] = $item->getId();
                 }
+            }
+
+            if (!empty($idsToExpire)) {
+                $this->automationResource
+                    ->update(
+                        $idsToExpire,
+                        $updatedAt,
+                        self::CONTACT_STATUS_EXPIRED
+                    );
             }
 
             if (! empty($idsToUpdateStatus)) {
