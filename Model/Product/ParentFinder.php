@@ -151,9 +151,9 @@ class ParentFinder
      * @param array $productIds
      * @return array
      */
-    public function getConfigurableParentsFromProductIds($productIds)
+    public function getConfigurableParentIdsFromProductIds($productIds)
     {
-        $configurableParents = [];
+        $configurableParentIds = [];
 
         foreach ($productIds as $productId) {
             try {
@@ -168,12 +168,12 @@ class ParentFinder
             if ($product instanceof Product) {
                 $parentProduct = $this->getConfigurableParentProduct($product);
                 if (isset($parentProduct)) {
-                    $configurableParents[] = $parentProduct->getData();
+                    $configurableParentIds[] = $parentProduct->getEntityId();
                 }
             }
         }
 
-        return array_unique($configurableParents, SORT_REGULAR);
+        return array_unique($configurableParentIds);
     }
 
     /**
