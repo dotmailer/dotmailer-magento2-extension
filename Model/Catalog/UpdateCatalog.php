@@ -57,12 +57,8 @@ class UpdateCatalog
      */
     private function updateEmailCatalog($product)
     {
-        $productsToUpdate = $this->parentFinder->getConfigurableParentsFromProductIds([$product->getId()]);
-        array_push($productsToUpdate, $product->getData());
-
-        $idsToUpdate = array_map(function ($products) {
-            return $products['entity_id'];
-        }, $productsToUpdate);
+        $idsToUpdate = $this->parentFinder->getConfigurableParentIdsFromProductIds([$product->getId()]);
+        array_push($idsToUpdate, $product->getId());
 
         $this->catalogResource->setUnprocessedByIds($idsToUpdate);
     }

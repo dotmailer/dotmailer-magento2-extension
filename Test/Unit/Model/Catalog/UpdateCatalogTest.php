@@ -77,15 +77,9 @@ class UpdateCatalogTest extends TestCase
         $this->catalogMock->expects($this->never())
             ->method('setProductId');
 
-        $this->productMock->expects($this->once())
-            ->method('getData')
-            ->willReturn($toUpdate = [
-                'entity_id' => 54
-            ]);
-
         $this->parentFinderMock->expects($this->once())
-            ->method('getConfigurableParentsFromProductIds')
-            ->willReturn([]);
+            ->method('getConfigurableParentIdsFromProductIds')
+            ->willReturn(['100', '101', '102']);
 
         $this->catalogResourceMock->expects($this->once())
             ->method('setUnprocessedByIds');

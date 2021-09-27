@@ -87,7 +87,7 @@ class UpdateCatalogBulk
         }
 
         if (!empty($existingProductIds)) {
-            $parentProductIds = $this->parentFinder->getConfigurableParentsFromProductIds($existingProductIds);
+            $parentProductIds = $this->parentFinder->getConfigurableParentIdsFromProductIds($existingProductIds);
             $this->catalogResource->setUnprocessedByIds(
                 array_merge($existingProductIds, $parentProductIds)
             );
