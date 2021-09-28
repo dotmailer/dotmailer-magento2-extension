@@ -135,7 +135,7 @@ class UnsubscriberTest extends TestCase
             ->willReturn($this->getLocalContactsRecentlyResubscribed());
 
         $this->contactResourceMock->expects($this->never())
-            ->method('unsubscribe');
+            ->method('unsubscribeByWebsiteAndStore');
 
         $unsubscribes = $this->model->unsubscribe();
 
