@@ -19,6 +19,14 @@ You are welcome to contribute to Engagement Cloud for Magento! You can either:
 - Fix a bug: please clone and use our [Develop branch](https://github.com/dotmailer/dotmailer-magento2-extension/tree/develop) to submit your Pull Request
 - Request a feature on our [roadmap](https://roadmap.dotdigital.com)
 
+# 4.13.5
+
+##### Bug fixes
+- Contacts enrolled in automations or queued for abandoned cart campaigns, who were initially ‘Pending Opt-in’ but who soon afterwards became unsubscribed or suppressed, were causing an error in the related syncs. This has been fixed.
+- Pending contacts in dotdigital will no longer be marked as ‘Suppressed’.
+- We fixed a bug in order sync related to marking ordered products as unprocessed.
+- We’ve improved our handling of missing campaign data in template sync.
+
 # 4.13.4
 
 ##### Bug fixes
