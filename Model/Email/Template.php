@@ -248,26 +248,13 @@ class Template extends \Magento\Framework\DataObject implements SyncInterface
      * @param string $templateCode
      * @return \Magento\Framework\DataObject
      */
-    public function loadByTemplateByCode($templateCode)
+    private function loadTemplateByCode($templateCode)
     {
         $template = $this->templateCollectionFactory->create()
             ->addFieldToFilter('template_code', $templateCode)
             ->setPageSize(1);
 
         return $template->getFirstItem();
-    }
-
-    /**
-     * Delete email_template.
-     *
-     * @param string $templatecode
-     */
-    public function deleteTemplateByCode($templatecode)
-    {
-        $template = $this->loadByTemplateByCode($templatecode);
-        if ($template->getId()) {
-            $template->delete();
-        }
     }
 
     /**
@@ -328,7 +315,7 @@ class Template extends \Magento\Framework\DataObject implements SyncInterface
      * @param int $campaignId
      * @param int $emailTemplateId
      * @param \Magento\Store\Api\Data\StoreInterface $store
-     * @return \Magento\Email\Model\Template|string
+     * @return void
      */
     private function syncEmailTemplate($campaignId, $emailTemplateId, $store)
     {
@@ -337,16 +324,14 @@ class Template extends \Magento\Framework\DataObject implements SyncInterface
         $dmCampaign = $client->getCampaignByIdWithPreparedContent($campaignId);
 
         if (isset($dmCampaign->message)) {
-            $message = $dmCampaign->message;
-            $this->helper->log($message);
-            return $message;
+            return;
         }
 
         $template = $this->templateFactory->create();
         $this->templateResource->load($template, $emailTemplateId);
         //check if is a dotmailer template
         if ($template->getId() || $template->getTemplateCode()) {
-            return $this->saveTemplate($template, $dmCampaign, $campaignId);
+            $this->saveTemplate($template, $dmCampaign, $campaignId);
         }
     }
 
@@ -372,14 +357,15 @@ class Template extends \Magento\Framework\DataObject implements SyncInterface
         $client = $this->helper->getWebsiteApiClient($websiteId);
         $dmCampaign = $client->getCampaignByIdWithPreparedContent($campaignId);
         if (isset($dmCampaign->message)) {
-            $this->helper->log('Failed to get api template : ' . $dmCampaign->message);
+            $this->helper->debug('Failed to get api template : ' . $dmCampaign->message);
             return false;
         }
 
         $templateName = $dmCampaign->name . '_' . $campaignId;
-        $template = $this->loadByTemplateByCode($templateName);
+        $template = $this->loadTemplateByCode($templateName);
+        $this->saveTemplate($template, $dmCampaign, $campaignId, $templateConfigPath);
 
-        return $this->saveTemplate($template, $dmCampaign, $campaignId, $templateConfigPath);
+        return $template->getId();
     }
 
     /**
@@ -387,10 +373,23 @@ class Template extends \Magento\Framework\DataObject implements SyncInterface
      * @param Object $dmCampaign
      * @param int $campaignId
      * @param string $origTemplateCode
-     * @return \Magento\Email\Model\Template
+     * @return void
      */
-    public function saveTemplate($template, $dmCampaign, $campaignId, $origTemplateCode = '')
+    private function saveTemplate($template, $dmCampaign, $campaignId, $origTemplateCode = '')
     {
+        if (!isset($dmCampaign->name) ||
+            !isset($dmCampaign->subject) ||
+            !isset($dmCampaign->processedHtmlContent) ||
+            !isset($dmCampaign->fromName) ||
+            !isset($dmCampaign->fromAddress->email)
+        ) {
+            $this->helper->debug(
+                'Missing data for campaign id: ' . $campaignId . '. Cannot update template.',
+                (array) $dmCampaign
+            );
+            return;
+        }
+
         $templateName = $dmCampaign->name . '_' . $campaignId;
 
         try {
@@ -404,10 +403,8 @@ class Template extends \Magento\Framework\DataObject implements SyncInterface
 
             $this->templateResource->save($template);
         } catch (\Exception $e) {
-            $this->helper->log($e->getMessage());
+            $this->helper->debug($e->getMessage());
         }
-
-        return $template;
     }
 
     /**
