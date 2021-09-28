@@ -98,17 +98,17 @@ class EmailTemplateFieldValue extends \Magento\Framework\App\Config\Value
         //email template mapped
         if ($this->getValue()) {
             $templateConfigPath = $dotTemplate->templateConfigMapping[$templateConfigId];
-            $template = $dotTemplate->saveTemplateWithConfigPath(
+            $templateId = $dotTemplate->saveTemplateWithConfigPath(
                 $templateConfigId,
                 $this->getValue(),
                 $scope,
                 $scopeId
             );
             //save successful created new email template with the default config value for template.
-            if ($template) {
+            if ($templateId) {
                 $this->helper->saveConfigData(
                     $templateConfigPath,
-                    $template->getId(),
+                    $templateId,
                     $scope,
                     $scopeId
                 );
