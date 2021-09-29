@@ -19,23 +19,31 @@ You are welcome to contribute to Engagement Cloud for Magento! You can either:
 - Fix a bug: please clone and use our [Develop branch](https://github.com/dotmailer/dotmailer-magento2-extension/tree/develop) to submit your Pull Request
 - Request a feature on our [roadmap](https://roadmap.dotdigital.com)
 
+# 4.14.0-RC1
+
+###### What's new
+- Merchants can now sync all types of automations by store (previously the sync worked by website). We've extensively rewritten the code for automation enrolment, including the handling of pending contacts, and updating data fields.
+
+###### Improvements
+- `ImporterReportHandler` now uses a newer unsubscribeByWebsiteAndStore() method, for scope-aware unsubscribes.
+
 # 4.13.5
 
 ##### Bug fixes
-- Contacts enrolled in automations or queued for abandoned cart campaigns, who were initially ‘Pending Opt-in’ but who soon afterwards became unsubscribed or suppressed, were causing an error in the related syncs. This has been fixed.
-- Pending contacts in dotdigital will no longer be marked as ‘Suppressed’.
-- We fixed a bug in order sync related to marking ordered products as unprocessed.
-- We’ve improved our handling of missing campaign data in template sync.
+- Contacts enrolled in automations or queued for abandoned cart campaigns, who were initially ‘Pending Opt-in’ but who soon afterwards became unsubscribed or suppressed, were causing an error in the related syncs. We fixed it.
+- Pending contacts in dotdigital are no longer marked as ‘Suppressed’.
+- We fixed a bug in the order sync related to marking ordered products as unprocessed.
+- We’ve improved our handling of missing campaign data in the template sync.
 
 # 4.13.4
 
-##### Bug fixes
+###### Bug fixes
 - We now send review dates as correctly formatted date strings in review sync, to enable full use of segmentation in dotdigital.
 - We fixed a problem with our web behaviour tracking script collecting product data outside of product pages. 
 
 # 4.13.3
 
-##### Bug fixes
+###### Bug fixes
 - We fixed an exception thrown error during contact import sync.
 
 # 4.13.2
