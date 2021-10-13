@@ -19,10 +19,10 @@ You are welcome to contribute to Engagement Cloud for Magento! You can either:
 - Fix a bug: please clone and use our [Develop branch](https://github.com/dotmailer/dotmailer-magento2-extension/tree/develop) to submit your Pull Request
 - Request a feature on our [roadmap](https://roadmap.dotdigital.com)
 
-# 4.14.0-RC1
+# 4.14.0-RC2
 
 ###### What's new
-- Merchants can now sync all types of automations by store (previously the sync worked by website). We've extensively rewritten the code for automation enrolment, including the handling of pending contacts, and updating data fields.
+- Merchants can now sync all types of automations by store (previously the sync worked by website). We've modified the code for automation enrolment, including the handling of pending contacts, and updating data fields.
 
 ###### Improvements
 - `ImporterReportHandler` now uses a newer unsubscribeByWebsiteAndStore() method, for scope-aware unsubscribes.
@@ -73,6 +73,7 @@ You are welcome to contribute to Engagement Cloud for Magento! You can either:
 - We've improved our handling of the contact import report; to be resubscribed, contacts must now be subscribed, and not suppressed.
 - Unused Fancybox JS files have been removed.
 - We've removed, or updated, various bits of code relating to the Zend Framework.
+- Menus and ACL resources are now translatable. [External contribution](https://github.com/dotmailer/dotmailer-magento2-extension/pull/574) 
 
 ###### Bug fixes
 - We've fixed date-based resetting in **Developer > Sync Settings**.
