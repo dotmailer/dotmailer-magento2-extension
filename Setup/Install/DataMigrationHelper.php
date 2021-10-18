@@ -3,11 +3,12 @@
 namespace Dotdigitalgroup\Email\Setup\Install;
 
 use Dotdigitalgroup\Email\Logger\Logger;
+use Dotdigitalgroup\Email\Setup\Install\Type\AbstractDataMigration;
 use Magento\Framework\Math\Random;
 use Magento\Config\Model\ResourceModel\Config as ConfigResource;
 use Magento\Framework\App\ResourceConnection;
+use Magento\Framework\App\Config\ScopeConfigInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Dotdigitalgroup\Email\Setup\Install\Type\AbstractDataMigration;
 
 class DataMigrationHelper
 {
@@ -43,25 +44,32 @@ class DataMigrationHelper
     private $dataMigrationTypeProvider;
 
     /**
-     * MigrateData constructor
+     * @var ScopeConfigInterface
+     */
+    private $scopeConfig;
+
+    /**
      * @param ConfigResource $config
      * @param Random $random
      * @param ResourceConnection $resourceConnection
      * @param Logger $logger
      * @param DataMigrationTypeProvider $dataMigrationTypeProvider
+     * @param ScopeConfigInterface $scopeConfig
      */
     public function __construct(
         ConfigResource $config,
         Random $random,
         ResourceConnection $resourceConnection,
         Logger $logger,
-        DataMigrationTypeProvider $dataMigrationTypeProvider
+        DataMigrationTypeProvider $dataMigrationTypeProvider,
+        ScopeConfigInterface $scopeConfig
     ) {
         $this->config = $config;
         $this->randomMath = $random;
         $this->resourceConnection = $resourceConnection;
         $this->logger = $logger;
         $this->dataMigrationTypeProvider = $dataMigrationTypeProvider;
+        $this->scopeConfig = $scopeConfig;
     }
 
     /**
@@ -137,12 +145,18 @@ class DataMigrationHelper
      */
     private function generateAndSaveCode()
     {
-        $code = $this->randomMath->getRandomString(32);
-        $this->config->saveConfig(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_CONTENT_PASSCODE,
-            $code,
-            'default',
-            '0'
+        $passcode = $this->scopeConfig->getValue(
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_CONTENT_PASSCODE
         );
+
+        if (!$passcode) {
+            $code = $this->randomMath->getRandomString(32);
+            $this->config->saveConfig(
+                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_CONTENT_PASSCODE,
+                $code,
+                'default',
+                '0'
+            );
+        }
     }
 }
