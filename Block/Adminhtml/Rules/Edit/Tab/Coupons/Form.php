@@ -57,7 +57,7 @@ class Form extends \Magento\Backend\Block\Widget\Form\Generic
             ->registry(RegistryConstants::CURRENT_SALES_RULE)
             ->getId();
 
-        $enableFields = $this->helper->isEnabled();
+        $enableFields = $this->helper->isConnectorEnabledAtAnyLevel();
 
         /** @var \Magento\Framework\Data\Form $form */
         $form = $this->_formFactory->create();
@@ -76,7 +76,7 @@ You have not set a passcode which will be sent with the coupon code request.
 EOT;
         }
 
-        if (!($this->helper->isEnabled())) {
+        if (!($this->helper->isConnectorEnabledAtAnyLevel())) {
             $commentField['after_element_html'] = <<<EOT
 <small id="ddg-notice_coupon-builder-disabled">
 An active Engagement Cloud account is required to use this feature.
