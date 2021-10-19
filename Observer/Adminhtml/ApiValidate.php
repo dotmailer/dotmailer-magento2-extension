@@ -2,6 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Observer\Adminhtml;
 
+use Magento\Config\Model\ResourceModel\Config;
 use Dotdigitalgroup\Email\Model\Sync\DummyRecordsFactory;
 
 /**
@@ -25,11 +26,6 @@ class ApiValidate implements \Magento\Framework\Event\ObserverInterface
     private $messageManager;
 
     /**
-     * @var \Magento\Framework\App\Config\Storage\Writer
-     */
-    private $writer;
-
-    /**
      * @var \Dotdigitalgroup\Email\Model\Apiconnector\Test
      */
     private $test;
@@ -40,27 +36,30 @@ class ApiValidate implements \Magento\Framework\Event\ObserverInterface
     private $dummyRecordsFactory;
 
     /**
-     * ApiValidate constructor.
-     *
+     * @var Config
+     */
+    private $resourceConfig;
+
+    /**
      * @param \Dotdigitalgroup\Email\Helper\Data $data
      * @param \Dotdigitalgroup\Email\Model\Apiconnector\Test $test
      * @param \Magento\Backend\App\Action\Context $context
-     * @param \Magento\Framework\App\Config\Storage\Writer $writer
      * @param DummyRecordsFactory $dummyRecordsFactory
+     * @param Config $resourceConfig
      */
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Dotdigitalgroup\Email\Model\Apiconnector\Test $test,
         \Magento\Backend\App\Action\Context $context,
-        \Magento\Framework\App\Config\Storage\Writer $writer,
-        DummyRecordsFactory $dummyRecordsFactory
+        DummyRecordsFactory $dummyRecordsFactory,
+        Config $resourceConfig
     ) {
         $this->test           = $test;
         $this->helper         = $data;
-        $this->writer         = $writer;
         $this->context        = $context;
         $this->messageManager = $context->getMessageManager();
         $this->dummyRecordsFactory = $dummyRecordsFactory;
+        $this->resourceConfig = $resourceConfig;
     }
 
     /**
@@ -78,6 +77,7 @@ class ApiValidate implements \Magento\Framework\Event\ObserverInterface
         if (isset($groups['api']['fields']['username']['inherit'])
             || isset($groups['api']['fields']['password']['inherit'])
         ) {
+            $this->deleteApiEndpoint();
             return $this;
         }
 
@@ -122,5 +122,28 @@ class ApiValidate implements \Magento\Framework\Event\ObserverInterface
 
         $this->messageManager->addWarningMessage(__('Authorization has been denied for this request.'));
         return false;
+    }
+
+    /**
+     * Deletes api endpoint if default value is used.
+     * @return void
+     */
+    private function deleteApiEndpoint()
+    {
+        $websiteId = $this->context->getRequest()->getParam('website');
+
+        $scope = 'default';
+        $scopeId = '0';
+
+        if ($websiteId) {
+            $scope = 'websites';
+            $scopeId = $websiteId;
+        }
+
+        $this->resourceConfig->deleteConfig(
+            \Dotdigitalgroup\Email\Helper\Config::PATH_FOR_API_ENDPOINT,
+            $scope,
+            $scopeId
+        );
     }
 }
