@@ -406,18 +406,12 @@ class Order
                 /**
                  * Categories
                  */
-                $categoryCollection = $productModel->getCategoryCollection()
-                    ->addAttributeToSelect('name');
-                $productCat = [];
-                foreach ($categoryCollection as $cat) {
-                    $categories = [];
-                    $categories[] = $cat->getName();
-                    $productCat[]['Name'] = mb_substr(
-                        implode(', ', $categories),
-                        0,
-                        \Dotdigitalgroup\Email\Helper\Data::DM_FIELD_LIMIT
-                    );
-                }
+                $productCat = $this->getCategoriesFromProductModel($productModel);
+
+                $childCategories = isset($childProductModel) ?
+                    $this->getCategoriesFromProductModel($childProductModel) : [];
+
+                $this->mergeChildCategories($productCat, $childCategories);
 
                 /**
                  * Product attributes
@@ -691,5 +685,40 @@ class Order
             $attributesFromAttributeSet,
             $product
         );
+    }
+
+    /**
+     * @param \Magento\Catalog\Model\Product $productModel
+     * @return array
+     */
+    private function getCategoriesFromProductModel($productModel)
+    {
+        $categoryCollection = $productModel->getCategoryCollection()
+            ->addAttributeToSelect('name');
+
+        $productCat = [];
+        foreach ($categoryCollection as $cat) {
+            $categories = [];
+            $categories[] = $cat->getName();
+            $productCat[]['Name'] = mb_substr(
+                implode(', ', $categories),
+                0,
+                \Dotdigitalgroup\Email\Helper\Data::DM_FIELD_LIMIT
+            );
+        }
+        return $productCat;
+    }
+
+    /**
+     * @param array $productCat
+     * @param array $childCategories
+     */
+    private function mergeChildCategories(&$productCat, $childCategories)
+    {
+        foreach ($childCategories as $childCategory) {
+            if (!in_array($childCategory, $productCat)) {
+                array_push($productCat, $childCategory);
+            }
+        }
     }
 }
