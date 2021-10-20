@@ -3,7 +3,7 @@
        xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
     <test name="DotdigitalDashboardPageTest">
         <annotations>
-            <features value="Engagement Cloud module"/>
+            <features value="Dotdigital module"/>
             <stories value="Dashboard Page Test"/>
             <title value="Dashboard Page Test"/>
             <description value="The dotdigital Dashboard can be viewed."/>

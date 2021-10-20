@@ -3,8 +3,8 @@
        xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
     <test name="CouponUrlBuilderTest">
         <annotations>
-            <features value="Engagement Cloud module"/>
-            <stories value="dotdigital Coupon URL Builder"/>
+            <features value="Dotdigital module"/>
+            <stories value="Dotdigital Coupon URL Builder"/>
             <title value="Generate coupon URLs using the tool"/>
             <description value="The coupon URL builder is displayed if the API is enabled, and functions as expected."/>
             <severity value="MINOR"/>

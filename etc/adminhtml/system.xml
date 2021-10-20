@@ -19,7 +19,7 @@
                 <attribute type="expanded">1</attribute>
                 <field id="enabled" translate="label" type="select" sortOrder="1" showInDefault="1" showInStore="0" showInWebsite="1">
                     <label>Enabled</label>
-                    <comment><![CDATA[Don't have an API user? Find out about <a href="https://developer.dotdigital.com/docs/getting-started-with-the-api/" target="_blank">getting started with the Engagement Cloud API</a>.]]></comment>
+                    <comment><![CDATA[Don't have an API user? Find out about <a href="https://developer.dotdigital.com/docs/getting-started-with-the-api/" target="_blank">getting started with the Dotdigital API</a>.]]></comment>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
                 <field id="username" translate="label" type="text" sortOrder="2" showInDefault="1" showInStore="0" showInWebsite="1">
@@ -774,7 +774,7 @@
                 <field id="order_dynamic_content_url" translate="label comment" sortOrder="80" showInStore="0" showInWebsite="1"
                        showInDefault="1">
                     <label>Order Recommendation (Deprecated)</label>
-                    <comment><![CDATA[Use dotdigital Engagement Cloud's built-in product recommendation functionality. <a href="https://support.dotdigital.com/hc/en-gb/articles/360000110040-Product-recommendations-an-overview">Learn more</a>]]></comment>
+                    <comment><![CDATA[Use Dotdigital's built-in product recommendation functionality. <a href="https://support.dotdigital.com/hc/en-gb/articles/360000110040-Product-recommendations-an-overview">Learn more</a>]]></comment>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\SubheadingWithComment</frontend_model>
                 </field>
                 <field id="related_products_url" translate="label" sortOrder="90" type="text" showInStore="0"
@@ -795,7 +795,7 @@
                 <field id="cart_recommendation_title" translate="label comment" sortOrder="120" showInStore="0"
                        showInWebsite="1" showInDefault="1">
                     <label>Cart Recommendation (Deprecated)</label>
-                    <comment><![CDATA[Use dotdigital Engagement Cloud's built-in product recommendation functionality. <a href="https://support.dotdigital.com/hc/en-gb/articles/360000110040-Product-recommendations-an-overview">Learn more</a>]]></comment>
+                    <comment><![CDATA[Use Dotdigital's built-in product recommendation functionality. <a href="https://support.dotdigital.com/hc/en-gb/articles/360000110040-Product-recommendations-an-overview">Learn more</a>]]></comment>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\SubheadingWithComment</frontend_model>
                 </field>
                 <field id="cart_related_products_url" translate="label" sortOrder="130" type="text" showInStore="0"
@@ -816,7 +816,7 @@
                 <field id="product_recommendation_title" translate="label comment" sortOrder="160" showInStore="0"
                        showInWebsite="1" showInDefault="1">
                     <label>Product Recommendation (Deprecated)</label>
-                    <comment><![CDATA[Use dotdigital Engagement Cloud's built-in product recommendation functionality. <a href="https://support.dotdigital.com/hc/en-gb/articles/360000110040-Product-recommendations-an-overview">Learn more</a>]]></comment>
+                    <comment><![CDATA[Use Dotdigital's built-in product recommendation functionality. <a href="https://support.dotdigital.com/hc/en-gb/articles/360000110040-Product-recommendations-an-overview">Learn more</a>]]></comment>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\SubheadingWithComment</frontend_model>
                 </field>
                 <field id="best_sellers_url" translate="label" sortOrder="170" type="text" showInStore="0" showInWebsite="1" showInDefault="1">
@@ -1717,7 +1717,7 @@
                        showInWebsite="1" showInDefault="1">
                     <label>Automap Data Fields</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Automapdatafields</frontend_model>
-                    <comment><![CDATA[Map Magento data to Engagement Cloud data fields, including customer, address and sales information.]]></comment>
+                    <comment><![CDATA[Map Magento data to Dotdigital data fields, including customer, address and sales information.]]></comment>
                 </field>
                 <field id="delete_contact" translate="label" sortOrder="30" showInStore="0" showInWebsite="1"
                        showInDefault="1">

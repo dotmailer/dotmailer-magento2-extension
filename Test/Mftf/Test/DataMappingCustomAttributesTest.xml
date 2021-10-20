@@ -3,7 +3,7 @@
        xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
     <test name="DataMappingCustomAttributesTest">
         <annotations>
-            <features value="Engagement Cloud module"/>
+            <features value="Dotdigital module"/>
             <stories value="Configure data mapping"/>
             <title value="Map custom attributes to data fields"/>
             <description value="Map a custom attribute to an Engagement Cloud data field, then delete the mapping."/>

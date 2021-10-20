@@ -3,10 +3,10 @@
        xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
     <test name="ImporterReportPageTest">
         <annotations>
-            <features value="Engagement Cloud module"/>
-            <stories value="Test dotdigital report grids"/>
+            <features value="Dotdigital module"/>
+            <stories value="Test Dotdigital report grids"/>
             <title value="Test Importer Status Grid"/>
-            <description value="The dotdigital Import report can be viewed, filtered and sorted."/>
+            <description value="The Dotdigital Import report can be viewed, filtered and sorted."/>
             <severity value="MINOR"/>
             <group value="dotmailer"/>
             <testCaseId value="BUNDLE-69"/>

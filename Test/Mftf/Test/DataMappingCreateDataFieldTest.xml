@@ -3,7 +3,7 @@
        xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
     <test name="DataMappingCreateDataFieldTest">
         <annotations>
-            <features value="Engagement Cloud module"/>
+            <features value="Dotdigital module"/>
             <stories value="Configure data mapping"/>
             <title value="Create and confirm data fields"/>
             <description value="Create a new data field in the dotdigital admin, and confirm that data can be mapped to it."/>

@@ -148,7 +148,7 @@ class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     {
         $bind = [
             'send_status' => \Dotdigitalgroup\Email\Model\Campaign::SENT,
-            'message' => 'Check sending status in Engagement Cloud',
+            'message' => 'Check sending status in Dotdigital',
             'updated_at' => $this->datetime->gmtDate()
         ];
         $this->getConnection()

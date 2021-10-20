@@ -33,7 +33,7 @@ class ImportDataCommand extends Command
     protected function configure()
     {
         $this->setName('dotdigital:migrate')
-            ->setDescription('Migrate data into email_ tables to sync with Engagement Cloud')
+            ->setDescription('Migrate data into email_ tables to sync with Dotdigital')
             ->addOption(
                 'table',
                 't',

@@ -1,6 +1,6 @@
 {
   "name": "dotmailer/dotmailer-magento2-extension",
-  "description": "dotmailer integration for magento 2",
+  "description": "Dotdigital for Magento 2",
   "type": "magento2-module",
   "version": "4.14.0-RC2",
   "license": "MIT",
@@ -57,6 +57,6 @@
     }
   },
   "suggest": {
-    "dotmailer/dotmailer-magento2-extension-chat": "Adds Engagement Cloud Chat to your Magento store"
+    "dotmailer/dotmailer-magento2-extension-chat": "Adds Dotdigital Chat to your Magento store"
   }
 }

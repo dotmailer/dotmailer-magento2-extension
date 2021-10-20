@@ -3,7 +3,7 @@
        xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
     <test name="DataMappingEditSettingsTest">
         <annotations>
-            <features value="Engagement Cloud module"/>
+            <features value="Dotdigital module"/>
             <stories value="Configure data mapping"/>
             <title value="Test editing of data field mappings."/>
             <description value="Data field mappings can be amended and saved."/>

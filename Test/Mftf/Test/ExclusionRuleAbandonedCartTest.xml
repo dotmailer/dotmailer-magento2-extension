@@ -3,7 +3,7 @@
        xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
     <test name="ExclusionRuleAbandonedCartTest">
         <annotations>
-            <features value="Engagement Cloud module"/>
+            <features value="Dotdigital module"/>
             <stories value="Test exclusion rules"/>
             <title value="Test abandoned cart exclusion rules"/>
             <description value="An exclusion rule for abandoned carts can be created with conditions."/>

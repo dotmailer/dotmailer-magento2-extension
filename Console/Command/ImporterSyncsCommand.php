@@ -46,7 +46,7 @@ class ImporterSyncsCommand extends Command
     {
         $this
             ->setName('dotdigital:sync')
-            ->setDescription(__('Run syncs to populate email_ tables before importing to Engagement Cloud'))
+            ->setDescription(__('Run syncs to populate email_ tables before importing to Dotdigital'))
             ->addArgument(
                 'sync',
                 InputArgument::OPTIONAL,
@@ -129,7 +129,7 @@ class ImporterSyncsCommand extends Command
     {
         $helper = $this->getHelper('question');
         $syncQuestion = new ChoiceQuestion(
-            __('Please select an Engagement Cloud sync to run')->getText(),
+            __('Please select a Dotdigital sync to run')->getText(),
             array_column($this->syncProvider->getAvailableSyncs(), 'title')
         );
         $syncQuestion->setErrorMessage(__('Please select a sync')->getText());

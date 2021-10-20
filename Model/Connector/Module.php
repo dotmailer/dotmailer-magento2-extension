@@ -7,7 +7,7 @@ use Magento\Framework\Module\ModuleListInterface;
 class Module
 {
     const MODULE_NAME = 'Dotdigitalgroup_Email';
-    const MODULE_DESCRIPTION = 'Engagement Cloud for Magento 2';
+    const MODULE_DESCRIPTION = 'Dotdigital for Magento 2';
 
     /**
      * @var ModuleListInterface

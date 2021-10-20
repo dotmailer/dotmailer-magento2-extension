@@ -3,7 +3,7 @@
        xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
     <test name="AddressBooksCreateAndMapTest">
         <annotations>
-            <features value="Engagement Cloud module"/>
+            <features value="Dotdigital module"/>
             <stories value="Configure address books"/>
             <title value="Create and map address books"/>
             <description value="Use the Create Address Books panel to create address books in Engagement Cloud, and then map them to Magento user types."/>

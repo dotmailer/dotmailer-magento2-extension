@@ -3,7 +3,7 @@
        xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
     <test name="DeveloperSettingsTest">
         <annotations>
-            <features value="Engagement Cloud module"/>
+            <features value="Dotdigital module"/>
             <stories value="Test dotdigital developer section settings"/>
             <title value="Test all Developer section settings"/>
             <description value="The dotdigital Developer section can be viewed, and its subsections expanded."/>

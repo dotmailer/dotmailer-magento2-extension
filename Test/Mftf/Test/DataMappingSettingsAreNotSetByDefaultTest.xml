@@ -3,7 +3,7 @@
        xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
     <test name="DataMappingSettingsAreNotSetByDefaultTest">
         <annotations>
-            <features value="Engagement Cloud module"/>
+            <features value="Dotdigital module"/>
             <stories value="Configure data mapping"/>
             <title value="Confirm that data mapping settings are not set by default"/>
             <description value="Data Mapping settings in the dotdigital > Data Mapping tab should be empty by default."/>

@@ -102,7 +102,7 @@ class ProgramEnrolmentSaverTest extends TestCase
             ->with($automationModelMock)
             ->willReturn($automationModelMock);
 
-        // Arbitrary ID for dotdigital program
+        // Arbitrary ID for Dotdigital program
         $programId = "123456";
 
         $this->model->save($quoteModel, $storeModel, $programId);

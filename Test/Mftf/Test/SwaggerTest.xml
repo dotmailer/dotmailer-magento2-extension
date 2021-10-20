@@ -3,7 +3,7 @@
        xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
     <test name="SwaggerTest">
         <annotations>
-            <features value="Engagement Cloud module"/>
+            <features value="Dotdigital module"/>
             <stories value="Test API validation"/>
             <title value="Test Swagger Interactive API page"/>
             <description value="Confirm that we haven't broken the /swagger page."/>

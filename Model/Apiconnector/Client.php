@@ -5,7 +5,7 @@ namespace Dotdigitalgroup\Email\Model\Apiconnector;
 use Dotdigitalgroup\Email\Logger\Logger;
 
 /**
- * dotdigital REST V2 api client.
+ * Dotdigital REST V2 api client.
  *
  * @SuppressWarnings(PHPMD.ExcessivePublicCount)
  * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)

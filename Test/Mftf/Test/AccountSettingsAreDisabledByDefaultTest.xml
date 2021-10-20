@@ -3,7 +3,7 @@
        xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
     <test name="AccountSettingsAreDisabledByDefaultTest">
         <annotations>
-            <features value="Engagement Cloud module"/>
+            <features value="Dotdigital module"/>
             <stories value="Configure account settings"/>
             <title value="Confirm that API settings are disabled by default"/>
             <description value="Account settings in the dotdigital > Settings tab should be disabled by default."/>

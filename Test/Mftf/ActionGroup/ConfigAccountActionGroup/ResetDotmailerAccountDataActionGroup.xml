@@ -9,7 +9,7 @@
 	xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/actionGroupSchema.xsd">
     <actionGroup name="ResetDotmailerAccountData">
         <amOnPage url="{{AdminDotmailerAccountsPage.url}}" stepKey="navigateToDotmailerAccountPageReset"/>
-        <comment userInput="Resetting API credentials in dotdigital account settings" stepKey="apiCredentialsEnteredComment"/>
+        <comment userInput="Resetting API credentials in Dotdigital account settings" stepKey="apiCredentialsEnteredComment"/>
         <waitForPageLoad stepKey="waitForPageLoadReset"/>
         <conditionalClick stepKey="expandAccountsTabReset" selector="{{AdminDotmailerAccountsSection.accountsFieldsetToggle}}" dependentSelector="{{AdminDotmailerAccountsSection.accountsFieldset}}" visible="false"/>
         <clearField selector="{{AdminDotmailerAccountsSection.accountsUsernameField}}" stepKey="setApiUserNameReset"/>

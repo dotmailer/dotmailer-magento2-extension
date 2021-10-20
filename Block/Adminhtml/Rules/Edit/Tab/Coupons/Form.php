@@ -79,7 +79,7 @@ EOT;
         if (!($this->helper->isConnectorEnabledAtAnyLevel())) {
             $commentField['after_element_html'] = <<<EOT
 <small id="ddg-notice_coupon-builder-disabled">
-An active Engagement Cloud account is required to use this feature.
+An active Dotdigital account is required to use this feature.
 Please enable your account
 <a href="{$this->getUrl('adminhtml/system_config/edit', ['section' => 'connector_api_credentials'])}">here</a>.
 </small>

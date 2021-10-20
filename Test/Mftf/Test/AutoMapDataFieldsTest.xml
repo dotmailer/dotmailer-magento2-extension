@@ -3,7 +3,7 @@
        xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
     <test name="AutoMapDataFieldsTest">
         <annotations>
-            <features value="Engagement Cloud module"/>
+            <features value="Dotdigital module"/>
             <stories value="Configure data mapping"/>
             <title value="Test automatic mapping of data fields"/>
             <description value="The dotdigital:automap CLI command will automatically map Magento data fields to Engagement Cloud data fields."/>
