@@ -23,6 +23,7 @@
         <after>
             <amOnPage url="{{AdminDotmailerDeveloperSettingPage.url}}" stepKey="dotmailerDeveloperSettingsBack"/>
             <waitForPageLoad stepKey="waitForPageLoad4"/>
+            <conditionalClick selector="{{AdminDeveloperSettingsSection.developerIpRestrictionFieldsetToggle}}" dependentSelector="{{AdminDeveloperSettingsSection.developerIpRestrictionFieldset}}" visible="false" stepKey="click"/>
             <grabCookie userInput="beforeIps" stepKey="grabCookie"/>
             <fillField selector="{{AdminDeveloperSettingsSection.developerIpAddresses}}" userInput="{$grabCookie}" stepKey="noIpLimitBack"/>
             <click selector="{{AdminDeveloperSettingsSection.developerSettingSaveButton}}" stepKey="click2"/>
