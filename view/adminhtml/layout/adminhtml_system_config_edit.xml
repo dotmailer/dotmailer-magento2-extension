@@ -3,7 +3,7 @@
       xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
 <head>
     <script src="Dotdigitalgroup_Email::js/daterange.js"/>
-    <script src="Dotdigitalgroup_Email::js/node_modules/colpick/colpick.js"/>
+    <script src="Dotdigitalgroup_Email::js/lib/colpick/colpick.js"/>
     <script src="Dotdigitalgroup_Email::js/colorPickerInit.js"/>
     <script src="Dotdigitalgroup_Email::js/datePickerInit.js"/>
     <script src="Dotdigitalgroup_Email::js/confirm.js"/>
