@@ -5,6 +5,7 @@ namespace Dotdigitalgroup\Email\Block\Helper;
 use Dotdigitalgroup\Email\Helper\Config;
 use Dotdigitalgroup\Email\Helper\Data;
 use Magento\Framework\View\Element\Template\Context;
+use Magento\Store\Model\StoreManagerInterface;
 
 /**
  * Font block
@@ -19,17 +20,24 @@ class Font extends \Magento\Framework\View\Element\Template
     public $helper;
 
     /**
-     * Font constructor.
-     *
+     * @var int
+     */
+    private $websiteId;
+
+    /**
      * @param Context $context
      * @param Data $helper
+     * @param StoreManagerInterface $storeManager
      * @param array $data
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function __construct(
         Context $context,
         Data $helper,
+        StoreManagerInterface $storeManager,
         array $data = []
     ) {
+        $this->websiteId = $storeManager->getStore()->getWebsiteId();
         $this->helper = $helper;
         parent::__construct($context, $data);
     }
@@ -42,7 +50,8 @@ class Font extends \Magento\Framework\View\Element\Template
     public function getEscapedFontFamilyForCoupon()
     {
         $rawFont = $this->helper->getWebsiteConfig(
-            Config::XML_PATH_CONNECTOR_DYNAMIC_COUPON_FONT
+            Config::XML_PATH_CONNECTOR_DYNAMIC_COUPON_FONT,
+            $this->websiteId
         );
         return $this->getSanitisedFont($rawFont);
     }
@@ -76,35 +85,80 @@ class Font extends \Magento\Framework\View\Element\Template
      */
     public function getDynamicStyles()
     {
-        $rawDocFont = $this->helper->getConfigValue(Config::XML_PATH_CONNECTOR_DYNAMIC_DOC_FONT);
+        $rawDocFont = $this->helper->getWebsiteConfig(
+            Config::XML_PATH_CONNECTOR_DYNAMIC_DOC_FONT,
+            $this->websiteId
+        );
         return [
             'nameStyle' => explode(
                 ',',
-                $this->helper->getConfigValue(Config::XML_PATH_CONNECTOR_DYNAMIC_NAME_STYLE)
+                $this->helper->getWebsiteConfig(
+                    Config::XML_PATH_CONNECTOR_DYNAMIC_NAME_STYLE,
+                    $this->websiteId
+                )
             ),
             'priceStyle' => explode(
                 ',',
-                $this->helper->getConfigValue(Config::XML_PATH_CONNECTOR_DYNAMIC_PRICE_STYLE)
+                $this->helper->getWebsiteConfig(
+                    Config::XML_PATH_CONNECTOR_DYNAMIC_PRICE_STYLE,
+                    $this->websiteId
+                )
             ),
             'linkStyle' => explode(
                 ',',
-                $this->helper->getConfigValue(Config::XML_PATH_CONNECTOR_DYNAMIC_LINK_STYLE)
+                $this->helper->getWebsiteConfig(
+                    Config::XML_PATH_CONNECTOR_DYNAMIC_LINK_STYLE,
+                    $this->websiteId
+                )
             ),
             'otherStyle' => explode(
                 ',',
-                $this->helper->getConfigValue(Config::XML_PATH_CONNECTOR_DYNAMIC_OTHER_STYLE)
+                $this->helper->getWebsiteConfig(
+                    Config::XML_PATH_CONNECTOR_DYNAMIC_OTHER_STYLE,
+                    $this->websiteId
+                )
             ),
-            'nameColor' => $this->helper->getConfigValue(Config::XML_PATH_CONNECTOR_DYNAMIC_NAME_COLOR),
-            'fontSize' => $this->helper->getConfigValue(Config::XML_PATH_CONNECTOR_DYNAMIC_NAME_FONT_SIZE),
-            'priceColor' => $this->helper->getConfigValue(Config::XML_PATH_CONNECTOR_DYNAMIC_PRICE_COLOR),
-            'priceFontSize' => $this->helper->getConfigValue(Config::XML_PATH_CONNECTOR_DYNAMIC_PRICE_FONT_SIZE),
-            'urlColor' => $this->helper->getConfigValue(Config::XML_PATH_CONNECTOR_DYNAMIC_LINK_COLOR),
-            'urlFontSize' => $this->helper->getConfigValue(Config::XML_PATH_CONNECTOR_DYNAMIC_LINK_FONT_SIZE),
-            'otherColor' => $this->helper->getConfigValue(Config::XML_PATH_CONNECTOR_DYNAMIC_OTHER_COLOR),
-            'otherFontSize' => $this->helper->getConfigValue(Config::XML_PATH_CONNECTOR_DYNAMIC_OTHER_FONT_SIZE),
+            'nameColor' => $this->helper->getWebsiteConfig(
+                Config::XML_PATH_CONNECTOR_DYNAMIC_NAME_COLOR,
+                $this->websiteId
+            ),
+            'fontSize' => $this->helper->getWebsiteConfig(
+                Config::XML_PATH_CONNECTOR_DYNAMIC_NAME_FONT_SIZE,
+                $this->websiteId
+            ),
+            'priceColor' => $this->helper->getWebsiteConfig(
+                Config::XML_PATH_CONNECTOR_DYNAMIC_PRICE_COLOR,
+                $this->websiteId
+            ),
+            'priceFontSize' => $this->helper->getWebsiteConfig(
+                Config::XML_PATH_CONNECTOR_DYNAMIC_PRICE_FONT_SIZE,
+                $this->websiteId
+            ),
+            'urlColor' => $this->helper->getWebsiteConfig(
+                Config::XML_PATH_CONNECTOR_DYNAMIC_LINK_COLOR,
+                $this->websiteId
+            ),
+            'urlFontSize' => $this->helper->getWebsiteConfig(
+                Config::XML_PATH_CONNECTOR_DYNAMIC_LINK_FONT_SIZE,
+                $this->websiteId
+            ),
+            'otherColor' => $this->helper->getWebsiteConfig(
+                Config::XML_PATH_CONNECTOR_DYNAMIC_OTHER_COLOR,
+                $this->websiteId
+            ),
+            'otherFontSize' => $this->helper->getWebsiteConfig(
+                Config::XML_PATH_CONNECTOR_DYNAMIC_OTHER_FONT_SIZE,
+                $this->websiteId
+            ),
             'docFont' => $this->getSanitisedFont($rawDocFont),
-            'docBackgroundColor' => $this->helper->getConfigValue(Config::XML_PATH_CONNECTOR_DYNAMIC_DOC_BG_COLOR),
-            'dynamicStyling' => $this->helper->getConfigValue(Config::XML_PATH_CONNECTOR_DYNAMIC_STYLING),
+            'docBackgroundColor' => $this->helper->getWebsiteConfig(
+                Config::XML_PATH_CONNECTOR_DYNAMIC_DOC_BG_COLOR,
+                $this->websiteId
+            ),
+            'dynamicStyling' => $this->helper->getWebsiteConfig(
+                Config::XML_PATH_CONNECTOR_DYNAMIC_STYLING,
+                $this->websiteId
+            ),
         ];
     }
 }
