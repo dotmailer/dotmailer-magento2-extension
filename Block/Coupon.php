@@ -6,8 +6,9 @@ use Dotdigitalgroup\Email\Helper\Config;
 use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Model\SalesRule\DotdigitalCouponRequestProcessor;
 use Dotdigitalgroup\Email\Model\SalesRule\DotdigitalCouponRequestProcessorFactory;
-use Magento\Framework\View\Element\Template\Context;
 use Dotdigitalgroup\Email\Block\Helper\Font;
+use Magento\Framework\View\Element\Template\Context;
+use Magento\Store\Model\StoreManagerInterface;
 
 /**
  * Coupon block
@@ -42,24 +43,31 @@ class Coupon extends \Magento\Framework\View\Element\Template
     private $couponCode;
 
     /**
-     * Coupon constructor.
-     *
+     * @var int
+     */
+    private $websiteId;
+
+    /**
      * @param Context $context
      * @param Data $helper
      * @param DotdigitalCouponRequestProcessorFactory $dotdigitalCouponRequestProcessorFactory
      * @param Font $font
+     * @param StoreManagerInterface $storeManager
      * @param array $data
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function __construct(
         Context $context,
         Data $helper,
         DotdigitalCouponRequestProcessorFactory $dotdigitalCouponRequestProcessorFactory,
         Font $font,
+        StoreManagerInterface $storeManager,
         array $data = []
     ) {
         $this->helper = $helper;
         $this->dotdigitalCouponRequestProcessorFactory = $dotdigitalCouponRequestProcessorFactory;
         $this->font = $font;
+        $this->websiteId = $storeManager->getStore()->getWebsiteId();
         parent::__construct($context, $data);
     }
 
@@ -105,7 +113,10 @@ class Coupon extends \Magento\Framework\View\Element\Template
     {
         return explode(
             ',',
-            $this->helper->getWebsiteConfig(Config::XML_PATH_CONNECTOR_DYNAMIC_COUPON_STYLE)
+            $this->helper->getWebsiteConfig(
+                Config::XML_PATH_CONNECTOR_DYNAMIC_COUPON_STYLE,
+                $this->websiteId
+            )
         );
     }
 
@@ -117,7 +128,8 @@ class Coupon extends \Magento\Framework\View\Element\Template
     public function getCouponColor()
     {
         return $this->helper->getWebsiteConfig(
-            Config::XML_PATH_CONNECTOR_DYNAMIC_COUPON_COLOR
+            Config::XML_PATH_CONNECTOR_DYNAMIC_COUPON_COLOR,
+            $this->websiteId
         );
     }
 
@@ -129,7 +141,8 @@ class Coupon extends \Magento\Framework\View\Element\Template
     public function getFontSize()
     {
         return $this->helper->getWebsiteConfig(
-            Config::XML_PATH_CONNECTOR_DYNAMIC_COUPON_FONT_SIZE
+            Config::XML_PATH_CONNECTOR_DYNAMIC_COUPON_FONT_SIZE,
+            $this->websiteId
         );
     }
 
@@ -149,7 +162,8 @@ class Coupon extends \Magento\Framework\View\Element\Template
     public function getBackgroundColor()
     {
         return $this->helper->getWebsiteConfig(
-            Config::XML_PATH_CONNECTOR_DYNAMIC_COUPON_BG_COLOR
+            Config::XML_PATH_CONNECTOR_DYNAMIC_COUPON_BG_COLOR,
+            $this->websiteId
         );
     }
 }
