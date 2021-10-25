@@ -48,16 +48,16 @@ class SetDefaultStoreIdForEmailAutomations implements DataPatchInterface
                 ->getConnection()
                 ->select()
                 ->from(
-                    $emailAutomationTable,
+                    $emailAutomationTable
                 )
                 ->where('enrolment_status IN (?)', [StatusInterface::PENDING, StatusInterface::CONFIRMED])
+                ->where('store_id IS NULL')
                 ->limit(100);
 
             $automations = $this->moduleDataSetup->getConnection()->fetchAll($query);
 
             $bulkUpdateByWebsite = [];
             foreach ($automations as $automation) {
-
                 if (array_key_exists($automation["website_id"], $bulkUpdateByWebsite)) {
                     continue;
                 }
