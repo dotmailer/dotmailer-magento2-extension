@@ -19,6 +19,18 @@ You are welcome to contribute to Dotdigital for Magento! You can either:
 - Fix a bug: please clone and use our [Develop branch](https://github.com/dotmailer/dotmailer-magento2-extension/tree/develop) to submit your Pull Request
 - Request a feature on our [roadmap](https://roadmap.dotdigital.com)
 
+# 4.13.6
+
+##### Improvements
+- Menus and ACL resources are now translatable. [External contribution](https://github.com/dotmailer/dotmailer-magento2-extension/pull/574)
+- For data migrations using `dotdigital:migrate`, we now won’t override an existing dynamic content passcode.
+
+##### Bug fixes
+- The Dotdigital Coupon URL Builder is now useable if Dotdigital is enabled at any level. 
+- We fixed a bug that could affect merchants changing their Dotdigital API region.
+- Dynamic content styling now uses correctly-scoped style values.
+- We are merging child product categories with parent product categories for line items in order insight data.
+
 # 4.14.0-RC2
 
 ###### What's new
