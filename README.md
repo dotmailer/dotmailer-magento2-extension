@@ -19,6 +19,18 @@ You are welcome to contribute to Dotdigital for Magento! You can either:
 - Fix a bug: please clone and use our [Develop branch](https://github.com/dotmailer/dotmailer-magento2-extension/tree/develop) to submit your Pull Request
 - Request a feature on our [roadmap](https://roadmap.dotdigital.com)
 
+# 4.14.0-RC3
+
+##### What's new
+- Guest abandoned baskets are now restored when a guest clicks the ‘Take me to my basket’ link.
+
+##### Improvements
+- We've updated the naming of Dotdigital throughout the connector.
+- Our third-party ‘Color Picker’ JS file has been moved from `node_modules` to `lib`.
+
+##### Bug fixes
+- We fixed a bug with the `SetDefaultStoreIdForEmailAutomations` patch which could cause an infinite loop when updating rows.
+
 # 4.13.6
 
 ##### Improvements
