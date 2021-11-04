@@ -1647,7 +1647,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             return '';
         }
 
-        preg_match("/https:\/\/(.*)api.dotmailer.com/", $apiEndpoint, $matches);
+        preg_match("/https:\/\/(.*)api.(dotmailer|dotdigital).com/", $apiEndpoint, $matches);
         return isset($matches[1]) ? $matches[1] : '';
     }
 
