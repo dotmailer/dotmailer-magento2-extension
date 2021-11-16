@@ -689,19 +689,12 @@ class Rest
 
         switch ($level) {
             case Logger::ERROR:
-                $this->logger->addError($logTitle, $extra);
-                break;
-
             case Logger::WARNING:
-                $this->logger->addWarning($logTitle, $extra);
-                break;
-
             case Logger::DEBUG:
-                $this->logger->addDebug($logTitle, $extra);
+                $this->logger->addRecord($level, $logTitle, $extra);
                 break;
-
             default:
-                $this->logger->addInfo($logTitle, $extra);
+                $this->logger->addRecord(Logger::INFO, $logTitle, $extra);
         }
 
         return $this;
