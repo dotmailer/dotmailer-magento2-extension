@@ -82,9 +82,6 @@ class DataMigrationHelper
     {
         $types = $this->dataMigrationTypeProvider->getEnabledTypes($table);
 
-        // truncate any tables which are about to be updated
-        $this->emptyTables($types);
-
         // loop through types and execute
         foreach ($types as $dataMigration) {
             /** @var AbstractDataMigration $dataMigration */
@@ -123,6 +120,25 @@ class DataMigrationHelper
     }
 
     /**
+     * Truncate relevant tables before running
+     * @param null $table
+     * @return $this
+     */
+    public function emptyTables($table = null)
+    {
+        foreach ($this->dataMigrationTypeProvider->getEnabledTypes($table) as $migrationType) {
+            /** @var AbstractDataMigration $migrationType */
+            $tableName = $this->resourceConnection->getTableName($migrationType->getTableName());
+            $this->resourceConnection->getConnection()->delete($tableName);
+
+            $this->resourceConnection->getConnection()
+                ->query(sprintf('ALTER TABLE %s AUTO_INCREMENT = 1', $tableName));
+        }
+
+        return $this;
+    }
+
+    /**
      * Log actions of each data migration
      * @param AbstractDataMigration $dataMigration
      */
@@ -139,21 +155,6 @@ class DataMigrationHelper
                 get_class($dataMigration),
                 $dataMigration->getRowsAffected()
             ));
-        }
-    }
-
-    /**
-     * Truncate relevant tables before running
-     */
-    private function emptyTables($types)
-    {
-        foreach ($types as $migrationType) {
-            /** @var AbstractDataMigration $migrationType */
-            $tableName = $this->resourceConnection->getTableName($migrationType->getTableName());
-            $this->resourceConnection->getConnection()->delete($tableName);
-
-            $this->resourceConnection->getConnection()
-                ->query(sprintf('ALTER TABLE %s AUTO_INCREMENT = 1', $tableName));
         }
     }
 

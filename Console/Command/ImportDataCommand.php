@@ -68,7 +68,7 @@ class ImportDataCommand extends Command
         $start = microtime(true);
         $output->writeln(__('Starting data import')->getText());
 
-        $this->migrateData->setOutputInterface($output)->run($requestedTable);
+        $this->migrateData->setOutputInterface($output)->emptyTables($requestedTable)->run($requestedTable);
 
         $output->writeln(__(sprintf('Import complete in %s', round(microtime(true) - $start, 2)))->getText());
     }
