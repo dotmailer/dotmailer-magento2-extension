@@ -19,6 +19,17 @@ You are welcome to contribute to Dotdigital for Magento! You can either:
 - Fix a bug: please clone and use our [Develop branch](https://github.com/dotmailer/dotmailer-magento2-extension/tree/develop) to submit your Pull Request
 - Request a feature on our [roadmap](https://roadmap.dotdigital.com)
 
+# 4.14.0-RC4
+
+##### What's new
+- Our module has been renamed `dotdigital/dotdigital-magento2-extension`.
+
+##### Improvements
+- Our `InstallData` and `UpgradeData` scripts have now been removed and replaced with data patches.
+- We've updated a regex pattern to allow our extension to use ‘dotdigital.com’ API endpoints in the future.
+- We removed some deprecated Logger methods.
+- We removed a redundant `curl_setopt` line.
+
 # 4.13.7
 
 ##### Bug fixes
