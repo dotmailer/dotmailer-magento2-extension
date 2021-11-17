@@ -496,7 +496,6 @@ class Rest
     {
         if ($this->apiUsername !== null && $this->apiPassword !== null) {
             // @codingStandardsIgnoreStart
-            curl_setopt($ch, CURLAUTH_BASIC, CURLAUTH_DIGEST);
             curl_setopt(
                 $ch,
                 CURLOPT_USERPWD,
