@@ -1,8 +1,8 @@
 {
-  "name": "dotmailer/dotmailer-magento2-extension",
+  "name": "dotdigital/dotdigital-magento2-extension",
   "description": "Dotdigital for Magento 2",
   "type": "magento2-module",
-  "version": "4.13.7",
+  "version": "4.14.0-RC4",
   "license": "MIT",
   "repositories": [
     {
@@ -10,6 +10,9 @@
       "url": "https://repo.magento.com/"
     }
   ],
+  "replace": {
+    "dotmailer/dotmailer-magento2-extension": "*"
+  },
   "require": {
     "php": "^7.1",
     "magento/framework": ">=101 <104",
