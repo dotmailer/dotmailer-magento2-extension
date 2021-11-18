@@ -27,6 +27,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     const REST_TRANSACTIONAL_DATA = '/v2/contacts/transactional-data/';
     const REST_CAMPAIGN_SEND = '/v2/campaigns/send';
     const REST_CONTACTS_SUPPRESSED_SINCE = '/v2/contacts/suppressed-since/';
+    const REST_CONTACTS_MODIFIED_SINCE = '/v2/contacts/modified-since/';
     const REST_DATA_FIELDS_CAMPAIGNS = '/v2/campaigns';
     const REST_CONTACTS_RESUBSCRIBE = '/v2/contacts/resubscribe';
     const REST_CAMPAIGN_FROM_ADDRESS_LIST = '/v2/custom-from-addresses';
@@ -747,6 +748,51 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
             $this->addClientLog('Error getting suppressed contacts')
                 ->addClientLog('Suppressed contacts request parameters', [
                     'since_date' => $dateString,
+                    'select' => $select,
+                    'skip' => $skip,
+                ], Logger::DEBUG);
+        }
+
+        return $response;
+    }
+
+    /**
+     * Gets a list of contacts modified in your account since a given date.
+     *
+     * @param string $dateString An ISO8601 date.
+     * @param string $withFullData Retrieve full contact data fields.
+     * @param int $select
+     * @param int $skip
+     *
+     * @return array|object
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function getContactsModifiedSinceDate(
+        $dateString,
+        $withFullData = 'false',
+        $select = 1000,
+        $skip = 0
+    ) {
+        $url = sprintf(
+            '%s%s%s?withFullData=%s&select=%s&skip=%s',
+            $this->getApiEndpoint(),
+            self::REST_CONTACTS_MODIFIED_SINCE,
+            $dateString,
+            $withFullData,
+            $select,
+            $skip
+        );
+
+        $this->setUrl($url)
+            ->setVerb('GET');
+
+        $response = $this->execute();
+
+        if (isset($response->message)) {
+            $this->addClientLog('Error getting modified contacts')
+                ->addClientLog('Modified contacts request parameters', [
+                    'since_date' => $dateString,
+                    'withFullData' => $withFullData,
                     'select' => $select,
                     'skip' => $skip,
                 ], Logger::DEBUG);

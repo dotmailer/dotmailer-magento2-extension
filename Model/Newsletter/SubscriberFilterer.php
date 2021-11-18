@@ -2,19 +2,27 @@
 
 namespace Dotdigitalgroup\Email\Model\Newsletter;
 
+use Magento\Newsletter\Model\ResourceModel\Subscriber\Collection;
+use Magento\Newsletter\Model\ResourceModel\Subscriber\CollectionFactory;
+
+/**
+ * Class SubscriberFilterer
+ *
+ * This class is for retrieving or filtering subscriber collections.
+ */
 class SubscriberFilterer
 {
     /**
-     * @var \Magento\Newsletter\Model\ResourceModel\Subscriber\CollectionFactory
+     * @var CollectionFactory
      */
     private $subscriberCollectionFactory;
 
     /**
      * SubscriberFilterer constructor.
-     * @param \Magento\Newsletter\Model\ResourceModel\Subscriber\CollectionFactory $subscriberCollectionFactory
+     * @param CollectionFactory $subscriberCollectionFactory
      */
     public function __construct(
-        \Magento\Newsletter\Model\ResourceModel\Subscriber\CollectionFactory $subscriberCollectionFactory
+        CollectionFactory $subscriberCollectionFactory
     ) {
         $this->subscriberCollectionFactory = $subscriberCollectionFactory;
     }
@@ -43,5 +51,20 @@ class SubscriberFilterer
         }
 
         return $collection;
+    }
+
+    /**
+     * @param array $emails
+     * @param array $storeIds
+     * @param int $status
+     *
+     * @return Collection
+     */
+    public function getSubscribersByEmailsStoresAndStatus(array $emails, array $storeIds, $status)
+    {
+        return $this->subscriberCollectionFactory->create()
+            ->addFieldToFilter('subscriber_email', ['in' => $emails])
+            ->addFieldToFilter('store_id', ['in' => $storeIds])
+            ->addFieldToFilter('subscriber_status', $status);
     }
 }

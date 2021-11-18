@@ -4,6 +4,7 @@ namespace Dotdigitalgroup\Email\Model\ResourceModel;
 
 use Dotdigitalgroup\Email\Helper\Config;
 use Dotdigitalgroup\Email\Setup\SchemaInterface as Schema;
+use Magento\Newsletter\Model\Subscriber;
 use Magento\Store\Api\Data\WebsiteInterface;
 
 class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
@@ -180,6 +181,61 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         );
 
         return $num;
+    }
+
+    /**
+     * Subscribe a batch of contacts in email_contact/newsletter table,
+     * supplying store ids to restrict the scope.
+     *
+     * @param array $storeContacts
+     *
+     * @return int
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function subscribeByEmailAndStore(array $storeContacts)
+    {
+        if (!empty($storeContacts) && is_array($storeContacts)) {
+            $write = $this->getConnection();
+            $now = (new \DateTime('now', new \DateTimeZone('UTC')))
+                ->format(\DateTime::ATOM);
+            $updated = 0;
+
+            foreach ($storeContacts as $storeId => $emails) {
+                // resubscribe to email_contact
+                $ecUpdated = $write->update(
+                    $this->getMainTable(),
+                    [
+                        'is_subscriber' => '1',
+                        'subscriber_status' => Subscriber::STATUS_SUBSCRIBED,
+                        'suppressed' => '0',
+                        'last_subscribed_at' => $now,
+                    ],
+                    [
+                        "email IN (?)" => $emails,
+                        "store_id = (?)" => $storeId
+                    ]
+                );
+
+                // resubscribe to newsletter_subscriber
+                $write->update(
+                    $this->getTable('newsletter_subscriber'),
+                    [
+                        'subscriber_status' => Subscriber::STATUS_SUBSCRIBED,
+                        'change_status_at' => $now,
+                    ],
+                    [
+                        "subscriber_email IN (?)" => $emails,
+                        "store_id = (?)" => $storeId
+                    ]
+                );
+
+                $updated += $ecUpdated;
+            }
+
+            return $updated;
+        }
+
+        return 0;
     }
 
     /**
