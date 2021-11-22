@@ -80,7 +80,7 @@ class TransportPlugin
         }
 
         try {
-            $this->smtpTransporter->send($subject, $storeId);
+            $this->smtpTransportAdapter->send($subject, $storeId);
         } catch (\Exception $e) {
             if (in_array(str_replace("\r\n", "", $e->getMessage()), self::EXCLUDED_ERRORS)) {
                 $to = $subject->getMessage()->getTo();
