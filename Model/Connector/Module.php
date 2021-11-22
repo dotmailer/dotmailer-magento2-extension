@@ -2,7 +2,8 @@
 
 namespace Dotdigitalgroup\Email\Model\Connector;
 
-use Magento\Framework\Module\ModuleListInterface;
+use Magento\Framework\Component\ComponentRegistrarInterface;
+use Magento\Framework\Filesystem\Directory\ReadFactory;
 
 class Module
 {
@@ -10,18 +11,27 @@ class Module
     const MODULE_DESCRIPTION = 'Dotdigital for Magento 2';
 
     /**
-     * @var ModuleListInterface
+     * @var ComponentRegistrarInterface
      */
-    private $fullModuleList;
+    private $componentRegistrar;
+
+    /**
+     * @var ReadFactory
+     */
+    protected $readFactory;
 
     /**
      * Module constructor.
-     * @param ModuleListInterface $moduleListInterface
+     *
+     * @param ComponentRegistrarInterface $componentRegistrar
+     * @param ReadFactory $readFactory
      */
     public function __construct(
-        ModuleListInterface $moduleListInterface
+        ComponentRegistrarInterface $componentRegistrar,
+        ReadFactory $readFactory
     ) {
-        $this->fullModuleList = $moduleListInterface;
+        $this->componentRegistrar = $componentRegistrar;
+        $this->readFactory = $readFactory;
     }
 
     /**
@@ -34,9 +44,28 @@ class Module
             $modules,
             [
                 'name' => self::MODULE_DESCRIPTION,
-                'version' => $this->fullModuleList->getOne(self::MODULE_NAME)['setup_version']
+                'version' => $this->getModuleVersion(self::MODULE_NAME)
             ]
         );
         return $modules;
+    }
+
+    /**
+     * Get module composer version
+     *
+     * @param string $moduleName
+     * @return \Magento\Framework\Phrase|string|void
+     */
+    public function getModuleVersion($moduleName)
+    {
+        $path = $this->componentRegistrar->getPath(
+            \Magento\Framework\Component\ComponentRegistrar::MODULE,
+            $moduleName
+        );
+        $directoryRead = $this->readFactory->create($path);
+        $composerJsonData = $directoryRead->readFile('composer.json');
+        $data = json_decode($composerJsonData);
+
+        return !empty($data->version) ? $data->version : __('Read error!');
     }
 }
