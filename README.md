@@ -19,6 +19,11 @@ You are welcome to contribute to Engagement Cloud for Magento! You can either:
 - Fix a bug: please clone and use our [Develop branch](https://github.com/dotmailer/dotmailer-magento2-extension/tree/develop) to submit your Pull Request
 - Request a feature on our [roadmap](https://roadmap.dotdigital.com)
 
+# 4.13.8
+
+##### Bug fixes
+- We patched a regression in 4.13.7, which caused an exception in the `TransportPlugin`.
+
 # 4.13.7
 
 ##### Bug fixes
