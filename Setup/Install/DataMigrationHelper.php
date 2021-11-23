@@ -88,11 +88,6 @@ class DataMigrationHelper
             $dataMigration->execute();
             $this->logActions($dataMigration);
         }
-
-        /**
-         * Save config value
-         */
-        $this->generateAndSaveCode();
     }
 
     /**
@@ -139,6 +134,27 @@ class DataMigrationHelper
     }
 
     /**
+     * Generate a random string and save in config
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function generateAndSaveCode()
+    {
+        $passcode = $this->scopeConfig->getValue(
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_CONTENT_PASSCODE
+        );
+
+        if (!$passcode) {
+            $code = $this->randomMath->getRandomString(32);
+            $this->config->saveConfig(
+                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_CONTENT_PASSCODE,
+                $code,
+                'default',
+                '0'
+            );
+        }
+    }
+
+    /**
      * Log actions of each data migration
      * @param AbstractDataMigration $dataMigration
      */
@@ -155,27 +171,6 @@ class DataMigrationHelper
                 get_class($dataMigration),
                 $dataMigration->getRowsAffected()
             ));
-        }
-    }
-
-    /**
-     * Generate a random string and save in config
-     * @throws \Magento\Framework\Exception\LocalizedException
-     */
-    private function generateAndSaveCode()
-    {
-        $passcode = $this->scopeConfig->getValue(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_CONTENT_PASSCODE
-        );
-
-        if (!$passcode) {
-            $code = $this->randomMath->getRandomString(32);
-            $this->config->saveConfig(
-                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_CONTENT_PASSCODE,
-                $code,
-                'default',
-                '0'
-            );
         }
     }
 }

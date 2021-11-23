@@ -56,6 +56,7 @@ class MigrateData implements DataPatchInterface
                 $this->migrateData->run($tableFromAvailableType);
             }
         }
+        $this->migrateData->generateAndSaveCode();
 
         $this->moduleDataSetup->getConnection()->endSetup();
     }

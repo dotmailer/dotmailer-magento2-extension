@@ -70,6 +70,10 @@ class ImportDataCommand extends Command
 
         $this->migrateData->setOutputInterface($output)->emptyTables($requestedTable)->run($requestedTable);
 
+        if (!$requestedTable) {
+            $this->migrateData->generateAndSaveCode();
+        }
+
         $output->writeln(__(sprintf('Import complete in %s', round(microtime(true) - $start, 2)))->getText());
     }
 }
