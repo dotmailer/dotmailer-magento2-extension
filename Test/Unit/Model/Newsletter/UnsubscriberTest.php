@@ -5,12 +5,12 @@ namespace Dotdigitalgroup\Email\Test\Unit\Model\Newsletter;
 use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Model\Apiconnector\Client;
 use Dotdigitalgroup\Email\Model\Connector\AccountHandler;
-use Dotdigitalgroup\Email\Model\DateIntervalFactory;
 use Dotdigitalgroup\Email\Model\Newsletter\Unsubscriber;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact\Collection as ContactCollection;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory as ContactCollectionFactory;
-use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
+use Magento\Framework\Stdlib\DateTime\DateTimeFactory;
+use Magento\Framework\Stdlib\DateTime\TimezoneInterfaceFactory;
 use Magento\Store\Api\StoreWebsiteRelationInterface;
 use PHPUnit\Framework\TestCase;
 
@@ -32,14 +32,14 @@ class UnsubscriberTest extends TestCase
     private $contactCollectionFactoryMock;
 
     /**
-     * @var TimezoneInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var DateTimeFactory|\PHPUnit_Framework_MockObject_MockObject
      */
-    private $timezoneMock;
+    private $dateTimeFactoryMock;
 
     /**
-     * @var DateIntervalFactory|\PHPUnit_Framework_MockObject_MockObject
+     * @var TimezoneInterfaceFactory|\PHPUnit_Framework_MockObject_MockObject
      */
-    private $dateIntervalFactoryMock;
+    private $timezoneInterfaceFactoryMock;
 
     /**
      * @var AccountHandler|\PHPUnit_Framework_MockObject_MockObject
@@ -64,8 +64,8 @@ class UnsubscriberTest extends TestCase
         $this->helperMock = $this->createMock(Data::class);
         $this->contactResourceMock = $this->createMock(Contact::class);
         $this->contactCollectionFactoryMock = $this->createMock(ContactCollectionFactory::class);
-        $this->timezoneMock = $this->createMock(TimezoneInterface::class);
-        $this->dateIntervalFactoryMock = $this->createMock(DateIntervalFactory::class);
+        $this->timezoneInterfaceFactoryMock = $this->createMock(TimezoneInterfaceFactory::class);
+        $this->dateTimeFactoryMock = $this->createMock(DateTimeFactory::class);
         $this->accountHandlerMock = $this->createMock(AccountHandler::class);
         $this->storeWebsiteRelationInterfaceMock = $this->createMock(StoreWebsiteRelationInterface::class);
 
@@ -73,8 +73,8 @@ class UnsubscriberTest extends TestCase
             $this->helperMock,
             $this->contactResourceMock,
             $this->contactCollectionFactoryMock,
-            $this->timezoneMock,
-            $this->dateIntervalFactoryMock,
+            $this->dateTimeFactoryMock,
+            $this->timezoneInterfaceFactoryMock,
             $this->accountHandlerMock,
             $this->storeWebsiteRelationInterfaceMock
         );
@@ -90,7 +90,7 @@ class UnsubscriberTest extends TestCase
             ->willReturn($contactCollectionMock);
 
         $contactCollectionMock->expects($this->atLeastOnce())
-            ->method('getContactsWithScopeAndLastSubscribedAtDate')
+            ->method('getSubscribersWithScopeAndLastSubscribedAtDate')
             ->willReturnOnConsecutiveCalls(
                 $this->getLocalContactsWebsiteOne(),
                 $this->getLocalContactsWebsiteOne(),
@@ -116,7 +116,7 @@ class UnsubscriberTest extends TestCase
             ->method('unsubscribeByWebsiteAndStore')
             ->willReturnOnConsecutiveCalls(count($filteredA), count($filteredB));
 
-        $unsubscribes = $this->model->unsubscribe();
+        $unsubscribes = $this->model->unsubscribe(3);
 
         $this->assertEquals(5, $unsubscribes);
     }
@@ -131,7 +131,7 @@ class UnsubscriberTest extends TestCase
             ->willReturn($contactCollectionMock);
 
         $contactCollectionMock->expects($this->atLeastOnce())
-            ->method('getContactsWithScopeAndLastSubscribedAtDate')
+            ->method('getSubscribersWithScopeAndLastSubscribedAtDate')
             ->willReturn($this->getLocalContactsRecentlyResubscribed());
 
         $this->contactResourceMock->expects($this->never())
@@ -166,14 +166,26 @@ class UnsubscriberTest extends TestCase
             ->method('getAPIUsersForECEnabledWebsites')
             ->willReturn($this->getApiUserData());
 
+        $fromTime = '2021-11-18T12:17:47+00:00';
+
         $dateTimeMock = $this->createMock(\DateTime::class);
-        $this->timezoneMock->expects($this->atLeastOnce())
+        $magentoDateTimeMock = $this->createMock(\Magento\Framework\Stdlib\DateTime\DateTime::class);
+        $timezoneInterfaceMock = $this->createMock(\Magento\Framework\Stdlib\DateTime\TimezoneInterface::class);
+        $this->timezoneInterfaceFactoryMock->expects($this->once())
+            ->method('create')
+            ->willReturn($timezoneInterfaceMock);
+        $timezoneInterfaceMock->expects($this->once())
             ->method('date')
             ->willReturn($dateTimeMock);
+        $dateTimeMock->expects($this->once())
+            ->method('sub');
 
-        $dateTimeMock->expects($this->atLeastOnce())
-            ->method('sub')
-            ->willReturn($dateTimeMock);
+        $this->dateTimeFactoryMock->expects($this->once())
+            ->method('create')
+            ->willReturn($magentoDateTimeMock);
+        $magentoDateTimeMock->expects($this->once())
+            ->method('date')
+            ->willReturn($fromTime);
 
         $clientMock = $this->createMock(Client::class);
         $this->helperMock->expects($this->atLeastOnce())

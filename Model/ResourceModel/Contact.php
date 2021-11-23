@@ -209,6 +209,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
                         'subscriber_status' => Subscriber::STATUS_SUBSCRIBED,
                         'suppressed' => '0',
                         'last_subscribed_at' => $now,
+                        'updated_at' => $now
                     ],
                     [
                         "email IN (?)" => $emails,
@@ -251,15 +252,18 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     {
         if (! empty($emails) && is_array($emails)) {
             $write = $this->getConnection();
+            $now = (new \DateTime('now', new \DateTimeZone('UTC')))
+                ->format(\DateTime::ATOM);
 
             //un-subscribe from the email contact table.
             $updated = $write->update(
                 $this->getMainTable(),
                 [
                     'is_subscriber' => $this->expressionFactory->create(["expression" => 'null']),
-                    'subscriber_status' => \Magento\Newsletter\Model\Subscriber::STATUS_UNSUBSCRIBED,
+                    'subscriber_status' => Subscriber::STATUS_UNSUBSCRIBED,
                     'suppressed' => '1',
                     'last_subscribed_at' => $this->expressionFactory->create(['expression' => 'null']),
+                    'updated_at' => $now
                 ],
                 [
                     "email IN (?)" => $emails,
@@ -277,7 +281,10 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 
             $write->update(
                 $this->getTable('newsletter_subscriber'),
-                ['subscriber_status' => \Magento\Newsletter\Model\Subscriber::STATUS_UNSUBSCRIBED],
+                [
+                    'subscriber_status' => Subscriber::STATUS_UNSUBSCRIBED,
+                    'change_status_at' => $now
+                ],
                 $newsletterWhereConditions
             );
 

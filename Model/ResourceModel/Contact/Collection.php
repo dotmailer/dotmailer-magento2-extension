@@ -393,14 +393,14 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     }
 
     /**
-     * Get current contact records to check when they last subscribed.
+     * Get current subscribed contact records to check when they last subscribed.
      *
      * @param array $emails
      * @param array $websiteIds
      *
      * @return array
      */
-    public function getContactsWithScopeAndLastSubscribedAtDate(array $emails, $websiteIds)
+    public function getSubscribersWithScopeAndLastSubscribedAtDate(array $emails, $websiteIds)
     {
         return $this
             ->addFieldToSelect([
@@ -411,6 +411,11 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
             ])
             ->addFieldToFilter('email', ['in' => $emails])
             ->addFieldToFilter('website_id', ['in' => $websiteIds])
+            ->addFieldToFilter('is_subscriber', 1)
+            ->addFieldToFilter(
+                'subscriber_status',
+                \Magento\Newsletter\Model\Subscriber::STATUS_SUBSCRIBED
+            )
             ->getData();
     }
 }

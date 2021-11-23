@@ -40,4 +40,12 @@
             <schedule>*/5 * * * *</schedule>
         </job>
     </group>
+    <group id="ddg_automation_subs">
+        <job name="ddg_automation_unsubscribe" instance="Dotdigitalgroup\Email\Model\Cron" method="unsubscribe">
+            <schedule>*/15 * * * *</schedule>
+        </job>
+        <job name="ddg_automation_resubscribe" instance="Dotdigitalgroup\Email\Model\Cron" method="resubscribe">
+            <schedule>*/15 * * * *</schedule>
+        </job>
+    </group>
 </config>

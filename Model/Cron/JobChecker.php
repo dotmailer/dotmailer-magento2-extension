@@ -45,4 +45,21 @@ class JobChecker
 
         return false;
     }
+
+    /**
+     * @param string $jobCode
+     *
+     * @return string
+     */
+    public function getLastJobFinishedAt($jobCode)
+    {
+        /** @var \Magento\Cron\Model\Schedule $lastSuccessfulJob */
+        $lastSuccessfulJob = $this->cronCollection->create()
+            ->addFieldToFilter('job_code', $jobCode)
+            ->addFieldToFilter('status', 'success')
+            ->setOrder('finished_at', 'desc')
+            ->getFirstItem();
+
+        return $lastSuccessfulJob->getFinishedAt();
+    }
 }

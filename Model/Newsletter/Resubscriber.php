@@ -5,12 +5,18 @@ namespace Dotdigitalgroup\Email\Model\Newsletter;
 use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Model\Connector\AccountHandler;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact;
-use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
+use Magento\Framework\DataObject;
+use Magento\Framework\Stdlib\DateTime\DateTimeFactory;
+use Magento\Framework\Stdlib\DateTime\TimezoneInterfaceFactory;
 use Magento\Newsletter\Model\ResourceModel\Subscriber\Collection as SubscriberCollection;
 use Magento\Store\Api\StoreWebsiteRelationInterface;
 
-class Resubscriber
+class Resubscriber extends DataObject
 {
+    use SetsCronFromTime;
+
+    const BATCH_SIZE = 1000;
+
     /**
      * @var Data
      */
@@ -22,9 +28,14 @@ class Resubscriber
     private $contactResource;
 
     /**
-     * @var TimezoneInterface
+     * @var DateTimeFactory
      */
-    private $timezone;
+    private $dateTimeFactory;
+
+    /**
+     * @var TimezoneInterfaceFactory
+     */
+    private $timezoneInterfaceFactory;
 
     /**
      * @var AccountHandler
@@ -44,33 +55,41 @@ class Resubscriber
     /**
      * @param Data $helper
      * @param Contact $contactResource
-     * @param TimezoneInterface $timezone
+     * @param DateTimeFactory $dateTimeFactory
+     * @param TimezoneInterfaceFactory $timezoneInterfaceFactory
      * @param AccountHandler $accountHandler
      * @param StoreWebsiteRelationInterface $storeWebsiteRelation
      * @param SubscriberFilterer $subscriberFilterer
+     * @param array $data
      */
     public function __construct(
         Data $helper,
         Contact $contactResource,
-        TimezoneInterface $timezone,
+        DateTimeFactory $dateTimeFactory,
+        TimezoneInterfaceFactory $timezoneInterfaceFactory,
         AccountHandler $accountHandler,
         StoreWebsiteRelationInterface $storeWebsiteRelation,
-        SubscriberFilterer $subscriberFilterer
+        SubscriberFilterer $subscriberFilterer,
+        array $data = []
     ) {
         $this->helper = $helper;
         $this->contactResource = $contactResource;
-        $this->timezone = $timezone;
+        $this->dateTimeFactory = $dateTimeFactory;
+        $this->timezoneInterfaceFactory = $timezoneInterfaceFactory;
         $this->accountHandler = $accountHandler;
         $this->storeWebsiteRelation = $storeWebsiteRelation;
         $this->subscriberFilterer = $subscriberFilterer;
+        parent::__construct($data);
     }
 
     /**
      * Subscribe by enabled account.
      *
+     * @param int $batchSize This argument enables unit testing of the while loop.
+     *
      * @return int
      */
-    public function subscribe()
+    public function subscribe($batchSize = self::BATCH_SIZE)
     {
         $resubscribes = 0;
 
@@ -80,7 +99,7 @@ class Resubscriber
         }
 
         foreach ($activeApiUsers as $apiUser) {
-            $resubscribes += $this->batchProcessModifiedContacts($apiUser['websites']);
+            $resubscribes += $this->batchProcessModifiedContacts($apiUser['websites'], $batchSize);
         }
 
         return $resubscribes;
@@ -90,22 +109,22 @@ class Resubscriber
      * Loop through modified Dotdigital contacts and process resubscribes.
      *
      * @param array $websiteIds
-     * @param string $intervalSpec
+     *
+     * @param int $batchSize
+     *
      * @return int
+     * @throws \Exception
      */
-    private function batchProcessModifiedContacts($websiteIds, $intervalSpec = 'PT24H')
+    private function batchProcessModifiedContacts($websiteIds, $batchSize)
     {
         $skip = 0;
-        $batchSize = 1000;
         $resubscribes = 0;
-        $date = $this->timezone->date()->sub(new \DateInterval($intervalSpec));
-        $dateString = $date->format(\DateTime::ATOM);
         $client = $this->helper->getWebsiteApiClient($websiteIds[0]);
 
         do {
             try {
                 $apiContacts = $client->getContactsModifiedSinceDate(
-                    $dateString,
+                    $this->getFromTime(),
                     'true',
                     $batchSize,
                     $skip
@@ -118,7 +137,7 @@ class Resubscriber
                 break;
             }
 
-            $recentlySubscribedContacts = $this->filterModifiedContacts($apiContacts, $dateString);
+            $recentlySubscribedContacts = $this->filterModifiedContacts($apiContacts);
 
             if (count($recentlySubscribedContacts) === 0) {
                 $skip += $batchSize;
@@ -155,14 +174,18 @@ class Resubscriber
      * Trim the set to include only contacts with a recent subscribed date.
      *
      * @param Object[] $contacts
-     * @param string $date
      *
      * @return array
      * @throws \Exception
      */
-    private function filterModifiedContacts($contacts, $date)
+    private function filterModifiedContacts($contacts)
     {
         $recentlySubscribedContacts = [];
+
+        $utcFromTime = new \DateTime(
+            $this->getFromTime(),
+            new \DateTimeZone('UTC')
+        );
 
         foreach ($contacts as $contact) {
             $lastSubscribedAt = $this->getLastSubscribedAt($contact->dataFields);
@@ -170,17 +193,12 @@ class Resubscriber
                 continue;
             }
 
-            // convert both timestamps to DateTime
             $utcLastSubscribedAt = new \DateTime(
                 $lastSubscribedAt,
                 new \DateTimeZone('UTC')
             );
-            $utcDateString = new \DateTime(
-                $date,
-                new \DateTimeZone('UTC')
-            );
 
-            if ($utcLastSubscribedAt < $utcDateString) {
+            if ($utcLastSubscribedAt < $utcFromTime) {
                 continue;
             }
 
