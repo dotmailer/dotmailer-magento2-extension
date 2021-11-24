@@ -6,7 +6,9 @@ Dotdigital for Magento 2
 ## Requirements
 
 - PHP 7.1+
-- Magento 2.2+ (Magento 2.1 is compatible up to version 4.2.0)
+- Magento 2.3+ 
+    - Magento 2.1.x is compatible up to version 4.2.0-p1
+    - Magento 2.2.x is compatible up to version 4.13.x
 
 ## Support
 
@@ -18,6 +20,16 @@ You are welcome to contribute to Dotdigital for Magento! You can either:
 - Report a bug: create a [GitHub issue](https://github.com/dotmailer/dotmailer-magento2-extension/issues/new) including description, repro steps, Magento and extension version numbers
 - Fix a bug: please clone and use our [Develop branch](https://github.com/dotmailer/dotmailer-magento2-extension/tree/develop) to submit your Pull Request
 - Request a feature on our [roadmap](https://roadmap.dotdigital.com)
+
+# 4.14.0-RC5
+
+##### What's new
+- Contacts who resubscribe in Dotdigital will have their subscription status updated in Magento.
+- The unsubscribe and resubscribe steps of the subscriber sync have been moved to a separate cron group.
+
+##### Improvements
+- `setup_version` has been removed from module.xml; in the Dashboard, we now use composer.json to provide the current active module versions.
+- We've removed some repetition when generating the dynamic content passcode. 
 
 # 4.13.8
 
