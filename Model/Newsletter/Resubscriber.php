@@ -272,7 +272,7 @@ class Resubscriber extends DataObject
             );
 
             // Note that 'subscribed_at' is already a date object
-            if ($utcChangeStatusAt < $contacts[$email]['subscribed_at']) {
+            if ($utcChangeStatusAt < $contacts[strtolower($email)]['subscribed_at']) {
                 $filteredSubscribers[$subscriber->getStoreId()][] = [
                     'email' => $email
                 ];
