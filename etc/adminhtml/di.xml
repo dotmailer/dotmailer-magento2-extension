@@ -6,7 +6,7 @@
             <argument name="resourceModel" xsi:type="string">Magento\Cron\Model\ResourceModel\Schedule</argument>
         </arguments>
     </virtualType>
-    <virtualType name="Dotdigitalgroup\Email\Ui\Model\ResourceModel\Importer\Collection" type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
+    <virtualType name="Dotdigitalgroup\Email\Ui\Model\ResourceModel\Importer\Collection" type="Dotdigitalgroup\Email\Ui\DataProvider\Importer\Listing\Collection">
         <arguments>
             <argument name="mainTable" xsi:type="string">email_importer</argument>
             <argument name="resourceModel" xsi:type="string">Dotdigitalgroup\Email\Model\ResourceModel\Importer</argument>
