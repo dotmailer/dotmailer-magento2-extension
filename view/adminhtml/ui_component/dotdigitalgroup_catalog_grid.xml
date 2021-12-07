@@ -32,8 +32,7 @@
         <columnsControls name="columns_controls"/>
         <filters name="listing_filters"/>
         <exportButton name="export_button"/>
-        <massaction name="listing_massaction"
-                    component="Magento_Ui/js/grid/tree-massactions">
+        <massaction name="listing_massaction" component="Magento_Ui/js/grid/tree-massactions">
             <action name="delete">
                 <settings>
                     <url path="*/*/massDelete"/>
@@ -41,6 +40,28 @@
                     <label translate="true">Delete</label>
                     <confirm>
                         <title translate="true">Delete items</title>
+                        <message translate="true">Are you sure?</message>
+                    </confirm>
+                </settings>
+            </action>
+            <action name="setProcessed">
+                <settings>
+                    <url path="*/*/massSetProcessed"/>
+                    <type>set-processed</type>
+                    <label translate="true">Set Processed</label>
+                    <confirm>
+                        <title translate="true">Set items processed</title>
+                        <message translate="true">Are you sure?</message>
+                    </confirm>
+                </settings>
+            </action>
+            <action name="setUnprocessed">
+                <settings>
+                    <url path="*/*/massSetUnprocessed"/>
+                    <type>set-unprocessed</type>
+                    <label translate="true">Set Unprocessed</label>
+                    <confirm>
+                        <title translate="true">Set items unprocessed</title>
                         <message translate="true">Are you sure?</message>
                     </confirm>
                 </settings>
