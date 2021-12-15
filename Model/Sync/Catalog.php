@@ -2,10 +2,14 @@
 
 namespace Dotdigitalgroup\Email\Model\Sync;
 
+use Dotdigitalgroup\Email\Helper\Config;
+use Dotdigitalgroup\Email\Model\Sync\Catalog\CatalogSyncerInterface;
+use Magento\Framework\DataObject;
+
 /**
  * Sync account TD for catalog.
  */
-class Catalog implements SyncInterface
+class Catalog extends DataObject implements SyncInterface
 {
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
@@ -38,26 +42,35 @@ class Catalog implements SyncInterface
     private $catalogSyncFactory;
 
     /**
-     * Catalog constructor.
-     *
+     * @var \Dotdigitalgroup\Email\Model\ImporterFactory
+     */
+    private $importerFactory;
+
+    /**
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory $catalogResourceFactory
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory $catalogCollectionFactory
-     * @param \Dotdigitalgroup\Email\Model\Sync\Catalog\CatalogSyncFactory $catalogSyncFactory
+     * @param Catalog\CatalogSyncFactory $catalogSyncFactory
+     * @param \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
      */
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory $catalogResourceFactory,
         \Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory $catalogCollectionFactory,
-        Catalog\CatalogSyncFactory $catalogSyncFactory
+        Catalog\CatalogSyncFactory $catalogSyncFactory,
+        \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
+        array $data = []
     ) {
         $this->helper = $helper;
         $this->scopeConfig = $scopeConfig;
         $this->catalogResourceFactory = $catalogResourceFactory;
         $this->catalogCollectionFactory = $catalogCollectionFactory;
         $this->catalogSyncFactory = $catalogSyncFactory;
+        $this->importerFactory = $importerFactory;
+
+        parent::__construct($data);
     }
 
     /**
@@ -76,32 +89,82 @@ class Catalog implements SyncInterface
 
         $this->start = microtime(true);
         $limit = $this->scopeConfig->getValue(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_TRANSACTIONAL_DATA_SYNC_LIMIT
+            Config::XML_PATH_CONNECTOR_TRANSACTIONAL_DATA_SYNC_LIMIT
         );
 
-        $syncedProducts = [];
-        $productsToProcess = $this->getProductsToProcess($limit);
+        //remove product with product id set and no product
+        $this->catalogResourceFactory->create()
+            ->removeOrphanProducts();
 
-        if (!$productsToProcess) {
-            $message = 'Catalog sync skipped, no products to process.';
-            $response['message'] = $message;
-        } else {
-            $syncedProducts = $this->syncCatalog($productsToProcess);
+        $megaBatch = [];
+        $productsProcessedCount = 0;
+        $megaBatchCount = 0;
+        $totalProductsSyncedCount = 0;
+        $loopStart = true;
 
-            $message = '----------- Catalog sync ----------- : ' .
-                gmdate('H:i:s', microtime(true) - $this->start) .
-                ', Total processed = ' . count($productsToProcess) . ', Total synced = ' . count($syncedProducts);
-            $this->helper->log($message);
-            $response['message'] = $message;
+        $breakValue = $this->isRunFromDeveloperButton() ? $limit : $this->scopeConfig->getValue(
+            Config::XML_PATH_CONNECTOR_SYNC_CATALOG_BREAK_VALUE
+        );
+
+        do {
+            $productsToProcess = $this->getProductsToProcess($limit);
+
+            if (!$productsToProcess) {
+                break;
+            }
+
+            if ($loopStart) {
+                $this->helper->log('----------- Catalog sync ----------- : Start batching');
+                $loopStart = false;
+            }
+
+            $megaBatch = $this->mergeBatch(
+                $megaBatch,
+                $batch = $this->syncCatalog($productsToProcess)
+            );
+
+            $productsProcessedCount += count($productsToProcess);
+            $megaBatchCount += $batchCount = $this->getBatchProductsCount($batch);
+            $totalProductsSyncedCount += $batchCount;
+
+            $this->catalogResourceFactory->create()
+                ->setProcessedByIds($productsToProcess);
+
+            $this->helper->log(sprintf('Catalog sync: %s products processed.', count($productsToProcess)));
+
+            if ($megaBatchCount >= CatalogSyncerInterface::MEGA_BATCH_SIZE) {
+                $this->addToImportQueue($megaBatch);
+                $megaBatchCount = 0;
+                $megaBatch = [];
+            }
+
+        } while ($breakValue === null || $totalProductsSyncedCount < $breakValue);
+
+        if (!empty($megaBatch)) {
+            //Add the rest of the products (if any) to the importer
+            $this->addToImportQueue($megaBatch);
         }
 
-        $this->catalogResourceFactory->create()
-            ->setProcessedByIds($productsToProcess);
-
-        $this->catalogResourceFactory->create()
-            ->setImportedDateByIds(array_keys($syncedProducts));
-
+        $message = '----------- Catalog sync ----------- : ' .
+            gmdate('H:i:s', microtime(true) - $this->start) .
+            ', Total processed = ' . $productsProcessedCount . ', Total synced = ' . $totalProductsSyncedCount;
+        $this->helper->log($message);
+        $response['message'] = $message;
         return $response;
+    }
+
+    /**
+     * @param array $syncedProducts
+     * @return array
+     */
+    private function getSyncedProductIds($syncedProducts)
+    {
+        $productIds = [];
+        foreach ($syncedProducts as $batch) {
+            $productIds += array_keys($batch['products']);
+        }
+
+        return array_unique($productIds);
     }
 
     /**
@@ -111,13 +174,9 @@ class Catalog implements SyncInterface
      *
      * @return array
      */
-    public function syncCatalog($products)
+    private function syncCatalog($products)
     {
         try {
-            //remove product with product id set and no product
-            $this->catalogResourceFactory->create()
-                ->removeOrphanProducts();
-
             return $this->catalogSyncFactory->create()
                 ->sync($products);
 
@@ -166,5 +225,86 @@ class Catalog implements SyncInterface
             }
         }
         return false;
+    }
+
+    /**
+     * @param array $megaBatch
+     * @param array $batch
+     * @return array
+     */
+    private function mergeBatch(array $megaBatch, array $batch)
+    {
+        foreach ($batch as $catalogName => $set) {
+            if (array_key_exists($catalogName, $megaBatch)) {
+                if (isset($set['products'])) {
+                    $megaBatch[$catalogName]['products'] += $set['products'];
+                }
+            } else {
+                $megaBatch += [$catalogName => $set];
+            }
+        }
+
+        return $megaBatch;
+    }
+
+    /**
+     * @param array $catalogs
+     */
+    private function addToImportQueue(array $catalogs)
+    {
+        foreach ($catalogs as $catalogName => $batch) {
+            $success = $this->importerFactory->create()
+                ->registerQueue(
+                    $catalogName,
+                    $batch['products'],
+                    \Dotdigitalgroup\Email\Model\Importer::MODE_BULK,
+                    $batch['websiteId']
+                );
+
+            if (!$success) {
+                $pid = implode(",", array_keys($batch['products']));
+                $msg = "Failed to register with IMPORTER."
+                    . "Type(Catalog) / Scope(Bulk) / Website({$batch['websiteId']}) / Product Ids($pid)";
+                $this->helper->log($msg);
+            } else {
+                $this->helper->log(
+                    sprintf(
+                        'Catalog sync [%s]: %s products batched for importer.',
+                        $catalogName,
+                        count($batch['products'])
+                    )
+                );
+            }
+        }
+
+        $this->catalogResourceFactory->create()
+            ->setImportedDateByIds(
+                $this->getSyncedProductIds($catalogs)
+            );
+    }
+
+    /**
+     * @param array $batch
+     * @return int
+     */
+    private function getBatchProductsCount(array $batch)
+    {
+        $productsToSync = 0;
+
+        foreach ($batch as $importerItems) {
+            $productsToSync += count($importerItems['products']);
+        }
+
+        return $productsToSync;
+    }
+
+    /**
+     * Determines whether the sync was triggered from Configuration > Dotdigital > Developer > Sync Settings.
+     *
+     * @return bool
+     */
+    private function isRunFromDeveloperButton()
+    {
+        return $this->_getData('web') ? true : false;
     }
 }

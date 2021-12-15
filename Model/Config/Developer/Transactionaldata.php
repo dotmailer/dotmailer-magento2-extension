@@ -18,6 +18,8 @@ class Transactionaldata implements \Magento\Framework\Data\OptionSourceInterface
             ['value' => '300', 'label' => '300'],
             ['value' => '400', 'label' => '400'],
             ['value' => '500', 'label' => '500'],
+            ['value' => '1000', 'label' => '1000'],
+            ['value' => '2000', 'label' => '2000'],
         ];
     }
 }

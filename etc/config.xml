@@ -283,10 +283,11 @@
         <connector_developer_settings>
             <import_settings>
                 <batch_size>500</batch_size>
-                <transactional_data>50</transactional_data>
+                <transactional_data>1000</transactional_data>
                 <importer_bulk_limit>1</importer_bulk_limit>
                 <subscriber_sales_data_enabled>0</subscriber_sales_data_enabled>
                 <strip_pub_from_media_paths>0</strip_pub_from_media_paths>
+                <transactional_data_break></transactional_data_break>
             </import_settings>
             <sync_settings>
                 <setup_data_fields></setup_data_fields>

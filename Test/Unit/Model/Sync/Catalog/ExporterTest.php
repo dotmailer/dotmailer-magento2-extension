@@ -8,6 +8,7 @@ use Dotdigitalgroup\Email\Model\ResourceModel\Catalog\Collection;
 use Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory;
 use Dotdigitalgroup\Email\Model\Sync\Catalog\Exporter;
 use Magento\Catalog\Model\Product;
+use Dotdigitalgroup\Email\Logger\Logger;
 use PHPUnit\Framework\TestCase;
 
 class ExporterTest extends TestCase
@@ -28,26 +29,26 @@ class ExporterTest extends TestCase
     private $productFactoryMock;
 
     /**
-     * @var Data
-     */
-    private $helperMock;
-
-    /**
      * @var Collection
      */
     private $collectionMock;
+
+    /**
+     * @var Logger
+     */
+    private $loggerMock;
 
     protected function setUp() :void
     {
         $this->collectionFactoryMock = $this->createMock(CollectionFactory::class);
         $this->productFactoryMock = $this->createMock(ProductFactory::class);
-        $this->helperMock = $this->createMock(Data::class);
         $this->collectionMock = $this->createMock(Collection::class);
+        $this->loggerMock = $this->createMock(Logger::class);
 
         $this->exporter = new Exporter(
             $this->collectionFactoryMock,
             $this->productFactoryMock,
-            $this->helperMock
+            $this->loggerMock
         );
     }
 
