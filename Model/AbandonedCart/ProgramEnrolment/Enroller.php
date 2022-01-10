@@ -6,7 +6,6 @@ use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\ResourceModel\Automation\CollectionFactory as AutomationCollectionFactory;
 use Dotdigitalgroup\Email\Model\Sync\SetsSyncFromTime;
 use Dotdigitalgroup\Email\Model\AbandonedCart\TimeLimit;
-use Magento\Store\Model\StoreManagerInterface;
 
 class Enroller
 {
@@ -67,7 +66,6 @@ class Enroller
      * @param \Dotdigitalgroup\Email\Model\AbandonedCart\CartInsight\Data $cartInsight
      * @param AutomationCollectionFactory $automationFactory
      * @param TimeLimit $timeLimit
-     * @param StoreManagerInterface $storeManager
      */
     public function __construct(
         Logger $logger,
@@ -78,8 +76,7 @@ class Enroller
         Rules $rules,
         \Dotdigitalgroup\Email\Model\AbandonedCart\CartInsight\Data $cartInsight,
         AutomationCollectionFactory $automationFactory,
-        TimeLimit $timeLimit,
-        StoreManagerInterface $storeManager
+        TimeLimit $timeLimit
     ) {
         $this->logger = $logger;
         $this->orderCollection = $collectionFactory;
@@ -90,7 +87,6 @@ class Enroller
         $this->cartInsight = $cartInsight;
         $this->automationFactory = $automationFactory;
         $this->timeLimit = $timeLimit;
-        $this->storeManager = $storeManager;
     }
 
     public function process()
@@ -207,7 +203,6 @@ class Enroller
     private function isAutomationFoundInsideTimeLimit($quote, $storeId)
     {
         $updated = $this->timeLimit->getAbandonedCartTimeLimit($storeId);
-        $websiteId = $this->storeManager->getStore($storeId)->getWebsiteId();
 
         if (!$updated) {
             return false;
