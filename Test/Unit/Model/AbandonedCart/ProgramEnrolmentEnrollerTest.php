@@ -15,8 +15,6 @@ use Dotdigitalgroup\Email\Model\ResourceModel\Automation\CollectionFactory as Au
 use Dotdigitalgroup\Email\Model\ResourceModel\Order\Collection;
 use Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory;
 use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
-use Magento\Store\Model\StoreManagerInterface;
-use Magento\Store\Api\Data\StoreInterface;
 use PHPUnit\Framework\TestCase;
 
 class ProgramEnrolmentEnrollerTest extends TestCase
@@ -130,8 +128,7 @@ class ProgramEnrolmentEnrollerTest extends TestCase
             $this->rules,
             $this->cartInsight,
             $this->automationCollectionFactoryMock,
-            $this->timeLimitMock,
-            $this->storeManagerMock
+            $this->timeLimitMock
         );
     }
 
@@ -157,14 +154,6 @@ class ProgramEnrolmentEnrollerTest extends TestCase
             ->method('getAbandonedCartTimeLimit')
             ->willReturn(null);
 
-        $this->storeManagerMock->expects($this->atLeastOnce())
-            ->method('getStore')
-            ->with($storeId = 1)
-            ->willReturn($this->storeInterfaceMock);
-
-        $this->storeInterfaceMock->expects($this->atLeastOnce())
-            ->method('getWebsiteId')
-            ->willReturn($websiteId = 1);
         $this->saver->expects($this->atLeastOnce())
             ->method('save');
 
@@ -193,15 +182,6 @@ class ProgramEnrolmentEnrollerTest extends TestCase
             ->method('getSize')
             ->willReturn(0);
 
-        $this->storeManagerMock->expects($this->atLeastOnce())
-            ->method('getStore')
-            ->with($storeId = 1)
-            ->willReturn($this->storeInterfaceMock);
-
-        $this->storeInterfaceMock->expects($this->atLeastOnce())
-            ->method('getWebsiteId')
-            ->willReturn($websiteId = 1);
-
         $this->saver->expects($this->atLeastOnce())
             ->method('save');
 
@@ -229,15 +209,6 @@ class ProgramEnrolmentEnrollerTest extends TestCase
         $this->automationCollectionFactoryMock->expects($this->atLeastOnce())
             ->method('getSize')
             ->willReturn(1);
-
-        $this->storeManagerMock->expects($this->atLeastOnce())
-            ->method('getStore')
-            ->with($storeId = 1)
-            ->willReturn($this->storeInterfaceMock);
-
-        $this->storeInterfaceMock->expects($this->atLeastOnce())
-            ->method('getWebsiteId')
-            ->willReturn($websiteId = 1);
 
         $this->saver->expects($this->never())
             ->method('save');
