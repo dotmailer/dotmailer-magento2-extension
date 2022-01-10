@@ -21,7 +21,7 @@ class Getbasket extends \Magento\Framework\App\Action\Action
     /**
      * @var \Magento\Customer\Model\SessionFactory
      */
-    private $checkoutSession;
+    private $checkoutSessionFactory;
 
     /**
      * @var \Magento\Quote\Model\Quote
@@ -75,7 +75,7 @@ class Getbasket extends \Magento\Framework\App\Action\Action
         PwaUrlConfig $pwaUrlConfig,
         StoreManagerInterface $storeManager
     ) {
-        $this->checkoutSession = $checkoutSessionFactory;
+        $this->checkoutSessionFactory = $checkoutSessionFactory;
         $this->quoteFactory    = $quoteFactory;
         $this->quoteResource = $quoteResource;
         $this->customerSessionFactory = $customerSessionFactory;
@@ -127,8 +127,6 @@ class Getbasket extends \Magento\Framework\App\Action\Action
 
     /**
      * Process customer basket.
-     *
-     * @return null
      */
     private function handleCustomerBasket()
     {
@@ -141,7 +139,7 @@ class Getbasket extends \Magento\Framework\App\Action\Action
         //if customer is logged in then redirect to cart
         if ($customerSession->isLoggedIn()
             && $customerSession->getCustomerId() == $this->quote->getCustomerId()) {
-            $checkoutSession = $this->checkoutSession->create();
+            $checkoutSession = $this->checkoutSessionFactory->create();
             if ($checkoutSession->getQuote()
                 && $checkoutSession->getQuote()->hasItems()
             ) {
@@ -192,13 +190,11 @@ class Getbasket extends \Magento\Framework\App\Action\Action
 
     /**
      * Check missing items from current quote and add.
-     *
-     * @return null
      */
     private function checkMissingAndAdd()
     {
         /** @var \Magento\Checkout\Model\Session $checkoutSession */
-        $checkoutSession = $this->checkoutSession->create();
+        $checkoutSession = $this->checkoutSessionFactory->create();
         $currentQuote = $checkoutSession->getQuote();
 
         if ($currentQuote->hasItems()) {
@@ -211,7 +207,7 @@ class Getbasket extends \Magento\Framework\App\Action\Action
             /** @var \Magento\Quote\Model\Quote\Item $item */
             foreach ($this->quote->getAllItems() as $item) {
                 if (!in_array($item->getId(), $currentItemIds)) {
-                    $currentQuote->addItem($item);
+                    $currentQuote->addProduct($item->getProduct());
                 }
             }
             $currentQuote->collectTotals();
@@ -222,11 +218,17 @@ class Getbasket extends \Magento\Framework\App\Action\Action
 
     /**
      * Process guest basket.
-     *
-     * @return null
      */
     private function handleGuestBasket()
     {
+        /** @var \Magento\Checkout\Model\Session $checkoutSession */
+        $checkoutSession = $this->checkoutSessionFactory->create();
+        if (!$checkoutSession->getQuoteId()) {
+            $checkoutSession->setQuoteId($this->quote->getId());
+        } else {
+            $this->checkMissingAndAdd();
+        }
+
         $configCartUrl = $this->quote->getStore()
             ->getWebsite()
             ->getConfig(Config::XML_PATH_CONNECTOR_CONTENT_CART_URL);

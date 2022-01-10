@@ -39,12 +39,13 @@ class Catalogsync extends \Magento\Backend\App\AbstractAction
     /**
      * Refresh suppressed contacts.
      *
-     * @return null
+     * @return void
      */
     public function execute()
     {
-        $result = $this->catalogFactory->create()
-            ->sync();
+        $result = $this->catalogFactory->create(
+            ['data' => ['web' => true]]
+        )->sync();
 
         $this->messageManager->addSuccessMessage($result['message']);
 

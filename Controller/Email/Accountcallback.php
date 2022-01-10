@@ -92,7 +92,7 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
         $addressBookStatus = $this->trialSetup->createAddressBooks();
         $syncStatus = $this->trialSetup->enableSyncForTrial();
 
-        $this->helper->log('Engagement Cloud account creation', [
+        $this->helper->log('Dotdigital account creation', [
             'api_username' => $params['apiusername'],
             'api_endpoint' => $params['apiendpoint'],
             'chat_account' => $chatAccountCreated

@@ -144,7 +144,7 @@ class Contact implements SyncInterface
      */
     public function exportCustomersForWebsite(WebsiteInterface $website)
     {
-        $contacts = $this->getContacts($website);
+        $contacts = $this->getContacts($website->getId());
 
         // no contacts found
         if ($contacts->getSize() === 0) {
@@ -198,17 +198,17 @@ class Contact implements SyncInterface
     }
 
     /**
-     * @param WebsiteInterface $website
+     * @param int|string $websiteId
      * @return \Dotdigitalgroup\Email\Model\ResourceModel\Contact\Collection
      */
-    public function getContacts(WebsiteInterface $website)
+    public function getContacts($websiteId)
     {
-        $syncLimit = $this->helper->getSyncLimit($website);
+        $syncLimit = $this->helper->getSyncLimit($websiteId);
         return $this->contactCollectionFactory->create()
             ->getContactsToImportByWebsite(
-                $website->getId(),
+                $websiteId,
                 $syncLimit,
-                $this->helper->isOnlySubscribersForContactSync($website->getId())
+                $this->helper->isOnlySubscribersForContactSync($websiteId)
             );
     }
 

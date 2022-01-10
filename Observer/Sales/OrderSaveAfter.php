@@ -3,6 +3,8 @@
 namespace Dotdigitalgroup\Email\Observer\Sales;
 
 use Dotdigitalgroup\Email\Model\ResourceModel\Automation;
+use Dotdigitalgroup\Email\Model\Sync\Automation\AutomationTypeHandler;
+use Dotdigitalgroup\Email\Model\StatusInterface;
 
 /**
  * Trigger Order automation based on order state.
@@ -150,20 +152,20 @@ class OrderSaveAfter implements \Magento\Framework\Event\ObserverInterface
         $websiteId  = $store->getWebsiteId();
         // start app emulation
         $appEmulation = $this->emulationFactory->create();
-        $initialEnvironmentInfo = $appEmulation->startEnvironmentEmulation($store->getId());
+        $initialEnvironmentInfo = $appEmulation->startEnvironmentEmulation($storeId);
         $emailOrder = $this->emailOrderFactory->create()
             ->loadByOrderId($order->getEntityId(), $order->getQuoteId());
         //reimport email order
         $emailOrder->setUpdatedAt($order->getUpdatedAt())
             ->setCreatedAt($order->getUpdatedAt())
-            ->setStoreId($store->getId())
+            ->setStoreId($storeId)
             ->setOrderStatus($status);
 
         if ($emailOrder->getEmailImported() != \Dotdigitalgroup\Email\Model\Contact::EMAIL_CONTACT_IMPORTED) {
             $emailOrder->setEmailImported(0);
         }
 
-        $isEnabled = $this->helper->isStoreEnabled($store->getId());
+        $isEnabled = $this->helper->isStoreEnabled($storeId);
 
         //api not enabled, stop emulation and exit
         if (! $isEnabled) {
@@ -178,7 +180,7 @@ class OrderSaveAfter implements \Magento\Framework\Event\ObserverInterface
         $appEmulation->stopEnvironmentEmulation($initialEnvironmentInfo);
         $this->orderResource->save($emailOrder);
 
-        $this->statusCheckAutomationEnrolment($order, $status, $customerEmail, $websiteId, $storeName);
+        $this->statusCheckAutomationEnrolment($order, $status, $customerEmail, $websiteId, $storeId, $storeName);
 
         //Reset contact if found
         $contactCollection = $this->contactCollectionFactory->create();
@@ -192,11 +194,10 @@ class OrderSaveAfter implements \Magento\Framework\Event\ObserverInterface
             $orders = $this->orderCollectionFactory->create()
                 ->addFieldToFilter('customer_id', $order->getCustomerId());
             if ($orders->getSize() == 1) {
-                $automationTypeNewOrder
-                    = \Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_TYPE_CUSTOMER_FIRST_ORDER;
+                $automationTypeNewOrder = AutomationTypeHandler::AUTOMATION_TYPE_CUSTOMER_FIRST_ORDER;
                 $programIdNewOrder = $this->helper->getAutomationIdByType(
                     'XML_PATH_CONNECTOR_AUTOMATION_STUDIO_FIRST_ORDER',
-                    $order->getStoreId()
+                    $storeId
                 );
                 if ($programIdNewOrder) {
                     //send to automation queue
@@ -207,6 +208,7 @@ class OrderSaveAfter implements \Magento\Framework\Event\ObserverInterface
                             'email' => $customerEmail,
                             'order_id' => $order->getIncrementId(),
                             'website_id' => $websiteId,
+                            'store_id' => $storeId,
                             'store_name' => $storeName
                         ]
                     );
@@ -239,8 +241,6 @@ class OrderSaveAfter implements \Magento\Framework\Event\ObserverInterface
      * Save enrolment to queue for cron automation enrolment.
      *
      * @param array $data
-     *
-     * @return null
      */
     private function doAutomationEnrolment($data)
     {
@@ -259,9 +259,10 @@ class OrderSaveAfter implements \Magento\Framework\Event\ObserverInterface
                     $automation = $this->automationFactory->create()
                         ->setEmail($data['email'])
                         ->setAutomationType($data['automationType'])
-                        ->setEnrolmentStatus(\Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_STATUS_PENDING)
+                        ->setEnrolmentStatus(StatusInterface::PENDING)
                         ->setTypeId($data['order_id'])
                         ->setWebsiteId($data['website_id'])
+                        ->setStoreId($data['store_id'])
                         ->setStoreName($data['store_name'])
                         ->setProgramId($data['programId']);
                     $this->automationResource->save($automation);
@@ -277,8 +278,6 @@ class OrderSaveAfter implements \Magento\Framework\Event\ObserverInterface
     /**
      * @param string $status
      * @param \Dotdigitalgroup\Email\Model\Order $emailOrder
-     *
-     * @return null
      */
     private function handleOrderStatusChange($status, $emailOrder)
     {
@@ -296,16 +295,17 @@ class OrderSaveAfter implements \Magento\Framework\Event\ObserverInterface
      * @param string $status
      * @param string $customerEmail
      * @param int $websiteId
+     * @param int $storeId
      * @param string $storeName
      *
      * @return void
      */
-    private function statusCheckAutomationEnrolment($order, $status, $customerEmail, $websiteId, $storeName)
+    private function statusCheckAutomationEnrolment($order, $status, $customerEmail, $websiteId, $storeId, $storeName)
     {
         $orderStatusAutomations = $this->scopeConfig->getValue(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_AUTOMATION_STUDIO_ORDER_STATUS,
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
-            $order->getStore()
+            $storeId
         );
 
         try {
@@ -323,6 +323,7 @@ class OrderSaveAfter implements \Magento\Framework\Event\ObserverInterface
                             'email' => $customerEmail,
                             'order_id' => $order->getIncrementId(),
                             'website_id' => $websiteId,
+                            'store_id' => $storeId,
                             'store_name' => $storeName
                         ]
                     );

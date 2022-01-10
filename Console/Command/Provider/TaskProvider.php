@@ -2,11 +2,28 @@
 
 namespace Dotdigitalgroup\Email\Console\Command\Provider;
 
+use Dotdigitalgroup\Email\Model\Cron\CleanerFactory;
+
 /**
  * Provides factories for all available task models, and exposes its properties to show what's available
  */
 class TaskProvider
 {
+    /**
+     * @var CleanerFactory
+     */
+    private $cleanerFactory;
+
+    /**
+     * TaskProvider constructor.
+     * @param CleanerFactory $cleanerFactory
+     */
+    public function __construct(
+        CleanerFactory $cleanerFactory
+    ) {
+        $this->cleanerFactory = $cleanerFactory;
+    }
+
     /**
      * Get available task factories
      *

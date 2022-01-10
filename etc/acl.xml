@@ -4,31 +4,31 @@
         <resources>
             <resource id="Magento_Backend::admin">
                 <resource id="Magento_Backend::marketing">
-                    <resource id="Dotdigitalgroup_Email::automation" title="dotdigital" translate="title" sortOrder="10">
-                        <resource id="Dotdigitalgroup_Email::automation_studio" title="dotdigital Engagement Cloud" translate="title" sortOrder="10"/>
-                        <resource id="Dotdigitalgroup_Email::exclusion_rules" title="dotdigital Exclusion Rules" translate="title" sortOrder="20"/>
+                    <resource id="Dotdigitalgroup_Email::automation" title="Dotdigital" translate="title" sortOrder="10">
+                        <resource id="Dotdigitalgroup_Email::automation_studio" title="Dotdigital" translate="title" sortOrder="10"/>
+                        <resource id="Dotdigitalgroup_Email::exclusion_rules" title="Dotdigital Exclusion Rules" translate="title" sortOrder="20"/>
                     </resource>
                 </resource>
                 <resource id="Magento_Reports::report">
-                    <resource id="Dotdigitalgroup_Email::reports" title="dotdigital" translate="title">
-                        <resource id="Dotdigitalgroup_Email::contact" title="dotdigital Contact" translate="title" sortOrder="20"/>
-                        <resource id="Dotdigitalgroup_Email::order" title="dotdigital Order" translate="title" sortOrder="30"/>
-                        <resource id="Dotdigitalgroup_Email::review" title="dotdigital Review" translate="title" sortOrder="50"/>
-                        <resource id="Dotdigitalgroup_Email::wishlist" title="dotdigital Wishlist" translate="title" sortOrder="60"/>
-                        <resource id="Dotdigitalgroup_Email::catalog" title="dotdigital Catalog" translate="title" sortOrder="70"/>
-                        <resource id="Dotdigitalgroup_Email::importer" title="dotdigital Importer" translate="title" sortOrder="80"/>
-                        <resource id="Dotdigitalgroup_Email::campaign" title="dotdigital Campaign" translate="title" sortOrder="90"/>
-                        <resource id="Dotdigitalgroup_Email::cron" title="dotdigital Cron" translate="title" sortOrder="100"/>
-                        <resource id="Dotdigitalgroup_Email::dashboard" title="dotdigital Dashboard" translate="title" sortOrder="110"/>
-                        <resource id="Dotdigitalgroup_Email::automation_enrollment" title="dotdigital Enrolment Automation" translate="title" sortOrder="120"/>
-                        <resource id="Dotdigitalgroup_Email::logviewer" title="dotdigital Log Viewer" translate="title" sortOrder="130"/>
-                        <resource id="Dotdigitalgroup_Email::abandoned" title="dotdigital Abandoned Carts" translate="title" sortOrder="140"/>
+                    <resource id="Dotdigitalgroup_Email::reports" title="Dotdigital" translate="title">
+                        <resource id="Dotdigitalgroup_Email::contact" title="Dotdigital Contact" translate="title" sortOrder="20"/>
+                        <resource id="Dotdigitalgroup_Email::order" title="Dotdigital Order" translate="title" sortOrder="30"/>
+                        <resource id="Dotdigitalgroup_Email::review" title="Dotdigital Review" translate="title" sortOrder="50"/>
+                        <resource id="Dotdigitalgroup_Email::wishlist" title="Dotdigital Wishlist" translate="title" sortOrder="60"/>
+                        <resource id="Dotdigitalgroup_Email::catalog" title="Dotdigital Catalog" translate="title" sortOrder="70"/>
+                        <resource id="Dotdigitalgroup_Email::importer" title="Dotdigital Importer" translate="title" sortOrder="80"/>
+                        <resource id="Dotdigitalgroup_Email::campaign" title="Dotdigital Campaign" translate="title" sortOrder="90"/>
+                        <resource id="Dotdigitalgroup_Email::cron" title="Dotdigital Cron" translate="title" sortOrder="100"/>
+                        <resource id="Dotdigitalgroup_Email::dashboard" title="Dotdigital Dashboard" translate="title" sortOrder="110"/>
+                        <resource id="Dotdigitalgroup_Email::automation_enrollment" title="Dotdigital Automation Enrolment" translate="title" sortOrder="120"/>
+                        <resource id="Dotdigitalgroup_Email::logviewer" title="Dotdigital Log Viewer" translate="title" sortOrder="130"/>
+                        <resource id="Dotdigitalgroup_Email::abandoned" title="Dotdigital Abandoned Carts" translate="title" sortOrder="140"/>
                     </resource>
                 </resource>
                 <resource id="Magento_Backend::stores">
                     <resource id="Magento_Backend::stores_settings">
                         <resource id="Magento_Config::config">
-                            <resource id="Dotdigitalgroup_Email::config" title="dotdigital" translate="title" />
+                            <resource id="Dotdigitalgroup_Email::config" title="Dotdigital" translate="title" />
                         </resource>
                     </resource>
                 </resource>

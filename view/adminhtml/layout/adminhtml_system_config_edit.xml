@@ -3,14 +3,12 @@
       xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
 <head>
     <script src="Dotdigitalgroup_Email::js/daterange.js"/>
-    <script src="Dotdigitalgroup_Email::js/node_modules/colpick/colpick.js"/>
+    <script src="Dotdigitalgroup_Email::js/lib/colpick/colpick.js"/>
     <script src="Dotdigitalgroup_Email::js/colorPickerInit.js"/>
     <script src="Dotdigitalgroup_Email::js/datePickerInit.js"/>
-    <script src="Dotdigitalgroup_Email::js/fancyBoxInit.js"/>
     <script src="Dotdigitalgroup_Email::js/confirm.js"/>
     <script src="Dotdigitalgroup_Email::js/clickToCopy.js"/>
     <css src="Dotdigitalgroup_Email::colpick.css"/>
-    <css src="Dotdigitalgroup_Email::jquery.fancybox.css"/>
     <css src="Dotdigitalgroup_Email::styles.css"/>
 </head>
 </page>

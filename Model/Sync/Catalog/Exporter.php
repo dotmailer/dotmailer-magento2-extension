@@ -3,14 +3,10 @@
 namespace Dotdigitalgroup\Email\Model\Sync\Catalog;
 
 use Dotdigitalgroup\Email\Model\Connector\Product;
+use Dotdigitalgroup\Email\Logger\Logger;
 
 class Exporter
 {
-    /**
-     * @var \Dotdigitalgroup\Email\Helper\Data
-     */
-    private $helper;
-
     /**
      * @var \Dotdigitalgroup\Email\Model\Connector\ProductFactory
      */
@@ -22,28 +18,29 @@ class Exporter
     private $catalogCollectionFactory;
 
     /**
-     * Catalog constructor.
-     *
+     * @var Logger
+     */
+    private $logger;
+
+    /**
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory $catalogCollectionFactory
      * @param \Dotdigitalgroup\Email\Model\Connector\ProductFactory $connectorProductFactory
-     * @param \Dotdigitalgroup\Email\Helper\Data $helper
+     * @param Logger $logger
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory $catalogCollectionFactory,
         \Dotdigitalgroup\Email\Model\Connector\ProductFactory $connectorProductFactory,
-        \Dotdigitalgroup\Email\Helper\Data $helper
+        Logger $logger
     ) {
         $this->catalogCollectionFactory = $catalogCollectionFactory;
         $this->connectorProductFactory = $connectorProductFactory;
-        $this->helper = $helper;
+        $this->logger = $logger;
     }
 
     /**
-     * @param $storeId
-     * @param $productsToProcess
+     * @param string|int $storeId
+     * @param array $productsToProcess
      * @return array
-     * @throws \Magento\Framework\Exception\LocalizedException
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function exportCatalog($storeId, $productsToProcess)
     {
@@ -51,9 +48,19 @@ class Exporter
         $products = $this->getProductsToExport($storeId, $productsToProcess);
 
         foreach ($products as $product) {
-            $connectorProduct = $this->connectorProductFactory->create()
-                ->setProduct($product, $storeId);
-            $connectorProducts[$product->getId()] = $this->expose($connectorProduct);
+            try {
+                $connectorProduct = $this->connectorProductFactory->create()
+                    ->setProduct($product, $storeId);
+                $connectorProducts[$product->getId()] = $this->expose($connectorProduct);
+            } catch (\Exception $e) {
+                $this->logger->debug(
+                    sprintf(
+                        'Product id %s was not exported, but will be marked as processed.',
+                        $product->getId()
+                    ),
+                    [(string) $e]
+                );
+            }
         }
 
         return $connectorProducts;

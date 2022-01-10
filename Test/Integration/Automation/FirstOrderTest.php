@@ -35,9 +35,9 @@ class FirstOrderTest extends \PHPUnit\Framework\TestCase
      * @magentoConfigFixture default_store connector_api_credentials/api/password dummypassword
      * @magentoConfigFixture default_store connector_automation/visitor_automation/first_order_automation 123
      *
-     * @return null
+     * @return void
      */
-    public function testFirstCustomerAutomation()
+    public function testFirstCustomerOrderAutomation()
     {
         $this->objectManager->create(\Magento\Customer\Model\Customer::class);
 
@@ -58,6 +58,7 @@ class FirstOrderTest extends \PHPUnit\Framework\TestCase
 
         $customerOrders = $this->objectManager->create(\Magento\Sales\Model\ResourceModel\Order\Collection::class);
         $customerOrders->addFieldToFilter('customer_email', $orderEmail);
+
         //update to new state
         $this->assertEquals('new', $order->getState(), 'order state not new');
 

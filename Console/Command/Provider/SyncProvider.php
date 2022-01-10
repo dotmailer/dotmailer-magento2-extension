@@ -9,7 +9,7 @@ use Dotdigitalgroup\Email\Model\Sync\CatalogFactory;
 use Dotdigitalgroup\Email\Model\Apiconnector\ContactFactory;
 use Dotdigitalgroup\Email\Model\Customer\GuestFactory;
 use Dotdigitalgroup\Email\Model\Sync\ImporterFactory;
-use Dotdigitalgroup\Email\Model\Sync\IntegrationInsightsFactory;
+use Dotdigitalgroup\Email\Model\Sync\Integration\IntegrationInsightsFactory;
 use Dotdigitalgroup\Email\Model\Sync\OrderFactory;
 use Dotdigitalgroup\Email\Model\Sync\ReviewFactory;
 use Dotdigitalgroup\Email\Model\Newsletter\SubscriberFactory;

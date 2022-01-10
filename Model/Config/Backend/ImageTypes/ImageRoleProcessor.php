@@ -2,16 +2,29 @@
 
 namespace Dotdigitalgroup\Email\Model\Config\Backend\ImageTypes;
 
+use Dotdigitalgroup\Email\Helper\Config;
+use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Product\ImageType\ImageTypeService;
+use Dotdigitalgroup\Email\Model\ResourceModel\Catalog;
 use Magento\Framework\App\ObjectManager;
 use Magento\Framework\Serialize\SerializerInterface;
 
 class ImageRoleProcessor extends \Magento\Framework\App\Config\Value
 {
     /**
+     * @var Logger
+     */
+    private $logger;
+
+    /**
      * @var ImageTypeService
      */
     private $imageTypeService;
+
+    /**
+     * @var Catalog
+     */
+    private $catalogResource;
 
     /**
      * @var SerializerInterface
@@ -19,7 +32,14 @@ class ImageRoleProcessor extends \Magento\Framework\App\Config\Value
     private $serializer;
 
     /**
+     * @var bool
+     */
+    private $isCatalogReset = false;
+
+    /**
+     * @param Logger $logger
      * @param ImageTypeService $imageTypeService
+     * @param Catalog $catalogResource
      * @param \Magento\Framework\Model\Context $context
      * @param \Magento\Framework\Registry $registry
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $config
@@ -30,7 +50,9 @@ class ImageRoleProcessor extends \Magento\Framework\App\Config\Value
      * @param array $data
      */
     public function __construct(
+        Logger $logger,
         ImageTypeService $imageTypeService,
+        Catalog $catalogResource,
         \Magento\Framework\Model\Context $context,
         \Magento\Framework\Registry $registry,
         \Magento\Framework\App\Config\ScopeConfigInterface $config,
@@ -40,7 +62,9 @@ class ImageRoleProcessor extends \Magento\Framework\App\Config\Value
         \Magento\Framework\Serialize\SerializerInterface $serializer = null,
         array $data = []
     ) {
+        $this->logger = $logger;
         $this->imageTypeService = $imageTypeService;
+        $this->catalogResource = $catalogResource;
         $this->serializer = $serializer ?: ObjectManager::getInstance()->get(SerializerInterface::class);
         parent::__construct(
             $context,
@@ -73,6 +97,14 @@ class ImageRoleProcessor extends \Magento\Framework\App\Config\Value
             $this->setValue($this->serializer->serialize($newValue));
         }
 
+        if ($this->getData('path') === Config::XML_PATH_CONNECTOR_IMAGE_TYPES_CATALOG_SYNC &&
+            !$this->isCatalogReset
+        ) {
+            $this->catalogResource->resetCatalog();
+            $this->isCatalogReset = true;
+            $this->logger->info('Catalog sync image type changed, catalog data reset.');
+        }
+
         return parent::beforeSave();
     }
 
@@ -91,7 +123,7 @@ class ImageRoleProcessor extends \Magento\Framework\App\Config\Value
     }
 
     /**
-     * @param $imageId
+     * @param string $imageId
      * @return string
      */
     private function getImageRoleById($imageId)

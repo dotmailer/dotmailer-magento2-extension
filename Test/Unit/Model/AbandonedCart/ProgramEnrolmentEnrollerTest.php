@@ -91,16 +91,6 @@ class ProgramEnrolmentEnrollerTest extends TestCase
      */
     private $loggerMock;
 
-    /**
-     * @var StoreManagerInterface|mixed|\PHPUnit\Framework\MockObject\MockObject
-     */
-    private $storeManagerMock;
-
-    /**
-     * @var StoreInterface|mixed|\PHPUnit\Framework\MockObject\MockObject
-     */
-    private $storeInterfaceMock;
-
     protected function setUp() :void
     {
         $this->orderCollectionFactoryMock = $this->getMockBuilder(CollectionFactory::class)
@@ -122,7 +112,6 @@ class ProgramEnrolmentEnrollerTest extends TestCase
         $this->objectManager = new ObjectManager($this);
         $this->quoteMock = $this->createMock(\Magento\Quote\Model\Quote::class);
         $this->orderCollectionMock = $this->objectManager->getCollectionMock(Collection::class, [$this->quoteMock]);
-        $this->storeManagerMock = $this->createMock(StoreManagerInterface::class);
         $this->automationCollectionFactoryMock = $this->getMockBuilder(AutomationCollectionFactory::class)
             ->disableOriginalConstructor()
             ->setMethods(['create','getAbandonedCartAutomationsForContactByInterval','getSize'])
@@ -130,7 +119,6 @@ class ProgramEnrolmentEnrollerTest extends TestCase
 
         $this->timeLimitMock = $this->createMock(TimeLimit::class);
         $this->loggerMock = $this->createMock(Logger::class);
-        $this->storeInterfaceMock = $this->createMock(StoreInterface::class);
         $this->prepare();
 
         $this->model = new Enroller(

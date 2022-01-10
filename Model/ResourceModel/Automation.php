@@ -14,7 +14,7 @@ class Automation extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Initialize resource.
      *
-     * @return null
+     * @return void
      */
     public function _construct()
     {
@@ -34,24 +34,24 @@ class Automation extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
-     * update status for automation entries
+     * Update status for automation entries
      *
-     * @param array $contactIds
+     * @param array $rowIds
      * @param string $status
      * @param string $message
      * @param string $updatedAt
      * @param string $type
      *
-     * @return null
+     * @return void
      */
-    public function updateStatus($contactIds, $status, $message, $updatedAt, $type)
+    public function updateStatus($rowIds, $status, $message, $updatedAt, $type)
     {
         $bind = [
             'enrolment_status' => $status,
             'message' => $message,
             'updated_at' => $updatedAt,
         ];
-        $where = ['id IN(?)' => $contactIds];
+        $where = ['id IN(?)' => $rowIds];
         $num = $this->getConnection()->update(
             $this->getTable(Schema::EMAIL_AUTOMATION_TABLE),
             $bind,
@@ -83,5 +83,19 @@ class Automation extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             $bind,
             $where
         );
+    }
+
+    /**
+     * @param \Dotdigitalgroup\Email\Model\Automation $automation
+     * @param string $status
+     * @param string $message
+     *
+     * @return void
+     */
+    public function setStatusAndSaveAutomation($automation, $status, $message = '')
+    {
+        $automation->setEnrolmentStatus($status);
+        $automation->setMessage($message);
+        $this->save($automation);
     }
 }

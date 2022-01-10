@@ -7,7 +7,7 @@ use Magento\Framework\Mail\MessageInterface;
 use Magento\Framework\Registry;
 use Zend\Mime\Mime;
 use Zend\Mime\Part;
-use Dotdigitalgroup\Email\Model\Mail\SmtpTransportZend2;
+use Dotdigitalgroup\Email\Model\Mail\SmtpTransporter;
 use Dotdigitalgroup\Email\Model\Email\TemplateService;
 
 class MessagePlugin
@@ -87,7 +87,7 @@ class MessagePlugin
     {
         $bodyPart = new Part($body);
         $bodyPart->setEncoding(Mime::ENCODING_QUOTEDPRINTABLE);
-        $bodyPart->setCharset(SmtpTransportZend2::ENCODING);
+        $bodyPart->setCharset(SmtpTransporter::ENCODING);
         ($this->isHTML($body)) ? $bodyPart->setType(Mime::TYPE_HTML) : $bodyPart->setType(Mime::TYPE_TEXT);
         $mimeMessage = new \Zend\Mime\Message();
         $mimeMessage->addPart($bodyPart);

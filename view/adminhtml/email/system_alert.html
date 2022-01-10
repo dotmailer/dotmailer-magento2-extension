@@ -12,19 +12,19 @@
 
 <ul>
     {{if cron_total}}
-    <li>{{trans "We've found %total error(s) in the following dotdigital cron task(s): %summary." total=$cron_total summary=$cron_summary}}</li>
+    <li>{{trans "We've found %total error(s) in the following Dotdigital cron task(s): %summary." total=$cron_total summary=$cron_summary}}</li>
     {{/if}}
     {{if importer_total}}
-    <li>{{trans "We've found %total error(s) in the following dotdigital import task(s): %summary." total=$importer_total summary=$importer_summary}}</li>
+    <li>{{trans "We've found %total error(s) in the following Dotdigital import task(s): %summary." total=$importer_total summary=$importer_summary}}</li>
     {{/if}}
     {{if campaign_total}}
-    <li>{{trans "We've found %total error(s) in the following dotdigital campaign send(s): %summary." total=$campaign_total summary=$campaign_summary}}</li>
+    <li>{{trans "We've found %total error(s) in the following Dotdigital campaign send(s): %summary." total=$campaign_total summary=$campaign_summary}}</li>
     {{/if}}
     {{if automation_total}}
-    <li>{{trans "We've found %total error(s) in the following dotdigital automation task(s): %summary." total=$automation_total summary=$automation_summary}}</li>
+    <li>{{trans "We've found %total error(s) in the following Dotdigital automation task(s): %summary." total=$automation_total summary=$automation_summary}}</li>
     {{/if}}
     {{if smtp_total}}
-    <li>{{trans "We've found %total error(s) in recent dotdigital SMTP mail sends." total=$smtp_total}}</li>
+    <li>{{trans "We've found %total error(s) in recent Dotdigital SMTP mail sends." total=$smtp_total}}</li>
     {{/if}}
 </ul>
 

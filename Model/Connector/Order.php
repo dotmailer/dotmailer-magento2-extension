@@ -580,7 +580,7 @@ class Order
                     $value = null;
                     if ($orderData->$function() !== null) {
                         $date = new \DateTime($orderData->$function());
-                        $value = $date->format(\DateTime::ISO8601);
+                        $value = $date->format(\DateTime::ATOM);
                     }
                     break;
 

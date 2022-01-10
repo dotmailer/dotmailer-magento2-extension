@@ -40,7 +40,7 @@ class Index extends \Magento\Backend\App\Action
         $resultPage->setActiveMenu('Dotdigitalgroup_Email::dashboard');
         $resultPage->addBreadcrumb(__('Dashboard'), __('Dashboard '));
         $resultPage->addBreadcrumb(__('Dashboard'), __('Dashboard'));
-        $resultPage->getConfig()->getTitle()->prepend(__('dotdigital Engagement Cloud Dashboard'));
+        $resultPage->getConfig()->getTitle()->prepend(__('Dotdigital Dashboard'));
 
         return $resultPage;
     }

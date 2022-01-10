@@ -27,8 +27,9 @@ class TransactionalEmails implements \Magento\Framework\Event\ObserverInterface
     {
         $groups = $this->context->getRequest()->getPost('groups');
 
-        if (isset($groups['ddg_transactional']['fields']['host']['value']) &&
-            empty($groups['ddg_transactional']['fields']['host']['value'])
+        if (isset($groups['ddg_transactional']['fields']) &&
+            $groups['ddg_transactional']['fields']['enabled']['value'] === '1' &&
+            $groups['ddg_transactional']['fields']['host']['value'] === '0'
         ) {
             throw new \Magento\Framework\Exception\LocalizedException(
                 __('Please select a host.')

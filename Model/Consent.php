@@ -112,7 +112,7 @@ class Consent extends \Magento\Framework\Model\AbstractModel
 
         $this->checkModelLoaded($websiteId, $email);
         $consentText = $this->getConsentText($websiteId);
-        $consentDatetime = $this->dateTime->date(\Zend_Date::ISO_8601, $this->getConsentDatetime());
+        $consentDatetime = $this->dateTime->date(\DateTime::ATOM, $this->getConsentDatetime());
         return [
             $consentText,
             $this->getConsentUrl(),
@@ -136,7 +136,7 @@ class Consent extends \Magento\Framework\Model\AbstractModel
 
         $this->checkModelLoaded($websiteId, $email);
         $consentText = $this->getConsentText($websiteId);
-        $consentDatetime = $this->dateTime->date(\Zend_Date::ISO_8601, $this->getConsentDatetime());
+        $consentDatetime = $this->dateTime->date(\DateTime::ATOM, $this->getConsentDatetime());
         return [
             ['key' => 'TEXT', 'value' => $consentText],
             ['key' => 'URL', 'value' => $this->getConsentUrl()],

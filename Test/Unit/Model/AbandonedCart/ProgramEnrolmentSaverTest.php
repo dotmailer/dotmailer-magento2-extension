@@ -78,6 +78,7 @@ class ProgramEnrolmentSaverTest extends TestCase
                 [$this->equalTo('setEnrolmentStatus')],
                 [$this->equalTo('setTypeId')],
                 [$this->equalTo('setWebsiteId')],
+                [$this->equalTo('setStoreId')],
                 [$this->equalTo('setStoreName')],
                 [$this->equalTo('setProgramId')]
             )
@@ -101,7 +102,7 @@ class ProgramEnrolmentSaverTest extends TestCase
             ->with($automationModelMock)
             ->willReturn($automationModelMock);
 
-        // Arbitrary ID for dotdigital program
+        // Arbitrary ID for Dotdigital program
         $programId = "123456";
 
         $this->model->save($quoteModel, $storeModel, $programId);

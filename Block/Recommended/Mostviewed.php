@@ -83,7 +83,7 @@ class Mostviewed extends \Dotdigitalgroup\Email\Block\Recommended
         $mode = $this->getRequest()->getActionName();
         $limit = $this->recommendedHelper->getDisplayLimitByMode($mode);
         $from  = $this->recommendedHelper->getTimeFromConfig($mode);
-        $to = $this->_localeDate->date()->format(\Zend_Date::ISO_8601);
+        $to = $this->_localeDate->date()->format(\DateTime::ATOM);
         $catId = $this->getRequest()->getParam('category_id');
         $catName = $this->getRequest()->getParam('category_name');
 

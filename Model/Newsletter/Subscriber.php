@@ -73,6 +73,11 @@ class Subscriber implements SyncInterface
     private $unsubscriber;
 
     /**
+     * @var Resubscriber
+     */
+    private $resubscriber;
+
+    /**
      * Subscriber constructor.
      *
      * @param ContactCollectionFactory $contactCollectionFactory
@@ -84,6 +89,7 @@ class Subscriber implements SyncInterface
      * @param \Magento\Framework\Stdlib\DateTime\TimezoneInterface $timezone
      * @param \Dotdigitalgroup\Email\Model\DateIntervalFactory $dateIntervalFactory
      * @param Unsubscriber $unsubscriber
+     * @param Resubscriber $resubscriber
      */
     public function __construct(
         ContactCollectionFactory $contactCollectionFactory,
@@ -94,7 +100,8 @@ class Subscriber implements SyncInterface
         \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contactResource,
         \Magento\Framework\Stdlib\DateTime\TimezoneInterface $timezone,
         \Dotdigitalgroup\Email\Model\DateIntervalFactory $dateIntervalFactory,
-        Unsubscriber $unsubscriber
+        Unsubscriber $unsubscriber,
+        Resubscriber $resubscriber
     ) {
         $this->dateIntervalFactory = $dateIntervalFactory;
         $this->helper            = $helper;
@@ -105,15 +112,21 @@ class Subscriber implements SyncInterface
         $this->emailContactResource = $contactResource;
         $this->timezone = $timezone;
         $this->unsubscriber = $unsubscriber;
+        $this->resubscriber = $resubscriber;
     }
 
     /**
-     * Sync subscribers and unsubscribes in EC
+     * - Sync subscribers
+     * - Process unsubscribes from Dotdigital
+     * - Process resubscribes from Dotdigital
+     *
+     * @inheritdoc
      */
     public function sync(\DateTime $from = null)
     {
         $this->runExport();
         $this->unsubscriber->unsubscribe();
+        $this->resubscriber->subscribe();
     }
 
     /**

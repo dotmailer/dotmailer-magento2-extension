@@ -496,7 +496,6 @@ class Rest
     {
         if ($this->apiUsername !== null && $this->apiPassword !== null) {
             // @codingStandardsIgnoreStart
-            curl_setopt($ch, CURLAUTH_BASIC, CURLAUTH_DIGEST);
             curl_setopt(
                 $ch,
                 CURLOPT_USERPWD,
@@ -689,19 +688,12 @@ class Rest
 
         switch ($level) {
             case Logger::ERROR:
-                $this->logger->addError($logTitle, $extra);
-                break;
-
             case Logger::WARNING:
-                $this->logger->addWarning($logTitle, $extra);
-                break;
-
             case Logger::DEBUG:
-                $this->logger->addDebug($logTitle, $extra);
+                $this->logger->addRecord($level, $logTitle, $extra);
                 break;
-
             default:
-                $this->logger->addInfo($logTitle, $extra);
+                $this->logger->addRecord(Logger::INFO, $logTitle, $extra);
         }
 
         return $this;

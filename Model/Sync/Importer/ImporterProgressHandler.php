@@ -2,21 +2,19 @@
 
 namespace Dotdigitalgroup\Email\Model\Sync\Importer;
 
-use Dotdigitalgroup\Email\Helper\Config;
-use Dotdigitalgroup\Email\Helper\Data;
+use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Helper\File;
 use Dotdigitalgroup\Email\Model\Apiconnector\Client;
 use Dotdigitalgroup\Email\Model\Importer as ImporterModel;
 use Dotdigitalgroup\Email\Model\ImporterFactory;
 use Magento\Framework\DataObject;
-use Magento\Framework\Stdlib\DateTime;
 
 class ImporterProgressHandler extends DataObject
 {
     /**
-     * @var Data
+     * @var Logger
      */
-    private $helper;
+    private $logger;
 
     /**
      * @var File
@@ -29,31 +27,14 @@ class ImporterProgressHandler extends DataObject
     private $importerFactory;
 
     /**
-     * @var DateTime
+     * @var ImporterReportHandler
      */
-    private $dateTime;
+    private $reportHandler;
 
     /**
      * @var Client
      */
     private $client;
-
-    /**
-     * @var array
-     */
-    private $reasons
-        = [
-            'Globally Suppressed',
-            'Blocked',
-            'Unsubscribed',
-            'Hard Bounced',
-            'Isp Complaints',
-            'Domain Suppressed',
-            'Failures',
-            'Invalid Entries',
-            'Mail Blocked',
-            'Suppressed by you',
-        ];
 
     /**
      * @var array
@@ -69,25 +50,25 @@ class ImporterProgressHandler extends DataObject
         ];
 
     /**
-     * Importer constructor.
+     * ImporterProgressHandler constructor.
      *
-     * @param Data $helper
+     * @param Logger $logger
      * @param File $fileHelper
      * @param ImporterFactory $importerFactory
-     * @param DateTime $dateTime
+     * @param ImporterReportHandler $reportHandler
      * @param array $data
      */
     public function __construct(
-        Data $helper,
+        Logger $logger,
         File $fileHelper,
         ImporterFactory $importerFactory,
-        DateTime $dateTime,
+        ImporterReportHandler $reportHandler,
         array $data = []
     ) {
-        $this->helper = $helper;
+        $this->logger = $logger;
         $this->fileHelper = $fileHelper;
         $this->importerFactory = $importerFactory;
-        $this->dateTime = $dateTime;
+        $this->reportHandler = $reportHandler;
 
         parent::__construct($data);
     }
@@ -191,7 +172,7 @@ class ImporterProgressHandler extends DataObject
                     $this->fileHelper->getFilePathWithFallback($file)
                 );
                 if ($log) {
-                    $this->helper->log($log);
+                    $this->logger->info($log);
                 }
                 if (! $this->fileHelper->isFileAlreadyArchived($file)) {
                     $this->fileHelper->archiveCSV($file);
@@ -199,100 +180,15 @@ class ImporterProgressHandler extends DataObject
             }
 
             if ($item->getImportId()) {
-                $this->_processContactImportReportFaults($item->getImportId(), $item->getWebsiteId());
+                $this->reportHandler->processContactImportReportFaults(
+                    $item->getImportId(),
+                    $item->getWebsiteId(),
+                    $this->client
+                );
             }
         }
 
         return $item;
-    }
-
-    /**
-     * Get report info for contacts sync.
-     *
-     * @param int $id
-     * @param int $websiteId
-     * @return null
-     * @throws \Magento\Framework\Exception\LocalizedException
-     */
-    private function _processContactImportReportFaults($id, $websiteId)
-    {
-        $report = $this->client->getContactImportReportFaults($id);
-
-        if ($report) {
-            $reportData = explode(PHP_EOL, $this->_removeUtf8Bom($report));
-            //unset header
-            unset($reportData[0]);
-            //no data in report
-            if (! empty($reportData)) {
-                $contacts = [];
-                foreach ($reportData as $row) {
-                    if (empty($row) || strpos($row, ',') === false) {
-                        continue;
-                    }
-
-                    list($reason, $email) = explode(',', $row);
-                    if (in_array($reason, $this->reasons)) {
-                        $contacts[] = $email;
-                    }
-                }
-
-                // get a time period for the last contact sync
-                $cronMinutes = filter_var(
-                    $this->helper->getConfigValue(Config::XML_PATH_CRON_SCHEDULE_CONTACT),
-                    FILTER_SANITIZE_NUMBER_INT
-                );
-                $lastSyncPeriod = new \DateTime($this->dateTime->formatDate(true), new \DateTimeZone('UTC'));
-                $lastSyncPeriod->sub(new \DateInterval("PT{$cronMinutes}M"));
-
-                // check whether any last subscribe dates fall within the last subscriber sync period
-                $recentlyResubscribed = array_filter(
-                    $this->helper->contactResource->getLastSubscribedAtDates($contacts),
-                    function ($contact) use ($lastSyncPeriod) {
-                        if ($contact['last_subscribed_at'] === null) {
-                            return false;
-                        }
-                        $lastSubscribed = new \DateTime($contact['last_subscribed_at'], new \DateTimeZone('UTC'));
-                        return $lastSubscribed >= $lastSyncPeriod;
-                    }
-                );
-
-                if (!empty($recentlyResubscribed)) {
-                    $importerModel = $this->importerFactory->create();
-                    // queue resubscription jobs
-                    foreach ($recentlyResubscribed as $resubscriber) {
-                        $importerModel->registerQueue(
-                            ImporterModel::IMPORT_TYPE_SUBSCRIBER_RESUBSCRIBED,
-                            ['email' => $resubscriber['email']],
-                            ImporterModel::MODE_SUBSCRIBER_RESUBSCRIBED,
-                            $websiteId
-                        );
-                    }
-
-                    // remove from unsubscribable emails
-                    $contacts = array_diff($contacts, array_column($recentlyResubscribed, 'email'));
-                }
-
-                //unsubscribe from email contact and newsletter subscriber tables
-                if (!empty($contacts)) {
-                    $this->helper->contactResource->unsubscribe($contacts);
-                }
-            }
-        }
-    }
-
-    /**
-     * Convert utf8 data.
-     *
-     * @param string $text
-     *
-     * @return string
-     */
-    private function _removeUtf8Bom($text)
-    {
-        $bom = pack('H*', 'EFBBBF');
-        $text = preg_replace("/^$bom/", '', $text);
-
-        return $text;
     }
 
     /**

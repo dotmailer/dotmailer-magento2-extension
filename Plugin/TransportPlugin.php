@@ -2,9 +2,11 @@
 
 namespace Dotdigitalgroup\Email\Plugin;
 
-use Magento\Framework\Mail\TransportInterface;
-use Magento\Framework\FlagManager;
+use Dotdigitalgroup\Email\Model\Mail\SmtpTransporter;
 use Dotdigitalgroup\Email\Model\Monitor\Smtp\Monitor;
+use Magento\Framework\FlagManager;
+use Magento\Framework\Mail\EmailMessageInterface;
+use Magento\Framework\Mail\TransportInterface;
 
 /**
  * SMTP mail transport.
@@ -18,9 +20,9 @@ class TransportPlugin
     ];
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\Mail\SmtpTransportAdapter
+     * @var SmtpTransporter
      */
-    private $smtpTransportAdapter;
+    private $smtpTransporter;
 
     /**
      * @var \Dotdigitalgroup\Email\Helper\Transactional
@@ -44,20 +46,20 @@ class TransportPlugin
 
     /**
      * TransportPlugin constructor.
-     * @param \Dotdigitalgroup\Email\Model\Mail\SmtpTransportAdapter $smtpTransportAdapter
+     * @param SmtpTransporter $smtpTransporter
      * @param \Dotdigitalgroup\Email\Helper\Transactional $helper
      * @param \Dotdigitalgroup\Email\Helper\Data $dataHelper
      * @param \Magento\Framework\Registry $registry
      * @param FlagManager $flagManager
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\Mail\SmtpTransportAdapter $smtpTransportAdapter,
+        SmtpTransporter $smtpTransporter,
         \Dotdigitalgroup\Email\Helper\Transactional $helper,
         \Dotdigitalgroup\Email\Helper\Data $dataHelper,
         \Magento\Framework\Registry $registry,
         FlagManager $flagManager
     ) {
-        $this->smtpTransportAdapter = $smtpTransportAdapter;
+        $this->smtpTransporter = $smtpTransporter;
         $this->helper = $helper;
         $this->dataHelper = $dataHelper;
         $this->registry = $registry;
@@ -80,12 +82,15 @@ class TransportPlugin
         }
 
         try {
-            $this->smtpTransportAdapter->send($subject, $storeId);
+            $this->smtpTransporter->send($subject, $storeId);
         } catch (\Exception $e) {
             if (in_array(str_replace("\r\n", "", $e->getMessage()), self::EXCLUDED_ERRORS)) {
-                $to = $subject->getMessage()->getTo();
+                $to = $this->getAddressee($subject);
                 $this->dataHelper->log(
-                    "Unable to deliver transactional email. Invalid email address: " . reset($to)->getEmail(),
+                    sprintf(
+                        "Unable to deliver transactional email. Invalid email address. %s",
+                        $to ? '[' . $to . ']' : ''
+                    ),
                     [(string) $e]
                 );
                 return $proceed();
@@ -108,5 +113,21 @@ class TransportPlugin
             $this->dataHelper->log("TransportPlugin send exception: " . $e->getMessage());
             return $proceed();
         }
+    }
+
+    /**
+     * @param TransportInterface $subject
+     *
+     * @return bool|string
+     */
+    private function getAddressee(TransportInterface $subject)
+    {
+        $message = $subject->getMessage();
+        if ($message instanceof EmailMessageInterface) {
+            $to = $message->getTo();
+            return reset($to)->getEmail();
+        }
+
+        return false;
     }
 }

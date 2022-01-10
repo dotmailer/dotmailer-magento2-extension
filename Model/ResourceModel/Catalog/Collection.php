@@ -145,4 +145,18 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
 
         return $productCollection;
     }
+
+    /**
+     * Utility method to return all the product ids in a collection.
+     *
+     * @return array
+     */
+    public function getAllProductIds()
+    {
+        $ids = [];
+        foreach ($this->getItems() as $item) {
+            $ids[] = $item->getProductId();
+        }
+        return $ids;
+    }
 }

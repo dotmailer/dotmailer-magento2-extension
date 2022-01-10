@@ -19,7 +19,7 @@
                 <attribute type="expanded">1</attribute>
                 <field id="enabled" translate="label" type="select" sortOrder="1" showInDefault="1" showInStore="0" showInWebsite="1">
                     <label>Enabled</label>
-                    <comment><![CDATA[Don't have an API user? Find out about <a href="https://developer.dotdigital.com/docs/getting-started-with-the-api/" target="_blank">getting started with the Engagement Cloud API</a>.]]></comment>
+                    <comment><![CDATA[Don't have an API user? Find out about <a href="https://developer.dotdigital.com/docs/getting-started-with-the-api/" target="_blank">getting started with the Dotdigital API</a>.]]></comment>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
                 <field id="username" translate="label" type="text" sortOrder="2" showInDefault="1" showInStore="0" showInWebsite="1">
@@ -596,56 +596,52 @@
                 </field>
             </group>
         </section>
-        <section id="connector_automation" translate="label" sortOrder="170" showInStore="0" showInWebsite="1"
-                 showInDefault="1">
+        <section id="connector_automation" translate="label" sortOrder="170" showInStore="1" showInWebsite="1" showInDefault="1">
             <class>separator-top</class>
             <label>Automation</label>
             <tab>ddg_automation</tab>
             <resource>Dotdigitalgroup_Email::config</resource>
-            <group id="visitor_automation" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1"
-                   showInStore="0">
+            <group id="visitor_automation" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Visitor action automation enrolment</label>
-                <field id="customer_automation" translate="label" type="select" sortOrder="10" showInStore="0"
+                <field id="customer_automation" translate="label" type="select" sortOrder="10" showInStore="1"
                        showInWebsite="1" showInDefault="1">
                     <label>New Customer</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Automation\Program</source_model>
                 </field>
-                <field id="subscriber_automation" translate="label" type="select" sortOrder="20" showInStore="0"
+                <field id="subscriber_automation" translate="label" type="select" sortOrder="20" showInStore="1"
                        showInWebsite="1" showInDefault="1">
                     <label>New Subscriber</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Automation\Program</source_model>
                 </field>
-                <field id="first_order_automation" translate="label" type="select" sortOrder="25" showInStore="0"
+                <field id="first_order_automation" translate="label" type="select" sortOrder="25" showInStore="1"
                        showInWebsite="1" showInDefault="1">
                     <label>First Customer Order</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Automation\Program</source_model>
                 </field>
-                <field id="order_automation" translate="label" type="select" sortOrder="30" showInStore="0"
+                <field id="order_automation" translate="label" type="select" sortOrder="30" showInStore="1"
                        showInWebsite="1" showInDefault="1">
                     <label>Customer Order</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Automation\Program</source_model>
                 </field>
-                <field id="guest_order_automation" translate="label" type="select" sortOrder="40" showInStore="0"
+                <field id="guest_order_automation" translate="label" type="select" sortOrder="40" showInStore="1"
                        showInWebsite="1" showInDefault="1">
                     <label>Guest Order</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Automation\Program</source_model>
                 </field>
-                <field id="review_automation" translate="label" type="select" sortOrder="50" showInStore="0"
+                <field id="review_automation" translate="label" type="select" sortOrder="50" showInStore="1"
                        showInWebsite="1" showInDefault="1">
                     <label>Approved Review</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Automation\Program</source_model>
                 </field>
-                <field id="wishlist_automation" translate="label" type="select" sortOrder="60" showInStore="0"
+                <field id="wishlist_automation" translate="label" type="select" sortOrder="60" showInStore="1"
                        showInWebsite="1" showInDefault="1">
                     <label>New Wishlist</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Automation\Program</source_model>
                 </field>
             </group>
-            <group id="order_status_automation" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1"
-                   showInStore="0">
+            <group id="order_status_automation" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Order Status Automation Enrolment</label>
-                <field id="program" translate="label" sortOrder="490" showInDefault="1" showInWebsite="1"
-                       showInStore="0">
+                <field id="program" translate="label" sortOrder="490" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Customer</label>
                     <backend_model>Dotdigitalgroup\Email\Model\Config\Backend\ArraySerialized</backend_model>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Orderstatus</source_model>
@@ -778,7 +774,7 @@
                 <field id="order_dynamic_content_url" translate="label comment" sortOrder="80" showInStore="0" showInWebsite="1"
                        showInDefault="1">
                     <label>Order Recommendation (Deprecated)</label>
-                    <comment><![CDATA[Use dotdigital Engagement Cloud's built-in product recommendation functionality. <a href="https://support.dotdigital.com/hc/en-gb/articles/360000110040-Product-recommendations-an-overview">Learn more</a>]]></comment>
+                    <comment><![CDATA[Use Dotdigital's built-in product recommendation functionality. <a href="https://support.dotdigital.com/hc/en-gb/articles/360000110040-Product-recommendations-an-overview">Learn more</a>]]></comment>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\SubheadingWithComment</frontend_model>
                 </field>
                 <field id="related_products_url" translate="label" sortOrder="90" type="text" showInStore="0"
@@ -799,7 +795,7 @@
                 <field id="cart_recommendation_title" translate="label comment" sortOrder="120" showInStore="0"
                        showInWebsite="1" showInDefault="1">
                     <label>Cart Recommendation (Deprecated)</label>
-                    <comment><![CDATA[Use dotdigital Engagement Cloud's built-in product recommendation functionality. <a href="https://support.dotdigital.com/hc/en-gb/articles/360000110040-Product-recommendations-an-overview">Learn more</a>]]></comment>
+                    <comment><![CDATA[Use Dotdigital's built-in product recommendation functionality. <a href="https://support.dotdigital.com/hc/en-gb/articles/360000110040-Product-recommendations-an-overview">Learn more</a>]]></comment>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\SubheadingWithComment</frontend_model>
                 </field>
                 <field id="cart_related_products_url" translate="label" sortOrder="130" type="text" showInStore="0"
@@ -820,7 +816,7 @@
                 <field id="product_recommendation_title" translate="label comment" sortOrder="160" showInStore="0"
                        showInWebsite="1" showInDefault="1">
                     <label>Product Recommendation (Deprecated)</label>
-                    <comment><![CDATA[Use dotdigital Engagement Cloud's built-in product recommendation functionality. <a href="https://support.dotdigital.com/hc/en-gb/articles/360000110040-Product-recommendations-an-overview">Learn more</a>]]></comment>
+                    <comment><![CDATA[Use Dotdigital's built-in product recommendation functionality. <a href="https://support.dotdigital.com/hc/en-gb/articles/360000110040-Product-recommendations-an-overview">Learn more</a>]]></comment>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\SubheadingWithComment</frontend_model>
                 </field>
                 <field id="best_sellers_url" translate="label" sortOrder="170" type="text" showInStore="0" showInWebsite="1" showInDefault="1">
@@ -1339,6 +1335,10 @@
             </group>
             <group id="tracking" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="0">
                 <label>Tracking</label>
+                <field id="integration_insights" translate="label" sortOrder="5" type="select" showInStore="0"
+                       showInWebsite="0" showInDefault="0">
+                    <label>Integration Insights</label>
+                </field>
                 <field id="roi_enabled" translate="label" sortOrder="10" type="select" showInStore="0" showInWebsite="1"
                        showInDefault="1">
                     <label>ROI Tracking</label>
@@ -1692,6 +1692,9 @@
                     <label>Transactional Data Sync Size</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Developer\Transactionaldata</source_model>
                 </field>
+                <field id="transactional_data_break" translate="label" sortOrder="35" showInStore="0" showInWebsite="0" showInDefault="0">
+                    <label>Transactional data break</label>
+                </field>
                 <field id="subscriber_sales_data_enabled" type="select" sortOrder="40" showInDefault="1" showInStore="0"
                        showInWebsite="1">
                     <label>Enable Subscribers Sales Data Sync</label>
@@ -1717,7 +1720,7 @@
                        showInWebsite="1" showInDefault="1">
                     <label>Automap Data Fields</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Automapdatafields</frontend_model>
-                    <comment><![CDATA[Map Magento data to Engagement Cloud data fields, including customer, address and sales information.]]></comment>
+                    <comment><![CDATA[Map Magento data to Dotdigital data fields, including customer, address and sales information.]]></comment>
                 </field>
                 <field id="delete_contact" translate="label" sortOrder="30" showInStore="0" showInWebsite="1"
                        showInDefault="1">
@@ -1772,42 +1775,41 @@
                     <label>Reset Sync Options</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
-                <field id="reset_customers" translate="label" sortOrder="150" showInStore="0" showInWebsite="1"
+                <field id="reimport_dates" translate="label" sortOrder="145" showInStore="0" showInWebsite="1"
                        showInDefault="1">
-                    <label>Reset Customers</label>
-                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Resetcustomers</frontend_model>
+                    <label>Date Range</label>
+                    <comment><![CDATA[If any of the data range is not selected then a full data refresh will be done.]]></comment>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Daterange</frontend_model>
+                </field>
+                <field id="reset_contacts" translate="label" sortOrder="150" showInStore="0" showInWebsite="1"
+                       showInDefault="1">
+                    <label>Reset Contacts</label>
+                    <frontend_model>resetContactsVirtualType</frontend_model>
                 </field>
                 <field id="reset_subscribers" translate="label" sortOrder="160" showInStore="0" showInWebsite="1"
                        showInDefault="1">
                     <label>Reset Subscribers</label>
-                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Resetsubscribers</frontend_model>
-                </field>
-                <field id="reimport_dates" translate="label" sortOrder="165" showInStore="0" showInWebsite="1"
-                       showInDefault="1">
-                    <label>Date Range</label>
-                    <comment>
-                        <![CDATA[If any of the data range is not selected then full data refresh will be done. This Date Range does not apply on Customer and Subscribers refresh.]]></comment>
-                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Daterange</frontend_model>
+                    <frontend_model>resetSubscribersVirtualType</frontend_model>
                 </field>
                 <field id="reset_orders" translate="label" sortOrder="170" showInStore="0" showInWebsite="1"
                        showInDefault="1">
                     <label>Reset Order Data</label>
-                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Resetorders</frontend_model>
+                    <frontend_model>resetOrdersVirtualType</frontend_model>
                 </field>
                 <field id="reset_reviews" translate="label" sortOrder="180" showInStore="0" showInWebsite="1"
                        showInDefault="1">
                     <label>Reset Review Data</label>
-                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Resetreviews</frontend_model>
+                    <frontend_model>resetReviewsVirtualType</frontend_model>
                 </field>
                 <field id="reset_wishlists" translate="label" sortOrder="190" showInStore="0" showInWebsite="1"
                        showInDefault="1">
                     <label>Reset Wishlist Data</label>
-                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Resetwishlists</frontend_model>
+                    <frontend_model>resetWishlistsVirtualType</frontend_model>
                 </field>
                 <field id="reset_catalog" translate="label" sortOrder="210" showInStore="0" showInWebsite="1"
                        showInDefault="1">
                     <label>Reset Catalog Data</label>
-                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Resetcatalog</frontend_model>
+                    <frontend_model>resetCatalogVirtualType</frontend_model>
                 </field>
             </group>
             <group id="debug" translate="label" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="0">
@@ -1866,26 +1868,31 @@
                        showInDefault="1">
                     <label>Importer</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Developer\Cronexpressionsone</source_model>
+                    <backend_model>Dotdigitalgroup\Email\Model\Adminhtml\Backend\CronOffset</backend_model>
                 </field>
                 <field id="contact" translate="label" sortOrder="20" type="select" showInStore="0" showInWebsite="1"
                        showInDefault="1">
                     <label>Contact</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Developer\Cronexpressionstwo</source_model>
+                    <backend_model>Dotdigitalgroup\Email\Model\Adminhtml\Backend\CronOffset</backend_model>
                 </field>
                 <field id="order" translate="label" sortOrder="30" type="select" showInStore="0" showInWebsite="1"
                        showInDefault="1">
                     <label>Order</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Developer\Cronexpressionstwo</source_model>
+                    <backend_model>Dotdigitalgroup\Email\Model\Adminhtml\Backend\CronOffset</backend_model>
                 </field>
                 <field id="catalog" translate="label" sortOrder="40" type="select" showInStore="0" showInWebsite="1"
                        showInDefault="1">
                     <label>Catalog</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Developer\Cronexpressionstwo</source_model>
+                    <backend_model>Dotdigitalgroup\Email\Model\Adminhtml\Backend\CronOffset</backend_model>
                 </field>
                 <field id="review_wishlist" translate="label" sortOrder="50" type="select" showInStore="0"
                        showInWebsite="1" showInDefault="1">
                     <label>Review And Wishlist</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Developer\Cronexpressionstwo</source_model>
+                    <backend_model>Dotdigitalgroup\Email\Model\Adminhtml\Backend\CronOffset</backend_model>
                 </field>
             </group>
             <group id="system_alerts" translate="label" sortOrder="80" showInDefault="1" showInWebsite="0" showInStore="0">

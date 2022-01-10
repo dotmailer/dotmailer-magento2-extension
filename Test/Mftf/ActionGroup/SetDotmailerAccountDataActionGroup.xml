@@ -8,7 +8,7 @@
             <argument name="ecApiPassword" defaultValue="{{_CREDS.dotmailer/ec_api_password}}"/>
         </arguments>
         <amOnPage url="{{AdminDotmailerAccountsPage.url}}" stepKey="navigateToDotmailerAccountPage"/>
-        <comment userInput="Setting API credentials in dotdigital account settings" stepKey="apiCredentialsEnteredComment"/>
+        <comment userInput="Setting API credentials in Dotdigital account settings" stepKey="apiCredentialsEnteredComment"/>
         <waitForPageLoad stepKey="waitForPageLoad"/>
         <conditionalClick stepKey="expandAccountsTab" selector="{{AdminDotmailerAccountsSection.accountsFieldsetToggle}}" dependentSelector="{{AdminDotmailerAccountsSection.accountsFieldset}}" visible="false"/>
         <selectOption selector="{{AdminDotmailerAccountsSection.accountsEnabledOption}}" userInput="Yes" stepKey="setEnabled"/>

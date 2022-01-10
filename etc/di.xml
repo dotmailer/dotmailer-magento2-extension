@@ -60,23 +60,6 @@
             <argument name="target" xsi:type="object">Magento\Catalog\Pricing\Price\Pool</argument>
         </arguments>
     </virtualType>
-    <virtualType name="dotdigitalgroupZendDate" type="Zend_Date">
-        <arguments>
-            <argument name="date" xsi:type="null"/>
-            <argument name="part" xsi:type="null"/>
-            <argument name="locale" xsi:type="null"/>
-        </arguments>
-    </virtualType>
-    <type name="Dotdigitalgroup\Email\Helper\Recommended">
-        <arguments>
-            <argument name="date" xsi:type="object">dotdigitalgroupZendDate</argument>
-        </arguments>
-    </type>
-    <virtualType name="dotdigitalgroupZendMailTransportSendmail" type="Zend_Mail_Transport_Sendmail">
-        <arguments>
-            <argument name="parameters" xsi:type="null"/>
-        </arguments>
-    </virtualType>
     <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
         <arguments>
             <argument name="collections" xsi:type="array">
@@ -137,4 +120,35 @@
             <argument name="imageRole" xsi:type="string">Thumbnail</argument>
         </arguments>
     </virtualType>
+
+    <virtualType name="AbandonedCartUpdaterVirtualType" type="Dotdigitalgroup\Email\Model\Sync\PendingContact\PendingContactUpdater">
+        <arguments>
+            <argument name="typeProvider" xsi:type="object">Dotdigitalgroup\Email\Model\Sync\PendingContact\Type\AbandonedCartTypeProvider</argument>
+        </arguments>
+    </virtualType>
+    <type name="Dotdigitalgroup\Email\Model\Sales\Quote">
+        <arguments>
+            <argument name="pendingContactUpdater" xsi:type="object">AbandonedCartUpdaterVirtualType</argument>
+        </arguments>
+    </type>
+
+    <virtualType name="AutomationUpdaterVirtualType" type="Dotdigitalgroup\Email\Model\Sync\PendingContact\PendingContactUpdater">
+        <arguments>
+            <argument name="typeProvider" xsi:type="object">Dotdigitalgroup\Email\Model\Sync\PendingContact\Type\AutomationTypeProvider</argument>
+        </arguments>
+    </virtualType>
+    <type name="Dotdigitalgroup\Email\Model\Sync\Automation">
+        <arguments>
+            <argument name="pendingContactUpdater" xsi:type="object">AutomationUpdaterVirtualType</argument>
+        </arguments>
+    </type>
+
+    <type name="Magento\Framework\Setup\Declaration\Schema\Operations\AddColumn">
+        <arguments>
+            <argument name="triggers" xsi:type="array">
+                <item name="combineColumnsForProcessing" xsi:type="object">Dotdigitalgroup\Email\Setup\Schema\Triggers\CombineColumnsForProcessing</item>
+                <item name="migrateIsSent" xsi:type="object">Dotdigitalgroup\Email\Setup\Schema\Triggers\MigrateIsSent</item>
+            </argument>
+        </arguments>
+    </type>
 </config>

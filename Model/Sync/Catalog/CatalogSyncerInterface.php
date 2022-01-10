@@ -4,6 +4,8 @@ namespace Dotdigitalgroup\Email\Model\Sync\Catalog;
 
 interface CatalogSyncerInterface
 {
+    const MEGA_BATCH_SIZE = 10000;
+
     /**
      * Sync
      *

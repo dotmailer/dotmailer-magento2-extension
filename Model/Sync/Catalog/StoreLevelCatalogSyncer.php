@@ -5,9 +5,6 @@ namespace Dotdigitalgroup\Email\Model\Sync\Catalog;
 use Magento\Framework\App\Area;
 use Magento\Store\Model\App\Emulation;
 
-/**
- * @implements CatalogSyncerInterface
- */
 class StoreLevelCatalogSyncer implements CatalogSyncerInterface
 {
     /**
@@ -45,15 +42,19 @@ class StoreLevelCatalogSyncer implements CatalogSyncerInterface
     /**
      * Sync
      *
-     * @see CatalogSyncerInterface::sync()
      * @param array $products
+     *
      * @return array
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @see CatalogSyncerInterface::sync()
      */
     public function sync($products)
     {
         $stores = $this->helper->getStores();
         $syncedProducts = [];
 
+        /** @var \Magento\Store\Model\Store $store */
         foreach ($stores as $store) {
             $enabled = $this->helper->isEnabled($store->getWebsiteId());
             $catalogSyncEnabled = $this->helper->isCatalogSyncEnabled($store->getWebsiteId());
@@ -69,12 +70,12 @@ class StoreLevelCatalogSyncer implements CatalogSyncerInterface
                 true
             );
 
-            $importType = 'Catalog_' . $store->getWebsite()->getCode() . '_' . $store->getCode();
+            $catalogName = 'Catalog_' . $store->getWebsite()->getCode() . '_' . $store->getCode();
             $syncedProducts += $this->storeCatalogSyncer->syncByStore(
                 $products,
                 $storeId,
                 $store->getWebsiteId(),
-                $importType
+                $catalogName
             );
 
             $this->appEmulation->stopEnvironmentEmulation();

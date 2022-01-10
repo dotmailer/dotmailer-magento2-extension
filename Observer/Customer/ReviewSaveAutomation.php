@@ -3,6 +3,8 @@
 namespace Dotdigitalgroup\Email\Observer\Customer;
 
 use Dotdigitalgroup\Email\Model\ContactFactory;
+use Dotdigitalgroup\Email\Model\Sync\Automation\AutomationTypeHandler;
+use Dotdigitalgroup\Email\Model\StatusInterface;
 
 /**
  * New review automation.
@@ -128,10 +130,11 @@ class ReviewSaveAutomation implements \Magento\Framework\Event\ObserverInterface
             if ($programId) {
                 $automation = $this->automationFactory->create();
                 $automation->setEmail($customer->getEmail())
-                    ->setAutomationType(\Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_TYPE_NEW_REVIEW)
-                    ->setEnrolmentStatus(\Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_STATUS_PENDING)
+                    ->setAutomationType(AutomationTypeHandler::AUTOMATION_TYPE_NEW_REVIEW)
+                    ->setEnrolmentStatus(StatusInterface::PENDING)
                     ->setTypeId($dataObject->getReviewId())
                     ->setWebsiteId($websiteId)
+                    ->setStoreId($store->getId())
                     ->setStoreName($store->getName())
                     ->setProgramId($programId);
                 $this->automationResource->save($automation);
@@ -146,8 +149,6 @@ class ReviewSaveAutomation implements \Magento\Framework\Event\ObserverInterface
      *
      * @param mixed $review
      * @param string $storeId
-     *
-     * @return null
      */
     private function registerReview($review, $storeId)
     {

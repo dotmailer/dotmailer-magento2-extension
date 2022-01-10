@@ -3,7 +3,7 @@
        xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
     <test name="ImageTypesSettingsTest">
         <annotations>
-            <features value="Engagement Cloud module"/>
+            <features value="Dotdigital module"/>
             <stories value="Test dotdigital image types settings"/>
             <title value="Test images types settings page"/>
             <description value="The dotdigital image types section can be viewed, and values stored."/>

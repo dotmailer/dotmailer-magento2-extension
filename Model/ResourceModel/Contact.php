@@ -4,6 +4,7 @@ namespace Dotdigitalgroup\Email\Model\ResourceModel;
 
 use Dotdigitalgroup\Email\Helper\Config;
 use Dotdigitalgroup\Email\Setup\SchemaInterface as Schema;
+use Magento\Newsletter\Model\Subscriber;
 use Magento\Store\Api\Data\WebsiteInterface;
 
 class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
@@ -12,11 +13,6 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      * @var \Magento\Newsletter\Model\ResourceModel\Subscriber\CollectionFactory
      */
     public $subscribersCollection;
-
-    /**
-     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory
-     */
-    public $contactCollectionFactory;
 
     /**
      * @var \Magento\Customer\Model\ResourceModel\Customer\CollectionFactory
@@ -66,7 +62,6 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      * @param \Magento\Customer\Model\ResourceModel\Customer\CollectionFactory $customerCollectionFactory
      * @param \Magento\Cron\Model\ScheduleFactory $schedule
      * @param \Dotdigitalgroup\Email\Model\Sql\ExpressionFactory $expressionFactory
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory $contactCollectionFactory
      * @param \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollectionFactory
      * @param \Magento\Quote\Model\ResourceModel\QuoteFactory $quoteResourceFactory
      * @param Config $config
@@ -78,7 +73,6 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         \Magento\Customer\Model\ResourceModel\Customer\CollectionFactory $customerCollectionFactory,
         \Magento\Cron\Model\ScheduleFactory $schedule,
         \Dotdigitalgroup\Email\Model\Sql\ExpressionFactory $expressionFactory,
-        \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory $contactCollectionFactory,
         \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollectionFactory,
         \Magento\Quote\Model\ResourceModel\QuoteFactory $quoteResourceFactory,
         Config $config,
@@ -89,7 +83,6 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         $this->scheduleFactory         = $schedule;
         $this->customerCollection       = $customerCollectionFactory;
         $this->subscribersCollection    = $subscriberCollection;
-        $this->contactCollectionFactory = $contactCollectionFactory;
         $this->orderCollectionFactory   = $orderCollectionFactory;
         $this->quoteResourceFactory = $quoteResourceFactory;
         parent::__construct($context, $connectionName);
@@ -118,14 +111,24 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 
     /**
      * Reset the imported contacts.
-     *
+     * @param string|null $from
+     * @param string|null $to
      * @return int
-     *
      */
-    public function resetAllContacts()
+    public function resetAllContacts(string $from = null, string $to = null)
     {
         $conn = $this->getConnection();
-        $where = ['email_imported = ?' => 1];
+
+        if ($from && $to) {
+            $where = [
+                'created_at >= ?' => $from . ' 00:00:00',
+                'created_at <= ?' => $to . ' 23:59:59',
+                'email_imported = ?' => 1
+            ];
+        } else {
+            $where = ['email_imported = ?' => 1];
+        }
+
         $num = $conn->update(
             $this->getTable(Schema::EMAIL_CONTACT_TABLE),
             ['email_imported' => 0],
@@ -153,53 +156,82 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 
     /**
      * Set all imported subscribers for reimport.
-     *
+     * @param string|null $from
+     * @param string|null $to
      * @return int
-     *
      */
-    public function resetSubscribers()
+    public function resetSubscribers(string $from = null, string $to = null)
     {
         $conn = $this->getConnection();
+
+        if ($from && $to) {
+            $where = [
+                'created_at >= ?' => $from . ' 00:00:00',
+                'created_at <= ?' => $to . ' 23:59:59',
+                'subscriber_imported = ?' => 1
+            ];
+        } else {
+            $where = ['subscriber_imported = ?' => 1];
+        }
 
         $num = $conn->update(
             $this->getTable(Schema::EMAIL_CONTACT_TABLE),
             ['subscriber_imported' => 0],
-            ['subscriber_imported = ?' => 1]
+            $where
         );
 
         return $num;
     }
 
     /**
-     * Unsubscribe a contact from email_contact/newsletter table.
-     * @deprecated 4.13.1 Unsubcribe should restrict by scope.
+     * Subscribe a batch of contacts in email_contact/newsletter table,
+     * supplying store ids to restrict the scope.
      *
-     * @param array $emails
+     * @param array $storeContacts
+     *
      * @return int
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function unsubscribe($emails)
+    public function subscribeByEmailAndStore(array $storeContacts)
     {
-        if (! empty($emails) && is_array($emails)) {
+        if (!empty($storeContacts) && is_array($storeContacts)) {
             $write = $this->getConnection();
+            $now = (new \DateTime('now', new \DateTimeZone('UTC')))
+                ->format(\DateTime::ATOM);
+            $updated = 0;
 
-            //un-subscribe from the email contact table.
-            $updated = $write->update(
-                $this->getMainTable(),
-                [
-                    'is_subscriber' => $this->expressionFactory->create(["expression" => 'null']),
-                    'subscriber_status' => \Magento\Newsletter\Model\Subscriber::STATUS_UNSUBSCRIBED,
-                    'suppressed' => '1',
-                    'last_subscribed_at' => $this->expressionFactory->create(['expression' => 'null']),
-                ],
-                ["email IN (?)" => $emails]
-            );
+            foreach ($storeContacts as $storeId => $emails) {
+                // resubscribe to email_contact
+                $ecUpdated = $write->update(
+                    $this->getMainTable(),
+                    [
+                        'is_subscriber' => '1',
+                        'subscriber_status' => Subscriber::STATUS_SUBSCRIBED,
+                        'suppressed' => '0',
+                        'last_subscribed_at' => $now,
+                        'updated_at' => $now
+                    ],
+                    [
+                        "email IN (?)" => $emails,
+                        "store_id = (?)" => $storeId
+                    ]
+                );
 
-            // un-subscribe newsletter subscribers
-            $write->update(
-                $this->getTable('newsletter_subscriber'),
-                ['subscriber_status' => \Magento\Newsletter\Model\Subscriber::STATUS_UNSUBSCRIBED],
-                ["subscriber_email IN (?)" => $emails]
-            );
+                // resubscribe to newsletter_subscriber
+                $write->update(
+                    $this->getTable('newsletter_subscriber'),
+                    [
+                        'subscriber_status' => Subscriber::STATUS_SUBSCRIBED,
+                        'change_status_at' => $now,
+                    ],
+                    [
+                        "subscriber_email IN (?)" => $emails,
+                        "store_id = (?)" => $storeId
+                    ]
+                );
+
+                $updated += $ecUpdated;
+            }
 
             return $updated;
         }
@@ -220,15 +252,18 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     {
         if (! empty($emails) && is_array($emails)) {
             $write = $this->getConnection();
+            $now = (new \DateTime('now', new \DateTimeZone('UTC')))
+                ->format(\DateTime::ATOM);
 
             //un-subscribe from the email contact table.
             $updated = $write->update(
                 $this->getMainTable(),
                 [
                     'is_subscriber' => $this->expressionFactory->create(["expression" => 'null']),
-                    'subscriber_status' => \Magento\Newsletter\Model\Subscriber::STATUS_UNSUBSCRIBED,
+                    'subscriber_status' => Subscriber::STATUS_UNSUBSCRIBED,
                     'suppressed' => '1',
                     'last_subscribed_at' => $this->expressionFactory->create(['expression' => 'null']),
+                    'updated_at' => $now
                 ],
                 [
                     "email IN (?)" => $emails,
@@ -246,7 +281,10 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 
             $write->update(
                 $this->getTable('newsletter_subscriber'),
-                ['subscriber_status' => \Magento\Newsletter\Model\Subscriber::STATUS_UNSUBSCRIBED],
+                [
+                    'subscriber_status' => Subscriber::STATUS_UNSUBSCRIBED,
+                    'change_status_at' => $now
+                ],
                 $newsletterWhereConditions
             );
 
@@ -388,22 +426,6 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         }
 
         return $orderArray;
-    }
-
-    /**
-     * @param array $emails
-     * @return array|null
-     */
-    public function getLastSubscribedAtDates(array $emails)
-    {
-        // get current contact records to check when they last subscribed
-        return $this->contactCollectionFactory->create()
-            ->addFieldToSelect([
-                'email',
-                'last_subscribed_at',
-            ])
-            ->addFieldToFilter('email', ['in' => $emails])
-            ->getData();
     }
 
     /**

@@ -2,11 +2,20 @@
 
 namespace Dotdigitalgroup\Email\Model;
 
+use Dotdigitalgroup\Email\Helper\Config;
 use Dotdigitalgroup\Email\Model\Cron\JobChecker;
-use Dotdigitalgroup\Email\Model\Sync\IntegrationInsightsFactory;
+use Dotdigitalgroup\Email\Model\Sync\Integration\IntegrationInsightsFactory;
 
 class Cron
 {
+    const CRON_PATHS = [
+        Config::XML_PATH_CRON_SCHEDULE_IMPORTER => 5,
+        Config::XML_PATH_CRON_SCHEDULE_ORDERS => 15,
+        Config::XML_PATH_CRON_SCHEDULE_REVIEWS => 15,
+        Config::XML_PATH_CRON_SCHEDULE_CONTACT => 15,
+        Config::XML_PATH_CRON_SCHEDULE_CATALOG => 15,
+    ];
+
     /**
      * @var Email\TemplateFactory
      */
@@ -41,6 +50,11 @@ class Cron
      * @var Newsletter\UnsubscriberFactory
      */
     private $unsubscriberFactory;
+
+    /**
+     * @var Newsletter\ResubscriberFactory
+     */
+    private $resubscriberFactory;
 
     /**
      * @var Customer\GuestFactory
@@ -113,6 +127,7 @@ class Cron
         Customer\GuestFactory $guestFactory,
         Newsletter\SubscriberFactory $subscriberFactory,
         Newsletter\UnsubscriberFactory $unsubscriberFactory,
+        Newsletter\ResubscriberFactory $resubscriberFactory,
         Sync\CatalogFactory $catalogFactory,
         Sync\ImporterFactory $importerFactory,
         Sync\AutomationFactory $automationFactory,
@@ -130,6 +145,7 @@ class Cron
         $this->guestFactory      = $guestFactory;
         $this->subscriberFactory = $subscriberFactory;
         $this->unsubscriberFactory = $unsubscriberFactory;
+        $this->resubscriberFactory = $resubscriberFactory;
         $this->catalogFactory    = $catalogFactory;
         $this->importerFactory   = $importerFactory;
         $this->automationFactory = $automationFactory;
@@ -173,10 +189,6 @@ class Cron
         //sync subscribers
         $subscriberModel = $this->subscriberFactory->create();
         $result = $subscriberModel->runExport();
-
-        //un-subscribe suppressed contacts
-        $unsubscriberModel = $this->unsubscriberFactory->create();
-        $unsubscriberModel->unsubscribe();
 
         //sync guests
         $this->guestFactory->create()->sync();
@@ -335,5 +347,45 @@ class Cron
 
         $this->monitor->create()
             ->run();
+    }
+
+    /**
+     * Unsubscribe suppressions from Dotdigital.
+     *
+     * @return void
+     */
+    public function unsubscribe()
+    {
+        $jobCode = 'ddg_automation_unsubscribe';
+
+        if ($this->jobChecker->hasAlreadyBeenRun($jobCode)) {
+            return;
+        }
+
+        $this->unsubscriberFactory
+            ->create(
+                ['data' => ['fromTime' => $this->jobChecker->getLastJobFinishedAt($jobCode)]]
+            )
+            ->unsubscribe();
+    }
+
+    /**
+     * Resubscribe recent subscribers from Dotdigital.
+     *
+     * @return void
+     */
+    public function resubscribe()
+    {
+        $jobCode = 'ddg_automation_resubscribe';
+
+        if ($this->jobChecker->hasAlreadyBeenRun($jobCode)) {
+            return;
+        }
+
+        $this->resubscriberFactory
+            ->create(
+                ['data' => ['fromTime' => $this->jobChecker->getLastJobFinishedAt($jobCode)]]
+            )
+            ->subscribe();
     }
 }

@@ -1,8 +1,8 @@
 {
-  "name": "dotmailer/dotmailer-magento2-extension",
-  "description": "dotmailer integration for magento 2",
+  "name": "dotdigital/dotdigital-magento2-extension",
+  "description": "Dotdigital for Magento 2",
   "type": "magento2-module",
-  "version": "4.13.8",
+  "version": "4.14.0",
   "license": "MIT",
   "repositories": [
     {
@@ -10,8 +10,11 @@
       "url": "https://repo.magento.com/"
     }
   ],
+  "replace": {
+    "dotmailer/dotmailer-magento2-extension": "*"
+  },
   "require": {
-    "php": "^7.1",
+    "php": "^7.1||^8.0",
     "magento/framework": ">=101 <104",
     "magento/module-newsletter": "100.*",
     "magento/module-review": ">=100 <102",
@@ -44,7 +47,11 @@
     "magento/module-grouped-product": "100.*",
     "magento/module-url-rewrite": ">=100 <103",
     "magento/module-authorization": "100.*",
-    "magento/module-tax": "100.*"
+    "magento/module-tax": "100.*",
+    "magento/module-inventory-api": "*",
+    "magento/module-inventory-configuration-api": "*",
+    "magento/module-inventory-sales-admin-ui": "*",
+    "magento/module-inventory-sales-api": "*"
   },
   "autoload": {
     "files": [ "registration.php" ],
@@ -53,6 +60,6 @@
     }
   },
   "suggest": {
-    "dotmailer/dotmailer-magento2-extension-chat": "Adds Engagement Cloud Chat to your Magento store"
+    "dotdigital/dotdigital-magento2-extension-chat": "Adds Dotdigital Chat to your Magento store"
   }
 }

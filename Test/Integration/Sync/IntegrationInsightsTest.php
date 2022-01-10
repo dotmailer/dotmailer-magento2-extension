@@ -3,7 +3,7 @@
 namespace Dotdigitalgroup\Email\Sync;
 
 use Dotdigitalgroup\Email\Helper\Config;
-use Dotdigitalgroup\Email\Model\Sync\IntegrationInsights;
+use Dotdigitalgroup\Email\Model\Sync\Integration\IntegrationInsights;
 use Dotdigitalgroup\Email\Test\Integration\MocksApiResponses;
 use Magento\Framework\App\Config\MutableScopeConfigInterface;
 use Magento\Framework\App\ObjectManager;

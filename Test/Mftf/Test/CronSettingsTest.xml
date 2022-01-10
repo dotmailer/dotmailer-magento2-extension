@@ -3,7 +3,7 @@
        xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
     <test name="CronSettingsTest">
         <annotations>
-            <features value="Engagement Cloud module"/>
+            <features value="Dotdigital module"/>
             <stories value="Test dotdigital developer section settings"/>
             <title value="Test cron frequency settings"/>
             <description value="The Manage Cron Timings section can be viewed, and its settings updated."/>

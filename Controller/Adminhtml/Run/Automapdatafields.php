@@ -79,7 +79,7 @@ class Automapdatafields extends \Magento\Backend\App\AbstractAction
                 ->addNoticeMessage('There were some errors mapping data fields. Please check the connector log.');
         } else {
             $this->messageManager
-                ->addSuccessMessage('All data fields created and mapped to your Engagement Cloud account.');
+                ->addSuccessMessage('All data fields created and mapped to your Dotdigital account.');
         }
 
         $this->_redirect($redirectUrl);

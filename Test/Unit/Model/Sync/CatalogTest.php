@@ -11,6 +11,8 @@ use Dotdigitalgroup\Email\Model\Sync\Catalog;
 use Dotdigitalgroup\Email\Model\Sync\Catalog\CatalogSyncerInterface;
 use Dotdigitalgroup\Email\Model\Sync\Catalog\CatalogSyncFactory;
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use Dotdigitalgroup\Email\Model\ImporterFactory;
+use Dotdigitalgroup\Email\Model\Importer;
 use PHPUnit\Framework\TestCase;
 
 class CatalogTest extends TestCase
@@ -60,6 +62,16 @@ class CatalogTest extends TestCase
      */
     private $scopeConfigInterfaceMock;
 
+    /**
+     * @var ImporterFactory
+     */
+    private $importerFactoryMock;
+
+    /**
+     * @var Importer|mixed|\PHPUnit\Framework\MockObject\MockObject
+     */
+    private $importerMock;
+
     protected function setUp() :void
     {
         $this->catalogCollectionMock = $this->createMock(CatalogCollection::Class);
@@ -70,6 +82,8 @@ class CatalogTest extends TestCase
         $this->catalogSyncerInterfaceMock = $this->createMock(CatalogSyncerInterface::class);
         $this->resourceCatalogMock = $this->createMock(ResourceCatalog::class);
         $this->scopeConfigInterfaceMock = $this->createMock(ScopeConfigInterface::class);
+        $this->importerFactoryMock = $this->createMock(ImporterFactory::class);
+        $this->importerMock = $this->createMock(Importer::class);
 
         $this->helperMock->expects($this->any())
             ->method('isEnabled')
@@ -84,7 +98,8 @@ class CatalogTest extends TestCase
             $this->scopeConfigInterfaceMock,
             $this->catalogResourceFactoryMock,
             $this->catalogCollectionFactoryMock,
-            $this->catalogSyncFactoryMock
+            $this->catalogSyncFactoryMock,
+            $this->importerFactoryMock
         );
     }
 
@@ -97,19 +112,20 @@ class CatalogTest extends TestCase
         $removeOrphanProductsResult = null;
         $unexpectedResultMessage = 'Done.';
         $expectedResultMessage = '----------- Catalog sync ----------- : ' .
-            '00:00:00, Total processed = 10, Total synced = 5';
+            '00:00:00, Total processed = 10, Total synced = 15';
 
-        $this->getLimit();
+        $this->getLimitAnfBreakValue();
         $productsToProcess = $this->getMockProductsToProcess();
+        $noProductsTProcess = [];
         $syncedProducts = $this->getMockSyncedProducts();
 
-        $this->catalogCollectionFactoryMock->expects($this->once())
+        $this->catalogCollectionFactoryMock->expects($this->atLeastOnce())
             ->method('create')
             ->willReturn($this->catalogCollectionMock);
 
-        $this->catalogCollectionMock->expects($this->once())
+        $this->catalogCollectionMock
             ->method('getProductsToProcess')
-            ->willReturn($productsToProcess);
+            ->willReturnOnConsecutiveCalls($productsToProcess, $noProductsTProcess);
 
         $this->catalogResourceFactoryMock->expects($this->atLeastOnce())
             ->method('create')
@@ -127,8 +143,8 @@ class CatalogTest extends TestCase
             ->method('sync')
             ->willReturn($syncedProducts);
 
-        $this->setImportedByDate(array_keys($syncedProducts));
         $this->setProcessed($productsToProcess);
+        $this->addToImportQueue();
 
         $response = $this->catalog->sync();
 
@@ -139,50 +155,15 @@ class CatalogTest extends TestCase
     }
 
     /**
-     *
-     */
-    public function testSyncCatalogIfNoProductsAvailableToProcess()
-    {
-        $countProducts = 0;
-        $removeOrphanProductsResult = null;
-        $expectedResultMessage = 'Catalog sync skipped, no products to process.';
-        $unexpectedResultMessage = '----------- Catalog sync ----------- : ' .
-            '00:00:00, Total processed = 10, Total synced = 10';
-
-        $this->getLimit();
-        $productsToProcess = [];
-
-        $this->catalogCollectionFactoryMock->expects($this->once())
-            ->method('create')
-            ->willReturn($this->catalogCollectionMock);
-
-        $this->catalogCollectionMock->expects($this->once())
-            ->method('getProductsToProcess')
-            ->willReturn($productsToProcess);
-
-        $this->catalogResourceFactoryMock->expects($this->atLeastOnce())
-            ->method('create')
-            ->willReturn($this->resourceCatalogMock);
-
-        $this->setProcessed($productsToProcess);
-
-        $response = $this->catalog->sync();
-
-        $this->assertEquals($countProducts, 0);
-        $this->assertNull($removeOrphanProductsResult);
-        $this->assertNotEquals($response['message'], $unexpectedResultMessage);
-        $this->assertEquals($response['message'], $expectedResultMessage);
-    }
-
-    /**
      * Tests retrieving the configured sync limit.
      */
-    private function getLimit()
+    private function getLimitAnfBreakValue()
     {
-        $this->scopeConfigInterfaceMock->expects($this->once())
-            ->method('getValue')
-            ->with(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_TRANSACTIONAL_DATA_SYNC_LIMIT)
-            ->willReturn(500);
+        $this->scopeConfigInterfaceMock->method('getValue')
+            ->withConsecutive(
+                [\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_TRANSACTIONAL_DATA_SYNC_LIMIT],
+                [\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_CATALOG_BREAK_VALUE]
+            )->willReturnOnConsecutiveCalls(500, null);
     }
 
     /**
@@ -192,16 +173,6 @@ class CatalogTest extends TestCase
     {
         $this->resourceCatalogMock->expects($this->once())
             ->method('setProcessedByIds')
-            ->with($products);
-    }
-
-    /**
-     * @param $products
-     */
-    private function setImportedByDate($products)
-    {
-        $this->resourceCatalogMock->expects($this->atLeastOnce())
-            ->method('setImportedDateByIds')
             ->with($products);
     }
 
@@ -234,11 +205,84 @@ class CatalogTest extends TestCase
     public function getMockSyncedProducts()
     {
         return [
-            '1205' => [],
-            '1206' => [],
-            '1207' => [],
-            '1208' => [],
-            '1209' => []
+            'Catalog_Store_1' => [
+                'products' => [
+                    '1205' => [],
+                    '1206' => [],
+                    '1207' => [],
+                    '1208' => [],
+                    '1209' => []
+                ],
+                'websiteId' => 1
+            ],
+            'Catalog_Store_2' => [
+                'products' => [
+                    '1205' => [],
+                    '1206' => [],
+                    '1207' => [],
+                    '1208' => [],
+                    '1209' => []
+                ],
+                'websiteId' => 2
+            ],
+            'Catalog_Store_3' => [
+                'products' => [
+                    '1205' => [],
+                    '1206' => [],
+                    '1207' => [],
+                    '1208' => [],
+                    '1209' => []
+                ],
+                'websiteId' => 3
+            ],
         ];
+    }
+
+    /**
+     * @return string[]
+     */
+    private function getProductIds()
+    {
+        return [
+            '1205',
+            '1206',
+            '1207',
+            '1208',
+            '1209'
+        ];
+    }
+
+    /**
+     * Mocks the importer register process
+     */
+    private function addToImportQueue()
+    {
+        $productsToImport = $this->getMockSyncedProducts();
+        $this->importerFactoryMock->expects($this->atLeastOnce())
+            ->method('create')
+            ->willReturn($this->importerMock);
+
+        $this->importerMock->expects($this->atLeastOnce())
+                ->method('registerQueue')
+        ->withConsecutive(
+            [
+                'Catalog_Store_1',
+                $productsToImport['Catalog_Store_1']['products'],
+                \Dotdigitalgroup\Email\Model\Importer::MODE_BULK,
+                $productsToImport['Catalog_Store_1']['websiteId']
+            ],
+            [
+                'Catalog_Store_2',
+                $productsToImport['Catalog_Store_2']['products'],
+                \Dotdigitalgroup\Email\Model\Importer::MODE_BULK,
+                $productsToImport['Catalog_Store_2']['websiteId']
+            ],
+            [
+                'Catalog_Store_3',
+                $productsToImport['Catalog_Store_3']['products'],
+                \Dotdigitalgroup\Email\Model\Importer::MODE_BULK,
+                $productsToImport['Catalog_Store_3']['websiteId']
+            ],
+        );
     }
 }

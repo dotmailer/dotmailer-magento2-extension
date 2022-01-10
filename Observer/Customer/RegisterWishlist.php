@@ -3,6 +3,8 @@
 namespace Dotdigitalgroup\Email\Observer\Customer;
 
 use Dotdigitalgroup\Email\Logger\Logger;
+use Dotdigitalgroup\Email\Model\Sync\Automation\AutomationTypeHandler;
+use Dotdigitalgroup\Email\Model\StatusInterface;
 use Magento\Wishlist\Model\ResourceModel\Item\CollectionFactory;
 
 /**
@@ -150,6 +152,7 @@ class RegisterWishlist implements \Magento\Framework\Event\ObserverInterface
             $this->registerWithAutomation(
                 $wishlist,
                 $websiteId,
+                $storeId,
                 $this->storeManager->getStore($storeId)->getName()
             );
 
@@ -186,16 +189,20 @@ class RegisterWishlist implements \Magento\Framework\Event\ObserverInterface
 
     /**
      * @param \Dotdigitalgroup\Email\Model\Wishlist $wishlist
+     * @param string|int $websiteId
+     * @param string|int $storeId
      * @param string $storeName
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
-    private function registerWithAutomation($wishlist, $websiteId, $storeName)
+    private function registerWithAutomation($wishlist, $websiteId, $storeId, $storeName)
     {
         $customer = $this->customerRepository->getById($wishlist->getCustomerId());
 
         try {
             $programId = $this->helper->getWebsiteConfig(
                 \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_AUTOMATION_STUDIO_WISHLIST,
-                $customer->getWebsiteId()
+                $storeId
             );
 
             //wishlist program mapped
@@ -203,9 +210,10 @@ class RegisterWishlist implements \Magento\Framework\Event\ObserverInterface
                 $automation = $this->automationFactory->create();
                 //save automation type
                 $automation->setEmail($customer->getEmail())
-                    ->setAutomationType(\Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_TYPE_NEW_WISHLIST)
-                    ->setEnrolmentStatus(\Dotdigitalgroup\Email\Model\Sync\Automation::AUTOMATION_STATUS_PENDING)
+                    ->setAutomationType(AutomationTypeHandler::AUTOMATION_TYPE_NEW_WISHLIST)
+                    ->setEnrolmentStatus(StatusInterface::PENDING)
                     ->setTypeId($wishlist->getWishlistId())
+                    ->setStoreId($storeId)
                     ->setWebsiteId($websiteId)
                     ->setStoreName($storeName)
                     ->setProgramId($programId);

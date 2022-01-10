@@ -21,13 +21,19 @@ class Contact extends \Magento\Framework\Model\AbstractModel
     private $contactResource;
 
     /**
+     * @var \Magento\Framework\Stdlib\DateTime
+     */
+    private $dateTime;
+
+    /**
      * Contact constructor.
      * @param \Magento\Framework\Model\Context $context
      * @param \Magento\Framework\Registry $registry
-     * @param \Magento\Framework\Model\ResourceModel\AbstractResource|null $resource
-     * @param \Magento\Framework\Data\Collection\AbstractDb|null $resourceCollection
      * @param ResourceModel\Contact $contactResource
      * @param ContactCollectionFactory $contactCollectionFactory
+     * @param \Magento\Framework\Stdlib\DateTime $dateTime
+     * @param \Magento\Framework\Model\ResourceModel\AbstractResource|null $resource
+     * @param \Magento\Framework\Data\Collection\AbstractDb|null $resourceCollection
      * @param array $data
      */
     public function __construct(
@@ -35,10 +41,12 @@ class Contact extends \Magento\Framework\Model\AbstractModel
         \Magento\Framework\Registry $registry,
         \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contactResource,
         ContactCollectionFactory $contactCollectionFactory,
+        \Magento\Framework\Stdlib\DateTime $dateTime,
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         array $data = []
     ) {
+        $this->dateTime = $dateTime;
         $this->contactCollectionFactory = $contactCollectionFactory;
         $this->contactResource = $contactResource;
 
@@ -59,6 +67,22 @@ class Contact extends \Magento\Framework\Model\AbstractModel
     public function _construct()
     {
         $this->_init(\Dotdigitalgroup\Email\Model\ResourceModel\Contact::class);
+    }
+
+    /**
+     * Prepare data to be saved to database.
+     *
+     * @return $this
+     */
+    public function beforeSave()
+    {
+        parent::beforeSave();
+        if ($this->isObjectNew() && !$this->getCreatedAt()) {
+            $this->setCreatedAt($this->dateTime->formatDate(true));
+        }
+        $this->setUpdatedAt($this->dateTime->formatDate(true));
+
+        return $this;
     }
 
     /**
@@ -237,5 +261,15 @@ class Contact extends \Magento\Framework\Model\AbstractModel
             );
             $this->contactResource->save($contactModel);
         }
+    }
+
+    /**
+     * @param string|null $from
+     * @param string|null $to
+     * @return int
+     */
+    public function reset(string $from = null, string $to = null)
+    {
+        return $this->contactResource->resetAllContacts($from, $to);
     }
 }

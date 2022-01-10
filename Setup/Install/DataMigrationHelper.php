@@ -73,24 +73,21 @@ class DataMigrationHelper
     }
 
     /**
-     * Run all install methods
+     * @param string|null $table
+     * @throws \ErrorException
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Zend_Db_Statement_Exception
      */
-    public function run()
+    public function run($table = null)
     {
-        // truncate any tables which are about to be updated
-        $this->emptyTables();
+        $types = $this->dataMigrationTypeProvider->getEnabledTypes($table);
 
         // loop through types and execute
-        foreach ($this->dataMigrationTypeProvider->getTypes() as $dataMigration) {
+        foreach ($types as $dataMigration) {
             /** @var AbstractDataMigration $dataMigration */
             $dataMigration->execute();
             $this->logActions($dataMigration);
         }
-
-        /**
-         * Save config value
-         */
-        $this->generateAndSaveCode();
     }
 
     /**
@@ -102,6 +99,59 @@ class DataMigrationHelper
     {
         $this->output = $output;
         return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getTablesFromAvailableTypes()
+    {
+        $tables = [];
+        foreach ($this->dataMigrationTypeProvider->getTypes() as $migrationType) {
+            $tables[] = $migrationType->getTableName();
+        }
+
+        return array_unique($tables);
+    }
+
+    /**
+     * Truncate relevant tables before running
+     * @param null $table
+     * @return $this
+     */
+    public function emptyTables($table = null)
+    {
+        foreach ($this->dataMigrationTypeProvider->getEnabledTypes($table) as $migrationType) {
+            /** @var AbstractDataMigration $migrationType */
+            $tableName = $this->resourceConnection->getTableName($migrationType->getTableName());
+            $this->resourceConnection->getConnection()->delete($tableName);
+
+            $this->resourceConnection->getConnection()
+                ->query(sprintf('ALTER TABLE %s AUTO_INCREMENT = 1', $tableName));
+        }
+
+        return $this;
+    }
+
+    /**
+     * Generate a random string and save in config
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function generateAndSaveCode()
+    {
+        $passcode = $this->scopeConfig->getValue(
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_CONTENT_PASSCODE
+        );
+
+        if (!$passcode) {
+            $code = $this->randomMath->getRandomString(32);
+            $this->config->saveConfig(
+                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_CONTENT_PASSCODE,
+                $code,
+                'default',
+                '0'
+            );
+        }
     }
 
     /**
@@ -121,42 +171,6 @@ class DataMigrationHelper
                 get_class($dataMigration),
                 $dataMigration->getRowsAffected()
             ));
-        }
-    }
-
-    /**
-     * Truncate relevant tables before running
-     */
-    private function emptyTables()
-    {
-        foreach ($this->dataMigrationTypeProvider->getTypes() as $migrationType) {
-            /** @var AbstractDataMigration $migrationType */
-            $tableName = $this->resourceConnection->getTableName($migrationType->getTableName());
-            $this->resourceConnection->getConnection()->delete($tableName);
-
-            $this->resourceConnection->getConnection()
-                ->query(sprintf('ALTER TABLE %s AUTO_INCREMENT = 1', $tableName));
-        }
-    }
-
-    /**
-     * Generate a random string and save in config
-     * @throws \Magento\Framework\Exception\LocalizedException
-     */
-    private function generateAndSaveCode()
-    {
-        $passcode = $this->scopeConfig->getValue(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_CONTENT_PASSCODE
-        );
-
-        if (!$passcode) {
-            $code = $this->randomMath->getRandomString(32);
-            $this->config->saveConfig(
-                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_DYNAMIC_CONTENT_PASSCODE,
-                $code,
-                'default',
-                '0'
-            );
         }
     }
 }

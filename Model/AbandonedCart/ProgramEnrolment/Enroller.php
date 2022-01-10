@@ -58,11 +58,6 @@ class Enroller
     private $timeLimit;
 
     /**
-     * @var StoreManagerInterface
-     */
-    private $storeManager;
-
-    /**
      * @param Logger $logger
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory $collectionFactory
      * @param \Dotdigitalgroup\Email\Helper\Data $data
@@ -223,7 +218,7 @@ class Enroller
                 ->getAbandonedCartAutomationsForContactByInterval(
                     $quote->getCustomerEmail(),
                     $updated,
-                    $websiteId
+                    $storeId
                 );
         } catch (\Exception $e) {
             return false;

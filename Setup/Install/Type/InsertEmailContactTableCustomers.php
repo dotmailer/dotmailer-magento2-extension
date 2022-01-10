@@ -25,7 +25,9 @@ class InsertEmailContactTableCustomers extends AbstractDataMigration implements 
                 'customer_id' => 'entity_id',
                 'email',
                 'website_id',
-                'store_id'
+                'store_id',
+                'created_at',
+                'updated_at'
             ])
             ->order('customer_id')
         ;
@@ -41,6 +43,8 @@ class InsertEmailContactTableCustomers extends AbstractDataMigration implements 
             'email',
             'website_id',
             'store_id',
+            'created_at',
+            'updated_at'
         ];
     }
 }

@@ -250,7 +250,15 @@ class Product
             )
         );
 
-        $this->stock = (float)number_format($this->stockFinderInterface->getStockQty($product), 2, '.', '');
+        $this->stock = (float) number_format(
+            $this->stockFinderInterface->getStockQty(
+                $product,
+                (int) $this->storeManager->getStore($storeId)->getWebsiteId()
+            ),
+            2,
+            '.',
+            ''
+        );
 
         //limit short description
         $this->shortDescription = mb_substr(

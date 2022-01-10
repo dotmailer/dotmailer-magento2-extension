@@ -2,6 +2,9 @@
 
 namespace Dotdigitalgroup\Email\Helper;
 
+use Dotdigitalgroup\Email\Model\DateIntervalFactory;
+use Magento\Framework\Intl\DateTimeFactory;
+
 /**
  * Dynamic content configuration data and recommendation values.
  */
@@ -49,14 +52,19 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
     private $adapter;
 
     /**
-     * @var \Zend_Date
-     */
-    private $date;
-
-    /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Catalog
      */
     public $catalog;
+
+    /**
+     * @var \Dotdigitalgroup\Email\Model\DateIntervalFactory
+     */
+    private $dateIntervalFactory;
+
+    /**
+     * @var \Dotdigitalgroup\Email\Model\DateTimeFactory
+     */
+    private $dateTimeFactory;
 
     /**
      * Recommended constructor.
@@ -65,22 +73,26 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
      * @param \Dotdigitalgroup\Email\Helper\Data $data
      * @param \Magento\Framework\App\Helper\Context $context
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
-     * @param \Zend_Date $date
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalog
+     * @param DateIntervalFactory $dateIntervalFactory
+     * @param DateTimeFactory $dateTimeFactory
      */
     public function __construct(
         \Magento\Framework\App\ResourceConnection $adapter,
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Magento\Framework\App\Helper\Context $context,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
-        \Zend_Date $date,
-        \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalog
+        \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalog,
+        DateIntervalFactory $dateIntervalFactory,
+        DateTimeFactory $dateTimeFactory
     ) {
         $this->adapter      = $adapter;
         $this->helper       = $data;
         $this->context      = $context;
         $this->storeManager = $storeManager;
-        $this->date = $date;
         $this->catalog    = $catalog;
+        $this->dateIntervalFactory = $dateIntervalFactory;
+        $this->dateTimeFactory = $dateTimeFactory;
 
         parent::__construct($context);
     }
@@ -286,16 +298,17 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getTimeFromConfig($config)
     {
-        $now = $this->date;
+        $now = $this->dateTimeFactory->create('now', new \DateTimeZone('UTC'));
         $period = $this->processConfig($config);
-
         $sub = $this->processPeriod($period);
 
-        if (isset($sub)) {
-            $period = $now->sub(1, $sub);
+        if ($sub) {
+            $period = $now->sub(
+                $this->dateIntervalFactory->create(['interval_spec' => $sub])
+            );
         }
 
-        return $period->toString(\Zend_Date::ISO_8601);
+        return $period->format(\DateTime::ATOM);
     }
 
     /**
@@ -333,13 +346,13 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
         $sub = null;
 
         if ($period == 'week' || $period == 'W') {
-            $sub = \Zend_Date::WEEK;
+            $sub = 'P7D';
         } elseif ($period == 'month' || $period == 'M') {
-            $sub = \Zend_Date::MONTH;
+            $sub = 'P1M';
         } elseif ($period == 'year') {
-            $sub = \Zend_Date::YEAR;
+            $sub = 'P1Y';
         } elseif ($period == 'D') {
-            $sub = \Zend_Date::DAY;
+            $sub = 'P1D';
         }
         return $sub;
     }

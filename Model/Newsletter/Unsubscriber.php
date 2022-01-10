@@ -4,14 +4,19 @@ namespace Dotdigitalgroup\Email\Model\Newsletter;
 
 use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Model\Connector\AccountHandler;
-use Dotdigitalgroup\Email\Model\DateIntervalFactory;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory as ContactCollectionFactory;
-use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
+use Magento\Framework\DataObject;
+use Magento\Framework\Stdlib\DateTime\DateTimeFactory;
+use Magento\Framework\Stdlib\DateTime\TimezoneInterfaceFactory;
 use Magento\Store\Api\StoreWebsiteRelationInterface;
 
-class Unsubscriber
+class Unsubscriber extends DataObject
 {
+    use SetsCronFromTime;
+
+    const BATCH_SIZE = 1000;
+
     /**
      * @var Data
      */
@@ -28,14 +33,14 @@ class Unsubscriber
     private $contactCollectionFactory;
 
     /**
-     * @var TimezoneInterface
+     * @var DateTimeFactory
      */
-    private $timezone;
+    private $dateTimeFactory;
 
     /**
-     * @var DateIntervalFactory
+     * @var TimezoneInterfaceFactory
      */
-    private $dateIntervalFactory;
+    private $timezoneInterfaceFactory;
 
     /**
      * @var AccountHandler
@@ -53,45 +58,50 @@ class Unsubscriber
      * @param Data $helper
      * @param Contact $contactResource
      * @param ContactCollectionFactory $contactCollectionFactory
-     * @param TimezoneInterface $timezone
-     * @param DateIntervalFactory $dateIntervalFactory
+     * @param DateTimeFactory $dateTimeFactory
+     * @param TimezoneInterfaceFactory $timezoneInterfaceFactory
      * @param AccountHandler $accountHandler
      * @param StoreWebsiteRelationInterface $storeWebsiteRelation
+     * @param array $data
      */
     public function __construct(
         Data $helper,
         Contact $contactResource,
         ContactCollectionFactory $contactCollectionFactory,
-        TimezoneInterface $timezone,
-        DateIntervalFactory $dateIntervalFactory,
+        DateTimeFactory $dateTimeFactory,
+        TimezoneInterfaceFactory $timezoneInterfaceFactory,
         AccountHandler $accountHandler,
-        StoreWebsiteRelationInterface $storeWebsiteRelation
+        StoreWebsiteRelationInterface $storeWebsiteRelation,
+        array $data = []
     ) {
         $this->helper = $helper;
         $this->contactResource = $contactResource;
         $this->contactCollectionFactory = $contactCollectionFactory;
-        $this->timezone = $timezone;
-        $this->dateIntervalFactory = $dateIntervalFactory;
+        $this->dateTimeFactory = $dateTimeFactory;
+        $this->timezoneInterfaceFactory = $timezoneInterfaceFactory;
         $this->accountHandler = $accountHandler;
         $this->storeWebsiteRelation = $storeWebsiteRelation;
+        parent::__construct($data);
     }
 
     /**
      * Unsubscribe suppressed contacts by account.
      *
+     * @param int $batchSize This argument enables unit testing of the while loop.
+     *
      * @return int Count of unsubscribes.
      */
-    public function unsubscribe()
+    public function unsubscribe($batchSize = self::BATCH_SIZE)
     {
         $unsubscribes = 0;
 
         $activeApiUsers = $this->accountHandler->getAPIUsersForECEnabledWebsites();
         if (!$activeApiUsers) {
-            return;
+            return 0;
         }
 
         foreach ($activeApiUsers as $apiUser) {
-            $unsubscribes += $this->batchProcessSuppressions($apiUser['websites']);
+            $unsubscribes += $this->batchProcessSuppressions($apiUser['websites'], $batchSize);
         }
 
         return $unsubscribes;
@@ -99,23 +109,22 @@ class Unsubscriber
 
     /**
      * @param array $websiteIds
-     * @param string $intervalSpec
+     * @param int $batchSize
+     *
      * @return int
      */
-    private function batchProcessSuppressions($websiteIds, $intervalSpec = 'PT24H')
+    private function batchProcessSuppressions($websiteIds, $batchSize)
     {
-        $firstWebsiteId = $websiteIds[0];
-        $limit = 5;
-        $batchSize = 1000;
         $skip = 0;
         $unsubscribes = 0;
-        $date = $this->timezone->date()->sub($this->dateIntervalFactory->create(['interval_spec' => $intervalSpec]));
-        $dateString = $date->format(\DateTime::W3C);
-        $client = $this->helper->getWebsiteApiClient($firstWebsiteId);
+        $client = $this->helper->getWebsiteApiClient($websiteIds[0]);
 
-        // Suppressions are returned in batches of max 1000
-        for ($i = 0; $i <= $limit; $i++) {
-            $apiContacts = $client->getContactsSuppressedSinceDate($dateString, $batchSize, $skip);
+        do {
+            $apiContacts = $client->getContactsSuppressedSinceDate(
+                $this->getFromTime(),
+                $batchSize,
+                $skip
+            );
 
             // no more contacts found or the api request failed
             if (!is_array($apiContacts)) {
@@ -139,7 +148,7 @@ class Unsubscriber
             );
 
             $skip += $batchSize;
-        }
+        } while (count($apiContacts) === $batchSize);
 
         return $unsubscribes;
     }
@@ -158,7 +167,7 @@ class Unsubscriber
         }
 
         $localContacts = $this->contactCollectionFactory->create()
-            ->getContactsWithScopeAndLastSubscribedAtDate(
+            ->getSubscribersWithScopeAndLastSubscribedAtDate(
                 array_column($suppressions, 'email'),
                 $websiteIds
             );
@@ -223,7 +232,7 @@ class Unsubscriber
      * - so unsubscribe only for website 1
      *
      * However, in newsletter_subscriber there may be subs for store ids that don't match email_contact,
-     * because email_contact only stores one rwo per website. So we have to unsubscribe for ALL related
+     * because email_contact only stores one row per website. So we have to unsubscribe for ALL related
      * store ids.
      *
      * @param array $contacts

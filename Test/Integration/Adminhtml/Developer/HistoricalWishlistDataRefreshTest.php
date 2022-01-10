@@ -17,7 +17,7 @@ class HistoricalWishlistDataRefreshTest extends \Magento\TestFramework\TestCase\
     /**
      * @var string
      */
-    protected $uri = 'backend/dotdigitalgroup_email/run/wishlistsreset';
+    protected $uri = 'backend/dotdigitalgroup_email/run/reset';
 
     /**
      * @var string
@@ -31,6 +31,7 @@ class HistoricalWishlistDataRefreshTest extends \Magento\TestFramework\TestCase\
         $this->getRequest()->setParams([
             'from' => '',
             'to' => '',
+            'reset-type' => 'wishlist'
         ]);
     }
 

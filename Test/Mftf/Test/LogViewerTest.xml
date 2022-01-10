@@ -3,7 +3,7 @@
        xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
     <test name="LogViewerTest">
         <annotations>
-            <features value="Engagement Cloud module"/>
+            <features value="Dotdigital module"/>
             <stories value="Test Log Viewer"/>
             <title value="Test dotdigital integrated Log Viewer"/>
             <description value="Confirm that log files can be viewed."/>

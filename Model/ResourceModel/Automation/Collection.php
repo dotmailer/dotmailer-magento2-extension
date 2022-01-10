@@ -2,7 +2,8 @@
 
 namespace Dotdigitalgroup\Email\Model\ResourceModel\Automation;
 
-use Dotdigitalgroup\Email\Model\Sync\Automation;
+use Dotdigitalgroup\Email\Model\Sync\Automation\AutomationTypeHandler;
+use Dotdigitalgroup\Email\Model\StatusInterface;
 
 class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection
 {
@@ -14,7 +15,7 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     /**
      * Initialize resource collection.
      *
-     * @return null
+     * @return void
      */
     public function _construct()
     {
@@ -25,24 +26,22 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     }
 
     /**
-     * Get automation status type
-     *
      * @return array
      */
-    public function getAutomationStatusType()
+    public function getTypesForPendingAndConfirmedAutomations()
     {
-        $automationOrderStatusCollection = $this->addFieldToFilter(
+        $collection = $this->addFieldToFilter(
             'enrolment_status',
-            Automation::AUTOMATION_STATUS_PENDING
+            [
+                'in' => [
+                    StatusInterface::PENDING,
+                    StatusInterface::CONFIRMED
+                ]
+            ]
         );
-        $automationOrderStatusCollection
-            ->addFieldToFilter(
-                'automation_type',
-                ['like' => '%' . Automation::ORDER_STATUS_AUTOMATION . '%']
-            )->getSelect()
-            ->group('automation_type');
+        $collection->getSelect()->group('automation_type');
 
-        return $automationOrderStatusCollection->getColumnValues('automation_type');
+        return $collection->getColumnValues('automation_type');
     }
 
     /**
@@ -59,8 +58,8 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
             'enrolment_status',
             [
                 'in' => [
-                    Automation::AUTOMATION_STATUS_PENDING,
-                    Automation::CONTACT_STATUS_CONFIRMED
+                    StatusInterface::PENDING,
+                    StatusInterface::CONFIRMED
                 ]
             ]
         )->addFieldToFilter(
@@ -82,7 +81,7 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     {
         $collection = $this->addFieldToFilter(
             'enrolment_status',
-            Automation::CONTACT_STATUS_PENDING
+            StatusInterface::PENDING_OPT_IN
         );
         if ($expireTime) {
             $collection->addFieldToFilter('created_at', ['lt' => $expireTime]);
@@ -98,7 +97,7 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     {
         $collection = $this->addFieldToFilter(
             'enrolment_status',
-            Automation::CONTACT_STATUS_PENDING
+            StatusInterface::PENDING_OPT_IN
         )->setOrder("updated_at")->setPageSize(1);
 
         return $collection->getFirstItem()->getUpdatedAt();
@@ -112,7 +111,10 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     public function getAbandonedCartAutomationByQuoteId($quoteId)
     {
         $collection = $this->addFieldToFilter('type_id', $quoteId)
-            ->addFieldToFilter('automation_type', Automation::AUTOMATION_TYPE_ABANDONED_CART_PROGRAM_ENROLMENT);
+            ->addFieldToFilter(
+                'automation_type',
+                AutomationTypeHandler::AUTOMATION_TYPE_ABANDONED_CART_PROGRAM_ENROLMENT
+            );
 
         return $collection;
     }
@@ -124,24 +126,28 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
      */
     public function getSubscriberAutomationByEmail($email, $websiteId)
     {
-        $collection = $this->addFieldToFilter('email', $email)
+        return $this->addFieldToFilter('email', $email)
             ->addFieldToFilter('website_id', $websiteId)
-            ->addFieldToFilter('automation_type', Automation::AUTOMATION_TYPE_NEW_SUBSCRIBER);
-
-        return $collection;
+            ->addFieldToFilter(
+                'automation_type',
+                AutomationTypeHandler::AUTOMATION_TYPE_NEW_SUBSCRIBER
+            );
     }
 
     /**
      * @param string $email
      * @param array $updated
-     * @param string|int $websiteId
+     * @param string|int $storeId
      * @return Collection
      */
-    public function getAbandonedCartAutomationsForContactByInterval($email, $updated, $websiteId)
+    public function getAbandonedCartAutomationsForContactByInterval($email, $updated, $storeId)
     {
         return $this->addFieldToFilter('email', $email)
-            ->addFieldToFilter('website_id', $websiteId)
-            ->addFieldToFilter('automation_type', Automation::AUTOMATION_TYPE_ABANDONED_CART_PROGRAM_ENROLMENT)
+            ->addFieldToFilter('store_id', $storeId)
+            ->addFieldToFilter(
+                'automation_type',
+                AutomationTypeHandler::AUTOMATION_TYPE_ABANDONED_CART_PROGRAM_ENROLMENT
+            )
             ->addFieldToFilter('updated_at', $updated);
     }
 
@@ -154,7 +160,7 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
      */
     public function fetchAutomationEnrolmentsWithErrorStatusInTimeWindow($timeWindow)
     {
-        return $this->addFieldToFilter('enrolment_status', Automation::AUTOMATION_STATUS_FAILED)
+        return $this->addFieldToFilter('enrolment_status', StatusInterface::FAILED)
             ->addFieldToFilter('created_at', $timeWindow)
             ->setOrder('updated_at', 'DESC');
     }
@@ -169,7 +175,7 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
      */
     public function fetchAutomationEnrolmentsWithPendingStatusInTimeWindow($timeWindow)
     {
-        return $this->addFieldToFilter('enrolment_status', Automation::AUTOMATION_STATUS_PENDING)
+        return $this->addFieldToFilter('enrolment_status', StatusInterface::PENDING)
             ->addFieldToFilter('created_at', $timeWindow)
             ->addFieldToFilter('created_at', ['lt' => new \DateTime('-1 hour')])
             ->setOrder('updated_at', 'DESC');

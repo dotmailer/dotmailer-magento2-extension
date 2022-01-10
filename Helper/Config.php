@@ -270,6 +270,8 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_PATH_CONNECTOR_ENABLE_SUBSCRIBER_SALES_DATA =
         'connector_developer_settings/import_settings/subscriber_sales_data_enabled';
     const XML_PATH_CONNECTOR_STRIP_PUB = 'connector_developer_settings/import_settings/strip_pub_from_media_paths';
+    const XML_PATH_CONNECTOR_SYNC_CATALOG_BREAK_VALUE =
+        'connector_developer_settings/import_settings/transactional_data_break';
     const XML_PATH_CONNECTOR_SYSTEM_ALERTS_SYSTEM_MESSAGES =
         'connector_developer_settings/system_alerts/system_messages';
     const XML_PATH_CONNECTOR_SYSTEM_ALERTS_EMAIL_NOTIFICATIONS =
