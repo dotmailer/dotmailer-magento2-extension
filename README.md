@@ -1,27 +1,45 @@
-Dotdigital for Magento 2
- ======
-
-[![Packagist Version](https://img.shields.io/packagist/v/dotmailer/dotmailer-magento2-extension?color=green&label=stable)](https://github.com/dotmailer/dotmailer-magento2-extension/releases)
-[![Packagist Version (including pre-releases)](https://img.shields.io/packagist/v/dotmailer/dotmailer-magento2-extension?color=blue&include_prereleases&label=feature)](https://github.com/dotmailer/dotmailer-magento2-extension/releases)
+# Dotdigital for Magento 2
+[![Packagist Version](https://img.shields.io/packagist/v/dotdigital/dotdigital-magento2-extension?color=green&label=stable)](https://github.com/dotmailer/dotmailer-magento2-extension/releases)
+[![Packagist Version (including pre-releases)](https://img.shields.io/packagist/v/dotdigital/dotdigital-magento2-extension?color=blue&include_prereleases&label=feature)](https://github.com/dotmailer/dotmailer-magento2-extension/releases)
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg)](LICENSE.md)
 
 ## Requirements
-
 - PHP 7.1+
 - Magento 2.3+ 
     - Magento 2.1.x is compatible up to version 4.2.0-p1
     - Magento 2.2.x is compatible up to version 4.13.x
 
 ## Version history
-
 Please see our [Changelog](CHANGELOG.md) or the [Releases](https://github.com/dotmailer/dotmailer-magento2-extension/releases) page.
 
-## Usage and support
+## Installation
+We encourage merchants to install our modules via our vendor page on the [Magento Marketplace](https://marketplace.magento.com/partner/dotdigitalLtd). We provide three 'metapackages', each containing a selection of modules to match your flavour of Magento (Open Source, Adobe Commerce or B2B for Adobe Commerce). 
 
-Full support documentation and setup guides available [here](https://support.dotdigital.com/hc/en-gb/sections/360000722900-Engagement-Cloud-for-Magento-2).
+**Steps:**
+1. You must ‘purchase’ the relevant package from the Marketplace.
+2. Any existing `require` instructions in your composer.json relating to `dotmailer/*` packages must be removed.
+3. Now, require the correct package.
+
+For merchants using Magento Open Source:
+```
+composer require dotdigital/dotdigital-magento2-os-package --no-update
+composer update
+```
+For merchants using Adobe Commerce:
+```
+composer require dotdigital/dotdigital-magento2-commerce-package --no-update
+composer update
+```
+For merchants using B2B for Adobe Commerce:
+```
+composer require dotdigital/dotdigital-magento2-b2b-package --no-update
+composer update
+```
+
+## Usage and support
+Full support documentation and setup guides are available [here](https://support.dotdigital.com/hc/en-gb/sections/360000722900-Engagement-Cloud-for-Magento-2).
 
 ### CLI commands
-
 #### sync
 Run the sync commands on demand. Useful when troubleshooting cron issues.
 ```
@@ -80,7 +98,6 @@ Running `migrate` with no options supplied will re-run the complete data install
 - `migrate` will not overwrite a previously-saved dynamic content passcode (4.13.6+). 
 
 ## Contribution
-
 You are welcome to contribute to Dotdigital for Magento! You can either:
 - Report a bug: create a [GitHub issue](https://github.com/dotmailer/dotmailer-magento2-extension/issues/new) including description, repro steps, Magento and extension version numbers
 - Fix a bug: please clone and use our [Develop branch](https://github.com/dotmailer/dotmailer-magento2-extension/tree/develop) to submit your Pull Request

@@ -1,45 +1,50 @@
-# 4.14.0-RC5
+# 4.14.0
 
 ##### What's new
 - Contacts who resubscribe in Dotdigital will have their subscription status updated in Magento.
 - The unsubscribe and resubscribe steps of the subscriber sync have been moved to a separate cron group.
+- Guest abandoned baskets are now restored when a guest clicks the ‘Take me to my basket’ link.
+- Catalog sync now supports Multi Source Inventory in Magento.
+- Merchants can now sync all types of automations by store (previously the sync worked by website). We've modified the code for automation enrolment, including the handling of pending contacts, and updating data fields.
+- We have adopted declarative schema for our module's database structure.
+- The ‘cleaner’ cron can now be run on demand from the CLI.
+- This module has been renamed `dotdigital/dotdigital-magento2-extension`.
 
 ##### Improvements
+- Catalog sync performance has been improved. The sync now runs continuously until all products are processed.
+- Product rows in the Catalog Report can now be set to 'Processed' or 'Not processed' either individually or in bulk.
+- The configurable Dotdigital cron jobs are now scheduled using a random offset. 
+- Integration insight data has been extended to collect additional dotdigital configuration values, via a weekly cron.
+- Data migration can now be performed on a per-table basis via the CLI.
 - `setup_version` has been removed from module.xml; in the Dashboard, we now use composer.json to provide the current active module versions.
-- We've removed some repetition when generating the dynamic content passcode. 
+- We've improved our handling of the contact import report; to be resubscribed, contacts must now be subscribed, and not suppressed.
+- Unused Fancybox JS files have been removed.
+- We've removed, or updated, various bits of code relating to the Zend Framework.
+- Menus and ACL resources are now translatable. [External contribution](https://github.com/dotmailer/dotmailer-magento2-extension/pull/574).
+- `ImporterReportHandler` now uses a newer `unsubscribeByWebsiteAndStore()` method, for scope-aware unsubscribes.
+- Our `InstallData` and `UpgradeData` scripts have now been removed and replaced with data patches.
+- We've updated a regex pattern to allow our extension to use ‘dotdigital.com’ API endpoints in the future.
+- We've updated the naming of Dotdigital throughout the connector.
+- We've fixed date-based resetting in **Developer > Sync Settings**.
+- We’ve streamlined the _Import Report_ (it could fail to load records when some types of filter were set).
+- We've removed some repetition when generating the dynamic content passcode.
+- We removed some deprecated Logger methods.
+- We removed a redundant `curl_setopt` line.
+- Our third-party ‘Color Picker’ JS file has been moved from `node_modules` to `lib`.
+
+##### Bug fixes
+- We patched a problem relating to logging SMTP failures, affecting Magento versions 2.3.0-2.3.2.
+- We fixed a bug with the catalog reset that happens when the Catalog sync image type value is changed, in **Configuration > Image Types**.
 
 # 4.13.8
 
 ##### Bug fixes
 - We patched a regression in 4.13.7, which caused an exception in the `TransportPlugin`.
 
-# 4.14.0-RC4
-
-##### What's new
-- Our module has been renamed `dotdigital/dotdigital-magento2-extension`.
-
-##### Improvements
-- Our `InstallData` and `UpgradeData` scripts have now been removed and replaced with data patches.
-- We've updated a regex pattern to allow our extension to use ‘dotdigital.com’ API endpoints in the future.
-- We removed some deprecated Logger methods.
-- We removed a redundant `curl_setopt` line.
-
 # 4.13.7
 
 ##### Bug fixes
 - We fixed a bug in our `TransportPlugin` that sent duplicate transactional emails when our relay was enabled.
-
-# 4.14.0-RC3
-
-##### What's new
-- Guest abandoned baskets are now restored when a guest clicks the ‘Take me to my basket’ link.
-
-##### Improvements
-- We've updated the naming of Dotdigital throughout the connector.
-- Our third-party ‘Color Picker’ JS file has been moved from `node_modules` to `lib`.
-
-##### Bug fixes
-- We fixed a bug with the `SetDefaultStoreIdForEmailAutomations` patch which could cause an infinite loop when updating rows.
 
 # 4.13.6
 
@@ -52,14 +57,6 @@
 - We fixed a bug that could affect merchants changing their Dotdigital API region.
 - Dynamic content styling now uses correctly-scoped style values.
 - We are merging child product categories with parent product categories for line items in order insight data.
-
-# 4.14.0-RC2
-
-###### What's new
-- Merchants can now sync all types of automations by store (previously the sync worked by website). We've modified the code for automation enrolment, including the handling of pending contacts, and updating data fields.
-
-###### Improvements
-- `ImporterReportHandler` now uses a newer unsubscribeByWebsiteAndStore() method, for scope-aware unsubscribes.
 
 # 4.13.5
 
@@ -92,24 +89,6 @@
 - Order sync will now not break if product custom options have no `option_id`  key.
 - Abandoned cart automation enrolments now function correctly if a time limit is configured, and the same contact drops a cart on multiple websites. 
 - Migrating subscribers at install (or `dotdigital:migrate`) could create duplicate contacts instead of updating an existing row; this has been fixed.
-
-# 4.14.0-RC1
-
-###### What's new
-- We have adopted declarative schema for our module's database structure.
-- Integration insight data has been extended to collect additional dotdigital configuration values, via a weekly cron.
-- The ‘cleaner’ cron can now be run on demand from the CLI.
-
-###### Improvements
-- The configurable dotdigital cron jobs are now scheduled using a random offset. 
-- Data migration can now be performed on a per-table basis via the CLI.
-- Catalog sync now supports Multi Source Inventory in Magento. 
-- We've improved our handling of the contact import report; to be resubscribed, contacts must now be subscribed, and not suppressed.
-- Unused Fancybox JS files have been removed.
-- We've removed, or updated, various bits of code relating to the Zend Framework.
-
-###### Bug fixes
-- We've fixed date-based resetting in **Developer > Sync Settings**.
 
 # 4.13.0
 
