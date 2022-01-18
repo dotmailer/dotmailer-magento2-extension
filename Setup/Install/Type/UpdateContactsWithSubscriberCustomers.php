@@ -42,12 +42,11 @@ class UpdateContactsWithSubscriberCustomers extends AbstractDataMigration implem
     /**
      * @inheritdoc
      */
-    public function getUpdateWhereClause()
+    public function getUpdateWhereClause($selectStatement)
     {
-        // get customer IDs
         $emails = $this->resourceConnection
             ->getConnection()
-            ->fetchCol($this->getSelectStatement());
+            ->fetchCol($selectStatement);
 
         return [
             'email in (?)' => $emails,
