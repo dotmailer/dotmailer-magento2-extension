@@ -107,7 +107,7 @@ class ResubscriberTest extends TestCase
 
         $subscriberCollectionMock->expects($this->exactly(3))
             ->method('getIterator')
-            ->willReturn(new \ArrayObject([$subscriberModelMock, $subscriberModelMock]));
+            ->willReturn(new \ArrayIterator([$subscriberModelMock, $subscriberModelMock]));
 
         $subscriberModelMock->expects($this->any())
             ->method('getSubscriberEmail')
@@ -165,7 +165,7 @@ class ResubscriberTest extends TestCase
 
         $subscriberCollectionMock->expects($this->exactly(3))
             ->method('getIterator')
-            ->willReturn(new \ArrayObject([$subscriberModelMock, $subscriberModelMock]));
+            ->willReturn(new \ArrayIterator([$subscriberModelMock, $subscriberModelMock]));
 
         $subscriberModelMock->expects($this->any())
             ->method('getSubscriberEmail')
