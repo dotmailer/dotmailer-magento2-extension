@@ -185,7 +185,7 @@ class ImporterReportHandler
         // get a time period for the last contact sync
         $cronMinutes = filter_var(
             $this->cronOffsetter->getDecodedCronValue(
-                $this->scopeConfig->getValue(Config::XML_PATH_CRON_SCHEDULE_CONTACT),
+                $this->scopeConfig->getValue(Config::XML_PATH_CRON_SCHEDULE_CONTACT)
             ),
             FILTER_SANITIZE_NUMBER_INT
         );
