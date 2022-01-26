@@ -42,7 +42,7 @@ class UpdateContactsWithSubscriberCustomers extends AbstractDataMigration implem
     /**
      * @inheritdoc
      */
-    public function getUpdateWhereClause($selectStatement)
+    public function getUpdateWhereClause(Select $selectStatement)
     {
         $emails = $this->resourceConnection
             ->getConnection()
