@@ -253,6 +253,10 @@ class Catalog extends DataObject implements SyncInterface
     private function addToImportQueue(array $catalogs)
     {
         foreach ($catalogs as $catalogName => $batch) {
+            if (!$batch['products']) {
+                continue;
+            }
+
             $success = $this->importerFactory->create()
                 ->registerQueue(
                     $catalogName,
