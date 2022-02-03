@@ -13,27 +13,16 @@
 Please see our [Changelog](CHANGELOG.md) or the [Releases](https://github.com/dotmailer/dotmailer-magento2-extension/releases) page.
 
 ## Installation
-We encourage merchants to install our modules via our vendor page on the [Magento Marketplace](https://marketplace.magento.com/partner/dotdigitalLtd). We provide three 'metapackages', each containing a selection of modules to match your flavour of Magento (Open Source, Adobe Commerce or B2B for Adobe Commerce). 
+We encourage merchants to install our core modules via our combined **Dotdigital - Marketing Automation** extension:
+- View the listing on [Magento Marketplace](https://marketplace.magento.com/dotdigital-dotdigital-magento2-os-package.html).
+- View the metapackage on [Github](https://github.com/dotmailer/dotdigital-magento2-os-package). 
 
 **Steps:**
-1. You must ‘purchase’ the relevant package from the Marketplace.
+1. You must ‘purchase’ the [core extension](https://marketplace.magento.com/dotdigital-dotdigital-magento2-os-package.html) from the Marketplace.
 2. Any existing `require` instructions in your composer.json relating to `dotmailer/*` packages must be removed.
-3. Now, require the correct package.
-
-For merchants using Magento Open Source:
+3. Now, require the package.
 ```
-composer require dotdigital/dotdigital-magento2-os-package --no-update
-composer update
-```
-For merchants using Adobe Commerce:
-```
-composer require dotdigital/dotdigital-magento2-commerce-package --no-update
-composer update
-```
-For merchants using B2B for Adobe Commerce:
-```
-composer require dotdigital/dotdigital-magento2-b2b-package --no-update
-composer update
+composer require dotdigital/dotdigital-magento2-os-package
 ```
 
 ## Usage and support
