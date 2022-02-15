@@ -33,11 +33,17 @@ class AutomationProcessorTest extends TestCase
      */
     private $automationProcessor;
 
+    private $automationModelMock;
+
     protected function setUp() :void
     {
         $this->helperMock = $this->createMock(Data::class);
         $this->automationResourceMock = $this->createMock(AutomationResource::class);
         $this->dataFieldUpdateHandlerMock = $this->createMock(DataFieldUpdateHandler::class);
+        $this->automationModelMock = $this->getMockBuilder(\Dotdigitalgroup\Email\Model\Automation::class)
+            ->addMethods(['getAutomationType'])
+            ->disableOriginalConstructor()
+            ->getMock();
 
         $this->automationProcessor = new AutomationProcessor(
             $this->helperMock,
@@ -56,6 +62,10 @@ class AutomationProcessorTest extends TestCase
 
         $this->automationResourceMock->expects($this->never())
             ->method('setStatusAndSaveAutomation');
+
+        $this->automationModelMock->expects($this->once())
+            ->method('getAutomationType')
+            ->willReturn('customer_automation');
 
         $this->dataFieldUpdateHandlerMock->expects($this->once())
             ->method('updateDatafieldsByType');
@@ -82,8 +92,6 @@ class AutomationProcessorTest extends TestCase
 
     public function testRowIsMarkedAsFailedIfContactNotFound()
     {
-        $automationModelMock = $this->createMock(\Dotdigitalgroup\Email\Model\Automation::class);
-
         $this->helperMock->expects($this->once())
             ->method('getOrCreateContact')
             ->willReturn(false);
@@ -91,7 +99,7 @@ class AutomationProcessorTest extends TestCase
         $this->automationResourceMock->expects($this->once())
             ->method('setStatusAndSaveAutomation')
             ->with(
-                $automationModelMock,
+                $this->automationModelMock,
                 StatusInterface::FAILED,
                 'Contact cannot be created or has been suppressed'
             );
@@ -130,11 +138,10 @@ class AutomationProcessorTest extends TestCase
     private function getAutomationCollectionMock()
     {
         $objectManager = new ObjectManager($this);
-        $automationModelMock = $this->createMock(\Dotdigitalgroup\Email\Model\Automation::class);
 
         return $objectManager->getCollectionMock(
             AutomationCollection::class,
-            [$automationModelMock]
+            [$this->automationModelMock]
         );
     }
 }

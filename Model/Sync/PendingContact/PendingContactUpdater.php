@@ -4,7 +4,6 @@ namespace Dotdigitalgroup\Email\Model\Sync\PendingContact;
 
 use Dotdigitalgroup\Email\Helper\Config;
 use Dotdigitalgroup\Email\Helper\Data;
-use Dotdigitalgroup\Email\Model\DateIntervalFactory;
 use Dotdigitalgroup\Email\Model\StatusInterface;
 use Dotdigitalgroup\Email\Model\Sync\PendingContact\Type\TypeProviderInterface;
 use Magento\Framework\Stdlib\DateTime;
@@ -17,11 +16,6 @@ class PendingContactUpdater
      * @var Data
      */
     private $helper;
-
-    /**
-     * @var DateIntervalFactory
-     */
-    private $dateIntervalFactory;
 
     /**
      * @var \Magento\Framework\Stdlib\DateTime
@@ -60,7 +54,6 @@ class PendingContactUpdater
 
     /**
      * @param Data $helper
-     * @param DateIntervalFactory $dateIntervalFactory
      * @param TimezoneInterface $timeZone
      * @param TypeProviderInterface $typeProvider
      * @param DateTime $dateTime
@@ -68,14 +61,12 @@ class PendingContactUpdater
      */
     public function __construct(
         Data $helper,
-        DateIntervalFactory $dateIntervalFactory,
         TimezoneInterface $timeZone,
         TypeProviderInterface $typeProvider,
         DateTime $dateTime,
         StoreManagerInterface $storeManager
     ) {
         $this->helper = $helper;
-        $this->dateIntervalFactory = $dateIntervalFactory;
         $this->timeZone = $timeZone;
         $this->typeProvider = $typeProvider;
         $this->dateTime = $dateTime;
@@ -108,7 +99,7 @@ class PendingContactUpdater
     private function isItTimeToCheckPendingContact($dateTimeFromDb)
     {
         $lastCheckTime = $this->timeZone->date($dateTimeFromDb);
-        $interval = $this->dateIntervalFactory->create(['interval_spec' => 'PT30M']);
+        $interval = new \DateInterval('PT30M');
         $lastCheckTime->add($interval);
         $now = $this->timeZone->date();
         return ($now->format('Y-m-d H:i:s') > $lastCheckTime->format('Y-m-d H:i:s'));
@@ -148,9 +139,8 @@ class PendingContactUpdater
         $hours = $this->helper->getWebsiteConfig(
             Config::XML_PATH_CONNECTOR_AC_AUTOMATION_EXPIRE_TIME
         );
-        $interval = $this->dateIntervalFactory->create(
-            ['interval_spec' => sprintf('PT%sH', $hours)]
-        );
+
+        $interval = new \DateInterval(sprintf('PT%sH', $hours));
 
         $dateTime = $this->timeZone->date();
         $dateTime->sub($interval);

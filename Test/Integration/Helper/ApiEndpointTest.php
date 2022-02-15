@@ -2,11 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Helper;
 
-use Dotdigitalgroup\Email\Model\Apiconnector\ClientFactory;
-use Dotdigitalgroup\Email\Model\DateIntervalFactory;
 use Dotdigitalgroup\Email\Test\Integration\MocksApiResponses;
-use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
-use Magento\TestFramework\ObjectManager;
 
 /**
  * @magentoDbIsolation enabled

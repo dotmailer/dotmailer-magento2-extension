@@ -2,19 +2,12 @@
 
 namespace Dotdigitalgroup\Email\Model\ResourceModel\Importer;
 
-use Dotdigitalgroup\Email\Model\DateIntervalFactory;
-
 class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection
 {
     /**
      * @var string
      */
     protected $_idFieldName = 'id';
-
-    /**
-     * @var DateIntervalFactory
-     */
-    private $dateIntervalFactory;
 
     /**
      * Initialize resource collection.
@@ -26,37 +19,6 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
         $this->_init(
             \Dotdigitalgroup\Email\Model\Importer::class,
             \Dotdigitalgroup\Email\Model\ResourceModel\Importer::class
-        );
-    }
-
-    /**
-     * Collection constructor.
-     *
-     * @param \Magento\Framework\Data\Collection\EntityFactoryInterface $entityFactory
-     * @param \Psr\Log\LoggerInterface $logger
-     * @param \Magento\Framework\Data\Collection\Db\FetchStrategyInterface $fetchStrategy
-     * @param \Magento\Framework\Event\ManagerInterface $eventManager
-     * @param DateIntervalFactory $dateIntervalFactory
-     * @param \Magento\Framework\DB\Adapter\AdapterInterface|null $connection
-     * @param \Magento\Framework\Model\ResourceModel\Db\AbstractDb|null $resource
-     */
-    public function __construct(
-        \Magento\Framework\Data\Collection\EntityFactoryInterface $entityFactory,
-        \Psr\Log\LoggerInterface $logger,
-        \Magento\Framework\Data\Collection\Db\FetchStrategyInterface $fetchStrategy,
-        \Magento\Framework\Event\ManagerInterface $eventManager,
-        DateIntervalFactory $dateIntervalFactory,
-        \Magento\Framework\DB\Adapter\AdapterInterface $connection = null,
-        \Magento\Framework\Model\ResourceModel\Db\AbstractDb $resource = null
-    ) {
-        $this->dateIntervalFactory = $dateIntervalFactory;
-        parent::__construct(
-            $entityFactory,
-            $logger,
-            $fetchStrategy,
-            $eventManager,
-            $connection,
-            $resource
         );
     }
 
@@ -129,9 +91,7 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
              * Skip orders if one hour has not passed since the created_at time.
              */
             if ($importType == 'Orders') {
-                $interval = $this->dateIntervalFactory->create(
-                    ['interval_spec' => 'PT1H']
-                );
+                $interval = new \DateInterval('PT1H');
                 $fromDate = new \DateTime('now', new \DateTimezone('UTC'));
                 $fromDate->sub($interval);
 

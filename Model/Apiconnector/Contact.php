@@ -126,7 +126,7 @@ class Contact implements SyncInterface
         }
         //sync processed
         $message = '----------- Customer sync ----------- : '
-            . gmdate('H:i:s', microtime(true) - $this->start)
+            . gmdate('H:i:s', (int) (microtime(true) - $this->start))
             . ', Total contacts = ' . $this->countCustomers;
 
         if ($this->countCustomers) {
@@ -180,7 +180,7 @@ class Contact implements SyncInterface
         $customerNum = count($customerIds);
         $this->helper->log(
             'Website : ' . $website->getName() . ', customers = ' . $customerNum .
-            ', execution time :' . gmdate('H:i:s', microtime(true) - $this->start)
+            ', execution time :' . gmdate('H:i:s', (int) (microtime(true) - $this->start))
         );
 
         //file was created - continue to queue the export
@@ -302,7 +302,7 @@ class Contact implements SyncInterface
 
         return $this->contactResource->getSalesDataForCustomersWithOrderStatusesAndBrand(
             $customerIds,
-            explode(',', $statuses),
+            explode(',', $statuses ?: ''),
             $website->getStoreIds()
         );
     }

@@ -190,7 +190,10 @@ class ProductTest extends TestCase
                 'getCategoryCollection',
                 'getWebsiteIds'
             ])
-            ->addMethods(['getTaxClassId'])
+            ->addMethods([
+                'getTaxClassId',
+                'getShortDescription'
+            ])
             ->getMock();
         $this->statusMock = $this->createMock(Status::class);
         $this->phraseMock = $this->createMock(Phrase::class);
@@ -283,7 +286,12 @@ class ProductTest extends TestCase
             ->with($this->mageProductMock, $imageType);
 
         $this->stockFinderInterfaceMock->expects($this->atLeastOnce())
-            ->method('getStockQty');
+            ->method('getStockQty')
+            ->willReturn(10);
+
+        $this->mageProductMock->expects($this->once())
+            ->method('getShortDescription')
+            ->willReturn('This here is a product');
 
         $this->storeManagerMock->expects($this->atLeastOnce())
             ->method('getStore')
@@ -461,6 +469,10 @@ class ProductTest extends TestCase
     {
         $parentId = 4;
 
+        $this->mageProductMock->expects($this->atLeastOnce())
+            ->method('getTypeId')
+            ->willReturn('simple');
+
         $this->parentFinderMock->expects($this->once())
             ->method('getProductParentIdToCatalogSync')
             ->with($this->mageProductMock)
@@ -475,6 +487,10 @@ class ProductTest extends TestCase
     public function testIfParentDoesNotExistsTypeNotChangesButParentIdStillSet()
     {
         $parentId = '';
+
+        $this->mageProductMock->expects($this->atLeastOnce())
+            ->method('getTypeId')
+            ->willReturn('simple');
 
         $this->parentFinderMock->expects($this->once())
             ->method('getProductParentIdToCatalogSync')
@@ -495,6 +511,10 @@ class ProductTest extends TestCase
         $specialPrice_incl_tax = '18.00';
         $taxableGoodsClassId = 2;
         $taxRate = 20.0;
+
+        $this->mageProductMock->expects($this->atLeastOnce())
+            ->method('getTypeId')
+            ->willReturn('simple');
 
         $this->mageProductMock->expects($this->once())
             ->method('getTaxClassId')
@@ -522,14 +542,16 @@ class ProductTest extends TestCase
     private function getArrayPrices()
     {
         $firstElement = $this->createMock(MageProduct::class);
-        $firstElement->expects($this->at(0))->method('getPrice')->willReturn('20.00');
-        $firstElement->expects($this->at(1))->method('getSpecialPrice')->willReturn('15.00');
-        $firstElement->expects($this->at(2))->method('getSpecialPrice')->willReturn('15.00');
+        $firstElement->expects($this->once())->method('getPrice')->willReturn('20.00');
+        $firstElement->expects($this->exactly(2))
+            ->method('getSpecialPrice')
+            ->willReturn('15.00');
 
         $secondElement = $this->createMock(MageProduct::class);
-        $secondElement->expects($this->at(0))->method('getPrice')->willReturn('15.00');
-        $secondElement->expects($this->at(1))->method('getSpecialPrice')->willReturn('8.00');
-        $secondElement->expects($this->at(2))->method('getSpecialPrice')->willReturn('8.00');
+        $secondElement->expects($this->once())->method('getPrice')->willReturn('15.00');
+        $secondElement->expects($this->exactly(2))
+            ->method('getSpecialPrice')
+            ->willReturn('8.00');
 
         return $arrayPrices = [$firstElement, $secondElement];
     }
@@ -537,13 +559,13 @@ class ProductTest extends TestCase
     private function getArrayNullSpecialPrices()
     {
         $firstElement = $this->createMock(MageProduct::class);
-        $firstElement->expects($this->at(0))->method('getPrice')->willReturn('20.00');
-        $firstElement->expects($this->at(1))->method('getSpecialPrice')->willReturn(null);
+        $firstElement->expects($this->once())->method('getPrice')->willReturn('20.00');
+        $firstElement->expects($this->once())->method('getSpecialPrice')->willReturn(null);
 
         $secondElement = $this->createMock(MageProduct::class);
-        $secondElement->expects($this->at(0))->method('getPrice')->willReturn('15.00');
-        $secondElement->expects($this->at(1))->method('getSpecialPrice')->willReturn(null);
+        $secondElement->expects($this->once())->method('getPrice')->willReturn('15.00');
+        $secondElement->expects($this->once())->method('getSpecialPrice')->willReturn(null);
 
-        return $arrayPrices = [$firstElement, $secondElement];
+        return [$firstElement, $secondElement];
     }
 }

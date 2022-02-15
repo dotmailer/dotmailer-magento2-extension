@@ -6,6 +6,7 @@ use Dotdigitalgroup\Email\Helper\Config;
 use Dotdigitalgroup\Email\Setup\SchemaInterface as Schema;
 use Magento\Newsletter\Model\Subscriber;
 use Magento\Store\Api\Data\WebsiteInterface;
+use Magento\Framework\DB\Sql\ExpressionFactory;
 
 class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
@@ -25,7 +26,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     private $scheduleFactory;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\Sql\ExpressionFactory
+     * @var ExpressionFactory
      */
     private $expressionFactory;
 
@@ -61,7 +62,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      * @param \Magento\Newsletter\Model\ResourceModel\Subscriber\CollectionFactory $subscriberCollection
      * @param \Magento\Customer\Model\ResourceModel\Customer\CollectionFactory $customerCollectionFactory
      * @param \Magento\Cron\Model\ScheduleFactory $schedule
-     * @param \Dotdigitalgroup\Email\Model\Sql\ExpressionFactory $expressionFactory
+     * @param ExpressionFactory $expressionFactory
      * @param \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollectionFactory
      * @param \Magento\Quote\Model\ResourceModel\QuoteFactory $quoteResourceFactory
      * @param Config $config
@@ -72,7 +73,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         \Magento\Newsletter\Model\ResourceModel\Subscriber\CollectionFactory $subscriberCollection,
         \Magento\Customer\Model\ResourceModel\Customer\CollectionFactory $customerCollectionFactory,
         \Magento\Cron\Model\ScheduleFactory $schedule,
-        \Dotdigitalgroup\Email\Model\Sql\ExpressionFactory $expressionFactory,
+        ExpressionFactory $expressionFactory,
         \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollectionFactory,
         \Magento\Quote\Model\ResourceModel\QuoteFactory $quoteResourceFactory,
         Config $config,
@@ -502,7 +503,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * @param string $salesOrder
      * @param string $storeIds
-     * @return \Dotdigitalgroup\Email\Model\Sql\Expression
+     * @return \Magento\Framework\DB\Sql\Expression
      */
     private function createFirstOrderIdColumn($salesOrder, $storeIds)
     {

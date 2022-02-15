@@ -244,22 +244,19 @@ class ProgramEnrolmentEnrollerTest extends TestCase
             ->method('getScopeConfig')
             ->willReturn($this->scopeConfigModelMock);
 
-        $this->scopeConfigModelMock->expects($this->at(0))
+        $this->scopeConfigModelMock->expects($this->atLeastOnce())
             ->method('getValue')
-            ->with(
-                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_LOSTBASKET_ENROL_TO_PROGRAM_ID,
+            ->withConsecutive(
+                [\Dotdigitalgroup\Email\Helper\Config::XML_PATH_LOSTBASKET_ENROL_TO_PROGRAM_ID,
                 \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
-                $storeId
+                $storeId],
+                [Config::XML_PATH_CONNECTOR_SYNC_LIMIT,
+                    \Magento\Store\Model\ScopeInterface::SCOPE_STORE]
             )
-            ->willReturn($programId);
-
-        $this->scopeConfigModelMock->expects($this->at(1))
-            ->method('getValue')
-            ->with(
-                Config::XML_PATH_CONNECTOR_SYNC_LIMIT,
-                \Magento\Store\Model\ScopeInterface::SCOPE_STORE
-            )
-            ->willReturn($batchSize = 500);
+            ->willReturnOnConsecutiveCalls(
+                $programId,
+                500
+            );
 
         // Enrolment interval
         $this->interval

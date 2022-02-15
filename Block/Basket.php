@@ -53,12 +53,12 @@ class Basket extends Recommended
     /**
      * Basket constructor.
      *
-     * @param Logger $logger
      * @param \Magento\Catalog\Block\Product\Context $context
      * @param Helper\Font $font
      * @param \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder
      * @param DynamicContent $imageType
      * @param ImageFinder $imageFinder
+     * @param Logger $logger
      * @param \Magento\Store\Model\App\EmulationFactory $emulationFactory
      * @param \Magento\Quote\Model\QuoteFactory $quoteFactory
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
@@ -142,12 +142,12 @@ class Basket extends Recommended
         }
 
         $itemsData = [];
-
-        /** @var \Magento\Quote\Model\Quote\Item $quoteItem */
-
         $parentProductIds = [];
 
-        //Collect all parent ids to identify later which products to show in EDC
+        /*
+         * Collect all parent ids to identify later which products to show in EDC
+         */
+        /** @var \Magento\Quote\Model\Quote\Item $quoteItem */
         foreach ($quoteItems as $quoteItem) {
             if ($quoteItem->getParentItemId() == null) {
                 $parentProductIds[] = $quoteItem->getProduct()->getId();
@@ -181,23 +181,25 @@ class Basket extends Recommended
     }
 
     /**
-     * @var \Magento\Quote\Model\Quote\Item $quoteItem
-     * Get Item Data For Products who doesn't have child's
+     * Get item data for parent products.
+     *
+     * @param \Magento\Quote\Model\Quote\Item $quoteItem
+     *
      * @return array
      */
-
     private function getItemDataForParentProducts($quoteItem)
     {
         $_product = $quoteItem->getProduct();
-        return $this->getItemsData($quoteItem, $_product, $_parentProduct = null);
+        return $this->getItemsData($quoteItem, $_product);
     }
 
     /**
-     * @var \Magento\Quote\Model\Quote\Item $quoteItem
-     * Get Item Data For Products who do have child's
+     * Get item data for child products.
+     *
+     * @param \Magento\Quote\Model\Quote\Item $quoteItem
+     *
      * @return array
      */
-
     private function getItemDataForChildProducts($quoteItem)
     {
         $_product = $quoteItem->getProduct();
@@ -207,14 +209,15 @@ class Basket extends Recommended
     }
 
     /**
-     * Returns the itemsData array to be viewed;
-     * @var \Magento\Quote\Model\Quote\Item $quoteItem
+     * Returns the itemsData array to be viewed.
+     *
+     * @param \Magento\Quote\Model\Quote\Item $quoteItem
      * @param Product $_product
-     * @param  Product$_parentProduct
+     * @param Product $_parentProduct
+     *
      * @return array
      */
-
-    private function getItemsData($quoteItem, $_product, $_parentProduct)
+    private function getItemsData($quoteItem, $_product, $_parentProduct = null)
     {
         $totalPrice = (!isset($_parentProduct)
             ? $quoteItem->getBaseRowTotalInclTax()
@@ -294,6 +297,8 @@ class Basket extends Recommended
     }
 
     /**
+     * Get 'take me to my basket' text override.
+     *
      * @return string|boolean
      */
     public function takeMeToCartTextForUrl()
@@ -312,8 +317,9 @@ class Basket extends Recommended
      * If a custom image role is selected, but that attribute is not available on the product
      * loaded from the quote, we must reload the product from the product repository.
      *
-     * @param $product
+     * @param Product $product
      * @param string $imageId
+     *
      * @return string
      * @throws \Magento\Framework\Exception\LocalizedException
      * @throws \Magento\Framework\Exception\NoSuchEntityException
@@ -324,7 +330,7 @@ class Basket extends Recommended
             $this->_storeManager->getStore()->getWebsiteId()
         );
 
-        if (!$product->getData($imageTypeFromConfig['role'])) {
+        if (!$imageTypeFromConfig['role'] || !$product->getData($imageTypeFromConfig['role'])) {
             $product = $this->productRepository->getById($product->getId());
         }
 

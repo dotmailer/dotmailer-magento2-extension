@@ -3,7 +3,6 @@
 namespace Dotdigitalgroup\Email\Test\Unit\Model\AbandonedCart\ProgramEnrolment;
 
 use Dotdigitalgroup\Email\Model\DateTimeFactory;
-use Dotdigitalgroup\Email\Model\DateIntervalFactory;
 use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Model\AbandonedCart\ProgramEnrolment\Interval;
 use PHPUnit\Framework\TestCase;
@@ -14,11 +13,6 @@ class ProgramEnrolmentIntervalTest extends TestCase
      * @var DateTimeFactory|\PHPUnit_Framework_MockObject_MockObject
      */
     private $dateTimeFactoryMock;
-
-    /**
-     * @var DateIntervalFactory|\PHPUnit_Framework_MockObject_MockObject
-     */
-    private $dateIntervalFactoryMock;
 
     /**
      * @var Data|\PHPUnit_Framework_MockObject_MockObject
@@ -35,16 +29,13 @@ class ProgramEnrolmentIntervalTest extends TestCase
         $this->dateTimeFactoryMock = $this->getMockBuilder(DateTimeFactory::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $this->dateIntervalFactoryMock = $this->getMockBuilder(DateIntervalFactory::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+
         $this->dataHelperMock = $this->getMockBuilder(Data::class)
             ->disableOriginalConstructor()
             ->getMock();
 
         $this->model = new Interval(
             $this->dateTimeFactoryMock,
-            $this->dateIntervalFactoryMock,
             $this->dataHelperMock
         );
     }
@@ -80,31 +71,10 @@ class ProgramEnrolmentIntervalTest extends TestCase
             )
             ->willReturn($minutes);
 
-        // Date interval
-        $intervalModelMock1 = $this->createMock(\DateInterval::class);
-        $intervalModelMock2 = $this->createMock(\DateInterval::class);
-
-        $this->dateIntervalFactoryMock->expects($this->atLeastOnce())
-            ->method('create')
-            ->withConsecutive(
-                [['interval_spec' => sprintf('PT%sM', $minutes)]],
-                [['interval_spec' => 'PT5M']]
-            )
-            ->willReturnOnConsecutiveCalls(
-                $intervalModelMock1,
-                $intervalModelMock2
-            );
 
         $dateTimeMock->expects($this->atLeastOnce())
             ->method('sub')
-            ->withConsecutive(
-                [$intervalModelMock1],
-                [$intervalModelMock2]
-            )
-            ->willReturnOnConsecutiveCalls(
-                $dateTimeMock,
-                $dateTimeMock
-            );
+            ->willReturn($dateTimeMock);
 
         $fromString = "2018-01-01 10:00:00";
         $toString = "2018-01-02 10:00:00";

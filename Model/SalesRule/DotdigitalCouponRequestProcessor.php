@@ -4,7 +4,6 @@ namespace Dotdigitalgroup\Email\Model\SalesRule;
 
 use Dotdigitalgroup\Email\Model\Coupon\CouponAttributeCollection;
 use Dotdigitalgroup\Email\Model\Coupon\CouponAttributeCollectionFactory;
-use Dotdigitalgroup\Email\Model\DateIntervalFactory;
 use Dotdigitalgroup\Email\Model\DateTimeFactory;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
@@ -29,11 +28,6 @@ class DotdigitalCouponRequestProcessor
      * @var Rule
      */
     private $ruleResource;
-
-    /**
-     * @var DateIntervalFactory
-     */
-    private $dateIntervalFactory;
 
     /**
      * @var DateTimeFactory
@@ -74,7 +68,6 @@ class DotdigitalCouponRequestProcessor
      * @param RuleFactory $ruleFactory
      * @param Rule $ruleResource
      * @param DateTimeFactory $dateTimeFactory
-     * @param DateIntervalFactory $dateIntervalFactory
      * @param TimezoneInterface $timezoneInterface
      * @param CouponAttributeCollectionFactory $couponAttributeCollectionFactory
      * @param DotdigitalCouponGenerator $dotdigitalCouponGenerator
@@ -83,7 +76,6 @@ class DotdigitalCouponRequestProcessor
         RuleFactory $ruleFactory,
         Rule $ruleResource,
         DateTimeFactory $dateTimeFactory,
-        DateIntervalFactory $dateIntervalFactory,
         TimezoneInterface $timezoneInterface,
         CouponAttributeCollectionFactory $couponAttributeCollectionFactory,
         DotdigitalCouponGenerator $dotdigitalCouponGenerator
@@ -91,7 +83,6 @@ class DotdigitalCouponRequestProcessor
         $this->ruleFactory = $ruleFactory;
         $this->ruleResource = $ruleResource;
         $this->dateTimeFactory = $dateTimeFactory;
-        $this->dateIntervalFactory = $dateIntervalFactory;
         $this->localeDate = $timezoneInterface;
         $this->couponAttributeCollectionFactory = $couponAttributeCollectionFactory;
         $this->dotdigitalCouponGenerator = $dotdigitalCouponGenerator;

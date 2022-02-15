@@ -3,7 +3,6 @@
 namespace Dotdigitalgroup\Email\Model\Customer\DataField;
 
 use Magento\Framework\Stdlib\DateTime\TimezoneInterfaceFactory;
-use Dotdigitalgroup\Email\Model\DateIntervalFactory;
 
 class Date
 {
@@ -12,17 +11,10 @@ class Date
      */
     private $localeDateFactory;
 
-    /**
-     * @var DateIntervalFactory
-     */
-    private $dateIntervalFactory;
-
     public function __construct(
-        TimezoneInterfaceFactory $localeDateFactory,
-        DateIntervalFactory $dateIntervalFactory
+        TimezoneInterfaceFactory $localeDateFactory
     ) {
         $this->localeDateFactory = $localeDateFactory;
-        $this->dateIntervalFactory = $dateIntervalFactory;
     }
 
     /**
@@ -58,9 +50,7 @@ class Date
         }
 
         // For locales west of GMT i.e. -01:00 and below, adjust date by adding the current timezone offset
-        $offset = $this->dateIntervalFactory->create(
-            ['interval_spec' => 'PT' . abs($timezoneOffset) . 'S']
-        );
+        $offset = new \DateInterval(sprintf('PT%sS', abs($timezoneOffset)));
 
         return $adjustedDate->add($offset)->format(\DateTime::ATOM);
     }

@@ -54,11 +54,6 @@ class Order
     private $rulesFactory;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\DateIntervalFactory
-     */
-    private $dateIntervalFactory;
-
-    /**
      * Order constructor.
      *
      * @param \Dotdigitalgroup\Email\Model\RulesFactory $rulesFactory
@@ -69,7 +64,6 @@ class Order
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Magento\Framework\Stdlib\DateTime $datetime
      * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
-     * @param \Dotdigitalgroup\Email\Model\DateIntervalFactory $dateIntervalFactory
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\RulesFactory $rulesFactory,
@@ -79,10 +73,8 @@ class Order
         \Dotdigitalgroup\Email\Model\ResourceModel\Campaign $campaignResource,
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Framework\Stdlib\DateTime $datetime,
-        \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
-        \Dotdigitalgroup\Email\Model\DateIntervalFactory $dateIntervalFactory
+        \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
     ) {
-        $this->dateIntervalFactory = $dateIntervalFactory;
         $this->campaignResource = $campaignResource;
         $this->rulesFactory       = $rulesFactory;
         $this->orderCollection    = $orderCollection;
@@ -186,12 +178,10 @@ class Order
                     'order_increment_id'
                 );
                 $fromTime = new \DateTime('now', new \DateTimezone('UTC'));
-                $interval = $this->dateIntervalFactory->create(
-                    ['interval_spec' => sprintf('P%sD', $delayInDays)]
-                );
+                $interval = new \DateInterval(sprintf('P%sD', $delayInDays));
                 $fromTime->sub($interval);
                 $toTime = clone $fromTime;
-                $fromTime->sub($this->dateIntervalFactory->create(['interval_spec' => 'PT2H']));
+                $fromTime->sub(new \DateInterval('PT2H'));
                 $fromDate = $fromTime->format('Y-m-d H:i:s');
                 $toDate = $toTime->format('Y-m-d H:i:s');
 

@@ -22,11 +22,6 @@ class Catalog extends DataObject implements SyncInterface
     private $scopeConfig;
 
     /**
-     * @var mixed
-     */
-    private $start;
-
-    /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory
      */
     public $catalogResourceFactory;
@@ -87,7 +82,7 @@ class Catalog extends DataObject implements SyncInterface
             return $response;
         }
 
-        $this->start = microtime(true);
+        $start = microtime(true);
         $limit = $this->scopeConfig->getValue(
             Config::XML_PATH_CONNECTOR_TRANSACTIONAL_DATA_SYNC_LIMIT
         );
@@ -146,7 +141,7 @@ class Catalog extends DataObject implements SyncInterface
         }
 
         $message = '----------- Catalog sync ----------- : ' .
-            gmdate('H:i:s', microtime(true) - $this->start) .
+            gmdate('H:i:s', (int) (microtime(true) - $start)) .
             ', Total processed = ' . $productsProcessedCount . ', Total synced = ' . $totalProductsSyncedCount;
         $this->helper->log($message);
         $response['message'] = $message;

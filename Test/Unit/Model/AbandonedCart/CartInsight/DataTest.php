@@ -235,15 +235,16 @@ class DataTest extends TestCase
             ->method('getShippingAddress')
             ->willReturn($addressMock);
 
-        $addressMock->expects($this->at(0))
+        $addressMock->expects($this->atLeastOnce())
             ->method('__call')
-            ->with($this->equalTo('getTaxAmount'))
-            ->willReturn($expectedPayload['json']['taxAmount']);
-
-        $addressMock->expects($this->at(1))
-            ->method('__call')
-            ->with($this->equalTo('getShippingAmount'))
-            ->willReturn($expectedPayload['json']['shipping']);
+            ->withConsecutive(
+                [$this->equalTo('getTaxAmount')],
+                [$this->equalTo('getShippingAmount')]
+            )
+            ->willReturnOnConsecutiveCalls(
+                $expectedPayload['json']['taxAmount'],
+                $expectedPayload['json']['shipping']
+            );
 
         // Line items loop
         $itemsArray = [

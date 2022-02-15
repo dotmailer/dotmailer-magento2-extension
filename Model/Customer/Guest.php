@@ -100,7 +100,7 @@ class Guest implements SyncInterface
         if ($this->countGuests) {
             $this->helper->log(
                 '----------- Guest sync ----------- : ' .
-                gmdate('H:i:s', microtime(true) - $this->start) .
+                gmdate('H:i:s', (int) (microtime(true) - $this->start)) .
                 ', Total synced = ' . $this->countGuests
             );
         }

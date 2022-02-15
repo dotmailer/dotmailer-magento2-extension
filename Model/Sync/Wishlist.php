@@ -139,7 +139,7 @@ class Wishlist implements SyncInterface
             }
         }
 
-        $response['message'] .= gmdate('H:i:s', microtime(true) - $start) . ',';
+        $response['message'] .= gmdate('H:i:s', (int) (microtime(true) - $start)) . ',';
         $response['message'] .= $syncSummary;
         $response['message'] .= ' Total synced = ' . $totalWishlists;
 

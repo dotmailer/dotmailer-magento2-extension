@@ -177,18 +177,21 @@ class ImageFinder
     }
 
     /**
+     * Get image by role.
+     *
      * @param Product $product
      * @param string $role
+     * 
      * @return string
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     private function getImageByRole($product, $role)
     {
+        $roleWithParentCheck = $this->parentFinder->getParentProductForNoImageSelection($product, $role)
+            ->getData($role);
+
         return $this->mediaConfig->create()
-            ->getMediaUrl(
-                $this->parentFinder->getParentProductForNoImageSelection($product, $role)
-                    ->getData($role)
-            );
+            ->getMediaUrl(($roleWithParentCheck) ?: $role);
     }
 
     /**
