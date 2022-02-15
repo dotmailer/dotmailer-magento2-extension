@@ -5,6 +5,7 @@ namespace Dotdigitalgroup\Email\Model;
 use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Model\Sync\Integration\DotdigitalConfig;
 use Dotdigitalgroup\Email\Model\Sync\Integration\IntegrationInsightData;
+use Dotdigitalgroup\Email\Model\Connector\Module;
 use Magento\Framework\App\ProductMetadataInterface;
 use Magento\Framework\Module\ModuleListInterface;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
@@ -35,24 +36,9 @@ class IntegrationInsightDataUnitTest extends TestCase
     private $productMetadataMock;
 
     /**
-     * @var ModuleListInterface
-     */
-    private $moduleListMock;
-
-    /**
-     * @var TimezoneInterface
-     */
-    private $timezoneMock;
-
-    /**
      * @var \Dotdigitalgroup\Email\Model\Sync\Integration\DotdigitalConfig|\PHPUnit\Framework\MockObject\MockObject
      */
     private $dotdigitalConfigMock;
-
-    /**
-     * @var ScopeConfigInterface|\PHPUnit\Framework\MockObject\MockObject
-     */
-    private $scopeConfigMock;
 
     /**
      * @var StoreManagerInterface|mixed|\PHPUnit\Framework\MockObject\MockObject
@@ -63,11 +49,9 @@ class IntegrationInsightDataUnitTest extends TestCase
     {
         $this->helperMock = $this->createMock(Data::class);
         $this->productMetadataMock = $this->createMock(ProductMetadataInterface::class);
-        $this->moduleListMock = $this->createMock(ModuleListInterface::class);
-        $this->timezoneMock = $this->createMock(TimezoneInterface::class);
         $this->dotdigitalConfigMock = $this->createMock(DotdigitalConfig::class);
-        $this->scopeConfigMock = $this->createMock(ScopeConfigInterface::class);
         $this->storeManagerInterfaceMock = $this->createMock(StoreManagerInterface::class);
+        $this->moduleManagerMock = $this->createMock(Module::class);
 
         // set up metadata
         $this->productMetadataMock
@@ -82,9 +66,9 @@ class IntegrationInsightDataUnitTest extends TestCase
             ->expects($this->once())
             ->method('getVersion')
             ->willReturn(self::VERSION);
-        $this->moduleListMock
+        $this->moduleManagerMock
             ->expects($this->once())
-            ->method('getOne')
+            ->method('getModuleVersion')
             ->with('Dotdigitalgroup_Email')
             ->willReturn([
                 'setup_version' => self::CONNECTOR_VERSION,
@@ -101,10 +85,9 @@ class IntegrationInsightDataUnitTest extends TestCase
         $this->integrationInsightData = new IntegrationInsightData(
             $this->helperMock,
             $this->productMetadataMock,
-            $this->moduleListMock,
             $this->dotdigitalConfigMock,
-            $this->scopeConfigMock,
-            $this->storeManagerInterfaceMock
+            $this->storeManagerInterfaceMock,
+            $this->moduleManagerMock
         );
     }
 

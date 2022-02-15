@@ -3,12 +3,11 @@
 namespace Dotdigitalgroup\Email\Model\Sync\Integration;
 
 use Dotdigitalgroup\Email\Helper\Data;
+use Dotdigitalgroup\Email\Model\Connector\Module;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Framework\App\ProductMetadataInterface;
-use Magento\Framework\Module\ModuleListInterface;
 use Magento\Framework\UrlInterface;
 use Magento\Store\Model\Store;
-use Magento\Framework\App\Config\ScopeConfigInterface;
 
 class IntegrationInsightData
 {
@@ -23,11 +22,6 @@ class IntegrationInsightData
     private $productMetadata;
 
     /**
-     * @var ModuleListInterface
-     */
-    private $moduleList;
-
-    /**
      * @var array
      */
     private $integrationMetaData;
@@ -38,40 +32,41 @@ class IntegrationInsightData
     private $dotdigitalConfig;
 
     /**
-     * @var ScopeConfigInterface
-     */
-    private $scopeConfig;
-
-    /**
      * @var StoreManagerInterface
      */
     private $storeManager;
 
     /**
+     * @var Module
+     */
+    private $moduleManager;
+
+    /**
      * IntegrationInsightData constructor.
+     *
      * @param Data $helper
      * @param ProductMetadataInterface $productMetadata
-     * @param ModuleListInterface $moduleList
      * @param DotdigitalConfig $dotdigitalConfig
-     * @param ScopeConfigInterface $scopeConfig
+     * @param StoreManagerInterface $storeManager
+     * @param Module $moduleManager
      */
     public function __construct(
         Data $helper,
         ProductMetadataInterface $productMetadata,
-        ModuleListInterface $moduleList,
         DotdigitalConfig $dotdigitalConfig,
-        ScopeConfigInterface $scopeConfig,
-        StoreManagerInterface $storeManager
+        StoreManagerInterface $storeManager,
+        Module $moduleManager
     ) {
         $this->helper = $helper;
         $this->productMetadata = $productMetadata;
-        $this->moduleList = $moduleList;
         $this->dotdigitalConfig = $dotdigitalConfig;
-        $this->scopeConfig = $scopeConfig;
         $this->storeManager = $storeManager;
+        $this->moduleManager = $moduleManager;
     }
 
     /**
+     * Fetch insight data for all websites.
+     *
      * @return array
      * @throws \Exception
      */
@@ -98,7 +93,8 @@ class IntegrationInsightData
     }
 
     /**
-     * @param $store
+     * Get system information.
+     *
      * @return array
      * @throws \Exception
      */
@@ -113,25 +109,19 @@ class IntegrationInsightData
             'edition' => $this->productMetadata->getEdition(),
             'version' => $this->productMetadata->getVersion(),
             'phpVersion' => implode('.', [PHP_MAJOR_VERSION, PHP_MINOR_VERSION, PHP_RELEASE_VERSION]),
-            'connectorVersion' => $this->getConnectorVersion(),
+            'connectorVersion' => $this->moduleManager->getModuleVersion(Module::MODULE_NAME),
             'lastUpdated' => (new \DateTime('now', new \DateTimeZone('UTC')))->format(\DateTime::W3C)
         ];
     }
 
     /**
-     * @param $websiteId
+     * Get connector configurations.
+     *
+     * @param string|int $websiteId
      * @return array
      */
     private function getConfiguration($websiteId)
     {
         return $this->dotdigitalConfig->getConfig($websiteId);
-    }
-
-    /**
-     * @return string
-     */
-    private function getConnectorVersion(): string
-    {
-        return $this->moduleList->getOne('Dotdigitalgroup_Email')['setup_version'];
     }
 }
