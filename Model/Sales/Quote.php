@@ -134,11 +134,6 @@ class Quote
     private $abandonedResource;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\DateIntervalFactory
-     */
-    private $dateIntervalFactory;
-
-    /**
      * @var PendingContactUpdater
      */
     private $pendingContactUpdater;
@@ -177,7 +172,6 @@ class Quote
      * @param \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory $quoteCollectionFactory
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory $collectionFactory
      * @param \Magento\Framework\Stdlib\DateTime\TimezoneInterface $timezone
-     * @param \Dotdigitalgroup\Email\Model\DateIntervalFactory $dateIntervalFactory
      * @param PendingContactUpdater $pendingContactUpdater
      * @param \Dotdigitalgroup\Email\Model\AbandonedCart\CartInsight\Data $cartInsight
      * @param TimeLimit $timeLimit
@@ -198,7 +192,6 @@ class Quote
         \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory $quoteCollectionFactory,
         \Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory $collectionFactory,
         \Magento\Framework\Stdlib\DateTime\TimezoneInterface $timezone,
-        \Dotdigitalgroup\Email\Model\DateIntervalFactory $dateIntervalFactory,
         PendingContactUpdater $pendingContactUpdater,
         \Dotdigitalgroup\Email\Model\AbandonedCart\CartInsight\Data $cartInsight,
         TimeLimit $timeLimit,
@@ -215,7 +208,6 @@ class Quote
         $this->campaignResource = $campaignResource;
         $this->orderCollection = $collectionFactory;
         $this->abandonedResource = $abandonedResource;
-        $this->dateIntervalFactory = $dateIntervalFactory;
         $this->scopeConfig = $scopeConfig;
         $this->quoteCollectionFactory = $quoteCollectionFactory;
         $this->campaignCollectionFactory = $campaignCollectionFactory;
@@ -499,14 +491,10 @@ class Quote
     {
         if ($num == 1) {
             $minutes = $this->getLostBasketCustomerInterval($num, $storeId);
-            $interval = $this->dateIntervalFactory->create(
-                ['interval_spec' => sprintf('PT%sM', $minutes)]
-            );
+            $interval = new \DateInterval(sprintf('PT%sM', $minutes));
         } else {
             $hours = (int)$this->getLostBasketCustomerInterval($num, $storeId);
-            $interval = $this->dateIntervalFactory->create(
-                ['interval_spec' => sprintf('PT%sH', $hours)]
-            );
+            $interval = new \DateInterval(sprintf('PT%sH', $hours));
         }
 
         return $interval;
@@ -524,13 +512,9 @@ class Quote
 
         //for the  first cart which use the minutes
         if ($num == 1) {
-            $interval = $this->dateIntervalFactory->create(
-                ['interval_spec' => sprintf('PT%sM', $timeInterval)]
-            );
+            $interval = new \DateInterval(sprintf('PT%sM', $timeInterval));
         } else {
-            $interval = $this->dateIntervalFactory->create(
-                ['interval_spec' => sprintf('PT%sH', $timeInterval)]
-            );
+            $interval = new \DateInterval(sprintf('PT%sH', $timeInterval));
         }
 
         return $interval;
@@ -546,7 +530,7 @@ class Quote
 
         $fromTime = $this->getSyncFromTime($this->getInterval($storeId, $abandonedNum));
         $toTime = clone $fromTime;
-        $fromTime->sub($this->dateIntervalFactory->create(['interval_spec' => 'PT5M']));
+        $fromTime->sub(new \DateInterval('PT5M'));
         $fromDate = $fromTime->format('Y-m-d H:i:s');
         $toDate = $toTime->format('Y-m-d H:i:s');
 
@@ -787,7 +771,7 @@ class Quote
 
         $fromTime = $this->getSyncFromTime($this->getSendAfterIntervalForGuest($storeId, $abandonedNum));
         $toTime = clone $fromTime;
-        $fromTime->sub($this->dateIntervalFactory->create(['interval_spec' => 'PT5M']));
+        $fromTime->sub(new \DateInterval('PT5M'));
 
         //format time
         $fromDate   = $fromTime->format('Y-m-d H:i:s');
@@ -903,7 +887,7 @@ class Quote
 
         $fromTime = $this->getSyncFromTime($interval);
         $toTime = clone $fromTime;
-        $fromTime->sub($this->dateIntervalFactory->create(['interval_spec' => 'PT5M']));
+        $fromTime->sub(new \DateInterval('PT5M'));
         $fromDate   = $fromTime->format('Y-m-d H:i:s');
         $toDate     = $toTime->format('Y-m-d H:i:s');
         //get abandoned carts already sent

@@ -2,7 +2,6 @@
 
 namespace Dotdigitalgroup\Email\Helper;
 
-use Dotdigitalgroup\Email\Model\DateIntervalFactory;
 use Magento\Framework\Intl\DateTimeFactory;
 
 /**
@@ -57,11 +56,6 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
     public $catalog;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\DateIntervalFactory
-     */
-    private $dateIntervalFactory;
-
-    /**
      * @var \Dotdigitalgroup\Email\Model\DateTimeFactory
      */
     private $dateTimeFactory;
@@ -74,7 +68,6 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
      * @param \Magento\Framework\App\Helper\Context $context
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalog
-     * @param DateIntervalFactory $dateIntervalFactory
      * @param DateTimeFactory $dateTimeFactory
      */
     public function __construct(
@@ -83,7 +76,6 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
         \Magento\Framework\App\Helper\Context $context,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalog,
-        DateIntervalFactory $dateIntervalFactory,
         DateTimeFactory $dateTimeFactory
     ) {
         $this->adapter      = $adapter;
@@ -91,7 +83,6 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
         $this->context      = $context;
         $this->storeManager = $storeManager;
         $this->catalog    = $catalog;
-        $this->dateIntervalFactory = $dateIntervalFactory;
         $this->dateTimeFactory = $dateTimeFactory;
 
         parent::__construct($context);
@@ -304,7 +295,7 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
 
         if ($sub) {
             $period = $now->sub(
-                $this->dateIntervalFactory->create(['interval_spec' => $sub])
+                new \DateInterval($sub)
             );
         }
 

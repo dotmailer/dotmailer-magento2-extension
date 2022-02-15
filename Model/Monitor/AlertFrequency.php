@@ -3,16 +3,10 @@
 namespace Dotdigitalgroup\Email\Model\Monitor;
 
 use Magento\Framework\App\Config\ScopeConfigInterface;
-use Dotdigitalgroup\Email\Model\DateIntervalFactory;
 use Dotdigitalgroup\Email\Helper\Config;
 
 class AlertFrequency
 {
-    /**
-     * @var DateIntervalFactory
-     */
-    private $dateIntervalFactory;
-
     /**
      * @var ScopeConfigInterface
      */
@@ -21,14 +15,11 @@ class AlertFrequency
     /**
      * AlertFrequency constructor.
      *
-     * @param DateIntervalFactory $dateIntervalFactory
      * @param ScopeConfigInterface $scopeConfig
      */
     public function __construct(
-        DateIntervalFactory $dateIntervalFactory,
         ScopeConfigInterface $scopeConfig
     ) {
-        $this->dateIntervalFactory = $dateIntervalFactory;
         $this->scopeConfig = $scopeConfig;
     }
 
@@ -46,10 +37,7 @@ class AlertFrequency
             Config::XML_PATH_CONNECTOR_SYSTEM_ALERTS_FREQUENCY
         );
 
-        $interval = $this->dateIntervalFactory->create(
-            ['interval_spec' => sprintf('PT%sH', $hours)]
-        );
-
+        $interval = new \DateInterval(sprintf('PT%sH', $hours));
         $fromTime = clone $toTime;
         $fromTime->sub($interval);
 

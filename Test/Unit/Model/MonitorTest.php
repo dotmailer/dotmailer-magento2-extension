@@ -131,43 +131,37 @@ class MonitorTest extends TestCase
 
     private function setDdgMonitorMessagesAndEmailsEnabled()
     {
-        $this->scopeConfigInterfaceMock->expects($this->at(0))
+        $this->scopeConfigInterfaceMock->expects($this->exactly(2))
             ->method('getValue')
-            ->with(Config::XML_PATH_CONNECTOR_SYSTEM_ALERTS_SYSTEM_MESSAGES)
-            ->willReturn(1);
-
-        $this->scopeConfigInterfaceMock->expects($this->at(1))
-            ->method('getValue')
-            ->with(Config::XML_PATH_CONNECTOR_SYSTEM_ALERTS_EMAIL_NOTIFICATIONS)
-            ->willReturn(1);
+            ->withConsecutive(
+                [Config::XML_PATH_CONNECTOR_SYSTEM_ALERTS_SYSTEM_MESSAGES],
+                [Config::XML_PATH_CONNECTOR_SYSTEM_ALERTS_EMAIL_NOTIFICATIONS]
+            )
+            ->willReturnOnConsecutiveCalls(1, 1);
 
         $this->setTimeWindowAndTypes();
     }
 
     private function setDdgMonitorMessagesAndEmailsDisabled()
     {
-        $this->scopeConfigInterfaceMock->expects($this->at(0))
+        $this->scopeConfigInterfaceMock->expects($this->exactly(2))
             ->method('getValue')
-            ->with(Config::XML_PATH_CONNECTOR_SYSTEM_ALERTS_SYSTEM_MESSAGES)
-            ->willReturn(0);
-
-        $this->scopeConfigInterfaceMock->expects($this->at(1))
-            ->method('getValue')
-            ->with(Config::XML_PATH_CONNECTOR_SYSTEM_ALERTS_EMAIL_NOTIFICATIONS)
-            ->willReturn(0);
+            ->withConsecutive(
+                [Config::XML_PATH_CONNECTOR_SYSTEM_ALERTS_SYSTEM_MESSAGES],
+                [Config::XML_PATH_CONNECTOR_SYSTEM_ALERTS_EMAIL_NOTIFICATIONS]
+            )
+            ->willReturnOnConsecutiveCalls(0, 0);
     }
 
     private function setDdgMonitorMessagesEnabledAndEmailsDisabled()
     {
-        $this->scopeConfigInterfaceMock->expects($this->at(0))
+        $this->scopeConfigInterfaceMock->expects($this->exactly(2))
             ->method('getValue')
-            ->with(Config::XML_PATH_CONNECTOR_SYSTEM_ALERTS_SYSTEM_MESSAGES)
-            ->willReturn(1);
-
-        $this->scopeConfigInterfaceMock->expects($this->at(1))
-            ->method('getValue')
-            ->with(Config::XML_PATH_CONNECTOR_SYSTEM_ALERTS_EMAIL_NOTIFICATIONS)
-            ->willReturn(0);
+            ->withConsecutive(
+                [Config::XML_PATH_CONNECTOR_SYSTEM_ALERTS_SYSTEM_MESSAGES],
+                [Config::XML_PATH_CONNECTOR_SYSTEM_ALERTS_EMAIL_NOTIFICATIONS]
+            )
+            ->willReturnOnConsecutiveCalls(1, 0);
 
         $this->setTimeWindowAndTypes();
     }

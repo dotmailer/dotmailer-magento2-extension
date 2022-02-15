@@ -75,11 +75,6 @@ class TrialSetup
     private $timezone;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\DateIntervalFactory
-     */
-    private $dateIntervalFactory;
-
-    /**
      * @var \Magento\Framework\HTTP\PhpEnvironment\ServerAddress
      */
     private $serverAddress;
@@ -101,7 +96,6 @@ class TrialSetup
      * @param \Dotdigitalgroup\Email\Model\Connector\Datafield $dataField
      * @param \Magento\Framework\App\Config\ReinitableConfigInterface $config
      * @param \Magento\Framework\Stdlib\DateTime\Timezone $timezone
-     * @param \Dotdigitalgroup\Email\Model\DateIntervalFactory $dateIntervalFactory
      * @param \Magento\Framework\HTTP\PhpEnvironment\ServerAddress $serverAddress
      * @param EncryptorInterface $encryptor
      * @param ProductMetadataInterface $productMetadata
@@ -112,12 +106,10 @@ class TrialSetup
         \Dotdigitalgroup\Email\Model\Connector\Datafield $dataField,
         \Magento\Framework\App\Config\ReinitableConfigInterface $config,
         \Magento\Framework\Stdlib\DateTime\Timezone $timezone,
-        \Dotdigitalgroup\Email\Model\DateIntervalFactory $dateIntervalFactory,
         \Magento\Framework\HTTP\PhpEnvironment\ServerAddress $serverAddress,
         EncryptorInterface $encryptor,
         ProductMetadataInterface $productMetadata
     ) {
-        $this->dateIntervalFactory = $dateIntervalFactory;
         $this->timezone = $timezone;
         $this->randomMath = $randomMath;
         $this->helper = $helper;
@@ -374,7 +366,7 @@ class TrialSetup
         );
 
         $expiryDate = $this->timezone->date();
-        $expiryDate->add($this->dateIntervalFactory->create(['interval_spec' => 'PT30M']));
+        $expiryDate->add(new \DateInterval('PT30M'));
         $this->helper->saveConfigData(
             Config::XML_PATH_CONNECTOR_API_TRIAL_TEMPORARY_PASSCODE_EXPIRY,
             $expiryDate->format(\DateTime::ATOM),

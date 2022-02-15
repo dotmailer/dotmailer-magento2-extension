@@ -187,8 +187,8 @@ class Order
         $this->storeName = $this->storeManager->getStore($orderData->getStoreId())->getName();
         $this->purchaseDate = $orderData->getCreatedAt();
         $this->deliveryMethod = $orderData->getShippingDescription();
-        $this->deliveryTotal = (float)number_format(
-            $orderData->getShippingAmount(),
+        $this->deliveryTotal = (float) number_format(
+            (float) $orderData->getShippingAmount(),
             2,
             '.',
             ''
@@ -262,14 +262,14 @@ class Order
             $this->products = [];
         }
 
-        $this->orderSubtotal = (float)number_format(
-            $orderData->getData('subtotal'),
+        $this->orderSubtotal = (float) number_format(
+            (float) $orderData->getData('subtotal'),
             2,
             '.',
             ''
         );
-        $this->discountAmount = (float)number_format(
-            $orderData->getData('discount_amount'),
+        $this->discountAmount = (float) number_format(
+            (float) $orderData->getData('discount_amount'),
             2,
             '.',
             ''
@@ -277,7 +277,7 @@ class Order
         $orderTotal = abs(
             $orderData->getData('grand_total') - $orderData->getTotalRefunded()
         );
-        $this->orderTotal = (float)number_format($orderTotal, 2, '.', '');
+        $this->orderTotal = (float) number_format($orderTotal, 2, '.', '');
         $this->orderStatus = $orderData->getStatus();
 
         unset($this->storeManager, $this->logger);
@@ -431,11 +431,11 @@ class Order
                     'name' => $productItem->getName(),
                     'parent_name' => $isBundle ? '' : $productModel->getName(),
                     'sku' => $isBundle ? $productModel->getSku() : $productItem->getSku(),
-                    'qty' => (int)number_format(
+                    'qty' => (int) number_format(
                         $productItem->getData('qty_ordered'),
                         2
                     ),
-                    'price' => (float)number_format(
+                    'price' => (float) number_format(
                         $price,
                         2,
                         '.',
@@ -467,11 +467,11 @@ class Order
                 $productData = [
                     'name' => $productItem->getName(),
                     'sku' => $productItem->getSku(),
-                    'qty' => (int)number_format(
+                    'qty' => (int) number_format(
                         $productItem->getData('qty_ordered'),
                         2
                     ),
-                    'price' => (float)number_format(
+                    'price' => (float) number_format(
                         $price,
                         2,
                         '.',
@@ -566,7 +566,7 @@ class Order
                     break;
 
                 case 'decimal':
-                    $value = (float)number_format(
+                    $value = (float) number_format(
                         $orderData->$function(),
                         2,
                         '.',

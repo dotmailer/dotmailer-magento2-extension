@@ -230,7 +230,7 @@ class Product
         $this->status = $this->statusFactory->create()
             ->getOptionText($product->getStatus());
 
-        $this->type = ucfirst($product->getTypeId());
+        $this->type = ucfirst((string) $product->getTypeId());
 
         $options = $this->visibilityFactory->create()
             ->getOptionArray();
@@ -262,7 +262,7 @@ class Product
 
         //limit short description
         $this->shortDescription = mb_substr(
-            $product->getShortDescription(),
+            (string) $product->getShortDescription(),
             0,
             \Dotdigitalgroup\Email\Helper\Data::DM_FIELD_LIMIT
         );
@@ -350,13 +350,13 @@ class Product
                     $childSpecialPrices[] = $childProduct->getSpecialPrice();
                 }
             }
-            $this->price = isset($childPrices) ? min($childPrices) : null;
-            $this->specialPrice = isset($childSpecialPrices) ? min($childSpecialPrices) : null;
+            $price = isset($childPrices) ? min($childPrices) : null;
+            $specialPrice = isset($childSpecialPrices) ? min($childSpecialPrices) : null;
         } elseif ($product->getTypeId() == 'bundle') {
-            $this->price = $product->getPriceInfo()->getPrice('regular_price')->getMinimalPrice()->getValue();
-            $this->specialPrice = $product->getPriceInfo()->getPrice('final_price')->getMinimalPrice()->getValue();
+            $price = $product->getPriceInfo()->getPrice('regular_price')->getMinimalPrice()->getValue();
+            $specialPrice = $product->getPriceInfo()->getPrice('final_price')->getMinimalPrice()->getValue();
             //if special price equals to price then its wrong.
-            $this->specialPrice = ($this->specialPrice === $this->price) ? null : $this->specialPrice;
+            $specialPrice = ($specialPrice === $price) ? null : $specialPrice;
         } elseif ($product->getTypeId() == 'grouped') {
             foreach ($product->getTypeInstance()->getAssociatedProducts($product) as $childProduct) {
                 $childPrices[] = $childProduct->getPrice();
@@ -364,13 +364,13 @@ class Product
                     $childSpecialPrices[] = $childProduct->getSpecialPrice();
                 }
             }
-            $this->price = isset($childPrices) ? min($childPrices) : null;
-            $this->specialPrice = isset($childSpecialPrices) ? min($childSpecialPrices) : null;
+            $price = isset($childPrices) ? min($childPrices) : null;
+            $specialPrice = isset($childSpecialPrices) ? min($childSpecialPrices) : null;
         } else {
-            $this->price = $product->getPrice();
-            $this->specialPrice = $product->getSpecialPrice();
+            $price = $product->getPrice();
+            $specialPrice = $product->getSpecialPrice();
         }
-        $this->formatPriceValues();
+        $this->formatPriceValues($price, $specialPrice);
     }
 
     /**
@@ -397,23 +397,30 @@ class Product
     /**
      * Formats the price values.
      *
+     * @param float|null $price
+     * @param float|null $specialPrice
+     *
      * @return void
      */
-    private function formatPriceValues()
+    private function formatPriceValues($price, $specialPrice)
     {
-        $this->price = (float)number_format(
-            $this->price,
-            2,
-            '.',
-            ''
-        );
+        if ($price) {
+            $this->price = (float) number_format(
+                $price,
+                2,
+                '.',
+                ''
+            );
+        }
 
-        $this->specialPrice = (float)number_format(
-            $this->specialPrice,
-            2,
-            '.',
-            ''
-        );
+        if ($specialPrice) {
+            $this->specialPrice = (float) number_format(
+                $specialPrice,
+                2,
+                '.',
+                ''
+            );
+        }
     }
 
     /**

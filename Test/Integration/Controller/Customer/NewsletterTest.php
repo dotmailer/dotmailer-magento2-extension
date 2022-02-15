@@ -118,12 +118,12 @@ class NewsletterTest extends \Magento\TestFramework\TestCase\AbstractController
         $this->mockHelper->method('getCanShowAdditionalSubscriptions')
             ->willReturn(true);
 
-        $this->mockClient->expects($this->at(1))
+        $this->mockClient->expects($this->exactly(2))
             ->method('postAddressBookContacts')
-            ->with(1, $this->mockECContactObject);
-        $this->mockClient->expects($this->at(2))
-            ->method('postAddressBookContacts')
-            ->with(2, $this->mockECContactObject);
+            ->withConsecutive(
+                [1, $this->mockECContactObject],
+                [2, $this->mockECContactObject]
+            );
 
         $this->dispatch('connector/customer/newsletter?additional_subscriptions[]=1&additional_subscriptions[]=2');
     }
