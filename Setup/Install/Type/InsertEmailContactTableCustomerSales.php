@@ -18,6 +18,13 @@ class InsertEmailContactTableCustomerSales extends AbstractDataMigration impleme
     protected $resourceName = 'sales';
 
     /**
+     * Do not use offset for this migration.
+     *
+     * @var bool
+     */
+    protected $useOffset = false;
+
+    /**
      * @return \Magento\Framework\DB\Select|void
      */
     protected function getSelectStatement()
