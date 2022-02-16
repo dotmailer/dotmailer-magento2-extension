@@ -1,3 +1,13 @@
+# 4.14.1
+
+##### Improvements
+- We removed some redundant logging for the catalog sync.
+
+##### Bug fixes
+- In 4.14.0 `connectorVersion` was missing from integration insight data; this is now fixed.
+- We removed a trailing comma in method arguments that broke compilation in PHP 7.1.
+- The 'use offset' flag is removed from the customer sales data migration type.
+
 # 4.14.0
 
 ##### What's new
