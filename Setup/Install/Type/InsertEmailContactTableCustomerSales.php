@@ -46,14 +46,15 @@ class InsertEmailContactTableCustomerSales extends AbstractDataMigration impleme
                 ['website_id' => 'store.website_id']
             )
             ->where(
-                '(sales_order.customer_email, store.website_id) NOT IN (?)',
+                'NOT EXISTS (?)',
                 $this->resourceConnection
                     ->getConnection()
                     ->select()
                     ->from(
-                        $this->resourceConnection->getTableName(Schema::EMAIL_CONTACT_TABLE),
-                        ['email', 'website_id']
+                        $this->resourceConnection->getTableName(Schema::EMAIL_CONTACT_TABLE)
                     )
+                    ->where('email = sales_order.customer_email')
+                    ->where('website_id = store.website_id')
             )->where(
                 $this->resourceConnection
                     ->getConnection()
