@@ -2,6 +2,6 @@
 <pages xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:noNamespaceSchemaLocation="urn:magento:mftf:Page/etc/PageObject.xsd">
     <page name="AdminImporterReportPage" url="dotdigitalgroup_email/importer" area="admin" module="Dotdigitalgroup_Email">
-        <section name="AdminImporterReportPageSection"/>
+        <section name="AdminReportGridFilterSection/AdminDotdigitalReportColumnsSection"/>
     </page>
 </pages>

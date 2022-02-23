@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<actionGroups xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/actionGroupSchema.xsd">
+    <actionGroup name="DeleteImporterReportRowsActionGroup">
+        <amOnPage url="{{AdminImporterReportPage.url}}" stepKey="amOnImportReportPage"/>
+        <waitForPageLoad stepKey="waitForImportsPageLoad"/>
+        <click selector="{{AdminDotdigitalReportColumnsSection.multiSelectMenu}}" stepKey="clickActionMenu"/>
+        <click selector="{{AdminDotdigitalReportColumnsSection.selectAllBtn}}" stepKey="clickSelectAll"/>
+        <click selector="{{AdminDotdigitalReportColumnsSection.actionMenu}}" stepKey="clickMassDeleteActionMenu"/>
+        <click selector="{{AdminDotdigitalReportColumnsSection.deleteBtn}}" stepKey="clickMassDeleteDelete"/>
+        <click selector="{{AdminDotdigitalReportColumnsSection.modalAcceptButton}}" stepKey="confirmMassDeleteDelete"/>
+        <waitForPageLoad stepKey="waitForDelete"/>
+    </actionGroup>
+</actionGroups>

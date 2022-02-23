@@ -1,0 +1,18 @@
+<actionGroups xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/actionGroupSchema.xsd">
+    <actionGroup name="DelinkAddressBooksActionGroup">
+
+        <!--Nagivate to page -->
+        <amOnPage url="{{AdminDotdigitalSyncSettingsPage.url}}" stepKey="amOnDotdigitalSyncAddressBookSettingsPageActionGroup"/>
+
+        <!-- Set Adress books for Customers, Subscribers and Guests -->
+        <selectOption selector="{{AdminDotdigitalSyncSettingsSection.addCustomersTo}}" userInput="-- Please Select --" stepKey="DelinkCustomersAddressBookActionGroup"/>
+        <selectOption selector="{{AdminDotdigitalSyncSettingsSection.addSubscribersTo}}" userInput="-- Please Select --" stepKey="DelinkSubscribersAddressBookActionGroup"/>
+        <selectOption selector="{{AdminDotdigitalSyncSettingsSection.addGuestsTo}}" userInput="-- Please Select --" stepKey="DelinkGuestsAddressBookActionGroup"/>
+
+        <!-- Save selection -->
+        <click selector="{{AdminDotdigitalSyncSettingsSection.save}}" stepKey="saveDelinkConfigAddressBookActionGroup" />
+        <waitForPageLoad stepKey="waitForDelinkAddressBookSettingsPageLoadActionGroup"/>
+    </actionGroup>
+
+</actionGroups>
