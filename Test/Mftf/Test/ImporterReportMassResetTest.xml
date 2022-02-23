@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
+    <test name="ImporterReportMassResetTest">
+        <annotations>
+            <features value="Dotdigital module"/>
+            <stories value="Test Dotdigital report mass action reset"/>
+            <title value="Test Importer Mass Action reset"/>
+            <description value="Rows in the Dotdigital Import report can be selected and reset."/>
+            <severity value="MINOR"/>
+            <group value="dotmailer"/>
+        </annotations>
+
+        <before>
+            <!-- Login as admin -->
+            <actionGroup ref="AdminLoginActionGroup" stepKey="AdminLoginActionGroup1"/>
+
+            <!-- Setup Customer Sync -->
+            <actionGroup ref="SetDotmailerAccountData" stepKey="SetDotmailerAccountData"/>
+
+            <!-- Enable Customer Sync -->
+            <actionGroup ref="EnableCustomerSync" stepKey="enableCustomerSync"/>
+
+            <!-- Update sync settings -->
+            <actionGroup ref="SelectOptionForNotSubscribedContacts" stepKey="enableNotSubscribedContacts">
+                <argument name="selectedOption" value="Yes"/>
+            </actionGroup>
+
+            <!-- Create customer address book -->
+            <actionGroup ref="CreateAddressBook" stepKey="createCustomersAddressBook">
+                <argument name="addressBookName" value="{{AddressBooks.customerAddressBookName}}"/>
+            </actionGroup>
+
+            <!-- Set address books for Customers and Subscribers -->
+            <actionGroup ref="LinkAddressBooksActionGroup" stepKey="LinkAddressBooks">
+                <argument name="customerBookName" value="{{AddressBooks.customerAddressBookName}}"/>
+            </actionGroup>
+
+            <!-- Navigate and to Store front customer sign up -->
+            <actionGroup ref="StorefrontOpenCustomerAccountCreatePageActionGroup" stepKey="openCreateAccountPage"/>
+
+            <!-- Complete signup form -->
+            <actionGroup ref="StorefrontFillCustomerAccountCreationFormActionGroup" stepKey="fillCreateAccountForm">
+                <argument name="customer" value="CustomerEntityOne"/>
+            </actionGroup>
+
+            <!-- Submit signup form -->
+            <actionGroup ref="StorefrontClickCreateAnAccountCustomerAccountCreationFormActionGroup" stepKey="submitCreateAccountForm"/>
+
+        </before>
+
+        <after>
+
+            <!-- Remove Customer -->
+            <actionGroup ref="DeleteCustomerByEmailActionGroup" stepKey="deleteNewUser">
+                <argument name="email" value="{{CustomerEntityOne.email}}"/>
+            </actionGroup>
+
+            <!-- Delink Address books for Customers and Subscribers -->
+            <actionGroup ref="DelinkAddressBooksActionGroup" stepKey="DelinkAddressBooks">
+                <argument name="customerBookName" value="{{AddressBooks.customerAddressBookName}}"/>
+            </actionGroup>
+
+            <!-- Disable Customer Sync -->
+            <actionGroup ref="DisableCustomerSync" stepKey="disableCustomerSync" />
+
+            <!-- Delete all imports generated -->
+            <actionGroup ref="DeleteImporterReportRowsActionGroup" stepKey="CleanupRows"/>
+
+            <!-- Logout -->
+            <actionGroup ref="AdminLogoutActionGroup" stepKey="logout"/>
+
+        </after>
+
+
+        <!-- Run Contact syncs -->
+        <magentoCLI command="dotdigital:sync Contact" stepKey="runContactSync"/>
+        <wait time="5" stepKey="waitFiveSecondsForSyncContactToGetPickedUpByCron"/>
+
+        <!-- Run  Importer syncs -->
+        <magentoCLI command="dotdigital:sync Importer" stepKey="runImporterSync1"/>
+        <wait time="30" stepKey="waitThirtySecondsForSyncImporter1"/>
+
+        <!-- Run  Importer syncs -->
+        <magentoCLI command="dotdigital:sync Importer" stepKey="runImporterSync2"/>
+        <wait time="30" stepKey="waitThirtySecondsForSyncImporter2"/>
+
+        <!-- Navigate to Importer report page -->
+        <amOnPage url="{{AdminImporterReportPage.url}}" stepKey="amOnImportReportPage"/>
+        <waitForPageLoad stepKey="waitForImportsPageLoad"/>
+
+        <!-- Test reset action works -->
+        <checkOption selector="{{AdminDotdigitalReportColumnsSection.selectRowByPosition('1')}}" stepKey="selectRule"/>
+        <click selector="{{AdminDotdigitalReportColumnsSection.actionMenu}}" stepKey="clickActionMenu"/>
+        <click selector="{{AdminDotdigitalReportColumnsSection.resetBtn}}" stepKey="clickReset"/>
+        <click selector="{{AdminDotdigitalReportColumnsSection.modalAcceptButton}}" stepKey="confirmReset"/>
+        <waitForPageLoad stepKey="waitForReset"/>
+
+        <!-- Test message is displayed -->
+        <seeInSource html="Total of 1 record(s) have been reset." stepKey="checkWindowForDotdigitalLog"/>
+
+        <!-- Test ID has been removed -->
+        <grabTextFrom  selector="{{AdminDotdigitalReportColumnsSection.selectColumnByPosition('1','2')}}" stepKey="importID"/>
+        <assertEmpty message="Import ID did not get removed after Resetting import" stepKey="ImportIdHasBeenRemoved">
+            <actualResult type="string">{$importID}</actualResult>
+        </assertEmpty>
+
+        <!-- Test Import started at has been removed -->
+        <grabTextFrom  selector="{{AdminDotdigitalReportColumnsSection.selectColumnByPosition('1','7')}}" stepKey="ImportStartedAtTimestamp"/>
+        <assertEmpty message="Import Started At did not get removed after Resetting import" stepKey="ImportTimestampStartedAtHasBeenRemoved">
+            <actualResult type="string">{$ImportStartedAtTimestamp}</actualResult>
+        </assertEmpty>
+
+        <!-- Test Import Finished at has been removed -->
+        <grabTextFrom  selector="{{AdminDotdigitalReportColumnsSection.selectColumnByPosition('1','8')}}" stepKey="ImportFinishedAtTimestamp"/>
+        <assertEmpty message="Import Started At did not get removed after Resetting import" stepKey="ImportTimestampFinishedAtHasBeenRemoved">
+            <actualResult type="string">{$ImportFinishedAtTimestamp}</actualResult>
+        </assertEmpty>
+
+        <!-- Test status has changed -->
+        <grabTextFrom selector="{{AdminDotdigitalReportColumnsSection.selectColumnByPosition('1','5')}}" stepKey="ImportStatus"/>
+        <assertEquals message="This is an optional human readable hint that will be shown in the logs if this assert fails." stepKey="assertEquals1">
+            <expectedResult type="string">Not Imported</expectedResult>
+            <actualResult type="string">{$ImportStatus}</actualResult>
+        </assertEquals>
+
+    </test>
+</tests>

@@ -3,15 +3,18 @@
 namespace Dotdigitalgroup\Email\Model\ResourceModel;
 
 use Dotdigitalgroup\Email\Setup\SchemaInterface as Schema;
+use Magento\Framework\Exception\AlreadyExistsException;
+use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
+use Dotdigitalgroup\Email\Model\Importer as ImporterModel;
 
-class Importer extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
+class Importer extends AbstractDb
 {
     /**
      * Initialize resource.
      *
-     * @return null
+     * @return void
      */
-    public function _construct()
+    public function _construct():void
     {
         $this->_init(Schema::EMAIL_IMPORTER_TABLE, 'id');
     }
@@ -23,17 +26,25 @@ class Importer extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      *
      * @return int|string
      */
-    public function massResend($ids)
+    public function massReset(array $ids)
     {
         try {
+
             $conn = $this->getConnection();
-            $num = $conn->update(
-                $this->getTable(Schema::EMAIL_IMPORTER_TABLE),
-                ['import_status' => 0],
+            $tableName = $this->getTable(Schema::EMAIL_IMPORTER_TABLE);
+
+            return $conn->update(
+                $tableName,
+                [
+                    'import_status' => 0,
+                    'import_id' => null,
+                    'import_started' => null,
+                    'import_finished' => null,
+                    'updated_at' => gmdate('Y-m-d H:i:s'),
+                ],
                 ['id IN(?)' => $ids]
             );
 
-            return $num;
         } catch (\Exception $e) {
             return $e->getMessage();
         }
@@ -42,11 +53,12 @@ class Importer extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Save item
      *
-     * @param \Dotdigitalgroup\Email\Model\Importer $item
+     * @param ImporterModel $item
      *
-     * @return $this
+     * @return Importer $this
+     * @throws AlreadyExistsException
      */
-    public function saveItem($item)
+    public function saveItem(ImporterModel $item):Importer
     {
         return $this->save($item);
     }
