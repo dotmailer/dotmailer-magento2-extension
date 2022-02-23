@@ -418,4 +418,19 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
             )
             ->getData();
     }
+
+    /**
+     * Find matching contacts.
+     *
+     * @param array $emails
+     * @param int $websiteId
+     *
+     * @return array
+     */
+    public function matchEmailsToContacts($emails, $websiteId)
+    {
+        return $this->addFieldToFilter('email', ['in' => $emails])
+            ->addFieldToFilter('website_id', $websiteId)
+            ->getColumnValues('email');
+    }
 }

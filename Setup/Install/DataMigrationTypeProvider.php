@@ -52,7 +52,11 @@ class DataMigrationTypeProvider
     private $updateEmailContactTableCustomerSales;
 
     /**
-     * DataMigrationTypeProvider constructor
+     * @var Type\UpdateEmailContactTableGuestSales
+     */
+    private $updateEmailContactTableGuestSales;
+
+    /**
      * @param Type\InsertEmailContactTableCustomers $insertEmailContactTableCustomers
      * @param Type\InsertEmailContactTableSubscribers $insertEmailContactTableSubscribers
      * @param Type\InsertEmailContactTableCustomerSales $insertEmailContactTableCustomerSales
@@ -62,6 +66,7 @@ class DataMigrationTypeProvider
      * @param Type\InsertEmailWishlistTable $insertEmailWishlistTable
      * @param Type\InsertEmailCatalogTable $insertEmailCatalogTable
      * @param Type\UpdateEmailContactTableCustomerSales $updateEmailContactTableCustomerSales
+     * @param Type\UpdateEmailContactTableGuestSales $updateEmailContactTableGuestSales
      */
     public function __construct(
         Type\InsertEmailContactTableCustomers $insertEmailContactTableCustomers,
@@ -72,7 +77,8 @@ class DataMigrationTypeProvider
         Type\InsertEmailReviewTable $insertEmailReviewTable,
         Type\InsertEmailWishlistTable $insertEmailWishlistTable,
         Type\InsertEmailCatalogTable $insertEmailCatalogTable,
-        Type\UpdateEmailContactTableCustomerSales $updateEmailContactTableCustomerSales
+        Type\UpdateEmailContactTableCustomerSales $updateEmailContactTableCustomerSales,
+        Type\UpdateEmailContactTableGuestSales $updateEmailContactTableGuestSales
     ) {
         $this->insertEmailContactTableCustomers = $insertEmailContactTableCustomers;
         $this->insertEmailContactTableSubscribers = $insertEmailContactTableSubscribers;
@@ -83,11 +89,14 @@ class DataMigrationTypeProvider
         $this->insertEmailWishlistTable = $insertEmailWishlistTable;
         $this->insertEmailCatalogTable = $insertEmailCatalogTable;
         $this->updateEmailContactTableCustomerSales = $updateEmailContactTableCustomerSales;
+        $this->updateEmailContactTableGuestSales = $updateEmailContactTableGuestSales;
     }
 
     /**
      * Get types associated with this provider
+     *
      * @param string|null $table
+     *
      * @return array
      * @throws \ErrorException
      * @throws \Magento\Framework\Exception\LocalizedException
@@ -99,6 +108,8 @@ class DataMigrationTypeProvider
     }
 
     /**
+     * Filter all types for those that are enabled.
+     *
      * @param string|null $table
      * @return mixed
      */
@@ -108,7 +119,9 @@ class DataMigrationTypeProvider
     }
 
     /**
-     * @param $table
+     * If migration is being run for a single table, get the related migration types.
+     *
+     * @param string $table
      * @throws \ErrorException
      * @throws \Magento\Framework\Exception\LocalizedException
      * @throws \Zend_Db_Statement_Exception
@@ -139,6 +152,8 @@ class DataMigrationTypeProvider
     }
 
     /**
+     * Migration types for email_contact.
+     *
      * @return array
      */
     public function getContactTypes()
@@ -149,10 +164,13 @@ class DataMigrationTypeProvider
             $this->updateContactsWithSubscriberCustomers,
             $this->insertEmailContactTableCustomerSales,
             $this->updateEmailContactTableCustomerSales,
+            $this->updateEmailContactTableGuestSales
         ];
     }
 
     /**
+     * Migration types for email_order.
+     *
      * @return Type\InsertEmailOrderTable[]
      */
     public function getOrderTypes()
@@ -161,6 +179,8 @@ class DataMigrationTypeProvider
     }
 
     /**
+     * Migration types for email_review.
+     *
      * @return Type\InsertEmailReviewTable[]
      */
     public function getReviewTypes()
@@ -169,6 +189,8 @@ class DataMigrationTypeProvider
     }
 
     /**
+     * Migration types for email_wishlist.
+     *
      * @return Type\InsertEmailWishlistTable[]
      */
     public function getWishlistTypes()
@@ -177,6 +199,8 @@ class DataMigrationTypeProvider
     }
 
     /**
+     * Migration types for email_catalog.
+     *
      * @return Type\InsertEmailCatalogTable[]
      */
     public function getCatalogTypes()
@@ -185,8 +209,11 @@ class DataMigrationTypeProvider
     }
 
     /**
-     * @param $types
-     * @return mixed
+     * Filter types by is_enabled flag.
+     *
+     * @param array $types
+     *
+     * @return array
      */
     private function filterTypes($types)
     {

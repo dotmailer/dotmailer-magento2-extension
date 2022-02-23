@@ -2,6 +2,8 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Run;
 
+use Dotdigitalgroup\Email\Model\Sync\OrderFactory;
+
 class Ordersync extends \Magento\Backend\App\AbstractAction
 {
     /**
@@ -9,7 +11,7 @@ class Ordersync extends \Magento\Backend\App\AbstractAction
      *
      * @see _isAllowed()
      */
-    const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::config';
+    public const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::config';
 
     /**
      * @var \Magento\Framework\Message\ManagerInterface
@@ -17,21 +19,19 @@ class Ordersync extends \Magento\Backend\App\AbstractAction
     protected $messageManager;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\CronFactory
+     * @var OrderFactory
      */
-    private $cronFactory;
+    private $syncOrderFactory;
 
     /**
-     * Ordersync constructor.
-     *
-     * @param \Dotdigitalgroup\Email\Model\CronFactory $cronFactory
-     * @param \Magento\Backend\App\Action\Context      $context
+     * @param OrderFactory $syncOrderFactory
+     * @param \Magento\Backend\App\Action\Context $context
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\CronFactory $cronFactory,
+        OrderFactory $syncOrderFactory,
         \Magento\Backend\App\Action\Context $context
     ) {
-        $this->cronFactory    = $cronFactory;
+        $this->syncOrderFactory    = $syncOrderFactory;
         $this->messageManager = $context->getMessageManager();
         parent::__construct($context);
     }
@@ -39,16 +39,19 @@ class Ordersync extends \Magento\Backend\App\AbstractAction
     /**
      * Refresh suppressed contacts.
      *
-     * @return null
+     * @return void
      */
     public function execute()
     {
-        $result = $this->cronFactory->create()
-            ->orderSync();
+        $result = $this->syncOrderFactory->create(
+            ['data' => ['web' => true]]
+        )->sync();
 
         $this->messageManager->addSuccessMessage($result['message']);
 
+        // @codingStandardsIgnoreStart
         $redirectBack = $this->_redirect->getRefererUrl();
         $this->_redirect($redirectBack);
+        // @codingStandardsIgnoreEnd
     }
 }

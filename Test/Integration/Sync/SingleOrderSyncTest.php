@@ -68,14 +68,14 @@ class SingleOrderSyncTest extends \PHPUnit\Framework\TestCase
      *
      * @return null
      */
-    public function testSingleOrderIsTypeOrderAndModeSingle()
+    public function testSingleOrderIsTypeOrderAndModeBulk()
     {
         $this->createModifiedEmailOrder();
         $this->prep();
 
         $item = $this->importerCollection
             ->addFieldToFilter('import_type', \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_ORDERS)
-            ->addFieldToFilter('import_mode', \Dotdigitalgroup\Email\Model\Importer::MODE_SINGLE)
+            ->addFieldToFilter('import_mode', \Dotdigitalgroup\Email\Model\Importer::MODE_BULK)
             ->getFirstItem();
 
         $this->assertEquals(
@@ -84,7 +84,7 @@ class SingleOrderSyncTest extends \PHPUnit\Framework\TestCase
             'Item is not type of order'
         );
         $this->assertEquals(
-            \Dotdigitalgroup\Email\Model\Importer::MODE_SINGLE,
+            \Dotdigitalgroup\Email\Model\Importer::MODE_BULK,
             $item->getImportMode(),
             'Item is not single mode'
         );
@@ -109,7 +109,7 @@ class SingleOrderSyncTest extends \PHPUnit\Framework\TestCase
     /**
      * @return null
      */
-    public function createModifiedEmailOrder()
+    private function createModifiedEmailOrder()
     {
         /** @var \Magento\Sales\Model\ResourceModel\Order\Collection $orderCollection */
         $orderCollection = $this->objectManager->create(\Magento\Sales\Model\ResourceModel\Order\Collection::class);
@@ -122,8 +122,7 @@ class SingleOrderSyncTest extends \PHPUnit\Framework\TestCase
             ->setOrderStatus($order->getStatus())
             ->setQuoteId($order->getQuoteId())
             ->setStoreId($order->getStoreId())
-            ->setEmailImported('1')
-            ->setModified('1');
+            ->setProcessed('0');
         $emailOrder->save();
     }
 
@@ -135,7 +134,7 @@ class SingleOrderSyncTest extends \PHPUnit\Framework\TestCase
         $this->createModifiedEmailOrder();
         $orderResponse = $this->prep();
 
-        $this->assertEquals(1, $orderResponse['single_sync']);
+        $this->assertEquals(1, $orderResponse['syncedOrders']);
     }
 
     /**
@@ -146,7 +145,7 @@ class SingleOrderSyncTest extends \PHPUnit\Framework\TestCase
         $this->createOrderWithoutPayment();
         $orderResponse = $this->prep();
 
-        $this->assertEquals(1, $orderResponse['single_sync']);
+        $this->assertEquals(1, $orderResponse['syncedOrders']);
     }
 
     private function createOrderWithoutPayment()

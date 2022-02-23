@@ -25,6 +25,8 @@ class InsertEmailContactTableCustomerSales extends AbstractDataMigration impleme
     protected $useOffset = false;
 
     /**
+     * Get this type's select statement
+     *
      * @return \Magento\Framework\DB\Select|void
      */
     protected function getSelectStatement()
@@ -66,6 +68,8 @@ class InsertEmailContactTableCustomerSales extends AbstractDataMigration impleme
     }
 
     /**
+     * Get the insert array
+     *
      * @return array|void
      */
     public function getInsertArray()
@@ -79,6 +83,8 @@ class InsertEmailContactTableCustomerSales extends AbstractDataMigration impleme
     }
 
     /**
+     * Insert data
+     *
      * @param Select $selectStatement
      * @return int
      * @throws \Magento\Framework\Exception\NoSuchEntityException
@@ -102,6 +108,8 @@ class InsertEmailContactTableCustomerSales extends AbstractDataMigration impleme
     }
 
     /**
+     * This type only runs if Account Sharing is Global.
+     *
      * @return bool
      */
     public function isEnabled(): bool

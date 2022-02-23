@@ -3,7 +3,6 @@
 namespace Dotdigitalgroup\Email\Model\Sync;
 
 use Dotdigitalgroup\Email\Helper\Config;
-use Dotdigitalgroup\Email\Model\Sync\Catalog\CatalogSyncerInterface;
 use Magento\Framework\DataObject;
 
 /**
@@ -42,12 +41,15 @@ class Catalog extends DataObject implements SyncInterface
     private $importerFactory;
 
     /**
+     * Catalog constructor.
+     *
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory $catalogResourceFactory
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory $catalogCollectionFactory
      * @param Catalog\CatalogSyncFactory $catalogSyncFactory
      * @param \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
+     * @param array $data
      */
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $helper,
@@ -101,6 +103,8 @@ class Catalog extends DataObject implements SyncInterface
             Config::XML_PATH_CONNECTOR_SYNC_CATALOG_BREAK_VALUE
         );
 
+        $megaBatchSize = $this->scopeConfig->getValue(Config::XML_PATH_CONNECTOR_MEGA_BATCH_SIZE_CATALOG);
+
         do {
             $productsToProcess = $this->getProductsToProcess($limit);
 
@@ -127,13 +131,13 @@ class Catalog extends DataObject implements SyncInterface
 
             $this->helper->log(sprintf('Catalog sync: %s products processed.', count($productsToProcess)));
 
-            if ($megaBatchCount >= CatalogSyncerInterface::MEGA_BATCH_SIZE) {
+            if ($megaBatchCount >= $megaBatchSize) {
                 $this->addToImportQueue($megaBatch);
                 $megaBatchCount = 0;
                 $megaBatch = [];
             }
 
-        } while ($breakValue === null || $totalProductsSyncedCount < $breakValue);
+        } while (!$breakValue || $totalProductsSyncedCount < $breakValue);
 
         if (!empty($megaBatch)) {
             //Add the rest of the products (if any) to the importer
@@ -149,6 +153,8 @@ class Catalog extends DataObject implements SyncInterface
     }
 
     /**
+     * Fetch product ids.
+     *
      * @param array $syncedProducts
      * @return array
      */
@@ -196,6 +202,8 @@ class Catalog extends DataObject implements SyncInterface
     }
 
     /**
+     * Decides if sync should proceed.
+     *
      * @return bool
      */
     private function shouldProceed()
@@ -223,6 +231,8 @@ class Catalog extends DataObject implements SyncInterface
     }
 
     /**
+     * Creates the catalog mega batch.
+     *
      * @param array $megaBatch
      * @param array $batch
      * @return array
@@ -243,6 +253,8 @@ class Catalog extends DataObject implements SyncInterface
     }
 
     /**
+     * Register catalog to importer.
+     *
      * @param array $catalogs
      */
     private function addToImportQueue(array $catalogs)
@@ -283,6 +295,8 @@ class Catalog extends DataObject implements SyncInterface
     }
 
     /**
+     * Product counter.
+     *
      * @param array $batch
      * @return int
      */

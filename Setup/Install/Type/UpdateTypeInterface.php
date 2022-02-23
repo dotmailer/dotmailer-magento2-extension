@@ -8,6 +8,7 @@ interface UpdateTypeInterface
 {
     /**
      * Get the bindings for this update
+     *
      * @return array
      */
     public function getUpdateBindings();

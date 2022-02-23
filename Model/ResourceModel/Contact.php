@@ -66,7 +66,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      * @param \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollectionFactory
      * @param \Magento\Quote\Model\ResourceModel\QuoteFactory $quoteResourceFactory
      * @param Config $config
-     * @param null $connectionName
+     * @param string|null $connectionName
      */
     public function __construct(
         \Magento\Framework\Model\ResourceModel\Db\Context $context,
@@ -77,7 +77,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollectionFactory,
         \Magento\Quote\Model\ResourceModel\QuoteFactory $quoteResourceFactory,
         Config $config,
-        $connectionName = null
+        string $connectionName = null
     ) {
         $this->config                   = $config;
         $this->expressionFactory        = $expressionFactory;
@@ -93,7 +93,6 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      * Remove all contact_id from the table.
      *
      * @return int
-     *
      */
     public function deleteContactIds()
     {
@@ -112,6 +111,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 
     /**
      * Reset the imported contacts.
+     *
      * @param string|null $from
      * @param string|null $to
      * @return int
@@ -157,6 +157,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 
     /**
      * Set all imported subscribers for reimport.
+     *
      * @param string|null $from
      * @param string|null $to
      * @return int
@@ -185,8 +186,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
-     * Subscribe a batch of contacts in email_contact/newsletter table,
-     * supplying store ids to restrict the scope.
+     * Subscribe a batch of contacts in email_contact/newsletter table, supplying store ids to restrict the scope.
      *
      * @param array $storeContacts
      *
@@ -241,8 +241,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
-     * Unsubscribe a batch of contacts from email_contact/newsletter table,
-     * supplying website and store ids to restrict the unsubscribe.
+     * Unsubscribe contacts.
      *
      * @param array $emails
      * @param array $websiteIds
@@ -296,28 +295,32 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
-     * email, website_id, store_id, is_guest
+     * Create contacts.
+     *
      * @param array $guests
      *
-     * @return null
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function insertGuests($guests)
     {
         $write = $this->getConnection();
-        if (! empty($guests)) {
+        if (!empty($guests)) {
             $write->insertMultiple($this->getMainTable(), $guests);
         }
     }
 
     /**
-     * @param array $guests
+     * Mark contact as a guest.
+     *
+     * @param array $guestEmails
+     * @param string $websiteId
      */
-    public function updateContactsAsGuests($guests, $websiteId)
+    public function setContactsAsGuest($guestEmails, $websiteId)
     {
         $write = $this->getConnection();
-        if (! empty($guests)) {
+        if ($guestEmails) {
             $where = [
-                'email IN (?)' => $guests,
+                'email IN (?)' => $guestEmails,
                 'website_id = ?' => $websiteId,
                 'is_guest IS NULL'
             ];
@@ -430,6 +433,8 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
+     * Initialize columns.
+     *
      * @param string $storeIds
      * @return array
      */
@@ -465,6 +470,8 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
+     * Create column.
+     *
      * @param string $salesOrder
      * @param string $storeIds
      * @return \Zend_Db_Expr
@@ -483,6 +490,8 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
+     * Create column.
+     *
      * @param string $salesOrder
      * @param string $storeIds
      * @return \Zend_Db_Expr
@@ -501,6 +510,8 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
+     * Create column.
+     *
      * @param string $salesOrder
      * @param string $storeIds
      * @return \Magento\Framework\DB\Sql\Expression
@@ -519,6 +530,8 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
+     * Create column.
+     *
      * @param string $salesOrder
      * @param string $storeIds
      * @return \Zend_Db_Expr
@@ -537,6 +550,8 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
+     * Create column.
+     *
      * @param string $salesOrder
      * @param string $salesOrderItem
      * @param string $storeIds
@@ -558,6 +573,8 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
+     * Create column.
+     *
      * @param string $salesOrder
      * @param string $salesOrderItem
      * @param string $storeIds
@@ -579,6 +596,8 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
+     * Create column.
+     *
      * @param string $salesOrder
      * @param string $storeIds
      * @return \Zend_Db_Expr
@@ -600,6 +619,8 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
+     * Create column.
+     *
      * @param string $salesOrder
      * @param string $storeIds
      * @return \Zend_Db_Expr
@@ -621,6 +642,8 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
+     * Create column.
+     *
      * @param string $salesOrder
      * @param string $salesOrderItem
      * @param string $storeIds
@@ -705,6 +728,8 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
+     * Initialize collection.
+     *
      * @param array $customerIds
      *
      * @return \Magento\Customer\Model\ResourceModel\Customer\Collection
@@ -736,6 +761,8 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
+     * Assign data.
+     *
      * @param string $salesOrderGrid
      * @param string $salesOrder
      * @param string $salesOrderItem
@@ -850,6 +877,8 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
+     * Include shipping to collection.
+     *
      * @param \Magento\Customer\Model\ResourceModel\Customer\Collection $customerCollection
      */
     private function addShippingJoinAttributesToCustomerCollection($customerCollection)
@@ -906,6 +935,8 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
+     * Include billing to collection.
+     *
      * @param \Magento\Customer\Model\ResourceModel\Customer\Collection $customerCollection
      */
     private function addBillingJoinAttributesToCustomerCollection($customerCollection)
@@ -1021,6 +1052,8 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
+     * Fetch collection.
+     *
      * @param array $customerIds
      * @param array $orderArray
      * @param array $storeIds

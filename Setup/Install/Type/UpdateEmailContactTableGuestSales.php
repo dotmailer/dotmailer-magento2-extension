@@ -5,7 +5,7 @@ namespace Dotdigitalgroup\Email\Setup\Install\Type;
 use Dotdigitalgroup\Email\Setup\SchemaInterface as Schema;
 use Magento\Framework\DB\Select;
 
-class UpdateEmailContactTableCustomerSales extends AbstractDataMigration implements BulkUpdateTypeInterface
+class UpdateEmailContactTableGuestSales extends AbstractDataMigration implements BulkUpdateTypeInterface
 {
     /**
      * @var string
@@ -18,6 +18,8 @@ class UpdateEmailContactTableCustomerSales extends AbstractDataMigration impleme
     protected $tableName = Schema::EMAIL_CONTACT_TABLE;
 
     /**
+     * Get this type's select statement
+     *
      * @return Select
      */
     protected function getSelectStatement()
@@ -28,7 +30,7 @@ class UpdateEmailContactTableCustomerSales extends AbstractDataMigration impleme
             ->from([
                 'sales_order'=> $this->resourceConnection->getTableName('sales_order', $this->resourceName)
             ], [
-                'customer_id',
+                'is_guest' => new \Zend_Db_Expr('1'),
                 'customer_email'
             ])
             ->distinct(true)
@@ -46,29 +48,34 @@ class UpdateEmailContactTableCustomerSales extends AbstractDataMigration impleme
                         $this->resourceConnection->getTableName(Schema::EMAIL_CONTACT_TABLE),
                         ['email', 'website_id']
                     )
-                    ->where('customer_id = ?', 0)
+                    ->where('customer_id != ?', 0)
             )
             ->where(
                 $this->resourceConnection
                     ->getConnection()
                     ->prepareSqlCondition('sales_order.customer_id', [
-                        'notnull' => true
+                        'null' => true
                     ])
             );
     }
 
     /**
-     * @param $customerId
+     * Get the bindings for this update
+     *
+     * @param bool $isGuest
+     *
      * @return array
      */
-    public function getUpdateBindings($customerId)
+    public function getUpdateBindings($isGuest)
     {
         return [
-            'customer_id' => $customerId,
+            'is_guest' => $isGuest,
         ];
     }
 
     /**
+     * Get the where clause for this update
+     *
      * @param array $row
      *
      * @return array
@@ -76,11 +83,14 @@ class UpdateEmailContactTableCustomerSales extends AbstractDataMigration impleme
     public function getUpdateWhereClause($row)
     {
         return [
-            'email in (?)' => $row['customer_email'],
+            'email = ?' => $row['customer_email'],
+            'website_id = ?' => $row['website_id']
         ];
     }
 
     /**
+     * Fetch records
+     *
      * @return array
      */
     public function fetchRecords()
@@ -91,18 +101,12 @@ class UpdateEmailContactTableCustomerSales extends AbstractDataMigration impleme
     }
 
     /**
-     * @return bool
-     */
-    public function isEnabled(): bool
-    {
-        return $this->isAccountSharingGlobal();
-    }
-
-    /**
+     * Get the bind key
+     *
      * @return string
      */
     public function getBindKey(): string
     {
-        return 'customer_id';
+        return 'is_guest';
     }
 }
