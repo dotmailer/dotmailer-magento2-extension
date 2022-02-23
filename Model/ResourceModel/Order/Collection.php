@@ -32,7 +32,7 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     /**
      * Initialize resource collection.
      *
-     * @return null
+     * @return void
      */
     public function _construct()
     {
@@ -126,62 +126,42 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     }
 
     /**
-     * Get pending orders for import.
+     * Return order collection filtered by order ids.
      *
-     * @param array $storeIds
-     * @param int $limit
-     * @param array $orderStatuses
+     * @param array $orderIds
      *
      * @return $this
      */
-    public function getOrdersToImport($storeIds, $limit, $orderStatuses)
+    public function getOrdersFromIds($orderIds)
     {
-        $collection = $this->addFieldToFilter('store_id', ['in' => $storeIds])
-            ->addFieldToFilter('order_status', ['in' => $orderStatuses])
-            ->addFieldToFilter('email_imported', 0);
-
-        $collection->getSelect()->limit($limit);
-
-        return $collection;
+        return $this->addFieldToFilter('order_id', ['in' => $orderIds]);
     }
 
     /**
-     * Get pending modified orders to import.
+     * Fetch unprocessed orders.
      *
+     * @param string $limit
      * @param array $storeIds
-     * @param int $limit
-     * @param array $orderStatuses
      *
-     * @return $this
+     * @return array
      */
-    public function getModifiedOrdersToImport($storeIds, $limit, $orderStatuses)
+    public function getOrdersToProcess($limit, $storeIds)
     {
-        $collection = $this->addFieldToFilter('store_id', ['in' => $storeIds])
-            ->addFieldToFilter('order_status', ['in' => $orderStatuses])
-            ->addFieldToFilter('email_imported', '1')
-            ->addFieldToFilter('modified', '1');
+        $connectorCollection = $this;
+        $connectorCollection->addFieldToFilter('processed', '0');
+        $connectorCollection->addFieldToFilter('store_id', ['in' => $storeIds]);
+        $connectorCollection->getSelect()->limit($limit);
+        $connectorCollection->setOrder(
+            'order_id',
+            'asc'
+        );
 
-        $collection->getSelect()->limit($limit);
+        //check number of orders
+        if ($connectorCollection->getSize()) {
+            return $connectorCollection->getColumnValues('order_id');
+        }
 
-        return $collection;
-    }
-
-    /**
-     * Get all sent orders.
-     *
-     * @param array $storeIds
-     * @param int $limit
-     *
-     * @return $this
-     */
-    public function getAllSentOrders($storeIds, $limit)
-    {
-        $collection = $this->addFieldToFilter('email_imported', 1)
-            ->addFieldToFilter('store_id', ['in' => $storeIds]);
-
-        $collection->getSelect()->limit($limit);
-
-        return $collection->load();
+        return [];
     }
 
     /**
@@ -356,6 +336,8 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     }
 
     /**
+     * Fetch quotes filtered by quote ids.
+     *
      * @param array $quoteIds
      * @param int $storeId
      *
@@ -374,5 +356,35 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
         }
 
         return $salesCollection;
+    }
+
+    /**
+     * Utility method to return all the order ids in a collection.
+     *
+     * @return array
+     */
+    public function getAllOrderIds(): array
+    {
+        $ids = [];
+        foreach ($this->getItems() as $item) {
+            $ids[] = $item->getOrderId();
+        }
+        return $ids;
+    }
+
+    /**
+     * Returns order ids filtered by date.
+     *
+     * @param int $storeId
+     * @param \DateTime $time
+     *
+     * @return array
+     */
+    public function getOrderIdsFromRecentUnprocessedOrdersSince($storeId, $time)
+    {
+        return $this->addFieldToFilter('processed', '0')
+            ->addFieldToFilter('store_id', $storeId)
+            ->addFieldToFilter('updated_at', ['gt' => $time])
+            ->getColumnValues('order_id');
     }
 }

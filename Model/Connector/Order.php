@@ -2,6 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Model\Connector;
 
+use Dotdigitalgroup\Email\Helper\Config;
 use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Product\AttributeFactory;
 
@@ -20,7 +21,7 @@ class Order
     public $id;
 
     /**
-     * Email.
+     * Email address.
      *
      * @var string
      */
@@ -111,22 +112,17 @@ class Order
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    public $helper;
-
-    /**
-     * @var \Magento\Store\Model\StoreManagerInterface
-     */
-    private $storeManager;
+    private $helper;
 
     /**
      * @var \Magento\Customer\Model\CustomerFactory
      */
-    public $customerFactory;
+    private $customerFactory;
 
     /**
      * @var \Magento\Catalog\Model\ProductFactory
      */
-    public $productFactory;
+    private $productFactory;
 
     /**
      * @var KeyValidator
@@ -149,7 +145,6 @@ class Order
      * @param \Magento\Catalog\Model\ProductFactory $productFactory
      * @param \Magento\Customer\Model\CustomerFactory $customerFactory
      * @param \Dotdigitalgroup\Email\Helper\Data $helperData
-     * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
      * @param KeyValidator $validator
      * @param AttributeFactory $attributeHandler
      * @param Logger $logger
@@ -158,15 +153,13 @@ class Order
         \Magento\Catalog\Model\ProductFactory $productFactory,
         \Magento\Customer\Model\CustomerFactory $customerFactory,
         \Dotdigitalgroup\Email\Helper\Data $helperData,
-        \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
         KeyValidator $validator,
         AttributeFactory $attributeHandler,
         Logger $logger
     ) {
-        $this->productFactory      = $productFactory;
-        $this->customerFactory     = $customerFactory;
-        $this->helper              = $helperData;
-        $this->storeManager = $storeManagerInterface;
+        $this->productFactory = $productFactory;
+        $this->customerFactory = $customerFactory;
+        $this->helper = $helperData;
         $this->validator = $validator;
         $this->attributeHandler = $attributeHandler;
         $this->logger = $logger;
@@ -184,7 +177,7 @@ class Order
         $this->id = $orderData->getIncrementId();
         $this->email = $orderData->getCustomerEmail();
         $this->quoteId = $orderData->getQuoteId();
-        $this->storeName = $this->storeManager->getStore($orderData->getStoreId())->getName();
+        $this->storeName = $orderData->getStore()->getName();
         $this->purchaseDate = $orderData->getCreatedAt();
         $this->deliveryMethod = $orderData->getShippingDescription();
         $this->deliveryTotal = (float) number_format(
@@ -194,11 +187,12 @@ class Order
             ''
         );
         $this->currency = $orderData->getOrderCurrencyCode();
-        $payment = $orderData->getPayment();
 
+        /** @var \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment */
+        $payment = $orderData->getPayment();
         if ($payment) {
             if ($payment->getMethod()) {
-                $methodInstance = $payment->getMethodInstance($payment->getMethod());
+                $methodInstance = $payment->getMethodInstance();
                 if ($methodInstance) {
                     $this->payment = $methodInstance->getTitle();
                 }
@@ -210,12 +204,9 @@ class Order
         /*
          * custom order attributes
          */
-        $website = $this->storeManager->getStore($orderData->getStore())->getWebsite();
-
-        $customAttributes
-            = $this->helper->getConfigSelectedCustomOrderAttributes(
-                $website
-            );
+        $customAttributes = $this->getConfigSelectedCustomOrderAttributes(
+            $orderData->getStore()->getWebsiteId()
+        );
 
         if ($customAttributes) {
             $fields = $this->helper->getOrderTableDescription();
@@ -245,8 +236,8 @@ class Order
         $this->processShippingAddress($orderData);
 
         $syncCustomOption = $this->helper->getWebsiteConfig(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_ORDER_PRODUCT_CUSTOM_OPTIONS,
-            $website
+            Config::XML_PATH_CONNECTOR_SYNC_ORDER_PRODUCT_CUSTOM_OPTIONS,
+            $orderData->getStore()->getWebsiteId()
         );
 
         /*
@@ -280,20 +271,22 @@ class Order
         $this->orderTotal = (float) number_format($orderTotal, 2, '.', '');
         $this->orderStatus = $orderData->getStatus();
 
-        unset($this->storeManager, $this->logger);
-
         return $this;
     }
 
     /**
+     * Process order billing address.
+     *
      * @param \Magento\Sales\Model\Order $orderData
      *
-     * @return null
+     * @return void
      */
     private function processBillingAddress($orderData)
     {
-        if ($orderData->getBillingAddress()) {
-            $billingData = $orderData->getBillingAddress()->getData();
+        if ($billingAddress = $orderData->getBillingAddress()) {
+            /** @var \Magento\Framework\Model\AbstractExtensibleModel $billingAddress */
+            $billingData = $billingAddress->getData();
+
             $this->billingAddress = [
                 'billing_address_1' => $this->_getStreet(
                     $billingData['street'],
@@ -312,14 +305,17 @@ class Order
     }
 
     /**
+     * Process order shipping address.
+     *
      * @param \Magento\Sales\Model\Order $orderData
      *
-     * @return null
+     * @return void
      */
     private function processShippingAddress($orderData)
     {
-        if ($orderData->getShippingAddress()) {
-            $shippingData = $orderData->getShippingAddress()->getData();
+        if ($shippingAddress = $orderData->getShippingAddress()) {
+            /** @var \Magento\Framework\Model\AbstractExtensibleModel $shippingAddress */
+            $shippingData = $shippingAddress->getData();
 
             $this->deliveryAddress = [
                 'delivery_address_1' => $this->_getStreet(
@@ -339,6 +335,8 @@ class Order
     }
 
     /**
+     * Process order items.
+     *
      * @param \Magento\Sales\Model\Order $orderData
      * @param boolean $syncCustomOption
      *
@@ -512,34 +510,6 @@ class Order
     }
 
     /**
-     * Exposes the class as an array of objects.
-     * Return any exposed data that will included into the import as transactional data for Orders.
-     *
-     * @return array
-     */
-    public function expose()
-    {
-        $properties = array_diff_key(
-            get_object_vars($this),
-            array_flip([
-                'storeManager',
-                'helper',
-                'customerFactory',
-                'productFactory',
-                'attributeCollection',
-                'attributeSet',
-                'productResource',
-                'attributeHandler',
-                'validator'
-            ])
-        );
-        //remove null/0/false values
-        $properties = array_filter($properties);
-
-        return $properties;
-    }
-
-    /**
      * Get attribute value for the field.
      *
      * @param array $field
@@ -588,7 +558,10 @@ class Order
                     $value = $orderData->$function();
             }
         } catch (\Exception $e) {
-            $this->helper->debug((string)$e, []);
+            $this->logger->debug(
+                'Error processing custom attribute values in order ID: ' . $orderData->getId(),
+                [(string) $e]
+            );
         }
 
         return $value;
@@ -600,18 +573,20 @@ class Order
      * @param string $field
      * @param mixed $value
      *
-     * @return null
+     * @return void
      */
-    public function _assignCustom($field, $value)
+    private function _assignCustom($field, $value)
     {
         $this->custom[$field['COLUMN_NAME']] = $value;
     }
 
     /**
+     * Process options for each order item.
+     *
      * @param \Magento\Sales\Model\Order\Item $orderItem
      * @return array
      */
-    public function _getOrderItemOptions($orderItem)
+    private function _getOrderItemOptions($orderItem)
     {
         $orderItemOptions = $orderItem->getProductOptions();
 
@@ -650,6 +625,8 @@ class Order
     }
 
     /**
+     * Look up selected attributes in config.
+     *
      * @param \Magento\Store\Model\Website $website
      * @return array|bool
      */
@@ -666,6 +643,8 @@ class Order
     }
 
     /**
+     * Process product attributes.
+     *
      * @param array $configAttributes
      * @param \Magento\Catalog\Model\Product $product
      * @return \Dotdigitalgroup\Email\Model\Product\Attribute|null
@@ -688,13 +667,16 @@ class Order
     }
 
     /**
+     * Load a product's categories.
+     *
      * @param \Magento\Catalog\Model\Product $productModel
      * @return array
      */
     private function getCategoriesFromProductModel($productModel)
     {
-        $categoryCollection = $productModel->getCategoryCollection()
-            ->addAttributeToSelect('name');
+        $categoryCollection = $productModel->getCategoryCollection();
+        /** @var \Magento\Eav\Model\Entity\Collection\AbstractCollection $categoryCollection */
+        $categoryCollection->addAttributeToSelect('name');
 
         $productCat = [];
         foreach ($categoryCollection as $cat) {
@@ -710,6 +692,8 @@ class Order
     }
 
     /**
+     * Merge child categories.
+     *
      * @param array $productCat
      * @param array $childCategories
      */
@@ -720,5 +704,21 @@ class Order
                 array_push($productCat, $childCategory);
             }
         }
+    }
+
+    /**
+     * Get array of custom attributes for orders from config.
+     *
+     * @param int $websiteId
+     *
+     * @return array|bool
+     */
+    private function getConfigSelectedCustomOrderAttributes($websiteId)
+    {
+        $customAttributes = $this->helper->getWebsiteConfig(
+            Config::XML_PATH_CONNECTOR_CUSTOM_ORDER_ATTRIBUTES,
+            $websiteId
+        );
+        return $customAttributes ? explode(',', $customAttributes) : false;
     }
 }

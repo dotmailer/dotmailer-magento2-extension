@@ -32,8 +32,8 @@ class OrderCreditmemoSaveAfter implements \Magento\Framework\Event\ObserverInter
      *
      * @param \Dotdigitalgroup\Email\Model\OrderFactory $emailOrderFactory
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Order $orderResource
-     * @param \Magento\Framework\Registry               $registry
-     * @param \Dotdigitalgroup\Email\Helper\Data        $data
+     * @param \Magento\Framework\Registry $registry
+     * @param \Dotdigitalgroup\Email\Helper\Data $data
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\OrderFactory $emailOrderFactory,
@@ -48,6 +48,8 @@ class OrderCreditmemoSaveAfter implements \Magento\Framework\Event\ObserverInter
     }
 
     /**
+     * Execute action.
+     *
      * @param \Magento\Framework\Event\Observer $observer
      *
      * @return $this
@@ -65,7 +67,7 @@ class OrderCreditmemoSaveAfter implements \Magento\Framework\Event\ObserverInter
              * Reimport transactional data.
              */
             $emailOrder = $this->emailOrderFactory->create()
-                ->loadByOrderId($orderId, $quoteId, $storeId);
+                ->loadByOrderId($orderId, $quoteId);
             if (!$emailOrder->getId()) {
                 $this->helper->log(
                     'ERROR Creditmemo Order not found :'
@@ -76,7 +78,7 @@ class OrderCreditmemoSaveAfter implements \Magento\Framework\Event\ObserverInter
                 return $this;
             }
 
-            $emailOrder->setEmailImported(\Dotdigitalgroup\Email\Model\Contact::EMAIL_CONTACT_NOT_IMPORTED);
+            $emailOrder->setProcessed(0);
             $this->orderResource->save($emailOrder);
         } catch (\Exception $e) {
             $this->helper->debug((string)$e, []);

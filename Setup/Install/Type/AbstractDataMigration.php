@@ -12,7 +12,7 @@ abstract class AbstractDataMigration
     /**
      * The size queries will be batched in
      */
-    const BATCH_SIZE = 500;
+    public const BATCH_SIZE = 1000;
 
     /**
      * The table name this type writes to
@@ -47,7 +47,7 @@ abstract class AbstractDataMigration
     /**
      * @var ScopeConfigInterface
      */
-    private $scopeConfig;
+    protected $scopeConfig;
 
     /**
      * AbstractType constructor
@@ -64,6 +64,7 @@ abstract class AbstractDataMigration
 
     /**
      * Run this type
+     *
      * @return self
      * @throws \ErrorException
      * @throws \Zend_Db_Statement_Exception
@@ -93,6 +94,7 @@ abstract class AbstractDataMigration
 
     /**
      * Get the table name
+     *
      * @return string
      */
     public function getTableName()
@@ -101,6 +103,8 @@ abstract class AbstractDataMigration
     }
 
     /**
+     * Check if Share Customer Accounts is set to 'Global' in settings.
+     *
      * @return bool
      */
     public function isAccountSharingGlobal(): bool
@@ -118,6 +122,7 @@ abstract class AbstractDataMigration
 
     /**
      * Get this type's select statement
+     *
      * @return Select
      */
     abstract protected function getSelectStatement();
@@ -152,20 +157,20 @@ abstract class AbstractDataMigration
                 ->update(
                     $this->resourceConnection->getTableName($this->tableName),
                     $this->getUpdateBindings($record[$this->getBindKey()]),
-                    $this->getUpdateWhereClause($record[$this->getWhereKey()])
+                    $this->getUpdateWhereClause($record)
                 );
         }
     }
 
     /**
+     * Run a batch insert
+     *
      * @param Select $selectStatement
      * @return void
      * @throws \Zend_Db_Statement_Exception
      */
     private function batchInsert(Select $selectStatement)
     {
-        $iterations = $rowCount = 0;
-
         do {
             // select offset for query
             $selectStatement->limit(self::BATCH_SIZE, $this->useOffset ? $this->rowsAffected : 0);
@@ -175,11 +180,7 @@ abstract class AbstractDataMigration
             // increase the batch offset
             $this->rowsAffected += $rowCount;
 
-            // if the first iteration returned < the batch size, we can break here to avoid an additional queries
-            if ($iterations++ === 0 && $rowCount < self::BATCH_SIZE) {
-                break;
-            }
-        } while ($rowCount > 0);
+        } while ($rowCount === self::BATCH_SIZE);
     }
 
     /**
@@ -203,6 +204,8 @@ abstract class AbstractDataMigration
     }
 
     /**
+     * Is this migration type enabled.
+     *
      * @return bool
      */
     public function isEnabled(): bool

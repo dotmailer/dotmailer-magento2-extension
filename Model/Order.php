@@ -6,7 +6,7 @@ use Dotdigitalgroup\Email\Model\ResourceModel\Order as OrderResource;
 
 class Order extends \Magento\Framework\Model\AbstractModel
 {
-    const EMAIL_ORDER_NOT_IMPORTED = 0;
+    public const EMAIL_ORDER_NOT_IMPORTED = 0;
 
     /**
      * @var \Magento\Sales\Api\Data\OrderSearchResultInterfaceFactory
@@ -35,6 +35,7 @@ class Order extends \Magento\Framework\Model\AbstractModel
      * @param \Magento\Framework\Model\Context $context
      * @param \Magento\Framework\Registry $registry
      * @param \Magento\Sales\Api\Data\OrderSearchResultInterfaceFactory $salesCollection
+     * @param OrderResource $orderResource
      * @param array $data
      * @param \Magento\Framework\Model\ResourceModel\AbstractResource|null $resource
      * @param \Magento\Framework\Data\Collection\AbstractDb|null $resourceCollection
@@ -106,61 +107,8 @@ class Order extends \Magento\Framework\Model\AbstractModel
     }
 
     /**
-     * Get pending orders for import.
+     * Updates orders.
      *
-     * @param array $storeIds
-     * @param int $limit
-     * @param array $orderStatuses
-     *
-     * @return \Dotdigitalgroup\Email\Model\ResourceModel\Order\Collection|\Magento\Framework\DataObject
-     */
-    public function getOrdersToImport($storeIds, $limit, $orderStatuses)
-    {
-        return $this->getCollection()
-            ->getOrdersToImport($storeIds, $limit, $orderStatuses);
-    }
-
-    /**
-     * Get pending modified orders to import.
-     *
-     * @param array $storeIds
-     * @param int $limit
-     * @param array $orderStatuses
-     *
-     * @return \Dotdigitalgroup\Email\Model\ResourceModel\Order\Collection
-     */
-    public function getModifiedOrdersToImport($storeIds, $limit, $orderStatuses)
-    {
-        return $this->getCollection()
-            ->getModifiedOrdersToImport($storeIds, $limit, $orderStatuses);
-    }
-
-    /**
-     * Get all sent orders
-     *
-     * @param array $storeIds
-     * @param int $limit
-     *
-     * @return \Dotdigitalgroup\Email\Model\ResourceModel\Order\Collection
-     */
-    public function getAllSentOrders($storeIds, $limit)
-    {
-        return $this->getCollection()
-            ->getAllSentOrders($storeIds, $limit);
-    }
-
-    /**
-     * @param array $orderIds
-     *
-     * @return \Magento\Sales\Model\ResourceModel\Order\Collection
-     */
-    public function getSalesOrdersWithIds($orderIds)
-    {
-        return $this->salesCollection->create()
-            ->addFieldToFilter('entity_id', ['in' => $orderIds]);
-    }
-
-    /**
      * @param string|null $from
      * @param string|null $to
      * @return int

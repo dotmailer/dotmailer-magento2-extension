@@ -1687,6 +1687,14 @@
                        showInDefault="1">
                     <label>Contact Sync Size</label>
                 </field>
+                <field id="mega_batch_size_orders" translate="label" sortOrder="5" type="select" showInStore="0"
+                       showInWebsite="0" showInDefault="0">
+                    <label>Orders mega batch size</label>
+                </field>
+                <field id="mega_batch_size_catalog" translate="label" sortOrder="5" type="select" showInStore="0"
+                       showInWebsite="0" showInDefault="0">
+                    <label>Catalog mega batch size</label>
+                </field>
                 <field id="transactional_data" translate="label" sortOrder="30" type="select" showInStore="0"
                        showInWebsite="0" showInDefault="1">
                     <label>Transactional Data Sync Size</label>

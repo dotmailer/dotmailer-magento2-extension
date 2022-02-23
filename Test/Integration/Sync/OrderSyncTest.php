@@ -103,7 +103,7 @@ class OrderSyncTest extends \Magento\TestFramework\TestCase\AbstractController
      * @magentoConfigFixture default_store sync_settings/sync/order_enabled 1
      * @magentoConfigFixture default_store connector_api_credentials/api/enabled 1
      */
-    public function testOrderSyncCanFindGuests()
+    public function testOrderSync()
     {
         /** @var Collection $quoteCollection */
         $quoteCollection = ObjectManager::getInstance()->create(Collection::class);
@@ -112,7 +112,6 @@ class OrderSyncTest extends \Magento\TestFramework\TestCase\AbstractController
         /** @var \Magento\Sales\Model\ResourceModel\Order\Collection $orderCollection */
         $orderCollection = ObjectManager::getInstance()
             ->create(\Magento\Sales\Model\ResourceModel\Order\Collection::class);
-        //$orderCollection->addFieldToFilter('quote_id', $latestQuote->getId());
         $order = $orderCollection->getFirstItem();
         $order->setQuoteId($latestQuote->getId());
         $order->save();
@@ -129,33 +128,10 @@ class OrderSyncTest extends \Magento\TestFramework\TestCase\AbstractController
             ->create(\Dotdigitalgroup\Email\Model\ResourceModel\Order::class)
             ->save($emailOrder);
 
-        $this->orderSync->sync();
+        $result = $this->orderSync->sync();
 
-        $this->assertNotEmpty($this->orderSync->guests, 'Failed no guests found to sync.');
-        $this->assertArrayHasKey('is_guest', $this->orderSync->guests[1]["customer@null.com"]);
-    }
-
-    /**
-     * @magentoDbIsolation enabled
-     * @magentoDataFixture Magento/Sales/_files/order.php
-     * @magentoConfigFixture default_store sync_settings/sync/order_enabled 1
-     * @magentoConfigFixture default_store connector_api_credentials/api/enabled 1
-     */
-    public function testGuestsOrderNotCreatingDuplicatesContact()
-    {
-        // add a contact who isn't a guest
-        $contact = ObjectManager::getInstance()->create(Contact::class);
-        $contact->setIsGuest(false);
-        $contact->setContactId(17897);
-        $contact->setCustomerId(1);
-        $contact->setWebsiteId(1);
-        $contact->setStoreId(1);
-        $contact->setEmail('customer@null.com');
-        $contact->save();
-
-        $this->orderSync->sync();
-
-        $this->assertEmpty($this->orderSync->guests);
+        $this->assertNotEmpty($result['syncedOrders'], 'Failed, no orders synced.');
+        $this->assertEquals(1, $result['syncedOrders']);
     }
 
     /**
@@ -163,7 +139,7 @@ class OrderSyncTest extends \Magento\TestFramework\TestCase\AbstractController
      * @magentoConfigFixture default_store sync_settings/sync/order_enabled 1
      * @magentoConfigFixture default_store connector_api_credentials/api/enabled 1
      */
-    public function testCanSyncModifiedOrders()
+    public function testCanSyncUnprocessedOrders()
     {
         /** @var \Magento\Sales\Model\Order $latestOrder */
         $orderCollection = ObjectManager::getInstance()
@@ -177,22 +153,21 @@ class OrderSyncTest extends \Magento\TestFramework\TestCase\AbstractController
             'order_status' => $latestOrder->getStatus(),
             'quote_id' => $latestOrder->getQuoteId(),
             'store_id' => $latestOrder->getStoreId(),
-            'email_imported' => '1',
-            'modified' => '1',
+            'processed' => '0',
         ]);
         ObjectManager::getInstance()
             ->create(\Dotdigitalgroup\Email\Model\ResourceModel\Order::class)
             ->save($order);
 
-        $this->orderSync->sync();
+        $result = $this->orderSync->sync();
 
-        $this->assertEquals(1, $this->orderSync->countOrders['modified']);
+        $this->assertEquals(1, $result['syncedOrders']);
     }
 
     /**
      * @return void
      */
-    public function createNewEmailOrder()
+    private function createNewEmailOrder()
     {
         $objectManager = ObjectManager::getInstance();
 
@@ -258,7 +233,7 @@ class OrderSyncTest extends \Magento\TestFramework\TestCase\AbstractController
     /**
      * @return void
      */
-    public function createModifiedEmailOrder()
+    private function createModifiedEmailOrder()
     {
         $objectManager = \Magento\TestFramework\Helper\Bootstrap::getObjectManager();
         $order = $objectManager->create(\Magento\Sales\Model\ResourceModel\Order\Collection::class);

@@ -2,104 +2,30 @@
 
 namespace Dotdigitalgroup\Email\Model\Sync;
 
+use Dotdigitalgroup\Email\Helper\Config;
+use Dotdigitalgroup\Email\Helper\Data;
+use Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory as OrderCollectionFactory;
+use Dotdigitalgroup\Email\Model\ResourceModel\OrderFactory as OrderResourceFactory;
+use Dotdigitalgroup\Email\Model\Sync\Order\BatchProcessor;
+use Dotdigitalgroup\Email\Model\Sync\Order\Exporter;
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\DataObject;
+use Magento\Store\Model\StoreManagerInterface;
 
 /**
  * Sync Orders.
  */
-class Order implements SyncInterface
+class Order extends DataObject implements SyncInterface
 {
     /**
-     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory
-     */
-    public $contactCollectionFactory;
-
-    /**
-     * @var array
-     */
-    private $accounts = [];
-
-    /**
-     * @var string
-     */
-    private $apiUsername;
-
-    /**
-     * @var string
-     */
-    private $apiPassword;
-
-    /**
-     * Global number of orders.
-     *
-     * @var array
-     */
-    public $countOrders = [
-        'orders' => 0,
-        'single_sync' => 0,
-        'pending' => 0,
-        'modified' => 0,
-    ];
-
-    /**
-     * @var array
-     */
-    private $orderIds = [];
-
-    /**
-     * @var \Dotdigitalgroup\Email\Helper\Data
+     * @var Data
      */
     private $helper;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Contact
+     * @var OrderResourceFactory
      */
-    private $contactResource;
-
-    /**
-     * @var \Dotdigitalgroup\Email\Model\OrderFactory
-     */
-    private $orderFactory;
-
-    /**
-     * @var \Magento\Sales\Model\OrderFactory
-     */
-    private $salesOrderFactory;
-
-    /**
-     * @var \Dotdigitalgroup\Email\Model\Connector\OrderFactory
-     */
-    private $connectorOrderFactory;
-
-    /**
-     * @var \Dotdigitalgroup\Email\Model\Connector\AccountFactory
-     */
-    private $accountFactory;
-
-    /**
-     * @var \Dotdigitalgroup\Email\Model\ImporterFactory
-     */
-    private $importerFactory;
-
-    /**
-     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Order
-     */
-    private $orderResource;
-
-    /**
-     * @var array
-     */
-    public $guests = [];
-
-    /**
-     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Catalog
-     */
-    private $catalogResource;
-
-    /**
-     * @var \Dotdigitalgroup\Email\Model\Catalog\UpdateCatalogBulk
-     */
-    private $bulkUpdate;
+    private $orderResourceFactory;
 
     /**
      * @var ScopeConfigInterface
@@ -107,331 +33,213 @@ class Order implements SyncInterface
     private $scopeConfig;
 
     /**
-     * Order constructor.
-     * @param \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
-     * @param \Dotdigitalgroup\Email\Model\OrderFactory $orderFactory
-     * @param \Dotdigitalgroup\Email\Model\Connector\AccountFactory $accountFactory
-     * @param \Dotdigitalgroup\Email\Model\Connector\OrderFactory $connectorOrderFactory
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contactResource
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory $contactCollectionFactory
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Order $orderResource
-     * @param \Dotdigitalgroup\Email\Helper\Data $helper
-     * @param \Magento\Sales\Model\OrderFactory $salesOrderFactory
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalogResource
-     * @param \Dotdigitalgroup\Email\Model\Catalog\UpdateCatalogBulk $bulkUpdate
+     * @var BatchProcessor
+     */
+    private $batchProcessor;
+
+    /**
+     * @var Exporter
+     */
+    private $exporter;
+
+    /**
+     * @var OrderCollectionFactory
+     */
+    private $orderCollectionFactory;
+
+    /**
+     * @var StoreManagerInterface
+     */
+    private $storeManager;
+
+    /**
+     * @var mixed
+     */
+    private $start;
+
+    /**
+     * @param OrderResourceFactory $orderResourceFactory
+     * @param Data $helper
      * @param ScopeConfigInterface $scopeConfig
+     * @param BatchProcessor $batchProcessor
+     * @param Exporter $exporter
+     * @param OrderCollectionFactory $orderCollectionFactory
+     * @param StoreManagerInterface $storeManager
+     * @param array $data
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
-        \Dotdigitalgroup\Email\Model\OrderFactory $orderFactory,
-        \Dotdigitalgroup\Email\Model\Connector\AccountFactory $accountFactory,
-        \Dotdigitalgroup\Email\Model\Connector\OrderFactory $connectorOrderFactory,
-        \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contactResource,
-        \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory $contactCollectionFactory,
-        \Dotdigitalgroup\Email\Model\ResourceModel\Order $orderResource,
-        \Dotdigitalgroup\Email\Helper\Data $helper,
-        \Magento\Sales\Model\OrderFactory $salesOrderFactory,
-        \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalogResource,
-        \Dotdigitalgroup\Email\Model\Catalog\UpdateCatalogBulk $bulkUpdate,
-        ScopeConfigInterface $scopeConfig
+        OrderResourceFactory $orderResourceFactory,
+        Data $helper,
+        ScopeConfigInterface $scopeConfig,
+        BatchProcessor $batchProcessor,
+        Exporter $exporter,
+        OrderCollectionFactory $orderCollectionFactory,
+        StoreManagerInterface $storeManager,
+        array $data = []
     ) {
-        $this->importerFactory       = $importerFactory;
-        $this->orderFactory          = $orderFactory;
-        $this->accountFactory        = $accountFactory;
-        $this->connectorOrderFactory = $connectorOrderFactory;
-        $this->contactResource       = $contactResource;
-        $this->orderResource         = $orderResource;
-        $this->helper                = $helper;
-        $this->salesOrderFactory     = $salesOrderFactory;
-        $this->contactCollectionFactory = $contactCollectionFactory;
-        $this->catalogResource = $catalogResource;
-        $this->bulkUpdate = $bulkUpdate;
+        $this->orderResourceFactory = $orderResourceFactory;
+        $this->helper = $helper;
         $this->scopeConfig = $scopeConfig;
+        $this->batchProcessor = $batchProcessor;
+        $this->exporter = $exporter;
+        $this->orderCollectionFactory = $orderCollectionFactory;
+        $this->storeManager = $storeManager;
+
+        parent::__construct($data);
     }
 
     /**
-     * Initial sync the transactional data.
-     *
-     * @return array
+     * Sync process.
      *
      * @param \DateTime|null $from
+     *
+     * @return array
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function sync(\DateTime $from = null)
     {
-        $response = ['success' => true, 'message' => 'Done.'];
-
+        $start = microtime(true);
         $limit = $this->scopeConfig->getValue(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_TRANSACTIONAL_DATA_SYNC_LIMIT
+            Config::XML_PATH_CONNECTOR_TRANSACTIONAL_DATA_SYNC_LIMIT
         );
 
-        // Initialise a return hash containing results of our sync attempt
-        $this->searchWebsiteAccounts($limit);
+        $breakValue = $this->isRunFromDeveloperButton() ? $limit : $this->scopeConfig->getValue(
+            Config::XML_PATH_CONNECTOR_SYNC_CATALOG_BREAK_VALUE
+        );
 
-        foreach ($this->accounts as $account) {
-            $orders = $account->getOrders();
-            $ordersForSingleSync = $account->getOrdersForSingleSync();
-            $numOrders = count($orders);
-            $numOrdersForSingleSync = count($ordersForSingleSync);
-            $website = $account->getWebsites();
+        $megaBatchSize = $this->scopeConfig->getValue(Config::XML_PATH_CONNECTOR_MEGA_BATCH_SIZE_ORDERS);
+        $megaBatch = [];
+        $totalOrdersSyncedCount = 0;
+        $megaBatchCount = 0;
+        $loopStart = true;
+        $ordersProcessedCount = 0;
+        $storeIds = $this->getOrderEnabledStoreIds();
 
-            $this->countOrders['orders'] += $numOrders;
-            $this->countOrders['single_sync'] += $numOrdersForSingleSync;
-
-            //create bulk
-            if ($numOrders) {
-                $this->helper->log('--------- Order sync ---------- : ' . $numOrders);
-                //queue order into importer
-                $this->importerFactory->create()
-                    ->registerQueue(
-                        \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_ORDERS,
-                        $orders,
-                        \Dotdigitalgroup\Email\Model\Importer::MODE_BULK,
-                        $website[0]
-                    );
-            }
-            //create single
-            if ($numOrdersForSingleSync) {
-                $this->createSingleImports($ordersForSingleSync, $website);
+        do {
+            if ($loopStart) {
+                $this->helper->log('----------- Order sync ----------- : Start batching');
+                $loopStart = false;
             }
 
-            //mark the orders as imported
-            $this->orderResource->setImported($this->orderIds);
+            $ordersToProcess = $this->orderCollectionFactory
+                ->create()
+                ->getOrdersToProcess($limit, $storeIds);
 
-            //Mark ordered products as unprocessed to be imported again
-            $mergedProducts = $this->getAllProducts($orders + $ordersForSingleSync);
-            $this->bulkUpdate->execute($mergedProducts);
-
-            unset($this->accounts[$account->getApiUsername()]);
-        }
-
-        /**
-         * Add guests to contact table.
-         */
-        if (!empty($this->guests)) {
-            $guestsToInsert = [];
-
-            foreach ($this->guests as $websiteId => $guests) {
-                $guestEmails = array_keys($guests);
-
-                $matchingContacts = $this->contactCollectionFactory->create()
-                    ->addFieldToFilter('email', ['in' => $guestEmails])
-                    ->addFieldToFilter('website_id', $websiteId)
-                    ->getColumnValues('email');
-
-                foreach (array_diff($guestEmails, $matchingContacts) as $email) {
-                    $guestsToInsert[] = $this->guests[$websiteId][strtolower($email)];
-                }
-
-                //mark existing contacts with is_guest, by website
-                $this->contactResource->updateContactsAsGuests($matchingContacts, $websiteId);
+            if (!$ordersToProcess) {
+                break;
             }
 
-            //insert new guest contacts
-            $this->contactResource->insertGuests($guestsToInsert);
+            $megaBatch = $this->mergeBatch(
+                $megaBatch,
+                $batch = $this->exporter->exportOrders($ordersToProcess)
+            );
+
+            $ordersProcessedCount += count($ordersToProcess);
+            $megaBatchCount += $batchCount = $this->getBatchOrdersCount($batch);
+            $totalOrdersSyncedCount += $batchCount;
+
+            $this->orderResourceFactory->create()
+                ->setProcessed($ordersToProcess);
+
+            $this->helper->log(sprintf('Order sync: %s orders processed.', count($ordersToProcess)));
+
+            if ($megaBatchCount >= $megaBatchSize) {
+                $this->batchProcessor->process($megaBatch);
+                $megaBatchCount = 0;
+                $megaBatch = [];
+            }
+        } while (!$breakValue || $totalOrdersSyncedCount < $breakValue);
+
+        if (!empty($megaBatch)) {
+            $this->batchProcessor->process($megaBatch);
         }
 
-        $totalOrders = $this->countOrders['orders'] + $this->countOrders['single_sync'];
-        if ($this->countOrders) {
-            $response = [
-                'message' => 'Orders updated ' . $totalOrders,
-            ] + $this->countOrders + $response;
-        }
-
-        return $response;
+        $message = '----------- Order sync ----------- : ' .
+            gmdate('H:i:s', (int) (microtime(true) - $start)) .
+            ', Total processed = ' . $ordersProcessedCount . ', Total synced = ' . $totalOrdersSyncedCount;
+        $this->helper->log($message);
+        return [
+            'message' => $message,
+            'syncedOrders' => $totalOrdersSyncedCount
+        ];
     }
 
     /**
-     * Search the configuration data per website.
+     * Creates the order mega batch.
      *
-     * @param string $limit
-     * @return void
+     * @param array $megaBatch
+     * @param array $batch
+     * @return array
+     */
+    private function mergeBatch(array $megaBatch, array $batch)
+    {
+        foreach ($batch as $websiteId => $orders) {
+            if (array_key_exists($websiteId, $megaBatch)) {
+                foreach ($orders as $order) {
+                    $megaBatch[$websiteId][] = $order;
+                }
+            } else {
+                $megaBatch += [$websiteId => $orders];
+            }
+        }
+
+        return $megaBatch;
+    }
+
+    /**
+     * Determines whether the sync was triggered from Configuration > Dotdigital > Developer > Sync Settings.
+     *
+     * @return bool
+     */
+    private function isRunFromDeveloperButton()
+    {
+        return (bool)$this->_getData('web');
+    }
+
+    /**
+     * Order counter.
+     *
+     * @param array $batch
+     * @return int
+     */
+    private function getBatchOrdersCount(array $batch)
+    {
+        $ordersToSync = 0;
+
+        foreach ($batch as $orders) {
+            $ordersToSync += count($orders);
+        }
+
+        return $ordersToSync;
+    }
+
+    /**
+     * Get all stores that order sync is enabled.
+     *
+     * @return array
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function searchWebsiteAccounts($limit)
+    private function getOrderEnabledStoreIds()
     {
-        $websites = $this->helper->getWebsites();
+        $websites = $this->storeManager->getWebsites(true);
+
+        $storeIds = [];
+        /** @var \Magento\Store\Model\Website $website */
         foreach ($websites as $website) {
-            $apiEnabled = $this->helper->isEnabled($website);
-            $storeIds = $website->getStoreIds();
+            $apiEnabled = $this->helper->isEnabled($website->getId());
             // api and order sync should be enabled, skip website with no store ids
-            if ($apiEnabled && $this->helper->getWebsiteConfig(
-                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_ORDER_ENABLED,
-                $website
+            if ($apiEnabled && $this->scopeConfig->getValue(
+                Config::XML_PATH_CONNECTOR_SYNC_ORDER_ENABLED,
+                \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
+                $website->getId()
             )
-                && !empty($storeIds)
             ) {
-                $this->apiUsername = $this->helper->getApiUsername($website);
-                $this->apiPassword = $this->helper->getApiPassword($website);
-
-                //set account for later use
-                if (! isset($this->accounts[$this->apiUsername])) {
-                    $account = $this->accountFactory->create();
-                    $account->setApiUsername($this->apiUsername);
-                    $account->setApiPassword($this->apiPassword);
-                    $this->accounts[$this->apiUsername] = $account;
-                }
-
-                $pendingOrders = $this->getPendingConnectorOrders($website, $limit);
-                if (! empty($pendingOrders)) {
-                    $this->countOrders['pending'] += count($pendingOrders);
-                    $this->accounts[$this->apiUsername]->setOrders($pendingOrders);
-                }
-                $this->accounts[$this->apiUsername]->setWebsites($website->getId());
-
-                $modifiedOrders = $this->getModifiedOrders($website, $limit);
-                if (! empty($modifiedOrders)) {
-                    $this->countOrders['modified'] += count($modifiedOrders);
-                    $this->accounts[$this->apiUsername]->setOrdersForSingleSync($modifiedOrders);
+                foreach ($website->getStoreIds() as $storeId) {
+                    $storeIds[] = $storeId;
                 }
             }
         }
-    }
 
-    /**
-     * @param \Magento\Store\Api\Data\WebsiteInterface $website
-     * @param string|int $limit
-     *
-     * @return array
-     */
-    public function getPendingConnectorOrders($website, $limit = 100)
-    {
-        $orders = [];
-        $storeIds = $website->getStoreIds();
-        /** @var \Dotdigitalgroup\Email\Model\Order $orderModel */
-        $orderModel = $this->orderFactory->create();
-        //get order statuses set in configuration section
-        $orderStatuses = $this->helper->getConfigSelectedStatus($website);
-
-        //no active store for website
-        if (empty($storeIds) || empty($orderStatuses)) {
-            return [];
-        }
-
-        //pending order from email_order
-        $orderCollection = $orderModel->getOrdersToImport($storeIds, $limit, $orderStatuses);
-
-        //no orders found
-        if (! $orderCollection->getSize()) {
-            return $orders;
-        }
-
-        $orders = $this->mapOrderData($orderCollection, $orderModel, $orders);
-
-        return $orders;
-    }
-
-    /**
-     * @param \Magento\Store\Api\Data\WebsiteInterface $website
-     * @param string|int $limit
-     *
-     * @return array
-     */
-    protected function getModifiedOrders($website, $limit)
-    {
-        $orders =  [];
-        $storeIds = $website->getStoreIds();
-        /** @var \Dotdigitalgroup\Email\Model\Order $orderModel */
-        $orderModel = $this->orderFactory->create();
-        //get order statuses set in configuration section
-        $orderStatuses = $this->helper->getConfigSelectedStatus($website);
-
-        //no active store for website
-        if (empty($storeIds) || empty($orderStatuses)) {
-            return [];
-        }
-
-        //pending order from email_order
-        $orderCollection = $orderModel->getModifiedOrdersToImport($storeIds, $limit, $orderStatuses);
-
-        //no orders found
-        if (! $orderCollection->getSize()) {
-            return $orders;
-        }
-
-        $orders = $this->mapOrderData($orderCollection, $orderModel, $orders);
-
-        return $orders;
-    }
-
-    /**
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Order\Collection $orderCollection
-     * @param \Dotdigitalgroup\Email\Model\Order $orderModel
-     * @param array $orders
-     *
-     * @return array
-     */
-    protected function mapOrderData($orderCollection, $orderModel, $orders)
-    {
-        $orderIds = $orderCollection->getColumnValues('order_id');
-
-        //get the order collection
-        $salesOrderCollection = $orderModel->getSalesOrdersWithIds($orderIds);
-
-        foreach ($salesOrderCollection as $order) {
-            if ($order->getId()) {
-                $storeId = $order->getStoreId();
-                $websiteId = $this->helper->storeManager->getStore($storeId)->getWebsiteId();
-
-                /**
-                 * Add guest to array to add to contacts table.
-                 */
-                if ($order->getCustomerIsGuest() && $order->getCustomerEmail()) {
-                    $email = $order->getCustomerEmail();
-                    $this->guests[$websiteId][strtolower($email)] = [
-                        'email' => $email,
-                        'website_id' => $websiteId,
-                        'store_id' => $storeId,
-                        'is_guest' => 1
-                    ];
-                }
-
-                $connectorOrder = $this->connectorOrderFactory->create();
-                $connectorOrder->setOrderData($order);
-                $orders[] = $connectorOrder;
-            }
-
-            $this->orderIds[] = $order->getId();
-        }
-
-        return $orders;
-    }
-
-    /**
-     * @param array $ordersForSingleSync
-     * @param array $website
-     *
-     * @return null
-     */
-    protected function createSingleImports($ordersForSingleSync, $website)
-    {
-        foreach ($ordersForSingleSync as $order) {
-            //register in queue with importer
-            $this->importerFactory->create()
-                ->registerQueue(
-                    \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_ORDERS,
-                    $order,
-                    \Dotdigitalgroup\Email\Model\Importer::MODE_SINGLE,
-                    $website[0]
-                );
-        }
-    }
-
-    /**
-     * @param array $orders
-     * @return array
-     */
-    private function getAllProducts($orders)
-    {
-        $allProducts = [];
-        foreach ($orders as $order) {
-            if (!isset($order['products'])) {
-                continue;
-            }
-            foreach ($order['products'] as $products) {
-                $allProducts[] = $products;
-            }
-        }
-        return $allProducts;
+        return $storeIds;
     }
 }
