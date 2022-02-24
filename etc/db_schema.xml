@@ -268,6 +268,7 @@
         <column xsi:type="varchar" name="import_type" nullable="false" length="255" default="" comment="Import Type"/>
         <column xsi:type="smallint" name="website_id" padding="6" unsigned="false" nullable="false" identity="false" default="0" comment="Website Id"/>
         <column xsi:type="smallint" name="import_status" padding="6" unsigned="false" nullable="false" identity="false" default="0" comment="Import Status"/>
+        <column xsi:type="smallint" name="retry_count" padding="6" unsigned="false" nullable="false" identity="false" default="0" comment="Retry count"/>
         <column xsi:type="varchar" name="import_id" nullable="false" length="255" default="" comment="Import Id"/>
         <column xsi:type="mediumblob" name="import_data" nullable="false" comment="Import Data"/>
         <column xsi:type="varchar" name="import_mode" nullable="false" length="255" default="" comment="Import Mode"/>

@@ -11,6 +11,9 @@ use Dotdigitalgroup\Email\Model\ResourceModel\Contact;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory as ContactCollectionFactory;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Stdlib\DateTime;
+use Dotdigitalgroup\Email\Model\ResourceModel\Importer\CollectionFactory as ImporterCollectionFactory;
+use Dotdigitalgroup\Email\Logger\Logger;
+use Magento\Framework\Serialize\SerializerInterface;
 
 class ImporterReportHandler
 {
@@ -62,14 +65,30 @@ class ImporterReportHandler
         ];
 
     /**
-     * ImporterReportHandler constructor.
-     *
+     * @var ImporterCollectionFactory
+     */
+    private $importerCollectionFactory;
+
+    /**
+     * @var SerializerInterface
+     */
+    private $serializer;
+
+    /**
+     * @var Logger
+     */
+    private $logger;
+
+    /**
      * @param ScopeConfigInterface $scopeConfig
      * @param ImporterFactory $importerFactory
      * @param ContactCollectionFactory $contactCollectionFactory
      * @param Contact $contactResource
      * @param DateTime $dateTime
      * @param CronOffsetter $cronOffsetter
+     * @param ImporterCollectionFactory $importerCollectionFactory
+     * @param SerializerInterface $serializer
+     * @param Logger $logger
      */
     public function __construct(
         ScopeConfigInterface $scopeConfig,
@@ -77,7 +96,10 @@ class ImporterReportHandler
         ContactCollectionFactory $contactCollectionFactory,
         Contact $contactResource,
         DateTime $dateTime,
-        CronOffsetter $cronOffsetter
+        CronOffsetter $cronOffsetter,
+        ImporterCollectionFactory $importerCollectionFactory,
+        SerializerInterface $serializer,
+        Logger $logger
     ) {
         $this->scopeConfig = $scopeConfig;
         $this->importerFactory = $importerFactory;
@@ -85,6 +107,9 @@ class ImporterReportHandler
         $this->contactResource = $contactResource;
         $this->dateTime = $dateTime;
         $this->cronOffsetter = $cronOffsetter;
+        $this->importerCollectionFactory = $importerCollectionFactory;
+        $this->serializer = $serializer;
+        $this->logger = $logger;
     }
 
     /**
@@ -136,6 +161,80 @@ class ImporterReportHandler
     }
 
     /**
+     * Check for failed report items.
+     *
+     * @param string $id
+     * @param string|int $websiteId
+     * @param Client $client
+     * @param string $importType
+     * @return void
+     */
+    public function processInsightReportFaults($id, $websiteId, Client $client, string $importType)
+    {
+        $report = $client->getTransactionalDataReportById($id);
+
+        if ($report) {
+            if (isset($report->totalRejected) && $report->totalRejected > 0) {
+                $this->requeueFailedItems($report, $id, $websiteId, $importType);
+            }
+        }
+    }
+
+    /**
+     * Prepare failed items for re import.
+     *
+     * @param \stdClass $reportFaults
+     * @param string $importId
+     * @param string|int $websiteId
+     * @param string $importType
+     * @return void
+     */
+    private function requeueFailedItems($reportFaults, string $importId, $websiteId, string $importType)
+    {
+        $importerResult = $this->importerCollectionFactory->create()
+            ->getImporterDataByImportId($importId);
+
+        $importData = $this->serializer->unserialize(
+            (string) $importerResult->getData('import_data')
+        );
+
+        $retryCount = (int) $importerResult->getData('retry_count');
+
+        $toReImport = [];
+        $faultsToLog = [];
+
+        foreach ($reportFaults->faults as $fault) {
+            $faultsToLog[] = (array) $fault;
+            if (array_key_exists($fault->key, $importData) && $fault->reason == 'ContactEmailDoesNotExist') {
+                $toReImport[$fault->key] = $importData[$fault->key];
+            }
+        }
+
+        if ($this->scopeConfig->getValue(Config::XML_PATH_CONNECTOR_ADVANCED_DEBUG_ENABLED)) {
+            $this->logger->debug(
+                sprintf(
+                    '%d faults for %s import (%s, retry %d)',
+                    count($faultsToLog),
+                    $importType,
+                    $importId,
+                    $retryCount
+                ),
+                $faultsToLog
+            );
+        }
+
+        $this->importerFactory->create()
+            ->registerQueue(
+                $importType,
+                $toReImport,
+                \Dotdigitalgroup\Email\Model\Importer::MODE_BULK,
+                $websiteId,
+                false,
+                ++$retryCount
+            );
+    }
+
+    /**
      * Convert utf8 data and strip csv headers.
      *
      * @param string $report
@@ -154,6 +253,8 @@ class ImporterReportHandler
     }
 
     /**
+     * Filter contacts.
+     *
      * @param array $data
      * @return array
      */

@@ -303,7 +303,7 @@
                 <suppressed_contacts></suppressed_contacts>
             </sync_settings>
             <debug>
-                <debug_enabled>1</debug_enabled>
+                <debug_enabled>0</debug_enabled>
                 <api_log_time>60</api_log_time>
             </debug>
             <oauth>

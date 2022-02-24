@@ -171,9 +171,9 @@ class Exporter
                         ->setOrderData($order);
 
                     if (array_key_exists($websiteId, $orders)) {
-                        $orders[$websiteId][$order->getId()] = $this->expose($connectorOrder);
+                        $orders[$websiteId][$order->getIncrementId()] = $this->expose($connectorOrder);
                     } else {
-                        $orders += [$websiteId => [$order->getId() => $this->expose($connectorOrder)]];
+                        $orders += [$websiteId => [$order->getIncrementId() => $this->expose($connectorOrder)]];
                     }
 
                 } catch (\Exception $exception) {

@@ -6,31 +6,31 @@ use Magento\Framework\Serialize\SerializerInterface;
 
 class Importer extends \Magento\Framework\Model\AbstractModel
 {
-    const NOT_IMPORTED = 0;
-    const IMPORTING = 1;
-    const IMPORTED = 2;
-    const FAILED = 3;
+    public const NOT_IMPORTED = 0;
+    public const IMPORTING = 1;
+    public const IMPORTED = 2;
+    public const FAILED = 3;
 
     //import mode
-    const MODE_BULK = 'Bulk';
-    const MODE_SINGLE = 'Single';
-    const MODE_SINGLE_DELETE = 'Single_Delete';
-    const MODE_CONTACT_DELETE = 'Contact_Delete';
-    const MODE_SUBSCRIBER_UPDATE = 'Subscriber_Update';
-    const MODE_CONTACT_EMAIL_UPDATE = 'Contact_Email_Update';
-    const MODE_SUBSCRIBER_RESUBSCRIBED = 'Subscriber_Resubscribed';
+    public const MODE_BULK = 'Bulk';
+    public const MODE_SINGLE = 'Single';
+    public const MODE_SINGLE_DELETE = 'Single_Delete';
+    public const MODE_CONTACT_DELETE = 'Contact_Delete';
+    public const MODE_SUBSCRIBER_UPDATE = 'Subscriber_Update';
+    public const MODE_CONTACT_EMAIL_UPDATE = 'Contact_Email_Update';
+    public const MODE_SUBSCRIBER_RESUBSCRIBED = 'Subscriber_Resubscribed';
 
     //import type
-    const IMPORT_TYPE_GUEST = 'Guest';
-    const IMPORT_TYPE_ORDERS = 'Orders';
-    const IMPORT_TYPE_CONTACT = 'Contact';
-    const IMPORT_TYPE_REVIEWS = 'Reviews';
-    const IMPORT_TYPE_WISHLIST = 'Wishlist';
-    const IMPORT_TYPE_CONTACT_UPDATE = 'Contact';
-    const IMPORT_TYPE_SUBSCRIBERS = 'Subscriber';
-    const IMPORT_TYPE_SUBSCRIBER_UPDATE = 'Subscriber';
-    const IMPORT_TYPE_SUBSCRIBER_RESUBSCRIBED = 'Subscriber';
-    const IMPORT_TYPE_CART_INSIGHT_CART_PHASE = 'CartInsight';
+    public const IMPORT_TYPE_GUEST = 'Guest';
+    public const IMPORT_TYPE_ORDERS = 'Orders';
+    public const IMPORT_TYPE_CONTACT = 'Contact';
+    public const IMPORT_TYPE_REVIEWS = 'Reviews';
+    public const IMPORT_TYPE_WISHLIST = 'Wishlist';
+    public const IMPORT_TYPE_CONTACT_UPDATE = 'Contact';
+    public const IMPORT_TYPE_SUBSCRIBERS = 'Subscriber';
+    public const IMPORT_TYPE_SUBSCRIBER_UPDATE = 'Subscriber';
+    public const IMPORT_TYPE_SUBSCRIBER_RESUBSCRIBED = 'Subscriber';
+    public const IMPORT_TYPE_CART_INSIGHT_CART_PHASE = 'CartInsight';
 
     /**
      * @var ResourceModel\Importer
@@ -94,7 +94,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
     /**
      * Constructor.
      *
-     * @return null
+     * @return void
      */
     public function _construct()
     {
@@ -102,6 +102,8 @@ class Importer extends \Magento\Framework\Model\AbstractModel
     }
 
     /**
+     * Override core action.
+     *
      * @return $this
      */
     public function beforeSave()
@@ -123,7 +125,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
      * @param string $importMode
      * @param int $websiteId
      * @param bool $file
-     *
+     * @param int $retryCount
      * @return bool
      */
     public function registerQueue(
@@ -131,8 +133,16 @@ class Importer extends \Magento\Framework\Model\AbstractModel
         $importData,
         $importMode,
         $websiteId,
-        $file = false
+        $file = false,
+        int $retryCount = 0
     ) {
+        /**
+         * Items that failed to imported for two times in a row should be ignored.
+         */
+        if ($retryCount === 3) {
+            return true;
+        }
+
         try {
             if (!empty($importData)) {
                 $importData = $this->serializer->serialize($importData);
@@ -146,7 +156,8 @@ class Importer extends \Magento\Framework\Model\AbstractModel
                 $this->setImportType($importType)
                     ->setImportData($importData)
                     ->setWebsiteId($websiteId)
-                    ->setImportMode($importMode);
+                    ->setImportMode($importMode)
+                    ->setRetryCount($retryCount);
 
                 $this->importerResource->save($this);
 
@@ -164,9 +175,11 @@ class Importer extends \Magento\Framework\Model\AbstractModel
     }
 
     /**
+     * Saves item.
+     *
      * @param \Dotdigitalgroup\Email\Model\Importer $itemToSave
      *
-     * @return null
+     * @return void
      * @throws \Magento\Framework\Exception\AlreadyExistsException
      */
     public function saveItem($itemToSave)
