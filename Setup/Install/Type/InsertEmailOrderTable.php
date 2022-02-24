@@ -9,7 +9,7 @@ use Magento\Framework\App\ResourceConnection;
 use Magento\Framework\DB\Select;
 use Magento\Store\Model\StoreManagerInterface;
 
-class InsertEmailOrderTable extends AbstractDataMigration implements InsertTypeInterface
+class InsertEmailOrderTable extends AbstractBatchInserter implements InsertTypeInterface
 {
     /**
      * @var string
@@ -124,6 +124,7 @@ class InsertEmailOrderTable extends AbstractDataMigration implements InsertTypeI
 
     /**
      * Inserts guest contacts in the order data array into email_contact.
+     *
      * This step added here as a faster method than a standalone insert query.
      *
      * @param array $orderData
@@ -183,7 +184,7 @@ class InsertEmailOrderTable extends AbstractDataMigration implements InsertTypeI
      */
     private function removeRowsWithCustomerId(&$data)
     {
-        $data = array_filter($data, function($row) {
+        $data = array_filter($data, function ($row) {
             return empty($row['customer_id']);
         });
     }

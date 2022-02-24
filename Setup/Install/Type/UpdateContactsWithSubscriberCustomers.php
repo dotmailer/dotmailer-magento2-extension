@@ -5,7 +5,7 @@ namespace Dotdigitalgroup\Email\Setup\Install\Type;
 use Dotdigitalgroup\Email\Setup\SchemaInterface as Schema;
 use Magento\Framework\DB\Select;
 
-class UpdateContactsWithSubscriberCustomers extends AbstractDataMigration implements UpdateTypeInterface
+class UpdateContactsWithSubscriberCustomers extends AbstractUpdater implements UpdateTypeInterface
 {
     /**
      * @var string

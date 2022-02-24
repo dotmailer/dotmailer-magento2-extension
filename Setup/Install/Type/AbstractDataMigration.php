@@ -27,18 +27,6 @@ abstract class AbstractDataMigration
     protected $resourceConnection;
 
     /**
-     * onDuplicate value
-     * @var bool
-     */
-    protected $onDuplicate = false;
-
-    /**
-     * Flag whether batched queries should be offset
-     * @var bool
-     */
-    protected $useOffset = true;
-
-    /**
      * Rows affected by the change
      * @var int
      */
@@ -63,24 +51,18 @@ abstract class AbstractDataMigration
     }
 
     /**
-     * Run this type
+     * Run the migration according to type.
      *
-     * @return self
-     * @throws \ErrorException
-     * @throws \Zend_Db_Statement_Exception
+     * @return static
      */
-    public function execute()
-    {
-        if ($this instanceof InsertTypeInterface) {
-            $this->batchInsert($this->getSelectStatement());
-        } elseif ($this instanceof UpdateTypeInterface) {
-            $this->update($this->getSelectStatement());
-        } elseif ($this instanceof BulkUpdateTypeInterface) {
-            $this->bulkUpdate();
-        }
+    abstract public function execute();
 
-        return $this;
-    }
+    /**
+     * Get this type's select statement
+     *
+     * @return Select
+     */
+    abstract protected function getSelectStatement();
 
     /**
      * Get the rows affected by this type
@@ -118,89 +100,6 @@ abstract class AbstractDataMigration
         }
 
         return false;
-    }
-
-    /**
-     * Get this type's select statement
-     *
-     * @return Select
-     */
-    abstract protected function getSelectStatement();
-
-    /**
-     * Run an update statement
-     *
-     * @param Select $selectStatement
-     * @return void
-     */
-    private function update(Select $selectStatement)
-    {
-        $this->rowsAffected += $this->resourceConnection
-            ->getConnection()
-            ->update(
-                $this->resourceConnection->getTableName($this->tableName),
-                $this->getUpdateBindings(),
-                $this->getUpdateWhereClause($selectStatement)
-            );
-    }
-
-    /**
-     * Run a bulk update statement
-     *
-     * @return void
-     */
-    private function bulkUpdate()
-    {
-        foreach ($this->fetchRecords() as $record) {
-            $this->rowsAffected += $this->resourceConnection
-                ->getConnection()
-                ->update(
-                    $this->resourceConnection->getTableName($this->tableName),
-                    $this->getUpdateBindings($record[$this->getBindKey()]),
-                    $this->getUpdateWhereClause($record)
-                );
-        }
-    }
-
-    /**
-     * Run a batch insert
-     *
-     * @param Select $selectStatement
-     * @return void
-     * @throws \Zend_Db_Statement_Exception
-     */
-    private function batchInsert(Select $selectStatement)
-    {
-        do {
-            // select offset for query
-            $selectStatement->limit(self::BATCH_SIZE, $this->useOffset ? $this->rowsAffected : 0);
-
-            $rowCount = $this->insertData($selectStatement);
-
-            // increase the batch offset
-            $this->rowsAffected += $rowCount;
-
-        } while ($rowCount === self::BATCH_SIZE);
-    }
-
-    /**
-     * By default, records are directly inserted via the select statement.
-     *
-     * @param Select $selectStatement
-     * @return int
-     * @throws \Zend_Db_Statement_Exception
-     */
-    protected function insertData(Select $selectStatement)
-    {
-        $query = $selectStatement->insertFromSelect(
-            $this->resourceConnection->getTableName($this->tableName),
-            $this->getInsertArray(),
-            $this->onDuplicate
-        );
-        return $this->resourceConnection
-            ->getConnection()
-            ->query($query)
-            ->rowCount();
     }
 
     /**
