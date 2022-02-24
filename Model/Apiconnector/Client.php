@@ -12,55 +12,41 @@ use Dotdigitalgroup\Email\Logger\Logger;
  */
 class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
 {
-    const APICONNECTOR_VERSION = 'V2';
-
-    const REST_WAIT_UPLOAD_TIME = 5;
-    //rest api data
-    const REST_ACCOUNT_INFO = 'https://r1-api.dotmailer.com/v2/account-info';
-    const REST_CONTACTS = '/v2/contacts/';
-    const REST_CONTACT_WITH_CONSENT = '/v2/contacts/with-consent';
-    const REST_CONTACT_WITH_CONSENT_AND_PREFERENCES = '/v2/contacts/with-consent-and-preferences';
-    const REST_CONTACTS_IMPORT = '/v2/contacts/import/';
-    const REST_ADDRESS_BOOKS = '/v2/address-books/';
-    const REST_DATA_FIELDS = '/v2/data-fields';
-    const REST_TRANSACTIONAL_DATA_IMPORT = '/v2/contacts/transactional-data/import/';
-    const REST_TRANSACTIONAL_DATA = '/v2/contacts/transactional-data/';
-    const REST_CAMPAIGN_SEND = '/v2/campaigns/send';
-    const REST_CONTACTS_SUPPRESSED_SINCE = '/v2/contacts/suppressed-since/';
-    const REST_CONTACTS_MODIFIED_SINCE = '/v2/contacts/modified-since/';
-    const REST_DATA_FIELDS_CAMPAIGNS = '/v2/campaigns';
-    const REST_CONTACTS_RESUBSCRIBE = '/v2/contacts/resubscribe';
-    const REST_CAMPAIGN_FROM_ADDRESS_LIST = '/v2/custom-from-addresses';
-    const REST_CREATE_CAMPAIGN = '/v2/campaigns';
-    const REST_PROGRAM = '/v2/programs/';
-    const REST_PROGRAM_ENROLMENTS = '/v2/programs/enrolments';
-    const REST_TEMPLATES = '/v2/templates';
-    const REST_SEND_TRANSACTIONAL_EMAIL = '/v2/email';
-    const REST_CAMPAIGNS_WITH_PREPARED_CONTENT = 'prepared-for-transactional-email';
-    const REST_POST_ABANDONED_CART_CARTINSIGHT = '/v2/contacts/transactional-data/cartInsight';
-    const REST_CHAT_SETUP = '/v2/webchat/setup';
-    const REST_SURVEYS_FORMS = '/v2/surveys';
+    private const REST_ACCOUNT_INFO = 'https://r1-api.dotmailer.com/v2/account-info';
+    private const REST_CONTACTS = '/v2/contacts/';
+    private const REST_CONTACT_WITH_CONSENT = '/v2/contacts/with-consent';
+    private const REST_CONTACT_WITH_CONSENT_AND_PREFERENCES = '/v2/contacts/with-consent-and-preferences';
+    private const REST_CONTACTS_IMPORT = '/v2/contacts/import/';
+    private const REST_ADDRESS_BOOKS = '/v2/address-books/';
+    private const REST_DATA_FIELDS = '/v2/data-fields';
+    private const REST_TRANSACTIONAL_DATA_IMPORT = '/v2/contacts/transactional-data/import/';
+    private const REST_TRANSACTIONAL_DATA = '/v2/contacts/transactional-data/';
+    private const REST_CAMPAIGN_SEND = '/v2/campaigns/send';
+    private const REST_CONTACTS_SUPPRESSED_SINCE = '/v2/contacts/suppressed-since/';
+    private const REST_CONTACTS_MODIFIED_SINCE = '/v2/contacts/modified-since/';
+    private const REST_DATA_FIELDS_CAMPAIGNS = '/v2/campaigns';
+    private const REST_CONTACTS_RESUBSCRIBE = '/v2/contacts/resubscribe';
+    private const REST_CAMPAIGN_FROM_ADDRESS_LIST = '/v2/custom-from-addresses';
+    private const REST_CREATE_CAMPAIGN = '/v2/campaigns';
+    private const REST_PROGRAM = '/v2/programs/';
+    private const REST_PROGRAM_ENROLMENTS = '/v2/programs/enrolments';
+    private const REST_TEMPLATES = '/v2/templates';
+    private const REST_SEND_TRANSACTIONAL_EMAIL = '/v2/email';
+    private const REST_CAMPAIGNS_WITH_PREPARED_CONTENT = 'prepared-for-transactional-email';
+    private const REST_POST_ABANDONED_CART_CARTINSIGHT = '/v2/contacts/transactional-data/cartInsight';
+    private const REST_CHAT_SETUP = '/v2/webchat/setup';
+    private const REST_SURVEYS_FORMS = '/v2/surveys';
 
     //rest error responses
-    const API_ERROR_API_EXCEEDED = 'Your account has generated excess API activity and is being temporarily capped. ' .
-        'Please contact support. ERROR_APIUSAGE_EXCEEDED';
-    const API_ERROR_TRANS_ALLOWANCE = 'TransactionalDataAllowanceInMegabytes';
-    const API_ERROR_EMAIL_NOT_VALID = 'Email is not a valid email address. ERROR_PARAMETER_INVALID';
-    const API_ERROR_FEATURENOTACTIVE = 'Error: ERROR_FEATURENOTACTIVE';
-    const API_ERROR_REPORT_NOT_FOUND = 'Import is not processed yet or completed with error. ' .
-        'ERROR_IMPORT_REPORT_NOT_FOUND';
-    const API_ERROR_TRANS_NOT_EXISTS = 'Error: ERROR_TRANSACTIONAL_DATA_DOES_NOT_EXIST';
-    const API_ERROR_DATAFIELD_EXISTS = 'Field already exists. ERROR_NON_UNIQUE_DATAFIELD';
-    const API_ERROR_CONTACT_NOT_FOUND = 'Error: ERROR_CONTACT_NOT_FOUND';
-    const API_ERROR_PROGRAM_NOT_ACTIVE = 'Error: ERROR_PROGRAM_NOT_ACTIVE';
-    const API_ERROR_ENROLMENT_EXCEEDED = 'Error: ERROR_ENROLMENT_ALLOWANCE_EXCEEDED ';
-    const API_ERROR_SEND_NOT_PERMITTED = 'Send not permitted at this time. ERROR_CAMPAIGN_SENDNOTPERMITTED';
-    const API_ERROR_CONTACT_SUPPRESSED = 'Contact is suppressed. ERROR_CONTACT_SUPPRESSED';
-    const API_ERROR_AUTHORIZATION_DENIED = 'Authorization has been denied for this request.';
-    const API_ERROR_ADDRESSBOOK_NOT_FOUND = 'Error: ERROR_ADDRESSBOOK_NOT_FOUND';
-    const API_ERROR_ADDRESSBOOK_DUPLICATE = 'That name is in use already, please choose another. ' .
-        'ERROR_ADDRESSBOOK_DUPLICATE';
-    const REST_ACCOUNT_PREFERENCES = "/v2/preferences";
+    private const API_ERROR_FEATURENOTACTIVE = 'Error: ERROR_FEATURENOTACTIVE';
+    private const API_ERROR_TRANS_NOT_EXISTS = 'Error: ERROR_TRANSACTIONAL_DATA_DOES_NOT_EXIST';
+    public const API_ERROR_DATAFIELD_EXISTS = 'Field already exists. ERROR_NON_UNIQUE_DATAFIELD';
+    private const API_ERROR_PROGRAM_NOT_ACTIVE = 'Error: ERROR_PROGRAM_NOT_ACTIVE';
+    private const API_ERROR_ENROLMENT_EXCEEDED = 'Error: ERROR_ENROLMENT_ALLOWANCE_EXCEEDED ';
+    private const API_ERROR_SEND_NOT_PERMITTED = 'Send not permitted at this time. ERROR_CAMPAIGN_SENDNOTPERMITTED';
+    public const API_ERROR_CONTACT_SUPPRESSED = 'Contact is suppressed. ERROR_CONTACT_SUPPRESSED';
+    private const API_ERROR_AUTHORIZATION_DENIED = 'Authorization has been denied for this request.';
+    private const API_ERROR_ADDRESSBOOK_NOT_FOUND = 'Error: ERROR_ADDRESSBOOK_NOT_FOUND';
 
     /**
      * @var string
@@ -85,6 +71,8 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     ];
 
     /**
+     * Initialize api endpoint.
+     *
      * @param string $apiEndpoint
      * @return void
      */
@@ -94,6 +82,8 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     }
 
     /**
+     * Fetch api endpoint.
+     *
      * @return string
      * @throws \Magento\Framework\Exception\LocalizedException
      */
@@ -247,6 +237,13 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         return $response;
     }
 
+    /**
+     * Create abandoned cart in dotdigital.
+     *
+     * @param array $content
+     * @return array|\stdClass|null
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
     public function postAbandonedCartCartInsight($content)
     {
         $url = $this->getApiEndpoint() . self::REST_POST_ABANDONED_CART_CARTINSIGHT;
@@ -269,7 +266,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      * @param string|int $addressBookId
      * @param string|int $contactId
      *
-     * @return null
+     * @return void
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function deleteAddressBookContact($addressBookId, $contactId)
@@ -445,6 +442,8 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     }
 
     /**
+     * Get campaign by id.
+     *
      * @param int $campaignId
      * @return mixed
      * @throws \Magento\Framework\Exception\LocalizedException
@@ -467,6 +466,8 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     }
 
     /**
+     * Get campaign by id with prepared content.
+     *
      * @param int $campaignId
      * @return mixed
      * @throws \Magento\Framework\Exception\LocalizedException
@@ -494,7 +495,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     /**
      * Creates a data field within the account.
      *
-     * @param        $data         string/array
+     * @param string|array $data
      * @param string $type string, numeric, date, boolean
      * @param string $visibility public, private
      * @param bool $defaultValue
@@ -595,7 +596,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      *
      * @param int $contactId
      *
-     * @return null
+     * @return void|array|null|\stdClass
      * @throws \Exception
      */
     public function deleteContact($contactId)
@@ -659,6 +660,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
 
     /**
      * Sends a specified campaign to one or more address books, segments or contacts at a specified time.
+     *
      * Leave the address book array empty to send to All Contacts.
      *
      * @param int $campaignId
@@ -802,8 +804,11 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     }
 
     /**
+     * Post contacts transactional data import.
+     *
      * Adds multiple pieces of transactional data to contacts asynchronously,
      * returning an identifier that can be used to check for import progress.
+     *
      * @param array  $transactionalData
      * @param string $collectionName
      *
@@ -964,7 +969,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      * @param string $email
      * @param string $collectionName
      *
-     * @return null
+     * @return void|array|null|\stdClass
      * @throws \Exception
      */
     public function deleteContactTransactionalData(
@@ -1082,7 +1087,10 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     }
 
     /**
-     * https://apiconnector.com/v2/programs?select={select}&skip={skip}.
+     * Get programs.
+     *
+     * Request format: https://apiconnector.com/v2/programs?select={select}&skip={skip}.
+     *
      * @param int $skip
      * @param int $select
      * @return mixed|null
@@ -1190,10 +1198,10 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     /**
      * Deletes a piece of transactional data by key.
      *
-     * @param int  $key
+     * @param int $key
      * @param string $collectionName
      *
-     * @return null
+     * @return void|array|null|\stdClass
      * @throws \Exception
      */
     public function deleteContactsTransactionalData(
@@ -1314,10 +1322,12 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     }
 
     /**
+     * Post transactional data import.
+     *
      * Adds multiple pieces of transactional data to account asynchronously,
      * returning an identifier that can be used to check for import progress.
      *
-     * @param  array $transactionalData
+     * @param array $transactionalData
      * @param string $collectionName
      *
      * @return null
@@ -1428,6 +1438,32 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
 
         if (isset($response->message)) {
             $this->addClientLog('Error getting transactional data import status', [
+                'import_id' => $importId
+            ]);
+        }
+
+        return $response;
+    }
+
+    /**
+     * Get transactional data report.
+     *
+     * @param string $importId
+     * @return \stdClass
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function getTransactionalDataReportById($importId)
+    {
+        $url = $this->getApiEndpoint() . self::REST_TRANSACTIONAL_DATA_IMPORT
+            . $importId . '/report';
+
+        $this->setUrl($url)
+            ->setVerb('GET');
+
+        $response = $this->execute();
+
+        if (isset($response->message)) {
+            $this->addClientLog('Error getting transactional data import report', [
                 'import_id' => $importId
             ]);
         }
@@ -1558,37 +1594,9 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     }
 
     /**
-     * Gets transactional email reporting statistics for a specified time period.
-     *
-     * @param string $date
-     * @param null $endDate
-     * @param null $aggregatedBy 'AllTime', 'Month', 'Week', 'Day'
-     *
-     * @return mixed
-     * @throws \Magento\Framework\Exception\LocalizedException
-     */
-    public function getEmailStats($date, $endDate = null, $aggregatedBy = null)
-    {
-        $url = $this->getApiEndpoint() . '/v2/email/stats/since-date/' . $date;
-        if ($endDate && $aggregatedBy) {
-            $url .= '?endDate=' . $endDate . '&aggregatedBy=' . $aggregatedBy;
-        }
-
-        $response = $this->setUrl($url)
-            ->setVerb('GET')
-            ->execute();
-
-        if (isset($response->message)) {
-            $this->addClientLog('Error getting email stats');
-        }
-
-        return $response;
-    }
-
-    /**
      * Gets all preferences that a given contact is opted into
      *
-     * @param $contactId
+     * @param string|int $contactId
      * @return mixed
      * @throws \Magento\Framework\Exception\LocalizedException
      */
@@ -1612,13 +1620,13 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     /**
      * Opts in a given contact to preferences, or opts out a given contact from preferences
      *
-     * @param $contactId
-     * @param $preferences
+     * @param string|int $contactId
+     * @param array $preferences
      *
      * @return mixed
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function setPreferencesForContact($contactId, $preferences)
+    public function setPreferencesForContact($contactId, array $preferences)
     {
         $url = $this->getApiEndpoint() . "/v2/contact/" . $contactId . "/preferences";
         $this->setUrl($url)
@@ -1725,9 +1733,10 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     }
 
     /**
-     * Setup New Chat Account
-     * @param $data
-     * @return mixed
+     * Setup New Chat Account.
+     *
+     * @param array $data
+     * @return array|null|\stdClass
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function setUpChatAccount(array $data = [])
@@ -1803,6 +1812,13 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         return $response;
     }
 
+    /**
+     * Get form by id.
+     *
+     * @param string $formId
+     * @return array|\stdClass|null
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
     public function getFormById($formId)
     {
         $url = sprintf(

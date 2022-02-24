@@ -12,7 +12,7 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     /**
      * Initialize resource collection.
      *
-     * @return null
+     * @return void
      */
     public function _construct()
     {
@@ -35,7 +35,6 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     /**
      * Get imports marked as importing for one or more websites.
      *
-     * @param int $limit
      * @param array $websiteIds
      *
      * @return $this|boolean
@@ -86,20 +85,6 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
                 'import_type',
                 ['eq' => $importType]
             );
-
-            /**
-             * Skip orders if one hour has not passed since the created_at time.
-             */
-            if ($importType == 'Orders') {
-                $interval = new \DateInterval('PT1H');
-                $fromDate = new \DateTime('now', new \DateTimezone('UTC'));
-                $fromDate->sub($interval);
-
-                $this->addFieldToFilter(
-                    'created_at',
-                    ['lt' => $fromDate]
-                );
-            }
         }
 
         $this->addFieldToFilter('import_mode', ['eq' => $importMode])
@@ -117,6 +102,8 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     }
 
     /**
+     * Fetch tasks with error status.
+     *
      * Search the email_importer table for jobs with import_status = 3 (failed),
      * with a created_at time inside the specified time window.
      *
@@ -129,5 +116,18 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
             ->addFieldToFilter('import_status', 3)
             ->addFieldToFilter('created_at', $timeWindow)
             ->setOrder('created_at', 'DESC');
+    }
+
+    /**
+     * Fetch importer data by id.
+     *
+     * @param string $importId
+     * @return \Magento\Framework\DataObject
+     */
+    public function getImporterDataByImportId($importId)
+    {
+        return $this->addFieldToSelect(['import_data', 'retry_count'])
+            ->addFieldToFilter('import_id', $importId)
+            ->getFirstItem();
     }
 }

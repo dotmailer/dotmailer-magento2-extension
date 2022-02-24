@@ -100,7 +100,7 @@ class ExporterTest extends TestCase
         $this->orderFactoryMock = $this->createMock(OrderFactory::class);
         $this->orderCollectionMock = $this->getMockBuilder(OrderCollection::class)
             ->onlyMethods(['getOrdersFromIds'])
-            ->addMethods(['getId','getOrderStatus', 'getStoreId', 'getStore'])
+            ->addMethods(['getId','getOrderStatus', 'getStoreId', 'getStore', 'getIncrementId'])
             ->disableOriginalConstructor()
             ->getMock();
         $this->storeInterfaceMock = $this->createMock(StoreInterface::class);
@@ -147,7 +147,11 @@ class ExporterTest extends TestCase
 
         $iterator = new \ArrayIterator([$this->orderCollectionMock]);
 
-        $this->orderCollection->expects($this->atLeastOnce())->method('getIterator')->will($this->returnValue($iterator));
+        $this->orderCollection
+            ->expects($this->atLeastOnce())
+            ->method('getIterator')
+            ->will($this->returnValue($iterator));
+
         $this->orderCollection
             ->expects($this->atLeastOnce())
             ->method('getIterator')
@@ -159,12 +163,36 @@ class ExporterTest extends TestCase
             ->method('getSize')
             ->willReturn(1);
         
-        $this->orderCollectionMock->expects($this->atLeastOnce())->method('getId')->willReturn(1);
-        $this->orderCollectionMock->expects($this->atLeastOnce())->method('getStoreId')->willReturn(1);
-        $this->storeManagerInterfaceMock->expects($this->once())->method('getStore')->willReturn($this->storeInterfaceMock);
-        $this->storeInterfaceMock->expects($this->atLeastOnce())->method('getWebsiteId')->willReturn(1);
-        $this->scopeConfigInterfaceMock->expects($this->atLeastOnce())->method('getValue')->willReturn('pending');
-        $this->orderCollectionMock->expects($this->atLeastOnce())->method('getOrderStatus')->willReturn('pending');
+        $this->orderCollectionMock
+            ->expects($this->atLeastOnce())
+            ->method('getIncrementId')
+            ->willReturn(1);
+
+        $this->orderCollectionMock
+            ->expects($this->atLeastOnce())
+            ->method('getStoreId')
+            ->willReturn(1);
+
+        $this->storeManagerInterfaceMock
+            ->expects($this->once())
+            ->method('getStore')
+            ->willReturn($this->storeInterfaceMock);
+
+        $this->storeInterfaceMock
+            ->expects($this->atLeastOnce())
+            ->method('getWebsiteId')
+            ->willReturn(1);
+
+        $this->scopeConfigInterfaceMock
+            ->expects($this->atLeastOnce())
+            ->method('getValue')
+            ->willReturn('pending');
+
+        $this->orderCollectionMock
+            ->expects($this->atLeastOnce())
+            ->method('getOrderStatus')
+            ->willReturn('pending');
+
         $this->orderCollectionMock
             ->expects($this->atLeastOnce())
             ->method('getId')

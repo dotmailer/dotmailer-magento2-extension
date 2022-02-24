@@ -79,12 +79,12 @@ class Review implements SyncInterface
      * Review constructor.
      *
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Review\CollectionFactory $reviewCollection
-     * @param \Magento\Framework\Stdlib\DateTime\DateTime                         $coreDate
-     * @param \Dotdigitalgroup\Email\Model\Customer\Review\RatingFactory          $ratingFactory
-     * @param \Dotdigitalgroup\Email\Model\Customer\ReviewFactory                 $connectorFactory
-     * @param \Dotdigitalgroup\Email\Model\ImporterFactory                        $importerFactory
-     * @param \Dotdigitalgroup\Email\Helper\Data                                  $data
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\ReviewFactory            $reviewResourceFactory
+     * @param \Magento\Framework\Stdlib\DateTime\DateTime $coreDate
+     * @param \Dotdigitalgroup\Email\Model\Customer\Review\RatingFactory $ratingFactory
+     * @param \Dotdigitalgroup\Email\Model\Customer\ReviewFactory $connectorFactory
+     * @param \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
+     * @param \Dotdigitalgroup\Email\Helper\Data $data
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\ReviewFactory $reviewResourceFactory
      * @param ScopeConfigInterface $scopeConfig
      * @param OrderFactory $orderFactory
      */
@@ -128,6 +128,8 @@ class Review implements SyncInterface
     }
 
     /**
+     * Sync.
+     *
      * @return array
      * @throws \Magento\Framework\Exception\LocalizedException
      */
@@ -226,7 +228,7 @@ class Review implements SyncInterface
                             $rating
                         );
                     }
-                    $this->reviews[$website->getId()][] = $connectorReview->expose();
+                    $this->reviews[$website->getId()][$connectorReview->getId()] = $connectorReview->expose();
                     $this->reviewIds[]                  = $mageReview->getReviewId();
                 } catch (\Exception $e) {
                     $this->helper->debug((string)$e, []);

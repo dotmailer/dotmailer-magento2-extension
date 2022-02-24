@@ -151,6 +151,8 @@ class Wishlist implements SyncInterface
     }
 
     /**
+     * Wishlist exporter.
+     *
      * @param WebsiteInterface $website
      * @param array $emailWishlists
      * @return array
@@ -172,7 +174,7 @@ class Wishlist implements SyncInterface
                     ->addStoreFilter($website->getStoreIds());
 
                 if ($wishListItemCollection->getSize()) {
-                    $wishlists[] = $this->buildWishlistData($wishlist, $wishListItemCollection);
+                    $wishlists[$wishlist->getId()] = $this->buildWishlistData($wishlist, $wishListItemCollection);
                 } else {
                     $this->importerFactory->create()
                         ->registerQueue(
@@ -190,6 +192,8 @@ class Wishlist implements SyncInterface
     }
 
     /**
+     * Fetch wishlists by website.
+     *
      * @param WebsiteInterface $website
      * @param int $limit
      * @return array
@@ -210,6 +214,8 @@ class Wishlist implements SyncInterface
     }
 
     /**
+     * Update wishlist.
+     *
      * @param array $ids
      */
     private function setImported($ids)
@@ -219,6 +225,8 @@ class Wishlist implements SyncInterface
     }
 
     /**
+     * Build wishlist collection.
+     *
      * @param \Magento\Wishlist\Model\Wishlist $wishlist
      * @param \Magento\Wishlist\Model\ResourceModel\Item\Collection $wishListItemCollection
      * @return array
@@ -250,6 +258,8 @@ class Wishlist implements SyncInterface
     }
 
     /**
+     * Get wishlist updated_at by id.
+     *
      * Magento's core wishlist table's updated_at column does not update when items are added
      * or removed from the wishlist. Therefore we rely on our own table.
      *
