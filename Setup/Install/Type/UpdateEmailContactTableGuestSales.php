@@ -5,7 +5,7 @@ namespace Dotdigitalgroup\Email\Setup\Install\Type;
 use Dotdigitalgroup\Email\Setup\SchemaInterface as Schema;
 use Magento\Framework\DB\Select;
 
-class UpdateEmailContactTableGuestSales extends AbstractDataMigration implements BulkUpdateTypeInterface
+class UpdateEmailContactTableGuestSales extends AbstractBulkUpdater implements BulkUpdateTypeInterface
 {
     /**
      * @var string
@@ -86,18 +86,6 @@ class UpdateEmailContactTableGuestSales extends AbstractDataMigration implements
             'email = ?' => $row['customer_email'],
             'website_id = ?' => $row['website_id']
         ];
-    }
-
-    /**
-     * Fetch records
-     *
-     * @return array
-     */
-    public function fetchRecords()
-    {
-        return $this->resourceConnection
-            ->getConnection()
-            ->fetchAll($this->getSelectStatement());
     }
 
     /**

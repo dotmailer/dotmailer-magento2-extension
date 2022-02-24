@@ -5,7 +5,7 @@ namespace Dotdigitalgroup\Email\Setup\Install\Type;
 use Dotdigitalgroup\Email\Setup\SchemaInterface as Schema;
 use Magento\Framework\DB\Select;
 
-class InsertEmailContactTableCustomerSales extends AbstractDataMigration implements InsertTypeInterface
+class InsertEmailContactTableCustomerSales extends AbstractBatchInserter implements InsertTypeInterface
 {
     /**
      * @var string

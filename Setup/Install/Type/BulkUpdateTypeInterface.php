@@ -5,13 +5,6 @@ namespace Dotdigitalgroup\Email\Setup\Install\Type;
 interface BulkUpdateTypeInterface
 {
     /**
-     * Fetch records for this update
-     *
-     * @return mixed
-     */
-    public function fetchRecords();
-
-    /**
      * Get the bindings for this update
      *
      * @param mixed $bind

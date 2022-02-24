@@ -5,7 +5,7 @@ namespace Dotdigitalgroup\Email\Setup\Install\Type;
 use Dotdigitalgroup\Email\Setup\SchemaInterface as Schema;
 use Magento\Framework\DB\Select;
 
-class UpdateEmailContactTableCustomerSales extends AbstractDataMigration implements BulkUpdateTypeInterface
+class UpdateEmailContactTableCustomerSales extends AbstractBulkUpdater implements BulkUpdateTypeInterface
 {
     /**
      * @var string
@@ -18,7 +18,7 @@ class UpdateEmailContactTableCustomerSales extends AbstractDataMigration impleme
     protected $tableName = Schema::EMAIL_CONTACT_TABLE;
 
     /**
-     * @return Select
+     * @inheritDoc
      */
     protected function getSelectStatement()
     {
@@ -58,7 +58,9 @@ class UpdateEmailContactTableCustomerSales extends AbstractDataMigration impleme
     }
 
     /**
-     * @param $customerId
+     * Where $customerId equals
+     *
+     * @param string $customerId
      * @return array
      */
     public function getUpdateBindings($customerId)
@@ -69,6 +71,8 @@ class UpdateEmailContactTableCustomerSales extends AbstractDataMigration impleme
     }
 
     /**
+     * Update where
+     *
      * @param array $row
      *
      * @return array
@@ -81,17 +85,7 @@ class UpdateEmailContactTableCustomerSales extends AbstractDataMigration impleme
     }
 
     /**
-     * @return array
-     */
-    public function fetchRecords()
-    {
-        return $this->resourceConnection
-            ->getConnection()
-            ->fetchAll($this->getSelectStatement());
-    }
-
-    /**
-     * @return bool
+     * @inheritDoc
      */
     public function isEnabled(): bool
     {
@@ -99,7 +93,7 @@ class UpdateEmailContactTableCustomerSales extends AbstractDataMigration impleme
     }
 
     /**
-     * @return string
+     * @inheritDoc
      */
     public function getBindKey(): string
     {

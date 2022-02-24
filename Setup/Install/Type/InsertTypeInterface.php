@@ -6,6 +6,7 @@ interface InsertTypeInterface
 {
     /**
      * Get the insert fields for this type
+     *
      * @return array
      */
     public function getInsertArray();
