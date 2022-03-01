@@ -1,3 +1,15 @@
+# 4.15.0
+
+### What's new
+- Rows in the Import Report that have already been imported can now be reset, either singly or in bulk.
+
+### Improvements
+- Order sync performance has been improved. The sync now runs continuously until all orders are processed.
+- We've updated our code for compatibility with PHP 8.1.
+- Errors relating to unsubscribing contacts who are already suppressed in Dotdigital will now not trigger a System Alert.
+- We've improved the performance of the `InsertEmailContactTableCustomerSales` migration type.
+- The structure of our data migration code has been refactored to use additional abstract classes.
+
 # 4.14.1
 
 ##### Improvements
