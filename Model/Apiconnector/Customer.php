@@ -510,18 +510,20 @@ class Customer extends ContactData
     }
 
     /**
+     * Return street address by line number.
+     *
      * @param string $street
      * @param int $line
-     * @return void
+     *
+     * @return string
      */
     public function getStreet($street, $line)
     {
-        $street = explode("\n", $street);
-        if (isset($street[$line - 1])) {
-            return $street[$line - 1];
+        if (!is_string($street)) {
+            return '';
         }
-
-        return '';
+        $street = explode("\n", $street);
+        return (isset($street[$line - 1])) ? $street[$line - 1] : '';
     }
 
     /**

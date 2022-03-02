@@ -12,7 +12,7 @@ abstract class AbstractDataMigration
     /**
      * The size queries will be batched in
      */
-    const BATCH_SIZE = 500;
+    public const BATCH_SIZE = 1000;
 
     /**
      * The table name this type writes to
@@ -27,18 +27,6 @@ abstract class AbstractDataMigration
     protected $resourceConnection;
 
     /**
-     * onDuplicate value
-     * @var bool
-     */
-    protected $onDuplicate = false;
-
-    /**
-     * Flag whether batched queries should be offset
-     * @var bool
-     */
-    protected $useOffset = true;
-
-    /**
      * Rows affected by the change
      * @var int
      */
@@ -47,7 +35,7 @@ abstract class AbstractDataMigration
     /**
      * @var ScopeConfigInterface
      */
-    private $scopeConfig;
+    protected $scopeConfig;
 
     /**
      * AbstractType constructor
@@ -63,23 +51,18 @@ abstract class AbstractDataMigration
     }
 
     /**
-     * Run this type
-     * @return self
-     * @throws \ErrorException
-     * @throws \Zend_Db_Statement_Exception
+     * Run the migration according to type.
+     *
+     * @return static
      */
-    public function execute()
-    {
-        if ($this instanceof InsertTypeInterface) {
-            $this->batchInsert($this->getSelectStatement());
-        } elseif ($this instanceof UpdateTypeInterface) {
-            $this->update($this->getSelectStatement());
-        } elseif ($this instanceof BulkUpdateTypeInterface) {
-            $this->bulkUpdate();
-        }
+    abstract public function execute();
 
-        return $this;
-    }
+    /**
+     * Get this type's select statement
+     *
+     * @return Select
+     */
+    abstract protected function getSelectStatement();
 
     /**
      * Get the rows affected by this type
@@ -93,6 +76,7 @@ abstract class AbstractDataMigration
 
     /**
      * Get the table name
+     *
      * @return string
      */
     public function getTableName()
@@ -101,6 +85,8 @@ abstract class AbstractDataMigration
     }
 
     /**
+     * Check if Share Customer Accounts is set to 'Global' in settings.
+     *
      * @return bool
      */
     public function isAccountSharingGlobal(): bool
@@ -117,92 +103,8 @@ abstract class AbstractDataMigration
     }
 
     /**
-     * Get this type's select statement
-     * @return Select
-     */
-    abstract protected function getSelectStatement();
-
-    /**
-     * Run an update statement
+     * Is this migration type enabled.
      *
-     * @param Select $selectStatement
-     * @return void
-     */
-    private function update(Select $selectStatement)
-    {
-        $this->rowsAffected += $this->resourceConnection
-            ->getConnection()
-            ->update(
-                $this->resourceConnection->getTableName($this->tableName),
-                $this->getUpdateBindings(),
-                $this->getUpdateWhereClause($selectStatement)
-            );
-    }
-
-    /**
-     * Run a bulk update statement
-     *
-     * @return void
-     */
-    private function bulkUpdate()
-    {
-        foreach ($this->fetchRecords() as $record) {
-            $this->rowsAffected += $this->resourceConnection
-                ->getConnection()
-                ->update(
-                    $this->resourceConnection->getTableName($this->tableName),
-                    $this->getUpdateBindings($record[$this->getBindKey()]),
-                    $this->getUpdateWhereClause($record[$this->getWhereKey()])
-                );
-        }
-    }
-
-    /**
-     * @param Select $selectStatement
-     * @return void
-     * @throws \Zend_Db_Statement_Exception
-     */
-    private function batchInsert(Select $selectStatement)
-    {
-        $iterations = $rowCount = 0;
-
-        do {
-            // select offset for query
-            $selectStatement->limit(self::BATCH_SIZE, $this->useOffset ? $this->rowsAffected : 0);
-
-            $rowCount = $this->insertData($selectStatement);
-
-            // increase the batch offset
-            $this->rowsAffected += $rowCount;
-
-            // if the first iteration returned < the batch size, we can break here to avoid an additional queries
-            if ($iterations++ === 0 && $rowCount < self::BATCH_SIZE) {
-                break;
-            }
-        } while ($rowCount > 0);
-    }
-
-    /**
-     * By default, records are directly inserted via the select statement.
-     *
-     * @param Select $selectStatement
-     * @return int
-     * @throws \Zend_Db_Statement_Exception
-     */
-    protected function insertData(Select $selectStatement)
-    {
-        $query = $selectStatement->insertFromSelect(
-            $this->resourceConnection->getTableName($this->tableName),
-            $this->getInsertArray(),
-            $this->onDuplicate
-        );
-        return $this->resourceConnection
-            ->getConnection()
-            ->query($query)
-            ->rowCount();
-    }
-
-    /**
      * @return bool
      */
     public function isEnabled(): bool

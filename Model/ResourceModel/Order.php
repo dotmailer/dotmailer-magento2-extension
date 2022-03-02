@@ -9,7 +9,7 @@ class Order extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Initialize resource.
      *
-     * @return null
+     * @return void
      */
     public function _construct()
     {
@@ -23,7 +23,6 @@ class Order extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      * @param string|null $to
      *
      * @return int
-     *
      */
     public function resetOrders($from = null, $to = null)
     {
@@ -32,16 +31,15 @@ class Order extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             $where = [
                 'created_at >= ?' => $from . ' 00:00:00',
                 'created_at <= ?' => $to . ' 23:59:59',
-                'email_imported = ?' => 1
+                'processed = ?' => 1
             ];
         } else {
-            $where = ['email_imported = ?' => 1];
+            $where = ['processed = ?' => 1];
         }
         $num = $conn->update(
             $this->getTable(Schema::EMAIL_ORDER_TABLE),
             [
-                'email_imported' => 0,
-                'modified' => new \Zend_Db_Expr('null'),
+                'processed' => 0,
             ],
             $where
         );
@@ -50,13 +48,12 @@ class Order extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
-     * Mark the connector orders to be imported.
+     * Update orders.
      *
      * @param array $ids
-     *
-     * @return null
+     * @return void
      */
-    public function setImported($ids)
+    public function setProcessed(array $ids)
     {
         if (empty($ids)) {
             return;
@@ -66,11 +63,56 @@ class Order extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         $connection->update(
             $tableName,
             [
-                'modified' => new \Zend_Db_Expr('null'),
-                'email_imported' => 1,
-                'updated_at' => gmdate('Y-m-d H:i:s')
+                'processed' => 1,
             ],
             ["order_id IN (?)" => $ids]
         );
+    }
+
+    /**
+     * Update orders.
+     *
+     * @param array $ids
+     * @return void
+     */
+    public function setUnProcessed(array $ids)
+    {
+        if (empty($ids)) {
+            return;
+        }
+        $connection = $this->getConnection();
+        $tableName = $this->getTable(Schema::EMAIL_ORDER_TABLE);
+        $connection->update(
+            $tableName,
+            [
+                'processed' => 0,
+            ],
+            ["order_id IN (?)" => $ids]
+        );
+    }
+
+    /**
+     * Set imported date.
+     *
+     * @param array $ids
+     *
+     * @return void
+     */
+    public function setImportedDateByIds(array $ids)
+    {
+        try {
+            $coreResource = $this->getConnection();
+            $tableName = $this->getTable(Schema::EMAIL_ORDER_TABLE);
+
+            $coreResource->update(
+                $tableName,
+                [
+                    'last_imported_at' => gmdate('Y-m-d H:i:s'),
+                ],
+                ["order_id IN (?)" => $ids]
+            );
+        } catch (\Exception $e) {
+            $this->_logger->debug((string)$e, []);
+        }
     }
 }

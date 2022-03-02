@@ -23,7 +23,7 @@ use Magento\Store\Model\ScopeInterface;
  */
 class Data extends \Magento\Framework\App\Helper\AbstractHelper
 {
-    const DM_FIELD_LIMIT = 1000;
+    public const DM_FIELD_LIMIT = 1000;
 
     /**
      * @var \Magento\Config\Model\ResourceModel\Config
@@ -980,26 +980,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * Order status config value.
-     *
-     * @param int $website
-     *
-     * @return array|bool
-     */
-    public function getConfigSelectedStatus($website = 0)
-    {
-        $status = $this->getWebsiteConfig(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_ORDER_STATUS,
-            $website
-        );
-        if ($status) {
-            return explode(',', $status);
-        } else {
-            return false;
-        }
-    }
-
-    /**
      * Get website config.
      *
      * @param string $path
@@ -1015,26 +995,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             $scope,
             $website
         );
-    }
-
-    /**
-     * Get array of custom attributes for orders from config.
-     *
-     * @param int $website
-     *
-     * @return array|bool
-     */
-    public function getConfigSelectedCustomOrderAttributes($website = 0)
-    {
-        $customAttributes = $this->getWebsiteConfig(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CUSTOM_ORDER_ATTRIBUTES,
-            $website
-        );
-        if ($customAttributes) {
-            return explode(',', $customAttributes);
-        } else {
-            return false;
-        }
     }
 
     /**

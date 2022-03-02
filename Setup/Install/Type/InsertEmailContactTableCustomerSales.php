@@ -5,7 +5,7 @@ namespace Dotdigitalgroup\Email\Setup\Install\Type;
 use Dotdigitalgroup\Email\Setup\SchemaInterface as Schema;
 use Magento\Framework\DB\Select;
 
-class InsertEmailContactTableCustomerSales extends AbstractDataMigration implements InsertTypeInterface
+class InsertEmailContactTableCustomerSales extends AbstractBatchInserter implements InsertTypeInterface
 {
     /**
      * @var string
@@ -25,6 +25,8 @@ class InsertEmailContactTableCustomerSales extends AbstractDataMigration impleme
     protected $useOffset = false;
 
     /**
+     * Get this type's select statement
+     *
      * @return \Magento\Framework\DB\Select|void
      */
     protected function getSelectStatement()
@@ -46,14 +48,15 @@ class InsertEmailContactTableCustomerSales extends AbstractDataMigration impleme
                 ['website_id' => 'store.website_id']
             )
             ->where(
-                '(sales_order.customer_email, store.website_id) NOT IN (?)',
+                'NOT EXISTS (?)',
                 $this->resourceConnection
                     ->getConnection()
                     ->select()
                     ->from(
-                        $this->resourceConnection->getTableName(Schema::EMAIL_CONTACT_TABLE),
-                        ['email', 'website_id']
+                        $this->resourceConnection->getTableName(Schema::EMAIL_CONTACT_TABLE)
                     )
+                    ->where('email = sales_order.customer_email')
+                    ->where('website_id = store.website_id')
             )->where(
                 $this->resourceConnection
                     ->getConnection()
@@ -65,6 +68,8 @@ class InsertEmailContactTableCustomerSales extends AbstractDataMigration impleme
     }
 
     /**
+     * Get the insert array
+     *
      * @return array|void
      */
     public function getInsertArray()
@@ -78,6 +83,8 @@ class InsertEmailContactTableCustomerSales extends AbstractDataMigration impleme
     }
 
     /**
+     * Insert data
+     *
      * @param Select $selectStatement
      * @return int
      * @throws \Magento\Framework\Exception\NoSuchEntityException
@@ -101,6 +108,8 @@ class InsertEmailContactTableCustomerSales extends AbstractDataMigration impleme
     }
 
     /**
+     * This type only runs if Account Sharing is Global.
+     *
      * @return bool
      */
     public function isEnabled(): bool

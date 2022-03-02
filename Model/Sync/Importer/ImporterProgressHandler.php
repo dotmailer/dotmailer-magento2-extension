@@ -75,6 +75,7 @@ class ImporterProgressHandler extends DataObject
 
     /**
      * Check imports in progress for an array of website ids.
+     *
      * Note this will only pick up bulk imports.
      *
      * @param array $websiteIds
@@ -118,6 +119,8 @@ class ImporterProgressHandler extends DataObject
     }
 
     /**
+     * Process Response.
+     *
      * @param Object $response
      * @param ImporterModel $item
      * @return int
@@ -148,6 +151,8 @@ class ImporterProgressHandler extends DataObject
     }
 
     /**
+     * Process finished item.
+     *
      * @param ImporterModel $item
      * @return ImporterModel $item
      * @throws \Magento\Framework\Exception\LocalizedException
@@ -160,38 +165,75 @@ class ImporterProgressHandler extends DataObject
             ->setImportFinished($now)
             ->setMessage('');
 
-        if ($item->getImportType() == ImporterModel::IMPORT_TYPE_CONTACT ||
-            $item->getImportType() == ImporterModel::IMPORT_TYPE_SUBSCRIBERS ||
-            $item->getImportType() == ImporterModel::IMPORT_TYPE_GUEST
-        ) {
-            $file = $item->getImportFile();
-            // if a filename is stored in the table and if that file physically exists
-            if ($file && $this->fileHelper->isFilePathExistWithFallback($file)) {
-                //remove the consent data for contacts before archiving the file
-                $log = $this->fileHelper->cleanProcessedConsent(
-                    $this->fileHelper->getFilePathWithFallback($file)
-                );
-                if ($log) {
-                    $this->logger->info($log);
-                }
-                if (! $this->fileHelper->isFileAlreadyArchived($file)) {
-                    $this->fileHelper->archiveCSV($file);
-                }
-            }
-
-            if ($item->getImportId()) {
-                $this->reportHandler->processContactImportReportFaults(
-                    $item->getImportId(),
-                    $item->getWebsiteId(),
-                    $this->client
-                );
-            }
+        switch ($item->getImportType()) {
+            case ImporterModel::IMPORT_TYPE_CONTACT:
+            case ImporterModel::IMPORT_TYPE_SUBSCRIBERS:
+            case ImporterModel::IMPORT_TYPE_GUEST:
+                $this->processContactFinishedItems($item);
+                break;
+            case ImporterModel::IMPORT_TYPE_ORDERS:
+            case ImporterModel::IMPORT_TYPE_REVIEWS:
+            case ImporterModel::IMPORT_TYPE_WISHLIST:
+                $this->processInsightDataItems($item);
+                break;
         }
 
         return $item;
     }
 
     /**
+     * Process contact import items.
+     *
+     * @param ImporterModel $item
+     * @return void
+     */
+    private function processContactFinishedItems($item)
+    {
+        $file = $item->getImportFile();
+        // if a filename is stored in the table and if that file physically exists
+        if ($file && $this->fileHelper->isFilePathExistWithFallback($file)) {
+            //remove the consent data for contacts before archiving the file
+            $log = $this->fileHelper->cleanProcessedConsent(
+                $this->fileHelper->getFilePathWithFallback($file)
+            );
+            if ($log) {
+                $this->logger->info($log);
+            }
+            if (! $this->fileHelper->isFileAlreadyArchived($file)) {
+                $this->fileHelper->archiveCSV($file);
+            }
+        }
+
+        if ($item->getImportId()) {
+            $this->reportHandler->processContactImportReportFaults(
+                $item->getImportId(),
+                $item->getWebsiteId(),
+                $this->client
+            );
+        }
+    }
+
+    /**
+     * Process insight data items.
+     *
+     * @param ImporterModel $item
+     * @return void
+     */
+    private function processInsightDataItems($item)
+    {
+        if ($item->getImportId()) {
+            $this->reportHandler->processInsightReportFaults(
+                $item->getImportId(),
+                $item->getWebsiteId(),
+                $this->client,
+                $item->getImportType()
+            );
+        }
+    }
+
+    /**
+     * Fetch client object.
+     *
      * @return Client
      */
     private function getClient()

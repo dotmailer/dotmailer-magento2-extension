@@ -5,7 +5,6 @@ namespace Dotdigitalgroup\Email\Model\AbandonedCart;
 use Dotdigitalgroup\Email\Helper\Config;
 use Dotdigitalgroup\Email\Model\Sync\SetsSyncFromTime;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
-use Dotdigitalgroup\Email\Model\DateIntervalFactory;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 
 class TimeLimit
@@ -23,22 +22,14 @@ class TimeLimit
     private $timezone;
 
     /**
-     * @var DateIntervalFactory
-     */
-    private $dateIntervalFactory;
-
-    /**
      * @param TimezoneInterface $timezone
-     * @param DateIntervalFactory $dateIntervalFactory
      * @param ScopeConfigInterface $scopeConfig
      */
     public function __construct(
         TimezoneInterface $timezone,
-        DateIntervalFactory $dateIntervalFactory,
         ScopeConfigInterface $scopeConfig
     ) {
         $this->timezone = $timezone;
-        $this->dateIntervalFactory = $dateIntervalFactory;
         $this->scopeConfig = $scopeConfig;
     }
 
@@ -61,9 +52,8 @@ class TimeLimit
 
         $fromTime = $this->timezone->scopeDate($storeId, $this->getSyncFromTime()->format('Y-m-d H:i:s'), true);
         $toTime = clone $fromTime;
-        $interval = $this->dateIntervalFactory->create(
-            ['interval_spec' => sprintf('PT%sH', $cartLimit)]
-        );
+
+        $interval = new \DateInterval(sprintf('PT%sH', $cartLimit));
         $fromTime->sub($interval);
 
         return [

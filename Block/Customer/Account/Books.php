@@ -64,12 +64,15 @@ class Books extends \Magento\Framework\View\Element\Template
     }
 
     /**
+     * Get customer consent text.
+     *
      * @return string
      */
-    public function getCustomerConsentText()
+    public function getCustomerConsentText(): string
     {
         return $this->helper->configHelperFactory->create()
-            ->getConsentCustomerText($this->_storeManager->getWebsite()->getId());
+            ->getConsentCustomerText($this->_storeManager->getWebsite()->getId())
+            ?: '';
     }
 
     /**

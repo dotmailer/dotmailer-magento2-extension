@@ -305,21 +305,14 @@ class EmailNotifierTest extends TestCase
 
     private function setUpUserRecipient()
     {
-        $this->scopeConfigInterfaceMock->expects($this->at(0))
+        $this->scopeConfigInterfaceMock->expects($this->atLeast(4))
             ->method('getValue')
-            ->with(Config::XML_PATH_CONNECTOR_SYSTEM_ALERTS_USER_ROLES);
-
-        $this->scopeConfigInterfaceMock->expects($this->at(1))
-            ->method('getValue')
-            ->with(Config::XML_PATH_CONNECTOR_SYSTEM_ALERTS_EMAIL_NOTIFICATION_TEMPLATE);
-
-        $this->scopeConfigInterfaceMock->expects($this->at(2))
-            ->method('getValue')
-            ->with('trans_email/ident_general/name');
-
-        $this->scopeConfigInterfaceMock->expects($this->at(3))
-            ->method('getValue')
-            ->with('trans_email/ident_general/email');
+            ->withConsecutive(
+                [Config::XML_PATH_CONNECTOR_SYSTEM_ALERTS_USER_ROLES],
+                [Config::XML_PATH_CONNECTOR_SYSTEM_ALERTS_EMAIL_NOTIFICATION_TEMPLATE],
+                ['trans_email/ident_general/name'],
+                ['trans_email/ident_general/email']
+            );
 
         $this->userCollectionFactoryMock->expects($this->once())
             ->method('create')

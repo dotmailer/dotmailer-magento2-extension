@@ -99,7 +99,7 @@ class OrderSaveAfter implements \Magento\Framework\Event\ObserverInterface
      * @param \Dotdigitalgroup\Email\Helper\Data $data
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contactResource
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory $contactCollectionFactory
-     * @parma \Dotdigitalgroup\Email\Model\ResourceModel\Automation\CollectionFactory $emailAutomationFactory
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Automation\CollectionFactory $emailAutomationFactory
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\AutomationFactory $automationFactory,
@@ -139,7 +139,6 @@ class OrderSaveAfter implements \Magento\Framework\Event\ObserverInterface
      * @param \Magento\Framework\Event\Observer $observer
      *
      * @return $this
-     *
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
@@ -159,11 +158,8 @@ class OrderSaveAfter implements \Magento\Framework\Event\ObserverInterface
         $emailOrder->setUpdatedAt($order->getUpdatedAt())
             ->setCreatedAt($order->getUpdatedAt())
             ->setStoreId($storeId)
+            ->setProcessed(0)
             ->setOrderStatus($status);
-
-        if ($emailOrder->getEmailImported() != \Dotdigitalgroup\Email\Model\Contact::EMAIL_CONTACT_IMPORTED) {
-            $emailOrder->setEmailImported(0);
-        }
 
         $isEnabled = $this->helper->isStoreEnabled($storeId);
 
@@ -172,9 +168,6 @@ class OrderSaveAfter implements \Magento\Framework\Event\ObserverInterface
             $appEmulation->stopEnvironmentEmulation($initialEnvironmentInfo);
             return $this;
         }
-
-        // check for order status change
-        $this->handleOrderStatusChange($status, $emailOrder);
 
         // set back the current store
         $appEmulation->stopEnvironmentEmulation($initialEnvironmentInfo);
@@ -276,21 +269,8 @@ class OrderSaveAfter implements \Magento\Framework\Event\ObserverInterface
     }
 
     /**
-     * @param string $status
-     * @param \Dotdigitalgroup\Email\Model\Order $emailOrder
-     */
-    private function handleOrderStatusChange($status, $emailOrder)
-    {
-        $statusBefore = $this->registry->registry('sales_order_status_before');
-        if ($status != $statusBefore) {
-            //If order status has changed and order is already imported then set modified to 1
-            if ($emailOrder->getEmailImported() == \Dotdigitalgroup\Email\Model\Contact::EMAIL_CONTACT_IMPORTED) {
-                $emailOrder->setModified(\Dotdigitalgroup\Email\Model\Contact::EMAIL_CONTACT_IMPORTED);
-            }
-        }
-    }
-
-    /**
+     * Enrol into automation if order status matches selected statuses.
+     *
      * @param \Magento\Sales\Model\Order $order
      * @param string $status
      * @param string $customerEmail

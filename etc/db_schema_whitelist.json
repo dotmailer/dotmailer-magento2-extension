@@ -47,7 +47,9 @@
             "email_imported": true,
             "modified": true,
             "created_at": true,
-            "updated_at": true
+            "updated_at": true,
+            "processed": true,
+            "last_imported_at": true
         },
         "index": {
             "EMAIL_ORDER_STORE_ID": true,
@@ -56,7 +58,9 @@
             "EMAIL_ORDER_ORDER_STATUS": true,
             "EMAIL_ORDER_MODIFIED": true,
             "EMAIL_ORDER_UPDATED_AT": true,
-            "EMAIL_ORDER_CREATED_AT": true
+            "EMAIL_ORDER_CREATED_AT": true,
+            "EMAIL_ORDER_PROCESSED": true,
+            "EMAIL_ORDER_LAST_IMPORTED_AT": true
         },
         "constraint": {
             "PRIMARY": true,

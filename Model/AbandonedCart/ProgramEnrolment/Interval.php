@@ -5,14 +5,9 @@ namespace Dotdigitalgroup\Email\Model\AbandonedCart\ProgramEnrolment;
 class Interval
 {
     /**
-     * @var \Dotdigitalgroup\Email\Model\DateIntervalFactory
+     * @var \Dotdigitalgroup\Email\Model\DateTimeFactory
      */
     private $dateTimeFactory;
-
-    /**
-     * @var \Dotdigitalgroup\Email\Model\DateIntervalFactory
-     */
-    private $dateIntervalFactory;
 
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
@@ -22,17 +17,14 @@ class Interval
     /**
      * Interval constructor.
      *
-     * @param \Dotdigitalgroup\Email\Model\DateIntervalFactory $dateTimeFactory
-     * @param \Dotdigitalgroup\Email\Model\DateIntervalFactory $dateIntervalFactory
+     * @param \Dotdigitalgroup\Email\Model\DateTimeFactory $dateTimeFactory
      * @param \Dotdigitalgroup\Email\Helper\Data $data
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\DateTimeFactory $dateTimeFactory,
-        \Dotdigitalgroup\Email\Model\DateIntervalFactory $dateIntervalFactory,
         \Dotdigitalgroup\Email\Helper\Data $data
     ) {
         $this->dateTimeFactory = $dateTimeFactory;
-        $this->dateIntervalFactory = $dateIntervalFactory;
         $this->helper = $data;
     }
 
@@ -59,13 +51,10 @@ class Interval
             $storeId
         );
 
-        $interval = $this->dateIntervalFactory->create(
-            ['interval_spec' => sprintf('PT%sM', $minutes)]
-        );
-
+        $interval = new \DateInterval(sprintf('PT%sM', $minutes));
         $fromTime->sub($interval);
         $toTime = clone $fromTime;
-        $fromTime->sub($this->dateIntervalFactory->create(['interval_spec' => 'PT5M']));
+        $fromTime->sub(new \DateInterval('PT5M'));
 
         return [
             'from' => $fromTime->format('Y-m-d H:i:s'),

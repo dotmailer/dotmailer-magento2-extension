@@ -58,11 +58,6 @@ class Subscriber implements SyncInterface
     private $subscriberWithSalesExporter;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\DateIntervalFactory
-     */
-    private $dateIntervalFactory;
-
-    /**
      * @var SubscriberExporter
      */
     private $subscriberExporter;
@@ -87,7 +82,6 @@ class Subscriber implements SyncInterface
      * @param SubscriberWithSalesExporter $subscriberWithSalesExporter
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contactResource
      * @param \Magento\Framework\Stdlib\DateTime\TimezoneInterface $timezone
-     * @param \Dotdigitalgroup\Email\Model\DateIntervalFactory $dateIntervalFactory
      * @param Unsubscriber $unsubscriber
      * @param Resubscriber $resubscriber
      */
@@ -99,11 +93,9 @@ class Subscriber implements SyncInterface
         \Dotdigitalgroup\Email\Model\Newsletter\SubscriberWithSalesExporter $subscriberWithSalesExporter,
         \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contactResource,
         \Magento\Framework\Stdlib\DateTime\TimezoneInterface $timezone,
-        \Dotdigitalgroup\Email\Model\DateIntervalFactory $dateIntervalFactory,
         Unsubscriber $unsubscriber,
         Resubscriber $resubscriber
     ) {
-        $this->dateIntervalFactory = $dateIntervalFactory;
         $this->helper            = $helper;
         $this->contactCollectionFactory = $contactCollectionFactory;
         $this->orderCollection   = $orderCollection;
@@ -160,7 +152,7 @@ class Subscriber implements SyncInterface
             }
         }
 
-        $response['message'] .= gmdate('H:i:s', microtime(true) - $this->start) . ', ';
+        $response['message'] .= gmdate('H:i:s', (int) (microtime(true) - $this->start)) . ', ';
         $response['message'] .= $storesSummary;
         $response['message'] .= ' Total synced = ' . $this->countSubscribers;
 

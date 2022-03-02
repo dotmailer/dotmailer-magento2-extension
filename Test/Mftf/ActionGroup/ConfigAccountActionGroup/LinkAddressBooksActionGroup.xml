@@ -1,0 +1,23 @@
+<actionGroups xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/actionGroupSchema.xsd">
+    <actionGroup name="LinkAddressBooksActionGroup">
+        <arguments>
+            <argument name="customerBookName" type="string" defaultValue="-- Please Select --"/>
+            <argument name="subscriberBookName" type="string"  defaultValue="-- Please Select --"/>
+            <argument name="guestBookName" type="string"  defaultValue="-- Please Select --"/>
+        </arguments>
+
+        <!--Navigate to page -->
+        <amOnPage url="{{AdminDotdigitalSyncSettingsPage.url}}" stepKey="amOnDotdigitalSyncAddressBookSettingsPageActionGroup"/>
+
+        <!-- Set address books for customers, subscribers and guests -->
+        <selectOption selector="{{AdminDotdigitalSyncSettingsSection.addCustomersTo}}" userInput="{{customerBookName}}" stepKey="setCustomersAddressBookActionGroup"/>
+        <selectOption selector="{{AdminDotdigitalSyncSettingsSection.addSubscribersTo}}" userInput="{{subscriberBookName}}" stepKey="setSubscribersAddressBookActionGroup"/>
+        <selectOption selector="{{AdminDotdigitalSyncSettingsSection.addGuestsTo}}" userInput="{{guestBookName}}" stepKey="setGuestsAddressBookActionGroup"/>
+
+        <!-- Save selection -->
+        <click selector="{{AdminDotdigitalSyncSettingsSection.save}}" stepKey="saveConfigAddressBookActionGroup" />
+        <waitForPageLoad stepKey="waitForAddressBookSettingsPageLoadActionGroup"/>
+    </actionGroup>
+
+</actionGroups>

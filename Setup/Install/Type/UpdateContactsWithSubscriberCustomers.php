@@ -5,7 +5,7 @@ namespace Dotdigitalgroup\Email\Setup\Install\Type;
 use Dotdigitalgroup\Email\Setup\SchemaInterface as Schema;
 use Magento\Framework\DB\Select;
 
-class UpdateContactsWithSubscriberCustomers extends AbstractDataMigration implements UpdateTypeInterface
+class UpdateContactsWithSubscriberCustomers extends AbstractUpdater implements UpdateTypeInterface
 {
     /**
      * @var string
@@ -42,12 +42,11 @@ class UpdateContactsWithSubscriberCustomers extends AbstractDataMigration implem
     /**
      * @inheritdoc
      */
-    public function getUpdateWhereClause()
+    public function getUpdateWhereClause(Select $selectStatement)
     {
-        // get customer IDs
         $emails = $this->resourceConnection
             ->getConnection()
-            ->fetchCol($this->getSelectStatement());
+            ->fetchCol($selectStatement);
 
         return [
             'email in (?)' => $emails,

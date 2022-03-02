@@ -57,7 +57,7 @@ abstract class AbstractTypeProvider
     }
 
     /**
-     * @param int $websiteId
+     * @param string|int $websiteId
      * @return array
      */
     public function getImageType($websiteId)

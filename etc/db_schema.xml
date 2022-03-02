@@ -4,7 +4,7 @@
         <column xsi:type="int" name="email_contact_id" padding="10" unsigned="true" nullable="false" identity="true" comment="Primary Key"/>
         <column xsi:type="smallint" name="is_guest" padding="5" unsigned="true" nullable="true" identity="false" comment="Is Guest"/>
         <column xsi:type="varchar" name="contact_id" nullable="true" length="15" comment="Connector Contact ID"/>
-        <column xsi:type="int" name="customer_id" padding="10" unsigned="true" nullable="false" identity="false" comment="Customer ID"/>
+        <column xsi:type="int" name="customer_id" padding="10" unsigned="true" nullable="false" identity="false" default="0" comment="Customer ID"/>
         <column xsi:type="smallint" name="website_id" padding="5" unsigned="true" nullable="false" identity="false" default="0" comment="Website ID"/>
         <column xsi:type="smallint" name="store_id" padding="5" unsigned="true" nullable="false" identity="false" default="0" comment="Store ID"/>
         <column xsi:type="varchar" name="email" nullable="false" length="255" default="" comment="Customer Email"/>
@@ -66,10 +66,10 @@
         <column xsi:type="varchar" name="order_status" nullable="false" length="255" comment="Order Status"/>
         <column xsi:type="int" name="quote_id" padding="10" unsigned="true" nullable="false" identity="false" comment="Sales Quote ID"/>
         <column xsi:type="smallint" name="store_id" padding="5" unsigned="true" nullable="false" identity="false" default="0" comment="Store ID"/>
-        <column xsi:type="smallint" name="email_imported" padding="5" unsigned="true" nullable="false" identity="false" default="0" comment="Is Order Imported"/>
-        <column xsi:type="smallint" name="modified" padding="5" unsigned="true" nullable="true" identity="false" comment="Is Order Modified"/>
+        <column xsi:type="smallint" name="processed" padding="5" unsigned="true" nullable="false" identity="false" comment="Order processed" onCreate="combineColumnsForProcessing"/>
         <column xsi:type="timestamp" name="created_at" on_update="false" nullable="true" comment="Creation Time"/>
         <column xsi:type="timestamp" name="updated_at" on_update="false" nullable="true" comment="Update Time"/>
+        <column xsi:type="timestamp" name="last_imported_at" on_update="false" nullable="true" comment="Last imported date"/>
         <constraint xsi:type="primary" referenceId="PRIMARY">
             <column name="email_order_id"/>
         </constraint>
@@ -81,20 +81,20 @@
         <index referenceId="EMAIL_ORDER_QUOTE_ID" indexType="btree">
             <column name="quote_id"/>
         </index>
-        <index referenceId="EMAIL_ORDER_EMAIL_IMPORTED" indexType="btree">
-            <column name="email_imported"/>
+        <index referenceId="EMAIL_ORDER_PROCESSED" indexType="btree">
+            <column name="processed"/>
         </index>
         <index referenceId="EMAIL_ORDER_ORDER_STATUS" indexType="btree">
             <column name="order_status"/>
-        </index>
-        <index referenceId="EMAIL_ORDER_MODIFIED" indexType="btree">
-            <column name="modified"/>
         </index>
         <index referenceId="EMAIL_ORDER_UPDATED_AT" indexType="btree">
             <column name="updated_at"/>
         </index>
         <index referenceId="EMAIL_ORDER_CREATED_AT" indexType="btree">
             <column name="created_at"/>
+        </index>
+        <index referenceId="EMAIL_ORDER_LAST_IMPORTED_AT" indexType="btree">
+            <column name="last_imported_at"/>
         </index>
     </table>
     <table name="email_campaign" resource="default" engine="innodb" comment="Connector Campaigns">
@@ -268,6 +268,7 @@
         <column xsi:type="varchar" name="import_type" nullable="false" length="255" default="" comment="Import Type"/>
         <column xsi:type="smallint" name="website_id" padding="6" unsigned="false" nullable="false" identity="false" default="0" comment="Website Id"/>
         <column xsi:type="smallint" name="import_status" padding="6" unsigned="false" nullable="false" identity="false" default="0" comment="Import Status"/>
+        <column xsi:type="smallint" name="retry_count" padding="6" unsigned="false" nullable="false" identity="false" default="0" comment="Retry count"/>
         <column xsi:type="varchar" name="import_id" nullable="false" length="255" default="" comment="Import Id"/>
         <column xsi:type="mediumblob" name="import_data" nullable="false" comment="Import Data"/>
         <column xsi:type="varchar" name="import_mode" nullable="false" length="255" default="" comment="Import Mode"/>

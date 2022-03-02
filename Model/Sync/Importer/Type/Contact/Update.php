@@ -14,10 +14,14 @@ use Magento\Newsletter\Model\Subscriber;
  */
 class Update extends AbstractItemSyncer
 {
-    const ERROR_CONTACT_ALREADY_SUBSCRIBED = 'Contact is already subscribed';
-    const ERROR_CONTACT_CHALLENGED = 'Contact must confirm resubscription via automated resubscribe email';
-    const ERROR_CONTACT_CANNOT_BE_UNSUPPRESSED = 'Contact cannot be unsuppressed';
-    const ERROR_FEATURE_NOT_AVAILABLE = 'This feature is not available in the version of the API you are using';
+    public const ERROR_CONTACT_ALREADY_SUBSCRIBED = 'Contact is already subscribed';
+    public const ERROR_CONTACT_CHALLENGED = 'Contact must confirm resubscription via automated resubscribe email';
+    public const ERROR_CONTACT_CANNOT_BE_UNSUPPRESSED = 'Contact cannot be unsuppressed';
+    public const ERROR_FEATURE_NOT_AVAILABLE = 'This feature is not available in the version of the API you are using';
+
+    public const IGNORED_ERRORS = [
+        'Contact is suppressed. ERROR_CONTACT_SUPPRESSED'
+    ];
 
     /**
      * @var Contact
@@ -75,7 +79,7 @@ class Update extends AbstractItemSyncer
      *
      * @param mixed $collection
      *
-     * @return null
+     * @return void
      */
     public function sync($collection)
     {
@@ -90,6 +94,13 @@ class Update extends AbstractItemSyncer
         }
     }
 
+    /**
+     * Process each Importer item.
+     *
+     * @param Importer $item
+     *
+     * @return void
+     */
     protected function process($item)
     {
         $websiteId = $item->getWebsiteId();
@@ -99,11 +110,13 @@ class Update extends AbstractItemSyncer
     }
 
     /**
-     * @param mixed $item
-     * @param mixed $importData
-     * @param mixed $websiteId
+     * Sync the data depending on the import type.
      *
-     * @return null
+     * @param Importer $item
+     * @param array $importData
+     * @param string|int $websiteId
+     *
+     * @return void
      */
     private function syncItem($item, $importData, $websiteId)
     {
@@ -131,8 +144,10 @@ class Update extends AbstractItemSyncer
     }
 
     /**
-     * @param mixed $importData
-     * @return mixed
+     * Sync Contact_Email_Update.
+     *
+     * @param array $importData
+     * @return \StdClass
      */
     private function syncItemContactEmailUpdateMode($importData)
     {
@@ -155,10 +170,12 @@ class Update extends AbstractItemSyncer
     }
 
     /**
-     * @param mixed $importData
+     * Sync Subscriber_Resubscribed.
+     *
+     * @param array $importData
      * @param int $websiteId
      *
-     * @return mixed
+     * @return \StdClass
      */
     private function syncItemSubscriberResubscribedMode($importData, $websiteId)
     {
@@ -183,10 +200,12 @@ class Update extends AbstractItemSyncer
     }
 
     /**
+     * Sync Subscriber_Update.
+     *
      * @param array $importData
      * @param string|int $websiteId
      *
-     * @return mixed
+     * @return \StdClass
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     private function syncItemSubscriberUpdateMode($importData, $websiteId)
@@ -201,6 +220,7 @@ class Update extends AbstractItemSyncer
             )
         ];
 
+        /** @var \StdClass $result */
         $result = $this->client->updateContactDatafieldsByEmail($email, $data);
 
         if (isset($result->id)) {
@@ -210,14 +230,20 @@ class Update extends AbstractItemSyncer
                 $contactId
             );
         } else {
-            //suppress contacts
             $this->suppressedContactIds[] = $id;
+            // Data field updates for suppressed contacts will not be marked as failed imports
+            if (isset($result->message) && in_array($result->message, self::IGNORED_ERRORS)) {
+                $result->ignoredMessage = $result->message;
+                unset($result->message);
+            }
         }
         return $result;
     }
 
     /**
-     * @param $response
+     * Map response status text to one of our class constants.
+     *
+     * @param \StdClass $response
      * @return string|null
      */
     private function handleResubscribeResponseStatus($response)

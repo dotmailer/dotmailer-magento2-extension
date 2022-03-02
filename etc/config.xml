@@ -288,6 +288,8 @@
                 <subscriber_sales_data_enabled>0</subscriber_sales_data_enabled>
                 <strip_pub_from_media_paths>0</strip_pub_from_media_paths>
                 <transactional_data_break></transactional_data_break>
+                <mega_batch_size_orders>5000</mega_batch_size_orders>
+                <mega_batch_size_catalog>5000</mega_batch_size_catalog>
             </import_settings>
             <sync_settings>
                 <setup_data_fields></setup_data_fields>
@@ -301,7 +303,7 @@
                 <suppressed_contacts></suppressed_contacts>
             </sync_settings>
             <debug>
-                <debug_enabled>1</debug_enabled>
+                <debug_enabled>0</debug_enabled>
                 <api_log_time>60</api_log_time>
             </debug>
             <oauth>

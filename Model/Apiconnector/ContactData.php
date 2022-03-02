@@ -234,7 +234,7 @@ class ContactData
      */
     public function toCSVArray()
     {
-        return array_values($this->contactData);
+        return is_array($this->contactData) ? array_values($this->contactData) : [];
     }
 
     /**

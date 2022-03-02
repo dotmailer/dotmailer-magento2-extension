@@ -2,8 +2,6 @@
 
 namespace Dotdigitalgroup\Email\Model\ResourceModel\Importer;
 
-use Dotdigitalgroup\Email\Model\DateIntervalFactory;
-
 class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection
 {
     /**
@@ -12,51 +10,15 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     protected $_idFieldName = 'id';
 
     /**
-     * @var DateIntervalFactory
-     */
-    private $dateIntervalFactory;
-
-    /**
      * Initialize resource collection.
      *
-     * @return null
+     * @return void
      */
     public function _construct()
     {
         $this->_init(
             \Dotdigitalgroup\Email\Model\Importer::class,
             \Dotdigitalgroup\Email\Model\ResourceModel\Importer::class
-        );
-    }
-
-    /**
-     * Collection constructor.
-     *
-     * @param \Magento\Framework\Data\Collection\EntityFactoryInterface $entityFactory
-     * @param \Psr\Log\LoggerInterface $logger
-     * @param \Magento\Framework\Data\Collection\Db\FetchStrategyInterface $fetchStrategy
-     * @param \Magento\Framework\Event\ManagerInterface $eventManager
-     * @param DateIntervalFactory $dateIntervalFactory
-     * @param \Magento\Framework\DB\Adapter\AdapterInterface|null $connection
-     * @param \Magento\Framework\Model\ResourceModel\Db\AbstractDb|null $resource
-     */
-    public function __construct(
-        \Magento\Framework\Data\Collection\EntityFactoryInterface $entityFactory,
-        \Psr\Log\LoggerInterface $logger,
-        \Magento\Framework\Data\Collection\Db\FetchStrategyInterface $fetchStrategy,
-        \Magento\Framework\Event\ManagerInterface $eventManager,
-        DateIntervalFactory $dateIntervalFactory,
-        \Magento\Framework\DB\Adapter\AdapterInterface $connection = null,
-        \Magento\Framework\Model\ResourceModel\Db\AbstractDb $resource = null
-    ) {
-        $this->dateIntervalFactory = $dateIntervalFactory;
-        parent::__construct(
-            $entityFactory,
-            $logger,
-            $fetchStrategy,
-            $eventManager,
-            $connection,
-            $resource
         );
     }
 
@@ -73,7 +35,6 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     /**
      * Get imports marked as importing for one or more websites.
      *
-     * @param int $limit
      * @param array $websiteIds
      *
      * @return $this|boolean
@@ -124,22 +85,6 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
                 'import_type',
                 ['eq' => $importType]
             );
-
-            /**
-             * Skip orders if one hour has not passed since the created_at time.
-             */
-            if ($importType == 'Orders') {
-                $interval = $this->dateIntervalFactory->create(
-                    ['interval_spec' => 'PT1H']
-                );
-                $fromDate = new \DateTime('now', new \DateTimezone('UTC'));
-                $fromDate->sub($interval);
-
-                $this->addFieldToFilter(
-                    'created_at',
-                    ['lt' => $fromDate]
-                );
-            }
         }
 
         $this->addFieldToFilter('import_mode', ['eq' => $importMode])
@@ -157,6 +102,8 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     }
 
     /**
+     * Fetch tasks with error status.
+     *
      * Search the email_importer table for jobs with import_status = 3 (failed),
      * with a created_at time inside the specified time window.
      *
@@ -169,5 +116,18 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
             ->addFieldToFilter('import_status', 3)
             ->addFieldToFilter('created_at', $timeWindow)
             ->setOrder('created_at', 'DESC');
+    }
+
+    /**
+     * Fetch importer data by id.
+     *
+     * @param string $importId
+     * @return \Magento\Framework\DataObject
+     */
+    public function getImporterDataByImportId($importId)
+    {
+        return $this->addFieldToSelect(['import_data', 'retry_count'])
+            ->addFieldToFilter('import_id', $importId)
+            ->getFirstItem();
     }
 }

@@ -16,7 +16,7 @@ class CombineColumnsForProcessing implements DDLTriggerInterface
      * Trigger name - used to check if this trigger is applicable.
      * For reusable triggers we should use a regex pattern see MigrateDataFrom.
      */
-    const TRIGGER_NAME = 'combineColumnsForProcessing';
+    public const TRIGGER_NAME = 'combineColumnsForProcessing';
 
     /**
      * @var ResourceConnection
@@ -48,14 +48,14 @@ class CombineColumnsForProcessing implements DDLTriggerInterface
     {
         /** @var Column $column */
         $column = $columnHistory->getNew();
-
-        return function () use ($column) {
+        $importedColumn = $this->getImportedColumn($column);
+        return function () use ($column, $importedColumn) {
             $tableName = $column->getTable()->getName();
             $adapter = $this->resourceConnection->getConnection(
                 $column->getTable()->getResource()
             );
 
-            if ($adapter->tableColumnExists($tableName, 'imported') &&
+            if ($adapter->tableColumnExists($tableName, $importedColumn) &&
                 $adapter->tableColumnExists($tableName, 'modified')
             ) {
                 $adapter
@@ -65,11 +65,27 @@ class CombineColumnsForProcessing implements DDLTriggerInterface
                             $column->getName() => 1
                         ],
                         [
-                            'imported' => 1,
+                            $importedColumn => 1,
                             'modified IS NULL OR modified = 0'
                         ]
                     );
             }
         };
+    }
+
+    /**
+     * Get the column used for 'imported' state in this table.
+     *
+     * @param Column $column
+     * @return string
+     */
+    private function getImportedColumn(Column $column)
+    {
+        switch ($column->getTable()->getNameWithoutPrefix()) {
+            case 'email_order':
+                return 'email_imported';
+            default:
+                return 'imported';
+        }
     }
 }

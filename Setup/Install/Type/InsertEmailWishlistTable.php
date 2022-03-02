@@ -4,7 +4,7 @@ namespace Dotdigitalgroup\Email\Setup\Install\Type;
 
 use Dotdigitalgroup\Email\Setup\SchemaInterface as Schema;
 
-class InsertEmailWishlistTable extends AbstractDataMigration implements InsertTypeInterface
+class InsertEmailWishlistTable extends AbstractBatchInserter implements InsertTypeInterface
 {
     /**
      * @var string

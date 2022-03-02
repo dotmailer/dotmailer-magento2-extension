@@ -43,6 +43,17 @@
                     </confirm>
                 </settings>
             </action>
+            <action name="resend">
+                <settings>
+                    <url path="*/*/massReset"/>
+                    <type>reset</type>
+                    <label translate="true">Reset</label>
+                    <confirm>
+                        <title translate="true">Reset selected import(s)</title>
+                        <message translate="true">Are you sure?</message>
+                    </confirm>
+                </settings>
+            </action>
         </massaction>
         <paging name="listing_paging"/>
     </listingToolbar>

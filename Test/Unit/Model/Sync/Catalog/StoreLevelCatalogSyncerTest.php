@@ -100,13 +100,12 @@ class StoreLevelCatalogSyncerTest extends TestCase
                 true
             );
 
-        $this->storeCatalogSyncerMock->expects($this->at(0))
+        $this->storeCatalogSyncerMock->expects($this->exactly(2))
             ->method('syncByStore')
-            ->willReturn([0 =>'product1']);
-
-        $this->storeCatalogSyncerMock->expects($this->at(1))
-            ->method('syncByStore')
-            ->willReturn([1 => 'product2']);
+            ->willReturnOnConsecutiveCalls(
+                [0 =>'product1'],
+                [1 => 'product2']
+            );
 
         $this->webSiteInterfaceMock->expects($this->exactly(2))
             ->method('getCode')
@@ -152,11 +151,11 @@ class StoreLevelCatalogSyncerTest extends TestCase
                 false
             );
 
-        $this->storeCatalogSyncerMock->expects($this->at(0))
+        $this->storeCatalogSyncerMock->expects($this->once())
             ->method('syncByStore')
             ->willReturn([0 =>'product1']);
 
-        $this->webSiteInterfaceMock->expects($this->at(0))
+        $this->webSiteInterfaceMock->expects($this->once())
             ->method('getCode')
             ->willReturn(hash("sha256", rand()));
 
@@ -280,13 +279,12 @@ class StoreLevelCatalogSyncerTest extends TestCase
                 true
             );
 
-        $this->storeCatalogSyncerMock->expects($this->at(0))
+        $this->storeCatalogSyncerMock->expects($this->exactly(2))
             ->method('syncByStore')
-            ->willReturn([0 =>'product1']);
-
-        $this->storeCatalogSyncerMock->expects($this->at(1))
-            ->method('syncByStore')
-            ->willReturn([1 => 'product2']);
+            ->willReturnOnConsecutiveCalls(
+                [0 =>'product1'],
+                [1 => 'product2']
+            );
 
         $this->storeLevelCatalogSyncer->sync($products);
     }
