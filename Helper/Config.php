@@ -220,7 +220,7 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     public const XML_PATH_CONNECTOR_DYNAMIC_LINK_FONT_SIZE
         = 'connector_configuration/dynamic_content_style/product_link_font_size';
     public const XML_PATH_CONNECTOR_DYNAMIC_LINK_STYLE =
-        'connector_configuration/dynamic_content_style/link_style';
+        'connector_configuration/dynamic_content_style/product_link_style';
     public const XML_PATH_CONNECTOR_DYNAMIC_DOC_FONT =
         'connector_configuration/dynamic_content_style/font';
     public const XML_PATH_CONNECTOR_DYNAMIC_DOC_BG_COLOR =
