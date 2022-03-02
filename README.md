@@ -4,7 +4,7 @@
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg)](LICENSE.md)
 
 ## Requirements
-- PHP 7.1+
+- PHP 7.2+
 - Magento 2.3+ 
     - Magento 2.1.x is compatible up to version 4.2.0-p1
     - Magento 2.2.x is compatible up to version 4.13.x
