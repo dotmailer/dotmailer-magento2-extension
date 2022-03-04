@@ -14,7 +14,7 @@ class Item
     public $sku;
 
     /**
-     * @var string
+     * @var int
      */
     public $qty;
 
@@ -34,6 +34,8 @@ class Item
     public $totalValueOfProduct;
 
     /**
+     * Set product.
+     *
      * @param \Magento\Catalog\Model\Product $product
      *
      * @return $this
@@ -47,6 +49,8 @@ class Item
     }
 
     /**
+     * Set name.
+     *
      * @param string $name
      *
      * @return $this
@@ -59,6 +63,8 @@ class Item
     }
 
     /**
+     * Get name.
+     *
      * @return string
      */
     public function getName()
@@ -67,6 +73,8 @@ class Item
     }
 
     /**
+     * Set quantity.
+     *
      * @param float $qty
      *
      * @return $this
@@ -79,6 +87,8 @@ class Item
     }
 
     /**
+     * Get quantity.
+     *
      * @return float
      */
     public function getQty()
@@ -87,6 +97,8 @@ class Item
     }
 
     /**
+     * Get total value of product.
+     *
      * @return float
      */
     public function getTotalValueOfProduct()
@@ -95,6 +107,8 @@ class Item
     }
 
     /**
+     * Set price (and update total item value).
+     *
      * @param \Magento\Catalog\Model\Product $product
      *
      * @return $this
@@ -110,6 +124,8 @@ class Item
     }
 
     /**
+     * Get price.
+     *
      * @return float
      */
     public function getPrice()
@@ -118,6 +134,8 @@ class Item
     }
 
     /**
+     * Set SKU.
+     *
      * @param string $sku
      *
      * @return $this
@@ -130,6 +148,8 @@ class Item
     }
 
     /**
+     * Get SKU.
+     *
      * @return string
      */
     public function getSku()
@@ -138,6 +158,8 @@ class Item
     }
 
     /**
+     * Get this class's public properties.
+     *
      * @return array
      */
     public function expose()
