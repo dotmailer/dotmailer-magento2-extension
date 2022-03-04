@@ -24,9 +24,6 @@
     <type name="Magento\Email\Model\Template">
         <plugin name="dotmailer_template_plugin" type="Dotdigitalgroup\Email\Plugin\TemplatePlugin" sortOrder="100" disabled="false"/>
     </type>
-    <type name="Magento\Framework\Mail\MessageInterface">
-        <plugin name="dotmailer_message_plugin" type="Dotdigitalgroup\Email\Plugin\MessagePlugin" sortOrder="1" disabled="false" />
-    </type>
     <type name="Magento\Newsletter\Controller\Manage\Index">
         <plugin name="dotmailer_newsletter_plugin" type="Dotdigitalgroup\Email\Plugin\NewsletterManageIndexPlugin" sortOrder="1"/>
     </type>
