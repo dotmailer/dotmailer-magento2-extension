@@ -115,7 +115,11 @@ class SetCronsWithOffset implements DataPatchInterface
                 continue;
             }
 
-            $offset = (int) explode("*", explode("/", $configuration["value"])[1])[0];
+            $slashRemoved = (strpos($configuration['value'], "/") !== false) ?
+                explode("/", $configuration["value"])[1] :
+                $configuration["value"];
+
+            $offset = trim(explode("*", $slashRemoved)[0]);
             $configuration["value"] = $this->cronOffsetter->getCronPatternWithOffset($offset);
 
             $this->moduleDataSetup->getConnection()->update(
