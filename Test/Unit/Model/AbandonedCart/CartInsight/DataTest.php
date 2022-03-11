@@ -287,7 +287,7 @@ class DataTest extends TestCase
             ->method('getSku')
             ->willReturn($expectedPayload['json']['lineItems'][0]['sku']);
 
-        $itemsArray[0]->expects($this->once())
+        $itemsArray[0]->expects($this->exactly(2))
             ->method('getName')
             ->willReturn($expectedPayload['json']['lineItems'][0]['name']);
 
