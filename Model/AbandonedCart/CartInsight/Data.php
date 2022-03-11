@@ -7,7 +7,7 @@ use Dotdigitalgroup\Email\Model\Product\ImageType\Context\AbandonedCart;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Framework\App\Area;
 use Magento\Framework\Pricing\PriceCurrencyInterface;
-use Magento\Quote\Api\Data\CartItemInterface;
+use Magento\Quote\Model\Quote\Item;
 use Magento\Store\Model\App\Emulation;
 
 class Data
@@ -15,7 +15,7 @@ class Data
     /**
      * Basket prefix for accessing stored quotes
      */
-    const CONNECTOR_BASKET_PATH = 'connector/email/getbasket';
+    private const CONNECTOR_BASKET_PATH = 'connector/email/getbasket';
 
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
@@ -105,6 +105,8 @@ class Data
     }
 
     /**
+     * Send cart insight data via API client.
+     *
      * @param \Magento\Quote\Model\Quote $quote
      * @param int $storeId
      *
@@ -121,10 +123,22 @@ class Data
             Area::AREA_FRONTEND,
             true
         );
-        $payload = $this->getPayload($quote, $store);
+
+        try {
+            $payload = $this->getPayload($quote, $store);
+        } catch (\Exception $e) {
+            $this->logger->debug(
+                sprintf('Error fetching cart insight data for quote ID: %s', $quote->getId()),
+                [(string) $e]
+            );
+            $payload = [];
+        }
+
         $this->appEmulation->stopEnvironmentEmulation();
 
-        $client->postAbandonedCartCartInsight($payload);
+        if (!empty($payload)) {
+            $client->postAbandonedCartCartInsight($payload);
+        }
     }
 
     /**
@@ -135,6 +149,7 @@ class Data
      *
      * @return array
      * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getPayload($quote, $store)
     {
@@ -159,38 +174,25 @@ class Data
         $discountTotal = 0;
         $lineItems = [];
         $imageType = $this->imageType->getImageType($store->getWebsiteId());
-
-        try {
-            $visibleItems = $quote->getAllVisibleItems();
-        } catch (\Exception $e) {
-            $visibleItems = [];
-            $this->logger->debug(
-                sprintf('Error fetching items for quote ID: %s', $quote->getId()),
-                [(string) $e]
-            );
-        }
+        $visibleItems = $quote->getAllVisibleItems();
 
         foreach ($visibleItems as $item) {
-            try {
-                $product = $this->loadProduct($item, $store->getId());
-                $discountTotal += $item->getDiscountAmount();
+            $product = $this->loadProduct($item, $store->getId());
+            $discountTotal += $item->getDiscountAmount();
 
-                $lineItems[] = [
-                    'sku' => $item->getSku(),
-                    'imageUrl' => $this->imageFinder->getCartImageUrl($item, $store->getId(), $imageType),
-                    'productUrl' => $this->urlFinder->fetchFor($product),
-                    'name' => $item->getName(),
-                    'unitPrice' => $this->getConvertedPrice($product->getPrice(), $store->getId(), $quoteCurrency),
-                    'unitPrice_incl_tax' => $this->getUnitPriceIncTax($item, $product),
-                    'quantity' => $item->getQty(),
-                    'salePrice' => $this->getConvertedPrice($item->getBasePrice(), $store->getId(), $quoteCurrency),
-                    'salePrice_incl_tax' => round($item->getPriceInclTax(), 2),
-                    'totalPrice' => round($item->getRowTotal(), 2),
-                    'totalPrice_incl_tax' => round($item->getRowTotalInclTax(), 2)
-                ];
-            } catch (\Exception $e) {
-                $this->logger->debug('Exception thrown when fetching CartInsight data', [(string) $e]);
-            }
+            $lineItems[] = [
+                'sku' => $item->getSku(),
+                'imageUrl' => $this->imageFinder->getCartImageUrl($item, $store->getId(), $imageType),
+                'productUrl' => $this->urlFinder->fetchFor($product),
+                'name' => $this->getItemName($item),
+                'unitPrice' => $this->getConvertedPrice($product->getPrice(), $store->getId(), $quoteCurrency),
+                'unitPrice_incl_tax' => $this->getUnitPriceIncTax($item, $product),
+                'quantity' => $item->getQty(),
+                'salePrice' => $this->getConvertedPrice($item->getBasePrice(), $store->getId(), $quoteCurrency),
+                'salePrice_incl_tax' => round($item->getPriceInclTax(), 2),
+                'totalPrice' => round($item->getRowTotal(), 2),
+                'totalPrice_incl_tax' => round($item->getRowTotalInclTax(), 2)
+            ];
         }
 
         $data['json']['discountAmount'] = (float) $discountTotal;
@@ -222,7 +224,7 @@ class Data
      * the correct unit price of any child products. For other types, this is not required.
      * For bundle products with dynamic SKUs, we *must* use getById().
      *
-     * @param CartItemInterface $item
+     * @param Item $item
      * @param string|int $storeId
      * @return ProductInterface
      * @throws \Magento\Framework\Exception\NoSuchEntityException
@@ -250,7 +252,31 @@ class Data
     }
 
     /**
-     * @param CartItemInterface $item
+     * Get the quote item name.
+     *
+     * @param Item $item
+     *
+     * @return string
+     * @throws \Exception
+     */
+    private function getItemName($item)
+    {
+        if (strlen((string) $item->getName()) === 0) {
+            throw new \ErrorException(
+                sprintf(
+                    'Product name is missing for quote item id %d.',
+                    $item->getItemId()
+                )
+            );
+        }
+
+        return $item->getName();
+    }
+
+    /**
+     * Get unit price including tax.
+     *
+     * @param Item $item
      * @param ProductInterface $product
      * @return float
      */
@@ -260,6 +286,8 @@ class Data
     }
 
     /**
+     * Get price, converted to the quote's currency.
+     *
      * @param string $price
      * @param string $storeId
      * @param string $currencyCode
