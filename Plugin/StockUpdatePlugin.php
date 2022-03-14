@@ -7,6 +7,7 @@ use Magento\CatalogInventory\Api\StockRegistryInterface;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Dotdigitalgroup\Email\Model\Catalog\UpdateCatalog;
 use Dotdigitalgroup\Email\Model\Catalog\CatalogService;
+use Magento\Framework\App\State;
 
 class StockUpdatePlugin
 {
@@ -31,37 +32,49 @@ class StockUpdatePlugin
     private $catalogService;
 
     /**
+     * @var State
+     */
+    private $state;
+
+    /**
      * StockUpdatePlugin constructor.
+     *
      * @param Data $helper
      * @param ProductRepositoryInterface $productRepository
      * @param UpdateCatalog $catalogUpdater
      * @param CatalogService $catalogService
+     * @param State $state
      */
     public function __construct(
         Data $helper,
         ProductRepositoryInterface $productRepository,
         UpdateCatalog $catalogUpdater,
-        CatalogService $catalogService
+        CatalogService $catalogService,
+        State $state
     ) {
         $this->helper = $helper;
         $this->productRepository = $productRepository;
         $this->catalogUpdater = $catalogUpdater;
         $this->catalogService = $catalogService;
+        $this->state = $state;
     }
 
     /**
+     * Reset matching product when stock is updated.
+     *
      * @param StockRegistryInterface $subject
-     * @param $result
+     * @param string|int $result
      * @param string $productSku
      *
-     * @return mixed
+     * @return string|int
      */
     public function afterUpdateStockItemBySku(
         StockRegistryInterface $subject,
         $result,
         $productSku
     ) {
-        if (!$this->helper->isEnabled()) {
+        if (!$this->helper->isEnabled() ||
+            $this->state->getAreaCode() !== \Magento\Framework\App\Area::AREA_WEBAPI_REST) {
             return $result;
         }
 
