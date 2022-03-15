@@ -13,11 +13,12 @@
 
 ### Improvements
 - Order sync performance has been improved. The sync now runs continuously until all orders are processed.
+- Insight data imports that are rejected if contacts don’t yet exist in Dotdigital will now be automatically retried, up to two times.
 - We've updated our code for compatibility with PHP 8.1.
 - Errors relating to unsubscribing contacts who are already suppressed in Dotdigital will now not trigger a System Alert.
 - We've improved the performance of the `InsertEmailContactTableCustomerSales` migration type.
 - The structure of our data migration code has been refactored to use additional abstract classes.
-- PHP 7.2 is now a minimum requirement for running this module. 
+- PHP 7.2 is now a minimum requirement for running this module.
 
 # 4.14.1
 
