@@ -1,3 +1,11 @@
+# 4.15.1
+
+### Improvements
+- We now prevent cart insight being posted to Dotdigital if any sort of error (including missing product names) is met when preparing the data.
+
+### Bug fixes
+- We fixed a bug in our cron offset data patch, which affected merchants with cron timings set to ‘Every 60 Minutes’.
+
 # 4.15.0
 
 ### What's new
