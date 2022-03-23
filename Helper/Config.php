@@ -456,14 +456,6 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public const MAGENTO_ROUTE =
         'connector/email/accountcallback';
-    public const MAGENTO_PROFILE_CALLBACK_ROUTE =
-        'connector/chat/profile?isAjax=true';
-    public const XML_PATH_LIVECHAT_ENABLED =
-        'chat_api_credentials/settings/enabled';
-    public const XML_PATH_LIVECHAT_API_SPACE_ID =
-        'chat_api_credentials/credentials/api_space_id';
-    public const XML_PATH_LIVECHAT_API_TOKEN =
-        'chat_api_credentials/credentials/api_token';
 
     /**
      * @var \Magento\Framework\Stdlib\StringUtils

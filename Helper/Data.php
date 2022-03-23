@@ -215,32 +215,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         }
         return $this;
     }
-
-    /**
-     * @param string $apiSpaceId
-     * @param string $token
-     * @param $website
-     * @return $this
-     */
-    public function saveChatApiSpaceIdAndToken(string $apiSpaceId, string $token, $website)
-    {
-        $scopeInterface = $website->getId() ? ScopeInterface::SCOPE_WEBSITES : ScopeConfigInterface::SCOPE_TYPE_DEFAULT;
-
-        $this->resourceConfig->saveConfig(
-            EmailConfig::XML_PATH_LIVECHAT_API_SPACE_ID,
-            $apiSpaceId,
-            $scopeInterface,
-            $website->getId()
-        );
-        $this->resourceConfig->saveConfig(
-            EmailConfig::XML_PATH_LIVECHAT_API_TOKEN,
-            $this->encryptor->encrypt($token),
-            $scopeInterface,
-            $website->getId()
-        );
-        return $this;
-    }
-
+    
     /**
      * Enable Engagement Cloud integration
      *
