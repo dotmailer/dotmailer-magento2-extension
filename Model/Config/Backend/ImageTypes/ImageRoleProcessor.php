@@ -142,11 +142,11 @@ class ImageRoleProcessor extends \Magento\Framework\App\Config\Value
     {
         try {
             $oldValue = $this->serializer->unserialize($this->getOldValue());
-            $oldValueId = isset($oldValue['id']) ? $oldValue['id'] : $oldValue;
+            $oldValueId = $oldValue['id'] ?? $oldValue;
         } catch (\InvalidArgumentException $e) {
             $oldValueId = $this->getOldValue();
         }
 
-        return $this->getValue() !== (string) $oldValueId;
+        return !is_string($oldValueId) || $this->getValue() !== $oldValueId;
     }
 }
