@@ -330,6 +330,7 @@
             </system_alerts>
             <pwa_settings>
                 <pwa_url></pwa_url>
+                <use_rewrites></use_rewrites>
             </pwa_settings>
         </connector_developer_settings>
     </default>
