@@ -1,3 +1,20 @@
+# 4.16.0
+
+### What's new
+- Support for Multi Source Inventory is now provided via a separate Inventory module.
+
+### Improvements
+- Our StockUpdatePlugin now only responds to Web API requests; we have an observer for all other product updates.
+- We improved our handling of review data fields in customer sync.
+- Our MessagePlugin has been removed, since Dotdigital now supports the required encoding for transactional sends.
+- Order sync now only logs when it has batched some orders, or if debug mode is enabled.
+- An API space id and token are no longer saved when a Dotdigital trial account is created via the 'chat' route.
+
+### Bug fixes
+- We fixed an error when saving image type configurations.
+- We added extra checks to prevent ‘undefined index’ errors in the `ddg_automation_resubscribe` cron.
+- Product URLs for PWA storefronts were not making use of custom rewrites; these now work by setting an additional config key.
+
 # 4.15.1
 
 ### Improvements
