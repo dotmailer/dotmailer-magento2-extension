@@ -4,6 +4,7 @@ namespace Dotdigitalgroup\Email\Model\Apiconnector;
 
 use Magento\Framework\Model\AbstractModel;
 use Dotdigitalgroup\Email\Logger\Logger;
+use Magento\Review\Model\Review;
 use Magento\Store\Model\App\Emulation;
 use Dotdigitalgroup\Email\Model\Customer\DataField\Date;
 
@@ -25,7 +26,7 @@ class Customer extends ContactData
     /**
      * @var \Magento\Review\Model\ResourceModel\Review\CollectionFactory
      */
-    public $reviewCollection;
+    private $reviewCollectionFactory;
 
     /**
      * @var array
@@ -78,6 +79,11 @@ class Customer extends ContactData
     private $appEmulation;
 
     /**
+     * @var array
+     */
+    private $customerReviews;
+
+    /**
      * Customer constructor.
      *
      * @param \Magento\Catalog\Model\ResourceModel\Product $productResource
@@ -119,7 +125,7 @@ class Customer extends ContactData
         Date $dateField,
         Emulation $appEmulation
     ) {
-        $this->reviewCollection  = $reviewCollectionFactory;
+        $this->reviewCollectionFactory = $reviewCollectionFactory;
         $this->orderCollectionFactory = $collectionFactory;
         $this->groupFactory      = $groupFactory;
         $this->subscriberFactory = $subscriberFactory;
@@ -151,7 +157,6 @@ class Customer extends ContactData
     public function init(AbstractModel $model, array $columns)
     {
         parent::init($model, $columns);
-        $this->setReviewCollection();
         $this->setContactData();
 
         return $this;
@@ -178,28 +183,13 @@ class Customer extends ContactData
     }
 
     /**
-     * Customer reviews.
-     *
-     * @return $this
-     */
-    public function setReviewCollection()
-    {
-        $this->reviewCollection = $this->reviewCollection->create()
-            ->addCustomerFilter($this->model->getId())
-            ->addStoreFilter($this->model->getStoreId())
-            ->setOrder('review_id', 'DESC');
-
-        return $this;
-    }
-
-    /**
      * Number of reviews.
      *
      * @return int
      */
     public function getReviewCount()
     {
-        return count($this->reviewCollection);
+        return count($this->getReviewsForCustomer());
     }
 
     /**
@@ -209,15 +199,10 @@ class Customer extends ContactData
      */
     public function getLastReviewDate()
     {
-        if ($this->reviewCollection->getSize()) {
-            $this->reviewCollection->getSelect()->limit(1);
-            $createdAt = $this->reviewCollection
-                ->getFirstItem()
-                ->getCreatedAt();
-            return $createdAt;
-        }
+        $reviews = $this->getReviewsForCustomer();
+        $lastReview = reset($reviews);
 
-        return '';
+        return $lastReview instanceof Review ? $lastReview->getCreatedAt() : '';
     }
 
     /**
@@ -584,5 +569,30 @@ class Customer extends ContactData
     public function getDeliveryCompany()
     {
         return $this->model->getShippingCompany();
+    }
+
+    /**
+     * @return array
+     */
+    private function getReviewsForCustomer()
+    {
+        if (!is_array($this->customerReviews)) {
+            $this->setReviewsForCustomer();
+        }
+
+        return $this->customerReviews;
+    }
+    /**
+     * @return void
+     */
+    private function setReviewsForCustomer()
+    {
+        $collection = $this->reviewCollectionFactory->create()
+            ->addCustomerFilter($this->model->getId())
+            ->addStoreFilter($this->model->getStoreId())
+            ->addFieldToSelect(['review_id', 'created_at'])
+            ->setOrder('created_at');
+
+        $this->customerReviews = $collection->getItems();
     }
 }

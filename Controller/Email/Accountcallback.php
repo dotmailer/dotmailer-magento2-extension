@@ -79,10 +79,6 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
             $website
         );
 
-        if ($chatAccountCreated = (!empty($params['apispaceid']) && !empty($params['token']))) {
-            $this->helper->saveChatApiSpaceIdAndToken($params['apispaceid'], $params['token'], $website);
-        }
-
         // enable EC in Magento
         $this->helper->enableEngagementCloud($website)
             ->reinitialiseConfig();
@@ -95,9 +91,6 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
         $this->helper->log('Dotdigital account creation', [
             'api_username' => $params['apiusername'],
             'api_endpoint' => $params['apiendpoint'],
-            'chat_account' => $chatAccountCreated
-                ? ['api_space_id' => $params['apispaceid']]
-                : false,
             'data_field_set_up' => $dataFieldsStatus,
             'address_books_set_up' => $addressBookStatus,
             'syncs_enabled_for_trial' => $syncStatus,

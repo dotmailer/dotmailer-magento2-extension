@@ -411,7 +411,7 @@ class TrialSetup
             '%s://%s%s',
             $baseUrlParsed['scheme'],
             $baseUrlParsed['host'],
-            isset($magentoHost['port']) ? ':' . $baseUrlParsed['port'] : ''
+            isset($baseUrlParsed['port']) ? ':' . $baseUrlParsed['port'] : ''
         );
 
         // get the magento edition

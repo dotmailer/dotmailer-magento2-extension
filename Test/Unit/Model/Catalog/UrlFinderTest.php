@@ -13,6 +13,7 @@ use Magento\Catalog\Model\Product;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Store\Model\Website;
+use Zend\Uri\Http;
 use PHPUnit\Framework\TestCase;
 
 class UrlFinderTest extends TestCase
@@ -67,6 +68,11 @@ class UrlFinderTest extends TestCase
      */
     private $parentFinderMock;
 
+    /**
+     * @var \PHPUnit\Framework\MockObject\MockObject
+     */
+    private $zendUriMock;
+
     protected function setUp() :void
     {
         $this->loggerMock = $this->createMock(Logger::class);
@@ -93,6 +99,8 @@ class UrlFinderTest extends TestCase
 
         $this->scopeConfigInterfaceMock = $this->createMock(ScopeConfigInterface::class);
 
+        $this->zendUriMock = $this->createMock(Http::class);
+
         $this->urlFinder = new UrlFinder(
             $this->loggerMock,
             $this->pwaUrlConfigMock,
@@ -100,7 +108,8 @@ class UrlFinderTest extends TestCase
             $this->storeManagerMock,
             $imageBuilderFactory,
             $this->scopeConfigInterfaceMock,
-            $this->parentFinderMock
+            $this->parentFinderMock,
+            $this->zendUriMock
         );
     }
 
@@ -234,6 +243,22 @@ class UrlFinderTest extends TestCase
             ->with(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_STRIP_PUB)
             ->willReturn(1);
 
+        $this->zendUriMock->expects($this->atLeastOnce())
+            ->method('parse')
+            ->willReturn($this->zendUriMock);
+
+        $this->zendUriMock->expects($this->atLeastOnce())
+            ->method('getScheme')
+            ->willReturn('https');
+
+        $this->zendUriMock->expects($this->atLeastOnce())
+            ->method('getHost')
+            ->willReturn('magento2.dev');
+
+        $this->zendUriMock->expects($this->atLeastOnce())
+            ->method('getPath')
+            ->willReturn('/pub/media/chaz-kangaroo.jpg');
+
         $returnedUrl = $this->urlFinder->getPath($path);
 
         $this->assertFalse(strpos($returnedUrl, '/pub'));
@@ -262,6 +287,22 @@ class UrlFinderTest extends TestCase
             ->with(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_STRIP_PUB)
             ->willReturn(1);
 
+        $this->zendUriMock->expects($this->atLeastOnce())
+            ->method('parse')
+            ->willReturn($this->zendUriMock);
+
+        $this->zendUriMock->expects($this->atLeastOnce())
+            ->method('getScheme')
+            ->willReturn('https');
+
+        $this->zendUriMock->expects($this->atLeastOnce())
+            ->method('getHost')
+            ->willReturn('magento2.dev');
+
+        $this->zendUriMock->expects($this->atLeastOnce())
+            ->method('getPath')
+            ->willReturn('/media/chaz-kangaroo.jpg');
+
         $returnedUrl = $this->urlFinder->getPath($path);
 
         $this->assertEquals($returnedUrl, $path);
@@ -277,6 +318,22 @@ class UrlFinderTest extends TestCase
             ->method('getValue')
             ->with(\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_STRIP_PUB)
             ->willReturn(1);
+
+        $this->zendUriMock->expects($this->atLeastOnce())
+            ->method('parse')
+            ->willReturn($this->zendUriMock);
+
+        $this->zendUriMock->expects($this->atLeastOnce())
+            ->method('getScheme')
+            ->willReturn('https');
+
+        $this->zendUriMock->expects($this->atLeastOnce())
+            ->method('getHost')
+            ->willReturn('simons-pub.com');
+
+        $this->zendUriMock->expects($this->atLeastOnce())
+            ->method('getPath')
+            ->willReturn('/pub-location/pub-beautifulImage.jpg');
 
         $returnedUrl = $this->urlFinder->getPath($path);
 

@@ -202,7 +202,7 @@ class Resubscriber extends DataObject
                 continue;
             }
 
-            $recentlySubscribedContacts[$contact->email] = [
+            $recentlySubscribedContacts[strtolower($contact->email)] = [
                 'subscribed_at' => $utcLastSubscribedAt,
             ];
         }
@@ -265,6 +265,10 @@ class Resubscriber extends DataObject
         /** @var \Magento\Newsletter\Model\Subscriber $subscriber */
         foreach ($collection as $subscriber) {
             $email = $subscriber->getSubscriberEmail();
+
+            if (!isset($contacts[strtolower($email)])) {
+                continue;
+            }
 
             $utcChangeStatusAt = new \DateTime(
                 $subscriber->getChangeStatusAt(),

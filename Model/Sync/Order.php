@@ -53,11 +53,6 @@ class Order extends DataObject implements SyncInterface
     private $storeManager;
 
     /**
-     * @var mixed
-     */
-    private $start;
-
-    /**
      * @param OrderResourceFactory $orderResourceFactory
      * @param Data $helper
      * @param ScopeConfigInterface $scopeConfig
@@ -116,17 +111,17 @@ class Order extends DataObject implements SyncInterface
         $storeIds = $this->getOrderEnabledStoreIds();
 
         do {
-            if ($loopStart) {
-                $this->helper->log('----------- Order sync ----------- : Start batching');
-                $loopStart = false;
-            }
-
             $ordersToProcess = $this->orderCollectionFactory
                 ->create()
                 ->getOrdersToProcess($limit, $storeIds);
 
             if (!$ordersToProcess) {
                 break;
+            }
+
+            if ($loopStart) {
+                $this->helper->log('----------- Order sync ----------- : Start batching');
+                $loopStart = false;
             }
 
             $megaBatch = $this->mergeBatch(
@@ -157,7 +152,11 @@ class Order extends DataObject implements SyncInterface
         $message = '----------- Order sync ----------- : ' .
             gmdate('H:i:s', (int) (microtime(true) - $start)) .
             ', Total processed = ' . $ordersProcessedCount . ', Total synced = ' . $totalOrdersSyncedCount;
-        $this->helper->log($message);
+
+        if ($totalOrdersSyncedCount > 0 || $this->helper->isDebugEnabled()) {
+            $this->helper->log($message);
+        }
+
         return [
             'message' => $message,
             'syncedOrders' => $totalOrdersSyncedCount

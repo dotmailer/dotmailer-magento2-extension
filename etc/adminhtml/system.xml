@@ -1932,6 +1932,9 @@
                     <label>PWA Storefront Base URL</label>
                     <comment><![CDATA[ Specify this if you use a PWA storefront URL which is different from Magento's default frontend base URL. e.g. https://pwa.yourdomain.com/]]></comment>
                 </field>
+                <field id="use_rewrites" translate="label" sortOrder="35" showInStore="0" showInWebsite="0" showInDefault="0">
+                    <label>Transactional data break</label>
+                </field>
             </group>
         </section>
     </system>
