@@ -147,6 +147,6 @@ class ImageRoleProcessor extends \Magento\Framework\App\Config\Value
             $oldValueId = $this->getOldValue();
         }
 
-        return !is_string($oldValueId) || $this->getValue() !== $oldValueId;
+        return is_array($oldValueId) || $this->getValue() !== (string) $oldValueId;
     }
 }
