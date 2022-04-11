@@ -284,12 +284,13 @@ class ImporterReportHandler
     private function getLastContactSyncTime()
     {
         // get a time period for the last contact sync
-        $cronMinutes = filter_var(
+        $decodedCronValue = filter_var(
             $this->cronOffsetter->getDecodedCronValue(
                 $this->scopeConfig->getValue(Config::XML_PATH_CRON_SCHEDULE_CONTACT)
             ),
             FILTER_SANITIZE_NUMBER_INT
         );
+        $cronMinutes = ($decodedCronValue === '00' ? '60' : $decodedCronValue);
         $time = new \DateTime($this->dateTime->formatDate(true), new \DateTimeZone('UTC'));
         return $time->sub(new \DateInterval("PT{$cronMinutes}M"));
     }
