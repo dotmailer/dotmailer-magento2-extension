@@ -1,3 +1,11 @@
+# 4.16.1
+
+### Bug fixes
+- One of our data migration scripts was inserting duplicate rows for guest purchasers in `email_contact`. This was a regression from 4.15.0.
+- We fixed a fault in the importer sync that occurred if the cron schedule for contact sync was set to 'Every 60 Minutes'.
+- We fixed a bug with the catalog reset that happens when image type values are changed, in **Dotdigital > Configuration > Image Types**.
+- Some stored image types values could cause a blank screen in **Dotdigital > Configuration**; this has been fixed.
+
 # 4.16.0
 
 ### What's new
