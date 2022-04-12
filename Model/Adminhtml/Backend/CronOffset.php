@@ -54,7 +54,7 @@ class CronOffset extends \Magento\Framework\App\Config\Value
     }
 
     /**
-     * @return CronOffset
+     * @return void
      */
     public function beforeSave()
     {
@@ -70,10 +70,7 @@ class CronOffset extends \Magento\Framework\App\Config\Value
      */
     private function isCronValueChanged()
     {
-        if (strpos($this->getOldValue(), "/") !== false) {
-            return (int) $this->cronOffsetter->getDecodedCronValue($this->getOldValue()) != (int)$this->getValue();
-        } else {
-            return $this->getValue() != '00';
-        }
+        $oldValue = $this->cronOffsetter->getDecodedCronValue($this->getOldValue());
+        return $this->getValue() != $oldValue;
     }
 }

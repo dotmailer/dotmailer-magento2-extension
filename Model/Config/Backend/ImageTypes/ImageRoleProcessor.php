@@ -119,7 +119,7 @@ class ImageRoleProcessor extends \Magento\Framework\App\Config\Value
             $this->setValue(false);
             return;
         }
-        $this->setValue(empty($unserialized) ? false : $unserialized['id']);
+        $this->setValue(empty($unserialized) || !isset($unserialized['id']) ? false : $unserialized['id']);
     }
 
     /**
@@ -147,6 +147,6 @@ class ImageRoleProcessor extends \Magento\Framework\App\Config\Value
             $oldValueId = $this->getOldValue();
         }
 
-        return !is_string($oldValueId) || $this->getValue() !== $oldValueId;
+        return is_array($oldValueId) || $this->getValue() !== (string) $oldValueId;
     }
 }

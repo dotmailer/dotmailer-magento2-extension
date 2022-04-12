@@ -140,20 +140,27 @@ class InsertEmailOrderTable extends AbstractBatchInserter implements InsertTypeI
         foreach ($storeGroups as $storeId => $storeOrders) {
             $guestsToInsert = [];
             $websiteId = $this->storeManager->getStore($storeId)->getWebsiteId();
-            $guestOrderEmails = array_column($storeOrders, 'customer_email');
+            $guestOrderEmails = array_unique(
+                array_column(
+                    $storeOrders,
+                    'customer_email'
+                )
+            );
             $matchingContactEmails = $this->contactCollectionFactory->create()
                 ->matchEmailsToContacts(
                     $guestOrderEmails,
                     $websiteId
                 );
 
-            foreach (array_diff($guestOrderEmails, $matchingContactEmails) as $email) {
+            foreach (array_udiff($guestOrderEmails, $matchingContactEmails, 'strcasecmp') as $email) {
+
                 $guestsToInsert[] = [
                     'is_guest' => '1',
                     'email' => $email,
                     'store_id' => (string) $storeId,
                     'website_id' => $websiteId,
                 ];
+
             }
 
             if (empty($guestsToInsert)) {
