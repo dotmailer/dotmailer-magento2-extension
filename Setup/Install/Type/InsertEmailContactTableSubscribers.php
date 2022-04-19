@@ -12,6 +12,12 @@ class InsertEmailContactTableSubscribers extends AbstractBatchInserter implement
     protected $tableName = Schema::EMAIL_CONTACT_TABLE;
 
     /**
+     * Don't offset the query for this migration
+     * @var bool
+     */
+    protected $useOffset = false;
+
+    /**
      * @inheritdoc
      */
     protected function getSelectStatement()
