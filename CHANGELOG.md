@@ -1,3 +1,8 @@
+# 4.16.2
+
+### Bug fixes
+- The 'use offset' flag has been removed from the subscriber insert migration type.
+
 # 4.16.1
 
 ### Bug fixes
