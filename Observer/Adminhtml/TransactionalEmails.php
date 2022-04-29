@@ -20,15 +20,21 @@ class TransactionalEmails implements \Magento\Framework\Event\ObserverInterface
     }
 
     /**
+     * Execute.
+     *
      * @param \Magento\Framework\Event\Observer $observer
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
-        $groups = $this->context->getRequest()->getPost('groups');
+        /** @var \Laminas\Http\Request $request */
+        $request = $this->context->getRequest();
+        $groups = $request->getPost('groups');
 
         if (isset($groups['ddg_transactional']['fields']) &&
+            isset($groups['ddg_transactional']['fields']['enabled']['value']) &&
             $groups['ddg_transactional']['fields']['enabled']['value'] === '1' &&
+            isset($groups['ddg_transactional']['fields']['host']['value']) &&
             $groups['ddg_transactional']['fields']['host']['value'] === '0'
         ) {
             throw new \Magento\Framework\Exception\LocalizedException(
