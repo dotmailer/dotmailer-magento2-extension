@@ -102,3 +102,80 @@ div.dotmailer-error{background:url(images/i_msg-error.png) no-repeat;padding:10p
 .add-top-border {
     border-top-width: 1px;
 }
+
+.event-message-placeholder{
+    text-align: center;
+}
+
+.dd-ellipsis {
+    display: inline-block;
+    position: relative;
+    width: 80px;
+    height: 80px;
+}
+.dd-ellipsis div {
+    position: absolute;
+    top: 33px;
+    width: 13px;
+    height: 13px;
+    border-radius: 50%;
+    background: #d4137d;
+    animation-timing-function: cubic-bezier(0, 1, 1, 0);
+}
+.dd-ellipsis div:nth-child(1) {
+    left: 8px;
+    animation: dd-ellipsis1 0.6s infinite;
+}
+.dd-ellipsis div:nth-child(2) {
+    left: 8px;
+    animation: dd-ellipsis2 0.6s infinite;
+}
+.dd-ellipsis div:nth-child(3) {
+    left: 32px;
+    animation: dd-ellipsis2 0.6s infinite;
+}
+.dd-ellipsis div:nth-child(4) {
+    left: 56px;
+    animation: dd-ellipsis3 0.6s infinite;
+}
+@keyframes dd-ellipsis1 {
+    0% {
+        transform: scale(0);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+@keyframes dd-ellipsis3 {
+    0% {
+        transform: scale(1);
+    }
+    100% {
+        transform: scale(0);
+    }
+}
+@keyframes dd-ellipsis2 {
+    0% {
+        transform: translate(0, 0);
+    }
+    100% {
+        transform: translate(24px, 0);
+    }
+}
+
+.ddg-account-details:before{
+    display: block;
+    content: ' ';
+    background-size: 20px 20px;
+    height: 20px;
+    width: 20px;
+    margin-top: -10px;
+}
+
+.ddg-connected:before {
+    background-image: url('images/account-success.svg');
+}
+
+.ddg-disconnected:before {
+    background-image: url('images/account-fail.svg');
+}

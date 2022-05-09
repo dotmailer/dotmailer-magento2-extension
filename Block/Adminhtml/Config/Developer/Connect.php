@@ -2,9 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer;
 
-class Connect extends AbstractDeveloper
-{
+use Dotdigitalgroup\Email\Block\Adminhtml\Config\AbstractButton;
 
+class Connect extends AbstractButton
+{
     /**
      * @var string
      */
@@ -59,6 +60,8 @@ class Connect extends AbstractDeveloper
     }
 
     /**
+     * Get disabled.
+     *
      * @return bool
      */
     protected function getDisabled()
@@ -67,6 +70,8 @@ class Connect extends AbstractDeveloper
     }
 
     /**
+     * Get button label.
+     *
      * @return \Magento\Framework\Phrase|string
      */
     protected function getButtonLabel()
@@ -75,6 +80,8 @@ class Connect extends AbstractDeveloper
     }
 
     /**
+     * Get button url.
+     *
      * @return string
      */
     protected function getButtonUrl()
@@ -87,6 +94,8 @@ class Connect extends AbstractDeveloper
     }
 
     /**
+     * Is secure url.
+     *
      * @return bool
      */
     public function _isSecureUrl()

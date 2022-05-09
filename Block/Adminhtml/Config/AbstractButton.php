@@ -1,34 +1,43 @@
 <?php
 
-namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer;
+namespace Dotdigitalgroup\Email\Block\Adminhtml\Config;
 
-abstract class AbstractDeveloper extends \Magento\Config\Block\System\Config\Form\Field
+abstract class AbstractButton extends \Magento\Config\Block\System\Config\Form\Field
 {
     /**
+     * Get disabled.
+     *
      * @return bool
      */
     abstract protected function getDisabled();
 
     /**
+     * Get button label.
+     *
      * @return string
      */
     abstract protected function getButtonLabel();
 
     /**
+     * Get button url.
+     *
      * @return string
      */
     abstract protected function getButtonUrl();
 
     /**
+     * Get element html.
+     *
      * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
      * @return string
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
     {
-        return $this->getLayout()
-            ->createBlock(\Magento\Backend\Block\Widget\Button::class)
-            ->setType('button')
+        $block = $this->getLayout()
+            ->createBlock(\Magento\Backend\Block\Widget\Button::class);
+        /** @var \Magento\Backend\Block\Widget\Button $block */
+        return $block->setType('button')
             ->setLabel($this->getButtonLabel())
             ->setOnClick("window.location.href='" . $this->getButtonUrl() . "'")
             ->setDisabled($this->getDisabled())
@@ -37,6 +46,7 @@ abstract class AbstractDeveloper extends \Magento\Config\Block\System\Config\For
 
     /**
      * Removes use Default Checkbox
+     *
      * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
      * @return string
      */

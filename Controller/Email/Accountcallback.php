@@ -3,8 +3,9 @@
 namespace Dotdigitalgroup\Email\Controller\Email;
 
 use Dotdigitalgroup\Email\Helper\Data;
-use Dotdigitalgroup\Email\Model\Trial\TrialSetup;
-use Dotdigitalgroup\Email\Model\Trial\TrialSetupFactory;
+use Dotdigitalgroup\Email\Model\Integration\IntegrationSetup;
+use Dotdigitalgroup\Email\Model\Integration\IntegrationSetupFactory;
+use Magento\Framework\App\Config\ReinitableConfigInterface;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\Controller\ResultInterface;
@@ -18,9 +19,9 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
     private $timezone;
 
     /**
-     * @var TrialSetup
+     * @var IntegrationSetup
      */
-    private $trialSetup;
+    private $integrationSetup;
 
     /**
      * @var Data
@@ -33,25 +34,34 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
     private $moduleManager;
 
     /**
+     * @var ReinitableConfigInterface
+     */
+    private $reinitableConfig;
+
+    /**
      * Accountcallback constructor.
+     *
      * @param Context $context
      * @param Timezone $timezone
-     * @param TrialSetupFactory $trialSetupFactory
+     * @param IntegrationSetupFactory $integrationSetupFactory
      * @param Data $helper
      * @param \Magento\Framework\Module\Manager $moduleManager
+     * @param ReinitableConfigInterface $reinitableConfig
      */
     public function __construct(
         Context $context,
         Timezone $timezone,
-        TrialSetupFactory $trialSetupFactory,
+        IntegrationSetupFactory $integrationSetupFactory,
         Data $helper,
-        \Magento\Framework\Module\Manager $moduleManager
+        \Magento\Framework\Module\Manager $moduleManager,
+        ReinitableConfigInterface $reinitableConfig
     ) {
 
         $this->timezone = $timezone;
-        $this->trialSetup = $trialSetupFactory->create();
+        $this->integrationSetup = $integrationSetupFactory->create();
         $this->helper = $helper;
         $this->moduleManager = $moduleManager;
+        $this->reinitableConfig = $reinitableConfig;
         parent::__construct($context);
     }
 
@@ -67,7 +77,7 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
 
         $this->helper->debug('Account callback request', $params);
 
-        if (!isset($params['code']) || !$this->trialSetup->isCodeValid($params['code'])) {
+        if (!isset($params['code']) || !$this->integrationSetup->isCodeValid($params['code'])) {
             return $this->sendErrorResponse();
         }
 
@@ -80,13 +90,17 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
         );
 
         // enable EC in Magento
-        $this->helper->enableEngagementCloud($website)
-            ->reinitialiseConfig();
+        $this->helper->enableEngagementCloud($website);
+        $this->reinitableConfig->reinit();
+
 
         // set up EC account
-        $dataFieldsStatus = $this->trialSetup->setupDataFields();
-        $addressBookStatus = $this->trialSetup->createAddressBooks();
-        $syncStatus = $this->trialSetup->enableSyncForTrial();
+        $dataFieldsStatus = $this->integrationSetup->setupDataFields();
+        $addressBookStatus = $this->integrationSetup->createAddressBooks();
+        $syncStatus = $this->integrationSetup->enableSyncs();
+
+        //Clear config cache.
+        $this->reinitableConfig->reinit();
 
         $this->helper->log('Dotdigital account creation', [
             'api_username' => $params['apiusername'],

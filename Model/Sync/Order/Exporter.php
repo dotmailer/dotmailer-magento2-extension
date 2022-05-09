@@ -117,6 +117,46 @@ class Exporter
     }
 
     /**
+     * Map order data.
+     *
+     * @param SalesOrderCollection $salesOrderCollection
+     *
+     * @return array|array[]
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
+    public function mapOrderData($salesOrderCollection)
+    {
+        $orders = [];
+        foreach ($salesOrderCollection as $order) {
+            if ($order->getId()) {
+                $websiteId = $order->getStore()->getWebsiteId();
+
+                try {
+                    $connectorOrder = $this->connectorOrderFactory->create()
+                        ->setOrderData($order);
+
+                    if (array_key_exists($websiteId, $orders)) {
+                        $orders[$websiteId][$order->getIncrementId()] = $this->expose($connectorOrder);
+                    } else {
+                        $orders += [$websiteId => [$order->getIncrementId() => $this->expose($connectorOrder)]];
+                    }
+
+                } catch (\Exception $exception) {
+                    $this->logger->debug(
+                        sprintf(
+                            'Order id %s was not exported, but will be marked as processed.',
+                            $order->getId()
+                        ),
+                        [(string) $exception]
+                    );
+                }
+            }
+        }
+
+        return $orders;
+    }
+
+    /**
      * Filter collection.
      *
      * @param OrderCollection $collection
@@ -149,46 +189,6 @@ class Exporter
     {
         return $this->salesOrderCollectionFactory->create()
             ->addFieldToFilter('entity_id', ['in' => $orderIds]);
-    }
-
-    /**
-     * Map order data.
-     *
-     * @param SalesOrderCollection $salesOrderCollection
-     *
-     * @return array|array[]
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
-     */
-    private function mapOrderData($salesOrderCollection)
-    {
-        $orders = [];
-        foreach ($salesOrderCollection as $order) {
-            if ($order->getId()) {
-                $websiteId = $order->getStore()->getWebsiteId();
-
-                try {
-                    $connectorOrder = $this->connectorOrderFactory->create()
-                        ->setOrderData($order);
-
-                    if (array_key_exists($websiteId, $orders)) {
-                        $orders[$websiteId][$order->getIncrementId()] = $this->expose($connectorOrder);
-                    } else {
-                        $orders += [$websiteId => [$order->getIncrementId() => $this->expose($connectorOrder)]];
-                    }
-
-                } catch (\Exception $exception) {
-                    $this->logger->debug(
-                        sprintf(
-                            'Order id %s was not exported, but will be marked as processed.',
-                            $order->getId()
-                        ),
-                        [(string) $exception]
-                    );
-                }
-            }
-        }
-
-        return $orders;
     }
 
     /**

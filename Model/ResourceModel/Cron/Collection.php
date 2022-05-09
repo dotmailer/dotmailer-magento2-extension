@@ -18,6 +18,21 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     }
 
     /**
+     * Fetch pending Dotdigital cron tasks.
+     *
+     * @param array $timeWindow
+     *
+     * @return Collection
+     */
+    public function fetchPendingCronTasksScheduledInNextHour($timeWindow)
+    {
+        return $this->addFieldToFilter('job_code', ['like' => '%ddg_automation%'])
+            ->addFieldToFilter('status', 'pending')
+            ->addFieldToFilter('scheduled_at', $timeWindow)
+            ->setPageSize(1);
+    }
+
+    /**
      * Search the cron_schedule table for jobs with error status,
      * with a scheduled_at time inside the specified time window.
      *

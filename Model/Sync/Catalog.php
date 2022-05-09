@@ -198,7 +198,7 @@ class Catalog extends DataObject implements SyncInterface
     private function getProductsToProcess($limit)
     {
         return $this->catalogCollectionFactory->create()
-            ->getProductsToProcess($limit);
+            ->getUnprocessedProducts($limit);
     }
 
     /**

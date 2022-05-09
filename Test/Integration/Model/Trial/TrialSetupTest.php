@@ -1,10 +1,11 @@
 <?php
 
-namespace Dotdigitalgroup\Email\Model\Trial;
+namespace Dotdigitalgroup\Email\Model\Integration;
 
 use Dotdigitalgroup\Email\Helper\Config;
 use Dotdigitalgroup\Email\Model\Connector\Datafield;
 use Dotdigitalgroup\Email\Test\Integration\MocksApiResponses;
+use Magento\Framework\App\Config\ReinitableConfigInterface;
 use Magento\Framework\App\Config\Storage\WriterInterface;
 use Magento\Framework\App\RequestInterface;
 use Magento\TestFramework\ObjectManager;
@@ -27,10 +28,16 @@ class TrialSetupTest extends \PHPUnit\Framework\TestCase
      */
     private $configWriter;
 
+    /**
+     * @var ReinitableConfigInterface
+     */
+    private $reinitableConfig;
+
     public function setUp() :void
     {
         $this->objectManager = ObjectManager::getInstance();
         $this->configWriter = $this->objectManager->create(WriterInterface::class);
+        $this->reinitableConfig = $this->objectManager->create(ReinitableConfigInterface::class);
     }
 
     /**
@@ -40,7 +47,7 @@ class TrialSetupTest extends \PHPUnit\Framework\TestCase
      */
     public function testVerifyCode()
     {
-        $trialSetup = $this->getTrialSetup();
+        $trialSetup = $this->getIntegrationSetup();
         $code = $trialSetup->generateTemporaryPasscode();
         $this->assertTrue($trialSetup->isCodeValid($code));
     }
@@ -63,7 +70,9 @@ class TrialSetupTest extends \PHPUnit\Framework\TestCase
 
         $helper = $this->instantiateDataHelper();
 
-        $this->getTrialSetup()->enableSyncForTrial();
+        $this->getIntegrationSetup()->enableSyncs();
+
+        $this->reinitableConfig->reinit();
 
         $this->assertTrue(
             $helper->getWebsiteConfig(Config::XML_PATH_CONNECTOR_SYNC_CUSTOMER_ENABLED)
@@ -85,7 +94,7 @@ class TrialSetupTest extends \PHPUnit\Framework\TestCase
         $this->mockClient->method('getAccountInfo')->willReturn('You are all good!');
 
         // run create address books method
-        $trialSetup = $this->getTrialSetup();
+        $trialSetup = $this->getIntegrationSetup();
 
         $id = 0;
         $this->mockClient
@@ -105,16 +114,16 @@ class TrialSetupTest extends \PHPUnit\Framework\TestCase
      */
     public function testEcSignupUrl()
     {
-        $signupUrl = $this->getTrialSetup()->getEcSignupUrl(
+        $signupUrl = $this->getIntegrationSetup()->getEcSignupUrl(
             $this->objectManager->create(RequestInterface::class),
-            TrialSetup::SOURCE_CHAT
+            IntegrationSetup::SOURCE_CHAT
         );
         $signupUrlParsed = parse_url($signupUrl);
         parse_str($signupUrlParsed['query'], $signupQuery);
 
-        $this->assertStringStartsWith($this->getTrialSetup()->getTrialSignupBaseUrl(), $signupUrl);
+        $this->assertStringStartsWith($this->getIntegrationSetup()->getTrialSignupBaseUrl(), $signupUrl);
         $this->assertEquals('http://localhost', $signupQuery['magentohost']);
-        $this->assertEquals(TrialSetup::SOURCE_CHAT, $signupQuery['source']);
+        $this->assertEquals(IntegrationSetup::SOURCE_CHAT, $signupQuery['source']);
         $this->assertStringEndsWith(Config::MAGENTO_ROUTE, $signupQuery['callback']);
     }
 
@@ -140,14 +149,14 @@ class TrialSetupTest extends \PHPUnit\Framework\TestCase
             ->with($this->logicalOr(...array_values($contactFields)));
 
         $this->instantiateDataHelper();
-        $this->getTrialSetup()->setupDataFields();
+        $this->getIntegrationSetup()->setupDataFields();
     }
 
     /**
-     * @return TrialSetup
+     * @return IntegrationSetup
      */
-    private function getTrialSetup()
+    private function getIntegrationSetup()
     {
-        return $this->objectManager->create(TrialSetup::class);
+        return $this->objectManager->create(IntegrationSetup::class);
     }
 }

@@ -4,7 +4,7 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml;
 
 use Dotdigitalgroup\Email\Helper\Config;
 use Dotdigitalgroup\Email\Helper\Data;
-use Dotdigitalgroup\Email\Model\Trial\TrialSetupFactory;
+use Dotdigitalgroup\Email\Model\Integration\IntegrationSetupFactory;
 use Dotdigitalgroup\Email\Helper\OauthValidator;
 use Magento\Backend\Block\Template\Context;
 
@@ -23,9 +23,9 @@ class Studio extends \Magento\Backend\Block\Template implements EngagementCloudT
     private $config;
 
     /**
-     * @var TrialSetupFactory
+     * @var IntegrationSetupFactory
      */
-    private $trialSetupFactory;
+    private $integrationSetupFactory;
 
     /**
      * @var OauthValidator
@@ -43,32 +43,34 @@ class Studio extends \Magento\Backend\Block\Template implements EngagementCloudT
      * @param Config $config
      * @param Context $context
      * @param Data $helper
-     * @param TrialSetupFactory $trialSetupFactory
+     * @param IntegrationSetupFactory $integrationSetupFactory
      * @param OauthValidator $oauth
      */
     public function __construct(
         Config $config,
         Context $context,
         Data $helper,
-        TrialSetupFactory $trialSetupFactory,
+        IntegrationSetupFactory $integrationSetupFactory,
         OauthValidator $oauth
     ) {
         $this->config  = $config;
         $this->helper = $helper;
-        $this->trialSetupFactory = $trialSetupFactory;
+        $this->integrationSetupFactory = $integrationSetupFactory;
         $this->oauth = $oauth;
 
         parent::__construct($context, []);
     }
 
     /**
+     * Get action.
+     *
      * @return string
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getAction(): string
     {
         if (!($this->helper->getApiUsername() && $this->helper->getApiPassword())) {
-            return $this->getTrialSetup()
+            return $this->getIntegrationSetup()
                 ->getEcSignupUrl($this->getRequest());
         }
 

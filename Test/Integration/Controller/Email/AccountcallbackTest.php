@@ -3,7 +3,7 @@
 namespace Dotdigitalgroup\Email\Controller\Email;
 
 use Dotdigitalgroup\Email\Helper\Config;
-use Dotdigitalgroup\Email\Model\Trial\TrialSetup;
+use Dotdigitalgroup\Email\Model\Integration\IntegrationSetup;
 use Dotdigitalgroup\Email\Test\Integration\MocksApiResponses;
 use Magento\TestFramework\TestCase\AbstractController;
 
@@ -11,7 +11,7 @@ class AccountcallbackTest extends AbstractController
 {
     use MocksApiResponses;
 
-    const TEST_CREDS = [
+    private const TEST_CREDS = [
         'apiusername' => 'chaz@apiconnector.com',
         'apipassword' => 'chazword',
         'apiendpoint' => 'https://api.dotmailer.com/v2',
@@ -23,7 +23,7 @@ class AccountcallbackTest extends AbstractController
     private $helper;
 
     /**
-     * @var TrialSetup
+     * @var IntegrationSetup
      */
     private $trialSetup;
 
@@ -32,7 +32,7 @@ class AccountcallbackTest extends AbstractController
         parent::setUp();
 
         $this->helper = $this->instantiateDataHelper();
-        $this->trialSetup = $this->_objectManager->create(TrialSetup::class);
+        $this->trialSetup = $this->_objectManager->create(IntegrationSetup::class);
     }
 
     /**
