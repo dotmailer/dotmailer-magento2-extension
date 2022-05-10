@@ -2,9 +2,13 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer;
 
-class Catalogsync extends AbstractDeveloper
+use Dotdigitalgroup\Email\Block\Adminhtml\Config\AbstractButton;
+
+class Catalogsync extends AbstractButton
 {
     /**
+     * Get disabled.
+     *
      * @return bool
      */
     protected function getDisabled()
@@ -13,6 +17,8 @@ class Catalogsync extends AbstractDeveloper
     }
 
     /**
+     * Get button label.
+     *
      * @return \Magento\Framework\Phrase|string
      */
     protected function getButtonLabel()
@@ -21,6 +27,8 @@ class Catalogsync extends AbstractDeveloper
     }
 
     /**
+     * Get button url.
+     *
      * @return string
      */
     protected function getButtonUrl()

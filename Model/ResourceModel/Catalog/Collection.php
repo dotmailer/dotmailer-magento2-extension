@@ -67,13 +67,13 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     }
 
     /**
-     * Get product collection to export.
+     * Get unprocessed products.
      *
      * @param int $limit
      *
-     * @return \Magento\Catalog\Model\ResourceModel\Product\Collection|array
+     * @return array
      */
-    public function getProductsToProcess($limit)
+    public function getUnprocessedProducts($limit)
     {
         $connectorCollection = $this;
         $connectorCollection->addFieldToFilter('processed', '0');
@@ -89,6 +89,25 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
         }
 
         return [];
+    }
+
+    /**
+     * Get products without a 'processed' filter.
+     *
+     * @param int $limit
+     *
+     * @return array
+     */
+    public function getProducts($limit)
+    {
+        $connectorCollection = $this;
+        $connectorCollection->getSelect()->limit($limit);
+        $connectorCollection->setOrder(
+            'product_id',
+            'asc'
+        );
+
+        return $connectorCollection->getColumnValues('product_id');
     }
 
     /**

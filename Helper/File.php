@@ -10,6 +10,8 @@ use Magento\Framework\Filesystem\DriverInterface;
  */
 class File
 {
+    private const LOG_SIZE_LIMIT = 500000;
+
     /**
      * @var string
      */
@@ -19,16 +21,6 @@ class File
      * @var string
      */
     private $outputArchiveFolder;
-
-    /**
-     * @var string
-     */
-    private $delimiter;
-
-    /**
-     * @var string
-     */
-    private $enclosure;
 
     /**
      * @var \Magento\Framework\App\Filesystem\DirectoryList
@@ -73,9 +65,6 @@ class File
         $varPath                   = $directoryList->getPath('var');
         $this->outputFolder        = $varPath . DIRECTORY_SEPARATOR . 'export' . DIRECTORY_SEPARATOR . 'email';
         $this->outputArchiveFolder = $this->outputFolder . DIRECTORY_SEPARATOR . 'archive';
-        // tab character
-        $this->delimiter = ',';
-        $this->enclosure = '"';
     }
 
     /**
@@ -217,29 +206,30 @@ class File
             default:
                 return "Log file is not valid. Log file name is " . $filename;
         }
+
         $pathLogfile = $this->directoryList->getPath('log') . DIRECTORY_SEPARATOR . $filename;
-        //tail the length file content
-        $lengthBefore = 500000;
+
         try {
-            $contents = '';
             $handle = $this->driver->fileOpen($pathLogfile, 'r');
-            fseek($handle, -$lengthBefore, SEEK_END);
             if (!$handle) {
-                return "Log file is not readable or does not exist at this moment. File path is "
-                . $pathLogfile;
+                return "Could not open log file at path " . $pathLogfile;
             }
 
-            if ($this->driver->stat($pathLogfile)['size'] > 0) {
-                $contents = $this->driver->fileReadLine(
-                    $handle,
-                    $this->driver->stat($pathLogfile)['size']
-                );
-                if ($contents === false) {
-                    return "Log file is not readable or does not exist at this moment. File path is "
-                        . $pathLogfile;
-                }
-                $this->driver->fileClose($handle);
+            $logFileSize = $this->driver->stat($pathLogfile)['size'];
+            if ($logFileSize === 0) {
+                return "This log file is empty.";
             }
+
+            if ($logFileSize > self::LOG_SIZE_LIMIT) {
+                $this->driver->fileSeek($handle, -self::LOG_SIZE_LIMIT, SEEK_END);
+            }
+
+            $contents = $this->driver->fileReadLine($handle, $logFileSize);
+            if (empty($contents)) {
+                return "Could not read from file at path " . $pathLogfile;
+            }
+
+            $this->driver->fileClose($handle);
             return $contents;
         } catch (\Exception $e) {
             return $e->getMessage() . $pathLogfile;

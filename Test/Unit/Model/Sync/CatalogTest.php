@@ -124,7 +124,7 @@ class CatalogTest extends TestCase
             ->willReturn($this->catalogCollectionMock);
 
         $this->catalogCollectionMock
-            ->method('getProductsToProcess')
+            ->method('getUnprocessedProducts')
             ->willReturnOnConsecutiveCalls($productsToProcess, $noProductsTProcess);
 
         $this->catalogResourceFactoryMock->expects($this->atLeastOnce())

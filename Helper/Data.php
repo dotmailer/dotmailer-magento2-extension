@@ -5,7 +5,7 @@ namespace Dotdigitalgroup\Email\Helper;
 use Dotdigitalgroup\Email\Helper\Config as EmailConfig;
 use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\StatusInterface;
-use Magento\Framework\App\Config\ReinitableConfigInterface;
+use Dotdigitalgroup\Email\Model\Apiconnector\Account;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Encryption\EncryptorInterface;
@@ -111,12 +111,13 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     private $encryptor;
 
     /**
-     * @var ReinitableConfigInterface
+     * @var Account
      */
-    private $reinitableConfig;
+    private $account;
 
     /**
      * Data constructor.
+     *
      * @param \Magento\Framework\App\ProductMetadata $productMetadata
      * @param \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contactResource
@@ -135,7 +136,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param Logger $logger
      * @param RequestInterface $request
      * @param EncryptorInterface $encryptor
-     * @param ReinitableConfigInterface $reinitableConfig
+     * @param Account $account
      */
     public function __construct(
         \Magento\Framework\App\ProductMetadata $productMetadata,
@@ -156,7 +157,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         Logger $logger,
         RequestInterface $request,
         EncryptorInterface $encryptor,
-        ReinitableConfigInterface $reinitableConfig
+        Account $account
     ) {
         $this->serializer = $serializer;
         $this->adapter = $adapter;
@@ -175,7 +176,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $this->logger = $logger;
         $this->request = $request;
         $this->encryptor = $encryptor;
-        $this->reinitableConfig = $reinitableConfig;
+        $this->account = $account;
 
         parent::__construct($context);
     }
@@ -215,7 +216,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         }
         return $this;
     }
-    
+
     /**
      * Enable Engagement Cloud integration
      *
@@ -231,17 +232,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             $scopeInterface,
             $website->getId()
         );
-        return $this;
-    }
-
-    /**
-     * Reinitialise config object
-     *
-     * @return $this
-     */
-    public function reinitialiseConfig()
-    {
-        $this->reinitableConfig->reinit();
         return $this;
     }
 
@@ -620,51 +610,19 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * Get the contact id for the customer based on website id.
-     *
      * @param string $email
      * @param int $websiteId
-     *
-     * @return bool|string
-     */
-    public function getContactId($email, $websiteId)
-    {
-        if (!$this->isEnabled($websiteId)) {
-            return false;
-        }
-
-        $contactFromTable = $this->getContactByEmail($email, $websiteId);
-        if ($contactId = $contactFromTable->getContactId()) {
-            return $contactId;
-        }
-
-        $contact = $this->getOrCreateContact($email, $websiteId, $contactFromTable);
-        if ($contact && isset($contact->id)) {
-            return $contact->id;
-        }
-
-        return false;
-    }
-
-    /**
-     * @param string $email
-     * @param int $websiteId
-     * @param boolean $contactFromTable
      *
      * @return bool|\stdClass
      */
-    public function getOrCreateContact($email, $websiteId, $contactFromTable = false)
+    public function getOrCreateContact($email, $websiteId)
     {
         if (!$this->isEnabled($websiteId)) {
             return false;
         }
 
-        if ($contactFromTable) {
-            $contact = $contactFromTable;
-        } else {
-            $contact = $this->contactFactory->create()
-                ->loadByCustomerEmail($email, $websiteId);
-        }
+        $contact = $this->contactFactory->create()
+            ->loadByCustomerEmail($email, $websiteId);
 
         $client = $this->getWebsiteApiClient($websiteId);
         $response = $client->getContactByEmail($email);
@@ -887,18 +845,16 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Guest address book.
      *
-     * @param \Magento\Store\Api\Data\WebsiteInterface|int $website
+     * @param int $websiteId
      *
      * @return string|boolean
      */
-    public function getGuestAddressBook($website)
+    public function getGuestAddressBook($websiteId)
     {
-        $website = $this->storeManager->getWebsite($website);
-
         return $this->scopeConfig->getValue(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_GUEST_ADDRESS_BOOK_ID,
             \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
-            $website->getid()
+            $websiteId
         );
     }
 
@@ -1571,6 +1527,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
+     * Get region prefix.
+     *
+     * Fetches region prefix from saved configurations.
+     *
      * @return string
      */
     public function getRegionPrefix()
@@ -1582,8 +1542,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             return '';
         }
 
-        preg_match("/https:\/\/(.*)api.(dotmailer|dotdigital).com/", $apiEndpoint, $matches);
-        return isset($matches[1]) ? $matches[1] : '';
+        return $this->account->getRegionPrefix($apiEndpoint);
     }
 
     /**

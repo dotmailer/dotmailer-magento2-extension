@@ -2,37 +2,43 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml;
 
-use Dotdigitalgroup\Email\Model\Trial\TrialSetup;
+use Dotdigitalgroup\Email\Model\Integration\IntegrationSetup;
 
 trait HandlesMicrositeRequests
 {
     /**
-     * @var TrialSetup
+     * @var IntegrationSetup
      */
-    private $trialSetup;
+    private $integrationSetup;
 
     /**
+     * Get local callback url.
+     *
      * @return string
      */
     public function getLocalCallbackUrl(): string
     {
-        return $this->getTrialSetup()->getLocalCallbackUrl();
+        return $this->getIntegrationSetup()->getLocalCallbackUrl();
     }
 
     /**
+     * Get trial signup host and scheme.
+     *
      * @return string
      */
     public function getTrialSignupHostAndScheme(): string
     {
-        return $this->getTrialSetup()->getTrialSignupHostAndScheme();
+        return $this->getIntegrationSetup()->getTrialSignupHostAndScheme();
     }
 
     /**
-     * @return TrialSetup
+     * Get integration setup.
+     *
+     * @return IntegrationSetup
      */
-    private function getTrialSetup()
+    private function getIntegrationSetup()
     {
-        return $this->trialSetup
-            ?: $this->trialSetup = $this->trialSetupFactory->create();
+        return $this->integrationSetup
+            ?: $this->integrationSetup = $this->integrationSetupFactory->create();
     }
 }

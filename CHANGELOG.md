@@ -1,3 +1,14 @@
+# 4.17.0
+
+### What's new
+- Merchants can now set up their integration with a single button click.
+
+### Improvements
+- The Log Viewer now has better error handling, and will display log contents however small the log size.
+
+### Bug fixes
+- We fixed a bug when saving values in **Dotdigital > Transactional Emails** at website or store level.
+
 # 4.16.2
 
 ### Bug fixes

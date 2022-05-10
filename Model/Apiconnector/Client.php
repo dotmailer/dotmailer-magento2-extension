@@ -215,7 +215,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      * Adds a contact to a given address book.
      *
      * @param string|int $addressBookId
-     * @param string|int $apiContact
+     * @param array $apiContact
      *
      * @return mixed|null
      * @throws \Magento\Framework\Exception\LocalizedException
@@ -533,10 +533,9 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         $response = $this->execute();
 
         if (isset($response->message)) {
-            $this->addClientLog('Error creating data fields')
-                ->addClientLog('Failed data field creation', [
-                    'data' => $data,
-                ], Logger::DEBUG);
+            $this->addClientLog('Error creating data fields', [
+                'data' => $data,
+            ]);
         }
 
         return $response;
@@ -854,7 +853,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      * @param array $data
      * @param string $collectionName
      *
-     * @return null
+     * @return object
      * @throws \Exception
      */
     public function postContactsTransactionalData(

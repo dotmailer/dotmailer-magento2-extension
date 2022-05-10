@@ -7,7 +7,7 @@ namespace Dotdigitalgroup\Email\Model\Apiconnector;
  */
 class Test
 {
-    const DEFAULT_API_ENDPOINT = 'https://r1-api.dotmailer.com';
+    public const DEFAULT_API_ENDPOINT = 'https://r1-api.dotmailer.com';
 
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
@@ -20,17 +20,25 @@ class Test
     private $config;
 
     /**
+     * @var \Dotdigitalgroup\Email\Model\Apiconnector\Account
+     */
+    private $account;
+
+    /**
      * Test constructor.
      *
      * @param \Dotdigitalgroup\Email\Helper\Data $data
      * @param \Magento\Framework\App\Config\ReinitableConfigInterface $config
+     * @param \Dotdigitalgroup\Email\Model\Apiconnector\Account $account
      */
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $data,
-        \Magento\Framework\App\Config\ReinitableConfigInterface $config
+        \Magento\Framework\App\Config\ReinitableConfigInterface $config,
+        Account $account
     ) {
         $this->helper = $data;
         $this->config = $config;
+        $this->account = $account;
     }
 
     /**
@@ -43,9 +51,6 @@ class Test
      */
     public function validate($apiUsername, $apiPassword)
     {
-        //Clear config cache
-        $this->config->reinit();
-
         $website = $this->helper->getWebsiteForSelectedScopeInAdmin();
 
         if (!$this->helper->isEnabled($website)) {
@@ -71,7 +76,7 @@ class Test
             }
 
             // If api endpoint then force save
-            if ($apiEndpoint = $this->getApiEndPoint($accountInfo)) {
+            if ($apiEndpoint = $this->account->getApiEndpoint($accountInfo)) {
                 $this->helper->saveApiEndpoint($apiEndpoint, $website->getId());
             }
             return $accountInfo;
@@ -89,7 +94,7 @@ class Test
      */
     public function validateEndpoint($apiEndpoint)
     {
-        if (!preg_match('#^https://(r[0-9]+-)?api\.dotmailer\.com$#', $apiEndpoint) &&
+        if (!preg_match('#^https://(r[0-9]+-)?api\.(dotmailer|dotdigital)\.com$#', $apiEndpoint) &&
             !preg_match('#^https://(r[0-9]+\.)?apiconnector\.com$#', $apiEndpoint)) {
             throw new \Magento\Framework\Exception\LocalizedException(
                 __('The endpoint '.$apiEndpoint.' is not permitted.')
@@ -97,23 +102,5 @@ class Test
         }
 
         return true;
-    }
-
-    /**
-     * Get api endpoint
-     *
-     * @param Object|null $accountInfo
-     * @return string
-     */
-    private function getApiEndPoint($accountInfo)
-    {
-        if (is_object($accountInfo)) {
-            //save endpoint for account
-            foreach ($accountInfo->properties as $property) {
-                if ($property->name == 'ApiEndpoint' && !empty($property->value)) {
-                    return $property->value;
-                }
-            }
-        }
     }
 }

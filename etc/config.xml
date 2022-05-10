@@ -155,7 +155,7 @@
                 <brand_attribute>manufacturer</brand_attribute>
             </data_fields>
             <transactional_data>
-                <order_statuses>complete,pending</order_statuses>
+                <order_statuses>complete,pending,processing</order_statuses>
                 <order_custom_attributes>0</order_custom_attributes>
                 <order_product_attributes>0</order_product_attributes>
                 <order_product_custom_options>0</order_product_custom_options>
@@ -212,7 +212,7 @@
                 <disable_customer_success>0</disable_customer_success>
             </admin>
             <catalog_sync>
-                <catalog_values>1</catalog_values>
+                <catalog_values>2</catalog_values>
                 <catalog_visibility>0</catalog_visibility>
                 <catalog_type>0</catalog_type>
             </catalog_sync>

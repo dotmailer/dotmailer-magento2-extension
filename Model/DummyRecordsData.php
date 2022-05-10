@@ -3,14 +3,15 @@
 namespace Dotdigitalgroup\Email\Model;
 
 use Dotdigitalgroup\Email\Helper\Data;
+use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
 use Dotdigitalgroup\Email\Logger\Logger;
+use Dotdigitalgroup\Email\Model\Apiconnector\Account;
 use Magento\Framework\UrlInterface;
 
 class DummyRecordsData
 {
-    const PRODUCT_NAME = 'Chaz Kangeroo Hoodie';
-    const EMAIL_PROPERTY_NAME = 'MainEmail';
+    private const PRODUCT_NAME = 'Chaz Kangeroo Hoodie';
 
     /**
      * @var Data
@@ -33,22 +34,33 @@ class DummyRecordsData
     private $logger;
 
     /**
+     * @var Account
+     */
+    private $account;
+
+    /**
      * DummyRecordsData constructor.
+     *
      * @param Data $helper
      * @param StoreManagerInterface $storeManager
      * @param Logger $logger
+     * @param Account $account
      */
     public function __construct(
         Data $helper,
         StoreManagerInterface $storeManager,
-        Logger $logger
+        Logger $logger,
+        Account $account
     ) {
         $this->helper = $helper;
         $this->storeManager = $storeManager;
         $this->logger = $logger;
+        $this->account = $account;
     }
 
     /**
+     * Get dummy contact data.
+     *
      * @return array
      * @throws \Exception
      */
@@ -66,17 +78,13 @@ class DummyRecordsData
 
             $accountInfo = $this->helper->getWebsiteApiClient()->getAccountInfo();
 
-            if (isset($accountInfo->properties)) {
-                $emailKey = $this->getEmailKey($accountInfo->properties);
-                if (!$emailKey) {
-                    $this->logger->debug('Email Info not found for that account');
-                    continue;
-                }
-            } else {
+            $email = $this->account->getAccountOwnerEmail($accountInfo);
+            if (!$email) {
+                $this->logger->debug('Email Info not found for that account');
                 continue;
             }
 
-            $this->email = $accountInfo->properties[$emailKey]->value;
+            $this->email = $email;
 
             $users[] = $this->helper->getApiUsername($website->getId());
             $websiteData[$website->getId()] = [
@@ -88,7 +96,9 @@ class DummyRecordsData
     }
 
     /**
-     * @param $websiteId
+     * Get contact insight data.
+     *
+     * @param int|string $websiteId
      * @return array
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
@@ -99,7 +109,9 @@ class DummyRecordsData
     }
 
     /**
-     * @param $websiteId
+     * Get store.
+     *
+     * @param int|string $websiteId
      * @return \Magento\Store\Api\Data\StoreInterface
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
@@ -114,7 +126,9 @@ class DummyRecordsData
     }
 
     /**
-     * @param $store
+     * Get static data.
+     *
+     * @param Store $store
      * @return array
      */
     private function getStaticData($store)
@@ -160,6 +174,8 @@ class DummyRecordsData
     }
 
     /**
+     * Get image url.
+     *
      * @return string
      */
     private function getImageUrl()
@@ -167,18 +183,5 @@ class DummyRecordsData
         return 'https://raw.githubusercontent.com/'
                .'magento/magento2-sample-data/'
                .'2.3/pub/media/catalog/product/m/h/mh01-black_main.jpg';
-    }
-
-    /**
-     * @param array $properties
-     * @return int|string
-     */
-    private function getEmailKey(array $properties)
-    {
-        foreach ($properties as $key => $property) {
-            if ($property->name === self::EMAIL_PROPERTY_NAME) {
-                return $key;
-            }
-        }
     }
 }

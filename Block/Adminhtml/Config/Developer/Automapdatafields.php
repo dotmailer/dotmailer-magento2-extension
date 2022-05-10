@@ -2,9 +2,13 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer;
 
-class Automapdatafields extends AbstractDeveloper
+use Dotdigitalgroup\Email\Block\Adminhtml\Config\AbstractButton;
+
+class Automapdatafields extends AbstractButton
 {
     /**
+     * Get disabled.
+     *
      * @return bool
      */
     protected function getDisabled()
@@ -13,6 +17,8 @@ class Automapdatafields extends AbstractDeveloper
     }
 
     /**
+     * Get button label.
+     *
      * @return \Magento\Framework\Phrase|string
      */
     protected function getButtonLabel()
@@ -21,6 +27,8 @@ class Automapdatafields extends AbstractDeveloper
     }
 
     /**
+     * Get button url.
+     *
      * @return string
      */
     protected function getButtonUrl()

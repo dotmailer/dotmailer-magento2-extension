@@ -7,8 +7,8 @@ use Dotdigitalgroup\Email\Helper\Config;
 use Dotdigitalgroup\Email\Helper\OauthValidator;
 use Dotdigitalgroup\Email\Model\Apiconnector\Client;
 use Dotdigitalgroup\Email\Model\Apiconnector\ClientFactory;
-use Dotdigitalgroup\Email\Model\Trial\TrialSetup;
-use Dotdigitalgroup\Email\Model\Trial\TrialSetupFactory;
+use Dotdigitalgroup\Email\Model\Integration\IntegrationSetup;
+use Dotdigitalgroup\Email\Model\Integration\IntegrationSetupFactory;
 use Dotdigitalgroup\Email\Test\Integration\MocksApiResponses;
 use Magento\Backend\Block\Template\Context;
 use Magento\Backend\Model\Auth;
@@ -43,9 +43,9 @@ class StudioTest extends \PHPUnit\Framework\TestCase
     private $client;
 
     /**
-     * @var TrialSetup
+     * @var IntegrationSetup
      */
-    private $trialSetup;
+    private $integrationSetup;
 
     /**
      * @var Config
@@ -76,12 +76,12 @@ class StudioTest extends \PHPUnit\Framework\TestCase
         $objectManager->addSharedInstance($this->authMock, Auth::class);
         $helper = $this->instantiateDataHelper();
 
-        $this->trialSetup = $objectManager->get(TrialSetup::class);
+        $this->integrationSetup = $objectManager->get(IntegrationSetup::class);
         $this->oauthValidator = $objectManager->create(OauthValidator::class);
 
-        $trialFactoryMock = $this->createMock(TrialSetupFactory::class);
-        $trialFactoryMock->method('create')
-            ->willReturn($this->trialSetup);
+        $integrationFactoryMock = $this->createMock(IntegrationSetupFactory::class);
+        $integrationFactoryMock->method('create')
+            ->willReturn($this->integrationSetup);
 
         $this->config = $objectManager->create(Config::class);
 
@@ -89,7 +89,7 @@ class StudioTest extends \PHPUnit\Framework\TestCase
             $this->config,
             $objectManager->create(Context::class),
             $helper,
-            $trialFactoryMock,
+            $integrationFactoryMock,
             $this->oauthValidator
         );
     }
@@ -101,7 +101,7 @@ class StudioTest extends \PHPUnit\Framework\TestCase
     {
         $url = parse_url($this->studio->getAction());
         $this->assertStringStartsWith(
-            $this->trialSetup->getTrialSignupHostAndScheme(),
+            $this->integrationSetup->getTrialSignupHostAndScheme(),
             sprintf('%s://%s', $url['scheme'], $url['host'])
         );
     }
