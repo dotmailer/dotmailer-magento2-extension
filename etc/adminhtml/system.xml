@@ -38,6 +38,13 @@
                         <field id="enabled">1</field>
                     </depends>
                 </field>
+                <field id="endpoint" translate="label" sortOrder="4" showInDefault="0" showInStore="0" showInWebsite="0">
+                    <label>API Endpoint</label>
+                    <backend_model>Dotdigitalgroup\Email\Model\Config\Backend\ApiEndpointValidate</backend_model>
+                </field>
+                <field id="endpoint_subdomain" translate="label" sortOrder="4" showInDefault="0" showInStore="0" showInWebsite="0">
+                    <label>API Endpoint Subdomain</label>
+                </field>
                 <field id="integration_setup" translate="comment label" type="button" sortOrder="4" showInStore="0"
                        showInWebsite="1" showInDefault="1">
                     <label></label>
@@ -1373,6 +1380,9 @@
                         Check out how <a href="https://support.dotdigital.com/hc/en-gb/articles/219045108-Installing-Web-Behavior-Tracking#profile" target="_blank">
                         to set up your unique tracking profile</a>.]]>
                     </comment>
+                </field>
+                <field id="host" translate="label" sortOrder="60" showInDefault="0" showInStore="0" showInWebsite="0">
+                    <label>Tracking Host</label>
                 </field>
             </group>
             <group id="consent" translate="label" sortOrder="25" showInDefault="1" showInWebsite="1" showInStore="0">

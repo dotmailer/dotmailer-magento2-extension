@@ -2,10 +2,17 @@
 
 namespace Dotdigitalgroup\Email\Helper;
 
+use Dotdigitalgroup\Email\Model\Consent;
+use Magento\Framework\App\Helper\Context;
+use Magento\Framework\App\Helper\AbstractHelper;
+use Magento\Framework\Stdlib\StringUtils;
+use Magento\Store\Model\ScopeInterface;
+use Magento\Store\Model\StoreManagerInterface;
+
 /**
  * Store for core config data path. Keep the configuration path in one place for settings.
  */
-class Config extends \Magento\Framework\App\Helper\AbstractHelper
+class Config extends AbstractHelper
 {
     /**
      * API SECTION.
@@ -350,7 +357,8 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
         'connector_configuration/tracking/page_enabled';
     public const XML_PATH_CONNECTOR_TRACKING_PROFILE_ID =
         'connector_configuration/tracking/tracking_profile_id';
-
+    public const TRACKING_HOST =
+        'connector_configuration/tracking/host';
     /**
      * CONSENT SECTION.
      */
@@ -434,10 +442,9 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * API and portal endpoints
      */
-    public const PATH_FOR_API_ENDPOINT =
-        'connector/api/endpoint';
-    public const PATH_FOR_PORTAL_ENDPOINT =
-        'connector/portal/endpoint';
+    public const PATH_FOR_API_ENDPOINT = 'connector_api_credentials/api/endpoint';
+    public const PATH_FOR_PORTAL_ENDPOINT = 'connector/portal/endpoint';
+    public const PATH_FOR_API_ENDPOINT_SUBDOMAIN = 'connector_api_credentials/api/endpoint_subdomain';
 
     /**
      * Version number to append to _dmpt tracking scripts
@@ -477,14 +484,14 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
 
     /**
      * Config constructor.
-     * @param \Magento\Framework\App\Helper\Context $context
-     * @param \Magento\Framework\Stdlib\StringUtils $stringUtils
-     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
+     * @param Context $context
+     * @param StringUtils $stringUtils
+     * @param StoreManagerInterface $storeManager
      */
     public function __construct(
-        \Magento\Framework\App\Helper\Context $context,
-        \Magento\Framework\Stdlib\StringUtils $stringUtils,
-        \Magento\Store\Model\StoreManagerInterface $storeManager
+        Context $context,
+        StringUtils $stringUtils,
+        StoreManagerInterface $storeManager
     ) {
         $this->stringUtils = $stringUtils;
         $this->storeManager = $storeManager;
@@ -521,6 +528,7 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     private function isAuthorizeCustomDomain($website = 0)
     {
         $website = $this->storeManager->getWebsite($website);
+        /** @var \Magento\Store\Model\Website $website */
         $customDomain = $website->getConfig(
             self::XML_PATH_CONNECTOR_CUSTOM_DOMAIN
         );
@@ -560,8 +568,7 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
 
         $website = $this->storeManager->getWebsite($website);
         $apiEndpoint = $this->getWebsiteConfig(self::PATH_FOR_API_ENDPOINT, $website);
-
-        $apiEndpoint = isset($apiEndpoint) ? $apiEndpoint : 'https://r1-app.dotdigital.com';
+        $apiEndpoint = $apiEndpoint ?: 'https://r1-app.dotdigital.com';
 
         $appSubDomain = substr_compare(
             $apiEndpoint,
@@ -590,6 +597,7 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
     {
         if ($this->isAuthorizeCustomDomain($website)) {
             $website = $this->storeManager->getWebsite($website);
+            /** @var \Magento\Store\Model\Website $website */
             $tokenUrl = $website->getConfig(self::XML_PATH_CONNECTOR_CUSTOM_DOMAIN) .
                 self::API_CONNECTOR_OAUTH_URL_TOKEN;
         } else {
@@ -621,7 +629,7 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
      * @param string $scope
      * @return int|string|boolean|float
      */
-    public function getWebsiteConfig($path, $website = 0, $scope = \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE)
+    public function getWebsiteConfig($path, $website = 0, $scope = ScopeInterface::SCOPE_WEBSITE)
     {
         return $this->scopeConfig->getValue(
             $path,
@@ -675,7 +683,7 @@ class Config extends \Magento\Framework\App\Helper\AbstractHelper
      */
     private function limitLength($value)
     {
-        if ($this->stringUtils->strlen($value) > \Dotdigitalgroup\Email\Model\Consent::CONSENT_TEXT_LIMIT) {
+        if ($this->stringUtils->strlen($value) > Consent::CONSENT_TEXT_LIMIT) {
             $value = $this->stringUtils->substr($value, 0, \Dotdigitalgroup\Email\Model\Consent::CONSENT_TEXT_LIMIT);
         }
 

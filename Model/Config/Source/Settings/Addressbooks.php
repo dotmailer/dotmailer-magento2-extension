@@ -46,7 +46,9 @@ class Addressbooks implements \Magento\Framework\Option\ArrayInterface
             if ($savedAddressbooks) {
                 $addressBooks = $savedAddressbooks;
             } else {
-                $client = $this->helper->getWebsiteApiClient($this->helper->getWebsiteForSelectedScopeInAdmin());
+                $client = $this->helper->getWebsiteApiClient(
+                    $this->helper->getWebsiteForSelectedScopeInAdmin()->getId()
+                );
                 //make an api call an register the addressbooks
                 $addressBooks = $client->getAddressBooks();
                 if ($addressBooks) {
@@ -57,7 +59,7 @@ class Addressbooks implements \Magento\Framework\Option\ArrayInterface
 
             //set up fields with book id and label
             foreach ($addressBooks as $book) {
-                if (isset($book->id)) {
+                if (isset($book->id) && isset($book->name)) {
                     $fields[] = [
                         'value' => (string)$book->id,
                         'label' => (string)$book->name,

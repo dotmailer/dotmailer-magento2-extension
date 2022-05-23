@@ -2,17 +2,19 @@
 
 namespace Dotdigitalgroup\Email\Model\Apiconnector;
 
+use Dotdigitalgroup\Email\Helper\Data;
+use Dotdigitalgroup\Email\Helper\File;
 use Dotdigitalgroup\Email\Logger\Logger;
+use Dotdigitalgroup\Email\Model\Apiconnector\Account;
+use Dotdigitalgroup\Email\Model\Apiconnector\Rest;
+use Magento\Framework\Filesystem\DriverInterface;
 
 /**
  * Dotdigital REST V2 api client.
- *
- * @SuppressWarnings(PHPMD.ExcessivePublicCount)
- * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
  */
-class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
+class Client extends Rest
 {
-    private const REST_ACCOUNT_INFO = 'https://r1-api.dotmailer.com/v2/account-info';
+    private const REST_ACCOUNT_INFO = '/v2/account-info';
     private const REST_CONTACTS = '/v2/contacts/';
     private const REST_CONTACT_WITH_CONSENT = '/v2/contacts/with-consent';
     private const REST_CONTACT_WITH_CONSENT_AND_PREFERENCES = '/v2/contacts/with-consent-and-preferences';
@@ -49,6 +51,31 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     private const API_ERROR_ADDRESSBOOK_NOT_FOUND = 'Error: ERROR_ADDRESSBOOK_NOT_FOUND';
 
     /**
+     * @var Data
+     */
+    protected $helper;
+
+    /**
+     * @var Logger
+     */
+    protected $logger;
+
+    /**
+     * @var Account
+     */
+    private $account;
+
+    /**
+     * @var File
+     */
+    protected $fileHelper;
+
+    /**
+     * @var DriverInterface
+     */
+    private $driver;
+
+    /**
      * @var string
      */
     private $apiEndpoint;
@@ -69,6 +96,24 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         self::API_ERROR_TRANS_NOT_EXISTS,
         self::API_ERROR_ADDRESSBOOK_NOT_FOUND,
     ];
+
+    /**
+     * @param Data $data
+     * @param Logger $logger
+     * @param File $fileHelper
+     * @param DriverInterface $driver
+     * @param Account $account
+     */
+    public function __construct(
+        Data $data,
+        Logger $logger,
+        File $fileHelper,
+        DriverInterface $driver,
+        Account $account
+    ) {
+        parent::__construct($data, $logger, $fileHelper, $driver);
+        $this->account = $account;
+    }
 
     /**
      * Initialize api endpoint.
@@ -96,32 +141,6 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
         }
 
         return $this->apiEndpoint;
-    }
-
-    /**
-     * Api validation.
-     *
-     * @param string $apiUsername
-     * @param string $apiPassword
-     *
-     * @return bool|mixed
-     */
-    public function validate($apiUsername, $apiPassword)
-    {
-        if ($apiUsername && $apiPassword) {
-            $this->setApiUsername($apiUsername)
-                ->setApiPassword($apiPassword);
-            $accountInfo = $this->getAccountInfo();
-
-            if (isset($accountInfo->message)) {
-                $this->addClientLog('Error validating API credentials', [], Logger::ERROR);
-                return false;
-            }
-
-            return $accountInfo;
-        }
-
-        return false;
     }
 
     /**
@@ -988,13 +1007,30 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
     /**
      * Gets a summary of information about the current status of the account.
      *
-     * @return object
+     * If the API endpoint is not yet set (e.g. we are fetching account info
+     * in order to set the API endpoint from the account properties), we fall
+     * back to the stored endpoint or the default one in config.xml.
      *
+     * @param int $websiteId
+     *
+     * @return object
      * @throws \Exception
      */
-    public function getAccountInfo()
+    public function getAccountInfo($websiteId = 0)
     {
-        $url = self::REST_ACCOUNT_INFO;
+        try {
+            $apiEndpoint = $this->getApiEndpoint();
+        } catch (\Magento\Framework\Exception\LocalizedException $e) {
+            $apiEndpoint = $this->helper->getApiEndPointFromConfig($websiteId);
+        }
+        if (strpos($apiEndpoint, 'r1') === false) {
+            $apiEndpoint = str_replace(
+                $this->account->getRegionPrefix($apiEndpoint),
+                'r1-',
+                $apiEndpoint
+            );
+        }
+        $url = $apiEndpoint . self::REST_ACCOUNT_INFO;
         $this->setUrl($url)
             ->setVerb('GET');
 
@@ -1092,7 +1128,7 @@ class Client extends \Dotdigitalgroup\Email\Model\Apiconnector\Rest
      *
      * @param int $skip
      * @param int $select
-     * @return mixed|null
+     * @return \stdClass
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getPrograms($skip = 0, $select = 1000)

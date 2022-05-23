@@ -76,6 +76,8 @@ class Books extends \Magento\Framework\View\Element\Template
     }
 
     /**
+     * Get customer from session.
+     *
      * @return \Magento\Customer\Model\Customer
      */
     public function getCustomer()
@@ -114,9 +116,9 @@ class Books extends \Magento\Framework\View\Element\Template
     private function _getApiClient()
     {
         if (empty($this->client)) {
-            $website = $this->_storeManager->getWebsite();
-            $client = $this->helper->getWebsiteApiClient($website);
-            $this->client = $client;
+            $this->client = $this->helper->getWebsiteApiClient(
+                $this->_storeManager->getWebsite()->getId()
+            );
         }
 
         return $this->client;
@@ -147,7 +149,7 @@ class Books extends \Magento\Framework\View\Element\Template
         $contactFromTable = $this->getContactFromTable();
         if (! empty($additionalFromConfig) && $contactFromTable->getContactId()) {
             $contact = $this->getConnectorContact();
-            if (isset($contact->id) && $contact->status !== 'PendingOptIn') {
+            if (isset($contact->id) && isset($contact->status) && $contact->status !== 'PendingOptIn') {
                 $addressBooks = $this->_getApiClient()
                     ->getContactAddressBooks(
                         $contact->id
@@ -206,7 +208,7 @@ class Books extends \Magento\Framework\View\Element\Template
         if ($contactFromTable->getContactId()) {
             $contact = $this->getConnectorContact();
             if (isset($contact->id)) {
-                $contactDataFields = $contact->dataFields;
+                $contactDataFields = $contact->dataFields ?? [];
                 foreach ($contactDataFields as $contactDataField) {
                     $processedContactDataFields[$contactDataField->key]
                         = $contactDataField->value;
@@ -248,6 +250,8 @@ class Books extends \Magento\Framework\View\Element\Template
     }
 
     /**
+     * Check if customer is subscriber.
+     *
      * @return bool
      */
     private function isCustomerSubscriber()
@@ -278,6 +282,8 @@ class Books extends \Magento\Framework\View\Element\Template
     }
 
     /**
+     * Get contact from table.
+     *
      * @return \Dotdigitalgroup\Email\Model\Contact
      */
     private function getContactFromTable()
@@ -293,6 +299,8 @@ class Books extends \Magento\Framework\View\Element\Template
     }
 
     /**
+     * Get preferences to show.
+     *
      * @return array
      */
     public function getPreferencesToShow()
@@ -320,6 +328,8 @@ class Books extends \Magento\Framework\View\Element\Template
     }
 
     /**
+     * Check config for preferences display.
+     *
      * @return bool
      */
     public function getCanShowPreferences()
@@ -331,8 +341,10 @@ class Books extends \Magento\Framework\View\Element\Template
     }
 
     /**
-     * @param $preferences
-     * @param $processedPreferences
+     * Process preferences.
+     *
+     * @param array $preferences
+     * @param array $processedPreferences
      *
      * @return mixed
      */
@@ -373,9 +385,11 @@ class Books extends \Magento\Framework\View\Element\Template
     }
 
     /**
-     * @param $additionalFromConfig
-     * @param $processedAddressBooks
-     * @param $additionalBooksToShow
+     * Get additional address books.
+     *
+     * @param array $additionalFromConfig
+     * @param array $processedAddressBooks
+     * @param array $additionalBooksToShow
      *
      * @return array
      */
@@ -401,6 +415,8 @@ class Books extends \Magento\Framework\View\Element\Template
     }
 
     /**
+     * Get data fields.
+     *
      * @param array $processedConnectorDataFields
      * @param array $dataFieldsFromConfig
      * @param array $processedContactDataFields
@@ -451,6 +467,8 @@ class Books extends \Magento\Framework\View\Element\Template
     }
 
     /**
+     * Is subscribed.
+     *
      * @return bool
      */
     public function isSubscribed()
@@ -466,7 +484,9 @@ class Books extends \Magento\Framework\View\Element\Template
     }
 
     /**
-     * @param stdClass $preference
+     * Check if preference has no public children.
+     *
+     * @param \stdClass $preference
      * @return bool
      */
     private function hasNoPublicChildren($preference)

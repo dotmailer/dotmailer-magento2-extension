@@ -5,18 +5,13 @@ namespace Dotdigitalgroup\Email\Test\Unit\Model\Config\Source\Carts;
 use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Model\Apiconnector\Client;
 use Dotdigitalgroup\Email\Model\Config\Source\Carts\Campaigns;
-use Magento\Framework\Escaper;
 use Magento\Framework\Registry;
+use Magento\Store\Api\Data\WebsiteInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class CampaignsTest extends TestCase
 {
-    /**
-     * @var MockObject
-     */
-    private $escaper;
-
     /**
      * @var MockObject
      */
@@ -28,14 +23,15 @@ class CampaignsTest extends TestCase
     private $registry;
 
     /**
+     * @var WebsiteInterface|MockObject
+     */
+    private $websiteInterfaceMock;
+
+    /**
      * Mock class dependencies
      */
     protected function setUp() :void
     {
-        $this->escaper = $this->getMockBuilder(Escaper::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
         $this->helper = $this->getMockBuilder(Data::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -43,6 +39,8 @@ class CampaignsTest extends TestCase
         $this->registry = $this->getMockBuilder(Registry::class)
             ->disableOriginalConstructor()
             ->getMock();
+
+        $this->websiteInterfaceMock = $this->createMock(WebsiteInterface::class);
     }
 
     /**
@@ -94,13 +92,18 @@ class CampaignsTest extends TestCase
     private function getCampaignsTest(array $testApiResponse)
     {
         $websiteId = 1234;
-        $this->helper->expects($this->exactly(2))
+
+        $this->helper->expects($this->atLeastOnce())
             ->method('getWebsiteForSelectedScopeInAdmin')
+            ->willReturn($this->websiteInterfaceMock);
+
+        $this->websiteInterfaceMock->expects($this->atLeastOnce())
+            ->method('getId')
             ->willReturn($websiteId);
 
         $this->helper->expects($this->once())
             ->method('isEnabled')
-            ->with($websiteId)
+            ->with($this->websiteInterfaceMock)
             ->willReturn(true);
 
         $this->registry->expects($this->once())
@@ -134,7 +137,7 @@ class CampaignsTest extends TestCase
             ->method('register')
             ->with('campaigns', $testApiResponse);
 
-        $campaigns = new Campaigns($this->registry, $this->helper, $this->escaper);
+        $campaigns = new Campaigns($this->registry, $this->helper);
         return $campaigns->toOptionArray();
     }
 

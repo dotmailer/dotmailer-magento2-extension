@@ -15,8 +15,6 @@ class Program implements \Magento\Framework\Data\OptionSourceInterface
     private $registry;
 
     /**
-     * Escaper
-     *
      * @var \Magento\Framework\Escaper
      */
     private $escaper;
@@ -59,7 +57,7 @@ class Program implements \Magento\Framework\Data\OptionSourceInterface
                 //grab the datafields request and save to register
                 $programs = [];
                 do {
-                    $client = $this->helper->getWebsiteApiClient($website);
+                    $client = $this->helper->getWebsiteApiClient($website->getId());
                     $programResponse = $client->getPrograms(count($programs));
 
                     if (is_object($programResponse)) {
@@ -94,7 +92,9 @@ class Program implements \Magento\Framework\Data\OptionSourceInterface
     }
 
     /**
-     * @param $programStatus
+     * Get program status.
+     *
+     * @param string $programStatus
      * @return \Magento\Framework\Phrase|string
      */
     private function getProgramStatus($programStatus)

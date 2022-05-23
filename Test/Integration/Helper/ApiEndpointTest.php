@@ -15,11 +15,11 @@ class ApiEndpointTest extends \PHPUnit\Framework\TestCase
      * @param int $website
      * @param string $endPoint
      *
-     * @return null
+     * @return void
      */
     public function testFetchingApiEndpointSuccessful()
     {
-        $endpoint = 'https://api.dotmailer.com/v2';
+        $endpoint = 'https://r1-api.dotdigital.com';
 
         $this->mockClientFactory();
         $this->mockClient->method('getAccountInfo')
@@ -35,7 +35,7 @@ class ApiEndpointTest extends \PHPUnit\Framework\TestCase
         ]);
 
         $helper = $this->instantiateDataHelper();
-        $apiEndpoint = $helper->getApiEndpoint(1, $this->mockClient);
+        $apiEndpoint = $helper->getApiEndPointFromConfig(1);
 
         $this->assertEquals(
             $endpoint,

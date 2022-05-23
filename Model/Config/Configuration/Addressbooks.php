@@ -13,7 +13,7 @@ class Addressbooks implements \Magento\Framework\Data\OptionSourceInterface
      * @var \Magento\Framework\Registry
      */
     private $registry;
-    
+
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
@@ -44,7 +44,7 @@ class Addressbooks implements \Magento\Framework\Data\OptionSourceInterface
     public function getAddressBooks()
     {
         $website = $this->helper->getWebsite();
-        $client = $this->helper->getWebsiteApiClient($website);
+        $client = $this->helper->getWebsiteApiClient($website->getId());
 
         $savedAddressBooks = $this->registry->registry('addressbooks');
         //get saved address books from registry

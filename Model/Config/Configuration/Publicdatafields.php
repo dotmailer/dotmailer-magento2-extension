@@ -2,20 +2,23 @@
 
 namespace Dotdigitalgroup\Email\Model\Config\Configuration;
 
-class Publicdatafields implements \Magento\Framework\Data\OptionSourceInterface
+use Dotdigitalgroup\Email\Helper\Data;
+use Magento\Framework\Data\OptionSourceInterface;
+
+class Publicdatafields implements OptionSourceInterface
 {
     /**
-     * @var \Dotdigitalgroup\Email\Helper\Data
+     * @var Data
      */
     private $helper;
 
     /**
      * Publicdatafields constructor.
      *
-     * @param \Dotdigitalgroup\Email\Helper\Data $data
+     * @param Data $data
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Helper\Data $data
+        Data $data
     ) {
         $this->helper = $data;
     }
@@ -28,7 +31,7 @@ class Publicdatafields implements \Magento\Framework\Data\OptionSourceInterface
     public function getDataFields()
     {
         $website = $this->helper->getWebsite();
-        $client = $this->helper->getWebsiteApiClient($website);
+        $client = $this->helper->getWebsiteApiClient($website->getId());
 
         //grab the datafields request and save to register
         $datafields = $client->getDataFields();
@@ -60,8 +63,9 @@ class Publicdatafields implements \Magento\Framework\Data\OptionSourceInterface
             } else {
                 //loop for all datafields option
                 foreach ($datafields as $datafield) {
-                    if (isset($datafield->name)
-                        && $datafield->visibility == 'Public'
+                    if (isset($datafield->name) &&
+                        isset($datafield->visibility) &&
+                        $datafield->visibility == 'Public'
                     ) {
                         $fields[] = [
                             'value' => $datafield->name,

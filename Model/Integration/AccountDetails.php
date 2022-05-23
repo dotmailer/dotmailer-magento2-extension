@@ -79,7 +79,7 @@ class AccountDetails
     private function getAccount($websiteId)
     {
         try {
-            $accountInfo  = $this->helper->getWebsiteApiClient($websiteId)
+            $accountInfo = $this->helper->getWebsiteApiClient($websiteId)
                 ->getAccountInfo();
 
             if (!$accountInfo || !is_object($accountInfo) || isset($accountInfo->message)) {

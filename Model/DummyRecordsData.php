@@ -76,7 +76,7 @@ class DummyRecordsData
                 continue;
             }
 
-            $accountInfo = $this->helper->getWebsiteApiClient()->getAccountInfo();
+            $accountInfo = $this->helper->getWebsiteApiClient($website->getId())->getAccountInfo();
 
             $email = $this->account->getAccountOwnerEmail($accountInfo);
             if (!$email) {

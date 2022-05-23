@@ -2,6 +2,8 @@
 
 namespace Dotdigitalgroup\Email\Block;
 
+use Dotdigitalgroup\Email\Helper\Config;
+
 /**
  * Roi block
  *
@@ -47,6 +49,8 @@ class Roi extends \Magento\Framework\View\Element\Template
     }
 
     /**
+     * Is roi available.
+     *
      * @return bool
      */
     public function isRoiTrackingAvailable()
@@ -55,15 +59,8 @@ class Roi extends \Magento\Framework\View\Element\Template
     }
 
     /**
-     * @return \Magento\Sales\Model\Order
-     */
-    private function getOrder()
-    {
-        return $this->session->getLastRealOrder();
-    }
-
-    /**
-     * Get order total
+     * Get order total.
+     *
      * @return string
      */
     public function getTotal()
@@ -72,7 +69,8 @@ class Roi extends \Magento\Framework\View\Element\Template
     }
 
     /**
-     * Get product names
+     * Get product names.
+     *
      * @return string
      */
     public function getProductNames()
@@ -88,10 +86,30 @@ class Roi extends \Magento\Framework\View\Element\Template
     }
 
     /**
+     * Tracking Url.
+     *
      * @return string
      */
     public function getPageTrackingUrlForSuccessPage()
     {
-        return $this->helper->getPageTrackingUrlForSuccessPage();
+        $trackingHost = $this->_scopeConfig->getValue(
+            Config::TRACKING_HOST,
+            \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
+            $this->websiteId
+        );
+
+        $version = $this->helper->getTrackingScriptVersionNumber();
+        return '//' . $this->helper->getRegionPrefix() . $trackingHost . '/_dmmpt'
+            . ($version ? '.js?v=' . $version : '');
+    }
+
+    /**
+     * Get order.
+     *
+     * @return \Magento\Sales\Model\Order
+     */
+    private function getOrder()
+    {
+        return $this->session->getLastRealOrder();
     }
 }

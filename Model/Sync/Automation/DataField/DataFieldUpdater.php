@@ -48,6 +48,8 @@ class DataFieldUpdater
     }
 
     /**
+     * Set default data fields.
+     *
      * @param string $email
      * @param string|int $websiteId
      * @param string $storeName
@@ -83,13 +85,15 @@ class DataFieldUpdater
     }
 
     /**
+     * Update data fields.
+     *
      * @return void
      * @throws \Exception
      */
     public function updateDataFields()
     {
         if (!empty($this->getData())) {
-            $client = $this->helper->getWebsiteApiClient($this->website);
+            $client = $this->helper->getWebsiteApiClient($this->getWebsite()->getId());
             $client->updateContactDatafieldsByEmail(
                 $this->email,
                 $this->getData()
@@ -98,6 +102,8 @@ class DataFieldUpdater
     }
 
     /**
+     * Get data.
+     *
      * @return array
      */
     public function getData()
@@ -106,11 +112,13 @@ class DataFieldUpdater
     }
 
     /**
+     * Get website from storeManager or cache.
+     *
      * @param string|int $websiteId
      * @return \Magento\Store\Api\Data\WebsiteInterface|Website
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    protected function getWebsite($websiteId)
+    protected function getWebsite($websiteId = 0)
     {
         if (!isset($this->website)) {
             $this->website = $this->storeManager->getWebsite($websiteId);
