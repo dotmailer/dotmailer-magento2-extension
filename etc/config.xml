@@ -6,6 +6,8 @@
                 <enabled>0</enabled>
                 <username></username>
                 <password backend_model="Magento\Config\Model\Config\Backend\Encrypted"/>
+                <endpoint>https://r1-api.dotdigital.com</endpoint>
+                <endpoint_subdomain></endpoint_subdomain>
             </api>
         </connector_api_credentials>
         <sync_settings>
@@ -176,6 +178,7 @@
                 <roi_enabled>1</roi_enabled>
                 <page_enabled>1</page_enabled>
                 <script_version>0</script_version>
+                <host>t.trackedlink.net</host>
             </tracking>
             <consent>
                 <dotmailer_consent_subscriber_enabled>0</dotmailer_consent_subscriber_enabled>

@@ -2,6 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Controller\Customer;
 
+use Dotdigitalgroup\Email\Model\Apiconnector\Client;
 use Dotdigitalgroup\Email\Model\ContactFactory;
 use Dotdigitalgroup\Email\Model\Customer\DataField\Date;
 use Dotdigitalgroup\Email\Model\Newsletter\CsvGenerator;
@@ -103,6 +104,8 @@ class Newsletter extends \Magento\Framework\App\Action\Action
     }
 
     /**
+     * Execute.
+     *
      * @return \Magento\Framework\App\ResponseInterface
      */
     public function execute()
@@ -113,17 +116,17 @@ class Newsletter extends \Magento\Framework\App\Action\Action
 
         $this->processGeneralSubscription();
 
+        /** @var \Magento\Store\Model\Store $store */
         $store = $this->storeManager->getStore();
         $website = $store->getWebsite();
 
-        //if enabled
         if ($this->helper->isEnabled($website->getId())) {
             $customerEmail = $this->customerSession->getCustomer()->getEmail();
             $contactFromTable = $this->contactFactory->create()
                 ->loadByCustomerEmail($customerEmail, $website->getId());
             $contactId = $this->getContactId($contactFromTable);
 
-            $client = $this->helper->getWebsiteApiClient($website);
+            $client = $this->helper->getWebsiteApiClient($website->getId());
             $contact = isset($contactId)
                 ? $client->getContactById($contactId)
                 : $this->createContact($client, $customerEmail, $store, $contactFromTable);
@@ -166,7 +169,9 @@ class Newsletter extends \Magento\Framework\App\Action\Action
     }
 
     /**
-     * @param $apiClient
+     * Create contact.
+     *
+     * @param Client $apiClient
      * @param string $customerEmail
      * @param \Magento\Store\Api\Data\StoreInterface $store
      * @param \Dotdigitalgroup\Email\Model\Contact $contactFromTable
@@ -210,8 +215,10 @@ class Newsletter extends \Magento\Framework\App\Action\Action
     }
 
     /**
+     * Process additional subscriptions.
+     *
      * @param Object $contact
-     * @param \Dotdigitalgroup\Email\Model\Apiconnector\Client $client
+     * @param Client $client
      * @param \Magento\Store\Model\Website $website
      *
      * @return bool
@@ -251,8 +258,10 @@ class Newsletter extends \Magento\Framework\App\Action\Action
     }
 
     /**
+     * Process contact data fields.
+     *
      * @param string $customerEmail
-     * @param \Dotdigitalgroup\Email\Model\Apiconnector\Client $client
+     * @param Client $client
      * @param \Magento\Store\Model\Website $website
      *
      * @return bool - success
@@ -277,6 +286,8 @@ class Newsletter extends \Magento\Framework\App\Action\Action
     }
 
     /**
+     * Get data fields.
+     *
      * @param \Dotdigitalgroup\Email\Model\Apiconnector\Client $client
      * @param array $paramDataFields
      * @return array
@@ -321,7 +332,9 @@ class Newsletter extends \Magento\Framework\App\Action\Action
     }
 
     /**
-     * @param \Dotdigitalgroup\Email\Model\Apiconnector\Client $client
+     * Process contact preferences.
+     *
+     * @param Client $client
      * @param Object $contact
      * @return bool
      */
@@ -349,6 +362,8 @@ class Newsletter extends \Magento\Framework\App\Action\Action
     }
 
     /**
+     * Process preferences.
+     *
      * @param array $paramPreferences
      * @param array $data
      * @return array
@@ -389,6 +404,8 @@ class Newsletter extends \Magento\Framework\App\Action\Action
     }
 
     /**
+     * Process preferences from session.
+     *
      * @param array $preferencesFromSession
      * @param array $data
      *
@@ -419,7 +436,9 @@ class Newsletter extends \Magento\Framework\App\Action\Action
     }
 
     /**
-     * @param $contactFromTable
+     * Get contact id.
+     *
+     * @param \Dotdigitalgroup\Email\Model\Contact $contactFromTable
      * @return mixed
      */
     private function getContactId($contactFromTable)
@@ -489,6 +508,8 @@ class Newsletter extends \Magento\Framework\App\Action\Action
     }
 
     /**
+     * Get isSubscribed.
+     *
      * With Global Account Sharing, $customer->getExtensionAttributes()->getIsSubscribed() is not reliable,
      * because we can have multiple subscriptions per customer ID
      *

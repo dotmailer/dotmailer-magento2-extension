@@ -36,6 +36,11 @@ class DataFieldUpdaterTest extends TestCase
      */
     private $websiteMock;
 
+    /**
+     * @var int
+     */
+    private $websiteId;
+
     protected function setUp() :void
     {
         $this->helperMock = $this->createMock(Data::class);
@@ -47,6 +52,9 @@ class DataFieldUpdaterTest extends TestCase
             $this->helperMock,
             $this->storeManagerMock
         );
+
+        $this->websiteMock->method('getId')
+            ->willReturn($this->websiteId = 1234);
     }
 
     public function testDefaultDataFieldsAreSet()
@@ -86,7 +94,7 @@ class DataFieldUpdaterTest extends TestCase
 
         $this->helperMock->expects($this->once())
             ->method('getWebsiteApiClient')
-            ->with($this->websiteMock)
+            ->with($this->websiteId)
             ->willReturn($this->clientMock);
 
         $this->dataFieldUpdater->updateDataFields();

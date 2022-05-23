@@ -4,8 +4,11 @@ namespace Dotdigitalgroup\Email\Test\Unit\Model\Apiconnector;
 
 use Dotdigitalgroup\Email\Model\Apiconnector\Test;
 use Dotdigitalgroup\Email\Helper\Data;
+use Dotdigitalgroup\Email\Model\Apiconnector\ClientFactory;
 use Dotdigitalgroup\Email\Model\Apiconnector\Account;
+use Magento\Framework\App\Config\Storage\Writer;
 use Magento\Framework\App\Config\ReinitableConfigInterface;
+use Magento\Store\Api\Data\WebsiteInterface;
 use PHPUnit\Framework\TestCase;
 
 class ApiTestTest extends TestCase
@@ -14,6 +17,11 @@ class ApiTestTest extends TestCase
      * @var Data|\PHPUnit_Framework_MockObject_MockObject
      */
     private $helperMock;
+
+    /**
+     * @var ClientFactory|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $clientFactoryMock;
 
     /**
      * @var ReinitableConfigInterface|\PHPUnit_Framework_MockObject_MockObject
@@ -25,16 +33,26 @@ class ApiTestTest extends TestCase
      */
     private $accountMock;
 
+    /**
+     * @var Writer|\PHPUnit\Framework\MockObject\MockObject
+     */
+    private $writerMock;
+
     protected function setUp() :void
     {
         $this->helperMock = $this->createMock(Data::class);
+        $this->clientFactoryMock = $this->createMock(ClientFactory::class);
         $this->configInterfaceMock = $this->createMock(ReinitableConfigInterface::class);
         $this->accountMock = $this->createMock(Account::class);
+        $this->writerMock = $this->createMock(Writer::class);
+        $this->websiteInterfaceMock = $this->createMock(WebsiteInterface::class);
 
         $this->apiTest = new Test(
             $this->helperMock,
+            $this->clientFactoryMock,
             $this->configInterfaceMock,
-            $this->accountMock
+            $this->accountMock,
+            $this->writerMock
         );
     }
 
@@ -79,6 +97,21 @@ class ApiTestTest extends TestCase
         $this->assertTrue(
             $this->apiTest->validateEndpoint($validEndpoint)
         );
+
+        $validEndpoint = 'https://r1-api-stg.dotdigital.com';
+        $this->assertTrue(
+            $this->apiTest->validateEndpoint($validEndpoint)
+        );
+
+        $validEndpoint = 'https://r1-api-vp.dotdigital.com';
+        $this->assertTrue(
+            $this->apiTest->validateEndpoint($validEndpoint)
+        );
+
+        $validEndpoint = 'https://r1-api-foo.dotdigital.com';
+        $this->assertTrue(
+            $this->apiTest->validateEndpoint($validEndpoint)
+        );
     }
 
     public function testValidApiconnectorEndpoint()
@@ -109,6 +142,24 @@ class ApiTestTest extends TestCase
         $this->apiTest->validateEndpoint($invalidEndpoint);
 
         $invalidEndpoint = 'https://www.apiconnector.com';
+        $this->expectException(\Magento\Framework\Exception\LocalizedException::class);
+        $this->apiTest->validateEndpoint($invalidEndpoint);
+    }
+
+    public function testInvalidHost()
+    {
+        $invalidEndpoint = 'http://r1-api.chaz.com';
+        $this->expectException(\Magento\Framework\Exception\LocalizedException::class);
+        $this->apiTest->validateEndpoint($invalidEndpoint);
+    }
+
+    public function testInvalidSubdomain()
+    {
+        $invalidEndpoint = 'http://r1-stg.dotdigital.com';
+        $this->expectException(\Magento\Framework\Exception\LocalizedException::class);
+        $this->apiTest->validateEndpoint($invalidEndpoint);
+
+        $invalidEndpoint = 'http://r1.api.dotdigital.com';
         $this->expectException(\Magento\Framework\Exception\LocalizedException::class);
         $this->apiTest->validateEndpoint($invalidEndpoint);
     }

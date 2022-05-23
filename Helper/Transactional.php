@@ -2,12 +2,14 @@
 
 namespace Dotdigitalgroup\Email\Helper;
 
+use Magento\Framework\App\Helper\AbstractHelper;
+use Magento\Store\Model\ScopeInterface;
 use Zend\Mail\Transport\SmtpOptions;
 
 /**
  * Transactional emails configuration data values.
  */
-class Transactional extends \Magento\Framework\App\Helper\AbstractHelper
+class Transactional extends AbstractHelper
 {
     public const XML_PATH_DDG_TRANSACTIONAL_ENABLED    = 'transactional_emails/ddg_transactional/enabled';
     public const XML_PATH_DDG_TRANSACTIONAL_HOST       = 'transactional_emails/ddg_transactional/host';
@@ -27,7 +29,7 @@ class Transactional extends \Magento\Framework\App\Helper\AbstractHelper
     {
         return $this->scopeConfig->isSetFlag(
             self::XML_PATH_DDG_TRANSACTIONAL_ENABLED,
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+            ScopeInterface::SCOPE_STORE,
             $storeId
         );
     }
@@ -44,16 +46,22 @@ class Transactional extends \Magento\Framework\App\Helper\AbstractHelper
     {
         $regionId = $this->scopeConfig->getValue(
             self::XML_PATH_DDG_TRANSACTIONAL_HOST,
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+            ScopeInterface::SCOPE_STORE,
+            $storeId
+        );
+
+        $subdomain = $this->scopeConfig->getValue(
+            Config::PATH_FOR_API_ENDPOINT_SUBDOMAIN,
+            ScopeInterface::SCOPE_STORE,
             $storeId
         );
 
         if ($regionId) {
-            return 'r' . $regionId . '-smtp.dotdigital.com';
+            return 'r' . $regionId . '-smtp' . ($subdomain ? '-' . $subdomain : '') . '.dotdigital.com';
         }
 
         throw new \Magento\Framework\Exception\LocalizedException(
-            __('Dotdigital smtp host region is not defined')
+            __('Dotdigital SMTP host region is not defined')
         );
     }
 
@@ -68,7 +76,7 @@ class Transactional extends \Magento\Framework\App\Helper\AbstractHelper
     {
         return $this->scopeConfig->getValue(
             self::XML_PATH_DDG_TRANSACTIONAL_USERNAME,
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+            ScopeInterface::SCOPE_STORE,
             $storeId
         );
     }
@@ -84,7 +92,7 @@ class Transactional extends \Magento\Framework\App\Helper\AbstractHelper
     {
         return $this->scopeConfig->getValue(
             self::XML_PATH_DDG_TRANSACTIONAL_PASSWORD,
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+            ScopeInterface::SCOPE_STORE,
             $storeId
         );
     }
@@ -100,7 +108,7 @@ class Transactional extends \Magento\Framework\App\Helper\AbstractHelper
     {
         return $this->scopeConfig->getValue(
             self::XML_PATH_DDG_TRANSACTIONAL_PORT,
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+            ScopeInterface::SCOPE_STORE,
             $storeId
         );
     }
@@ -110,28 +118,27 @@ class Transactional extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @param int $storeId
      *
-     * @return SmtpOptions
+     * @return SmtpOptions|null
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getSmtpOptions($storeId)
     {
         try {
-            $host = $this->getSmtpHost($storeId);
-
             return new SmtpOptions(
                 [
-                'host' => $host,
-                'port' => $this->getSmtpPort($storeId),
-                'connection_class' => 'login',
-                'connection_config' => [
-                    'username' => $this->getSmtpUsername($storeId),
-                    'password' => $this->getSmtpPassword($storeId),
-                    'ssl' => 'tls'
-                ]
+                    'host' => $this->getSmtpHost($storeId),
+                    'port' => $this->getSmtpPort($storeId),
+                    'connection_class' => 'login',
+                    'connection_config' => [
+                        'username' => $this->getSmtpUsername($storeId),
+                        'password' => $this->getSmtpPassword($storeId),
+                        'ssl' => 'tls'
+                    ]
                 ]
             );
         } catch (\Exception $e) {
             $this->_logger->debug((string) $e);
+            return null;
         }
     }
 

@@ -53,7 +53,7 @@ class Account
      */
     public function getRegionPrefix($apiEndpoint)
     {
-        preg_match("/https:\/\/(.*)api.(dotmailer|dotdigital).com/", $apiEndpoint, $matches);
+        preg_match("/https:\/\/(.*)api(.*).(dotmailer|dotdigital).com/", $apiEndpoint, $matches);
         return $matches[1] ?? '';
     }
 }

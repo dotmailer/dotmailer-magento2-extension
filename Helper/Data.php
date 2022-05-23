@@ -61,14 +61,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public $customerFactory;
 
     /**
-     * @var \Magento\Framework\App\Config\Storage\Writer
-     */
-    public $writer;
-
-    /**
      * @var \Dotdigitalgroup\Email\Model\Apiconnector\ClientFactory
      */
-    public $clientFactory;
+    private $clientFactory;
 
     /**
      * @var \Dotdigitalgroup\Email\Helper\ConfigFactory ConfigFactory
@@ -127,7 +122,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      * @param \Magento\Customer\Model\CustomerFactory $customerFactory
      * @param \Magento\Store\Model\Store $store
-     * @param \Magento\Framework\App\Config\Storage\Writer $writer
      * @param \Dotdigitalgroup\Email\Model\Apiconnector\ClientFactory $clientFactory
      * @param ConfigFactory $configHelperFactory
      * @param SerializerInterface $serializer
@@ -148,7 +142,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Magento\Customer\Model\CustomerFactory $customerFactory,
         \Magento\Store\Model\Store $store,
-        \Magento\Framework\App\Config\Storage\Writer $writer,
         \Dotdigitalgroup\Email\Model\Apiconnector\ClientFactory $clientFactory,
         \Dotdigitalgroup\Email\Helper\ConfigFactory $configHelperFactory,
         SerializerInterface $serializer,
@@ -167,7 +160,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $this->storeManager = $storeManager;
         $this->customerFactory = $customerFactory;
         $this->store = $store;
-        $this->writer = $writer;
         $this->clientFactory = $clientFactory;
         $this->configHelperFactory = $configHelperFactory;
         $this->datetime = $dateTime;
@@ -238,20 +230,19 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Get api credentials enabled.
      *
-     * @param int $website
+     * @param int $websiteId
      * @return bool
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function isEnabled($website = 0)
+    public function isEnabled($websiteId = 0)
     {
-        $website = $this->storeManager->getWebsite($website);
         $enabled = $this->scopeConfig->isSetFlag(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_ENABLED,
             \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
-            $website
+            $websiteId
         );
-        $apiUsername = $this->getApiUsername($website);
-        $apiPassword = $this->getApiPassword($website);
+        $apiUsername = $this->getApiUsername($websiteId);
+        $apiPassword = $this->getApiPassword($websiteId);
         if (!$apiUsername || !$apiPassword || !$enabled) {
             return false;
         }
@@ -654,83 +645,33 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Api client by website.
      *
-     * @param Magento\Store\Model\Website|int $website
+     * @param int $websiteId
      * @param string $username
      * @param string $password
      *
      * @return \Dotdigitalgroup\Email\Model\Apiconnector\Client
      */
-    public function getWebsiteApiClient($website = 0, $username = '', $password = '')
+    public function getWebsiteApiClient(int $websiteId = 0, $username = '', $password = '')
     {
         if ($username && $password) {
             $apiUsername = $username;
             $apiPassword = $password;
         } else {
-            $apiUsername = $this->getApiUsername($website);
-            $apiPassword = $this->getApiPassword($website);
+            $apiUsername = $this->getApiUsername($websiteId);
+            $apiPassword = $this->getApiPassword($websiteId);
         }
 
         $client = $this->clientFactory->create();
         $client->setApiUsername($apiUsername)
             ->setApiPassword($apiPassword);
 
-        $websiteId = $this->storeManager->getWebsite($website)->getId();
-        //Get api endpoint
-        $apiEndpoint = $this->getApiEndpoint($websiteId, $client);
+        $apiEndpoint = $this->getApiEndPointFromConfig($websiteId);
 
-        //Set api endpoint on client
         if ($apiEndpoint) {
             $client->setApiEndpoint($apiEndpoint);
         }
 
         return $client;
-    }
-
-    /**
-     * Get Api endPoint
-     *
-     * @param int $websiteId
-     * @param \Dotdigitalgroup\Email\Model\Apiconnector\Client $client
-     *
-     * @return string|
-     */
-    public function getApiEndpoint($websiteId, $client)
-    {
-        //Get from DB
-        $apiEndpoint = $this->getApiEndPointFromConfig($websiteId);
-
-        //Nothing from DB then fetch from api
-        if (!$apiEndpoint) {
-            $apiEndpoint = $this->getApiEndPointFromApi($client);
-            //Save it in DB
-            if ($apiEndpoint) {
-                $this->saveApiEndpoint($apiEndpoint, $websiteId);
-            }
-        }
-        return $apiEndpoint;
-    }
-
-    /**
-     * Get api end point from api
-     *
-     * @param \Dotdigitalgroup\Email\Model\Apiconnector\Client $client
-     *
-     * @return string|boolean
-     */
-    public function getApiEndPointFromApi($client)
-    {
-        $accountInfo = $client->getAccountInfo();
-        $apiEndpoint = false;
-        if (is_object($accountInfo) && !isset($accountInfo->message)) {
-            //save endpoint for account
-            foreach ($accountInfo->properties as $property) {
-                if ($property->name == 'ApiEndpoint' && !empty($property->value)) {
-                    $apiEndpoint = $property->value;
-                    break;
-                }
-            }
-        }
-        return $apiEndpoint;
     }
 
     /**
@@ -758,51 +699,28 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * Save api endpoint into config.
-     *
-     * @param string $apiEndpoint
      * @param int $websiteId
      *
-     * @return null
+     * @return string|boolean
      */
-    public function saveApiEndpoint($apiEndpoint, $websiteId)
+    public function getApiUsername($websiteId = 0)
     {
-        if ($websiteId > 0) {
-            $scope = \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITES;
-        } else {
-            $scope = ScopeConfigInterface::SCOPE_TYPE_DEFAULT;
-        }
-        $this->writer->save(
-            \Dotdigitalgroup\Email\Helper\Config::PATH_FOR_API_ENDPOINT,
-            $apiEndpoint,
-            $scope,
+        return $this->getWebsiteConfig(
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_USERNAME,
             $websiteId
         );
     }
 
     /**
-     * @param int $website
+     * @param int $websiteId
      *
      * @return string|boolean
      */
-    public function getApiUsername($website = 0)
-    {
-        return $this->getWebsiteConfig(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_USERNAME,
-            $website
-        );
-    }
-
-    /**
-     * @param int $website
-     *
-     * @return string|boolean
-     */
-    public function getApiPassword($website = 0)
+    public function getApiPassword($websiteId = 0)
     {
         return $this->getWebsiteConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_PASSWORD,
-            $website
+            $websiteId
         );
     }
 
@@ -914,60 +832,18 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * Get website config.
      *
      * @param string $path
-     * @param int $website
+     * @param int $websiteId
      * @param string $scope
      *
      * @return string|boolean
      */
-    public function getWebsiteConfig($path, $website = 0, $scope = \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE)
+    public function getWebsiteConfig($path, $websiteId = 0, $scope = ScopeInterface::SCOPE_WEBSITE)
     {
         return $this->scopeConfig->getValue(
             $path,
             $scope,
-            $website
+            $websiteId
         );
-    }
-
-    /**
-     * Disable website config when the request is made admin area only!
-     *
-     * @param string $path
-     *
-     * @return null
-     */
-    public function disableConfigForWebsite($path)
-    {
-        $scopeId = 0;
-        if ($website = $this->request->getParam('website')) {
-            $scope = 'websites';
-            $scopeId = $this->storeManager->getWebsite($website)->getId();
-        } else {
-            $scope = 'default';
-        }
-        $this->resourceConfig->saveConfig(
-            $path,
-            0,
-            $scope,
-            $scopeId
-        );
-    }
-
-    /**
-     * Number of customers with duplicate emails, emails as total number.
-     *
-     * @return \Magento\Customer\Model\ResourceModel\Customer\Collection
-     */
-    public function getCustomersWithDuplicateEmails()
-    {
-        $customers = $this->customerFactory->create()
-            ->getCollection();
-
-        //duplicate emails
-        $customers->getSelect()
-            ->columns(['emails' => 'COUNT(e.entity_id)'])
-            ->group('email')
-            ->having('emails > ?', 1);
-        return $customers;
     }
 
     /**
@@ -1529,7 +1405,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Get region prefix.
      *
-     * Fetches region prefix from saved configurations.
+     * Will return a string like 'r1-'.
      *
      * @return string
      */
@@ -1543,26 +1419,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         }
 
         return $this->account->getRegionPrefix($apiEndpoint);
-    }
-
-    /**
-     * @return string
-     */
-    public function getPageTrackingUrl()
-    {
-        $version = $this->getTrackingScriptVersionNumber();
-        return '//' . $this->getRegionPrefix() . 't.trackedlink.net/_dmpt'
-            . ($version ? '.js?v=' . $version : '');
-    }
-
-    /**
-     * @return string
-     */
-    public function getPageTrackingUrlForSuccessPage()
-    {
-        $version = $this->getTrackingScriptVersionNumber();
-        return '//' . $this->getRegionPrefix() . 't.trackedlink.net/_dmmpt'
-            . ($version ? '.js?v=' . $version : '');
     }
 
     /**
@@ -1653,7 +1509,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @return int|null
      */
-    private function getTrackingScriptVersionNumber()
+    public function getTrackingScriptVersionNumber()
     {
         return (int)$this->scopeConfig->getValue(Config::XML_PATH_TRACKING_SCRIPT_VERSION);
     }

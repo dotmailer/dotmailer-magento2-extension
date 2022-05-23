@@ -5,13 +5,6 @@ namespace Dotdigitalgroup\Email\Model\Config\Source\Carts;
 class Campaigns implements \Magento\Framework\Data\OptionSourceInterface
 {
     /**
-     * Escaper
-     *
-     * @var \Magento\Framework\Escaper
-     */
-    private $escaper;
-
-    /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     private $helper;
@@ -26,19 +19,18 @@ class Campaigns implements \Magento\Framework\Data\OptionSourceInterface
      *
      * @param \Magento\Framework\Registry $registry
      * @param \Dotdigitalgroup\Email\Helper\Data $data
-     * @param \Magento\Framework\Escaper $escaper
      */
     public function __construct(
         \Magento\Framework\Registry $registry,
-        \Dotdigitalgroup\Email\Helper\Data $data,
-        \Magento\Framework\Escaper $escaper
+        \Dotdigitalgroup\Email\Helper\Data $data
     ) {
-        $this->escaper = $escaper;
         $this->registry = $registry;
         $this->helper   = $data;
     }
 
     /**
+     * Options.
+     *
      * @return array
      */
     public function toOptionArray()
@@ -66,7 +58,7 @@ class Campaigns implements \Magento\Framework\Data\OptionSourceInterface
             } elseif (!empty($campaigns)) {
                 //loop for all campaign options
                 foreach ($campaigns as $campaign) {
-                    if (isset($campaign->name)) {
+                    if (isset($campaign->id) && isset($campaign->name)) {
                         $fields[] = [
                             'value' => $campaign->id,
                             'label' => $campaign->name,
@@ -80,13 +72,17 @@ class Campaigns implements \Magento\Framework\Data\OptionSourceInterface
     }
 
     /**
+     * Fetch campaigns.
+     *
      * @return array
      * @throws \Exception
      */
     private function fetchCampaigns()
     {
         //grab the datafields request and save to register
-        $client = $this->helper->getWebsiteApiClient($this->helper->getWebsiteForSelectedScopeInAdmin());
+        $client = $this->helper->getWebsiteApiClient(
+            $this->helper->getWebsiteForSelectedScopeInAdmin()->getId()
+        );
         $campaigns = [];
 
         do {

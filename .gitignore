@@ -7,3 +7,4 @@ vendor
 composer.lock
 .DS_Store
 auth.json
+*testsuite.xml

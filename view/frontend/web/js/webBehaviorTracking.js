@@ -66,7 +66,7 @@ define([
                         product_brand: productData.extension_attributes.ddg_brand || '',
                         product_categories: (productData.extension_attributes.ddg_categories || []).join(','),
                         product_image_path: productData.extension_attributes.ddg_image || '',
-                        product_description: productData.extension_attributes.ddg_description || '',
+                        product_description: productData.extension_attributes.ddg_description || ''
                 };
 
                 this.wbtTrack(trackingData);
@@ -75,16 +75,22 @@ define([
 
         /**
          * @param {String} id
+         * @param {String} subdomain
+         * @param {String} region
          */
-        initWbt: function (id) {
+        initWbt: function (id, subdomain = 'static', region = 'r1-') {
+            var scriptPath = '//' +
+                (subdomain === 'static' ? subdomain : region + subdomain) +
+                '.trackedweb.net/js/_dmptv4.js';
+
             window.dm_insight_id = id;
 
             (function (w, d, u, t, o, c) {
-                w['dmtrackingobjectname'] = o;c = d.createElement(t);c.async = 1;c.src = u;t = d.getElementsByTagName
-                (t)[0];t.parentNode.insertBefore(c, t);w[o] = w[o] || function () {
+                w['dmtrackingobjectname'] = o; w['dmtrackingdomain'] = subdomain + '.trackedweb.net'; c = d.createElement(t); c.async = 1; c.src = u; t = d.getElementsByTagName
+                (t)[0]; t.parentNode.insertBefore(c,t); w[o] = w[o] || function () {
                     (w[o].q = w[o].q || []).push(arguments);
                 };
-            })(window, document, '//static.trackedweb.net/js/_dmptv4.js', 'script', 'dmPt');
+            })(window, document, scriptPath, 'script', 'dmPt');
 
             return this;
         },
@@ -101,11 +107,12 @@ define([
          * @constructor
          */
         'Dotdigitalgroup_Email/js/webBehaviorTracking': function (settings) {
-            var wbt = this.initWbt(settings.id),
+            var wbt = this.initWbt(settings.id, settings.subdomain, settings.region),
                 body = document.getElementsByTagName('body')[0];
 
             if (body.classList.contains('catalogsearch-result-index')) {
                 var search = document.getElementById('search');
+
                 this.wbtTrack({
                     'searched_term': search.getAttribute('value')
                 });

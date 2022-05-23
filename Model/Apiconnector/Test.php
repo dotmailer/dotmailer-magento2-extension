@@ -2,17 +2,25 @@
 
 namespace Dotdigitalgroup\Email\Model\Apiconnector;
 
+use Dotdigitalgroup\Email\Helper\Config;
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\App\Config\Storage\Writer;
+use Magento\Store\Model\ScopeInterface;
+
 /**
  * test class for validation of the api credentials.
  */
 class Test
 {
-    public const DEFAULT_API_ENDPOINT = 'https://r1-api.dotmailer.com';
-
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     private $helper;
+
+    /**
+     * @var ClientFactory
+     */
+    private $clientFactory;
 
     /**
      * @var \Magento\Framework\App\Config\ReinitableConfigInterface
@@ -25,20 +33,31 @@ class Test
     private $account;
 
     /**
+     * @var Writer
+     */
+    private $writer;
+
+    /**
      * Test constructor.
      *
      * @param \Dotdigitalgroup\Email\Helper\Data $data
+     * @param \Dotdigitalgroup\Email\Model\Apiconnector\ClientFactory $clientFactory
      * @param \Magento\Framework\App\Config\ReinitableConfigInterface $config
-     * @param \Dotdigitalgroup\Email\Model\Apiconnector\Account $account
+     * @param Account $account
+     * @param Writer $writer
      */
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $data,
+        ClientFactory $clientFactory,
         \Magento\Framework\App\Config\ReinitableConfigInterface $config,
-        Account $account
+        Account $account,
+        Writer $writer
     ) {
         $this->helper = $data;
+        $this->clientFactory = $clientFactory;
         $this->config = $config;
         $this->account = $account;
+        $this->writer = $writer;
     }
 
     /**
@@ -53,31 +72,28 @@ class Test
     {
         $website = $this->helper->getWebsiteForSelectedScopeInAdmin();
 
-        if (!$this->helper->isEnabled($website)) {
+        if (!$this->helper->isEnabled($website->getId())) {
             return false;
         }
 
         if ($apiPassword == '******') {
-            $apiPassword = $this->helper->getApiPassword($website);
+            $apiPassword = $this->helper->getApiPassword($website->getId());
         }
 
-        $client = $this->helper->clientFactory->create();
         if ($apiUsername && $apiPassword) {
-            $client->setApiUsername($apiUsername)
-                ->setApiPassword($apiPassword);
-
-            $accountInfo = $client->getAccountInfo();
+            $accountInfo = $this->clientFactory->create()
+                ->setApiUsername($apiUsername)
+                ->setApiPassword($apiPassword)
+                ->getAccountInfo($website->getId());
 
             if (isset($accountInfo->message)) {
-                $this->helper->log('VALIDATION ERROR :  ' . $accountInfo->message);
-                $this->helper->saveApiEndpoint(self::DEFAULT_API_ENDPOINT, $website->getId());
-                $this->config->reinit();
+                $this->helper->error('VALIDATION ERROR :  ' . $accountInfo->message);
                 return false;
             }
 
-            // If api endpoint then force save
             if ($apiEndpoint = $this->account->getApiEndpoint($accountInfo)) {
-                $this->helper->saveApiEndpoint($apiEndpoint, $website->getId());
+                $this->saveApiEndpoint($apiEndpoint, $website->getId());
+                $this->config->reinit();
             }
             return $accountInfo;
         }
@@ -94,7 +110,7 @@ class Test
      */
     public function validateEndpoint($apiEndpoint)
     {
-        if (!preg_match('#^https://(r[0-9]+-)?api\.(dotmailer|dotdigital)\.com$#', $apiEndpoint) &&
+        if (!preg_match('#^https://(r[0-9]+-)?api(.*)\.(dotmailer|dotdigital)\.com$#', $apiEndpoint) &&
             !preg_match('#^https://(r[0-9]+\.)?apiconnector\.com$#', $apiEndpoint)) {
             throw new \Magento\Framework\Exception\LocalizedException(
                 __('The endpoint '.$apiEndpoint.' is not permitted.')
@@ -102,5 +118,28 @@ class Test
         }
 
         return true;
+    }
+
+    /**
+     * Save api endpoint into config.
+     *
+     * @param string $apiEndpoint
+     * @param int $websiteId
+     *
+     * @return void
+     */
+    private function saveApiEndpoint($apiEndpoint, $websiteId)
+    {
+        if ($websiteId > 0) {
+            $scope = ScopeInterface::SCOPE_WEBSITES;
+        } else {
+            $scope = ScopeConfigInterface::SCOPE_TYPE_DEFAULT;
+        }
+        $this->writer->save(
+            Config::PATH_FOR_API_ENDPOINT,
+            $apiEndpoint,
+            $scope,
+            $websiteId
+        );
     }
 }

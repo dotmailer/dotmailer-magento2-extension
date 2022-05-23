@@ -128,7 +128,7 @@ class CustomerGuestAbandonedTest extends \PHPUnit\Framework\TestCase
      * @magentoConfigFixture default_store abandoned_carts/customers/send_after_2 60
      * @magentoConfigFixture default_store abandoned_carts/customers/send_after_1 15
      * @magentoConfigFixture default_store abandoned_carts/customers/campaign_2 1234
-     * @magentoConfigFixture default_store connector/api/endpoint https://r1-api.dotmailer.com
+     * @magentoConfigFixture default_store connector_api_credentials/api/endpoint https://r1-api.dotdigital.com
      * @magentoConfigFixture default_store connector_configuration/abandoned_carts/allow_non_subscribers 1
      */
     public function testExistingCustomerAbandonedCart()
