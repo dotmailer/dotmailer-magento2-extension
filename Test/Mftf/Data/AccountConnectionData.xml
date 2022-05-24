@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<entities xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:noNamespaceSchemaLocation="urn:magento:mftf:DataGenerator/etc/dataProfileSchema.xsd">
+    <entity name="AccountConnectionData">
+        <data key="accountInvalidMessageText">The connection between this website and Dotdigital is currently failing.</data>
+        <data key="accountInvalidClasses">message ddg-account-details ddg-disconnected</data>
+        <data key="accountValidMessageText">This website is currently connected to the Dotdigital account:</data>
+        <data key="accountValidClasses">message ddg-account-details ddg-connected</data>
+    </entity>
+</entities>

@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
+    <test name="SetupIntegrationTest">
+        <annotations>
+            <features value="Dotdigital module"/>
+            <stories value="Test Dotdigital setup integration"/>
+            <title value="Test Setup integration action"/>
+            <description value=""/>
+            <severity value="MINOR"/>
+            <group value="dotmailer"/>
+        </annotations>
+
+        <before>
+            <!-- Login as admin -->
+            <actionGroup ref="AdminLoginActionGroup" stepKey="AdminLoginActionGroup"/>
+            <!-- Setup Dotdigital Account -->
+            <actionGroup ref="SetDotmailerAccountData" stepKey="SetDotmailerAccountData"/>
+            <!-- Set sync enable for no subscribed users -->
+            <actionGroup ref="SelectOptionForNotSubscribedContacts" stepKey="enableForNotSubscribedContacts"/>
+            <!-- create order data -->
+            <createData entity="_defaultCategory" stepKey="createOrderCategory"/>
+            <createData entity="SimpleProduct" stepKey="createOrderProduct">
+                <requiredEntity createDataKey="createOrderCategory"/>
+            </createData>
+            <!-- customer for order -->
+            <createData entity="Simple_US_Customer_CA" stepKey="orderCustomer"/>
+            <!-- Create Order  -->
+            <actionGroup ref="CreateOrderActionGroup" stepKey="createOrder">
+                <argument name="product" value="$createOrderProduct$"/>
+                <argument name="customer" value="$orderCustomer$"/>
+            </actionGroup>
+        </before>
+
+        <after>
+            <!--Delete created entity -->
+            <deleteData createDataKey="createOrderCategory" stepKey="deleteOrderCategory"/>
+            <deleteData createDataKey="createOrderProduct" stepKey="deleteOrderProduct"/>
+            <deleteData createDataKey="orderCustomer" stepKey="deleteOrderCustomer"/>
+            <!-- remove account detail -->
+            <actionGroup ref="ResetDotmailerAccountData" stepKey="resetAccountData"/>
+            <!-- End Test -->
+            <actionGroup ref="AdminLogoutActionGroup" stepKey="logout"/>
+        </after>
+
+        <amOnPage url="{{AdminDotmailerAccountsPage.url}}" stepKey="navigateToDotmailerAccountPage"/>
+        <waitForPageLoad stepKey="waitForPageLoad"/>
+        <!-- Go bag Go -->
+        <click selector="{{AdminDotmailerAccountsSection.setupIntegrationAction}}" stepKey="clickSetupIntegrationButton"/>
+        <wait time="5" stepKey="waitFiveSecondsForConfirmation"/>
+        <click selector="{{AdminDotmailerAccountsSection.setupIntegrationActionConfirmation}}" stepKey="clickSetupIntegrationConfirmationButton"/>
+        <!-- Loader Displays -->
+        <grabTextFrom selector="{{AdminDotmailerAccountsSection.setupIntegrationLoaderText}}" stepKey="loaderMessage"/>
+        <assertStringContainsString stepKey="assertSuccessMessage">
+            <expectedResult type="string">{{SetupIntegrationData.setupIntegrationLoadingMessage}}</expectedResult>
+            <actualResult type="string">{$loaderMessage}</actualResult>
+        </assertStringContainsString>
+        <!-- Wait for page to finish -->
+        <wait time="30" stepKey="waitForMessageRender"/>
+        <!-- Check Address books -->
+        <grabTextFrom selector="{{AdminDotmailerAccountsSection.setupIntegrationEventMessage('2')}}" stepKey="stepAddressBookMessage"/>
+        <assertElementContainsAttribute stepKey="assertAddressBookAttributes">
+            <expectedResult selector="{{AdminDotmailerAccountsSection.setupIntegrationEventMessage('2')}}" attribute="class" type="string">{{SetupIntegrationData.setupIntegrationSuccessClasses}}</expectedResult>
+        </assertElementContainsAttribute>
+        <assertStringContainsString stepKey="assertAddressBookMessage">
+            <expectedResult type="string">{{SetupIntegrationData.setupIntegrationAddressBookEventMessage}}</expectedResult>
+            <actualResult type="string">{$stepAddressBookMessage}</actualResult>
+        </assertStringContainsString>
+        <!-- Check Data Fields -->
+        <grabTextFrom selector="{{AdminDotmailerAccountsSection.setupIntegrationEventMessage('3')}}" stepKey="stepDataFieldsMessage"/>
+        <assertElementContainsAttribute stepKey="assertDataFieldsAttributes">
+            <expectedResult selector="{{AdminDotmailerAccountsSection.setupIntegrationEventMessage('3')}}" attribute="class" type="string">{{SetupIntegrationData.setupIntegrationSuccessClasses}}</expectedResult>
+        </assertElementContainsAttribute>
+        <assertStringContainsString stepKey="assertDataFieldsMessage">
+            <expectedResult type="string">{{SetupIntegrationData.setupIntegrationDataFieldsEventMessage}}</expectedResult>
+            <actualResult type="string">{$stepDataFieldsMessage}</actualResult>
+        </assertStringContainsString>
+        <!-- Check Syncs -->
+        <grabTextFrom selector="{{AdminDotmailerAccountsSection.setupIntegrationEventMessage('4')}}" stepKey="stepSyncsMessage"/>
+        <assertElementContainsAttribute stepKey="assertSyncsAttributes">
+            <expectedResult selector="{{AdminDotmailerAccountsSection.setupIntegrationEventMessage('4')}}" attribute="class" type="string">{{SetupIntegrationData.setupIntegrationSuccessClasses}}</expectedResult>
+        </assertElementContainsAttribute>
+        <assertStringContainsString stepKey="assertSyncsMessage">
+            <expectedResult type="string">{{SetupIntegrationData.setupIntegrationSyncsEventMessage}}</expectedResult>
+            <actualResult type="string">{$stepSyncsMessage}</actualResult>
+        </assertStringContainsString>
+        <!-- Check Easy email capture -->
+        <grabTextFrom selector="{{AdminDotmailerAccountsSection.setupIntegrationEventMessage('5')}}" stepKey="stepEasyEmailCaptureMessage"/>
+        <assertElementContainsAttribute stepKey="assertEasyEmailCaptureAttributes">
+            <expectedResult selector="{{AdminDotmailerAccountsSection.setupIntegrationEventMessage('5')}}" attribute="class" type="string">{{SetupIntegrationData.setupIntegrationSuccessClasses}}</expectedResult>
+        </assertElementContainsAttribute>
+        <assertStringContainsString stepKey="assertEasyEmailCaptureMessage">
+            <expectedResult type="string">{{SetupIntegrationData.setupIntegrationEasyEmailCaptureEventMessage}}</expectedResult>
+            <actualResult type="string">{$stepEasyEmailCaptureMessage}</actualResult>
+        </assertStringContainsString>
+        <!-- Check Orders preload -->
+        <grabTextFrom selector="{{AdminDotmailerAccountsSection.setupIntegrationEventMessage('6')}}" stepKey="stepOrdersMessage"/>
+        <assertElementContainsAttribute stepKey="assertOrdersAttributes">
+            <expectedResult selector="{{AdminDotmailerAccountsSection.setupIntegrationEventMessage('6')}}" attribute="class" type="string">{{SetupIntegrationData.setupIntegrationSuccessClasses}}</expectedResult>
+        </assertElementContainsAttribute>
+        <assertStringContainsString stepKey="assertOrdersMessage">
+            <expectedResult type="string">{{SetupIntegrationData.setupIntegrationOrdersEventMessage}}</expectedResult>
+            <actualResult type="string">{$stepOrdersMessage}</actualResult>
+        </assertStringContainsString>
+        <!-- Check Products preload -->
+        <grabTextFrom selector="{{AdminDotmailerAccountsSection.setupIntegrationEventMessage('7')}}" stepKey="stepProductsMessage"/>
+        <assertElementContainsAttribute stepKey="assertProductsAttributes">
+            <expectedResult selector="{{AdminDotmailerAccountsSection.setupIntegrationEventMessage('7')}}" attribute="class" type="string">{{SetupIntegrationData.setupIntegrationSuccessClasses}}</expectedResult>
+        </assertElementContainsAttribute>
+        <assertStringContainsString stepKey="assertProductsMessage">
+            <expectedResult type="string">{{SetupIntegrationData.setupIntegrationProductsEventMessage}}</expectedResult>
+            <actualResult type="string">{$stepProductsMessage}</actualResult>
+        </assertStringContainsString>
+        <!-- Check Cron Failed-->
+        <grabTextFrom selector="{{AdminDotmailerAccountsSection.setupIntegrationEventMessage('8')}}" stepKey="stepCronMessage"/>
+        <assertElementContainsAttribute stepKey="assertCronAttributes">
+            <expectedResult selector="{{AdminDotmailerAccountsSection.setupIntegrationEventMessage('8')}}" attribute="class" type="string">{{SetupIntegrationData.setupIntegrationWarningClasses}}</expectedResult>
+        </assertElementContainsAttribute>
+        <assertStringContainsString stepKey="assertCronMessage">
+            <expectedResult type="string">{{SetupIntegrationData.setupIntegrationCronEventMessage}}</expectedResult>
+            <actualResult type="string">{$stepCronMessage}</actualResult>
+        </assertStringContainsString>
+    </test>
+</tests>
