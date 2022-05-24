@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
+    <test name="AccountConnectionStatusValidTest">
+        <annotations>
+            <features value="Dotdigital module"/>
+            <stories value="Confirm connection status"/>
+            <title value="Confirm connection status message"/>
+            <description value="Checks whether the account connection status message displays correct message."/>
+            <severity value="MINOR"/>
+            <group value="dotmailer"/>
+            <testCaseId value="BUNDLE-1"/>
+        </annotations>
+
+        <before>
+            <actionGroup ref="AdminLoginActionGroup" stepKey="AdminLoginActionGroup1"/>
+            <!-- Setup Dotdigital Account -->
+            <actionGroup ref="SetDotmailerAccountData" stepKey="SetDotmailerAccountData"/>
+        </before>
+
+        <after>
+            <actionGroup ref="AdminLogoutActionGroup" stepKey="logout"/>
+        </after>
+
+        <amOnPage url="{{AdminDotmailerAccountsPage.url}}" stepKey="amOnDotdigitalAccountsPage"/>
+        <waitForPageLoad stepKey="waitForPageLoad"/>
+
+        <!-- Test status is correct -->
+        <grabTextFrom selector="{{AdminDotmailerAccountsSection.accountsStatusMessage}}" stepKey="connectionStatus"/>
+        <assertStringContainsString stepKey="assertSuccessMessage">
+            <expectedResult type="string">{{AccountConnectionData.accountValidMessageText}}</expectedResult>
+            <actualResult type="string">{$connectionStatus}</actualResult>
+        </assertStringContainsString>
+
+        <!-- Test status display is correct  -->
+        <assertElementContainsAttribute stepKey="assertElementContainsAttribute">
+            <expectedResult selector="{{AdminDotmailerAccountsSection.accountsStatusMessage}}" attribute="class" type="string">{{AccountConnectionData.accountValidClasses}}</expectedResult>
+        </assertElementContainsAttribute>
+
+    </test>
+
+</tests>

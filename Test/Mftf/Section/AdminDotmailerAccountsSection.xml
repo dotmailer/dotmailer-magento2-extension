@@ -8,6 +8,13 @@
         <element name="accountsEnabledOption" type="select" selector="#connector_api_credentials_api_enabled" />
         <element name="accountsUsernameField" type="input" selector="#connector_api_credentials_api_username" />
         <element name="accountsPasswordField" type="input" selector="#connector_api_credentials_api_password" />
+        <element name="accountsStatusMessage" type="text" selector=".ddg-account-details" />
+        <element name="setupIntegrationAction" type="button" selector="button.ddg-integration" />
+        <element name="setupIntegrationActionConfirmation" type="button" selector="button.action-primary.action-accept" />
+        <element name="setupIntegrationLoaderText" type="text" selector=".event-message-placeholder > p" />
+        <element name="accountsProgressNotification" type="text" selector=".dd-progress" />
+        <element name="accountsNotice" type="text" selector=".note" />
         <element name="save" type="button" selector="#save" />
+        <element name="setupIntegrationEventMessage" type="text" selector=".dd-progress:nth-child({{nthChild}})" parameterized="true" timeout="30"/>
     </section>
 </sections>

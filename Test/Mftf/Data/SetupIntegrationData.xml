@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<entities xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:noNamespaceSchemaLocation="urn:magento:mftf:DataGenerator/etc/dataProfileSchema.xsd">
+    <entity name="SetupIntegrationData">
+        <data key="setupIntegrationLoadingMessage">Running setup integration, please wait...</data>
+        <data key="setupIntegrationSuccessClasses">message-success message dd-progress</data>
+        <data key="setupIntegrationWarningClasses">message-warning message dd-progress</data>
+        <data key="setupIntegrationAddressBookEventMessage">Address books created</data>
+        <data key="setupIntegrationDataFieldsEventMessage">Data fields mapped</data>
+        <data key="setupIntegrationSyncsEventMessage">Syncs enabled</data>
+        <data key="setupIntegrationEasyEmailCaptureEventMessage">Easy email capture</data>
+        <data key="setupIntegrationOrdersEventMessage">Orders preload</data>
+        <data key="setupIntegrationProductsEventMessage">Products preload</data>
+        <data key="setupIntegrationCronEventMessage">Cron check failed - there are no pending Dotdigital cron jobs</data>
+    </entity>
+</entities>

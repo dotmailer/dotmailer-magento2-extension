@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
+    <test name="AccountConnectionStatusInvalidTest">
+        <annotations>
+            <features value="Dotdigital module"/>
+            <stories value="Confirm not connected status"/>
+            <title value="Confirm not connected status message"/>
+            <description value="Checks whether the account connection status message displays correct message when invalid credentials are provided."/>
+            <severity value="MINOR"/>
+            <group value="dotmailer"/>
+            <testCaseId value="BUNDLE-1"/>
+        </annotations>
+
+        <before>
+            <actionGroup ref="AdminLoginActionGroup" stepKey="AdminLoginActionGroup1"/>
+            <!-- Setup Dotdigital Account -->
+            <actionGroup ref="SetDotmailerAccountData" stepKey="SetDotmailerAccountData">
+                <argument name="ecApiUser" value="{{_CREDS.dotmailer/ec_api_user_invalid}}"/>
+                <argument name="ecApiPassword" value="{{_CREDS.dotmailer/ec_api_password_invalid}}"/>
+            </actionGroup>
+        </before>
+
+        <after>
+            <actionGroup ref="AdminLogoutActionGroup" stepKey="logout"/>
+        </after>
+
+        <amOnPage url="{{AdminDotmailerAccountsPage.url}}" stepKey="amOnDotdigitalAccountsPage"/>
+        <waitForPageLoad stepKey="waitForPageLoad"/>
+
+        <!-- Test status is correct -->
+        <grabTextFrom selector="{{AdminDotmailerAccountsSection.accountsStatusMessage}}" stepKey="connectionStatus"/>
+        <assertStringContainsString stepKey="assertSuccessMessage">
+            <expectedResult type="string">{{AccountConnectionData.accountInvalidMessageText}}</expectedResult>
+            <actualResult type="string">{$connectionStatus}</actualResult>
+        </assertStringContainsString>
+
+        <!-- Test status display is correct  -->
+        <assertElementContainsAttribute stepKey="assertElementContainsAttribute">
+            <expectedResult selector="{{AdminDotmailerAccountsSection.accountsStatusMessage}}" attribute="class" type="string">{{AccountConnectionData.accountInvalidClasses}}</expectedResult>
+        </assertElementContainsAttribute>
+
+    </test>
+
+</tests>
