@@ -36,8 +36,7 @@ class SetupIntegration extends AbstractButton
      */
     protected function getDisabled()
     {
-        $accountDetails = $this->accountDetails->getAccountInfo();
-        return isset($accountDetails["not_connected"]);
+        return !$this->accountDetails->getIsConnected();
     }
 
     /**

@@ -3,6 +3,8 @@
 namespace Dotdigitalgroup\Email\Model\Integration;
 
 use Dotdigitalgroup\Email\Helper\Config;
+use Dotdigitalgroup\Email\Helper\Data;
+use Dotdigitalgroup\Email\Model\Connector\Datafield;
 use Dotdigitalgroup\Email\Model\Integration\Data\Orders;
 use Dotdigitalgroup\Email\Model\Integration\Data\Products;
 use Dotdigitalgroup\Email\Model\ResourceModel\Cron\CollectionFactory as CronCollectionFactory;
@@ -13,6 +15,9 @@ use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\ProductMetadataInterface;
 use Magento\Framework\App\Request\Http;
 use Magento\Framework\Encryption\EncryptorInterface;
+use Magento\Framework\HTTP\PhpEnvironment\ServerAddress;
+use Magento\Framework\Math\Random;
+use Magento\Framework\Stdlib\DateTime\Timezone;
 use Magento\Framework\UrlInterface;
 use Magento\Store\Model\Information;
 use Magento\Store\Model\Store;
@@ -60,27 +65,27 @@ class IntegrationSetup
     ];
 
     /**
-     * @var \Dotdigitalgroup\Email\Helper\Data
+     * @var Data
      */
     private $helper;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\Connector\Datafield
+     * @var Datafield
      */
     private $dataField;
 
     /**
-     * @var \Magento\Framework\Math\Random
+     * @var Random
      */
     private $randomMath;
 
     /**
-     * @var \Magento\Framework\Stdlib\DateTime\Timezone
+     * @var Timezone
      */
     private $timezone;
 
     /**
-     * @var \Magento\Framework\HTTP\PhpEnvironment\ServerAddress
+     * @var ServerAddress
      */
     private $serverAddress;
 
@@ -137,16 +142,16 @@ class IntegrationSetup
     /**
      * IntegrationSetup constructor.
      *
-     * @param \Dotdigitalgroup\Email\Helper\Data $helper
-     * @param \Magento\Framework\Math\Random $randomMath
-     * @param \Dotdigitalgroup\Email\Model\Connector\Datafield $dataField
+     * @param Data $helper
+     * @param Random $randomMath
+     * @param Datafield $dataField
      * @param CronCollectionFactory $cronCollectionFactory
      * @param OrderCollectionFactory $orderCollectionFactory
      * @param ScopeConfigInterface $scopeConfig
-     * @param \Magento\Framework\Stdlib\DateTime\Timezone $timezone
-     * @param \Magento\Framework\HTTP\PhpEnvironment\ServerAddress $serverAddress
-     * @param EncryptorInterface $encryptor
+     * @param Timezone $timezone
+     * @param ServerAddress $serverAddress
      * @param ProductMetadataInterface $productMetadata
+     * @param EncryptorInterface $encryptor
      * @param StoreManagerInterface $storeManager
      * @param ResourceConfig $resourceConfig
      * @param Orders $orderData
@@ -154,32 +159,32 @@ class IntegrationSetup
      * @param ReinitableConfigInterface $reinitableConfig
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Helper\Data $helper,
-        \Magento\Framework\Math\Random $randomMath,
-        \Dotdigitalgroup\Email\Model\Connector\Datafield $dataField,
+        Data $helper,
+        Random $randomMath,
+        Datafield $dataField,
         CronCollectionFactory $cronCollectionFactory,
         OrderCollectionFactory $orderCollectionFactory,
         ScopeConfigInterface $scopeConfig,
-        \Magento\Framework\Stdlib\DateTime\Timezone $timezone,
-        \Magento\Framework\HTTP\PhpEnvironment\ServerAddress $serverAddress,
-        EncryptorInterface $encryptor,
+        Timezone $timezone,
+        ServerAddress $serverAddress,
         ProductMetadataInterface $productMetadata,
+        EncryptorInterface $encryptor,
         StoreManagerInterface $storeManager,
         ResourceConfig $resourceConfig,
         Orders $orderData,
         Products $productData,
         ReinitableConfigInterface $reinitableConfig
     ) {
-        $this->timezone = $timezone;
-        $this->randomMath = $randomMath;
         $this->helper = $helper;
+        $this->randomMath = $randomMath;
         $this->dataField = $dataField;
         $this->cronCollectionFactory = $cronCollectionFactory;
         $this->orderCollectionFactory = $orderCollectionFactory;
         $this->scopeConfig = $scopeConfig;
+        $this->timezone = $timezone;
         $this->serverAddress = $serverAddress;
-        $this->encryptor = $encryptor;
         $this->productMetadata = $productMetadata;
+        $this->encryptor = $encryptor;
         $this->storeManager = $storeManager;
         $this->resourceConfig = $resourceConfig;
         $this->orderData = $orderData;
@@ -195,19 +200,17 @@ class IntegrationSetup
      * @return bool
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function setupDataFields($websiteId = 0)
+    public function setupDataFields($websiteId = 0): bool
     {
         $apiModel = $this->helper->getWebsiteApiClient($websiteId);
-
-        //validate account
-        $accountInfo = $apiModel->getAccountInfo();
-        if (isset($accountInfo->message)) {
-            $this->helper->log('setupDataFields ' . $accountInfo->message);
-            return false;
-        }
-
+        $dotdigitalDataFields  = array_column((array) $apiModel->getDataFields(), 'name');
         foreach ($this->dataField->getContactDatafields() as $key => $dataField) {
-            $apiModel->postDataFields($dataField);
+            $response = $apiModel->postDataFields($dataField);
+            //if request to create fails, make sure it exists in dotdigital
+            if (!empty($response->message) && (!in_array($dataField['name'], $dotdigitalDataFields))
+            ) {
+                continue;
+            }
             //map the successfully created data field
             $this->saveConfigData(
                 'connector_data_mapping/customer_data/' . $key,
@@ -215,10 +218,11 @@ class IntegrationSetup
                 $this->getScope($websiteId),
                 $websiteId
             );
+            $mappedDataFields[] = $key;
             $this->helper->log('setupDataFields successfully connected : ' . $dataField['name']);
         }
 
-        return true;
+        return !empty($mappedDataFields);
     }
 
     /**
@@ -228,8 +232,9 @@ class IntegrationSetup
      *
      * @return bool
      * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Exception
      */
-    public function createAddressBooks(int $websiteId = 0)
+    public function createAddressBooks(int $websiteId = 0): bool
     {
         $websiteName = $websiteId ? $this->getWebsiteName($websiteId) : null;
 
@@ -240,7 +245,7 @@ class IntegrationSetup
             ];
         }, array_keys(self::$addressBookMap), self::$addressBookMap);
 
-        return $this->validateAccountAndCreateAddressbooks($addressBooks, $websiteId);
+        return $this->postAndMapAddressbooks($addressBooks, $websiteId);
     }
 
     /**
@@ -248,7 +253,7 @@ class IntegrationSetup
      *
      * @return array
      */
-    public function getAddressBookMap()
+    public function getAddressBookMap(): array
     {
         return self::$addressBookMap;
     }
@@ -285,7 +290,7 @@ class IntegrationSetup
      * @param string $code
      * @return bool
      */
-    public function isCodeValid($code)
+    public function isCodeValid($code): bool
     {
         $now = $this->timezone->date()->format(\DateTime::ATOM);
         $expiryDateString = $this->helper->getWebsiteConfig(
@@ -305,8 +310,9 @@ class IntegrationSetup
      * @param int|string $websiteId
      * @return bool
      */
-    public function enableSyncs($websiteId = 0)
+    public function enableSyncs($websiteId = 0): bool
     {
+
         $this->saveConfigData(
             Config::XML_PATH_CONNECTOR_SYNC_CUSTOMER_ENABLED,
             '1',
@@ -349,7 +355,7 @@ class IntegrationSetup
      * @return bool
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function sendOrders($websiteId)
+    public function sendOrders($websiteId): bool
     {
         return $this->orderData->prepareAndSend(
             $this->setScopeForDefaultLevel($websiteId)
@@ -364,7 +370,7 @@ class IntegrationSetup
      * @return bool
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function sendProducts($websiteId)
+    public function sendProducts($websiteId): bool
     {
         return $this->productData->prepareAndSend(
             $this->setScopeForDefaultLevel($websiteId)
@@ -376,7 +382,7 @@ class IntegrationSetup
      *
      * @return bool
      */
-    public function checkCrons()
+    public function checkCrons(): bool
     {
         $fromTime = new \DateTime('now', new \DateTimeZone('UTC'));
         $toTime = clone $fromTime;
@@ -395,7 +401,7 @@ class IntegrationSetup
     }
 
     /**
-     * Validate account and create address books.
+     * Create address books Dotdigital-side and map them in Magento.
      *
      * @param array $addressBooks
      * @param int|string $websiteId
@@ -403,16 +409,9 @@ class IntegrationSetup
      * @return bool
      * @throws \Exception
      */
-    private function validateAccountAndCreateAddressbooks($addressBooks, $websiteId = 0)
+    private function postAndMapAddressbooks($addressBooks, $websiteId = 0): bool
     {
         $client = $this->helper->getWebsiteApiClient($websiteId);
-        $accountInfo = $client->getAccountInfo();
-
-        if (isset($accountInfo->message)) {
-            $this->helper->log('createAddressBooks ' . $accountInfo->message);
-            return false;
-        }
-
         foreach ($addressBooks as $addressBook) {
             $addressBookName = $addressBook['name'];
             $visibility = $addressBook['visibility'];
@@ -422,8 +421,9 @@ class IntegrationSetup
 
                 if (isset($response->id)) {
                     $this->mapAddressBook($addressBookName, $response->id);
+                    $mappedAddressBooks[] = $addressBookName;
                 } else {
-                    //Need to fetch addressbook id to map. Addressbook already exist.
+                    //Need to fetch address book id to map. Address-book already exist.
                     $response = $client->getAddressBooks();
                     if (isset($response->message)) {
                         continue;
@@ -431,6 +431,7 @@ class IntegrationSetup
                     foreach ($response as $book) {
                         if ($book->name == $addressBookName) {
                             $this->mapAddressBook($addressBookName, $book->id, $websiteId);
+                            $mappedAddressBooks[] = $book->name;
                             break;
                         }
                     }
@@ -438,7 +439,7 @@ class IntegrationSetup
             }
         }
 
-        return true;
+        return !empty($mappedAddressBooks);
     }
 
     /**
@@ -447,7 +448,7 @@ class IntegrationSetup
      * @return string
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function generateTemporaryPasscode()
+    public function generateTemporaryPasscode(): string
     {
         // remove any previous passcode
         $this->helper->resourceConfig->deleteConfig(
@@ -488,7 +489,7 @@ class IntegrationSetup
      * @throws \Magento\Framework\Exception\LocalizedException
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
-    public function getEcSignupUrl(Http $request, string $source = self::SOURCE_ENGAGEMENT_CLOUD)
+    public function getEcSignupUrl(Http $request, string $source = self::SOURCE_ENGAGEMENT_CLOUD): string
     {
         $trialSignupBaseUrl = $this->getTrialSignupBaseUrl();
         $ipAddress = $this->serverAddress->getServerAddress();
@@ -552,7 +553,7 @@ class IntegrationSetup
      * @return string
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
-    public function getLocalCallbackUrl()
+    public function getLocalCallbackUrl(): string
     {
         /** @var Store $store */
         $store = $this->storeManager->getStore();
@@ -568,7 +569,7 @@ class IntegrationSetup
      *
      * @return string
      */
-    public function getTrialSignupHostAndScheme()
+    public function getTrialSignupHostAndScheme(): string
     {
         // @codingStandardsIgnoreLine
         $url = parse_url($this->getTrialSignupBaseUrl());
@@ -585,7 +586,7 @@ class IntegrationSetup
      *
      * @return string
      */
-    public function getTrialSignupBaseUrl()
+    public function getTrialSignupBaseUrl(): string
     {
         return $this->helper->getScopeConfig()->getValue(Config::XML_PATH_CONNECTOR_TRIAL_URL_OVERRIDE)
             ?: Config::API_CONNECTOR_TRIAL_FORM_URL;
@@ -597,7 +598,7 @@ class IntegrationSetup
      * @param int|string $websiteId
      * @return bool
      */
-    public function enableEasyEmailCapture($websiteId = 0)
+    public function enableEasyEmailCapture($websiteId = 0): bool
     {
         $this->saveConfigData(
             Config::XML_PATH_CONNECTOR_EMAIL_CAPTURE_NEWSLETTER,
@@ -623,7 +624,7 @@ class IntegrationSetup
      * @return string
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    private function getWebsiteName($websiteId)
+    private function getWebsiteName($websiteId): string
     {
         return $this->storeManager->getWebsite($websiteId)->getName();
     }
@@ -684,7 +685,7 @@ class IntegrationSetup
      * @return int
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    private function setScopeForDefaultLevel($websiteId)
+    private function setScopeForDefaultLevel($websiteId): int
     {
         if ($websiteId != 0) {
             return (int) $websiteId;

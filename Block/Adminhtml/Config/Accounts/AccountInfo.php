@@ -2,12 +2,13 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Accounts;
 
+use Magento\Framework\Data\Form\Element\AbstractElement;
 use Magento\Framework\Data\Form\Element\CollectionFactory;
 use Magento\Framework\Data\Form\Element\Factory;
 use Magento\Framework\Escaper;
 use Dotdigitalgroup\Email\Model\Integration\AccountDetails;
 
-class AccountInfo extends \Magento\Framework\Data\Form\Element\AbstractElement
+class AccountInfo extends AbstractElement
 {
     /**
      * @var AccountDetails
@@ -70,8 +71,7 @@ class AccountInfo extends \Magento\Framework\Data\Form\Element\AbstractElement
         }
 
         $accountInfo = $this->accountDetails->getAccountInfo();
-
-        if (!isset($accountInfo["not_connected"])) {
+        if ($this->accountDetails->getIsConnected()) {
             $accountDetails = sprintf(
                 '<strong> %s (region %s) </strong>',
                 $accountInfo["email"],
