@@ -35,7 +35,7 @@ class TrialSetupTest extends \PHPUnit\Framework\TestCase
 
     public function setUp() :void
     {
-        $this->objectManager = ObjectManager::getInstance();
+        $this->objectManager = ObjectManager::getInstance(); /** @phpstan-ignore-line */
         $this->configWriter = $this->objectManager->create(WriterInterface::class);
         $this->reinitableConfig = $this->objectManager->create(ReinitableConfigInterface::class);
     }
@@ -138,12 +138,15 @@ class TrialSetupTest extends \PHPUnit\Framework\TestCase
 
         /** @var Datafield $dataFields */
         $dataFields = $this->objectManager->create(Datafield::class);
-
-        $this->mockClientFactory();
-        $this->mockClient->method('getAccountInfo')->willReturn('Go sell some cauals!');
-
         $contactFields = $dataFields->getContactDatafields();
-
+        $this->mockClientFactory();
+        $this->mockClient
+            ->method('getAccountInfo')
+            ->willReturn('Go sell some casuals!');
+        $this->mockClient
+            ->expects($this->once())
+            ->method('getDataFields')
+            ->willReturn(['name'=>'dd_chaz_data_field']);
         $this->mockClient->expects($this->atLeast(count($contactFields)))
             ->method('postDataFields')
             ->with($this->logicalOr(...array_values($contactFields)));
