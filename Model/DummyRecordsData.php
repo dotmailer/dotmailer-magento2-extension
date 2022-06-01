@@ -8,6 +8,7 @@ use Magento\Store\Model\StoreManagerInterface;
 use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Apiconnector\Account;
 use Magento\Framework\UrlInterface;
+use Dotdigitalgroup\Email\Model\Connector\AccountHandler;
 
 class DummyRecordsData
 {
@@ -24,9 +25,9 @@ class DummyRecordsData
     private $storeManager;
 
     /**
-     * @var string
+     * @var array
      */
-    private $email;
+    public $email = [];
 
     /**
      * @var Logger
@@ -39,60 +40,50 @@ class DummyRecordsData
     private $account;
 
     /**
+     * @var AccountHandler
+     */
+    private $accountHandler;
+
+    /**
      * DummyRecordsData constructor.
      *
      * @param Data $helper
      * @param StoreManagerInterface $storeManager
      * @param Logger $logger
      * @param Account $account
+     * @param AccountHandler $accountHandler
      */
     public function __construct(
         Data $helper,
         StoreManagerInterface $storeManager,
         Logger $logger,
-        Account $account
+        Account $account,
+        AccountHandler $accountHandler
     ) {
         $this->helper = $helper;
         $this->storeManager = $storeManager;
         $this->logger = $logger;
         $this->account = $account;
+        $this->accountHandler = $accountHandler;
     }
 
     /**
-     * Get dummy contact data.
+     * Get active websites.
      *
-     * @return array
-     * @throws \Exception
+     * If an EC user is connected to multiple websites then we return the first
+     * as we don't need to send multiple api requests for the same user.
+     *
+     * This is to be used when in default level.
+     *
+     * @return \Iterator
      */
-    public function getDummyContactData(): array
+    public function getActiveWebsites()
     {
-        $websiteData = [];
-        $users = [];
-        foreach ($this->storeManager->getWebsites(true) as $website) {
-            if (!$this->helper->isEnabled($website->getId()) ||
-                isset($websiteData[$website->getId()]) ||
-                in_array($this->helper->getApiUsername($website->getId()), $users)
-            ) {
-                continue;
+        foreach ($this->accountHandler->getAPIUsersForECEnabledWebsites() as $user) {
+            foreach ($user as $websites) {
+                yield $websites[0];
             }
-
-            $accountInfo = $this->helper->getWebsiteApiClient($website->getId())->getAccountInfo();
-
-            $email = $this->account->getAccountOwnerEmail($accountInfo);
-            if (!$email) {
-                $this->logger->debug('Email Info not found for that account');
-                continue;
-            }
-
-            $this->email = $email;
-
-            $users[] = $this->helper->getApiUsername($website->getId());
-            $websiteData[$website->getId()] = [
-                    'email' => $this->email
-                ];
         }
-
-        return $websiteData;
     }
 
     /**
@@ -104,8 +95,9 @@ class DummyRecordsData
      */
     public function getContactInsightData($websiteId): array
     {
+        /** @var Store $store */
         $store = $this->getStore($websiteId);
-        return $this->getStaticData($store);
+        return $this->getStaticData($store, $websiteId);
     }
 
     /**
@@ -129,13 +121,14 @@ class DummyRecordsData
      * Get static data.
      *
      * @param Store $store
+     * @param int $websiteId
      * @return array
      */
-    private function getStaticData($store)
+    private function getStaticData($store, $websiteId)
     {
         $data = [
             'key' => '1',
-            'contactIdentifier' => $this->email,
+            'contactIdentifier' => $this->getEmailFromAccountInfo($websiteId),
             'json' => [
                 'cartId' => '1',
                 'cartUrl' => $store->getBaseUrl(
@@ -181,7 +174,20 @@ class DummyRecordsData
     private function getImageUrl()
     {
         return 'https://raw.githubusercontent.com/'
-               .'magento/magento2-sample-data/'
-               .'2.3/pub/media/catalog/product/m/h/mh01-black_main.jpg';
+            .'magento/magento2-sample-data/'
+            .'2.3/pub/media/catalog/product/m/h/mh01-black_main.jpg';
+    }
+
+    /**
+     * Get account email.
+     *
+     * @param string|int $websiteId
+     * @return string
+     * @throws \Exception
+     */
+    private function getEmailFromAccountInfo($websiteId)
+    {
+        $accountInfo = $this->helper->getWebsiteApiClient($websiteId)->getAccountInfo();
+        return $this->account->getAccountOwnerEmail($accountInfo);
     }
 }

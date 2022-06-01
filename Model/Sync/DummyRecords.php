@@ -25,6 +25,7 @@ class DummyRecords implements SyncInterface
 
     /**
      * DummyRecords constructor.
+     *
      * @param DummyRecordsData $dummyData
      * @param Data $helper
      * @param Logger $logger
@@ -37,19 +38,25 @@ class DummyRecords implements SyncInterface
     }
 
     /**
-     * @param \DateTime|null $from
+     * Sync.
+     *
+     * Run in default level.
+     *
+     * @param \DateTime $from
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      * @return void
      */
     public function sync(\DateTime $from = null)
     {
-        foreach ($this->dummyData->getDummyContactData() as $websiteId => $contact) {
+        foreach ($this->dummyData->getActiveWebsites() as $websiteId) {
             $this->postContactAndCartInsightData($websiteId);
         }
     }
 
     /**
-     * @param $websiteId
+     * Sync for website.
+     *
+     * @param string|int $websiteId
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function syncForWebsite($websiteId)
@@ -58,11 +65,13 @@ class DummyRecords implements SyncInterface
     }
 
     /**
-     * @param $websiteId
+     * Post contact and cartInsight data.
+     *
+     * @param string|int $websiteId
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      * @throws \Exception
      */
-    private function postContactAndCartInsightData($websiteId)
+    private function postContactAndCartInsightData($websiteId = 0)
     {
         $cartInsightData = $this->dummyData->getContactInsightData($websiteId);
         $client = $this->helper->getWebsiteApiClient($websiteId);
