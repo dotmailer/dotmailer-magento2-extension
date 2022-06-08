@@ -2,31 +2,34 @@
 
 namespace Dotdigitalgroup\Email\Model\Product;
 
-use Dotdigitalgroup\Email\Helper;
+use Dotdigitalgroup\Email\Helper\Data;
+use Dotdigitalgroup\Email\Helper\Config;
 use Magento\Catalog\Api\ProductAttributeRepositoryInterface;
+use Magento\Catalog\Model\ResourceModel\Product\Attribute\CollectionFactory as AttributeCollectionFactory;
+use Magento\Catalog\Model\ResourceModel\Product;
+use Magento\Eav\Api\AttributeSetRepositoryInterface;
 use Magento\Framework\Api\SearchCriteriaBuilder;
-use Magento\Framework\Api\FilterBuilder;
 use Magento\Framework\Stdlib\DateTime\DateTimeFactory;
 
 class Attribute
 {
     /**
-     * @var Helper\Data
+     * @var Data
      */
     private $helper;
 
     /**
-     * @var \Magento\Catalog\Model\ResourceModel\Product\Attribute\CollectionFactory
+     * @var AttributeCollectionFactory
      */
     private $attributeCollection;
 
     /**
-     * @var \Magento\Eav\Api\AttributeSetRepositoryInterface
+     * @var AttributeSetRepositoryInterface
      */
     private $attributeSet;
 
     /**
-     * @var \Magento\Catalog\Model\ResourceModel\Product
+     * @var Product
      */
     private $productResource;
 
@@ -41,39 +44,32 @@ class Attribute
     private $searchCriteriaBuilder;
 
     /**
-     * @var FilterBuilder
-     */
-    private $filterBuilder;
-
-    /**
-     * @var
-     */
-    private $hasValues;
-
-    /**
      * @var DateTimeFactory
      */
     private $dateTimeFactory;
 
     /**
+     * @var bool
+     */
+    private $hasValues;
+
+    /**
      * Attribute constructor.
-     * @param Helper\Data $helper
-     * @param \Magento\Catalog\Model\ResourceModel\Product\Attribute\CollectionFactory $attributeCollection
-     * @param \Magento\Eav\Api\AttributeSetRepositoryInterface $attributeSet
-     * @param \Magento\Catalog\Model\ResourceModel\Product $productResource
+     * @param Data $helper
+     * @param AttributeCollectionFactory $attributeCollection
+     * @param AttributeSetRepositoryInterface $attributeSet
+     * @param Product $productResource
      * @param ProductAttributeRepositoryInterface $productAttributeRepository
      * @param SearchCriteriaBuilder $searchCriteriaBuilder
-     * @param FilterBuilder $filterBuilder
      * @param DateTimeFactory $dateTimeFactory
      */
     public function __construct(
-        Helper\Data $helper,
-        \Magento\Catalog\Model\ResourceModel\Product\Attribute\CollectionFactory $attributeCollection,
-        \Magento\Eav\Api\AttributeSetRepositoryInterface $attributeSet,
-        \Magento\Catalog\Model\ResourceModel\Product $productResource,
+        Data $helper,
+        AttributeCollectionFactory $attributeCollection,
+        AttributeSetRepositoryInterface $attributeSet,
+        Product $productResource,
         ProductAttributeRepositoryInterface $productAttributeRepository,
         SearchCriteriaBuilder $searchCriteriaBuilder,
-        FilterBuilder $filterBuilder,
         DateTimeFactory $dateTimeFactory
     ) {
         $this->helper = $helper;
@@ -82,19 +78,18 @@ class Attribute
         $this->productResource = $productResource;
         $this->productAttributeRepository = $productAttributeRepository;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
-        $this->filterBuilder = $filterBuilder;
         $this->dateTimeFactory = $dateTimeFactory;
     }
 
     /**
-     * @param $websiteId
+     * @param string|int $websiteId
      *
      * @return bool|string
      */
     public function getConfigAttributesForSync($websiteId)
     {
         return $this->helper->getWebsiteConfig(
-            Helper\Config::XML_PATH_CONNECTOR_SYNC_PRODUCT_ATTRIBUTES,
+            Config::XML_PATH_CONNECTOR_SYNC_PRODUCT_ATTRIBUTES,
             $websiteId
         );
     }
@@ -177,15 +172,13 @@ class Attribute
 
         $this->hasValues = true;
 
-        if (!is_array($value)) {
-            // check limit on text and assign value to array
-            $this->$attributeCode = mb_substr($value, 0, Helper\Data::DM_FIELD_LIMIT);
-        } elseif (is_array($value)) {
-            $values = (isset($value['values'])) ? implode(',', $value['values']) : implode(',', $value);
-
+        if (is_array($value)) {
+            $values = $this->implodeRecursive(',', $value['values'] ?? $value);
             if ($values) {
-                $this->$attributeCode = mb_substr($values, 0, Helper\Data::DM_FIELD_LIMIT);
+                $this->$attributeCode = mb_substr($values, 0, Data::DM_FIELD_LIMIT);
             }
+        } else {
+            $this->$attributeCode = mb_substr($value, 0, Data::DM_FIELD_LIMIT);
         }
     }
 
@@ -221,5 +214,45 @@ class Attribute
             ->create();
 
         return $this->productAttributeRepository->getList($searchCriteria);
+    }
+
+    /**
+     * __get()
+     *
+     * Used in a unit test to check dynamically-set class properties.
+     *
+     * @param string $name
+     *
+     * @return null
+     */
+    public function __get($name)
+    {
+        return (isset($this->$name)) ? $this->$name: null;
+    }
+
+    /**
+     * @param string $separator
+     * @param array $array
+     *
+     * @return string
+     */
+    private function implodeRecursive(string $separator, array $array)
+    {
+        $string = '';
+        foreach ($array as $i => $a) {
+            if (is_array($a)) {
+                if ($string) {
+                    $string .= $separator;
+                }
+                $string .= $this->implodeRecursive($separator, $a);
+            } else {
+                $string .= $a;
+                if ($i < count($array) - 1) {
+                    $string .= $separator;
+                }
+            }
+        }
+
+        return $string;
     }
 }
