@@ -414,7 +414,7 @@ class Order
                 /**
                  * Product attributes
                  */
-                $configAttributes = $this->getProductAttributesToSync($orderData->getStore()->getWebsite());
+                $configAttributes = $this->getProductAttributesToSync($orderData->getStore()->getWebsiteId());
 
                 $attributeSetName = $this->attributeHandler->create()
                     ->getAttributeSetName($productModel);
@@ -627,13 +627,13 @@ class Order
     /**
      * Look up selected attributes in config.
      *
-     * @param \Magento\Store\Model\Website $website
+     * @param string|int $websiteId
      * @return array|bool
      */
-    private function getProductAttributesToSync($website)
+    private function getProductAttributesToSync($websiteId)
     {
         $configAttributes = $this->attributeHandler->create()
-            ->getConfigAttributesForSync($website);
+            ->getConfigAttributesForSync($websiteId);
 
         if (!$configAttributes) {
             return false;
