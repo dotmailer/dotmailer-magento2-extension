@@ -95,20 +95,19 @@ class Rest
 
     /**
      * Rest constructor.
+     *
      * @param Data $data
      * @param Logger $logger
      * @param File $fileHelper
-     * @param int $website
      * @param DriverInterface $driver
-     *
-     * @return null
+     * @param int $website
      */
     public function __construct(
         Data $data,
         Logger $logger,
         File $fileHelper,
         DriverInterface $driver,
-        $website = 0
+        int $website = 0
     ) {
         $this->helper        = $data;
         $this->url           = null;
@@ -130,8 +129,9 @@ class Rest
     }
 
     /**
-     * @param mixed $json
+     * Print json in readable format
      *
+     * @param mixed $json
      * @return string
      *
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
@@ -241,6 +241,8 @@ class Rest
     }
 
     /**
+     * Execute curl call
+     *
      * @throws \Exception
      *
      * @return array|stdClass
@@ -302,6 +304,8 @@ class Rest
     }
 
     /**
+     * Log debug information if enabled.
+     *
      * @return void
      */
     private function processDebugApi()
@@ -328,7 +332,7 @@ class Rest
     /**
      * Post data.
      *
-     * @param null $data
+     * @param mixed $data
      *
      * @return $this
      */
@@ -343,8 +347,6 @@ class Rest
      * Execute curl get request.
      *
      * @param mixed $ch
-     *
-     * @return null
      */
     private function executeGet($ch)
     {
@@ -355,8 +357,6 @@ class Rest
      * Execute post request.
      *
      * @param mixed $ch
-     *
-     * @return null
      */
     private function executePost($ch)
     {
@@ -388,8 +388,6 @@ class Rest
      * Execute put.
      *
      * @param mixed $ch
-     *
-     * @return null
      * @throws \Magento\Framework\Exception\FileSystemException
      */
     private function executePut($ch)
@@ -519,8 +517,6 @@ class Rest
      * Set accept type.
      *
      * @param mixed $acceptType
-     *
-     * @return null
      */
     public function setAcceptType($acceptType)
     {
@@ -546,7 +542,7 @@ class Rest
      */
     public function setApiUsername($apiUsername)
     {
-        $this->apiUsername = trim($apiUsername);
+        $this->apiUsername = trim((string)$apiUsername);
 
         return $this;
     }
@@ -620,7 +616,7 @@ class Rest
     }
 
     /**
-     * get the verb.
+     * Get the verb.
      *
      * @return string
      */
@@ -644,6 +640,8 @@ class Rest
     }
 
     /**
+     * Get error
+     *
      * @return mixed
      */
     public function getCurlError()
