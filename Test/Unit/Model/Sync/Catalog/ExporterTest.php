@@ -2,13 +2,13 @@
 
 namespace Dotdigitalgroup\Email\Test\Unit\Model\Sync\Catalog;
 
-use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Model\Connector\ProductFactory;
 use Dotdigitalgroup\Email\Model\ResourceModel\Catalog\Collection;
 use Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory;
 use Dotdigitalgroup\Email\Model\Sync\Catalog\Exporter;
 use Magento\Catalog\Model\Product;
 use Dotdigitalgroup\Email\Logger\Logger;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class ExporterTest extends TestCase
@@ -19,22 +19,22 @@ class ExporterTest extends TestCase
     private $exporter;
 
     /**
-     * @var CollectionFactory
+     * @var CollectionFactory|MockObject
      */
     private $collectionFactoryMock;
 
     /**
-     * @var ProductFactory
+     * @var ProductFactory|MockObject
      */
     private $productFactoryMock;
 
     /**
-     * @var Collection
+     * @var Collection|MockObject
      */
     private $collectionMock;
 
     /**
-     * @var Logger
+     * @var Logger|MockObject
      */
     private $loggerMock;
 
@@ -44,7 +44,6 @@ class ExporterTest extends TestCase
         $this->productFactoryMock = $this->createMock(ProductFactory::class);
         $this->collectionMock = $this->createMock(Collection::class);
         $this->loggerMock = $this->createMock(Logger::class);
-
         $this->exporter = new Exporter(
             $this->collectionFactoryMock,
             $this->productFactoryMock,
@@ -54,12 +53,12 @@ class ExporterTest extends TestCase
 
     /**
      * @dataProvider getProductAndStoreIds
-     * @param $storeId
-     * @param $product1Id
-     * @param $product2Id
-     * @param $productsToProcess
+     * @param int $storeId
+     * @param int $product1Id
+     * @param int $product2Id
+     * @return void
      */
-    public function testThatExportKeysAndProductsMatches($storeId, $product1Id, $product2Id)
+    public function testThatExportKeysAndProductsMatches(int $storeId, int $product1Id, int $product2Id)
     {
         $productsToProcess = $this->getMockProductsToProcess();
 
@@ -83,7 +82,8 @@ class ExporterTest extends TestCase
             ->with($storeId, $productsToProcess)
             ->willReturn($products);
 
-        $this->productFactoryMock->expects($this->exactly(2))
+        $this->productFactoryMock
+            ->expects($this->exactly(2))
             ->method('create')
             ->willReturnOnConsecutiveCalls(
                 $connectorProductMock1,
@@ -101,27 +101,30 @@ class ExporterTest extends TestCase
 
     /**
      * Returns the mocked Products
-     * @param $storeId
-     * @param $productId
-     * @return \PHPUnit\Framework\MockObject\MockObject
+     * @param int $productId
+     * @return MockObject
      */
-    private function getMockProducts($productId)
+    private function getMockProducts(int $productId)
     {
         $product = $this->createMock(Product::class);
         $product->expects($this->once())
             ->method('getId')
             ->willReturn($productId);
 
+        $product
+            ->method('toArray')
+            ->willReturn($this->getExposedProduct($productId));
+
         return $product;
     }
 
     /**
      * Returns the connector Mock Products
-     * @param $productMock
-     * @param $exposedMock
-     * @return \PHPUnit\Framework\MockObject\MockObject
+     * @param MockObject $productMock
+     * @param array $exposedMock
+     * @return MockObject
      */
-    private function getMockConnectorProducts($productMock, $exposedMock)
+    private function getMockConnectorProducts(MockObject $productMock, array $exposedMock)
     {
         $connectorProduct = $this->createMock(\Dotdigitalgroup\Email\Model\Connector\Product::class);
         $connectorProduct->expects($this->once())
@@ -131,6 +134,10 @@ class ExporterTest extends TestCase
 
         $connectorProduct->name = $exposedMock['name'];
         $connectorProduct->id = $exposedMock['id'];
+
+        $connectorProduct
+            ->method('toArray')
+            ->willReturn($this->getExposedProduct($connectorProduct->id));
 
         return $connectorProduct;
     }
@@ -170,11 +177,12 @@ class ExporterTest extends TestCase
     }
 
     /**
-     * @param $id
+     * @param int $id
      * @return array
      */
-    private function getExposedProduct($id)
+    private function getExposedProduct(int $id)
     {
+
         return [
             'id' => (int) $id,
             'name' => 'product' . $id,

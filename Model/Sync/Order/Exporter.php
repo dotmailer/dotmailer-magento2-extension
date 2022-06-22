@@ -2,15 +2,19 @@
 
 namespace Dotdigitalgroup\Email\Model\Sync\Order;
 
-use Dotdigitalgroup\Email\Helper\Data;
+use Dotdigitalgroup\Email\Helper\Config;
 use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Connector\OrderFactory as ConnectorOrderFactory;
-use Dotdigitalgroup\Email\Model\OrderFactory;
 use Dotdigitalgroup\Email\Model\ResourceModel\Order\Collection as OrderCollection;
 use Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory as OrderCollectionFactory;
+use Dotdigitalgroup\Email\Model\Validator\Schema\Exception\SchemaValidationException;
+use Exception;
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Sales\Model\ResourceModel\Order\Collection as SalesOrderCollection;
 use Magento\Sales\Model\ResourceModel\Order\CollectionFactory as SalesOrderCollectionFactory;
+use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
 
 class Exporter
@@ -19,16 +23,6 @@ class Exporter
      * @var StoreManagerInterface
      */
     private $storeManager;
-
-    /**
-     * @var Data
-     */
-    private $helper;
-
-    /**
-     * @var OrderFactory
-     */
-    private $orderFactory;
 
     /**
      * @var ScopeConfigInterface
@@ -62,8 +56,6 @@ class Exporter
 
     /**
      * @param StoreManagerInterface $storeManager
-     * @param Data $helper
-     * @param OrderFactory $orderFactory
      * @param ScopeConfigInterface $scopeConfig
      * @param ConnectorOrderFactory $connectorOrderFactory
      * @param OrderCollectionFactory $orderCollectionFactory
@@ -72,8 +64,6 @@ class Exporter
      */
     public function __construct(
         StoreManagerInterface $storeManager,
-        Data $helper,
-        OrderFactory $orderFactory,
         ScopeConfigInterface $scopeConfig,
         ConnectorOrderFactory $connectorOrderFactory,
         OrderCollectionFactory $orderCollectionFactory,
@@ -81,8 +71,6 @@ class Exporter
         SalesOrderCollectionFactory $salesOrderCollectionFactory
     ) {
         $this->storeManager = $storeManager;
-        $this->helper = $helper;
-        $this->orderFactory = $orderFactory;
         $this->scopeConfig = $scopeConfig;
         $this->connectorOrderFactory = $connectorOrderFactory;
         $this->orderCollectionFactory = $orderCollectionFactory;
@@ -95,10 +83,10 @@ class Exporter
      *
      * @param array $orderIds
      * @return array|array[]|mixed
-     * @throws \Magento\Framework\Exception\LocalizedException
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
      */
-    public function exportOrders($orderIds)
+    public function exportOrders(array $orderIds)
     {
         $orderCollection = $this->orderCollectionFactory
             ->create()
@@ -112,7 +100,6 @@ class Exporter
         $salesOrderCollection = $this->loadSalesOrderCollection(
             $filteredCollection->getColumnValues('order_id')
         );
-
         return $this->mapOrderData($salesOrderCollection);
     }
 
@@ -122,37 +109,41 @@ class Exporter
      * @param SalesOrderCollection $salesOrderCollection
      *
      * @return array|array[]
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @throws NoSuchEntityException
      */
-    public function mapOrderData($salesOrderCollection)
+    public function mapOrderData($salesOrderCollection): array
     {
         $orders = [];
         foreach ($salesOrderCollection as $order) {
             if ($order->getId()) {
                 $websiteId = $order->getStore()->getWebsiteId();
-
                 try {
-                    $connectorOrder = $this->connectorOrderFactory->create()
-                        ->setOrderData($order);
-
+                    $connectorOrder = $this->connectorOrderFactory->create();
+                    $connectorOrder->setOrderData($order);
                     if (array_key_exists($websiteId, $orders)) {
-                        $orders[$websiteId][$order->getIncrementId()] = $this->expose($connectorOrder);
+                        $orders[$websiteId][$order->getIncrementId()] = $connectorOrder->toArray();
                     } else {
-                        $orders += [$websiteId => [$order->getIncrementId() => $this->expose($connectorOrder)]];
+                        $orders += [$websiteId => [$order->getIncrementId() => $connectorOrder->toArray()]];
                     }
-
-                } catch (\Exception $exception) {
+                } catch (SchemaValidationException $exception) {
                     $this->logger->debug(
                         sprintf(
-                            'Order id %s was not exported, but will be marked as processed.',
+                            "Order id %s was not exported, but will be marked as processed",
                             $order->getId()
                         ),
-                        [(string) $exception]
+                        [$exception, $exception->errors()]
+                    );
+                } catch (Exception $exception) {
+                    $this->logger->debug(
+                        sprintf(
+                            "Order id %s was not exported, but will be marked as processed",
+                            $order->getId()
+                        ),
+                        [$exception]
                     );
                 }
             }
         }
-
         return $orders;
     }
 
@@ -163,7 +154,7 @@ class Exporter
      *
      * @return OrderCollection
      */
-    private function filterOrderCollectionByStatus($collection)
+    private function filterOrderCollectionByStatus(OrderCollection $collection)
     {
         foreach ($collection as $key => $order) {
             $storeId = $order->getStoreId();
@@ -202,8 +193,8 @@ class Exporter
     {
         if (!isset($this->selectedStatus[$websiteId])) {
             $this->selectedStatus[$websiteId] = $status = $this->scopeConfig->getValue(
-                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_ORDER_STATUS,
-                \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
+                Config::XML_PATH_CONNECTOR_SYNC_ORDER_STATUS,
+                ScopeInterface::SCOPE_WEBSITE,
                 $websiteId
             );
         } else {
@@ -215,19 +206,5 @@ class Exporter
         } else {
             return false;
         }
-    }
-
-    /**
-     * Expose.
-     *
-     * @param \Dotdigitalgroup\Email\Model\Connector\Order $connectorOrder
-     * @return array
-     */
-    private function expose($connectorOrder)
-    {
-        $properties = get_object_vars($connectorOrder);
-
-        //remove null/0/false values
-        return array_filter($properties);
     }
 }

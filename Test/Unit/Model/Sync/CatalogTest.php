@@ -2,6 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Test\Unit\Model\Sync;
 
+use Dotdigitalgroup\Email\Helper\Config;
 use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Model\ResourceModel\Catalog as ResourceCatalog;
 use Dotdigitalgroup\Email\Model\ResourceModel\Catalog\Collection as CatalogCollection;
@@ -13,62 +14,63 @@ use Dotdigitalgroup\Email\Model\Sync\Catalog\CatalogSyncFactory;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Dotdigitalgroup\Email\Model\ImporterFactory;
 use Dotdigitalgroup\Email\Model\Importer;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class CatalogTest extends TestCase
 {
     /**
-     * @var CatalogSyncFactory
+     * @var CatalogSyncFactory|MockObject
      */
     private $catalogSyncFactoryMock;
 
     /**
-     * @var Catalog
+     * @var Catalog|MockObject
      */
     private $catalog;
 
     /**
-     * @var CatalogCollection
+     * @var CatalogCollection|MockObject
      */
     private $catalogCollectionMock;
 
     /**
-     * @var CollectionFactory
+     * @var CollectionFactory|MockObject
      */
     private $catalogCollectionFactoryMock;
 
     /**
-     * @var Data
+     * @var Data|MockObject
      */
     private $helperMock;
 
     /**
-     * @var CatalogFactory
+     * @var CatalogFactory|MockObject
      */
     private $catalogResourceFactoryMock;
 
     /**
-     * @var CatalogSyncerInterface
+     * @var CatalogSyncerInterface|MockObject
      */
     private $catalogSyncerInterfaceMock;
 
     /**
-     * @var ResourceCatalog
+     * @var ResourceCatalog|MockObject
      */
     private $resourceCatalogMock;
 
     /**
-     * @var ScopeConfigInterface
+     * @var ScopeConfigInterface|MockObject
      */
     private $scopeConfigInterfaceMock;
 
     /**
-     * @var ImporterFactory
+     * @var ImporterFactory|MockObject
      */
     private $importerFactoryMock;
 
     /**
-     * @var Importer|mixed|\PHPUnit\Framework\MockObject\MockObject
+     * @var Importer|mixed|MockObject
      */
     private $importerMock;
 
@@ -161,8 +163,8 @@ class CatalogTest extends TestCase
     {
         $this->scopeConfigInterfaceMock->method('getValue')
             ->withConsecutive(
-                [\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_TRANSACTIONAL_DATA_SYNC_LIMIT],
-                [\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_CATALOG_BREAK_VALUE]
+                [Config::XML_PATH_CONNECTOR_TRANSACTIONAL_DATA_SYNC_LIMIT],
+                [Config::XML_PATH_CONNECTOR_SYNC_CATALOG_BREAK_VALUE]
             )->willReturnOnConsecutiveCalls(500, null);
     }
 
@@ -268,19 +270,19 @@ class CatalogTest extends TestCase
             [
                 'Catalog_Store_1',
                 $productsToImport['Catalog_Store_1']['products'],
-                \Dotdigitalgroup\Email\Model\Importer::MODE_BULK,
+                Importer::MODE_BULK,
                 $productsToImport['Catalog_Store_1']['websiteId']
             ],
             [
                 'Catalog_Store_2',
                 $productsToImport['Catalog_Store_2']['products'],
-                \Dotdigitalgroup\Email\Model\Importer::MODE_BULK,
+                Importer::MODE_BULK,
                 $productsToImport['Catalog_Store_2']['websiteId']
             ],
             [
                 'Catalog_Store_3',
                 $productsToImport['Catalog_Store_3']['products'],
-                \Dotdigitalgroup\Email\Model\Importer::MODE_BULK,
+                Importer::MODE_BULK,
                 $productsToImport['Catalog_Store_3']['websiteId']
             ],
         );

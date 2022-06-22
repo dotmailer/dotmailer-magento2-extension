@@ -9,13 +9,15 @@ use Dotdigitalgroup\Email\Model\Connector\Order as ConnectorOrder;
 use Dotdigitalgroup\Email\Model\OrderFactory;
 use Dotdigitalgroup\Email\Model\ResourceModel\Order\Collection as OrderCollection;
 use Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory as OrderCollectionFactory;
+use Dotdigitalgroup\Email\Model\Validator\Schema\SchemaValidatorFactory;
+use Dotdigitalgroup\Email\Model\Validator\Schema\SchemaValidator;
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Model\ResourceModel\Order\Collection as SalesOrderCollection;
 use Magento\Sales\Model\ResourceModel\Order\CollectionFactory as SalesOrderCollectionFactory;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Store\Api\Data\StoreInterface;
 use Dotdigitalgroup\Email\Model\Sync\Order\Exporter;
-use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
 use PHPUnit\Framework\TestCase;
 
 class ExporterTest extends TestCase
@@ -92,11 +94,11 @@ class ExporterTest extends TestCase
 
     protected function setUp() :void
     {
-        $this->objectManager = new ObjectManager($this);
         $this->helperMock = $this->createMock(Data::class);
         $this->loggerMock = $this->createMock(Logger::class);
         $this->connectorOrderFactory = $this->createMock(ConnectorOrderFactory::class);
         $this->connectorOrderMock = $this->createMock(ConnectorOrder::class);
+
         $this->orderFactoryMock = $this->createMock(OrderFactory::class);
         $this->orderCollectionMock = $this->getMockBuilder(OrderCollection::class)
             ->onlyMethods(['getOrdersFromIds'])
@@ -109,7 +111,6 @@ class ExporterTest extends TestCase
         $this->salesOrderCollectionMock = $this->createMock(SalesOrderCollection::class);
         $this->salesOrderCollectionFactoryMock = $this->createMock(SalesOrderCollectionFactory::class);
         $this->storeManagerInterfaceMock = $this->createMock(StoreManagerInterface::class);
-
         $this->orderCollection = $this->getMockBuilder(OrderCollection::class)
             ->disableOriginalConstructor()
             ->disableOriginalClone()
@@ -119,8 +120,6 @@ class ExporterTest extends TestCase
 
         $this->exporter = new Exporter(
             $this->storeManagerInterfaceMock,
-            $this->helperMock,
-            $this->orderFactoryMock,
             $this->scopeConfigInterfaceMock,
             $this->connectorOrderFactory,
             $this->orderCollectionFactoryMock,
@@ -162,7 +161,7 @@ class ExporterTest extends TestCase
         $this->orderCollection->expects($this->once())
             ->method('getSize')
             ->willReturn(1);
-        
+
         $this->orderCollectionMock
             ->expects($this->atLeastOnce())
             ->method('getIncrementId')

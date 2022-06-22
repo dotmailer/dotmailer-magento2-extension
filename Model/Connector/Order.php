@@ -3,16 +3,49 @@
 namespace Dotdigitalgroup\Email\Model\Connector;
 
 use Dotdigitalgroup\Email\Helper\Config;
+use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Product\AttributeFactory;
+use Dotdigitalgroup\Email\Model\Validator\Schema\Exception\SchemaValidationException;
+use Dotdigitalgroup\Email\Model\Validator\Schema\SchemaValidator;
+use Dotdigitalgroup\Email\Model\Validator\Schema\SchemaValidatorFactory;
+use Magento\Customer\Model\CustomerFactory;
+use Magento\Catalog\Model\ProductFactory;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Framework\Exception\ValidatorException;
+use Magento\Payment\Model\InfoInterface;
+use Magento\Sales\Api\Data\OrderInterface;
+use Magento\Sales\Api\Data\OrderPaymentInterface;
+use Magento\Sales\Model\Order\Item;
+use Magento\Sales\Model\Order as MagentoOrder;
+use Magento\Store\Model\Website;
 
 /**
  * Transactional data for orders, including mapped custom order attributes to sync.
  *
  * @SuppressWarnings(PHPMD.TooManyFields)
  */
-class Order
+class Order extends AbstractConnectorModel
 {
+    /**
+     * Dotdigital order required schema
+     */
+    public const SCHEMA_RULES = [
+        'orderTotal' => ':isFloat',
+        'currency' => ':isString',
+        'purchaseDate' => ':dateFormat',
+        'orderSubtotal' => ':isFloat',
+        'products' =>  [
+            '*' => [
+                'name' => ':isString',
+                'price' => ':isFloat',
+                'sku' => ':isString',
+                'qty' => ':isInt',
+            ]
+        ]
+    ];
+
     /**
      * Order Increment ID.
      *
@@ -110,17 +143,17 @@ class Order
     public $orderStatus;
 
     /**
-     * @var \Dotdigitalgroup\Email\Helper\Data
+     * @var Data
      */
     private $helper;
 
     /**
-     * @var \Magento\Customer\Model\CustomerFactory
+     * @var CustomerFactory
      */
     private $customerFactory;
 
     /**
-     * @var \Magento\Catalog\Model\ProductFactory
+     * @var ProductFactory
      */
     private $productFactory;
 
@@ -135,44 +168,60 @@ class Order
     private $attributeHandler;
 
     /**
+     * @var bool
+     */
+    private $includeCustomOptions;
+
+    /**
      * @var Logger
      */
     private $logger;
 
     /**
+     * @var SchemaValidator
+     */
+    private $schemaValidator;
+
+    /**
      * Order constructor.
      *
-     * @param \Magento\Catalog\Model\ProductFactory $productFactory
-     * @param \Magento\Customer\Model\CustomerFactory $customerFactory
-     * @param \Dotdigitalgroup\Email\Helper\Data $helperData
+     * @param ProductFactory $productFactory
+     * @param CustomerFactory $customerFactory
+     * @param Data $helperData
      * @param KeyValidator $validator
      * @param AttributeFactory $attributeHandler
      * @param Logger $logger
+     * @param SchemaValidatorFactory $schemaValidatorFactory
      */
     public function __construct(
-        \Magento\Catalog\Model\ProductFactory $productFactory,
-        \Magento\Customer\Model\CustomerFactory $customerFactory,
-        \Dotdigitalgroup\Email\Helper\Data $helperData,
+        ProductFactory $productFactory,
+        CustomerFactory $customerFactory,
+        Data $helperData,
         KeyValidator $validator,
         AttributeFactory $attributeHandler,
-        Logger $logger
+        Logger $logger,
+        SchemaValidatorFactory $schemaValidatorFactory
     ) {
         $this->productFactory = $productFactory;
         $this->customerFactory = $customerFactory;
         $this->helper = $helperData;
         $this->validator = $validator;
         $this->attributeHandler = $attributeHandler;
+        $this->schemaValidator = $schemaValidatorFactory->create(['pattern'=>static::SCHEMA_RULES]);
         $this->logger = $logger;
     }
 
     /**
      * Set the order data information.
      *
-     * @param \Magento\Sales\Model\Order $orderData
+     * @param mixed $orderData
      *
      * @return $this
+     * @throws NoSuchEntityException
+     * @throws ValidatorException
+     * @throws SchemaValidationException|LocalizedException
      */
-    public function setOrderData($orderData)
+    public function setOrderData($orderData): Order
     {
         $this->id = $orderData->getIncrementId();
         $this->email = $orderData->getCustomerEmail();
@@ -188,7 +237,7 @@ class Order
         );
         $this->currency = $orderData->getOrderCurrencyCode();
 
-        /** @var \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment */
+        /** @var OrderPaymentInterface|InfoInterface $payment */
         $payment = $orderData->getPayment();
         if ($payment) {
             if ($payment->getMethod()) {
@@ -199,13 +248,13 @@ class Order
             }
         }
 
-        $this->couponCode = $orderData->getCouponCode();
+        $this->couponCode = (string) $orderData->getCouponCode();
 
         /*
          * custom order attributes
          */
         $customAttributes = $this->getConfigSelectedCustomOrderAttributes(
-            $orderData->getStore()->getWebsiteId()
+            $orderData->getStore()->getWebsite()->getId()
         );
 
         if ($customAttributes) {
@@ -235,16 +284,16 @@ class Order
          */
         $this->processShippingAddress($orderData);
 
-        $syncCustomOption = $this->helper->getWebsiteConfig(
+        $this->includeCustomOptions = $this->helper->getWebsiteConfig(
             Config::XML_PATH_CONNECTOR_SYNC_ORDER_PRODUCT_CUSTOM_OPTIONS,
-            $orderData->getStore()->getWebsiteId()
+            $orderData->getStore()->getWebsite()->getId()
         );
 
         /*
          * Order items.
          */
         try {
-            $this->processOrderItems($orderData, $syncCustomOption);
+            $this->processOrderItems($orderData);
         } catch (\InvalidArgumentException $e) {
             $this->logger->debug(
                 'Error processing items for order ID: ' . $orderData->getId(),
@@ -271,13 +320,20 @@ class Order
         $this->orderTotal = (float) number_format($orderTotal, 2, '.', '');
         $this->orderStatus = $orderData->getStatus();
 
+        if (!$this->schemaValidator->isValid($this->toArray())) {
+            throw new SchemaValidationException(
+                $this->schemaValidator,
+                __("Validation error")
+            );
+        };
+
         return $this;
     }
 
     /**
      * Process order billing address.
      *
-     * @param \Magento\Sales\Model\Order $orderData
+     * @param MagentoOrder $orderData
      *
      * @return void
      */
@@ -307,7 +363,7 @@ class Order
     /**
      * Process order shipping address.
      *
-     * @param \Magento\Sales\Model\Order $orderData
+     * @param MagentoOrder $orderData
      *
      * @return void
      */
@@ -316,7 +372,6 @@ class Order
         if ($shippingAddress = $orderData->getShippingAddress()) {
             /** @var \Magento\Framework\Model\AbstractExtensibleModel $shippingAddress */
             $shippingData = $shippingAddress->getData();
-
             $this->deliveryAddress = [
                 'delivery_address_1' => $this->_getStreet(
                     $shippingData['street'],
@@ -337,19 +392,12 @@ class Order
     /**
      * Process order items.
      *
-     * @param \Magento\Sales\Model\Order $orderData
-     * @param boolean $syncCustomOption
-     *
+     * @param MagentoOrder $orderData
      * @return void
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
-    private function processOrderItems($orderData, $syncCustomOption)
+    private function processOrderItems(MagentoOrder $orderData)
     {
         foreach ($orderData->getAllItems() as $productItem) {
-            if ($productItem->getProduct() === null) {
-                continue;
-            }
-
             $isBundle = $isChildOfBundle = false;
 
             /**
@@ -357,17 +405,16 @@ class Order
              * Configurable parents are not output in schema,
              * but bundle parents are.
              */
-            if (in_array($productItem->getProduct()->getTypeId(), ['configurable', 'bundle'])) {
-                unset($parentProductModel, $parentLineItem);
-                $parentProductModel = $productItem->getProduct();
+            if (in_array($productItem->getProductType(), ['configurable', 'bundle'])) {
+                unset($parentLineItem);
                 $parentLineItem = $productItem;
 
                 // Custom options stored against parent order items
-                $customOptions = ($syncCustomOption) ? $this->_getOrderItemOptions($productItem) : [];
+                $customOptions = ($this->includeCustomOptions) ? $this->_getOrderItemOptions($productItem) : [];
 
                 // Define parent types for easy reference
-                $isBundle = $productItem->getProduct()->getTypeId() === 'bundle';
-                $isConfigurable = $productItem->getProduct()->getTypeId() === 'configurable';
+                $isBundle = $productItem->getProductType() === 'bundle';
+                $isConfigurable = $productItem->getProductType() === 'configurable';
 
                 if ($isConfigurable) {
                     continue;
@@ -375,14 +422,13 @@ class Order
             }
 
             if (empty($customOptions)) {
-                $customOptions = ($syncCustomOption) ? $this->_getOrderItemOptions($productItem) : [];
+                $customOptions = ($this->includeCustomOptions) ? $this->_getOrderItemOptions($productItem) : [];
             }
 
-            if (isset($parentProductModel) &&
-                isset($parentLineItem) &&
+            if (isset($parentLineItem) &&
                 $parentLineItem->getId() === $productItem->getParentItemId()) {
-                $isChildOfBundle = $parentProductModel->getTypeId() === 'bundle';
-                $productModel = $parentProductModel;
+                $isChildOfBundle = $parentLineItem->getProductType() === 'bundle';
+                $productModel = $parentLineItem->getProduct();
                 $childProductModel = $productItem->getProduct();
             } else {
                 $productModel = $productItem->getProduct();
@@ -394,7 +440,7 @@ class Order
              */
             if (isset($parentLineItem) &&
                 $parentLineItem->getId() === $productItem->getParentItemId() &&
-                $parentLineItem->getProduct()->getTypeId() === 'configurable') {
+                $parentLineItem->getProductType() === 'configurable') {
                 $price = $parentLineItem->getPrice();
             } else {
                 $price = $productItem->getPrice();
@@ -434,7 +480,7 @@ class Order
                         2
                     ),
                     'price' => (float) number_format(
-                        $price,
+                        (float) $price,
                         2,
                         '.',
                         ''
@@ -448,17 +494,6 @@ class Order
                 if ($configAttributes && $childAttributes && $childAttributes->hasValues()) {
                     $productData['child_product_attributes'] = $childAttributes;
                 }
-                if ($customOptions) {
-                    $productData['custom-options'] = $customOptions;
-                }
-
-                if ($isChildOfBundle) {
-                    end($this->products);
-                    $lastKey = key($this->products);
-                    $this->products[$lastKey]['sub_items'][] = $productData;
-                } else {
-                    $this->products[] = $productData;
-                }
 
             } else {
                 // when no product information is available limit to this data
@@ -470,7 +505,7 @@ class Order
                         2
                     ),
                     'price' => (float) number_format(
-                        $price,
+                        (float) $price,
                         2,
                         '.',
                         ''
@@ -478,9 +513,17 @@ class Order
                     'attribute-set' => '',
                     'categories' => [],
                 ];
-                if ($customOptions) {
-                    $productData['custom-options'] = $customOptions;
-                }
+            }
+
+            if ($customOptions) {
+                $productData['custom-options'] = $customOptions;
+            }
+
+            if ($isChildOfBundle) {
+                end($this->products);
+                $lastKey = key($this->products);
+                $this->products[$lastKey]['sub_items'][] = $productData;
+            } else {
                 $this->products[] = $productData;
             }
 
@@ -513,7 +556,7 @@ class Order
      * Get attribute value for the field.
      *
      * @param array $field
-     * @param \Magento\Sales\Model\Order $orderData
+     * @param MagentoOrder $orderData
      *
      * @return float|int|null|string
      */
@@ -532,12 +575,12 @@ class Order
             switch ($type) {
                 case 'int':
                 case 'smallint':
-                    $value = (int)$orderData->$function();
+                    $value = (int) $orderData->$function();
                     break;
 
                 case 'decimal':
                     $value = (float) number_format(
-                        $orderData->$function(),
+                        (float) $orderData->$function(),
                         2,
                         '.',
                         ''
@@ -583,10 +626,13 @@ class Order
     /**
      * Process options for each order item.
      *
+     * @deprecated This method ought to be private, and will be moved a new class in a future release.
+     * @see https://github.com/dotmailer/dotmailer-magento2-extension/issues/583
+     *
      * @param \Magento\Sales\Model\Order\Item $orderItem
      * @return array
      */
-    private function _getOrderItemOptions($orderItem)
+    public function _getOrderItemOptions($orderItem)
     {
         $orderItemOptions = $orderItem->getProductOptions();
 
@@ -685,7 +731,7 @@ class Order
             $productCat[]['Name'] = mb_substr(
                 implode(', ', $categories),
                 0,
-                \Dotdigitalgroup\Email\Helper\Data::DM_FIELD_LIMIT
+                Data::DM_FIELD_LIMIT
             );
         }
         return $productCat;
@@ -701,7 +747,7 @@ class Order
     {
         foreach ($childCategories as $childCategory) {
             if (!in_array($childCategory, $productCat)) {
-                array_push($productCat, $childCategory);
+                $productCat[] = $childCategory;
             }
         }
     }
