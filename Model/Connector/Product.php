@@ -4,11 +4,20 @@ namespace Dotdigitalgroup\Email\Model\Connector;
 
 use Dotdigitalgroup\Email\Api\StockFinderInterface;
 use Dotdigitalgroup\Email\Api\TierPriceFinderInterface;
+use Dotdigitalgroup\Email\Helper\Data;
+use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Catalog\UrlFinder;
 use Dotdigitalgroup\Email\Model\Product\AttributeFactory;
 use Dotdigitalgroup\Email\Model\Product\ImageFinder;
 use Dotdigitalgroup\Email\Model\Product\ImageType\Context\CatalogSync;
 use Dotdigitalgroup\Email\Model\Product\ParentFinder;
+use Dotdigitalgroup\Email\Model\Validator\Schema\Exception\SchemaValidationException;
+use Dotdigitalgroup\Email\Model\Validator\Schema\SchemaValidator;
+use Dotdigitalgroup\Email\Model\Validator\Schema\SchemaValidatorFactory;
+use Magento\Catalog\Model\Product as MagentoProduct;
+use Magento\Catalog\Model\Product\Attribute\Source\StatusFactory;
+use Magento\Catalog\Model\Product\VisibilityFactory;
+use Magento\Store\Model\StoreManagerInterface;
 use Magento\Tax\Api\TaxCalculationInterface;
 
 /**
@@ -16,9 +25,20 @@ use Magento\Tax\Api\TaxCalculationInterface;
  *
  * @SuppressWarnings(PHPMD.TooManyFields)
  */
-class Product
+class Product extends AbstractConnectorModel
 {
-    const TYPE_VARIANT = 'Variant';
+    public const TYPE_VARIANT = 'Variant';
+
+    /**
+     * Dotdigital order required schema
+     */
+    public const SCHEMA_RULES = [
+        'name' => ':isString',
+        'price' => ':isFloat',
+        'sku' => ':isString',
+        'url' => ':url',
+        'imagePath' => ':url'
+    ];
 
     /**
      * @var string
@@ -111,22 +131,22 @@ class Product
     public $type = '';
 
     /**
-     * @var \Dotdigitalgroup\Email\Helper\Data
+     * @var Data
      */
     private $helper;
 
     /**
-     * @var \Magento\Store\Model\StoreManagerInterface
+     * @var StoreManagerInterface
      */
     private $storeManager;
 
     /**
-     * @var \Magento\Catalog\Model\Product\Attribute\Source\StatusFactory
+     * @var StatusFactory
      */
     private $statusFactory;
 
     /**
-     * @var \Magento\Catalog\Model\Product\VisibilityFactory
+     * @var VisibilityFactory
      */
     private $visibilityFactory;
 
@@ -171,11 +191,21 @@ class Product
     private $taxCalculation;
 
     /**
+     * @var Logger
+     */
+    private $logger;
+
+    /**
+     * @var SchemaValidator
+     */
+    private $schemaValidator;
+
+    /**
      * Product constructor.
-     * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
-     * @param \Dotdigitalgroup\Email\Helper\Data $helper
-     * @param \Magento\Catalog\Model\Product\Attribute\Source\StatusFactory $statusFactory
-     * @param \Magento\Catalog\Model\Product\VisibilityFactory $visibilityFactory
+     * @param StoreManagerInterface $storeManagerInterface
+     * @param Data $helper
+     * @param StatusFactory $statusFactory
+     * @param VisibilityFactory $visibilityFactory
      * @param UrlFinder $urlFinder
      * @param AttributeFactory $attributeHandler
      * @param ParentFinder $parentFinder
@@ -184,12 +214,14 @@ class Product
      * @param StockFinderInterface $stockFinderInterface
      * @param CatalogSync $imageType
      * @param TaxCalculationInterface $taxCalculation
+     * @param Logger $logger
+     * @param SchemaValidatorFactory $schemaValidatorFactory
      */
     public function __construct(
-        \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
-        \Dotdigitalgroup\Email\Helper\Data $helper,
-        \Magento\Catalog\Model\Product\Attribute\Source\StatusFactory $statusFactory,
-        \Magento\Catalog\Model\Product\VisibilityFactory $visibilityFactory,
+        StoreManagerInterface $storeManagerInterface,
+        Data $helper,
+        StatusFactory $statusFactory,
+        VisibilityFactory $visibilityFactory,
         UrlFinder $urlFinder,
         AttributeFactory $attributeHandler,
         ParentFinder $parentFinder,
@@ -197,7 +229,9 @@ class Product
         TierPriceFinderInterface $tierPriceFinder,
         StockFinderInterface $stockFinderInterface,
         CatalogSync $imageType,
-        TaxCalculationInterface $taxCalculation
+        TaxCalculationInterface $taxCalculation,
+        Logger $logger,
+        SchemaValidatorFactory $schemaValidatorFactory
     ) {
         $this->visibilityFactory = $visibilityFactory;
         $this->statusFactory = $statusFactory;
@@ -211,17 +245,21 @@ class Product
         $this->stockFinderInterface = $stockFinderInterface;
         $this->imageType = $imageType;
         $this->taxCalculation = $taxCalculation;
+        $this->schemaValidator = $schemaValidatorFactory->create(['pattern'=>static::SCHEMA_RULES]);
+        $this->logger = $logger;
     }
 
     /**
      * Set the product data
-     * @param $product
-     * @param $storeId
+     *
+     * @param mixed $product
+     * @param int $storeId
      * @return $this
+     * @throws SchemaValidationException
      * @throws \Magento\Framework\Exception\LocalizedException
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
-    public function setProduct($product, $storeId)
+    public function setProduct($product, int $storeId)
     {
         $this->id = $product->getId();
         $this->sku = $product->getSku();
@@ -264,7 +302,7 @@ class Product
         $this->shortDescription = mb_substr(
             (string) $product->getShortDescription(),
             0,
-            \Dotdigitalgroup\Email\Helper\Data::DM_FIELD_LIMIT
+            Data::DM_FIELD_LIMIT
         );
 
         //category data
@@ -292,18 +330,26 @@ class Product
         $this->processProductOptions($product, $storeId);
         $this->processParentProducts($product);
 
+        if (!$this->schemaValidator->isValid($this->toArray())) {
+            throw new SchemaValidationException(
+                $this->schemaValidator,
+                __("Validation error")
+            );
+        };
+
         return $this;
     }
 
     /**
      * Retrieve product attributes for catalog sync.
      *
-     * @param \Magento\Catalog\Model\Product $product
+     * @param MagentoProduct $product
      * @param string $storeId
-     *
-     * @return null
+     * @return void
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
-    private function processProductOptions($product, $storeId)
+    private function processProductOptions($product, $storeId): void
     {
         $attributeModel = $this->attributeHandler->create();
 
@@ -338,7 +384,7 @@ class Product
     /**
      * Set prices for all product types.
      *
-     * @param \Magento\Catalog\Model\Product $product
+     * @param mixed $product
      * @return void
      */
     private function setPrices($product)
@@ -379,7 +425,7 @@ class Product
      * Default Tax Destination Calculation > Default Country.
      * Here we calculate the 'inc' figures with the rate and the prices we already obtained.
      *
-     * @param \Magento\Catalog\Model\Product $product
+     * @param MagentoProduct $product
      * @param string|int $storeId
      * @return void
      */
@@ -424,12 +470,13 @@ class Product
     }
 
     /**
-     * @param $product
+     * Process parent products
+     *
+     * @param MagentoProduct $product
      */
-    private function processParentProducts($product)
+    private function processParentProducts(MagentoProduct $product)
     {
         $parentId = $this->parentFinder->getProductParentIdToCatalogSync($product);
-
         if ($parentId) {
             $this->parent_id = $parentId;
             $this->type = self::TYPE_VARIANT;

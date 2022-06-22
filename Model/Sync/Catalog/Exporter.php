@@ -4,16 +4,21 @@ namespace Dotdigitalgroup\Email\Model\Sync\Catalog;
 
 use Dotdigitalgroup\Email\Model\Connector\Product;
 use Dotdigitalgroup\Email\Logger\Logger;
+use Dotdigitalgroup\Email\Model\Connector\ProductFactory;
+use Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory;
+use Dotdigitalgroup\Email\Model\Validator\Schema\Exception\SchemaValidationException;
+use Dotdigitalgroup\Email\Model\Validator\Schema\SchemaValidatorFactory;
+use Magento\Framework\Exception\ValidatorException;
 
 class Exporter
 {
     /**
-     * @var \Dotdigitalgroup\Email\Model\Connector\ProductFactory
+     * @var ProductFactory
      */
     private $connectorProductFactory;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory
+     * @var CollectionFactory
      */
     private $catalogCollectionFactory;
 
@@ -23,13 +28,13 @@ class Exporter
     private $logger;
 
     /**
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory $catalogCollectionFactory
-     * @param \Dotdigitalgroup\Email\Model\Connector\ProductFactory $connectorProductFactory
+     * @param CollectionFactory $catalogCollectionFactory
+     * @param ProductFactory $connectorProductFactory
      * @param Logger $logger
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory $catalogCollectionFactory,
-        \Dotdigitalgroup\Email\Model\Connector\ProductFactory $connectorProductFactory,
+        CollectionFactory $catalogCollectionFactory,
+        ProductFactory $connectorProductFactory,
         Logger $logger
     ) {
         $this->catalogCollectionFactory = $catalogCollectionFactory;
@@ -38,6 +43,8 @@ class Exporter
     }
 
     /**
+     * Export catalog
+     *
      * @param string|int $storeId
      * @param array $productsToProcess
      * @return array
@@ -49,20 +56,27 @@ class Exporter
 
         foreach ($products as $product) {
             try {
-                $connectorProduct = $this->connectorProductFactory->create()
-                    ->setProduct($product, $storeId);
-                $connectorProducts[$product->getId()] = $this->expose($connectorProduct);
-            } catch (\Exception $e) {
+                $connectorProduct = $this->connectorProductFactory->create();
+                $connectorProduct->setProduct($product, $storeId);
+                $connectorProducts[$product->getId()] = $connectorProduct->toArray();
+            } catch (SchemaValidationException $exception) {
+                $this->logger->debug(
+                    sprintf(
+                        "Product id %s was not exported, but will be marked as processed.",
+                        $product->getId()
+                    ),
+                    [$exception, $exception->errors()]
+                );
+            } catch (\Exception $exception) {
                 $this->logger->debug(
                     sprintf(
                         'Product id %s was not exported, but will be marked as processed.',
                         $product->getId()
                     ),
-                    [(string) $e]
+                    [$exception]
                 );
             }
         }
-
         return $connectorProducts;
     }
 
@@ -78,14 +92,5 @@ class Exporter
     {
         return $this->catalogCollectionFactory->create()
             ->filterProductsByStoreTypeAndVisibility($storeId, $productIds);
-    }
-
-    /**
-     * @param Product $connectorProduct
-     * @return array
-     */
-    private function expose($connectorProduct)
-    {
-        return get_object_vars($connectorProduct);
     }
 }

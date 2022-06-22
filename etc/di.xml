@@ -94,6 +94,9 @@
     <preference for="Dotdigitalgroup\Email\Api\TierPriceFinderInterface" type="Dotdigitalgroup\Email\Model\Product\TierPriceFinder" />
     <preference for="Dotdigitalgroup\Email\Api\StockFinderInterface" type="Dotdigitalgroup\Email\Model\Product\StockFinder" />
     <preference for="Magento\Framework\Filesystem\DriverInterface" type="Magento\Framework\Filesystem\Driver\File" />
+    <preference for="Dotdigitalgroup\Email\Model\Validator\Schema\SchemaValidatorInterface" type="Dotdigitalgroup\Email\Model\Validator\Schema\SchemaValidator" />
+    <preference for="Dotdigitalgroup\Email\Model\Validator\Schema\SchemaValidatorRuleSetInterface" type="Dotdigitalgroup\Email\Model\Validator\Schema\SchemaValidatorRuleSet" />
+    <preference for="Dotdigitalgroup\Email\Model\Validator\Schema\SchemaValidatorRuleInterface" type="Dotdigitalgroup\Email\Model\Validator\Schema\SchemaValidatorRule" />
     <type name="Dotdigitalgroup\Email\Logger\Handler\ConnectorLogHandler">
         <arguments>
             <argument name="filesystem" xsi:type="object">Magento\Framework\Filesystem\Driver\File</argument>

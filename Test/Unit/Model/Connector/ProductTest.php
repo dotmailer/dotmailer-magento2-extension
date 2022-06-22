@@ -4,6 +4,7 @@ namespace Dotdigitalgroup\Email\Test\Unit\Model\Connector;
 
 use Dotdigitalgroup\Email\Api\TierPriceFinderInterface;
 use Dotdigitalgroup\Email\Helper\Data;
+use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Catalog\UrlFinder;
 use Dotdigitalgroup\Email\Model\Connector\Product;
 use Dotdigitalgroup\Email\Model\Product\Attribute;
@@ -11,16 +12,15 @@ use Dotdigitalgroup\Email\Model\Product\AttributeFactory;
 use Dotdigitalgroup\Email\Model\Product\ImageFinder;
 use Dotdigitalgroup\Email\Model\Product\ImageType\Context\CatalogSync;
 use Dotdigitalgroup\Email\Model\Product\ParentFinder;
-use Dotdigitalgroup\Email\Model\Product\TierPriceFinder;
 use Dotdigitalgroup\Email\Api\StockFinderInterface;
+use Dotdigitalgroup\Email\Model\Product\TierPriceFinder;
+use Dotdigitalgroup\Email\Test\Unit\Traits\TestInteractsWithSchemaValidatorTrait;
 use Magento\Bundle\Model\Product\Type;
 use Magento\Bundle\Model\ResourceModel\Option\Collection as OptionCollection;
 use Magento\Bundle\Pricing\Price\BundleRegularPrice;
 use Magento\Catalog\Model\Product as MageProduct;
 use Magento\Catalog\Model\Product\Attribute\Source\Status;
 use Magento\Catalog\Model\Product\Attribute\Source\StatusFactory;
-use Magento\Catalog\Model\Product\Media\Config;
-use Magento\Catalog\Model\Product\Media\ConfigFactory;
 use Magento\Catalog\Model\Product\Visibility;
 use Magento\Catalog\Model\Product\VisibilityFactory;
 use Magento\Catalog\Model\ResourceModel\Category\Collection;
@@ -31,82 +31,84 @@ use Magento\Framework\Pricing\PriceInfo\Base;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Store\Model\Store;
 use Magento\Tax\Api\TaxCalculationInterface;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class ProductTest extends TestCase
 {
+    use TestInteractsWithSchemaValidatorTrait;
     /**
-     * @var Data|\PHPUnit_Framework_MockObject_MockObject
+     * @var Data|MockObject
      */
     private $helperMock;
 
     /**
-     * @var StoreManagerInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var StoreManagerInterface|MockObject
      */
     private $storeManagerMock;
 
     /**
-     * @var VisibilityFactory|\PHPUnit_Framework_MockObject_MockObject
+     * @var VisibilityFactory|MockObject
      */
     private $visibilityFactoryMock;
 
     /**
-     * @var StatusFactory|\PHPUnit_Framework_MockObject_MockObject
+     * @var StatusFactory|MockObject
      */
     private $statusFactoryMock;
 
     /**
-     * @var MageProduct|\PHPUnit_Framework_MockObject_MockObject
+     * @var MageProduct|MockObject
      */
     private $mageProductMock;
 
     /**
-     * @var Status|\PHPUnit_Framework_MockObject_MockObject
+     * @var Status|MockObject
      */
     private $statusMock;
 
     /**
-     * @var Phrase|\PHPUnit_Framework_MockObject_MockObject
+     * @var Phrase|MockObject
      */
     private $phraseMock;
 
     /**
-     * @var Collection|\PHPUnit_Framework_MockObject_MockObject
+     * @var Collection|MockObject
      */
     private $collectionMock;
 
     /**
-     * @var Configurable|\PHPUnit_Framework_MockObject_MockObject
+     * @var Configurable|MockObject
      */
     private $configurableMock;
 
     /**
-     * @var Base|\PHPUnit_Framework_MockObject_MockObject
+     * @var Base|MockObject
      */
     private $baseMock;
 
     /**
-     * @var BundleRegularPrice|\PHPUnit_Framework_MockObject_MockObject
+     * @var BundleRegularPrice|MockObject
      */
     private $bundleRegularPriceMock;
 
     /**
-     * @var AmountBaseMock|\PHPUnit_Framework_MockObject_MockObject
+     * @var AmountBase|MockObject
      */
     private $amountBaseMock;
 
     /**
-     * @var Type|\PHPUnit_Framework_MockObject_MockObject
+     * @var Type|MockObject
      */
     private $typeMock;
 
     /**
-     * @var OptionCollection|\PHPUnit_Framework_MockObject_MockObject
+     * @var OptionCollection|MockObject
      */
     private $optionCollectionMock;
 
     /**
-     * @var UrlFinder|\PHPUnit_Framework_MockObject_MockObject
+     * @var UrlFinder|MockObject
      */
     private $urlFinderMock;
 
@@ -116,62 +118,68 @@ class ProductTest extends TestCase
     private $visibility;
 
     /**
-     * @var Product
+     * @var Product|MockObject
      */
     private $product;
 
     /**
-     * @var Store
+     * @var Store|MockObject
      */
     private $storeMock;
 
     /**
-     * @var Attribute
+     * @var Attribute|MockObject
      */
     private $attributeMock;
 
     /**
-     * @var AttributeFactory
+     * @var AttributeFactory|MockObject
      */
     private $attributeFactoryMock;
 
     /**
-     * @var ParentFinder\PHPUnit\Framework\MockObject\MockObject
+     * @var ParentFinder|MockObject
      */
     private $parentFinderMock;
 
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject
+     * @var MageProduct|MockObject
      */
     private $parentMock;
 
     /**
-     * @var TierPriceFinder\PHPUnit\Framework\MockObject\MockObject
+     * @var TierPriceFinder|MockObject
      */
     private $tierPriceFinderMock;
 
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject
+     * @var StockFinderInterface|MockObject
      */
     private $stockFinderInterfaceMock;
 
     /**
-     * @var ImageFinder|\PHPUnit\Framework\MockObject\MockObject
+     * @var ImageFinder|MockObject
      */
     private $imageFinderMock;
 
     /**
-     * @var CatalogSync|\PHPUnit\Framework\MockObject\MockObject
+     * @var CatalogSync|MockObject
      */
     private $imageTypeMock;
 
     /**
-     * @var TaxCalculationInterface|\PHPUnit\Framework\MockObject\MockObject
+     * @var TaxCalculationInterface|MockObject
      */
     private $taxCalculationInterfaceMock;
 
+    /**
+     * @var Logger|MockObject
+     */
+    private $logger;
+
     protected function setUp() :void
     {
+        $this->setUpValidator([]);
         $this->storeManagerMock = $this->createMock(StoreManagerInterface::class);
         $this->helperMock = $this->createMock(Data::class);
         $this->statusFactoryMock = $this->createMock(StatusFactory::class);
@@ -195,6 +203,7 @@ class ProductTest extends TestCase
                 'getShortDescription'
             ])
             ->getMock();
+
         $this->statusMock = $this->createMock(Status::class);
         $this->phraseMock = $this->createMock(Phrase::class);
         $this->collectionMock = $this->createMock(Collection::class);
@@ -209,7 +218,7 @@ class ProductTest extends TestCase
         $this->attributeMock = $this->createMock(Attribute::class);
         $this->attributeFactoryMock = $this->createMock(AttributeFactory::class);
         $this->parentFinderMock = $this->createMock(ParentFinder::class);
-        $this->parentMock = $this->createMock(\Magento\Catalog\Model\Product::class);
+        $this->parentMock = $this->createMock(MageProduct::class);
         $this->tierPriceFinderMock = $this->createMock(TierPriceFinderInterface::class);
         $this->stockFinderInterfaceMock = $this->createMock(StockFinderInterface::class);
         $this->imageFinderMock = $this->createMock(ImageFinder::class);
@@ -218,7 +227,7 @@ class ProductTest extends TestCase
             $this->createMock(\Magento\Eav\Model\ResourceModel\Entity\Attribute::class)
         );
         $this->taxCalculationInterfaceMock = $this->createMock(TaxCalculationInterface::class);
-
+        $this->logger = $this->createMock(Logger::class);
         $this->product = new Product(
             $this->storeManagerMock,
             $this->helperMock,
@@ -231,7 +240,9 @@ class ProductTest extends TestCase
             $this->tierPriceFinderMock,
             $this->stockFinderInterfaceMock,
             $this->imageTypeMock,
-            $this->taxCalculationInterfaceMock
+            $this->taxCalculationInterfaceMock,
+            $this->logger,
+            $this->schemaValidatorFactory
         );
 
         $status = 1;
