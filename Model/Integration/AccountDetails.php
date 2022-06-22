@@ -39,7 +39,7 @@ class AccountDetails
     /**
      * @var array
      */
-    private $accountDetails;
+    private $accountDetails = [];
 
     /**
      * Account details constructor.
