@@ -2,34 +2,39 @@
 
 namespace Dotdigitalgroup\Email\Model\Sync\Importer\Type;
 
+use Dotdigitalgroup\Email\Helper\Data;
+use Dotdigitalgroup\Email\Helper\File;
+use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Apiconnector\Client;
+use Dotdigitalgroup\Email\Model\ResourceModel\Importer;
 use Dotdigitalgroup\Email\Model\Sync\Importer\Type\ItemPostProcessorInterfaceFactory;
 use Magento\Framework\DataObject;
+use Magento\Framework\Serialize\SerializerInterface;
 
 abstract class AbstractItemSyncer extends DataObject
 {
     /**
      * Legendary error message
      */
-    const ERROR_UNKNOWN = 'Error unknown';
+    public const ERROR_UNKNOWN = 'Error unknown';
 
     /**
-     * @var \Dotdigitalgroup\Email\Helper\Data
+     * @var Data
      */
     protected $helper;
 
     /**
-     * @var \Dotdigitalgroup\Email\Helper\File
+     * @var File
      */
     protected $fileHelper;
 
     /**
-     * @var \Magento\Framework\Serialize\SerializerInterface
+     * @var SerializerInterface
      */
     protected $serializer;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Importer
+     * @var Importer
      */
     protected $importerResource;
 
@@ -44,49 +49,79 @@ abstract class AbstractItemSyncer extends DataObject
     protected $client;
 
     /**
+     * @var Logger
+     */
+    protected $logger;
+
+    /**
      * AbstractItemSyncer constructor.
-     * @param \Dotdigitalgroup\Email\Helper\Data $helper
-     * @param \Dotdigitalgroup\Email\Helper\File $fileHelper
-     * @param \Magento\Framework\Serialize\SerializerInterface $serializer
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Importer $importerResource
-     * @param \Dotdigitalgroup\Email\Model\Sync\Importer\Type\ItemPostProcessorInterfaceFactory $postProcessor
+     * @param Data $helper
+     * @param File $fileHelper
+     * @param SerializerInterface $serializer
+     * @param Importer $importerResource
+     * @param Logger $logger
      * @param array $data
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Helper\Data $helper,
-        \Dotdigitalgroup\Email\Helper\File $fileHelper,
-        \Magento\Framework\Serialize\SerializerInterface $serializer,
-        \Dotdigitalgroup\Email\Model\ResourceModel\Importer $importerResource,
+        Data $helper,
+        File $fileHelper,
+        SerializerInterface $serializer,
+        Importer $importerResource,
+        Logger $logger,
         array $data = []
     ) {
         $this->helper = $helper;
         $this->fileHelper = $fileHelper;
         $this->serializer = $serializer;
         $this->importerResource = $importerResource;
+        $this->logger = $logger;
 
         parent::__construct($data);
     }
 
     /**
-     * @param $collection
+     * Run Sync(s)
+     *
+     * @param mixed $collection
+     * @return void
      */
     public function sync($collection)
     {
+        $result = null;
         $this->client = $this->getClient();
-
         foreach ($collection as $item) {
-            $result = $this->process($item);
-            $this->postProcessor->create(['data' => ['client' => $this->client]])
+            try {
+                $result = $this->process($item);
+            } catch (\InvalidArgumentException $e) {
+                $this->logger->debug(
+                    sprintf(
+                        'Error processing %s import data for ID: %d',
+                        $item->getImportType(),
+                        $item->getImportId()
+                    ),
+                    [(string)$e]
+                );
+            }
+            $this->postProcessor
+                ->create(['data' => ['client' => $this->client]])
                 ->handleItemAfterSync($item, $result);
         }
     }
 
+    /**
+     * Process sync
+     *
+     * @param mixed $item
+     * @return mixed
+     */
     abstract protected function process($item);
 
     /**
+     * Get client for sync.
+     *
      * @return Client
      */
-    private function getClient()
+    protected function getClient()
     {
         return $this->_getData('client');
     }

@@ -2,9 +2,14 @@
 
 namespace Dotdigitalgroup\Email\Model\Sync\Importer\Type\TransactionalData;
 
-use Dotdigitalgroup\Email\Model\Importer;
+use Dotdigitalgroup\Email\Helper\Data;
+use Dotdigitalgroup\Email\Helper\File;
+use Dotdigitalgroup\Email\Logger\Logger;
+use Dotdigitalgroup\Email\Model\Importer as ModelImporter;
+use Dotdigitalgroup\Email\Model\ResourceModel\Importer;
 use Dotdigitalgroup\Email\Model\Sync\Importer\Type\AbstractItemSyncer;
 use Dotdigitalgroup\Email\Model\Sync\Importer\Type\SingleItemPostProcessorFactory;
+use Magento\Framework\Serialize\SerializerInterface;
 
 /**
  * Handle TD update data for importer.
@@ -19,34 +24,36 @@ class Update extends AbstractItemSyncer
     /**
      * Update constructor.
      *
-     * @param \Dotdigitalgroup\Email\Helper\Data $helper
-     * @param \Dotdigitalgroup\Email\Helper\File $fileHelper
-     * @param \Magento\Framework\Serialize\SerializerInterface $serializer
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Importer $importerResource
+     * @param Data $helper
+     * @param File $fileHelper
+     * @param SerializerInterface $serializer
+     * @param Importer $importerResource
      * @param SingleItemPostProcessorFactory $postProcessor
+     * @param Logger $logger
      * @param array $data
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Helper\Data $helper,
-        \Dotdigitalgroup\Email\Helper\File $fileHelper,
-        \Magento\Framework\Serialize\SerializerInterface $serializer,
-        \Dotdigitalgroup\Email\Model\ResourceModel\Importer $importerResource,
+        Data $helper,
+        File $fileHelper,
+        SerializerInterface $serializer,
+        Importer $importerResource,
         SingleItemPostProcessorFactory $postProcessor,
+        Logger $logger,
         array $data = []
     ) {
         $this->postProcessor = $postProcessor;
 
-        parent::__construct($helper, $fileHelper, $serializer, $importerResource, $data);
+        parent::__construct($helper, $fileHelper, $serializer, $importerResource, $logger, $data);
     }
 
     /**
      * Process.
      *
-     * @param mixed $collection
-     *
-     * @return stdClass|null
+     * @param mixed $item
+     * @return \stdClass|null
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function process($item)
+    public function process($item): ?\stdClass
     {
         $importData = $this->serializer->unserialize($item->getImportData());
 
@@ -55,7 +62,7 @@ class Update extends AbstractItemSyncer
                 $importData,
                 $item->getImportType()
             );
-        } elseif ($item->getImportType() == Importer::IMPORT_TYPE_CART_INSIGHT_CART_PHASE) {
+        } elseif ($item->getImportType() == ModelImporter::IMPORT_TYPE_CART_INSIGHT_CART_PHASE) {
             $result = $this->client->postAbandonedCartCartInsight(
                 $importData
             );
