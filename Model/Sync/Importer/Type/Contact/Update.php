@@ -2,11 +2,16 @@
 
 namespace Dotdigitalgroup\Email\Model\Sync\Importer\Type\Contact;
 
+use Dotdigitalgroup\Email\Helper\Data;
+use Dotdigitalgroup\Email\Helper\File;
+use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Apiconnector\ContactData;
-use Dotdigitalgroup\Email\Model\Importer;
+use Dotdigitalgroup\Email\Model\Importer as ModelImporter;
+use Dotdigitalgroup\Email\Model\ResourceModel\Importer;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact;
 use Dotdigitalgroup\Email\Model\Sync\Importer\Type\AbstractItemSyncer;
 use Dotdigitalgroup\Email\Model\Sync\Importer\Type\SingleItemPostProcessorFactory;
+use Magento\Framework\Serialize\SerializerInterface;
 use Magento\Newsletter\Model\Subscriber;
 
 /**
@@ -48,30 +53,31 @@ class Update extends AbstractItemSyncer
     /**
      * Update constructor.
      *
-     * @param \Dotdigitalgroup\Email\Helper\Data $helper
-     * @param \Dotdigitalgroup\Email\Helper\File $fileHelper
-     * @param \Magento\Framework\Serialize\SerializerInterface $serializer
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Importer $importerResource
+     * @param Data $helper
+     * @param File $fileHelper
+     * @param SerializerInterface $serializer
+     * @param Importer $importerResource
      * @param Contact $contactResource
      * @param ContactData $contactData
      * @param SingleItemPostProcessorFactory $postProcessor
+     * @param Logger $logger
      * @param array $data
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Helper\Data $helper,
-        \Dotdigitalgroup\Email\Helper\File $fileHelper,
-        \Magento\Framework\Serialize\SerializerInterface $serializer,
-        \Dotdigitalgroup\Email\Model\ResourceModel\Importer $importerResource,
+        Data $helper,
+        File $fileHelper,
+        SerializerInterface $serializer,
+        Importer $importerResource,
         Contact $contactResource,
         ContactData $contactData,
         SingleItemPostProcessorFactory $postProcessor,
+        Logger $logger,
         array $data = []
     ) {
         $this->contactResource = $contactResource;
         $this->contactData = $contactData;
         $this->postProcessor = $postProcessor;
-
-        parent::__construct($helper, $fileHelper, $serializer, $importerResource, $data);
+        parent::__construct($helper, $fileHelper, $serializer, $importerResource, $logger, $data);
     }
 
     /**
@@ -84,9 +90,19 @@ class Update extends AbstractItemSyncer
     public function sync($collection)
     {
         $this->client = $this->getClient();
-
         foreach ($collection as $item) {
-            $this->process($item);
+            try {
+                $this->process($item);
+            } catch (\InvalidArgumentException $e) {
+                $this->logger->debug(
+                    sprintf(
+                        'Error processing %s import data for ID: %d',
+                        $item->getImportType(),
+                        $item->getImportId()
+                    ),
+                    [(string)$e]
+                );
+            }
         }
         //update suppress status for contact ids
         if (!empty($this->suppressedContactIds)) {
@@ -97,8 +113,7 @@ class Update extends AbstractItemSyncer
     /**
      * Process each Importer item.
      *
-     * @param Importer $item
-     *
+     * @param mixed $item
      * @return void
      */
     protected function process($item)
@@ -112,7 +127,7 @@ class Update extends AbstractItemSyncer
     /**
      * Sync the data depending on the import type.
      *
-     * @param Importer $item
+     * @param mixed $item
      * @param array $importData
      * @param string|int $websiteId
      *
@@ -123,16 +138,16 @@ class Update extends AbstractItemSyncer
         $apiMessage = $result = null;
 
         switch ($item->getImportMode()) {
-            case Importer::MODE_CONTACT_EMAIL_UPDATE:
+            case ModelImporter::MODE_CONTACT_EMAIL_UPDATE:
                 $result = $this->syncItemContactEmailUpdateMode($importData);
                 break;
 
-            case Importer::MODE_SUBSCRIBER_RESUBSCRIBED:
+            case ModelImporter::MODE_SUBSCRIBER_RESUBSCRIBED:
                 $result = $this->syncItemSubscriberResubscribedMode($importData, $websiteId);
                 $apiMessage = $this->handleResubscribeResponseStatus($result);
                 break;
 
-            case Importer::MODE_SUBSCRIBER_UPDATE:
+            case ModelImporter::MODE_SUBSCRIBER_UPDATE:
                 $result = $this->syncItemSubscriberUpdateMode($importData, $websiteId);
                 break;
         }

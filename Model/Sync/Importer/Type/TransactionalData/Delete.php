@@ -2,8 +2,13 @@
 
 namespace Dotdigitalgroup\Email\Model\Sync\Importer\Type\TransactionalData;
 
+use Dotdigitalgroup\Email\Helper\Data;
+use Dotdigitalgroup\Email\Helper\File;
+use Dotdigitalgroup\Email\Logger\Logger;
+use Dotdigitalgroup\Email\Model\ResourceModel\Importer;
 use Dotdigitalgroup\Email\Model\Sync\Importer\Type\AbstractItemSyncer;
 use Dotdigitalgroup\Email\Model\Sync\Importer\Type\SingleItemPostProcessorFactory;
+use Magento\Framework\Serialize\SerializerInterface;
 
 /**
  * Handle TD delete data for importer.
@@ -18,32 +23,33 @@ class Delete extends AbstractItemSyncer
     /**
      * Delete constructor.
      *
-     * @param \Dotdigitalgroup\Email\Helper\Data $helper
-     * @param \Dotdigitalgroup\Email\Helper\File $fileHelper
-     * @param \Magento\Framework\Serialize\SerializerInterface $serializer
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Importer $importerResource
-     * @param SingleItemPostProcessorFactory $singlePostProcessor
+     * @param Data $helper
+     * @param File $fileHelper
+     * @param SerializerInterface $serializer
+     * @param Importer $importerResource
+     * @param SingleItemPostProcessorFactory $postProcessor
+     * @param Logger $logger
      * @param array $data
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Helper\Data $helper,
-        \Dotdigitalgroup\Email\Helper\File $fileHelper,
-        \Magento\Framework\Serialize\SerializerInterface $serializer,
-        \Dotdigitalgroup\Email\Model\ResourceModel\Importer $importerResource,
+        Data $helper,
+        File $fileHelper,
+        SerializerInterface $serializer,
+        Importer $importerResource,
         SingleItemPostProcessorFactory $postProcessor,
+        Logger $logger,
         array $data = []
     ) {
         $this->postProcessor = $postProcessor;
 
-        parent::__construct($helper, $fileHelper, $serializer, $importerResource, $data);
+        parent::__construct($helper, $fileHelper, $serializer, $importerResource, $logger, $data);
     }
 
     /**
      * Process.
      *
      * @param mixed $item
-     *
-     * @return null
+     * @return void
      */
     public function process($item)
     {
