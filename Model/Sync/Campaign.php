@@ -8,7 +8,7 @@ namespace Dotdigitalgroup\Email\Model\Sync;
 class Campaign implements SyncInterface
 {
     //single call contact limit
-    const SEND_EMAIL_CONTACT_LIMIT = 10;
+    public const SEND_EMAIL_CONTACT_LIMIT = 10;
 
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
@@ -71,16 +71,16 @@ class Campaign implements SyncInterface
      *
      * @throws \Magento\Framework\Exception\LocalizedException
      *
-     * @return null
+     * @return void
      */
     public function sendCampaigns()
     {
-        /** @var \Magento\Store\Api\Data\WebsiteInterface $website */
         foreach ($this->storeManager->getWebsites(true) as $website) {
+            /** @var \Magento\Store\Model\Website $website */
             $storeIds = $website->getStoreIds();
 
             //check send status for processing
-            $this->_checkSendStatus($website, $storeIds);
+            $this->_checkSendStatus($website->getId(), $storeIds);
             //start send process
 
             $emailsToSend = $this->_getEmailCampaigns($storeIds);
@@ -98,12 +98,16 @@ class Campaign implements SyncInterface
     }
 
     /**
-     * @param int $website
+     * Check send status.
+     *
+     * Expires old campaigns and updates 'processing' ones.
+     *
+     * @param int $websiteId
      * @param array $storeIds
      *
-     * @return null
+     * @return void
      */
-    public function _checkSendStatus($website, $storeIds)
+    public function _checkSendStatus($websiteId, $storeIds)
     {
         $this->expireExpiredCampaigns($storeIds);
         $campaigns = $this->_getEmailCampaigns(
@@ -112,7 +116,7 @@ class Campaign implements SyncInterface
             true
         );
         foreach ($campaigns as $campaign) {
-            $client = $this->helper->getWebsiteApiClient($website);
+            $client = $this->helper->getWebsiteApiClient($websiteId);
             $response = $client->getSendStatus($campaign->getSendId());
             if (isset($response->message) || $response->status == 'Cancelled') {
                 $message = isset($response->message) ? $response->message : $response->status;
@@ -127,6 +131,8 @@ class Campaign implements SyncInterface
     }
 
     /**
+     * Expire campaigns.
+     *
      * @param array $storeIds
      */
     private function expireExpiredCampaigns($storeIds)
@@ -223,7 +229,7 @@ class Campaign implements SyncInterface
      *
      * @param array $campaignsToSend
      *
-     * @return null
+     * @return void
      */
     private function sendCampaignsViaEngagementCloud($campaignsToSend)
     {
@@ -265,12 +271,14 @@ class Campaign implements SyncInterface
     }
 
     /**
+     * Update data fields.
+     *
      * @param \Dotdigitalgroup\Email\Model\Campaign $campaign
      * @param int $websiteId
      * @param \Dotdigitalgroup\Email\Model\Apiconnector\Client $client
      * @param string $email
      *
-     * @return null
+     * @return void
      */
     private function updateDataFieldsForOrderReviewCampaigns($campaign, $websiteId, $client, $email)
     {
