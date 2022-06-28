@@ -1,14 +1,15 @@
 <?php
 
-namespace Dotdigitalgroup\Email\Test\Integration\Model\Apiconnector;
+namespace Dotdigitalgroup\Email\Test\Integration\Sync;
 
 use Dotdigitalgroup\Email\Helper\Config;
 use Dotdigitalgroup\Email\Helper\File;
-use Dotdigitalgroup\Email\Model\Apiconnector\Contact;
+use Dotdigitalgroup\Email\Model\Customer\CustomerDataFieldProviderFactory;
 use Dotdigitalgroup\Email\Model\Importer;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory as ContactCollectionFactory;
 use Dotdigitalgroup\Email\Model\ResourceModel\Importer\Collection;
 use Dotdigitalgroup\Email\Model\ResourceModel\Importer\CollectionFactory;
+use Dotdigitalgroup\Email\Model\Sync\Customer;
 use Dotdigitalgroup\Email\Setup\Install\Type\InsertEmailContactTableCustomers;
 use Dotdigitalgroup\Email\Test\Integration\MocksApiResponses;
 use Magento\Framework\App\ObjectManager;
@@ -16,7 +17,7 @@ use Magento\Framework\Filesystem\DriverInterface;
 use Magento\Framework\Serialize\Serializer\Json;
 use Magento\Store\Model\ScopeInterface;
 
-class ContactTest extends \PHPUnit\Framework\TestCase
+class CustomerSyncTest extends \PHPUnit\Framework\TestCase
 {
     use MocksApiResponses;
 
@@ -26,9 +27,14 @@ class ContactTest extends \PHPUnit\Framework\TestCase
     private $helper;
 
     /**
-     * @var Contact
+     * @var CustomerDataFieldProviderFactory
      */
-    private $contactSync;
+    private $customerDataFieldProviderFactory;
+
+    /**
+     * @var Customer
+     */
+    private $customerSync;
 
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Contact
@@ -67,26 +73,20 @@ class ContactTest extends \PHPUnit\Framework\TestCase
 
     protected function setUp() :void
     {
-        $this->markTestSkipped("Test skipped in 2.4.0");
         $this->objectManager = ObjectManager::getInstance();
         $this->importerCollectionFactory = $this->objectManager->create(CollectionFactory::class);
         $this->contactCollectionFactory = $this->objectManager->create(ContactCollectionFactory::class);
+        $this->customerDataFieldProviderFactory = $this->objectManager->create(CustomerDataFieldProviderFactory::class);
 
         $this->cleanTables();
 
         $this->mockClientFactory();
         $this->setApiConfigFlags();
-
-        foreach ([
-            Config::XML_PATH_CONNECTOR_SYNC_CUSTOMER_ENABLED => 1,
-            Config::XML_PATH_CONNECTOR_CUSTOMERS_ADDRESS_BOOK_ID => 'customers called chaz',
-        ] as $path => $value) {
-            $this->getMutableScopeConfig()->setValue($path, $value, ScopeInterface::SCOPE_WEBSITE);
-        }
+        $this->setExtraConfigForTest();
 
         $this->helper = $this->instantiateDataHelper();
 
-        $this->contactSync = $this->objectManager->create(Contact::class);
+        $this->contactSync = $this->objectManager->create(Customer::class);
         $this->importer = $this->objectManager->create(Importer::class);
         $this->fileHelper = $this->objectManager->create(File::class);
         $this->fileSystem = $this->objectManager->create(DriverInterface::class);
@@ -110,6 +110,16 @@ class ContactTest extends \PHPUnit\Framework\TestCase
             ),
             end($contactsQueue['items'])['import_file']
         );
+        $this->assertEquals(
+            Importer::IMPORT_TYPE_CUSTOMER,
+            end($contactsQueue['items'])['import_type'],
+            'Item is not of type contact'
+        );
+        $this->assertEquals(
+            Importer::MODE_BULK,
+            end($contactsQueue['items'])['import_mode'],
+            'Item is not in bulk mode'
+        );
     }
 
     /**
@@ -117,6 +127,9 @@ class ContactTest extends \PHPUnit\Framework\TestCase
      */
     public function testContactExportCsvFileExists()
     {
+        // To ensure the import filename changes between tests
+        sleep(1);
+
         $this->contactSync->sync();
         $contactsQueue = $this->getContactImporterQueue();
 
@@ -128,22 +141,28 @@ class ContactTest extends \PHPUnit\Framework\TestCase
      */
     public function testContactExportCsvContainsContacts()
     {
+        // To ensure the import filename changes between tests
+        sleep(1);
+
         // get the contacts we expect to be exported
-        $contactsToExport = $this->contactSync->getContacts($this->helper->getWebsiteById(1))->toArray();
+        $websiteId = 1;
+        $contactsToExport = $this->contactCollectionFactory->create()
+            ->getCustomersToImportByWebsite(
+                $websiteId,
+                $this->helper->isOnlySubscribersForContactSync($websiteId),
+                5,
+                0
+            )->toArray();
 
         $this->contactSync->sync();
         $contactsQueue = $this->getContactImporterQueue();
         $csv = $this->getCsvContent(end($contactsQueue['items'])['import_file']);
 
-        $this->assertTrue(
-            empty(array_diff_key(
-                array_column($contactsToExport['items'], 'email'),
-                array_column($csv, 'Email')
-            )) && empty(array_diff_key(
-                array_column($csv, 'Email'),
-                array_column($contactsToExport['items'], 'email'),
-            ))
-        );
+        foreach ($contactsToExport['items'] as $contact) {
+            $this->assertTrue(
+                in_array($contact['email'], array_column($csv, 'Email'))
+            );
+        }
     }
 
     /**
@@ -151,14 +170,20 @@ class ContactTest extends \PHPUnit\Framework\TestCase
      */
     public function testCsvExportContainsExpectedColumns()
     {
+        // To ensure the import filename changes between tests
+        sleep(1);
+
         $this->contactSync->sync();
         $contactsQueue = $this->getContactImporterQueue();
+        $dataFields = $this->getMappedDataFields();
         $csv = $this->getCsvContent(end($contactsQueue['items'])['import_file']);
 
-        $this->assertEqualsCanonicalizing(
-            array_values($this->contactSync->getContactExportColumns($this->helper->getWebsiteById(1))),
-            array_keys(reset($csv))
-        );
+        foreach ($dataFields as $field) {
+            $this->assertContains(
+                $field,
+                array_keys(reset($csv))
+            );
+        }
     }
 
     /**
@@ -166,6 +191,9 @@ class ContactTest extends \PHPUnit\Framework\TestCase
      */
     public function testCsvContainsCustomAttributeColumns()
     {
+        // To ensure the import filename changes between tests
+        sleep(1);
+
         /** @var Json $serializer */
         $serializer = $this->objectManager->create(Json::class);
         $this->setApiConfigFlags([
@@ -177,18 +205,13 @@ class ContactTest extends \PHPUnit\Framework\TestCase
                 'datafield' => 'CHATTY_CONSOLE',
             ]]),
         ]);
-        $website = $this->helper->getWebsiteById(1);
-        $columns = $this->contactSync->getContactExportColumns($website);
 
-        $this->assertContains($columns['downward_trend'], [
-            'downward_trend' => 'DOWNWARD_TREND',
-            'chatty_console' => 'CHATTY_CONSOLE',
-        ]);
+        $this->contactSync->sync();
+        $contactsQueue = $this->getContactImporterQueue();
+        $csv = $this->getCsvContent(end($contactsQueue['items'])['import_file']);
 
-        $this->assertContains($columns['chatty_console'], [
-            'downward_trend' => 'DOWNWARD_TREND',
-            'chatty_console' => 'CHATTY_CONSOLE',
-        ]);
+        $this->assertContains('DOWNWARD_TREND', array_keys(reset($csv)));
+        $this->assertContains('CHATTY_CONSOLE', array_keys(reset($csv)));
     }
 
     /**
@@ -228,11 +251,22 @@ class ContactTest extends \PHPUnit\Framework\TestCase
         /** @var Collection $importerCollection */
         $importerCollection = $this->importerCollectionFactory->create();
         return $importerCollection->getQueueByTypeAndMode(
-            Importer::IMPORT_TYPE_CONTACT,
+            Importer::IMPORT_TYPE_CUSTOMER,
             Importer::MODE_BULK,
-            10,
+            1,
             [1]
         )->toArray();
+    }
+
+    /**
+     * @return array
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    private function getMappedDataFields()
+    {
+        return $this->customerDataFieldProviderFactory
+            ->create(['data' => ['website' => $this->helper->getWebsiteById(1)]])
+            ->getCustomerDataFields();
     }
 
     /**
@@ -253,5 +287,22 @@ class ContactTest extends \PHPUnit\Framework\TestCase
         }
 
         ObjectManager::getInstance()->create(InsertEmailContactTableCustomers::class)->execute();
+    }
+
+    /**
+     * @return void
+     */
+    private function setExtraConfigForTest()
+    {
+        foreach ([
+             Config::XML_PATH_CONNECTOR_SYNC_CUSTOMER_ENABLED => 1,
+             Config::XML_PATH_CONNECTOR_CUSTOMERS_ADDRESS_BOOK_ID => 'customers called chaz',
+             Config::XML_PATH_CONNECTOR_SYNC_ALLOW_NON_SUBSCRIBERS => 1,
+             Config::XML_PATH_CONNECTOR_MAPPING_CUSTOMER_ID => "CUSTOMER_ID",
+             Config::XML_PATH_CONNECTOR_CUSTOMER_FIRSTNAME => "FIRSTNAME",
+             Config::XML_PATH_CONNECTOR_CUSTOMER_LASTNAME => "LASTNAME",
+                 ] as $path => $value) {
+            $this->getMutableScopeConfig()->setValue($path, $value, ScopeInterface::SCOPE_WEBSITE);
+        }
     }
 }

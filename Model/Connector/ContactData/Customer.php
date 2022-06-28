@@ -1,12 +1,13 @@
 <?php
 
-namespace Dotdigitalgroup\Email\Model\Apiconnector;
+namespace Dotdigitalgroup\Email\Model\Connector\ContactData;
 
-use Magento\Framework\Model\AbstractModel;
 use Dotdigitalgroup\Email\Logger\Logger;
+use Dotdigitalgroup\Email\Model\Connector\ContactData;
+use Dotdigitalgroup\Email\Model\Customer\DataField\Date;
+use Magento\Framework\Model\AbstractModel;
 use Magento\Review\Model\Review;
 use Magento\Store\Model\App\Emulation;
-use Dotdigitalgroup\Email\Model\Customer\DataField\Date;
 
 /**
  * Manages the Customer data as datafields for contact.
@@ -59,11 +60,6 @@ class Customer extends ContactData
     public $productFactory;
 
     /**
-     * @var \Magento\Sales\Model\ResourceModel\Order\CollectionFactory
-     */
-    public $orderCollectionFactory;
-
-    /**
      * @var object
      */
     public $contactFactory;
@@ -91,14 +87,12 @@ class Customer extends ContactData
      * @param \Magento\Customer\Model\ResourceModel\Group $groupResource
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      * @param \Magento\Review\Model\ResourceModel\Review\CollectionFactory $reviewCollectionFactory
-     * @param \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $collectionFactory
      * @param \Magento\Customer\Model\GroupFactory $groupFactory
      * @param \Magento\Newsletter\Model\SubscriberFactory $subscriberFactory
      * @param \Magento\Catalog\Api\Data\CategoryInterfaceFactory $categoryFactory
      * @param \Magento\Catalog\Api\Data\ProductInterfaceFactory $productFactory
      * @param \Magento\Sales\Model\OrderFactory $orderFactory
      * @param \Magento\Sales\Model\ResourceModel\Order $resourceOrder
-     * @param \Magento\Eav\Model\ConfigFactory $eavConfigFactory
      * @param \Dotdigitalgroup\Email\Helper\Config $configHelper
      * @param Logger $logger
      * @param \Magento\Eav\Model\Config $eavConfig
@@ -111,14 +105,12 @@ class Customer extends ContactData
         \Magento\Customer\Model\ResourceModel\Group $groupResource,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Magento\Review\Model\ResourceModel\Review\CollectionFactory $reviewCollectionFactory,
-        \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $collectionFactory,
         \Magento\Customer\Model\GroupFactory $groupFactory,
         \Magento\Newsletter\Model\SubscriberFactory $subscriberFactory,
         \Magento\Catalog\Api\Data\CategoryInterfaceFactory $categoryFactory,
         \Magento\Catalog\Api\Data\ProductInterfaceFactory $productFactory,
         \Magento\Sales\Model\OrderFactory $orderFactory,
         \Magento\Sales\Model\ResourceModel\Order $resourceOrder,
-        \Magento\Eav\Model\ConfigFactory $eavConfigFactory,
         \Dotdigitalgroup\Email\Helper\Config $configHelper,
         Logger $logger,
         \Magento\Eav\Model\Config $eavConfig,
@@ -126,7 +118,6 @@ class Customer extends ContactData
         Emulation $appEmulation
     ) {
         $this->reviewCollectionFactory = $reviewCollectionFactory;
-        $this->orderCollectionFactory = $collectionFactory;
         $this->groupFactory      = $groupFactory;
         $this->subscriberFactory = $subscriberFactory;
         $this->groupResource     = $groupResource;
@@ -141,7 +132,6 @@ class Customer extends ContactData
             $resourceOrder,
             $categoryFactory,
             $categoryResource,
-            $eavConfigFactory,
             $configHelper,
             $logger,
             $dateField,
@@ -150,6 +140,8 @@ class Customer extends ContactData
     }
 
     /**
+     * Initialize the model.
+     *
      * @param AbstractModel $model
      * @param array $columns
      * @return $this|ContactData
@@ -163,9 +155,11 @@ class Customer extends ContactData
     }
 
     /**
+     * Set email.
+     *
      * @param string $email
      *
-     * @return null
+     * @return void
      */
     public function setEmail($email)
     {
@@ -173,9 +167,11 @@ class Customer extends ContactData
     }
 
     /**
+     * Set email type.
+     *
      * @param string $emailType
      *
-     * @return null
+     * @return void
      */
     public function setEmailType($emailType)
     {
@@ -248,11 +244,17 @@ class Customer extends ContactData
     /**
      * Get customer gender.
      *
-     * @return bool|string
+     * @return string
      */
-    public function getGender()
+    protected function getGender()
     {
-        return $this->getCustomerGender();
+        $genderId = $this->model->getGender();
+        if (is_numeric($genderId)) {
+            return $this->eavConfig->getAttribute('customer', 'gender')
+                ->getSource()->getOptionText($genderId);
+        }
+
+        return '';
     }
 
     /**
@@ -456,45 +458,6 @@ class Customer extends ContactData
     }
 
     /**
-     * Total value refunded for the customer.
-     *
-     * @return float|int
-     */
-    public function getTotalRefund()
-    {
-        $customerOrders = $this->orderCollectionFactory->create()
-            ->addFieldToFilter('customer_id', $this->model->getId())
-            ->addFieldToFilter('store_id', $this->model->getStoreId());
-
-        $totalRefunded = 0;
-        //calculate total refunded
-        foreach ($customerOrders as $order) {
-            $refunded = $order->getTotalRefunded();
-            $totalRefunded += $refunded;
-        }
-
-        return $totalRefunded;
-    }
-
-    /**
-     * customer gender.
-     *
-     * @return bool|string
-     */
-    public function getCustomerGender()
-    {
-        $genderId = $this->model->getGender();
-        if (is_numeric($genderId)) {
-            $gender = $this->model->getAttribute('gender')
-                ->getSource()->getOptionText($genderId);
-
-            return $gender;
-        }
-
-        return '';
-    }
-
-    /**
      * Return street address by line number.
      *
      * @param string $street
@@ -512,6 +475,8 @@ class Customer extends ContactData
     }
 
     /**
+     * Get customer group.
+     *
      * @return string
      */
     public function getCustomerGroup()
@@ -572,6 +537,8 @@ class Customer extends ContactData
     }
 
     /**
+     * Get reviews for customer.
+     *
      * @return array
      */
     private function getReviewsForCustomer()
@@ -583,6 +550,8 @@ class Customer extends ContactData
         return $this->customerReviews;
     }
     /**
+     * Set reviews for customer.
+     *
      * @return void
      */
     private function setReviewsForCustomer()

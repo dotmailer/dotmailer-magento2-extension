@@ -96,6 +96,7 @@ class ImporterProgressHandler extends DataObject
         foreach ($items as $item) {
             try {
                 if ($item->getImportType() == ImporterModel::IMPORT_TYPE_CONTACT ||
+                    $item->getImportType() == ImporterModel::IMPORT_TYPE_CUSTOMER ||
                     $item->getImportType() == ImporterModel::IMPORT_TYPE_SUBSCRIBERS ||
                     $item->getImportType() == ImporterModel::IMPORT_TYPE_GUEST
                 ) {
@@ -167,6 +168,7 @@ class ImporterProgressHandler extends DataObject
 
         switch ($item->getImportType()) {
             case ImporterModel::IMPORT_TYPE_CONTACT:
+            case ImporterModel::IMPORT_TYPE_CUSTOMER:
             case ImporterModel::IMPORT_TYPE_SUBSCRIBERS:
             case ImporterModel::IMPORT_TYPE_GUEST:
                 $this->processContactFinishedItems($item);
@@ -208,6 +210,7 @@ class ImporterProgressHandler extends DataObject
             $this->reportHandler->processContactImportReportFaults(
                 $item->getImportId(),
                 $item->getWebsiteId(),
+                $item->getImportType(),
                 $this->client
             );
         }

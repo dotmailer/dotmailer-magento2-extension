@@ -100,7 +100,7 @@ class Catalog extends DataObject implements SyncInterface
         $loopStart = true;
 
         $breakValue = $this->isRunFromDeveloperButton() ? $limit : $this->scopeConfig->getValue(
-            Config::XML_PATH_CONNECTOR_SYNC_CATALOG_BREAK_VALUE
+            Config::XML_PATH_CONNECTOR_SYNC_BREAK_VALUE
         );
 
         $megaBatchSize = $this->scopeConfig->getValue(Config::XML_PATH_CONNECTOR_MEGA_BATCH_SIZE_CATALOG);

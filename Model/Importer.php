@@ -23,7 +23,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
     //import type
     public const IMPORT_TYPE_GUEST = 'Guest';
     public const IMPORT_TYPE_ORDERS = 'Orders';
-    public const IMPORT_TYPE_CONTACT = 'Contact';
+    public const IMPORT_TYPE_CUSTOMER = 'Customer';
     public const IMPORT_TYPE_REVIEWS = 'Reviews';
     public const IMPORT_TYPE_WISHLIST = 'Wishlist';
     public const IMPORT_TYPE_CONTACT_UPDATE = 'Contact';
@@ -31,6 +31,12 @@ class Importer extends \Magento\Framework\Model\AbstractModel
     public const IMPORT_TYPE_SUBSCRIBER_UPDATE = 'Subscriber';
     public const IMPORT_TYPE_SUBSCRIBER_RESUBSCRIBED = 'Subscriber';
     public const IMPORT_TYPE_CART_INSIGHT_CART_PHASE = 'CartInsight';
+
+    /**
+     * @deprecated
+     * @see self::IMPORT_TYPE_CUSTOMER
+     */
+    public const IMPORT_TYPE_CONTACT = 'Contact';
 
     /**
      * @var ResourceModel\Importer

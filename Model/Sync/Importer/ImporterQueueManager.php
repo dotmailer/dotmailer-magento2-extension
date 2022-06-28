@@ -88,6 +88,7 @@ class ImporterQueueManager
         $contact['model'] = $this->contactBulkFactory;
         $contact['type'] = [
             ImporterModel::IMPORT_TYPE_CONTACT,
+            ImporterModel::IMPORT_TYPE_CUSTOMER,
             ImporterModel::IMPORT_TYPE_GUEST,
             ImporterModel::IMPORT_TYPE_SUBSCRIBERS,
         ];

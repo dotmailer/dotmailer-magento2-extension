@@ -322,20 +322,6 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     }
 
     /**
-     * Check emails exist in sales order table.
-     *
-     * @param array $emails
-     *
-     * @return array
-     */
-    public function checkInSales($emails)
-    {
-        $collection = $this->orderCollection->create()
-            ->addFieldToFilter('customer_email', ['in' => $emails]);
-        return $collection->getColumnValues('customer_email');
-    }
-
-    /**
      * Fetch quotes filtered by quote ids.
      *
      * @param array $quoteIds

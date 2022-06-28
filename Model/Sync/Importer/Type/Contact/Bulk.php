@@ -85,6 +85,7 @@ class Bulk extends AbstractItemSyncer
     {
         switch ($importType) {
             case \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_CONTACT:
+            case \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_CUSTOMER:
                 $addressBook = $this->helper->getCustomerAddressBook(
                     $websiteId
                 );

@@ -6,9 +6,9 @@ use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory as Conta
 
 class Contact extends \Magento\Framework\Model\AbstractModel
 {
-    const EMAIL_CONTACT_IMPORTED = 1;
-    const EMAIL_CONTACT_NOT_IMPORTED = 0;
-    const EMAIL_SUBSCRIBER_NOT_IMPORTED = 0;
+    public const EMAIL_CONTACT_IMPORTED = 1;
+    public const EMAIL_CONTACT_NOT_IMPORTED = 0;
+    public const EMAIL_SUBSCRIBER_NOT_IMPORTED = 0;
 
     /**
      * @var ContactCollectionFactory
@@ -105,20 +105,6 @@ class Contact extends \Magento\Framework\Model\AbstractModel
     }
 
     /**
-     * Get all customer contacts not imported for a website.
-     *
-     * @param int $websiteId
-     * @param int $pageSize
-     *
-     * @return \Dotdigitalgroup\Email\Model\ResourceModel\Contact\Collection
-     */
-    public function getContactsToImportForWebsite($websiteId, $pageSize = 100)
-    {
-        return $this->getCollection()
-            ->getContactsToImportForWebsite($websiteId, $pageSize);
-    }
-
-    /**
      * Get missing contacts.
      *
      * @param int $websiteId
@@ -151,20 +137,6 @@ class Contact extends \Magento\Framework\Model\AbstractModel
             return $this->setEmail($email)
                 ->setWebsiteId($websiteId);
         }
-    }
-
-    /**
-     * Get all not imported guests for a website.
-     *
-     * @param \Magento\Store\Model\Website $website
-     * @param boolean $onlySubscriber
-     *
-     * @return \Dotdigitalgroup\Email\Model\ResourceModel\Contact\Collection
-     */
-    public function getGuests($website, $onlySubscriber = false)
-    {
-        return $this->getCollection()
-            ->getGuests($website->getId(), $onlySubscriber);
     }
 
     /**
@@ -218,36 +190,10 @@ class Contact extends \Magento\Framework\Model\AbstractModel
     }
 
     /**
-     * Get number of subscribers synced.
-     *
-     * @param int $websiteId
-     *
-     * @return int
-     */
-    public function getNumberSubscribersSynced($websiteId = 0)
-    {
-        return $this->getCollection()
-            ->getNumberSubscribersSynced($websiteId);
-    }
-
-    /**
-     * Get number of subscribers.
-     *
-     * @param int $websiteId
-     *
-     * @return int
-     */
-    public function getNumberSubscribers($websiteId = 0)
-    {
-        return $this->getCollection()
-            ->getNumberSubscribers($websiteId);
-    }
-
-    /**
      * Mark contact for reimport.
      *
-     * @param $customerId
-     * @param $websiteId
+     * @param string|int $customerId
+     * @param string|int $websiteId
      * @throws \Magento\Framework\Exception\AlreadyExistsException
      */
     public function setConnectorContactToReImport($customerId, $websiteId)
@@ -264,6 +210,8 @@ class Contact extends \Magento\Framework\Model\AbstractModel
     }
 
     /**
+     * Reset all contacts.
+     *
      * @param string|null $from
      * @param string|null $to
      * @return int

@@ -12,7 +12,7 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     /**
      * Initialize resource collection.
      *
-     * @return null
+     * @return void
      */
     public function _construct()
     {
@@ -23,16 +23,32 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     }
 
     /**
-     * Load consent by contact id.
+     * Get most recent consent data by contact ids.
      *
-     * @param int $contactId
+     * This query does a join on itself to identify the rows with the most
+     * recent consent_datetime. i.e. the aliases a and b refer to the same table.
      *
-     * @return $this
+     * @param array $contactIds
+     *
+     * @return array
      */
-    public function loadByEmailContactId($contactId)
+    public function getMostRecentConsentDataByContactIds(array $contactIds)
     {
-        $this->addFieldToFilter('email_contact_id', $contactId);
+        $connection = $this->getResource()->getConnection();
+        $select = $connection->select()
+            ->from([
+                'a' => $this->getMainTable(),
+            ], [
+                'a.*'
+            ])
+            ->joinLeft(
+                ['b' => $this->getMainTable()],
+                'a.email_contact_id = b.email_contact_id and a.consent_datetime < b.consent_datetime',
+                []
+            )
+            ->where('b.consent_datetime IS NULL')
+            ->where('a.email_contact_id IN (?)', $contactIds);
 
-        return $this;
+        return $connection->fetchAll($select);
     }
 }

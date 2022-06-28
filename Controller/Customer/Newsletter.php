@@ -5,7 +5,6 @@ namespace Dotdigitalgroup\Email\Controller\Customer;
 use Dotdigitalgroup\Email\Model\Apiconnector\Client;
 use Dotdigitalgroup\Email\Model\ContactFactory;
 use Dotdigitalgroup\Email\Model\Customer\DataField\Date;
-use Dotdigitalgroup\Email\Model\Newsletter\CsvGenerator;
 use Magento\Customer\Api\CustomerRepositoryInterface as CustomerRepository;
 use Magento\Newsletter\Model\Subscriber;
 use Magento\Store\Model\StoreManagerInterface;
@@ -48,11 +47,6 @@ class Newsletter extends \Magento\Framework\App\Action\Action
     protected $subscriberFactory;
 
     /**
-     * @var CsvGenerator
-     */
-    private $csvGenerator;
-
-    /**
      * @var StoreManagerInterface
      */
     private $storeManager;
@@ -75,7 +69,6 @@ class Newsletter extends \Magento\Framework\App\Action\Action
      * @param \Magento\Newsletter\Model\SubscriberFactory $subscriberFactory
      * @param StoreManagerInterface $storeManager
      * @param Date $dateField
-     * @param CsvGenerator $csvGenerator
      */
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $helper,
@@ -87,8 +80,7 @@ class Newsletter extends \Magento\Framework\App\Action\Action
         CustomerRepository $customerRepository,
         \Magento\Newsletter\Model\SubscriberFactory $subscriberFactory,
         StoreManagerInterface $storeManager,
-        Date $dateField,
-        CsvGenerator $csvGenerator
+        Date $dateField
     ) {
         $this->helper           = $helper;
         $this->contactFactory = $contactFactory;
@@ -97,7 +89,6 @@ class Newsletter extends \Magento\Framework\App\Action\Action
         $this->formKeyValidator = $formKeyValidator;
         $this->customerRepository = $customerRepository;
         $this->subscriberFactory = $subscriberFactory;
-        $this->csvGenerator = $csvGenerator;
         $this->storeManager = $storeManager;
         $this->dateField = $dateField;
         parent::__construct($context);
@@ -191,8 +182,8 @@ class Newsletter extends \Magento\Framework\App\Action\Action
                 'Email' => $customerEmail,
                 'EmailType' => 'Html'
             ];
-            $optInType = $this->csvGenerator->isOptInTypeDouble($store);
-            if ($optInType) {
+            /** @var \Magento\Store\Model\Store $store */
+            if ($store->getConfig(Subscriber::XML_PATH_CONFIRMATION_FLAG)) {
                 $contactData['OptInType'] = 'Double';
             }
 

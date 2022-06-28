@@ -117,10 +117,13 @@ class ImporterReportHandler
      *
      * @param int $id
      * @param int $websiteId
+     * @param string $importType
      * @param Client $client
+     *
+     * @return void
      * @throws \Exception
      */
-    public function processContactImportReportFaults($id, $websiteId, $client)
+    public function processContactImportReportFaults($id, $websiteId, $importType, $client)
     {
         $report = $client->getContactImportReportFaults($id);
 
@@ -129,7 +132,7 @@ class ImporterReportHandler
 
             if (!empty($reportData)) {
                 $contacts = $this->filterContactsInReportCsv($reportData);
-                $lastSyncTime = $this->getLastContactSyncTime();
+                $lastSyncTime = $this->getLastContactSyncTime($importType);
 
                 $recordsToCheck = $this->contactCollectionFactory->create()
                     ->getContactsByEmailsAndWebsiteId($contacts, $websiteId)
@@ -276,17 +279,28 @@ class ImporterReportHandler
     }
 
     /**
-     * Get the time of the last contact sync.
+     * Get the last 'contact' sync time.
      *
+     * Contact sync became 3 separate syncs, all with different timings.
+     * This gets the time of the last customer, subscriber or guest sync,
+     * depending on which type of import we are processing a finished item for.
+     *
+     * @param string $importType
      * @return \DateTime
      * @throws \Exception
      */
-    private function getLastContactSyncTime()
+    private function getLastContactSyncTime($importType)
     {
-        // get a time period for the last contact sync
+        $syncTypes = [
+            ImporterModel::IMPORT_TYPE_CONTACT => Config::XML_PATH_CRON_SCHEDULE_CUSTOMER,
+            ImporterModel::IMPORT_TYPE_CUSTOMER => Config::XML_PATH_CRON_SCHEDULE_CUSTOMER,
+            ImporterModel::IMPORT_TYPE_SUBSCRIBERS => Config::XML_PATH_CRON_SCHEDULE_SUBSCRIBER,
+            ImporterModel::IMPORT_TYPE_GUEST => Config::XML_PATH_CRON_SCHEDULE_GUEST,
+        ];
+
         $decodedCronValue = filter_var(
             $this->cronOffsetter->getDecodedCronValue(
-                $this->scopeConfig->getValue(Config::XML_PATH_CRON_SCHEDULE_CONTACT)
+                $this->scopeConfig->getValue($syncTypes[$importType])
             ),
             FILTER_SANITIZE_NUMBER_INT
         );

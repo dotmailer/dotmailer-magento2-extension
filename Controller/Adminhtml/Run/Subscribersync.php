@@ -2,6 +2,12 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Run;
 
+use Dotdigitalgroup\Email\Model\Sync\SubscriberFactory;
+use Dotdigitalgroup\Email\Model\Newsletter\UnsubscriberFactory;
+use Dotdigitalgroup\Email\Model\Newsletter\ResubscriberFactory;
+use Magento\Backend\App\Action\Context;
+use Magento\Framework\Controller\ResultFactory;
+
 class Subscribersync extends \Magento\Backend\App\AbstractAction
 {
     /**
@@ -9,46 +15,75 @@ class Subscribersync extends \Magento\Backend\App\AbstractAction
      *
      * @see _isAllowed()
      */
-    const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::config';
+    public const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::config';
+
+    /**
+     * @var SubscriberFactory
+     */
+    private $subscriberFactory;
+
+    /**
+     * @var UnsubscriberFactory
+     */
+    private $unsubscriberFactory;
+
+    /**
+     * @var ResubscriberFactory
+     */
+    private $resubscriberFactory;
 
     /**
      * @var \Magento\Framework\Message\ManagerInterface
      */
     protected $messageManager;
 
-    /**
-     * @var \Dotdigitalgroup\Email\Model\CronFactory
-     */
-    private $cronFactory;
 
     /**
-     * Subscribersync constructor.
-     *
-     * @param \Dotdigitalgroup\Email\Model\CronFactory $cronFactory
-     * @param \Magento\Backend\App\Action\Context      $context
+     * @param SubscriberFactory $subscriberFactory
+     * @param UnsubscriberFactory $unsubscriberFactory
+     * @param ResubscriberFactory $resubscriberFactory
+     * @param Context $context
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\CronFactory $cronFactory,
-        \Magento\Backend\App\Action\Context $context
+        SubscriberFactory $subscriberFactory,
+        UnsubscriberFactory $unsubscriberFactory,
+        ResubscriberFactory $resubscriberFactory,
+        Context $context
     ) {
-        $this->cronFactory    = $cronFactory;
+        $this->subscriberFactory = $subscriberFactory;
+        $this->unsubscriberFactory = $unsubscriberFactory;
+        $this->resubscriberFactory = $resubscriberFactory;
         $this->messageManager = $context->getMessageManager();
         parent::__construct($context);
     }
 
     /**
-     * Refresh suppressed contacts.
+     * Run Subscriber sync, followed by Unsubscriber and Resubscriber syncs.
      *
-     * @return null
+     * @return \Magento\Framework\Controller\ResultInterface
      */
     public function execute()
     {
-        $result = $this->cronFactory->create()
-            ->subscribersAndGuestSync();
+        $subscriberSyncResult = $this->subscriberFactory->create(
+            ['data' => ['web' => true]]
+        )->sync();
+        $unsubscriberSyncResult = $this->unsubscriberFactory->create()
+            ->unsubscribe();
+        $resubscriberSyncResult = $this->resubscriberFactory->create()
+            ->subscribe();
 
-        $this->messageManager->addSuccessMessage($result['message']);
+        $this->messageManager->addSuccessMessage(sprintf(
+            '%s. %s %d. %s %d.',
+            $subscriberSyncResult['message'],
+            'Unsubscribes: ',
+            $unsubscriberSyncResult,
+            'Resubscribes: ',
+            $resubscriberSyncResult
+        ));
 
-        $redirectBack = $this->_redirect->getRefererUrl();
-        $this->_redirect($redirectBack);
+        /** @var \Magento\Framework\Controller\Result\Redirect $redirect */
+        $redirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
+        $redirect->setRefererUrl();
+        return $redirect;
     }
 }

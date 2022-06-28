@@ -5,15 +5,15 @@ namespace Dotdigitalgroup\Email\Model\ResourceModel;
 use Dotdigitalgroup\Email\Helper\Config;
 use Dotdigitalgroup\Email\Setup\SchemaInterface as Schema;
 use Magento\Newsletter\Model\Subscriber;
-use Magento\Store\Api\Data\WebsiteInterface;
 use Magento\Framework\DB\Sql\ExpressionFactory;
+use Magento\Store\Model\Website;
 
 class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
     /**
      * @var \Magento\Newsletter\Model\ResourceModel\Subscriber\CollectionFactory
      */
-    public $subscribersCollection;
+    private $subscribersCollection;
 
     /**
      * @var \Magento\Customer\Model\ResourceModel\Customer\CollectionFactory
@@ -31,11 +31,6 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     private $expressionFactory;
 
     /**
-     * @var \Magento\Quote\Model\ResourceModel\QuoteFactory
-     */
-    private $quoteResourceFactory;
-
-    /**
      * @var \Magento\Sales\Model\ResourceModel\Order\CollectionFactory
      */
     private $orderCollectionFactory;
@@ -48,7 +43,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Initialize resource.
      *
-     * @return null
+     * @return void
      */
     public function _construct()
     {
@@ -64,7 +59,6 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      * @param \Magento\Cron\Model\ScheduleFactory $schedule
      * @param ExpressionFactory $expressionFactory
      * @param \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollectionFactory
-     * @param \Magento\Quote\Model\ResourceModel\QuoteFactory $quoteResourceFactory
      * @param Config $config
      * @param string|null $connectionName
      */
@@ -75,7 +69,6 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         \Magento\Cron\Model\ScheduleFactory $schedule,
         ExpressionFactory $expressionFactory,
         \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollectionFactory,
-        \Magento\Quote\Model\ResourceModel\QuoteFactory $quoteResourceFactory,
         Config $config,
         string $connectionName = null
     ) {
@@ -85,7 +78,6 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         $this->customerCollection       = $customerCollectionFactory;
         $this->subscribersCollection    = $subscriberCollection;
         $this->orderCollectionFactory   = $orderCollectionFactory;
-        $this->quoteResourceFactory = $quoteResourceFactory;
         parent::__construct($context, $connectionName);
     }
 
@@ -358,13 +350,13 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      * @param array $emailContactIds
      * @return int
      */
-    public function updateSubscribers($emailContactIds)
+    public function setSubscribersImportedByIds($emailContactIds)
     {
         if (empty($emailContactIds)) {
             return 0;
         }
         $write = $this->getConnection();
-        //update subscribers imported
+
         $updated = $write->update(
             $this->getMainTable(),
             ['subscriber_imported' => 1],
@@ -375,631 +367,13 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
-     * Get collection for subscribers by emails.
-     *
-     * @param array $emails
-     * @param WebsiteInterface $website
-     *
-     * @return array
-     */
-    public function getSalesDataForSubscribersWithOrderStatusesAndBrand($emails, $website)
-    {
-        $orderStatuses = $this->config->getWebsiteConfig(
-            Config::XML_PATH_CONNECTOR_SYNC_DATA_FIELDS_STATUS,
-            $website->getId()
-        );
-        $orderStatuses = explode(',', $orderStatuses);
-
-        $orderCollection = $this->orderCollectionFactory->create()
-            ->addFieldToSelect(['customer_email'])
-            ->addExpressionFieldToSelect('total_spend', 'SUM({{grand_total}})', 'grand_total')
-            ->addExpressionFieldToSelect('number_of_orders', 'COUNT({{*}})', '*')
-            ->addExpressionFieldToSelect('average_order_value', 'AVG({{grand_total}})', 'grand_total')
-            ->addFieldToFilter('customer_email', ['in' => $emails])
-            ->addFieldToFilter('store_id', $website->getStoreIds());
-
-        $columns = $this->buildCollectionColumns(
-            implode(',', $website->getStoreIds())
-        );
-        $orderCollection->getSelect()
-            ->columns($columns)
-            ->group('customer_email');
-
-        if (! empty($orderStatuses)) {
-            $orderCollection->getSelect()->where('status in (?)', $orderStatuses);
-        }
-
-        $orderArray = [];
-        foreach ($orderCollection as $item) {
-            $orderArray[$item->getCustomerEmail()] = $item->toArray(
-                [
-                    'total_spend',
-                    'number_of_orders',
-                    'average_order_value',
-                    'last_order_date',
-                    'first_order_id',
-                    'last_order_id',
-                    'last_increment_id',
-                    'product_id_for_first_brand',
-                    'product_id_for_last_brand',
-                    'week_day',
-                    'month_day',
-                    'product_id_for_most_sold_product'
-                ]
-            );
-        }
-
-        return $orderArray;
-    }
-
-    /**
-     * Initialize columns.
-     *
-     * @param string $storeIds
-     * @return array
-     */
-    private function buildCollectionColumns($storeIds)
-    {
-        $salesOrder = $this->getTable('sales_order');
-        $salesOrderItem = $this->getTable('sales_order_item');
-        $columns = [
-            'last_order_date' => $this->createLastOrderDataColumn($salesOrder, $storeIds),
-            'first_order_id' => $this->createFirstOrderIdColumn($salesOrder, $storeIds),
-            'last_order_id' => $this->createLastOrderIdColumn($salesOrder, $storeIds),
-            'last_increment_id' => $this->createLastIncrementIdColumn($salesOrder, $storeIds),
-            'product_id_for_first_brand' => $this->createProductIdForFirstBrandColumn(
-                $salesOrder,
-                $salesOrderItem,
-                $storeIds
-            ),
-            'product_id_for_last_brand' => $this->createProductIdForLastBrandColumn(
-                $salesOrder,
-                $salesOrderItem,
-                $storeIds
-            ),
-            'week_day' => $this->createWeekDayColumn($salesOrder, $storeIds),
-            'month_day' => $this->createMonthDayColumn($salesOrder, $storeIds),
-            'product_id_for_most_sold_product' => $this->createProductIdForMostSoldProductColumn(
-                $salesOrder,
-                $salesOrderItem,
-                $storeIds
-            )
-        ];
-
-        return $columns;
-    }
-
-    /**
-     * Create column.
-     *
-     * @param string $salesOrder
-     * @param string $storeIds
-     * @return \Zend_Db_Expr
-     */
-    private function createLastOrderDataColumn($salesOrder, $storeIds)
-    {
-        return $this->expressionFactory->create(
-            ["expression" => "(
-                SELECT created_at FROM $salesOrder
-                WHERE customer_email = main_table.customer_email
-                AND store_id IN ($storeIds)
-                ORDER BY created_at DESC
-                LIMIT 1
-            )"]
-        );
-    }
-
-    /**
-     * Create column.
-     *
-     * @param string $salesOrder
-     * @param string $storeIds
-     * @return \Zend_Db_Expr
-     */
-    private function createLastOrderIdColumn($salesOrder, $storeIds)
-    {
-        return $this->expressionFactory->create(
-            ["expression" => "(
-                SELECT entity_id FROM $salesOrder
-                WHERE customer_email = main_table.customer_email
-                AND store_id IN ($storeIds)
-                ORDER BY created_at DESC
-                LIMIT 1
-            )"]
-        );
-    }
-
-    /**
-     * Create column.
-     *
-     * @param string $salesOrder
-     * @param string $storeIds
-     * @return \Magento\Framework\DB\Sql\Expression
-     */
-    private function createFirstOrderIdColumn($salesOrder, $storeIds)
-    {
-        return $this->expressionFactory->create(
-            ["expression" => "(
-                SELECT entity_id FROM $salesOrder
-                WHERE customer_email = main_table.customer_email
-                AND store_id IN ($storeIds)
-                ORDER BY created_at ASC
-                LIMIT 1
-            )"]
-        );
-    }
-
-    /**
-     * Create column.
-     *
-     * @param string $salesOrder
-     * @param string $storeIds
-     * @return \Zend_Db_Expr
-     */
-    private function createLastIncrementIdColumn($salesOrder, $storeIds)
-    {
-        return $this->expressionFactory->create(
-            ["expression" => "(
-                SELECT increment_id FROM $salesOrder
-                WHERE customer_email = main_table.customer_email
-                AND store_id IN ($storeIds)
-                ORDER BY created_at DESC
-                LIMIT 1
-            )"]
-        );
-    }
-
-    /**
-     * Create column.
-     *
-     * @param string $salesOrder
-     * @param string $salesOrderItem
-     * @param string $storeIds
-     * @return \Zend_Db_Expr
-     */
-    private function createProductIdForFirstBrandColumn($salesOrder, $salesOrderItem, $storeIds)
-    {
-        return $this->expressionFactory->create(
-            ["expression" => "(
-                SELECT sfoi.product_id FROM $salesOrder as sfo
-                left join $salesOrderItem as sfoi on sfoi.order_id = sfo.entity_id
-                WHERE sfoi.product_type = 'simple'
-                AND customer_email = main_table.customer_email
-                AND sfo.store_id IN ($storeIds)
-                ORDER BY sfo.created_at ASC
-                LIMIT 1
-            )"]
-        );
-    }
-
-    /**
-     * Create column.
-     *
-     * @param string $salesOrder
-     * @param string $salesOrderItem
-     * @param string $storeIds
-     * @return \Zend_Db_Expr
-     */
-    private function createProductIdForLastBrandColumn($salesOrder, $salesOrderItem, $storeIds)
-    {
-        return $this->expressionFactory->create(
-            ["expression" => "(
-                SELECT sfoi.product_id FROM $salesOrder as sfo
-                left join $salesOrderItem as sfoi on sfoi.order_id = sfo.entity_id
-                WHERE sfoi.product_type = 'simple'
-                AND customer_email = main_table.customer_email
-                AND sfo.store_id IN ($storeIds)
-                ORDER BY sfo.created_at DESC
-                LIMIT 1
-            )"]
-        );
-    }
-
-    /**
-     * Create column.
-     *
-     * @param string $salesOrder
-     * @param string $storeIds
-     * @return \Zend_Db_Expr
-     */
-    private function createWeekDayColumn($salesOrder, $storeIds)
-    {
-        return $this->expressionFactory->create(
-            ["expression" => "(
-                SELECT dayname(created_at) as week_day
-                FROM $salesOrder
-                WHERE customer_email = main_table.customer_email
-                AND store_id IN ($storeIds)
-                GROUP BY week_day
-                HAVING COUNT(*) > 0
-                ORDER BY (COUNT(*)) DESC
-                LIMIT 1
-            )"]
-        );
-    }
-
-    /**
-     * Create column.
-     *
-     * @param string $salesOrder
-     * @param string $storeIds
-     * @return \Zend_Db_Expr
-     */
-    private function createMonthDayColumn($salesOrder, $storeIds)
-    {
-        return $this->expressionFactory->create(
-            ["expression" => "(
-                SELECT monthname(created_at) as month_day
-                FROM $salesOrder
-                WHERE customer_email = main_table.customer_email
-                AND store_id IN ($storeIds)
-                GROUP BY month_day
-                HAVING COUNT(*) > 0
-                ORDER BY (COUNT(*)) DESC
-                LIMIT 1
-            )"]
-        );
-    }
-
-    /**
-     * Create column.
-     *
-     * @param string $salesOrder
-     * @param string $salesOrderItem
-     * @param string $storeIds
-     * @return \Zend_Db_Expr
-     */
-    private function createProductIdForMostSoldProductColumn($salesOrder, $salesOrderItem, $storeIds)
-    {
-        return $this->expressionFactory->create(
-            ["expression" => "(
-                SELECT sfoi.product_id FROM $salesOrder as sfo
-                LEFT JOIN $salesOrderItem as sfoi on sfoi.order_id = sfo.entity_id
-                WHERE customer_email = main_table.customer_email
-                AND sfo.store_id IN ($storeIds)
-                GROUP BY sfoi.product_id
-                HAVING COUNT(sfoi.product_id) > 0
-                ORDER BY COUNT(sfoi.product_id) DESC
-                LIMIT 1
-            )"]
-        );
-    }
-
-    /**
-     * Customer collection with all data ready for export.
-     *
-     * @param array $customerIds
-     * @param array $statuses
-     * @param array $storeIds
-     * @return array
-     *
-     * @throws \Magento\Framework\Exception\LocalizedException
-     */
-    public function getSalesDataForCustomersWithOrderStatusesAndBrand($customerIds, $statuses, $storeIds)
-    {
-        $orderCollection = $this->orderCollectionFactory->create();
-        $salesOrder = $orderCollection->getTable('sales_order');
-        $salesOrderGrid = $orderCollection->getTable('sales_order_grid');
-        $salesOrderItem = $orderCollection->getTable('sales_order_item');
-
-        $orderCollection->addFieldToSelect(['customer_id'])
-            ->addExpressionFieldToSelect('total_spend', 'SUM({{grand_total}})', 'grand_total')
-            ->addExpressionFieldToSelect('number_of_orders', 'COUNT({{*}})', '*')
-            ->addExpressionFieldToSelect('average_order_value', 'AVG({{grand_total}})', 'grand_total')
-            ->addFieldToFilter('customer_id', ['in' => $customerIds])
-            ->addFieldToFilter('store_id', $storeIds);
-
-        $columnData = $this->buildColumnData(
-            $salesOrderGrid,
-            $salesOrder,
-            $salesOrderItem,
-            implode(', ', $storeIds)
-        );
-
-        $orderCollection->getSelect()
-            ->columns($columnData)
-            ->group('customer_id');
-
-        if (! empty($statuses)) {
-            $orderCollection->getSelect()->where('status in (?)', $statuses);
-        }
-
-        $orderArray = [];
-        foreach ($orderCollection as $item) {
-            $orderArray[$item->getCustomerId()] = $item->toArray(
-                [
-                    'total_spend',
-                    'number_of_orders',
-                    'average_order_value',
-                    'last_order_date',
-                    'first_order_id',
-                    'last_order_id',
-                    'last_increment_id',
-                    'product_id_for_first_brand',
-                    'product_id_for_last_brand',
-                    'week_day',
-                    'month_day',
-                    'product_id_for_most_sold_product'
-                ]
-            );
-        }
-
-        return $this->getCollectionWithLastQuoteId($customerIds, $orderArray, $storeIds);
-    }
-
-    /**
-     * Initialize collection.
-     *
-     * @param array $customerIds
-     *
-     * @return \Magento\Customer\Model\ResourceModel\Customer\Collection
-     */
-    public function buildCustomerCollection($customerIds)
-    {
-        $customerLog = $this->getTable('customer_log');
-        $customerCollection = $this->customerCollection->create()
-            ->addAttributeToSelect('*')
-            ->addNameToSelect();
-
-        $this->addBillingJoinAttributesToCustomerCollection($customerCollection);
-        $this->addShippingJoinAttributesToCustomerCollection($customerCollection);
-
-        $customerCollection->addAttributeToFilter('entity_id', ['in' => $customerIds]);
-
-        // get the last login date from the log_customer table
-        $customerCollection->getSelect()->columns([
-            'last_logged_date' => $this->expressionFactory->create(
-                ["expression" => "(
-                    SELECT last_login_at
-                    FROM  $customerLog
-                    WHERE customer_id =e.entity_id ORDER BY log_id DESC LIMIT 1
-                )"]
-            ),
-        ]);
-
-        return $customerCollection;
-    }
-
-    /**
-     * Assign data.
-     *
-     * @param string $salesOrderGrid
-     * @param string $salesOrder
-     * @param string $salesOrderItem
-     * @param string $storeIds
-     * @return array
-     * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
-     */
-    private function buildColumnData($salesOrderGrid, $salesOrder, $salesOrderItem, $storeIds)
-    {
-        $columnData = [
-            'last_order_date' => $this->expressionFactory->create(
-                ["expression" => "(
-                    SELECT created_at
-                    FROM $salesOrderGrid
-                    WHERE customer_id = main_table.customer_id
-                    AND store_id IN ($storeIds)
-                    ORDER BY created_at DESC
-                    LIMIT 1
-                )"]
-            ),
-            'first_order_id' => $this->expressionFactory->create(
-                ["expression" => "(
-                    SELECT entity_id
-                    FROM $salesOrderGrid
-                    WHERE customer_id = main_table.customer_id
-                    AND store_id IN ($storeIds)
-                    ORDER BY created_at ASC
-                    LIMIT 1
-                )"]
-            ),
-            'last_order_id' => $this->expressionFactory->create(
-                ["expression" => "(
-                    SELECT entity_id
-                    FROM $salesOrderGrid
-                    WHERE customer_id = main_table.customer_id
-                    AND store_id IN ($storeIds)
-                    ORDER BY created_at DESC
-                    LIMIT 1
-                )"]
-            ),
-            'last_increment_id' => $this->expressionFactory->create(
-                ["expression" => "(
-                    SELECT increment_id
-                    FROM $salesOrderGrid
-                    WHERE customer_id = main_table.customer_id
-                    AND store_id IN ($storeIds)
-                    ORDER BY created_at DESC
-                    LIMIT 1
-                )"]
-            ),
-            'product_id_for_first_brand' => $this->expressionFactory->create(
-                ["expression" => "(
-                    SELECT sfoi.product_id FROM $salesOrder as sfo
-                    left join $salesOrderItem as sfoi on sfoi.order_id = sfo.entity_id
-                    WHERE sfo.customer_id = main_table.customer_id
-                    AND sfoi.product_type = 'simple'
-                    AND sfo.store_id IN ($storeIds)
-                    ORDER BY sfo.created_at ASC
-                    LIMIT 1
-                )"]
-            ),
-            'product_id_for_last_brand' => $this->expressionFactory->create(
-                ["expression" => "(
-                    SELECT sfoi.product_id FROM $salesOrder as sfo
-                    left join $salesOrderItem as sfoi on sfoi.order_id = sfo.entity_id
-                    WHERE sfo.customer_id = main_table.customer_id
-                    AND sfoi.product_type = 'simple'
-                    AND sfo.store_id IN ($storeIds)
-                    ORDER BY sfo.created_at DESC
-                    LIMIT 1
-                )"]
-            ),
-            'week_day' => $this->expressionFactory->create(
-                ["expression" => "(
-                    SELECT dayname(created_at) as week_day
-                    FROM $salesOrder
-                    WHERE customer_id = main_table.customer_id
-                    AND store_id IN ($storeIds)
-                    GROUP BY week_day
-                    HAVING COUNT(*) > 0
-                    ORDER BY (COUNT(*)) DESC
-                    LIMIT 1
-                )"]
-            ),
-            'month_day' => $this->expressionFactory->create(
-                ["expression" => "(
-                    SELECT monthname(created_at) as month_day
-                    FROM $salesOrder
-                    WHERE customer_id = main_table.customer_id
-                    AND store_id IN ($storeIds)
-                    GROUP BY month_day
-                    HAVING COUNT(*) > 0
-                    ORDER BY (COUNT(*)) DESC
-                    LIMIT 1
-                )"]
-            ),
-            'product_id_for_most_sold_product' => $this->expressionFactory->create(
-                ["expression" => "(
-                    SELECT sfoi.product_id FROM $salesOrder as sfo
-                    LEFT JOIN $salesOrderItem as sfoi on sfoi.order_id = sfo.entity_id
-                    WHERE sfo.customer_id = main_table.customer_id
-                    AND sfo.store_id IN ($storeIds)
-                    GROUP BY sfoi.product_id
-                    HAVING COUNT(sfoi.product_id) > 0
-                    ORDER BY COUNT(sfoi.product_id) DESC
-                    LIMIT 1
-                )"]
-            )
-        ];
-
-        return $columnData;
-    }
-
-    /**
-     * Include shipping to collection.
-     *
-     * @param \Magento\Customer\Model\ResourceModel\Customer\Collection $customerCollection
-     */
-    private function addShippingJoinAttributesToCustomerCollection($customerCollection)
-    {
-        $customerCollection->joinAttribute(
-            'shipping_street',
-            'customer_address/street',
-            'default_shipping',
-            null,
-            'left'
-        )
-        ->joinAttribute(
-            'shipping_city',
-            'customer_address/city',
-            'default_shipping',
-            null,
-            'left'
-        )
-        ->joinAttribute(
-            'shipping_country_code',
-            'customer_address/country_id',
-            'default_shipping',
-            null,
-            'left'
-        )
-        ->joinAttribute(
-            'shipping_postcode',
-            'customer_address/postcode',
-            'default_shipping',
-            null,
-            'left'
-        )
-        ->joinAttribute(
-            'shipping_telephone',
-            'customer_address/telephone',
-            'default_shipping',
-            null,
-            'left'
-        )
-        ->joinAttribute(
-            'shipping_region',
-            'customer_address/region',
-            'default_shipping',
-            null,
-            'left'
-        )
-        ->joinAttribute(
-            'shipping_company',
-            'customer_address/company',
-            'default_shipping',
-            null,
-            'left'
-        );
-    }
-
-    /**
-     * Include billing to collection.
-     *
-     * @param \Magento\Customer\Model\ResourceModel\Customer\Collection $customerCollection
-     */
-    private function addBillingJoinAttributesToCustomerCollection($customerCollection)
-    {
-        $customerCollection->joinAttribute(
-            'billing_street',
-            'customer_address/street',
-            'default_billing',
-            null,
-            'left'
-        )
-        ->joinAttribute(
-            'billing_city',
-            'customer_address/city',
-            'default_billing',
-            null,
-            'left'
-        )
-        ->joinAttribute(
-            'billing_country_code',
-            'customer_address/country_id',
-            'default_billing',
-            null,
-            'left'
-        )
-        ->joinAttribute(
-            'billing_postcode',
-            'customer_address/postcode',
-            'default_billing',
-            null,
-            'left'
-        )
-        ->joinAttribute(
-            'billing_telephone',
-            'customer_address/telephone',
-            'default_billing',
-            null,
-            'left'
-        )
-        ->joinAttribute(
-            'billing_region',
-            'customer_address/region',
-            'default_billing',
-            null,
-            'left'
-        )
-        ->joinAttribute(
-            'billing_company',
-            'customer_address/company',
-            'default_billing',
-            null,
-            'left'
-        );
-    }
-
-    /**
-     * Set imported by ids.
+     * Set imported by customer ids.
      *
      * @param array $ids
      * @param string|int $websiteId
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function setImportedByIds($ids, $websiteId = 0)
+    public function setContactsImportedByCustomerIds($ids, $websiteId = 0)
     {
         $this->getConnection()->update(
             $this->getMainTable(),
@@ -1007,6 +381,23 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             [
                 "customer_id IN (?)" => $ids,
                 "website_id = ?" => $websiteId
+            ]
+        );
+    }
+
+    /**
+     * Set imported by ids.
+     *
+     * @param array $ids
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function setContactsImportedByIds($ids)
+    {
+        $this->getConnection()->update(
+            $this->getMainTable(),
+            ['email_imported' => 1],
+            [
+                "email_contact_id IN (?)" => $ids
             ]
         );
     }
@@ -1035,58 +426,5 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         $executedAt = $collection->getFirstItem()->getExecutedAt();
 
         return $executedAt;
-    }
-
-    /**
-     * Update contacts to re-import by customer ids
-     *
-     * @param array $customerIds
-     */
-    public function updateNotImportedByCustomerIds($customerIds)
-    {
-        $this->getConnection()->update(
-            $this->getMainTable(),
-            ['email_imported' => 0],
-            ["customer_id IN (?)" => $customerIds]
-        );
-    }
-
-    /**
-     * Fetch collection.
-     *
-     * @param array $customerIds
-     * @param array $orderArray
-     * @param array $storeIds
-     * @return array
-     * @throws \Magento\Framework\Exception\LocalizedException
-     */
-    private function getCollectionWithLastQuoteId($customerIds, $orderArray, $storeIds)
-    {
-        $quoteResource = $this->quoteResourceFactory->create();
-
-        $subQuery = new \Zend_Db_Expr(sprintf(
-            "(SELECT customer_id, MAX(entity_id) `last_quote_id` FROM %s
-	        WHERE (`customer_id` IN(%s))
-	        AND (`store_id` IN(%s))
-	        GROUP BY customer_id)",
-            $quoteResource->getMainTable(),
-            implode(',', $customerIds),
-            implode(',', $storeIds)
-        ));
-
-        $quoteQuery = $quoteResource->getConnection()
-            ->select()
-            ->from($subQuery, ['customer_id', 'last_quote_id'])
-            ->group('customer_id')
-            ->assemble();
-
-        foreach ($quoteResource->getConnection()->query($quoteQuery) as $quote) {
-            $customerId = $quote['customer_id'];
-            if (isset($orderArray[$customerId])) {
-                $orderArray[$customerId]['last_quote_id'] = $quote['last_quote_id'];
-            }
-        }
-
-        return $orderArray;
     }
 }

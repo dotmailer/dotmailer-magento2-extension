@@ -8,7 +8,7 @@
         <column xsi:type="smallint" name="website_id" padding="5" unsigned="true" nullable="false" identity="false" default="0" comment="Website ID"/>
         <column xsi:type="smallint" name="store_id" padding="5" unsigned="true" nullable="false" identity="false" default="0" comment="Store ID"/>
         <column xsi:type="varchar" name="email" nullable="false" length="255" default="" comment="Customer Email"/>
-        <column xsi:type="smallint" name="is_subscriber" padding="5" unsigned="true" nullable="true" identity="false" comment="Is Subscriber"/>
+        <column xsi:type="smallint" name="is_subscriber" padding="5" unsigned="true" nullable="false" identity="false" default="0" comment="Is Subscriber"/>
         <column xsi:type="smallint" name="subscriber_status" padding="5" unsigned="true" nullable="true" identity="false" comment="Subscriber status"/>
         <column xsi:type="smallint" name="email_imported" padding="5" unsigned="true" nullable="false" identity="false" default="0" comment="Is Imported"/>
         <column xsi:type="smallint" name="subscriber_imported" padding="5" unsigned="true" nullable="false" identity="false" default="0" comment="Is Subscriber Imported"/>

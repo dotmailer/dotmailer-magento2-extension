@@ -17,7 +17,7 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     /**
      * Initialize resource collection.
      *
-     * @return null
+     * @return void
      */
     public function _construct()
     {
@@ -96,25 +96,6 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     }
 
     /**
-     * Get all customer contacts not imported for a website.
-     *
-     * @param int $websiteId
-     * @param int $pageSize
-     *
-     * @return $this
-     */
-    public function getContactsToImportForWebsite($websiteId, $pageSize = 100)
-    {
-        $collection = $this->addFieldToFilter('website_id', $websiteId)
-            ->addFieldToFilter('email_imported', 0)
-            ->addFieldToFilter('customer_id', ['neq' => '0']);
-
-        $collection->getSelect()->limit($pageSize);
-
-        return $collection;
-    }
-
-    /**
      * Get missing contacts.
      *
      * @param int $websiteId
@@ -166,56 +147,36 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     }
 
     /**
-     * Contact subscribers to import for store.
+     * Get subscribers who are customers.
      *
-     * @param int $storeId
+     * @param array $storeIds
      * @param int $limit
-     * @param bool $isCustomerCheck
+     * @param int $offset
+     *
      * @return $this
      */
-    public function getSubscribersToImport(
-        $storeId,
-        $limit = 1000,
-        $isCustomerCheck = true
-    ) {
-        $collection = $this->addFieldToFilter('is_subscriber', ['notnull' => true])
+    public function getSubscribersToImportByStoreIds(array $storeIds, $limit, $offset)
+    {
+        $collection = $this->addFieldToFilter('is_subscriber', '1')
             ->addFieldToFilter('subscriber_status', '1')
             ->addFieldToFilter('subscriber_imported', 0)
-            ->addFieldToFilter('store_id', ['eq' => $storeId]);
+            ->addFieldToFilter('store_id', ['in' => $storeIds]);
 
-        if ($isCustomerCheck) {
-            $collection->addFieldToFilter('customer_id', ['neq' => 0]);
-        } else {
-            $collection->addFieldToFilter('customer_id', ['eq' => 0]);
-        }
-
-        $collection->getSelect()->limit($limit);
+        $collection->getSelect()->limit($limit, $offset);
 
         return $collection;
     }
 
     /**
-     * Fetch a list of subscribers by email and store id.
-     *
-     * @param array $emails
-     * @param string|int $storeId
-     * @return $this
-     */
-    public function getSubscribersToImportFromEmails($emails, $storeId)
-    {
-        return $this->addFieldToFilter('email', ['in' => $emails])
-            ->addFieldToFilter('store_id', $storeId);
-    }
-
-    /**
      * Get all not imported guests for a website.
      *
-     * @param int $websiteId
+     * @param int|string $websiteId
      * @param boolean $onlySubscriber
-     *
-     * @return $this
+     * @param int $pageSize
+     * @param int $offset
+     * @return Collection
      */
-    public function getGuests($websiteId, $onlySubscriber = false)
+    public function getGuests($websiteId, $onlySubscriber, $pageSize, $offset)
     {
         $guestCollection = $this->addFieldToFilter('is_guest', ['notnull' => true])
             ->addFieldToFilter('email_imported', 0)
@@ -229,7 +190,9 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
                 );
         }
 
-        return $guestCollection->load();
+        $guestCollection->getSelect()->limit($pageSize, $offset);
+
+        return $guestCollection;
     }
 
     /**
@@ -289,74 +252,21 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     }
 
     /**
-     * Get number of subscribers synced.
+     * Get customers to import by website.
      *
      * @param int $websiteId
-     *
-     * @return int
-     */
-    public function getNumberSubscribersSynced($websiteId = 0)
-    {
-        return $this->addFieldToFilter(
-            'subscriber_status',
-            \Dotdigitalgroup\Email\Model\Newsletter\Subscriber::STATUS_SUBSCRIBED
-        )
-            ->addFieldToFilter('subscriber_imported', 1)
-            ->addFieldToFilter('website_id', $websiteId)
-            ->getSize();
-    }
-
-    /**
-     * Get number of subscribers.
-     *
-     * @param int $websiteId
-     *
-     * @return int
-     */
-    public function getNumberSubscribers($websiteId = 0)
-    {
-        return $this->addFieldToFilter(
-            'subscriber_status',
-            \Dotdigitalgroup\Email\Model\Newsletter\Subscriber::STATUS_SUBSCRIBED
-        )
-            ->addFieldToFilter('website_id', $websiteId)
-            ->getSize();
-    }
-
-    /**
-     * Get subscribers data by emails
-     *
-     * @param array $emails
-     * @return array
-     */
-    public function getSubscriberDataByEmails($emails)
-    {
-        $subscriberFactory = $this->subscriberFactory->create();
-        $subscribersData = $subscriberFactory->getCollection()
-            ->addFieldToFilter(
-                'subscriber_email',
-                ['in' => $emails]
-            )
-            ->addFieldToSelect(['subscriber_email', 'store_id']);
-
-        return $subscribersData->toArray();
-    }
-
-    /**
-     * Get contacts to import by website
-     *
-     * @param int $websiteId
-     * @param int $syncLimit
      * @param boolean $onlySubscriber
+     * @param int $pageSize
+     * @param int $offset
+     *
      * @return $this
      */
-    public function getContactsToImportByWebsite($websiteId, $syncLimit, $onlySubscriber = false)
+    public function getCustomersToImportByWebsite($websiteId, $onlySubscriber, $pageSize, $offset)
     {
         $collection = $this->addFieldToSelect('*')
             ->addFieldToFilter('customer_id', ['neq' => '0'])
             ->addFieldToFilter('email_imported', 0)
-            ->addFieldToFilter('website_id', $websiteId)
-            ->setPageSize($syncLimit);
+            ->addFieldToFilter('website_id', $websiteId);
 
         if ($onlySubscriber) {
             $collection->addFieldToFilter('is_subscriber', 1)
@@ -366,10 +276,15 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
                 );
         }
 
+        $collection->getSelect()->limit($pageSize, $offset);
+
         return $collection;
     }
 
     /**
+     * Get customer scope data.
+
+     *
      * @param array $customerIds
      * @param string|int $websiteId
      * @return Collection
@@ -378,10 +293,12 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     {
         return $this->addFieldToFilter('customer_id', ['in' => $customerIds])
             ->addFieldToFilter('website_id', $websiteId)
-            ->addFieldToSelect(['customer_id', 'store_id']);
+            ->addFieldToSelect(['email_contact_id', 'customer_id', 'store_id']);
     }
 
     /**
+     * Get contacts by email and website id.
+     *
      * @param array $emails
      * @param string|int $websiteId
      * @return $this
@@ -432,5 +349,17 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
         return $this->addFieldToFilter('email', ['in' => $emails])
             ->addFieldToFilter('website_id', $websiteId)
             ->getColumnValues('email');
+    }
+
+    /**
+     * Get contacts by contact id.
+     *
+     * @param array $emailContactIds
+     *
+     * @return $this
+     */
+    public function getContactsByContactIds($emailContactIds)
+    {
+        return $this->addFieldToFilter('email_contact_id', ['in' => $emailContactIds]);
     }
 }

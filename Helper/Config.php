@@ -388,6 +388,8 @@ class Config extends AbstractHelper
         'connector_developer_settings/import_settings/mega_batch_size_orders';
     public const XML_PATH_CONNECTOR_MEGA_BATCH_SIZE_CATALOG =
         'connector_developer_settings/import_settings/mega_batch_size_catalog';
+    public const XML_PATH_CONNECTOR_MEGA_BATCH_SIZE_CONTACT =
+        'connector_developer_settings/import_settings/mega_batch_size_contact';
     public const XML_PATH_CONNECTOR_CUSTOM_DOMAIN =
         'connector_developer_settings/oauth/custom_domain';
     public const XML_PATH_CONNECTOR_SETUP_DATAFIELDS =
@@ -408,7 +410,7 @@ class Config extends AbstractHelper
         'connector_developer_settings/import_settings/subscriber_sales_data_enabled';
     public const XML_PATH_CONNECTOR_STRIP_PUB =
         'connector_developer_settings/import_settings/strip_pub_from_media_paths';
-    public const XML_PATH_CONNECTOR_SYNC_CATALOG_BREAK_VALUE =
+    public const XML_PATH_CONNECTOR_SYNC_BREAK_VALUE =
         'connector_developer_settings/import_settings/transactional_data_break';
     public const XML_PATH_CONNECTOR_SYSTEM_ALERTS_SYSTEM_MESSAGES =
         'connector_developer_settings/system_alerts/system_messages';
@@ -428,8 +430,17 @@ class Config extends AbstractHelper
     /*
      * Cron schedules
      */
+    /**
+     * @deprecated 4.17.0 Contact sync is now 3 separate paths.
+     */
     public const XML_PATH_CRON_SCHEDULE_CONTACT =
         'connector_developer_settings/cron_schedules/contact';
+    public const XML_PATH_CRON_SCHEDULE_CUSTOMER =
+        'connector_developer_settings/cron_schedules/customer';
+    public const XML_PATH_CRON_SCHEDULE_SUBSCRIBER =
+        'connector_developer_settings/cron_schedules/subscriber';
+    public const XML_PATH_CRON_SCHEDULE_GUEST =
+        'connector_developer_settings/cron_schedules/guest';
     public const XML_PATH_CRON_SCHEDULE_IMPORTER =
         'connector_developer_settings/cron_schedules/importer';
     public const XML_PATH_CRON_SCHEDULE_REVIEWS =

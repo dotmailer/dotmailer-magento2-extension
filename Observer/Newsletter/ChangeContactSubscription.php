@@ -3,12 +3,11 @@
 namespace Dotdigitalgroup\Email\Observer\Newsletter;
 
 use Dotdigitalgroup\Email\Helper\Config;
-use Dotdigitalgroup\Email\Model\Newsletter\Subscriber;
 use Dotdigitalgroup\Email\Model\ResourceModel\Automation;
 use Dotdigitalgroup\Email\Model\StatusInterface;
 use Dotdigitalgroup\Email\Model\Sync\Automation\AutomationTypeHandler;
 use Magento\Framework\App\Config\ScopeConfigInterface;
-use Magento\Newsletter\Model\Subscriber as CoreSubscriber;
+use Magento\Newsletter\Model\Subscriber;
 use Magento\Store\Model\ScopeInterface;
 
 /**
@@ -153,10 +152,10 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
                 );
 
             // only for subscribers
-            if ($subscriberStatus == \Magento\Newsletter\Model\Subscriber::STATUS_SUBSCRIBED) {
+            if ($subscriberStatus == Subscriber::STATUS_SUBSCRIBED) {
                 //Set contact as subscribed
                 $contactEmail->setSubscriberImported(0)
-                    ->setIsSubscriber('1');
+                    ->setIsSubscriber(1);
 
                 //Subscriber subscribed when it is suppressed in table then re-subscribe
                 if ($contactEmail->getSuppressed()) {
@@ -179,14 +178,13 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
                 if ($contactEmail->getSuppressed()) {
                     return $this;
                 }
-                $contactEmail->setSubscriberImported(1)
-                    ->setIsSubscriber(null);
+                $contactEmail->setIsSubscriber(0);
                 //save contact
                 $this->contactResource->save($contactEmail);
 
                 //need to confirm enabled, to keep before the subscription data for contentinsight.
-                if ($subscriberStatus == \Magento\Newsletter\Model\Subscriber::STATUS_UNCONFIRMED ||
-                    $subscriberStatus == \Magento\Newsletter\Model\Subscriber::STATUS_NOT_ACTIVE) {
+                if ($subscriberStatus == Subscriber::STATUS_UNCONFIRMED ||
+                    $subscriberStatus == Subscriber::STATUS_NOT_ACTIVE) {
                     return $this;
                 }
 
@@ -275,8 +273,8 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
         $subscriberStatusNow = $subscriber->getSubscriberStatus();
         $subscriberStatusBefore = $subscriber->getOrigData('subscriber_status');
 
-        $expectedStatusNow = $subscriberStatusNow == CoreSubscriber::STATUS_SUBSCRIBED;
-        $expectedStatusBefore = $subscriberStatusBefore != CoreSubscriber::STATUS_SUBSCRIBED;
+        $expectedStatusNow = $subscriberStatusNow == Subscriber::STATUS_SUBSCRIBED;
+        $expectedStatusBefore = $subscriberStatusBefore != Subscriber::STATUS_SUBSCRIBED;
 
         return $expectedStatusNow && $expectedStatusBefore;
     }

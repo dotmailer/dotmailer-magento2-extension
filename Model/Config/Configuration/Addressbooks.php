@@ -85,7 +85,7 @@ class Addressbooks implements \Magento\Framework\Data\OptionSourceInterface
             }
 
             $subscriberAddressBook
-                = $this->helper->getSubscriberAddressBook($this->helper->getWebsite());
+                = $this->helper->getSubscriberAddressBook($website->getId());
 
             //set up fields with book id and label
             foreach ($addressBooks as $book) {

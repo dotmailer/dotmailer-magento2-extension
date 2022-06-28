@@ -1,6 +1,6 @@
 <?php
 
-namespace Dotdigitalgroup\Email\Model\Apiconnector;
+namespace Dotdigitalgroup\Email\Model\Connector;
 
 use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Customer\DataField\Date;
@@ -16,10 +16,10 @@ class ContactData
     /**
      * @var array
      */
-    public $contactData;
+    protected $contactData;
 
     /**
-     * @var Object
+     * @var AbstractModel
      */
     public $model;
 
@@ -64,11 +64,6 @@ class ContactData
     private $categoryResource;
 
     /**
-     * @var \Magento\Eav\Model\ConfigFactory
-     */
-    private $eavConfigFactory;
-
-    /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
     private $storeManager;
@@ -96,7 +91,7 @@ class ContactData
     /**
      * @var \Magento\Eav\Model\Config
      */
-    private $eavConfig;
+    protected $eavConfig;
 
     /**
      * @var Date
@@ -115,6 +110,7 @@ class ContactData
 
     /**
      * ContactData constructor.
+     *
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      * @param \Magento\Catalog\Api\Data\ProductInterfaceFactory $productFactory
      * @param \Magento\Catalog\Model\ResourceModel\Product $productResource
@@ -122,7 +118,6 @@ class ContactData
      * @param \Magento\Sales\Model\ResourceModel\Order $orderResource
      * @param \Magento\Catalog\Api\Data\CategoryInterfaceFactory $categoryFactory
      * @param \Magento\Catalog\Model\ResourceModel\Category $categoryResource
-     * @param \Magento\Eav\Model\ConfigFactory $eavConfigFactory
      * @param \Dotdigitalgroup\Email\Helper\Config $configHelper
      * @param Logger $logger
      * @param Date $dateField
@@ -136,7 +131,6 @@ class ContactData
         \Magento\Sales\Model\ResourceModel\Order $orderResource,
         \Magento\Catalog\Api\Data\CategoryInterfaceFactory $categoryFactory,
         \Magento\Catalog\Model\ResourceModel\Category $categoryResource,
-        \Magento\Eav\Model\ConfigFactory $eavConfigFactory,
         \Dotdigitalgroup\Email\Helper\Config $configHelper,
         Logger $logger,
         Date $dateField,
@@ -150,12 +144,19 @@ class ContactData
         $this->categoryFactory = $categoryFactory;
         $this->productResource = $productResource;
         $this->categoryResource = $categoryResource;
-        $this->eavConfigFactory = $eavConfigFactory;
         $this->logger = $logger;
         $this->dateField = $dateField;
         $this->eavConfig = $eavConfig;
     }
 
+    /**
+     * Initialize the model.
+     *
+     * @param AbstractModel $model
+     * @param array $columns
+     *
+     * @return $this
+     */
     public function init(AbstractModel $model, array $columns)
     {
         $this->model = $model;
@@ -164,15 +165,7 @@ class ContactData
     }
 
     /**
-     * @param $data
-     */
-    public function setData($data)
-    {
-        $this->contactData[] = $data;
-    }
-
-    /**
-     * Set column data on the customer model
+     * Set column data on the customer model.
      *
      * @return $this
      * @throws \Magento\Framework\Exception\LocalizedException
@@ -208,6 +201,18 @@ class ContactData
     }
 
     /**
+     * Get the hydrated model.
+     *
+     * @return AbstractModel
+     */
+    public function getModel()
+    {
+        return $this->model;
+    }
+
+    /**
+     * Get columns.
+     *
      * @return array
      */
     public function getColumns()
@@ -216,6 +221,8 @@ class ContactData
     }
 
     /**
+     * Set columns.
+     *
      * @param mixed $columns
      *
      * @return $this
@@ -238,6 +245,8 @@ class ContactData
     }
 
     /**
+     * Get website name.
+     *
      * @return string
      * @throws \Magento\Framework\Exception\LocalizedException
      */
@@ -253,6 +262,8 @@ class ContactData
     }
 
     /**
+     * Get store name.
+     *
      * @return string
      */
     public function getStoreName()
@@ -271,14 +282,16 @@ class ContactData
     }
 
     /**
+     * Get the data field value for store name, when store view name is already mapped.
+     *
      * @return string
      */
     public function getStoreNameAdditional()
     {
         try {
-            return $this->storeManager->getStore($this->model->getStoreId())
-                ->getGroup()
-                ->getName();
+            /** @var \Magento\Store\Model\Store $store */
+            $store = $this->storeManager->getStore($this->model->getStoreId());
+            return $store->getGroup()->getName();
         } catch (\Magento\Framework\Exception\NoSuchEntityException $e) {
             $this->logger->debug(
                 'Requested store is not found. Store id: ' . $this->model->getStoreId(),
@@ -290,6 +303,8 @@ class ContactData
     }
 
     /**
+     * Get brand value.
+     *
      * @param mixed $id
      * @return string
      */
@@ -302,7 +317,7 @@ class ContactData
                 $this->model->getWebsiteId()
             );
 
-            $brandValue = $this->getAttributeValue($id, $attributeCode, $this->model->getStoreId());
+            $brandValue = $this->getBrandAttributeValue($id, $attributeCode, $this->model->getStoreId());
 
             if (is_array($brandValue)) {
                 $this->brandValue[$id] = implode(',', $brandValue);
@@ -340,7 +355,9 @@ class ContactData
     }
 
     /**
-     * @param $orderItems
+     * Get categories from historical orders.
+     *
+     * @param array $orderItems
      * @return array
      */
     public function getCategoriesFromOrderItems($orderItems)
@@ -391,14 +408,17 @@ class ContactData
     }
 
     /**
-     * @param $categoryId
+     * Get category value.
+     *
+     * @param string $categoryId
      * @return string
      */
     private function getCategoryValue($categoryId)
     {
         if ($categoryId) {
-            $category = $this->categoryFactory->create()
-                ->setStoreId($this->model->getStoreId());
+            /** @var \Magento\Catalog\Model\Category $category */
+            $category = $this->categoryFactory->create();
+            $category->setStoreId($this->model->getStoreId());
             $this->categoryResource->load($category, $categoryId);
             return $category->getName();
         }
@@ -407,7 +427,9 @@ class ContactData
     }
 
     /**
-     * @param $categoryIds
+     * Get category names.
+     *
+     * @param array $categoryIds
      * @return string
      */
     public function getCategoryNames($categoryIds)
@@ -439,14 +461,6 @@ class ContactData
     }
 
     /**
-     * @return AbstractModel
-     */
-    public function getModel()
-    {
-        return $this->model;
-    }
-
-    /**
      * Get last purchased brand.
      *
      * @return string
@@ -458,6 +472,8 @@ class ContactData
     }
 
     /**
+     * Get most purchased brand.
+     *
      * @return string
      * @throws \Magento\Framework\Exception\LocalizedException
      */
@@ -485,7 +501,7 @@ class ContactData
     }
 
     /**
-     * get most frequent day of purchase
+     * Get most frequent day of purchase.
      *
      * @return string
      */
@@ -500,18 +516,13 @@ class ContactData
     }
 
     /**
-     * get most frequent month of purchase
+     * Get most frequent month of purchase.
      *
      * @return string
      */
     public function getMostFreqPurMon()
     {
-        $month = $this->model->getMonthDay();
-        if ($month) {
-            return $month;
-        }
-
-        return "";
+        return $this->model->getMonth() ?: '';
     }
 
     /**
@@ -549,6 +560,8 @@ class ContactData
     }
 
     /**
+     * Get last order id.
+     *
      * @return int
      */
     public function getLastOrderId()
@@ -557,6 +570,8 @@ class ContactData
     }
 
     /**
+     * Get last order date.
+     *
      * @return string
      */
     public function getLastOrderDate()
@@ -575,6 +590,16 @@ class ContactData
     }
 
     /**
+     * Total value refunded for the customer.
+     *
+     * @return float|int
+     */
+    public function getTotalRefund()
+    {
+        return $this->model->getTotalRefund();
+    }
+
+    /**
      * Get average order value.
      *
      * @return string
@@ -585,6 +610,8 @@ class ContactData
     }
 
     /**
+     * Get number of orders.
+     *
      * @return int
      */
     public function getNumberOfOrders()
@@ -593,6 +620,8 @@ class ContactData
     }
 
     /**
+     * Get the model's id.
+     *
      * @return int
      */
     public function getId()
@@ -601,13 +630,15 @@ class ContactData
     }
 
     /**
+     * Get the value of the nominated 'Brand' attribute.
+     *
      * @param int $id
      * @param string $attributeCode
      * @param int $storeId
      *
      * @return string
      */
-    private function getAttributeValue($id, $attributeCode, $storeId)
+    private function getBrandAttributeValue($id, $attributeCode, $storeId)
     {
         //if the id and attribute found
         if ($id && $attributeCode) {
@@ -632,6 +663,8 @@ class ContactData
     }
 
     /**
+     * Load a product by id.
+     *
      * @param int $productId
      *
      * @return \Magento\Catalog\Model\Product
@@ -649,7 +682,9 @@ class ContactData
     }
 
     /**
-     * @param $attributeCode
+     * Get the value of an attribute by code.
+     *
+     * @param string $attributeCode
      * @return string
      * @throws \Magento\Framework\Exception\LocalizedException
      */
@@ -680,12 +715,18 @@ class ContactData
         try {
             return $this->getSubscriberStatusString($this->model->getSubscriberStatus());
         } catch (\InvalidArgumentException $e) {
+            $this->logger->debug(
+                'Error fetching subscriber status for contact ' . $this->model->getEmail(),
+                [(string) $e]
+            );
             return "";
         }
     }
 
     /**
-     * @param $statusCode
+     * Get subscriber status as a string (checking it matches an accepted value).
+     *
+     * @param string|int $statusCode
      * @throws \InvalidArgumentException
      * @return string
      */

@@ -1,14 +1,16 @@
 <?php
 
-namespace Dotdigitalgroup\Email\Model\Apiconnector;
+namespace Dotdigitalgroup\Email\Model\Connector;
 
 use Magento\Eav\Model\Entity\Attribute;
 
 trait CustomAttributesTrait
 {
     /**
-     * @param Attribute|Attribute\AbstractAttribute $attribute
-     * @param $attributeCode
+     * Get selected dropdown value.
+     *
+     * @param Attribute $attribute
+     * @param string $attributeCode
      * @return string
      */
     private function getSelectedDropDownValue(Attribute $attribute, $attributeCode)
@@ -28,8 +30,10 @@ trait CustomAttributesTrait
     }
 
     /**
-     * @param Attribute|Attribute\AbstractAttribute $attribute
-     * @param $attributeCode
+     * Get multi-select values.
+     *
+     * @param Attribute $attribute
+     * @param string $attributeCode
      * @return string
      */
     private function getMultiSelectValues(Attribute $attribute, $attributeCode)
@@ -52,13 +56,15 @@ trait CustomAttributesTrait
     }
 
     /**
-     * @param $attribute
-     * @return string
+     * Get an attribute's options.
+     *
+     * @param Attribute $attribute
+     * @return string|array
      */
-    private function getOptions($attribute)
+    private function getOptions(Attribute $attribute)
     {
         try {
-            return $options = $attribute->getSource()->getAllOptions();
+            return $attribute->getSource()->getAllOptions();
         } catch (\Exception $exception) {
             $this->logger->debug('Could not fetch options', [(string) $exception]);
             return '';

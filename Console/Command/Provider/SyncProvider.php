@@ -6,13 +6,13 @@ use Dotdigitalgroup\Email\Model\Sync\AbandonedCartFactory;
 use Dotdigitalgroup\Email\Model\Sync\AutomationFactory;
 use Dotdigitalgroup\Email\Model\Sync\CampaignFactory;
 use Dotdigitalgroup\Email\Model\Sync\CatalogFactory;
-use Dotdigitalgroup\Email\Model\Apiconnector\ContactFactory;
-use Dotdigitalgroup\Email\Model\Customer\GuestFactory;
+use Dotdigitalgroup\Email\Model\Sync\CustomerFactory;
+use Dotdigitalgroup\Email\Model\Sync\GuestFactory;
 use Dotdigitalgroup\Email\Model\Sync\ImporterFactory;
 use Dotdigitalgroup\Email\Model\Sync\Integration\IntegrationInsightsFactory;
 use Dotdigitalgroup\Email\Model\Sync\OrderFactory;
 use Dotdigitalgroup\Email\Model\Sync\ReviewFactory;
-use Dotdigitalgroup\Email\Model\Newsletter\SubscriberFactory;
+use Dotdigitalgroup\Email\Model\Sync\SubscriberFactory;
 use Dotdigitalgroup\Email\Model\Email\TemplateFactory;
 use Dotdigitalgroup\Email\Model\Sync\WishlistFactory;
 
@@ -42,9 +42,9 @@ class SyncProvider
     private $catalogFactory;
 
     /**
-     * @var ContactFactory
+     * @var CustomerFactory
      */
-    private $contactFactory;
+    private $customerFactory;
 
     /**
      * @var GuestFactory
@@ -87,18 +87,20 @@ class SyncProvider
     private $wishlistFactory;
 
     /**
+     * SyncProvider constructor.
+     *
      * @param AbandonedCartFactory $abandonedCartFactory
      * @param AutomationFactory $automationFactory
      * @param CampaignFactory $campaignFactory
      * @param CatalogFactory $catalogFactory
-     * @param ContactFactory $contactFactory
+     * @param CustomerFactory $customerFactory
      * @param GuestFactory $guestFactory
-     * @param OrderFactory $orderFactory
-     * @param SubscriberFactory $subscriberFactory
-     * @param TemplateFactory $templateFactory
      * @param ImporterFactory $importerFactory
      * @param IntegrationInsightsFactory $integrationInsightsFactory
+     * @param OrderFactory $orderFactory
      * @param ReviewFactory $reviewFactory
+     * @param SubscriberFactory $subscriberFactory
+     * @param TemplateFactory $templateFactory
      * @param WishlistFactory $wishlistFactory
      */
     public function __construct(
@@ -106,7 +108,7 @@ class SyncProvider
         AutomationFactory $automationFactory,
         CampaignFactory $campaignFactory,
         CatalogFactory $catalogFactory,
-        ContactFactory $contactFactory,
+        CustomerFactory $customerFactory,
         GuestFactory $guestFactory,
         ImporterFactory $importerFactory,
         IntegrationInsightsFactory $integrationInsightsFactory,
@@ -120,7 +122,7 @@ class SyncProvider
         $this->abandonedCartFactory = $abandonedCartFactory;
         $this->campaignFactory = $campaignFactory;
         $this->catalogFactory = $catalogFactory;
-        $this->contactFactory = $contactFactory;
+        $this->customerFactory = $customerFactory;
         $this->guestFactory = $guestFactory;
         $this->importerFactory = $importerFactory;
         $this->integrationInsightsFactory = $integrationInsightsFactory;
@@ -151,7 +153,8 @@ class SyncProvider
     }
 
     /**
-     * Get a sync object from those available
+     * Get a sync object from those available.
+     *
      * @param string $name
      * @return mixed
      */

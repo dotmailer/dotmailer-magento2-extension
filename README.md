@@ -41,7 +41,7 @@ Please select a Dotdigital sync to run
   [1 ] Automation
   [2 ] Campaign
   [3 ] Catalog
-  [4 ] Contact
+  [4 ] Customer
   [5 ] Guest
   [6 ] Importer
   [7 ] IntegrationInsights

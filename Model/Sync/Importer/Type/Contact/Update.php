@@ -5,7 +5,7 @@ namespace Dotdigitalgroup\Email\Model\Sync\Importer\Type\Contact;
 use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Helper\File;
 use Dotdigitalgroup\Email\Logger\Logger;
-use Dotdigitalgroup\Email\Model\Apiconnector\ContactData;
+use Dotdigitalgroup\Email\Model\Connector\ContactData;
 use Dotdigitalgroup\Email\Model\Importer as ModelImporter;
 use Dotdigitalgroup\Email\Model\ResourceModel\Importer;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact;
