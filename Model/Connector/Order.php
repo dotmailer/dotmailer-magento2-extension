@@ -16,6 +16,7 @@ use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Exception\ValidatorException;
 use Magento\Payment\Model\InfoInterface;
 use Magento\Sales\Api\Data\OrderInterface;
+use Magento\Sales\Api\Data\OrderItemInterface;
 use Magento\Sales\Api\Data\OrderPaymentInterface;
 use Magento\Sales\Model\Order\Item;
 use Magento\Sales\Model\Order as MagentoOrder;
@@ -397,6 +398,8 @@ class Order extends AbstractConnectorModel
      */
     private function processOrderItems(MagentoOrder $orderData)
     {
+        $parentLineItem = null;
+
         foreach ($orderData->getAllItems() as $productItem) {
             $isBundle = $isChildOfBundle = false;
 
@@ -499,6 +502,7 @@ class Order extends AbstractConnectorModel
                 // when no product information is available limit to this data
                 $productData = [
                     'name' => $productItem->getName(),
+                    'parent_name' => $isBundle ? '' : $this->getFallbackItemParentName($productItem, $parentLineItem),
                     'sku' => $productItem->getSku(),
                     'qty' => (int) number_format(
                         $productItem->getData('qty_ordered'),
@@ -766,5 +770,23 @@ class Order extends AbstractConnectorModel
             $websiteId
         );
         return $customAttributes ? explode(',', $customAttributes) : false;
+    }
+
+    /**
+     * Get a fallback parent name if we can't find the product model.
+     *
+     * @param OrderItemInterface $productItem
+     * @param OrderItemInterface|null $parentLineItem
+     *
+     * @return string
+     */
+    private function getFallbackItemParentName(OrderItemInterface $productItem, ?OrderItemInterface $parentLineItem)
+    {
+        /** @var Item $parentLineItem */
+        return ($parentLineItem &&
+            $parentLineItem->getId() === $productItem->getParentItemId() &&
+            $parentLineItem->getProductType() === 'configurable') ?
+            $parentLineItem->getName() :
+            $productItem->getName();
     }
 }
