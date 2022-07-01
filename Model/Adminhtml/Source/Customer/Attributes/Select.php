@@ -38,6 +38,7 @@ class Select
     public function toOptionArray()
     {
         $options = [];
+        
         //exclude attributes from mapping
         $excluded = [
             'created_at',
@@ -54,7 +55,9 @@ class Select
             'rp_token',
             'rp_token_create_at',
             'website_id',
+            'store_id',
         ];
+
         $attributes = $this->customerFactory->create()
             ->getAttributes();
 
