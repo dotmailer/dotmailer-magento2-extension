@@ -1,3 +1,19 @@
+# 4.18.0
+
+### What's new
+- Exported data for order and catalog syncs is now validated for mandatory attributes before being sent to the importer.
+
+### Improvements
+- We made some small improvements to our Integration Setup code.
+- Our connector now supports all internal (staging) API endpoints, to facilitate QA.
+
+### Bug fixes
+- Dummy record data was not being sent to Dotdigital when saving account credentials at website level; this has been fixed.
+- We're now try / catching unserialize errors for all types of import.
+- We fixed a bug affecting order and catalog syncs, when processing product attributes whose data was stored as nested arrays.
+- We fixed a PHP 8.1-related error when passing `null` to `trim()`.
+- 'Create In' has been removed from the list of mappable custom attributes ('Store View Name' should be used instead).
+
 # 4.17.0
 
 ### What's new
