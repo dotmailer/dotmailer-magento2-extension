@@ -11,7 +11,7 @@
     }
   ],
   "require": {
-    "php": "^7.1",
+    "php": "^7.1 || ^8.0",
     "magento/framework": ">=101 <104",
     "magento/module-newsletter": "100.*",
     "magento/module-review": ">=100 <102",

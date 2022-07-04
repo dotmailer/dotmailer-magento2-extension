@@ -2,7 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Model\Sql;
 
-use Zend\Stdlib\JsonSerializable;
+use Laminas\Stdlib\JsonSerializable;
 
 /**
  * Class is wrapper over Zend_Db_Expr for implement JsonSerializable interface.
@@ -12,7 +12,7 @@ class Expression extends \Zend_Db_Expr implements JsonSerializable
     /**
      * @inheritdoc
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): mixed
     {
         return [
             'class' => static::class,
