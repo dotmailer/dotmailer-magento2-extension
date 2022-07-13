@@ -30,7 +30,7 @@ abstract class AbstractExporter
      * @param CsvHandler $csvHandler
      */
     public function __construct(
-        CsvHandler $csvHandler,
+        CsvHandler $csvHandler
     ) {
         $this->csvHandler = $csvHandler;
     }
