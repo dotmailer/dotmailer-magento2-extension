@@ -9,17 +9,12 @@ namespace Dotdigitalgroup\Email\Observer\Catalog;
 class RemoveProduct implements \Magento\Framework\Event\ObserverInterface
 {
     /**
-     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Catalog
-     */
-    private $catalogResource;
-
-    /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     private $helper;
 
     /**
-     * @var \Psr\Log\LoggerInterface
+     * @var \Magento\Framework\App\Config\ScopeConfigInterface
      */
     private $scopeConfig;
 
@@ -34,11 +29,6 @@ class RemoveProduct implements \Magento\Framework\Event\ObserverInterface
     private $catalogFactory;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory
-     */
-    private $catalogCollection;
-
-    /**
      * @var \Dotdigitalgroup\Email\Model\ImporterFactory
      */
     private $importerFactory;
@@ -46,19 +36,15 @@ class RemoveProduct implements \Magento\Framework\Event\ObserverInterface
     /**
      * RemoveProduct constructor.
      *
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalogResource
      * @param \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
      * @param \Dotdigitalgroup\Email\Model\CatalogFactory $catalogFactory
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory $catalogCollectionFactory
      * @param \Dotdigitalgroup\Email\Helper\Data $data
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalogResource,
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
         \Dotdigitalgroup\Email\Model\CatalogFactory $catalogFactory,
-        \Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory $catalogCollectionFactory,
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
@@ -67,8 +53,6 @@ class RemoveProduct implements \Magento\Framework\Event\ObserverInterface
         $this->helper            = $data;
         $this->scopeConfig       = $scopeConfig;
         $this->catalogFactory    = $catalogFactory;
-        $this->catalogResource   = $catalogResource;
-        $this->catalogCollection = $catalogCollectionFactory;
         $this->storeManager      = $storeManagerInterface;
     }
 
@@ -77,7 +61,7 @@ class RemoveProduct implements \Magento\Framework\Event\ObserverInterface
      *
      * @param \Magento\Framework\Event\Observer $observer
      *
-     * @return null
+     * @return void
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
@@ -86,8 +70,8 @@ class RemoveProduct implements \Magento\Framework\Event\ObserverInterface
             $productId = $object->getId();
             $emailCatalog = $this->catalogFactory->create();
             if ($item = $emailCatalog->loadProductById($productId)) {
-                //if imported delete from account
-                if ($item->getProcessed()) {
+                // if ever imported, delete from account
+                if ($item->getLastImportedAt()) {
                     $this->deleteFromAccount($productId);
                 }
             }
@@ -100,10 +84,9 @@ class RemoveProduct implements \Magento\Framework\Event\ObserverInterface
      * Delete piece of transactional data by key.
      *
      * @param int $key
-     *
-     * @return null
+     * @return void
      */
-    protected function deleteFromAccount($key)
+    protected function deleteFromAccount($key): void
     {
         $apiEnabled = $this->scopeConfig->getValue(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_ENABLED
@@ -126,6 +109,7 @@ class RemoveProduct implements \Magento\Framework\Event\ObserverInterface
             if ($scope == 2) {
                 $stores = $this->storeManager->getStores();
                 foreach ($stores as $store) {
+                    /** @var \Magento\Store\Model\Store $store */
                     $websiteCode = $store->getWebsite()->getCode();
                     $storeCode = $store->getCode();
 
