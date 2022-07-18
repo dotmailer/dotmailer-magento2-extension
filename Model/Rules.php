@@ -2,39 +2,46 @@
 
 namespace Dotdigitalgroup\Email\Model;
 
+use Dotdigitalgroup\Email\Model\ResourceModel\Rules\CollectionFactory as RulesCollectionFactory;
+use Magento\Eav\Model\Config;
+use Magento\Framework\Data\Collection\AbstractDb;
+use Magento\Framework\Model\Context;
+use Magento\Framework\Model\ResourceModel\AbstractResource;
+use Magento\Framework\Registry;
 use Magento\Framework\Serialize\SerializerInterface;
 use Magento\Sales\Model\ResourceModel\Order\Collection as OrderCollection;
 use Magento\Quote\Model\ResourceModel\Quote\Collection as QuoteCollection;
+use Magento\Quote\Model\ResourceModel\Quote\CollectionFactory as MageQuoteCollectionFactory;
 
 class Rules extends \Magento\Framework\Model\AbstractModel
 {
     /**
      * Exclusion Rule for Abandoned Cart.
      */
-    const ABANDONED = 1;
+    public const ABANDONED = 1;
 
     /**
      * Exclusion Rule for Product Review.
      */
-    const REVIEW = 2;
+    public const REVIEW = 2;
 
     /**
      * Condition combination all.
      */
-    const COMBINATION_TYPE_ALL = 1;
+    public const COMBINATION_TYPE_ALL = 1;
 
     /**
      * Condition combination any.
      */
-    const COMBINATION_TYPE_ANY = 2;
+    public const COMBINATION_TYPE_ANY = 2;
 
     /**
-     * @var int
+     * @var RulesCollectionFactory
      */
-    public $ruleType;
+    private $rulesCollectionFactory;
 
     /**
-     * @var \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory
+     * @var MageQuoteCollectionFactory
      */
     private $quoteCollectionFactory;
 
@@ -44,6 +51,21 @@ class Rules extends \Magento\Framework\Model\AbstractModel
     private $rulesResource;
 
     /**
+     * @var Config
+     */
+    private $config;
+
+    /**
+     * @var SerializerInterface
+     */
+    private $serializer;
+
+    /**
+     * @var int
+     */
+    private $ruleType;
+
+    /**
      * @var array
      */
     private $conditionMap;
@@ -51,12 +73,7 @@ class Rules extends \Magento\Framework\Model\AbstractModel
     /**
      * @var array
      */
-    private $defaultOptions;
-
-    /**
-     * @var array
-     */
-    public $attributeMapForQuote;
+    private $attributeMapForQuote;
 
     /**
      * @var array
@@ -74,48 +91,34 @@ class Rules extends \Magento\Framework\Model\AbstractModel
     private $used = [];
 
     /**
-     * @var Adminhtml\Source\Rules\Type
-     */
-    private $rulesType;
-
-    /**
-     * @var \Magento\Eav\Model\Config
-     */
-    private $config;
-
-    /**
-     * @var SerializerInterface
-     */
-    private $serializer;
-
-    /**
      * Rules constructor.
-     * @param \Magento\Framework\Model\Context $context
-     * @param \Magento\Framework\Registry $registry
-     * @param \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory $quoteCollectionFactory
-     * @param Adminhtml\Source\Rules\Type $rulesType
-     * @param \Magento\Eav\Model\Config $config
-     * @param SerializerInterface $serializer
+     *
+     * @param Context $context
+     * @param Registry $registry
+     * @param RulesCollectionFactory $rulesCollectionFactory
      * @param ResourceModel\Rules $rulesResource
+     * @param Config $config
+     * @param MageQuoteCollectionFactory $quoteCollectionFactory
+     * @param SerializerInterface $serializer
      * @param array $data
-     * @param \Magento\Framework\Model\ResourceModel\AbstractResource|null $resource
-     * @param \Magento\Framework\Data\Collection\AbstractDb|null $resourceCollection
+     * @param AbstractResource|null $resource
+     * @param AbstractDb|null $resourceCollection
      */
     public function __construct(
-        \Magento\Framework\Model\Context $context,
-        \Magento\Framework\Registry $registry,
-        \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory $quoteCollectionFactory,
-        \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Type $rulesType,
-        \Magento\Eav\Model\Config $config,
+        Context $context,
+        Registry $registry,
+        RulesCollectionFactory $rulesCollectionFactory,
+        ResourceModel\Rules $rulesResource,
+        Config $config,
+        MageQuoteCollectionFactory $quoteCollectionFactory,
         SerializerInterface $serializer,
-        \Dotdigitalgroup\Email\Model\ResourceModel\Rules $rulesResource,
         array $data = [],
-        \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
-        \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null
+        AbstractResource $resource = null,
+        AbstractDb $resourceCollection = null
     ) {
         $this->serializer = $serializer;
-        $this->config       = $config;
-        $this->rulesType    = $rulesType;
+        $this->config = $config;
+        $this->rulesCollectionFactory = $rulesCollectionFactory;
         $this->rulesResource = $rulesResource;
         $this->quoteCollectionFactory = $quoteCollectionFactory;
         parent::__construct(
@@ -130,13 +133,11 @@ class Rules extends \Magento\Framework\Model\AbstractModel
     /**
      * Construct.
      *
-     * @return null
+     * @return void
      */
     public function _construct()
     {
-        $this->defaultOptions = $this->rulesType->defaultOptions();
-
-        $this->conditionMap         = [
+        $this->conditionMap = [
             'eq' => 'neq',
             'neq' => 'eq',
             'gteq' => 'lteq',
@@ -177,6 +178,8 @@ class Rules extends \Magento\Framework\Model\AbstractModel
     }
 
     /**
+     * Before save.
+     *
      * @return $this
      */
     public function beforeSave()
@@ -203,7 +206,7 @@ class Rules extends \Magento\Framework\Model\AbstractModel
      */
     public function checkWebsiteBeforeSave($websiteId, $type, $ruleId = false)
     {
-        return $this->getCollection()
+        return $this->rulesCollectionFactory->create()
             ->hasCollectionAnyItemsByWebsiteAndType($websiteId, $type, $ruleId);
     }
 
@@ -217,20 +220,18 @@ class Rules extends \Magento\Framework\Model\AbstractModel
      */
     public function getActiveRuleForWebsite($type, $websiteId)
     {
-        return $this->getCollection()
+        return $this->rulesCollectionFactory->create()
             ->getActiveRuleByWebsiteAndType($type, $websiteId);
     }
 
     /**
      * Process rule on collection.
      *
-     * @param \Magento\Sales\Model\ResourceModel\Order\Collection|
-     * \Magento\Quote\Model\ResourceModel\Quote\Collection $collection
+     * @param OrderCollection|QuoteCollection $collection
      * @param string $type
      * @param int $websiteId
      *
-     * @return \Magento\Sales\Model\ResourceModel\Order\Collection|
-     * \Magento\Quote\Model\ResourceModel\Quote\Collection $collection
+     * @return OrderCollection|QuoteCollection
      */
     public function process($collection, $type, $websiteId)
     {
@@ -242,12 +243,12 @@ class Rules extends \Magento\Framework\Model\AbstractModel
             return $collection;
         }
         try {
-            $condition = $this->serializer->unserialize($emailRules->getConditions());
+            $conditions = $this->serializer->unserialize($emailRules->getConditions());
         } catch (\InvalidArgumentException $e) {
             return $collection;
         }
 
-        if (empty($condition)) {
+        if (empty($conditions)) {
             return $collection;
         }
 
@@ -257,11 +258,11 @@ class Rules extends \Magento\Framework\Model\AbstractModel
         $collection = $this->rulesResource->joinTablesOnCollectionByType($collection, $type);
 
         if ($combination == self::COMBINATION_TYPE_ALL) {
-            $collection = $this->processAndCombination($collection, $condition);
+            $collection = $this->processAndCombination($collection, $conditions);
         }
 
         if ($combination == self::COMBINATION_TYPE_ANY) {
-            $collection = $this->processOrCombination($collection, $condition);
+            $collection = $this->processOrCombination($collection, $conditions);
         }
 
         return $collection;
@@ -270,18 +271,16 @@ class Rules extends \Magento\Framework\Model\AbstractModel
     /**
      * Process And combination on collection.
      *
-     * @param \Magento\Sales\Model\ResourceModel\Order\Collection|
-     * \Magento\Quote\Model\ResourceModel\Quote\Collectio $collection
-     * @param array $conditions
+     * @param OrderCollection|QuoteCollection $collection
+     * @param array $ruleConditions
      *
-     * @return \Magento\Sales\Model\ResourceModel\Order\Collection|
-     * \Magento\Quote\Model\ResourceModel\Quote\Collection $collection
+     * @return OrderCollection|QuoteCollection
      */
-    public function processAndCombination($collection, $conditions)
+    public function processAndCombination($collection, $ruleConditions)
     {
-        foreach ($conditions as $condition) {
+        foreach ($ruleConditions as $condition) {
             $attribute = $condition['attribute'];
-            $cond = $condition['conditions'];
+            $operator = $condition['conditions'];
             $value = $condition['cvalue'];
 
             //ignore condition if value is null or empty
@@ -307,23 +306,26 @@ class Rules extends \Magento\Framework\Model\AbstractModel
                 continue;
             }
 
-            $collection = $this->processProcessAndCombinationCondition($collection, $cond, $value, $attribute);
+            $collection = $this->processAndCombinationCondition($collection, $operator, $value, $attribute);
         }
 
         return $this->processProductAttributes($collection);
     }
 
     /**
-     * @param \Magento\Sales\Model\ResourceModel\Order\Collection|
-     * \Magento\Quote\Model\ResourceModel\Quote\Collection $collection
+     * Process And combination on collection.
+     *
+     * @param OrderCollection|QuoteCollection $collection
      * @param string $cond
      * @param string $value
      * @param string $attribute
      *
-     * @return null
+     * @return OrderCollection|QuoteCollection
      */
-    private function processProcessAndCombinationCondition($collection, $cond, $value, $attribute)
+    private function processAndCombinationCondition($collection, $cond, $value, $attribute)
     {
+        $condition = [];
+
         if ($cond == 'null') {
             if ($value == '1') {
                 $condition = ['notnull' => true];
@@ -354,18 +356,12 @@ class Rules extends \Magento\Framework\Model\AbstractModel
     }
 
     /**
-     * process Or combination on collection.
+     * Process Or combination on collection.
      *
-     * @param \Magento\Sales\Model\ResourceModel\Order\Collection|
-     * \Magento\Quote\Model\ResourceModel\Quote\Collectio $collection
+     * @param OrderCollection|QuoteCollection $collection
      * @param array $conditions
-     * @param string $type
      *
-     * @return \Magento\Sales\Model\ResourceModel\Order\Collection|
-     * \Magento\Quote\Model\ResourceModel\Quote\Collection $collection
-     *
-     * @SuppressWarnings(PHPMD.NPathComplexity)
-     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+     * @return OrderCollection|QuoteCollection
      */
     public function processOrCombination($collection, $conditions)
     {
@@ -419,23 +415,45 @@ class Rules extends \Magento\Framework\Model\AbstractModel
                     = [$this->conditionMap[$cond] => $value];
             }
         }
-        //all rules condition will be with or combination
+        /**
+         * All rule conditions are combined into an array to yield an OR when passed
+         * to `addFieldToFilter`. The exception is any 'like' or 'nlike' conditions,
+         * which must be added as separate filters in order to have the AND logic.
+         */
         if (!empty($fieldsConditions)) {
             $column = $cond = [];
             foreach ($fieldsConditions as $key => $fieldsCondition) {
-                $column[] = (string)$key;
-                $cond[] = $fieldsCondition;
+                $type = key($fieldsCondition);
+                if ($type == 'like' || $type == 'nlike') {
+                    $collection->addFieldToFilter(
+                        (string) $key,
+                        $fieldsCondition
+                    );
+                } else {
+                    $column[] = (string) $key;
+                    $cond[] = $fieldsCondition;
+                }
                 if (!empty($multiFieldsConditions[$key])) {
                     foreach ($multiFieldsConditions[$key] as $multiFieldsCondition) {
-                        $column[] = (string)$key;
-                        $cond[] = $multiFieldsCondition;
+                        $type = key($multiFieldsCondition);
+                        if ($type == 'like' || $type == 'nlike') {
+                            $collection->addFieldToFilter(
+                                (string) $key,
+                                $multiFieldsCondition
+                            );
+                        } else {
+                            $column[] = (string) $key;
+                            $cond[] = $multiFieldsCondition;
+                        }
                     }
                 }
             }
-            $collection->addFieldToFilter(
-                $column,
-                $cond
-            );
+            if (!empty($column) && !empty($cond)) {
+                $collection->addFieldToFilter(
+                    $column,
+                    $cond
+                );
+            }
         }
         return $this->processProductAttributes($collection);
     }
@@ -443,11 +461,9 @@ class Rules extends \Magento\Framework\Model\AbstractModel
     /**
      * Process product attributes on collection.
      *
-     * @param \Magento\Sales\Model\ResourceModel\Order\Collection|
-     * \Magento\Quote\Model\ResourceModel\Quote\Collection $collection
+     * @param OrderCollection|QuoteCollection $collection
      *
-     * @return \Magento\Sales\Model\ResourceModel\Order\Collection|
-     * \Magento\Quote\Model\ResourceModel\Quote\Collection $collection
+     * @return OrderCollection|QuoteCollection
      */
     private function processProductAttributes($collection)
     {
@@ -493,13 +509,9 @@ class Rules extends \Magento\Framework\Model\AbstractModel
     /**
      * Process product attributes on collection.
      *
-     * @param \Magento\Sales\Model\ResourceModel\Order\Collection|
-     * \Magento\Quote\Model\ResourceModel\Quote\Collectio $collection
+     * @param OrderCollection|QuoteCollection $collection
      *
-     * @return \Magento\Sales\Model\ResourceModel\Order\Collection|
-     * \Magento\Quote\Model\ResourceModel\Quote\Collection $collection
-     *
-     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+     * @return OrderCollection|QuoteCollection
      */
     private function processProductAttributesInCollection($collection)
     {
@@ -513,9 +525,11 @@ class Rules extends \Magento\Framework\Model\AbstractModel
     }
 
     /**
+     * Process collection item.
+     *
      * @param QuoteCollection|OrderCollection $collection
      * @param int $collectionItemId
-     * @param $item
+     * @param \Magento\Quote\Model\Quote\Item|\Magento\Sales\Model\Order\Item $item
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     private function processCollectionItem($collection, $collectionItemId, $item)
@@ -586,13 +600,14 @@ class Rules extends \Magento\Framework\Model\AbstractModel
     }
 
     /**
+     * Get attributes array from loaded product.
+     *
      * @param \Magento\Catalog\Model\Product $product
      *
      * @return array
      */
     private function getAttributesArrayFromLoadedProduct($product)
     {
-        //attributes array from loaded product
         $attributes = $this->config->getEntityAttributes(
             \Magento\Catalog\Model\Product::ENTITY,
             $product
@@ -602,10 +617,12 @@ class Rules extends \Magento\Framework\Model\AbstractModel
     }
 
     /**
-     * @param \Magento\Sales\Model\ResourceModel\Order\Collection $collection
+     * Filter collection by quote attribute.
+     *
+     * @param OrderCollection|QuoteCollection $collection
      * @param string $attribute
      * @param array $condition
-     * @return \Magento\Sales\Model\ResourceModel\Order\Collection
+     * @return OrderCollection|QuoteCollection
      */
     private function filterCollectionByQuoteAttribute($collection, $attribute, array $condition)
     {
