@@ -1,3 +1,9 @@
+# 4.18.1
+
+### Bug fixes
+- Products removed from Magento will now queue a Single_Delete import if they have ever previously been imported.
+- Multiple contains / not contains conditions are now supported in an ANY-type exclusion rule.
+
 # 4.18.0
 
 ### What's new
