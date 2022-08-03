@@ -4,6 +4,7 @@ namespace Dotdigitalgroup\Email\Block\Helper;
 
 use Dotdigitalgroup\Email\Helper\Config;
 use Dotdigitalgroup\Email\Helper\Data;
+use Magento\Framework\Escaper;
 use Magento\Framework\View\Element\Template\Context;
 use Magento\Store\Model\StoreManagerInterface;
 
@@ -17,7 +18,12 @@ class Font extends \Magento\Framework\View\Element\Template
     /**
      * @var Data
      */
-    public $helper;
+    private $helper;
+
+    /**
+     * @var Escaper
+     */
+    private $escaper;
 
     /**
      * @var int
@@ -27,25 +33,29 @@ class Font extends \Magento\Framework\View\Element\Template
     /**
      * @param Context $context
      * @param Data $helper
+     * @param Escaper $escaper
      * @param StoreManagerInterface $storeManager
      * @param array $data
+     *
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function __construct(
         Context $context,
         Data $helper,
+        Escaper $escaper,
         StoreManagerInterface $storeManager,
         array $data = []
     ) {
         $this->websiteId = $storeManager->getStore()->getWebsiteId();
         $this->helper = $helper;
+        $this->escaper = $escaper;
         parent::__construct($context, $data);
     }
 
     /**
      * Coupon Font from config.
      *
-     * @return string|boolean
+     * @return string
      */
     public function getEscapedFontFamilyForCoupon()
     {
@@ -57,8 +67,14 @@ class Font extends \Magento\Framework\View\Element\Template
     }
 
     /**
+     * Get the sanitised font family.
+     *
+     * If any part of a font-family definition contains apostrophes,
+     * remove them, escape the HTML inside the apostrophes, then
+     * put the apostrophes back.
+     *
      * @param string $rawFont
-     * @return string|boolean
+     * @return string
      */
     private function getSanitisedFont($rawFont)
     {
@@ -67,10 +83,10 @@ class Font extends \Magento\Framework\View\Element\Template
         $escapeFont = function ($font) {
             if (strpos($font, '\'') !== false) {
                 $font = str_replace('\'', '', $font);
-                $font = $this->escapeHtml($font);
-                return "\"$font\"";
+                $font = $this->escaper->escapeHtml($font);
+                return "\'$font\'";
             } else {
-                return $this->escapeHtml($font);
+                return $this->escaper->escapeHtml($font);
             }
         };
 

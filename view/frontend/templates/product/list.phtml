@@ -1,51 +1,53 @@
 <?php
-/** @var \Dotdigitalgroup\Email\Block\Recommended\Mostviewed $block */
-// @codingStandardsIgnoreFile
+/**
+ * @var \Dotdigitalgroup\Email\Block\Recommended\Mostviewed $block
+ * @var \Magento\Framework\Escaper $escaper
+ */
 ?>
 <?php
     $i = 0;
     $mode = $block->getMode();
     $products = $block->getLoadedProductCollection();
 ?>
-<?php if ($products) : ?>
+<?php if ($products): ?>
     <?php $dynamicStyle = $block->getDynamicStyles(); ?>
     <style>
         .product-name{
-            color: <?= $block->escapeHtml($dynamicStyle['nameColor']);?>;
-            font-size: <?= $block->escapeHtml($dynamicStyle['fontSize']);?>;
-        <?php if (in_array('bold', $dynamicStyle['nameStyle'])) : ?>
+            color: <?= $escaper->escapeHtml($dynamicStyle['nameColor']); ?>;
+            font-size: <?= $escaper->escapeHtml($dynamicStyle['fontSize']); ?>;
+        <?php if (in_array('bold', $dynamicStyle['nameStyle'])): ?>
             font-weight: bold;
-        <?php endif; ?><?php if (in_array('italic', $dynamicStyle['nameStyle'])) : ?>
+        <?php endif; ?><?php if (in_array('italic', $dynamicStyle['nameStyle'])): ?>
             font-style: italic;
-        <?php endif; ?><?php if (in_array('underline', $dynamicStyle['nameStyle'])) : ?>
+        <?php endif; ?><?php if (in_array('underline', $dynamicStyle['nameStyle'])): ?>
             text-decoration: underline;
         <?php endif; ?>
         }
         .product-price{
-            color: <?= $block->escapeHtml($dynamicStyle['priceColor']);?>;
-            font-size: <?= $block->escapeHtml($dynamicStyle['priceFontSize']);?>;
-        <?php if (in_array('bold', $dynamicStyle['priceStyle'])) : ?>
+            color: <?= $escaper->escapeHtml($dynamicStyle['priceColor']);?>;
+            font-size: <?= $escaper->escapeHtml($dynamicStyle['priceFontSize']);?>;
+        <?php if (in_array('bold', $dynamicStyle['priceStyle'])): ?>
             font-weight: bold;
-        <?php endif; ?><?php if (in_array('italic', $dynamicStyle['priceStyle'])) : ?>
+        <?php endif; ?><?php if (in_array('italic', $dynamicStyle['priceStyle'])): ?>
             font-style: italic;
-        <?php endif; ?><?php if (in_array('underline', $dynamicStyle['priceStyle'])) : ?>
+        <?php endif; ?><?php if (in_array('underline', $dynamicStyle['priceStyle'])): ?>
             text-decoration: underline;
         <?php endif; ?>
         }
         .product-url{
-            color: <?= $block->escapeHtml($dynamicStyle['urlColor']);?>;
-            font-size: <?= $block->escapeHtml($dynamicStyle['urlFontSize']);?>;
-        <?php if (in_array('bold', $dynamicStyle['linkStyle'])) : ?>
+            color: <?= $escaper->escapeHtml($dynamicStyle['urlColor']); ?>;
+            font-size: <?= $escaper->escapeHtml($dynamicStyle['urlFontSize']); ?>;
+        <?php if (in_array('bold', $dynamicStyle['linkStyle'])): ?>
             font-weight: bold;
-        <?php endif; ?><?php if (in_array('italic', $dynamicStyle['linkStyle'])) : ?>
+        <?php endif; ?><?php if (in_array('italic', $dynamicStyle['linkStyle'])): ?>
             font-style: italic;
-        <?php endif; ?><?php if (in_array('underline', $dynamicStyle['linkStyle'])) : ?>
+        <?php endif; ?><?php if (in_array('underline', $dynamicStyle['linkStyle'])): ?>
             text-decoration: underline;
         <?php endif; ?>
         }
         .product-table{
-            font-family: <?= $block->escapeHtml($dynamicStyle['docFont']);?>;
-            background-color: <?= $block->escapeHtml($dynamicStyle['docBackgroundColor']);?>;
+            font-family: <?= /* @noEscape */ $dynamicStyle['docFont']; ?>;
+            background-color: <?= $escaper->escapeHtml($dynamicStyle['docBackgroundColor']); ?>;
             width: 100% !important;
         }
         .product-table img{
@@ -58,7 +60,7 @@
             padding-bottom: 10px;
         }
         /** Styling from config field **/
-        <?= $block->escapeHtml($dynamicStyle['dynamicStyling']);?>
+        <?= $escaper->escapeHtml($dynamicStyle['dynamicStyling']); ?>
         /** Responsive  **/
         @media (max-width: 760px) {
             /* Force table to not be like tables anymore */
@@ -73,61 +75,55 @@
             }
         }
     </style>
-    <?php foreach ($products as $key => $_product) : ?>
-    <?php $productUrl = $block->getConfigurableParentUrl($_product); ?>
-    <?php if ($i == 0) : ?>
-        <table class="product-table" border="0" width="147" cellpadding="0" cellspacing="0"
-        style='border-collapse: collapse; font-size:12px';><tr>
-    <?php endif;?>
-    <?php if ($mode == 'list') :?>
-        </tr><tr>
-    <?php endif;?>
+    <?php foreach ($products as $key => $_product): ?>
+        <?php $productUrl = $block->getConfigurableParentUrl($_product); ?>
+        <?php if ($i == 0): ?>
+            <table class="product-table" border="0" width="147" cellpadding="0" cellspacing="0"
+            style='border-collapse: collapse; font-size:12px';><tr>
+        <?php endif; ?>
+        <?php if ($mode == 'list'): ?>
+            </tr><tr>
+        <?php endif;?>
 
-    <td style="vertical-align: text-top; padding-right: 2px;">
-        <a href="<?= $block->escapeHtml($productUrl); ?>"
-           title="<?= $block->escapeHtml(
+        <td style="vertical-align: text-top; padding-right: 2px;">
+            <a href="<?= $escaper->escapeHtml($productUrl); ?>" title="<?= $escaper->escapeHtml(
                 $block->stripTags(
-                   $block->getImageLabel(
-                       $_product,
-                       'small_image'
-                   ),
-                   null,
-                   true
+                    $block->getImageLabel(
+                        $_product,
+                        'small_image'
+                    ),
+                    null,
+                    true
                 )
-            ); ?>"
-            class="product-image">
-            <img src="<?= $block->getProductImageUrl($_product, 'product_small_image') ?>" alt="<?= $_product->getName() ?>">
-        </a>
-        <div class="product-name" align="center"><b><?= $block->escapeHtml(
-                mb_substr(
-                    $_product->getName(),
-                    0,
-                    40
-                )
-            );
-        ?></b></div>
-        <div class="product-price" align="center">
-            <?php $productPriceHtml = $block->getLayout()->getBlock('ddg.product.price.render.default')
-                ->render('final_price', $_product, []) ?>
-            <?= /* @noEscape */ $productPriceHtml; ?>
-        </div>
-        <div align="center">
-            <a class="product-url" href="<?= $block->escapeHtml($productUrl); ?>">
-                <?php if ($urlText = $block->getTextForUrl($_product->getStoreId())) : ?>
-                    <?= $block->escapeHtml($urlText); ?>
-                <?php else : ?>
-                    <?= $block->escapehtml(__('View Now')); ?>
-                <?php endif;?>
+                     ); // @codingStandardsIgnoreLine ?>" class="product-image">
+                <img src="<?= /* @noEscape */ $block->getProductImageUrl($_product, 'product_small_image') ?>"
+                     alt="<?= $escaper->escapeHtml($_product->getName()) ?>">
             </a>
-        </div>
-    </td>
+            <div class="product-name" align="center"><b><?= $escaper->escapeHtml(
+                mb_substr($_product->getName(), 0, 40)
+                    ); // @codingStandardsIgnoreLine ?></b></div>
+            <div class="product-price" align="center">
+                <?php $productPriceHtml = $block->getLayout()->getBlock('ddg.product.price.render.default')
+                    ->render('final_price', $_product, []) ?>
+                <?= /* @noEscape */ $productPriceHtml; ?>
+            </div>
+            <div align="center">
+                <a class="product-url" href="<?= $escaper->escapeHtml($productUrl); ?>">
+                    <?php if ($urlText = $block->getTextForUrl($_product->getStoreId())): ?>
+                        <?= $escaper->escapeHtml($urlText); ?>
+                    <?php else: ?>
+                        <?= $escaper->escapehtml(__('View Now')); ?>
+                    <?php endif;?>
+                </a>
+            </div>
+        </td>
 
-    <?php if ($i++ % 4 == 3 && $mode == 'grid') : ?>
-        </tr><tr>
-    <?php endif;?>
-<?php endforeach; ?>
-<?php if ($i > 0) : ?>
-    </table>
-<?php endif; ?>
+        <?php if ($i++ % 4 == 3 && $mode == 'grid'): ?>
+            </tr><tr>
+        <?php endif;?>
+    <?php endforeach; ?>
+    <?php if ($i > 0): ?>
+        </table>
+    <?php endif; ?>
 <?php endif; ?>
 
