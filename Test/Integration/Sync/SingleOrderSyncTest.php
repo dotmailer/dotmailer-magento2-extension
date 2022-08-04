@@ -76,7 +76,7 @@ class SingleOrderSyncTest extends \PHPUnit\Framework\TestCase
         $item = $this->importerCollection
             ->addFieldToFilter('import_type', \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_ORDERS)
             ->addFieldToFilter('import_mode', \Dotdigitalgroup\Email\Model\Importer::MODE_BULK)
-            ->getFirstItem();
+            ->getLastItem();
 
         $this->assertEquals(
             \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_ORDERS,
@@ -101,7 +101,7 @@ class SingleOrderSyncTest extends \PHPUnit\Framework\TestCase
     {
         $this->createModifiedEmailOrder();
         $this->prep();
-        $item = $this->importerCollection->getFirstItem();
+        $item = $this->importerCollection->getLastItem();
 
         $this->assertIsObject(json_decode($item->getImportData()), 'Import data is not of object type');
     }
@@ -114,7 +114,7 @@ class SingleOrderSyncTest extends \PHPUnit\Framework\TestCase
         /** @var \Magento\Sales\Model\ResourceModel\Order\Collection $orderCollection */
         $orderCollection = $this->objectManager->create(\Magento\Sales\Model\ResourceModel\Order\Collection::class);
         /** @var \Magento\Sales\Model\Order $order */
-        $order = $orderCollection->getFirstItem();
+        $order = $orderCollection->getLastItem();
 
         /** @var \Dotdigitalgroup\Email\Model\Order $emailOrder */
         $emailOrder = $this->objectManager->create(\Dotdigitalgroup\Email\Model\Order::class)
@@ -154,7 +154,7 @@ class SingleOrderSyncTest extends \PHPUnit\Framework\TestCase
         $orderCollection = $this->objectManager->create(\Magento\Sales\Model\ResourceModel\Order\Collection::class);
         $orderResource = $this->objectManager->create(\Magento\Sales\Model\ResourceModel\Order::class);
         /** @var \Magento\Sales\Model\Order $order */
-        $order = $orderCollection->getFirstItem();
+        $order = $orderCollection->getLastItem();
         $payment = \Magento\TestFramework\Helper\Bootstrap::getObjectManager()->create(
             \Magento\Sales\Model\Order\Payment::class
         );
