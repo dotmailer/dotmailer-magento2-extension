@@ -133,7 +133,7 @@ class ImporterProgressHandler extends DataObject
         if (isset($response->message)) {
             $item->setImportStatus(ImporterModel::FAILED)
                 ->setMessage($response->message);
-        } else {
+        } elseif (isset($response->status)) {
             if ($response->status == 'Finished') {
                 $item = $this->processFinishedItem($item);
             } elseif (in_array($response->status, $this->importStatuses)) {
