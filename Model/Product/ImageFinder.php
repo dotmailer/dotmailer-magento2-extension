@@ -11,6 +11,7 @@ use Magento\Catalog\Model\Product\Media\ConfigFactory;
 use Magento\ConfigurableProduct\Block\Cart\Item\Renderer\Configurable;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\GroupedProduct\Block\Cart\Item\Renderer\Grouped;
+use Magento\Quote\Model\Quote\Item as QuoteItem;
 
 class ImageFinder
 {
@@ -79,7 +80,9 @@ class ImageFinder
     }
 
     /**
-     * Get product image URL. This method defaults to the thumbnail image role.
+     * Get product image URL.
+     *
+     * This method defaults to the thumbnail image role.
      * To be replaced by getCartImageUrl, which takes an array of image type settings.
      *
      * @deprecated
@@ -109,6 +112,7 @@ class ImageFinder
             $id = $item->getProduct()->getIdBySku($item->getSku());
             $product = $this->productRepository->getById($id, false, $item->getStoreId());
 
+            /** @var \Magento\Catalog\Model\AbstractModel $product */
             if ($product->getThumbnail() !== "no_selection") {
                 return $base . $product->getThumbnail();
             }
@@ -124,10 +128,8 @@ class ImageFinder
 
     /**
      * Get an image URL for a product in the cart context.
-     * We respect the "Configurable Product Image" setting in determining
-     * which image to retrieve.
      *
-     * @param \Magento\Quote\Model\Quote\Item $item
+     * @param QuoteItem $item
      * @param int $storeId
      * @param array $settings
      *
@@ -150,6 +152,7 @@ class ImageFinder
 
         $product = $this->productRepository->getById($productId, false, $item->getStoreId());
 
+        /** @var \Magento\Catalog\Model\AbstractModel $product */
         if ($product->getData($settings['role']) === "no_selection") {
             return "";
         }
@@ -158,6 +161,8 @@ class ImageFinder
     }
 
     /**
+     * Get image URL.
+     *
      * @param Product $product
      * @param array $settings
      * @return string|null
@@ -181,20 +186,23 @@ class ImageFinder
      *
      * @param Product $product
      * @param string $role
-     * 
+     *
      * @return string
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     private function getImageByRole($product, $role)
     {
-        $roleWithParentCheck = $this->parentFinder->getParentProductForNoImageSelection($product, $role)
-            ->getData($role);
+        $parentProduct = $this->parentFinder->getParentProductForNoImageSelection($product, $role);
+        /** @var \Magento\Catalog\Model\AbstractModel $parentProduct */
+        $roleWithParentCheck = $parentProduct->getData($role);
 
         return $this->mediaConfig->create()
             ->getMediaUrl(($roleWithParentCheck) ?: $role);
     }
 
     /**
+     * Get cached image.
+     *
      * Fetches the size as defined in the theme view.xml file.
      * The matching type is automatically used as the role.
      *
@@ -215,8 +223,13 @@ class ImageFinder
     }
 
     /**
-     * @param $item
-     * @param $storeId
+     * We respect the "Configurable Product Image" setting in determining
+     * which image to retrieve. i.e.
+     * - Product Thumbnail Itself > variant id
+     * - Parent Product Thumbnail > parent id
+     *
+     * @param QuoteItem $item
+     * @param string|int $storeId
      * @return string|int
      */
     private function getProductIdForConfigurableType($item, $storeId)
@@ -228,16 +241,8 @@ class ImageFinder
         );
 
         if ($configurableProductImage === "itself") {
-            // Use item SKU to retrieve properties of configurable child product
-            $productId = $item->getProduct()->getIdBySku($item->getSku());
-            if (!$productId) {
-                $this->logger->debug(
-                    sprintf("Unable to get product ID for SKU %s. Parent ID returned", $item->getSku())
-                );
-
-                return $item->getProduct()->getId();
-            }
-            return $productId;
+            $variants = $item->getChildren();
+            return $variants[0]->getProductId();
         }
 
         // Parent product id
@@ -245,8 +250,13 @@ class ImageFinder
     }
 
     /**
-     * @param $item
-     * @param $storeId
+     * We respect the "Grouped Product Image" setting in determining
+     * which image to retrieve. i.e.
+     * - Product Thumbnail Itself > id of item in group
+     * - Parent Product Thumbnail > id of grouped product
+     *
+     * @param QuoteItem $item
+     * @param string|int $storeId
      * @return string|int
      */
     private function getProductIdForGroupedType($item, $storeId)
