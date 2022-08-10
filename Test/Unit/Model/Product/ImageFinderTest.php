@@ -80,7 +80,11 @@ class ImageFinderTest extends TestCase
         $this->productRepositoryMock = $this->createMock(ProductRepositoryInterface::class);
         $this->scopeConfigMock = $this->createMock(ScopeConfigInterface::class);
         $this->productMock = $this->createMock(Product::class);
-        $this->itemMock = $this->createMock(Item::class);
+        $this->itemMock = $this->getMockBuilder(Item::class)
+            ->addMethods(['getProductId'])
+            ->onlyMethods(['getChildren', 'getProductType', 'getProduct'])
+            ->disableOriginalConstructor()
+            ->getMock();
         $this->mediaConfigMock = $this->createMock(Config::class);
         $this->mediaConfigFactoryMock = $this->getMockBuilder(ConfigFactory::class)
             ->disableOriginalConstructor()
@@ -119,11 +123,11 @@ class ImageFinderTest extends TestCase
             ->willReturn($configurableProductImage);
 
         $this->itemMock->expects($this->once())
-            ->method('getProduct')
-            ->willReturn($this->productMock);
+            ->method('getChildren')
+            ->willReturn([$this->itemMock]);
 
-        $this->productMock->expects($this->once())
-            ->method('getIdBySku')
+        $this->itemMock->expects($this->once())
+            ->method('getProductId')
             ->willReturn(1);
 
         $this->productRepositoryMock->expects($this->once())
