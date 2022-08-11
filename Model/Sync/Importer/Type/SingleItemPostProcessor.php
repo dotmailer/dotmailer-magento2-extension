@@ -4,7 +4,8 @@ namespace Dotdigitalgroup\Email\Model\Sync\Importer\Type;
 
 use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Model\Apiconnector\Client;
-use Dotdigitalgroup\Email\Model\ResourceModel\Importer;
+use Dotdigitalgroup\Email\Model\Importer as ImporterModel;
+use Dotdigitalgroup\Email\Model\ResourceModel\Importer as ImporterResource;
 use Dotdigitalgroup\Email\Model\Sync\Importer\ImporterCurlErrorChecker;
 use Magento\Framework\Stdlib\DateTime;
 use Magento\Framework\DataObject;
@@ -17,7 +18,7 @@ class SingleItemPostProcessor extends DataObject implements ItemPostProcessorInt
     private $helper;
 
     /**
-     * @var $importerResource
+     * @var ImporterResource
      */
     private $importerResource;
 
@@ -34,14 +35,14 @@ class SingleItemPostProcessor extends DataObject implements ItemPostProcessorInt
     /**
      * SingleItemPostProcessor constructor.
      * @param Data $helper
-     * @param Importer $importerResource
+     * @param ImporterResource $importerResource
      * @param ImporterCurlErrorChecker $curlErrorChecker
      * @param DateTime $dateTime
      * @param array $data
      */
     public function __construct(
         Data $helper,
-        Importer $importerResource,
+        ImporterResource $importerResource,
         ImporterCurlErrorChecker $curlErrorChecker,
         DateTime $dateTime,
         array $data = []
@@ -55,8 +56,10 @@ class SingleItemPostProcessor extends DataObject implements ItemPostProcessorInt
     }
 
     /**
-     * @param $item
-     * @param $result
+     * Handle single import items after sync.
+     *
+     * @param ImporterModel $item
+     * @param \stdClass $result
      * @param string|null $apiMessage
      * @throws \Magento\Framework\Exception\AlreadyExistsException
      */
@@ -68,19 +71,24 @@ class SingleItemPostProcessor extends DataObject implements ItemPostProcessorInt
 
         //api response error
         if (isset($result->message) && !isset($result->id)) {
-            $item->setImportStatus(\Dotdigitalgroup\Email\Model\Importer::FAILED)
+            $item->setImportStatus(ImporterModel::FAILED)
                 ->setMessage($result->message);
-        } else {
+        } elseif (isset($result->id)) {
             $dateTime = $this->dateTime->formatDate(true);
-            $item->setImportStatus(\Dotdigitalgroup\Email\Model\Importer::IMPORTED)
+            $item->setImportStatus(ImporterModel::IMPORTED)
                 ->setImportFinished($dateTime)
                 ->setImportStarted($dateTime)
                 ->setMessage($apiMessage ?: '');
+        } else {
+            $item->setImportStatus(ImporterModel::FAILED);
+            $item->setMessage(ItemPostProcessorInterface::ERROR_UNKNOWN);
         }
         $this->importerResource->save($item);
     }
 
     /**
+     * Get client.
+     *
      * @return Client
      */
     private function getClient()
