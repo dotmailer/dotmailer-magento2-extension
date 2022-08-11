@@ -735,8 +735,8 @@ class Client extends Rest
 
         $response = $this->execute();
 
-        if (isset($response->message)) {
-            $this->addClientLog('Error adding contacts');
+        if (isset($response->message) || !isset($response->id)) {
+            $this->addClientLog('Error adding contact');
         }
 
         return $response;
