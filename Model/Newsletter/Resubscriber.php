@@ -270,16 +270,24 @@ class Resubscriber extends DataObject
                 continue;
             }
 
-            $utcChangeStatusAt = new \DateTime(
-                $subscriber->getChangeStatusAt(),
-                new \DateTimeZone('UTC')
-            );
-
-            // Note that 'subscribed_at' is already a date object
-            if ($utcChangeStatusAt < $contacts[strtolower($email)]['subscribed_at']) {
+            // If change_status_at is empty, always resubscribe
+            if (empty($subscriber->getChangeStatusAt())) {
                 $filteredSubscribers[$subscriber->getStoreId()][] = [
                     'email' => $email
                 ];
+            // resubscribe if change_status_at is older
+            } else {
+                $utcChangeStatusAt = new \DateTime(
+                    $subscriber->getChangeStatusAt(),
+                    new \DateTimeZone('UTC')
+                );
+
+                // Note that 'subscribed_at' is already a date object
+                if ($utcChangeStatusAt < $contacts[strtolower($email)]['subscribed_at']) {
+                    $filteredSubscribers[$subscriber->getStoreId()][] = [
+                        'email' => $email
+                    ];
+                }
             }
         }
 
