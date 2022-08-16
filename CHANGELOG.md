@@ -1,3 +1,14 @@
+# 4.18.2
+
+### Improvements
+- Product thumbnails for configurable products in cart insight data now work as expected even if the parent has customizable options.
+- Our resubscribe sync will now handle missing `change_status_at`  values in the Magento subscriber table.
+- Disabled account connections will no longer log failed authorization errors.
+
+### Bug fixes
+- We fixed a regression in 4.18.0 relating to a change to the API endpoint config path.
+- We fixed a bug with some custom fonts not displaying correctly in external dynamic content.
+
 # 4.18.1
 
 ### Bug fixes
