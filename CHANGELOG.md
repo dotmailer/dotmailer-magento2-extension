@@ -1,3 +1,8 @@
+# 4.19.0
+
+### What's new
+- Customer, Subscriber and Guest syncs have been refactored for speed and efficiency.
+
 # 4.18.2
 
 ### Improvements
