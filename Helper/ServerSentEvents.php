@@ -3,11 +3,11 @@
 namespace Dotdigitalgroup\Email\Helper;
 
 use Dotdigitalgroup\Email\Model\Events\EventInterface;
+use Dotdigitalgroup\Email\Model\Events\Response\StreamedResponse;
+use Zend\Http\Response;
+use Zend\Http\Request;
 use Magento\Setup\Exception;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
  * @property int $client_reconnect
@@ -52,8 +52,8 @@ class ServerSentEvents
         LoggerInterface $logger
     ) {
         $this->logger = $logger;
-        $this->id = (int)$request->headers->get('Last-Event-ID', 0);
-        $this->config['is_reconnect'] = $request->headers->has('Last-Event-ID');
+        $this->id = (int)$request->getHeaders('Last-Event-ID', 0);
+        $this->config['is_reconnect'] = $request->getHeaders()->has('Last-Event-ID');
     }
 
     /**
@@ -133,7 +133,7 @@ class ServerSentEvents
     }
 
     /**
-     * Returns a Symfony HTTPFoundation StreamResponse.
+     * Returns a streamed response.
      *
      * @return StreamedResponse
      */
@@ -157,15 +157,15 @@ class ServerSentEvents
                 $that->flush();
             }
         };
-        $response = new StreamedResponse($callback, Response::HTTP_OK, [
+        $response = new StreamedResponse($callback, Response::STATUS_CODE_200, [
             'Content-Type' => 'text/event-stream',
             'Cache-Control' => 'no-cache',
             'X-Accel-Buffering' => 'no' // Disables FastCGI Buffering on Nginx
         ]);
 
         if ($this->allow_cors) {
-            $response->headers->set('Access-Control-Allow-Origin', '*');
-            $response->headers->set('Access-Control-Allow-Credentials', 'true');
+            $response->setHeader('Access-Control-Allow-Origin', '*');
+            $response->setHeader('Access-Control-Allow-Credentials', 'true');
         }
         return $response;
     }

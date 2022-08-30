@@ -5,14 +5,14 @@ namespace Dotdigitalgroup\Email\Test\Integration\Helper;
 use Dotdigitalgroup\Email\Helper\ServerSentEvents;
 use Dotdigitalgroup\Email\Logger\Logger;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\HttpFoundation\Request;
+use Zend\Http\Request;
 
 class ServerSentEventsTest extends TestCase
 {
     public function testConstructor()
     {
         $logger = new Logger('tests');
-        $init_request = Request::create('/', 'GET', [], [], [], []);
+        $init_request = new Request();
         $sse = new ServerSentEvents($init_request, $logger);
         $this->assertEquals(true, $sse->client_reconnect);
         $this->assertEquals(false, $sse->allow_cors);
@@ -25,18 +25,17 @@ class ServerSentEventsTest extends TestCase
     public function testCreateResponse()
     {
         $logger = new Logger('tests');
-        $init_request = Request::create('/', 'GET', [], [], [], []);
+        $init_request = new Request();
         $sse = new ServerSentEvents($init_request, $logger);
         $response = $sse->createResponse();
 
-        $this->assertInstanceOf('\Symfony\Component\HttpFoundation\StreamedResponse', $response);
-        $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals('text/event-stream', $response->headers->get('Content-Type'));
+        $this->assertInstanceOf('\Dotdigitalgroup\Email\Model\Events\Response\StreamedResponse', $response);
+        $this->assertEquals('text/event-stream', $response->getHeader('Content-Type'));
 
         $sse->allow_cors = true;
         $response = $sse->createResponse();
-        $this->assertEquals('*', $response->headers->get('Access-Control-Allow-Origin'));
-        $this->assertEquals('true', $response->headers->get('Access-Control-Allow-Credentials'));
+        $this->assertEquals('*', $response->getHeader('Access-Control-Allow-Origin'));
+        $this->assertEquals('true', $response->getHeader('Access-Control-Allow-Credentials'));
 
         /**
          * To prevent the warning:
@@ -50,7 +49,7 @@ class ServerSentEventsTest extends TestCase
     public function testGetEventListener()
     {
         $logger = new Logger('tests');
-        $init_request = Request::create('/', 'GET', [], [], [], []);
+        $init_request = new Request();
         $sse = new ServerSentEvents($init_request, $logger);
         $this->assertEquals([], $sse->getEventHandlers());
     }

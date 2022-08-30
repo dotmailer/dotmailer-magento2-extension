@@ -133,7 +133,7 @@ class SetupIntegration extends \Magento\Backend\App\AbstractAction
     /**
      * Execute.
      *
-     * @return \Symfony\Component\HttpFoundation\StreamedResponse
+     * @return \Dotdigitalgroup\Email\Model\Events\Response\StreamedResponse
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function execute()
