@@ -5,6 +5,7 @@
 
 ### Bug fixes
 - We've replaced the requirement for Symfony\Component\HttpFoundation in our Server Sent Events helper.
+- We fixed the UpdateApiEndpointPath data patch for merchants with old and new endpoint paths stored in the same scope.
 
 # 4.18.2
 
