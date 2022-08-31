@@ -179,7 +179,7 @@ class OrderTest extends TestCase
         $this->scopeConfigInterfaceMock->method('getValue')
             ->withConsecutive(
                 [\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_TRANSACTIONAL_DATA_SYNC_LIMIT],
-                [\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_CATALOG_BREAK_VALUE],
+                [\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_BREAK_VALUE],
                 [\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_MEGA_BATCH_SIZE_ORDERS],
                 [
                     \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_ORDER_ENABLED,

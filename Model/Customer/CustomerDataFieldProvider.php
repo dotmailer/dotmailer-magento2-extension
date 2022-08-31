@@ -1,6 +1,6 @@
 <?php
 
-namespace Dotdigitalgroup\Email\Model\Apiconnector;
+namespace Dotdigitalgroup\Email\Model\Customer;
 
 use Dotdigitalgroup\Email\Helper\Data;
 use Magento\Framework\DataObject;
@@ -63,6 +63,8 @@ class CustomerDataFieldProvider extends DataObject
     }
 
     /**
+     * Get additional fields.
+     *
      * @return array
      */
     public function getAdditionalDataFields()
@@ -71,6 +73,8 @@ class CustomerDataFieldProvider extends DataObject
     }
 
     /**
+     * Get website from data object.
+     *
      * @return WebsiteInterface
      */
     public function getWebsite()

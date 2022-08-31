@@ -1710,13 +1710,14 @@
                        showInDefault="1">
                     <label>Contact Sync Size</label>
                 </field>
-                <field id="mega_batch_size_orders" translate="label" sortOrder="5" type="select" showInStore="0"
-                       showInWebsite="0" showInDefault="0">
-                    <label>Orders mega batch size</label>
+                <field id="mega_batch_size_orders" translate="label" sortOrder="5" type="select" showInStore="0" showInWebsite="0" showInDefault="0">
+                    <label>Order sync mega batch size</label>
                 </field>
-                <field id="mega_batch_size_catalog" translate="label" sortOrder="5" type="select" showInStore="0"
-                       showInWebsite="0" showInDefault="0">
-                    <label>Catalog mega batch size</label>
+                <field id="mega_batch_size_catalog" translate="label" sortOrder="5" type="select" showInStore="0" showInWebsite="0" showInDefault="0">
+                    <label>Catalog sync mega batch size</label>
+                </field>
+                <field id="mega_batch_size_contact" translate="label" sortOrder="5" type="select" showInStore="0" showInWebsite="0" showInDefault="0">
+                    <label>Contact sync mega batch size</label>
                 </field>
                 <field id="transactional_data" translate="label" sortOrder="30" type="select" showInStore="0"
                        showInWebsite="0" showInDefault="1">
@@ -1726,8 +1727,7 @@
                 <field id="transactional_data_break" translate="label" sortOrder="35" showInStore="0" showInWebsite="0" showInDefault="0">
                     <label>Transactional data break</label>
                 </field>
-                <field id="subscriber_sales_data_enabled" type="select" sortOrder="40" showInDefault="1" showInStore="0"
-                       showInWebsite="1">
+                <field id="subscriber_sales_data_enabled" type="select" sortOrder="40" showInDefault="1" showInStore="0" showInWebsite="1">
                     <label>Enable Subscribers Sales Data Sync</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <comment><![CDATA[Enabling ability to sync subscribers sales data increases server load and overall sync times.]]></comment>
@@ -1763,27 +1763,28 @@
                     <label>Manually Run Sync</label>
                     <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
-                <field id="contact_sync" translate="label" sortOrder="70" showInStore="0" showInWebsite="1"
-                       showInDefault="1">
-                    <label>Contact Sync</label>
-                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Contactsync</frontend_model>
+                <field id="customer_sync" translate="label" sortOrder="70" showInStore="0" showInWebsite="1" showInDefault="1">
+                    <label>Customer Sync</label>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Customersync</frontend_model>
                 </field>
-                <field id="subscriber_sync" translate="label" sortOrder="80" showInStore="0" showInWebsite="1"
-                       showInDefault="1">
+                <field id="subscriber_sync" translate="label" sortOrder="80" showInStore="0" showInWebsite="1" showInDefault="1">
                     <label>Subscriber Sync</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Subscribersync</frontend_model>
                 </field>
-                <field id="order_sync" translate="label" sortOrder="90" showInStore="0" showInWebsite="1"
-                       showInDefault="1">
+                <field id="guest_sync" translate="label" sortOrder="90" showInStore="0" showInWebsite="1" showInDefault="1">
+                    <label>Guest Sync</label>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Guestsync</frontend_model>
+                </field>
+                <field id="order_sync" translate="label" sortOrder="100" showInStore="0" showInWebsite="1" showInDefault="1">
                     <label>Order Sync</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Ordersync</frontend_model>
                 </field>
-                <field id="wishlist_sync" translate="label" sortOrder="100" showInStore="0" showInWebsite="1"
+                <field id="wishlist_sync" translate="label" sortOrder="110" showInStore="0" showInWebsite="1"
                        showInDefault="1">
                     <label>Wishlist Sync</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Wishlistsync</frontend_model>
                 </field>
-                <field id="review_sync" translate="label" sortOrder="110" showInStore="0" showInWebsite="1"
+                <field id="review_sync" translate="label" sortOrder="120" showInStore="0" showInWebsite="1"
                        showInDefault="1">
                     <label>Review Sync</label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Reviewsync</frontend_model>
@@ -1901,25 +1902,34 @@
                     <source_model>Dotdigitalgroup\Email\Model\Config\Developer\Cronexpressionsone</source_model>
                     <backend_model>Dotdigitalgroup\Email\Model\Adminhtml\Backend\CronOffset</backend_model>
                 </field>
-                <field id="contact" translate="label" sortOrder="20" type="select" showInStore="0" showInWebsite="1"
-                       showInDefault="1">
-                    <label>Contact</label>
+                <field id="customer" translate="label" sortOrder="20" type="select" showInStore="0" showInWebsite="1" showInDefault="1">
+                    <label>Customer</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Developer\Cronexpressionstwo</source_model>
                     <backend_model>Dotdigitalgroup\Email\Model\Adminhtml\Backend\CronOffset</backend_model>
                 </field>
-                <field id="order" translate="label" sortOrder="30" type="select" showInStore="0" showInWebsite="1"
+                <field id="guest" translate="label" sortOrder="30" type="select" showInStore="0" showInWebsite="1" showInDefault="1">
+                    <label>Guest</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Developer\Cronexpressionstwo</source_model>
+                    <backend_model>Dotdigitalgroup\Email\Model\Adminhtml\Backend\CronOffset</backend_model>
+                </field>
+                <field id="subscriber" translate="label" sortOrder="40" type="select" showInStore="0" showInWebsite="1" showInDefault="1">
+                    <label>Subscriber</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Developer\Cronexpressionstwo</source_model>
+                    <backend_model>Dotdigitalgroup\Email\Model\Adminhtml\Backend\CronOffset</backend_model>
+                </field>
+                <field id="order" translate="label" sortOrder="50" type="select" showInStore="0" showInWebsite="1"
                        showInDefault="1">
                     <label>Order</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Developer\Cronexpressionstwo</source_model>
                     <backend_model>Dotdigitalgroup\Email\Model\Adminhtml\Backend\CronOffset</backend_model>
                 </field>
-                <field id="catalog" translate="label" sortOrder="40" type="select" showInStore="0" showInWebsite="1"
+                <field id="catalog" translate="label" sortOrder="60" type="select" showInStore="0" showInWebsite="1"
                        showInDefault="1">
                     <label>Catalog</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Developer\Cronexpressionstwo</source_model>
                     <backend_model>Dotdigitalgroup\Email\Model\Adminhtml\Backend\CronOffset</backend_model>
                 </field>
-                <field id="review_wishlist" translate="label" sortOrder="50" type="select" showInStore="0"
+                <field id="review_wishlist" translate="label" sortOrder="70" type="select" showInStore="0"
                        showInWebsite="1" showInDefault="1">
                     <label>Review And Wishlist</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Developer\Cronexpressionstwo</source_model>

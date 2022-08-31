@@ -33,21 +33,30 @@ class UpdateApiEndpointPath implements DataPatchInterface
         $this->moduleDataSetup->getConnection()->startSetup();
         $select = $this->moduleDataSetup->getConnection()->select()->from(
             $this->moduleDataSetup->getTable('core_config_data'),
-            ['config_id']
+            ['config_id', 'scope_id']
         )->where(
             'path = ?',
             'connector/api/endpoint'
         );
         foreach ($this->moduleDataSetup->getConnection()->fetchAll($select) as $configRow) {
-            $this->moduleDataSetup->getConnection()->update(
-                $this->moduleDataSetup->getTable('core_config_data'),
-                [
-                    'path' => Config::PATH_FOR_API_ENDPOINT
-                ],
-                [
-                    'config_id = ?' => $configRow['config_id']
-                ]
-            );
+            // If there is a row in the same scope that already has the updated path, delete the older one
+            if ($this->hasNewerEndpointRow($configRow['scope_id'])) {
+                $this->moduleDataSetup->getConnection()->delete(
+                    $this->moduleDataSetup->getTable('core_config_data'),
+                    ['config_id = ?' => $configRow['config_id']]
+                );
+            // Otherwise update rows to the newer path
+            } else {
+                $this->moduleDataSetup->getConnection()->update(
+                    $this->moduleDataSetup->getTable('core_config_data'),
+                    [
+                        'path' => Config::PATH_FOR_API_ENDPOINT
+                    ],
+                    [
+                        'config_id = ?' => $configRow['config_id']
+                    ]
+                );
+            }
         }
         $this->moduleDataSetup->getConnection()->endSetup();
     }
@@ -66,5 +75,23 @@ class UpdateApiEndpointPath implements DataPatchInterface
     public static function getDependencies()
     {
         return [];
+    }
+
+    /**
+     * @param string $scopeId
+     *
+     * @return bool
+     */
+    private function hasNewerEndpointRow($scopeId)
+    {
+        $newerRow = $this->moduleDataSetup->getConnection()->select()->from(
+            $this->moduleDataSetup->getTable('core_config_data'),
+            ['config_id']
+        )
+        ->where('path = ?', Config::PATH_FOR_API_ENDPOINT)
+        ->where('scope_id = ?', $scopeId);
+
+        $result = $this->moduleDataSetup->getConnection()->fetchAll($newerRow);
+        return count($result) > 0;
     }
 }

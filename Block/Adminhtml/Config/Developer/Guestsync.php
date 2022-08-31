@@ -4,7 +4,7 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer;
 
 use Dotdigitalgroup\Email\Block\Adminhtml\Config\AbstractButton;
 
-class Contactsync extends AbstractButton
+class Guestsync extends AbstractButton
 {
     /**
      * Get disabled.
@@ -33,6 +33,6 @@ class Contactsync extends AbstractButton
      */
     protected function getButtonUrl()
     {
-        return $this->escapeUrl($this->_urlBuilder->getUrl('dotdigitalgroup_email/run/contactsync'));
+        return $this->escapeUrl($this->_urlBuilder->getUrl('dotdigitalgroup_email/run/guestsync'));
     }
 }

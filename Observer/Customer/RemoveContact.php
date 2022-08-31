@@ -101,7 +101,7 @@ class RemoveContact implements \Magento\Framework\Event\ObserverInterface
 
         $contact->setSubscriberStatus(null)
             ->setLastSubscribedAt(null)
-            ->setIsSubscriber(null);
+            ->setIsSubscriber(0);
 
         $this->contactResource->save($contact);
 

@@ -68,6 +68,8 @@ class File
     }
 
     /**
+     * Get output folder.
+     *
      * @return string
      */
     private function getOutputFolder()
@@ -78,6 +80,8 @@ class File
     }
 
     /**
+     * Get archive folder.
+     *
      * @return string
      */
     public function getArchiveFolder()
@@ -135,19 +139,20 @@ class File
     }
 
     /**
+     * Output CSV to file.
+     *
+     * Open for writing only; place the file pointer at the end of the file.
+     * If the file does not exist, attempt to create it.
+     *
      * @param string $filepath
      * @param array $csv
      *
-     * @return null
+     * @return void
      */
     public function outputCSV($filepath, $csv)
     {
-        /*
-         * Open for writing only; place the file pointer at the end of the file.
-         * If the file does not exist, attempt to create it.
-         */
         $handle = $this->driver->fileOpen($filepath, 'a');
-        fputcsv($handle, $csv, ',', '"');
+        $this->driver->filePutCsv($handle, $csv, ',', '"');
         $this->driver->fileClose($handle);
     }
 
@@ -237,6 +242,8 @@ class File
     }
 
     /**
+     * Clean processed consent.
+     *
      * @param string $file full path to the csv file.
      * @return bool|string
      */
@@ -276,6 +283,17 @@ class File
     }
 
     /**
+     * Check if file exists.
+     *
+     * @param string $filepath
+     * @return boolean
+     */
+    public function isFile($filepath)
+    {
+        return $this->driver->isFile($filepath);
+    }
+
+    /**
      * Check if file exists in email or archive folder
      *
      * @param string $filename
@@ -289,6 +307,8 @@ class File
     }
 
     /**
+     * Check if a file is already archived.
+     *
      * @param string $filename
      * @return bool
      */

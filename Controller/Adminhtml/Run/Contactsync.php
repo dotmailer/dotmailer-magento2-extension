@@ -2,6 +2,11 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Run;
 
+use Dotdigitalgroup\Email\Model\Sync\CustomerFactory;
+use Dotdigitalgroup\Email\Model\Sync\GuestFactory;
+
+use Magento\Framework\Controller\ResultFactory;
+
 class Contactsync extends \Magento\Backend\App\AbstractAction
 {
     /**
@@ -9,12 +14,7 @@ class Contactsync extends \Magento\Backend\App\AbstractAction
      *
      * @see _isAllowed()
      */
-    const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::config';
-
-    /**
-     * @var \Magento\Framework\Message\ManagerInterface
-     */
-    protected $messageManager;
+    public const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::config';
 
     /**
      * @var \Dotdigitalgroup\Email\Model\CronFactory
@@ -22,34 +22,64 @@ class Contactsync extends \Magento\Backend\App\AbstractAction
     private $cronFactory;
 
     /**
-     * Contactsync constructor.
-     *
+     * @var CustomerFactory
+     */
+    private $customerFactory;
+
+    /**
+     * @var GuestFactory
+     */
+    private $guestFactory;
+
+    /**
+     * @var \Magento\Framework\Message\ManagerInterface
+     */
+    protected $messageManager;
+
+    /**
      * @param \Dotdigitalgroup\Email\Model\CronFactory $cronFactory
-     * @param \Magento\Backend\App\Action\Context      $context
+     * @param CustomerFactory $customerFactory
+     * @param GuestFactory $guestFactory
+     * @param \Magento\Backend\App\Action\Context $context
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\CronFactory $cronFactory,
+        CustomerFactory $customerFactory,
+        GuestFactory $guestFactory,
         \Magento\Backend\App\Action\Context $context
     ) {
-        $this->cronFactory    = $cronFactory;
+        $this->cronFactory = $cronFactory;
+        $this->customerFactory = $customerFactory;
+        $this->guestFactory = $guestFactory;
         $this->messageManager = $context->getMessageManager();
         parent::__construct($context);
     }
 
     /**
-     * Refresh suppressed contacts.
+     * Run a combined 'contact' sync.
      *
-     * @return null
+     * @return \Magento\Framework\Controller\ResultInterface
      */
     public function execute()
     {
-        $result = $this->cronFactory->create()
-            ->contactSync();
+        $customerSyncResult = $this->customerFactory->create(
+            ['data' => ['web' => true]]
+        )->sync();
+        $subscriberSyncResult = $this->cronFactory->create()->subscriberSync();
+        $guestSyncResult = $this->guestFactory->create(
+            ['data' => ['web' => true]]
+        )->sync();
 
-        $this->messageManager->addSuccessMessage($result['message']);
+        $this->messageManager->addSuccessMessage(sprintf(
+            '%s . %s . %s',
+            $customerSyncResult['message'],
+            $subscriberSyncResult['message'],
+            $guestSyncResult['message']
+        ));
 
-        $redirectBack = $this->_redirect->getRefererUrl();
-
-        $this->_redirect($redirectBack);
+        /** @var \Magento\Framework\Controller\Result\Redirect $redirect */
+        $redirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
+        $redirect->setRefererUrl();
+        return $redirect;
     }
 }

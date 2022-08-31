@@ -8,12 +8,14 @@ use Dotdigitalgroup\Email\Model\Sync\Integration\IntegrationInsightsFactory;
 
 class Cron
 {
-    const CRON_PATHS = [
+    public const CRON_PATHS = [
         Config::XML_PATH_CRON_SCHEDULE_IMPORTER => 5,
         Config::XML_PATH_CRON_SCHEDULE_ORDERS => 15,
         Config::XML_PATH_CRON_SCHEDULE_REVIEWS => 15,
-        Config::XML_PATH_CRON_SCHEDULE_CONTACT => 15,
         Config::XML_PATH_CRON_SCHEDULE_CATALOG => 15,
+        Config::XML_PATH_CRON_SCHEDULE_CUSTOMER => 15,
+        Config::XML_PATH_CRON_SCHEDULE_SUBSCRIBER => 15,
+        Config::XML_PATH_CRON_SCHEDULE_GUEST => 15,
     ];
 
     /**
@@ -22,9 +24,9 @@ class Cron
     private $templateFactory;
 
     /**
-     * @var Apiconnector\ContactFactory
+     * @var Sync\CustomerFactory
      */
-    private $contactFactory;
+    private $customerFactory;
 
     /**
      * @var Sync\AutomationFactory
@@ -42,7 +44,7 @@ class Cron
     private $catalogFactory;
 
     /**
-     * @var Newsletter\SubscriberFactory
+     * @var Sync\SubscriberFactory
      */
     private $subscriberFactory;
 
@@ -57,7 +59,7 @@ class Cron
     private $resubscriberFactory;
 
     /**
-     * @var Customer\GuestFactory
+     * @var Sync\GuestFactory
      */
     private $guestFactory;
 
@@ -107,12 +109,14 @@ class Cron
      * @param Sync\CampaignFactory $campaignFactory
      * @param Sync\OrderFactory $syncOrderFactory
      * @param Sales\QuoteFactory $quoteFactory
-     * @param Customer\GuestFactory $guestFactory
-     * @param Newsletter\SubscriberFactory $subscriberFactory
+     * @param Sync\GuestFactory $guestFactory
+     * @param Sync\SubscriberFactory $subscriberFactory
+     * @param Newsletter\UnsubscriberFactory $unsubscriberFactory
+     * @param Newsletter\ResubscriberFactory $resubscriberFactory
      * @param Sync\CatalogFactory $catalogFactory
      * @param Sync\ImporterFactory $importerFactory
      * @param Sync\AutomationFactory $automationFactory
-     * @param Apiconnector\ContactFactory $contact
+     * @param Sync\CustomerFactory $customerFactory
      * @param Email\TemplateFactory $templateFactory
      * @param Cron\CronSubFactory $cronSubFactory
      * @param AbandonedCart\ProgramEnrolment\Enroller $abandonedCartProgramEnroller
@@ -124,14 +128,14 @@ class Cron
         Sync\CampaignFactory $campaignFactory,
         Sync\OrderFactory $syncOrderFactory,
         Sales\QuoteFactory $quoteFactory,
-        Customer\GuestFactory $guestFactory,
-        Newsletter\SubscriberFactory $subscriberFactory,
+        Sync\GuestFactory $guestFactory,
+        Sync\SubscriberFactory $subscriberFactory,
         Newsletter\UnsubscriberFactory $unsubscriberFactory,
         Newsletter\ResubscriberFactory $resubscriberFactory,
         Sync\CatalogFactory $catalogFactory,
         Sync\ImporterFactory $importerFactory,
         Sync\AutomationFactory $automationFactory,
-        Apiconnector\ContactFactory $contact,
+        Sync\CustomerFactory $customerFactory,
         Email\TemplateFactory $templateFactory,
         Cron\CronSubFactory $cronSubFactory,
         AbandonedCart\ProgramEnrolment\Enroller $abandonedCartProgramEnroller,
@@ -149,7 +153,7 @@ class Cron
         $this->catalogFactory    = $catalogFactory;
         $this->importerFactory   = $importerFactory;
         $this->automationFactory = $automationFactory;
-        $this->contactFactory    = $contact;
+        $this->customerFactory = $customerFactory;
         $this->templateFactory   = $templateFactory;
         $this->cronHelper        = $cronSubFactory->create();
         $this->abandonedCartProgramEnroller = $abandonedCartProgramEnroller;
@@ -159,44 +163,52 @@ class Cron
     }
 
     /**
+     * Run customer sync.
+     *
      * @return array|void
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function contactSync()
+    public function customerSync()
     {
-        if ($this->jobChecker->hasAlreadyBeenRun('ddg_automation_customer_subscriber_guest_sync')) {
+        if ($this->jobChecker->hasAlreadyBeenRun('ddg_automation_customer_sync')) {
             return;
         }
 
-        //run the sync for contacts
-        $result = $this->contactFactory->create()
-            ->sync();
-        //run subscribers and guests sync
-        $subscriberResult = $this->subscribersAndGuestSync();
-
-        $result['message'] .= ' - ' . $subscriberResult['message'];
-
-        return $result;
+        return $this->customerFactory->create()->sync();
     }
 
     /**
-     * CRON FOR SUBSCRIBERS AND GUEST CONTACTS.
-     * @return array
+     * Run guest sync.
+     *
+     * @return array|void
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function subscribersAndGuestSync()
+    public function guestSync()
     {
-        //sync subscribers
-        $subscriberModel = $this->subscriberFactory->create();
-        $result = $subscriberModel->runExport();
-
-        //sync guests
-        $this->guestFactory->create()->sync();
-
-        return $result;
+        if ($this->jobChecker->hasAlreadyBeenRun('ddg_automation_guest_sync')) {
+            return;
+        }
+        return $this->guestFactory->create()->sync();
     }
 
     /**
+     * Run subscriber sync.
+     *
+     * @return array|void
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function subscriberSync()
+    {
+        if ($this->jobChecker->hasAlreadyBeenRun('ddg_automation_subscriber_sync')) {
+            return;
+        }
+        return $this->subscriberFactory->create()
+            ->sync();
+    }
+
+    /**
+     * Catalog sync cron.
+     *
      * @return void
      */
     public function catalogSync()
@@ -210,7 +222,7 @@ class Cron
     }
 
     /**
-     * CRON FOR EMAIL IMPORTER PROCESSOR.
+     * Importer cron.
      *
      * @return void
      * @throws \Magento\Framework\Exception\AlreadyExistsException
@@ -226,7 +238,7 @@ class Cron
     }
 
     /**
-     * Send integration insight data
+     * Send integration insight data.
      */
     public function sendIntegrationInsights()
     {
@@ -239,7 +251,7 @@ class Cron
     }
 
     /**
-     * CRON FOR SYNC REVIEWS and REGISTER ORDER REVIEW CAMPAIGNS.
+     * Reviews and wishlist cron.
      *
      * @return void
      */
@@ -256,6 +268,8 @@ class Cron
     }
 
     /**
+     * Review sync.
+     *
      * @return array
      */
     public function reviewSync()
@@ -264,7 +278,7 @@ class Cron
     }
 
     /**
-     * CRON FOR ABANDONED CARTS.
+     * Abandoned cart cron.
      *
      * @return void
      */
@@ -279,7 +293,7 @@ class Cron
     }
 
     /**
-     * CRON FOR AUTOMATION.
+     * Automation cron.
      *
      * @return void
      * @throws \Magento\Framework\Exception\LocalizedException
@@ -309,6 +323,8 @@ class Cron
     }
 
     /**
+     * Order sync cron.
+     *
      * @return array|void
      * @throws \Magento\Framework\Exception\LocalizedException
      */
@@ -318,12 +334,13 @@ class Cron
             return;
         }
 
-        // send order
         return $this->syncOrderFactory->create()
             ->sync();
     }
 
     /**
+     * Email templates cron.
+     *
      * @return void
      */
     public function syncEmailTemplates()
@@ -337,6 +354,8 @@ class Cron
     }
 
     /**
+     * Monitor cron.
+     *
      * @return void
      */
     public function monitor()

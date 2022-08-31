@@ -116,7 +116,7 @@ class CatalogTest extends TestCase
         $expectedResultMessage = '----------- Catalog sync ----------- : ' .
             '00:00:00, Total processed = 10, Total synced = 15';
 
-        $this->getLimitAnfBreakValue();
+        $this->getLimitAndBreakValue();
         $productsToProcess = $this->getMockProductsToProcess();
         $noProductsTProcess = [];
         $syncedProducts = $this->getMockSyncedProducts();
@@ -159,12 +159,12 @@ class CatalogTest extends TestCase
     /**
      * Tests retrieving the configured sync limit.
      */
-    private function getLimitAnfBreakValue()
+    private function getLimitAndBreakValue()
     {
         $this->scopeConfigInterfaceMock->method('getValue')
             ->withConsecutive(
                 [Config::XML_PATH_CONNECTOR_TRANSACTIONAL_DATA_SYNC_LIMIT],
-                [Config::XML_PATH_CONNECTOR_SYNC_CATALOG_BREAK_VALUE]
+                [Config::XML_PATH_CONNECTOR_SYNC_BREAK_VALUE]
             )->willReturnOnConsecutiveCalls(500, null);
     }
 

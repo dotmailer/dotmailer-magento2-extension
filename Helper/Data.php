@@ -76,11 +76,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public $datetime;
 
     /**
-     * @var SerializerInterface
-     */
-    public $serializer;
-
-    /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Contact
      */
     public $contactResource;
@@ -124,7 +119,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param \Magento\Store\Model\Store $store
      * @param \Dotdigitalgroup\Email\Model\Apiconnector\ClientFactory $clientFactory
      * @param ConfigFactory $configHelperFactory
-     * @param SerializerInterface $serializer
      * @param \Magento\Framework\Stdlib\DateTime\DateTime $dateTime
      * @param \Magento\User\Model\ResourceModel\User $userResource
      * @param Logger $logger
@@ -144,7 +138,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         \Magento\Store\Model\Store $store,
         \Dotdigitalgroup\Email\Model\Apiconnector\ClientFactory $clientFactory,
         \Dotdigitalgroup\Email\Helper\ConfigFactory $configHelperFactory,
-        SerializerInterface $serializer,
         \Magento\Framework\Stdlib\DateTime\DateTime $dateTime,
         \Magento\User\Model\ResourceModel\User $userResource,
         Logger $logger,
@@ -152,7 +145,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         EncryptorInterface $encryptor,
         Account $account
     ) {
-        $this->serializer = $serializer;
         $this->adapter = $adapter;
         $this->productMetadata = $productMetadata;
         $this->contactFactory = $contactFactory;
@@ -727,51 +719,46 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Get the address book for customer.
      *
-     * @param int $website
+     * @param int $websiteId
      *
      * @return string
      */
-    public function getCustomerAddressBook($website = 0)
+    public function getCustomerAddressBook($websiteId)
     {
-        $website = $this->storeManager->getWebsite($website);
-
         return $this->scopeConfig->getValue(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CUSTOMERS_ADDRESS_BOOK_ID,
-            \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
-            $website
+            EmailConfig::XML_PATH_CONNECTOR_CUSTOMERS_ADDRESS_BOOK_ID,
+            ScopeInterface::SCOPE_WEBSITE,
+            $websiteId
         );
     }
 
     /**
-     * Subscriber address book.
+     * Get subscriber address book.
      *
-     * @param \Magento\Store\Api\Data\WebsiteInterface|int $website
+     * @param int $websiteId
      *
      * @return string|boolean
      */
-    public function getSubscriberAddressBook($website)
+    public function getSubscriberAddressBook($websiteId)
     {
-        $website = $this->storeManager->getWebsite($website);
-
         return $this->scopeConfig->getValue(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SUBSCRIBERS_ADDRESS_BOOK_ID,
-            \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
-            $website->getId()
+            EmailConfig::XML_PATH_CONNECTOR_SUBSCRIBERS_ADDRESS_BOOK_ID,
+            ScopeInterface::SCOPE_WEBSITE,
+            $websiteId
         );
     }
 
     /**
      * Guest address book.
      *
-     * @param int $websiteId
-     *
+     * @param string|int $websiteId
      * @return string|boolean
      */
     public function getGuestAddressBook($websiteId)
     {
         return $this->scopeConfig->getValue(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_GUEST_ADDRESS_BOOK_ID,
-            \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
+            EmailConfig::XML_PATH_CONNECTOR_GUEST_ADDRESS_BOOK_ID,
+            ScopeInterface::SCOPE_WEBSITE,
             $websiteId
         );
     }
@@ -786,33 +773,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function getWebsites($default = false)
     {
         return $this->storeManager->getWebsites($default);
-    }
-
-    /**
-     * Get custom datafield mapped.
-     *
-     * @param int $website
-     *
-     * @return array|mixed
-     */
-    public function getCustomAttributes($website = 0)
-    {
-        $attr = $this->scopeConfig->getValue(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_MAPPING_CUSTOM_DATAFIELDS,
-            \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
-            $website->getId()
-        );
-
-        if (!$attr) {
-            return [];
-        }
-
-        try {
-            return $this->serializer->unserialize($attr);
-        } catch (\InvalidArgumentException $e) {
-            $this->logger->debug((string) $e);
-            return [];
-        }
     }
 
     /**
@@ -974,8 +934,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function isOrderSyncEnabled($websiteId = 0)
     {
         return $this->scopeConfig->isSetFlag(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_ORDER_ENABLED,
-            \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
+            Config::XML_PATH_CONNECTOR_SYNC_ORDER_ENABLED,
+            ScopeInterface::SCOPE_WEBSITE,
             $websiteId
         );
     }
@@ -990,8 +950,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function isCatalogSyncEnabled($websiteId = 0)
     {
         return $this->scopeConfig->isSetFlag(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_CATALOG_ENABLED,
-            \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
+            Config::XML_PATH_CONNECTOR_SYNC_CATALOG_ENABLED,
+            ScopeInterface::SCOPE_WEBSITE,
             $websiteId
         );
     }
@@ -999,33 +959,15 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Customer sync enabled.
      *
-     * @param int $website
+     * @param int $websiteId
      *
      * @return bool
      */
-    public function isCustomerSyncEnabled($website = 0)
+    public function isCustomerSyncEnabled($websiteId)
     {
-        $website = $this->storeManager->getWebsite($website);
-
         return $this->scopeConfig->isSetFlag(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_CUSTOMER_ENABLED,
-            \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
-            $website
-        );
-    }
-
-    /**
-     * Customer sync size limit.
-     *
-     * @param int|string $websiteId
-     *
-     * @return string|boolean
-     */
-    public function getSyncLimit($websiteId = 0)
-    {
-        return $this->scopeConfig->getValue(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_LIMIT,
-            \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
+            Config::XML_PATH_CONNECTOR_SYNC_CUSTOMER_ENABLED,
+            ScopeInterface::SCOPE_WEBSITE,
             $websiteId
         );
     }
@@ -1040,8 +982,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function isGuestSyncEnabled($websiteId = 0)
     {
         return $this->scopeConfig->isSetFlag(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_GUEST_ENABLED,
-            \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
+            Config::XML_PATH_CONNECTOR_SYNC_GUEST_ENABLED,
+            ScopeInterface::SCOPE_WEBSITE,
             $websiteId
         );
     }
@@ -1056,8 +998,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function isSubscriberSyncEnabled($websiteId = 0)
     {
         return $this->scopeConfig->getValue(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_SUBSCRIBER_ENABLED,
-            \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
+            Config::XML_PATH_CONNECTOR_SYNC_SUBSCRIBER_ENABLED,
+            ScopeInterface::SCOPE_WEBSITE,
             $websiteId
         );
     }
@@ -1076,7 +1018,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
         $automationCampaignId = $this->scopeConfig->getValue(
             $path,
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+            ScopeInterface::SCOPE_STORE,
             $storeId
         );
 
@@ -1219,48 +1161,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function getDateLastCronRun($cronJob)
     {
         return $this->contactResource->getDateLastCronRun($cronJob);
-    }
-
-    /**
-     * Get website datafields for subscriber
-     *
-     * @param \Magento\Store\Model\Website $website
-     * @return array
-     */
-    public function getWebsiteSalesDataFields($website)
-    {
-        $subscriberDataFields = [
-            'website_name' => '',
-            'store_name' => '',
-            'subscriber_status' => '',
-            'number_of_orders' => '',
-            'average_order_value' => '',
-            'total_spend' => '',
-            'last_order_date' => '',
-            'last_increment_id' => '',
-            'most_pur_category' => '',
-            'most_pur_brand' => '',
-            'most_freq_pur_day' => '',
-            'most_freq_pur_mon' => '',
-            'first_category_pur' => '',
-            'last_category_pur' => '',
-            'first_brand_pur' => '',
-            'last_brand_pur' => ''
-        ];
-
-        $mappedData = $this->scopeConfig->getValue(
-            'connector_data_mapping/customer_data',
-            ScopeInterface::SCOPE_WEBSITES,
-            $website->getId()
-        );
-
-        $mappedData = array_intersect_key($mappedData, $subscriberDataFields);
-        foreach ($mappedData as $key => $value) {
-            if (!$value) {
-                unset($mappedData[$key]);
-            }
-        }
-        return $mappedData;
     }
 
     /**
@@ -1452,7 +1352,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * @param int $websiteId
+     * Check if allow non-subscribers is enabled.
+     *
+     * @param string|int $websiteId
      *
      * @return bool
      */
