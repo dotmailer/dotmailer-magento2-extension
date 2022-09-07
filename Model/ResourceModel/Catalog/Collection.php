@@ -113,7 +113,7 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     /**
      * Get product collection to export.
      *
-     * @param string $storeId
+     * @param string|int|null $storeId
      * @param array $productIds
      *
      * @return \Magento\Catalog\Model\ResourceModel\Product\Collection
