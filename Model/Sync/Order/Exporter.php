@@ -4,6 +4,7 @@ namespace Dotdigitalgroup\Email\Model\Sync\Order;
 
 use Dotdigitalgroup\Email\Helper\Config;
 use Dotdigitalgroup\Email\Logger\Logger;
+use Dotdigitalgroup\Email\Model\Connector\Order;
 use Dotdigitalgroup\Email\Model\Connector\OrderFactory as ConnectorOrderFactory;
 use Dotdigitalgroup\Email\Model\ResourceModel\Order\Collection as OrderCollection;
 use Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory as OrderCollectionFactory;
@@ -118,12 +119,13 @@ class Exporter
             if ($order->getId()) {
                 $websiteId = $order->getStore()->getWebsiteId();
                 try {
+                    /** @var Order $connectorOrder */
                     $connectorOrder = $this->connectorOrderFactory->create();
                     $connectorOrder->setOrderData($order);
                     if (array_key_exists($websiteId, $orders)) {
-                        $orders[$websiteId][$order->getIncrementId()] = $connectorOrder->toArray();
+                        $orders[$websiteId][$order->getIncrementId()] = $connectorOrder->toArrayWithEmptyArrayCheck();
                     } else {
-                        $orders += [$websiteId => [$order->getIncrementId() => $connectorOrder->toArray()]];
+                        $orders += [$websiteId => [$order->getIncrementId() => $connectorOrder->toArrayWithEmptyArrayCheck()]];
                     }
                 } catch (SchemaValidationException $exception) {
                     $this->logger->debug(
