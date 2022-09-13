@@ -1,3 +1,15 @@
+# 4.19.1
+
+### Bug fixes
+
+- The 'API valid' check in the Dotdigital dashboard now respects the current website scope.
+- We fixed a bug with running catalog sync at Default Level.
+- Some single imports were (incorrectly) reporting as Failed / Error Unknown. This has been fixed.
+- We reverted a change to the order insight data schema that was blocking order imports for some merchants.
+- We fixed a PHP 8.1 compatibility error when following the 'Take me to my basket' link from the Cart Content External Dynamic URL.
+- Empty address 'street' values would throw a PHP 8.1 deprecation exception in `explode()`; this has been fixed.
+- Exclusion rule conditions on values from product attributes with the input type of select or multiple select now function correctly.
+
 # 4.19.0
 
 ### What's new
