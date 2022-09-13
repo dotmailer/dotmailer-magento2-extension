@@ -1236,7 +1236,7 @@ class Client extends Rest
      * @param int $key
      * @param string $collectionName
      *
-     * @return void|array|null|\stdClass
+     * @return void|\stdClass
      * @throws \Exception
      */
     public function deleteContactsTransactionalData(

@@ -74,7 +74,7 @@
 
 
         <!-- Run Contact syncs -->
-        <magentoCLI command="dotdigital:sync Contact" stepKey="runContactSync"/>
+        <magentoCLI command="dotdigital:sync Customer" stepKey="runCustomerSync"/>
         <wait time="5" stepKey="waitFiveSecondsForSyncContactToGetPickedUpByCron"/>
 
         <!-- Run  Importer syncs -->

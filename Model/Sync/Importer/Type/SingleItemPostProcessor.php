@@ -73,15 +73,12 @@ class SingleItemPostProcessor extends DataObject implements ItemPostProcessorInt
         if (isset($result->message) && !isset($result->id)) {
             $item->setImportStatus(ImporterModel::FAILED)
                 ->setMessage($result->message);
-        } elseif (isset($result->id)) {
+        } else {
             $dateTime = $this->dateTime->formatDate(true);
             $item->setImportStatus(ImporterModel::IMPORTED)
                 ->setImportFinished($dateTime)
                 ->setImportStarted($dateTime)
                 ->setMessage($apiMessage ?: '');
-        } else {
-            $item->setImportStatus(ImporterModel::FAILED);
-            $item->setMessage(ItemPostProcessorInterface::ERROR_UNKNOWN);
         }
         $this->importerResource->save($item);
     }

@@ -2,30 +2,42 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Dashboard;
 
+use Dotdigitalgroup\Email\Helper\Data;
+use Dotdigitalgroup\Email\Model\Apiconnector\Test;
 use Dotdigitalgroup\Email\Model\Connector\Module;
+use Dotdigitalgroup\Email\Model\ResourceModel\FailedAuth\CollectionFactory;
+use IntlDateFormatter;
+use Magento\Backend\Block\Template;
+use Magento\Backend\Block\Template\Context;
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\App\ProductMetadata;
+use Magento\Framework\App\ProductMetadataFactory;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Phrase;
+use Magento\Store\Model\StoreManagerInterface;
 
 /**
  * Dashboard information block
  *
  * @api
  */
-class Information extends \Magento\Backend\Block\Template
+class Information extends Template
 {
     /**
      * Helper.
      *
-     * @var \Dotdigitalgroup\Email\Helper\Data
+     * @var Data
      */
     private $helper;
 
     /**
      * Test class.
-     * @var \Dotdigitalgroup\Email\Model\Apiconnector\Test
+     * @var Test
      */
     private $test;
 
     /**
-     * @var \Magento\Framework\App\ProductMetadata
+     * @var ProductMetadata
      */
     private $productMetadata;
 
@@ -46,22 +58,22 @@ class Information extends \Magento\Backend\Block\Template
 
     /**
      * Information constructor.
-     * @param \Magento\Backend\Block\Template\Context $context
-     * @param \Dotdigitalgroup\Email\Model\Apiconnector\Test $test
-     * @param \Dotdigitalgroup\Email\Helper\Data $helper
-     * @param \Magento\Framework\App\ProductMetadataFactory $productMetadata
+     * @param Context $context
+     * @param Test $test
+     * @param Data $helper
+     * @param ProductMetadataFactory $productMetadata
      * @param Module $moduleList
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\FailedAuth\CollectionFactory $failedAuthCollectionFactory
+     * @param CollectionFactory $failedAuthCollectionFactory
      * @param array $data
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws LocalizedException
      */
     public function __construct(
-        \Magento\Backend\Block\Template\Context $context,
-        \Dotdigitalgroup\Email\Model\Apiconnector\Test $test,
-        \Dotdigitalgroup\Email\Helper\Data $helper,
-        \Magento\Framework\App\ProductMetadataFactory $productMetadata,
+        Context $context,
+        Test $test,
+        Data $helper,
+        ProductMetadataFactory $productMetadata,
         Module $moduleList,
-        \Dotdigitalgroup\Email\Model\ResourceModel\FailedAuth\CollectionFactory $failedAuthCollectionFactory,
+        CollectionFactory $failedAuthCollectionFactory,
         array $data = []
     ) {
         $this->productMetadata = $productMetadata->create();
@@ -99,7 +111,7 @@ class Information extends \Magento\Backend\Block\Template
 
     /**
      * Magento version
-     * @return \Magento\Framework\Phrase | string
+     * @return Phrase | string
      */
     public function getMagentoVersion()
     {
@@ -119,16 +131,18 @@ class Information extends \Magento\Backend\Block\Template
     /**
      * Return HTML indicating the validity of stored API credentials.
      * @return string
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function getApiValid()
     {
-        $apiUsername = $this->helper->getApiUsername();
-        $apiPassword = $this->helper->getApiPassword();
-
+        $website = $this->helper->getWebsiteForSelectedScopeInAdmin();
+        $apiUsername = $this->helper->getApiUsername($website);
+        $apiPassword = $this->helper->getApiPassword($website);
         $result = $this->test->validate($apiUsername, $apiPassword);
 
-        return ($result) ? '<span class="message message-success">Valid</span>' :
-            '<span class="message message-error">Not Valid</span>';
+        return ($result)
+            ? '<span class="message message-success">Valid</span>'
+            : '<span class="message message-error">Not Valid</span>';
     }
 
     /**
@@ -168,7 +182,7 @@ class Information extends \Magento\Backend\Block\Template
     }
 
     /**
-     * @return \Magento\Framework\Phrase|string]
+     * @return Phrase|string]
      */
     public function getAuthStatus()
     {
@@ -185,7 +199,7 @@ class Information extends \Magento\Backend\Block\Template
     }
 
     /**
-     * @return string|\Magento\Framework\Phrase
+     * @return string|Phrase
      */
     public function getLastFailedAuth()
     {
@@ -194,14 +208,14 @@ class Information extends \Magento\Backend\Block\Template
         $failedAuth = $collection->getFirstItem();
 
         if ($failedAuth->getId()) {
-            return $this->formatTime($failedAuth->getLastAttemptDate(), \IntlDateFormatter::LONG);
+            return $this->formatTime($failedAuth->getLastAttemptDate(), IntlDateFormatter::LONG);
         } else {
             return __('None found');
         }
     }
 
     /**
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws LocalizedException
      */
     private function getStoreIdParam()
     {

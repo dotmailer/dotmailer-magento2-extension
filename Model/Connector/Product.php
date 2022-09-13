@@ -253,13 +253,13 @@ class Product extends AbstractConnectorModel
      * Set the product data
      *
      * @param mixed $product
-     * @param int $storeId
+     * @param int|null $storeId
      * @return $this
      * @throws SchemaValidationException
      * @throws \Magento\Framework\Exception\LocalizedException
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
-    public function setProduct($product, int $storeId)
+    public function setProduct($product, ?int $storeId)
     {
         $this->id = $product->getId();
         $this->sku = $product->getSku();
@@ -344,7 +344,7 @@ class Product extends AbstractConnectorModel
      * Retrieve product attributes for catalog sync.
      *
      * @param MagentoProduct $product
-     * @param string $storeId
+     * @param string|int|null $storeId
      * @return void
      * @throws \Magento\Framework\Exception\LocalizedException
      * @throws \Magento\Framework\Exception\NoSuchEntityException
@@ -426,7 +426,7 @@ class Product extends AbstractConnectorModel
      * Here we calculate the 'inc' figures with the rate and the prices we already obtained.
      *
      * @param MagentoProduct $product
-     * @param string|int $storeId
+     * @param string|int|null $storeId
      * @return void
      */
     private function setPricesIncTax($product, $storeId)

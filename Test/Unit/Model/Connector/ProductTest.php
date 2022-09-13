@@ -340,6 +340,29 @@ class ProductTest extends TestCase
         $this->assertEquals($specialPrice, $this->product->specialPrice);
     }
 
+    public function testSetProductNullStoreFunction()
+    {
+        $price = '20.00';
+        $specialPrice = '15.00';
+
+        $this->mageProductMock->expects($this->atLeastOnce())
+            ->method('getTypeId')
+            ->willReturn('simple');
+
+        $this->mageProductMock->expects($this->once())
+            ->method('getPrice')
+            ->willReturn($price);
+
+        $this->mageProductMock->expects($this->atLeastOnce())
+            ->method('getSpecialPrice')
+            ->willReturn($specialPrice);
+
+        $this->product->setProduct($this->mageProductMock, null);
+
+        $this->assertEquals($price, $this->product->price);
+        $this->assertEquals($specialPrice, $this->product->specialPrice);
+    }
+
     public function testConfigurableMinPrice()
     {
         $minPrice = '15.00';

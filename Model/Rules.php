@@ -3,6 +3,8 @@
 namespace Dotdigitalgroup\Email\Model;
 
 use Dotdigitalgroup\Email\Model\ResourceModel\Rules\CollectionFactory as RulesCollectionFactory;
+use Magento\Catalog\Api\Data\ProductInterface;
+use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Eav\Model\Config;
 use Magento\Framework\Data\Collection\AbstractDb;
 use Magento\Framework\Model\Context;
@@ -39,6 +41,11 @@ class Rules extends \Magento\Framework\Model\AbstractModel
      * @var RulesCollectionFactory
      */
     private $rulesCollectionFactory;
+
+    /**
+     * @var ProductRepositoryInterface
+     */
+    private $productRepository;
 
     /**
      * @var MageQuoteCollectionFactory
@@ -96,6 +103,7 @@ class Rules extends \Magento\Framework\Model\AbstractModel
      * @param Context $context
      * @param Registry $registry
      * @param RulesCollectionFactory $rulesCollectionFactory
+     * @param ProductRepositoryInterface $productRepository
      * @param ResourceModel\Rules $rulesResource
      * @param Config $config
      * @param MageQuoteCollectionFactory $quoteCollectionFactory
@@ -108,6 +116,7 @@ class Rules extends \Magento\Framework\Model\AbstractModel
         Context $context,
         Registry $registry,
         RulesCollectionFactory $rulesCollectionFactory,
+        ProductRepositoryInterface $productRepository,
         ResourceModel\Rules $rulesResource,
         Config $config,
         MageQuoteCollectionFactory $quoteCollectionFactory,
@@ -119,6 +128,7 @@ class Rules extends \Magento\Framework\Model\AbstractModel
         $this->serializer = $serializer;
         $this->config = $config;
         $this->rulesCollectionFactory = $rulesCollectionFactory;
+        $this->productRepository = $productRepository;
         $this->rulesResource = $rulesResource;
         $this->quoteCollectionFactory = $quoteCollectionFactory;
         parent::__construct(
@@ -486,7 +496,7 @@ class Rules extends \Magento\Framework\Model\AbstractModel
      *
      * @return bool
      */
-    public function _evaluate($varOne, $op, $varTwo)
+    private function _evaluate($varOne, $op, $varTwo)
     {
         switch ($op) {
             case 'eq':
@@ -534,7 +544,12 @@ class Rules extends \Magento\Framework\Model\AbstractModel
      */
     private function processCollectionItem($collection, $collectionItemId, $item)
     {
-        $product = $item->getProduct();
+        // reload the product to ensure all data is available
+        $product = $this->productRepository->getById(
+            $item->getProductId(),
+            false,
+            $item->getStoreId()
+        );
         $attributes = $this->getAttributesArrayFromLoadedProduct($product);
         $attributes[] = 'attribute_set_id';
 
@@ -552,21 +567,20 @@ class Rules extends \Magento\Framework\Model\AbstractModel
                 $value = '';
             }
 
-            //if attribute is in product's attributes array
+            // if attribute is in product's attributes array
             if (!in_array($attribute, $attributes)) {
                 continue;
             }
 
             $attr = $this->config->getAttribute('catalog_product', $attribute);
-            //frontend type
-            $frontType = $attr->getFrontend()->getInputType();
+            $frontendType = $attr->getFrontend()->getInputType();
 
-            //if type is select
-            if (in_array($frontType, ['select', 'multiselect'])) {
-                $attributeValue = $product->getAttributeText($attribute);
+            if (in_array($frontendType, ['select', 'multiselect'])) {
+                /** @var \Magento\Catalog\Model\Product $product */
+                $optionId = $product->getData($attribute);
 
                 //evaluate conditions on values. if true then unset item from collection
-                if ($this->_evaluate($value, $cond, $attributeValue)) {
+                if ($this->_evaluate($value, $cond, $optionId)) {
                     $collection->removeItemByKey($collectionItemId);
                     return;
                 }
@@ -602,7 +616,7 @@ class Rules extends \Magento\Framework\Model\AbstractModel
     /**
      * Get attributes array from loaded product.
      *
-     * @param \Magento\Catalog\Model\Product $product
+     * @param ProductInterface $product
      *
      * @return array
      */

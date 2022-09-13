@@ -538,14 +538,14 @@ class Order extends AbstractConnectorModel
     /**
      * Get the street name by line number.
      *
-     * @param string $street
+     * @param string|null $street
      * @param int $line
      *
      * @return string
      */
-    public function _getStreet($street, $line)
+    public function _getStreet(?string $street, $line)
     {
-        $street = explode("\n", $street);
+        $street = explode("\n", (string) $street);
         if ($line == 1) {
             return $street[0];
         }

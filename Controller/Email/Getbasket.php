@@ -276,7 +276,7 @@ class Getbasket extends \Magento\Framework\App\Action\Action
             '%s%s%s',
             $path,
             strpos($path, '?') !== false ? '&' : '?',
-            http_build_query($params, null, "&", PHP_QUERY_RFC3986)
+            http_build_query($params, "", "&", PHP_QUERY_RFC3986)
         );
 
         if ($dm_i) {
@@ -289,6 +289,8 @@ class Getbasket extends \Magento\Framework\App\Action\Action
     }
 
     /**
+     * Use the PWA URL to redirect to a basket.
+     *
      * @param string $pwaUrl
      * @param int $websiteId
      * @return \Magento\Framework\App\ResponseInterface

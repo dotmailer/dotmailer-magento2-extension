@@ -67,7 +67,7 @@
         <seeElement selector="{{AdminDotdigitalReportColumnsSection.statusInGrid('Not Imported')}}" stepKey="seeRecordFound"/>
 
         <!-- Run Contact and Importer syncs -->
-        <magentoCLI command="dotdigital:sync Contact" stepKey="runContactSync1"/>
+        <magentoCLI command="dotdigital:sync Customer" stepKey="runCustomerSync"/>
         <wait time="5" stepKey="waitFiveSeconds"/>
         <magentoCLI command="dotdigital:sync Importer" stepKey="runImporterSync"/>
         <wait time="5" stepKey="waitFiveSeconds2"/>

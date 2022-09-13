@@ -45,7 +45,7 @@ class Exporter
     /**
      * Export catalog
      *
-     * @param string|int $storeId
+     * @param string|int|null $storeId
      * @param array $productsToProcess
      * @return array
      */
@@ -83,7 +83,7 @@ class Exporter
     /**
      * Get product collection to export.
      *
-     * @param string $storeId
+     * @param string|int|null $storeId
      * @param array $productIds
      *
      * @return \Magento\Catalog\Model\ResourceModel\Product\Collection|array
