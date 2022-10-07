@@ -112,23 +112,23 @@ class AbandonedCart extends AutomationProcessor
      */
     private function getQuoteItems($quoteId)
     {
-        if (isset($this->quoteItems)) {
-            return $this->quoteItems;
+        if (isset($this->quoteItems[$quoteId])) {
+            return $this->quoteItems[$quoteId];
         }
         $quoteModel = $this->quoteFactory->create()
             ->loadByIdWithoutStore($quoteId);
 
         try {
-            $this->quoteItems = $quoteModel->getAllItems();
+            $this->quoteItems[$quoteId] = $quoteModel->getAllItems();
         } catch (\Exception $e) {
-            $this->quoteItems = [];
+            $this->quoteItems[$quoteId] = [];
             $this->logger->debug(
                 sprintf('Error fetching items for quote ID: %s', $quoteId),
                 [(string) $e]
             );
         }
 
-        return $this->quoteItems;
+        return $this->quoteItems[$quoteId];
     }
 
     /**
