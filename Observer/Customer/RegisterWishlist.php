@@ -2,9 +2,12 @@
 
 namespace Dotdigitalgroup\Email\Observer\Customer;
 
+use Dotdigitalgroup\Email\Helper\Config;
 use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Sync\Automation\AutomationTypeHandler;
 use Dotdigitalgroup\Email\Model\StatusInterface;
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Store\Model\ScopeInterface;
 use Magento\Wishlist\Model\ResourceModel\Item\CollectionFactory;
 
 /**
@@ -63,7 +66,13 @@ class RegisterWishlist implements \Magento\Framework\Event\ObserverInterface
     private $logger;
 
     /**
+     * @var ScopeConfigInterface
+     */
+    private $scopeConfig;
+
+    /**
      * RegisterWishlist constructor.
+     *
      * @param \Dotdigitalgroup\Email\Model\AutomationFactory $automationFactory
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Automation $automationResource
      * @param \Magento\Customer\Api\CustomerRepositoryInterface $customerRepository
@@ -74,6 +83,7 @@ class RegisterWishlist implements \Magento\Framework\Event\ObserverInterface
      * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
      * @param CollectionFactory $wishlistItemCollectionFactory
      * @param Logger $logger
+     * @param ScopeConfigInterface $scopeConfig
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\AutomationFactory $automationFactory,
@@ -85,7 +95,8 @@ class RegisterWishlist implements \Magento\Framework\Event\ObserverInterface
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
         CollectionFactory $wishlistItemCollectionFactory,
-        Logger $logger
+        Logger $logger,
+        ScopeConfigInterface $scopeConfig
     ) {
         $this->emailWishlistCollectionFactory = $emailWishlistCollectionFactory;
         $this->automationResource = $automationResource;
@@ -93,13 +104,16 @@ class RegisterWishlist implements \Magento\Framework\Event\ObserverInterface
         $this->automationFactory = $automationFactory;
         $this->customerRepository = $customerRepository;
         $this->wishlistFactory   = $wishlistFactory;
-        $this->helper            = $data;
-        $this->storeManager      = $storeManagerInterface;
+        $this->helper = $data;
+        $this->storeManager = $storeManagerInterface;
         $this->wishlistItemCollectionFactory = $wishlistItemCollectionFactory;
         $this->logger = $logger;
+        $this->scopeConfig = $scopeConfig;
     }
 
     /**
+     * Execute.
+     *
      * @param \Magento\Framework\Event\Observer $observer
      * @return $this
      */
@@ -111,6 +125,7 @@ class RegisterWishlist implements \Magento\Framework\Event\ObserverInterface
             $storeId = $this->storeManager->getStore()->getId();
 
             if ($this->helper->isEnabled($website->getId())) {
+                /** @var \Magento\Store\Model\Website $website */
                 $itemCount = $this->getWishlistItemCountByStoreIds(
                     $wishlist,
                     $website->getStoreIds()
@@ -135,8 +150,8 @@ class RegisterWishlist implements \Magento\Framework\Event\ObserverInterface
      *
      * @param \Dotdigitalgroup\Email\Model\Wishlist $wishlist
      * @param int $itemCount
-     * @param $websiteId
-     * @param $storeId
+     * @param string|int $websiteId
+     * @param string|int $storeId
      */
     private function registerWishlist($wishlist, $itemCount, $websiteId, $storeId)
     {
@@ -157,12 +172,15 @@ class RegisterWishlist implements \Magento\Framework\Event\ObserverInterface
             );
 
         } catch (\Exception $e) {
-            $this->helper->error((string)$e, []);
+            $this->logger->error((string) $e);
         }
     }
 
     /**
-     * @param int $wishlistId
+     * Get Dotdigital wishlist by id.
+     *
+     * @param string|int $wishlistId
+     * @param string|int $storeId
      * @return bool|\Dotdigitalgroup\Email\Model\Wishlist
      */
     private function getEmailWishlistById($wishlistId, $storeId)
@@ -172,6 +190,8 @@ class RegisterWishlist implements \Magento\Framework\Event\ObserverInterface
     }
 
     /**
+     * Update wishlist and reset for sync.
+     *
      * @param \Dotdigitalgroup\Email\Model\Wishlist $emailWishlist
      * @param int $itemCount
      */
@@ -188,6 +208,8 @@ class RegisterWishlist implements \Magento\Framework\Event\ObserverInterface
     }
 
     /**
+     * Create a wishlist automation.
+     *
      * @param \Dotdigitalgroup\Email\Model\Wishlist $wishlist
      * @param string|int $websiteId
      * @param string|int $storeId
@@ -200,8 +222,9 @@ class RegisterWishlist implements \Magento\Framework\Event\ObserverInterface
         $customer = $this->customerRepository->getById($wishlist->getCustomerId());
 
         try {
-            $programId = $this->helper->getWebsiteConfig(
-                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_AUTOMATION_STUDIO_WISHLIST,
+            $programId = $this->scopeConfig->getValue(
+                Config::XML_PATH_CONNECTOR_AUTOMATION_STUDIO_WISHLIST,
+                ScopeInterface::SCOPE_STORE,
                 $storeId
             );
 
@@ -220,11 +243,13 @@ class RegisterWishlist implements \Magento\Framework\Event\ObserverInterface
                 $this->automationResource->save($automation);
             }
         } catch (\Exception $e) {
-            $this->helper->error((string)$e, []);
+            $this->logger->error((string) $e);
         }
     }
 
     /**
+     * Get item count of a wishlist, filtered by store ids.
+     *
      * @param \Magento\Wishlist\Model\Wishlist $wishlist
      * @param array $storeIds
      * @return int
