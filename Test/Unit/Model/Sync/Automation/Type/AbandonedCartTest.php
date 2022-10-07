@@ -9,9 +9,9 @@ use Dotdigitalgroup\Email\Model\ResourceModel\Automation\Collection as Automatio
 use Dotdigitalgroup\Email\Model\Sales\QuoteFactory as DotdigitalQuoteFactory;
 use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\DataFieldUpdateHandler;
 use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\Updater\AbandonedCart as AbandonedCartUpdater;
+use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\Updater\AbandonedCartFactory as AbandonedCartUpdaterFactory;
 use Dotdigitalgroup\Email\Model\Sync\Automation\Type\AbandonedCart;
 use Dotdigitalgroup\Email\Model\StatusInterface;
-use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Quote\Model\QuoteFactory;
 use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
 use PHPUnit\Framework\TestCase;
@@ -48,6 +48,11 @@ class AbandonedCartTest extends TestCase
     private $dataFieldUpdaterMock;
 
     /**
+     * @var AbandonedCartUpdaterFactory|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $dataFieldUpdaterFactoryMock;
+
+    /**
      * @var DotdigitalQuoteFactory|\PHPUnit_Framework_MockObject_MockObject
      */
     private $ddgQuoteFactoryMock;
@@ -56,11 +61,6 @@ class AbandonedCartTest extends TestCase
      * @var QuoteFactory|\PHPUnit_Framework_MockObject_MockObject
      */
     private $quoteFactoryMock;
-
-    /**
-     * @var ScopeConfigInterface|\PHPUnit_Framework_MockObject_MockObject
-     */
-    private $scopeConfigMock;
 
     /**
      * @var AbandonedCart
@@ -74,26 +74,24 @@ class AbandonedCartTest extends TestCase
         $this->automationResourceMock = $this->createMock(AutomationResource::class);
         $this->dataFieldUpdateHandlerMock = $this->createMock(DataFieldUpdateHandler::class);
         $this->dataFieldUpdaterMock = $this->createMock(AbandonedCartUpdater::class);
+        $this->dataFieldUpdaterFactoryMock = $this->createMock(AbandonedCartUpdaterFactory::class);
         $this->ddgQuoteFactoryMock = $this->createMock(DotdigitalQuoteFactory::class);
         $this->quoteFactoryMock = $this->createMock(QuoteFactory::class);
-        $this->scopeConfigMock = $this->createMock(ScopeConfigInterface::class);
 
         $this->abandonedCart = new AbandonedCart(
             $this->helperMock,
             $this->loggerMock,
             $this->automationResourceMock,
             $this->dataFieldUpdateHandlerMock,
-            $this->dataFieldUpdaterMock,
+            $this->dataFieldUpdaterFactoryMock,
             $this->ddgQuoteFactoryMock,
-            $this->quoteFactoryMock,
-            $this->scopeConfigMock
+            $this->quoteFactoryMock
         );
     }
 
     public function testThatWeCompleteProcessLoopIfQuoteHasItems()
     {
         $contact = $this->getSubscribedContact();
-        $automationModelMock = $this->createMock(\Dotdigitalgroup\Email\Model\Automation::class);
         $quoteModelMock = $this->createMock(\Magento\Quote\Model\Quote::class);
         $quoteItemModelMock = $this->createMock(\Magento\Quote\Model\Quote\Item::class);
         $ddgQuoteModelMock = $this->createMock(\Dotdigitalgroup\Email\Model\Sales\Quote::class);
@@ -116,6 +114,10 @@ class AbandonedCartTest extends TestCase
 
         $this->automationResourceMock->expects($this->never())
             ->method('setStatusAndSaveAutomation');
+
+        $this->dataFieldUpdaterFactoryMock->expects($this->once())
+            ->method('create')
+            ->willReturn($this->dataFieldUpdaterMock);
 
         $this->dataFieldUpdaterMock->expects($this->once())
             ->method('setDatafields')
