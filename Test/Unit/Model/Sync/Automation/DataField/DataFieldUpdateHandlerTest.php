@@ -6,6 +6,8 @@ use Dotdigitalgroup\Email\Model\Sync\Automation\AutomationTypeHandler;
 use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\DataFieldUpdateHandler;
 use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\DataFieldUpdater;
 use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\Updater\Order;
+use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\DataFieldUpdaterFactory;
+use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\Updater\OrderFactory;
 use PHPUnit\Framework\TestCase;
 
 class DataFieldUpdateHandlerTest extends TestCase
@@ -25,20 +27,36 @@ class DataFieldUpdateHandlerTest extends TestCase
      */
     private $orderUpdaterMock;
 
+    /**
+     * @var DataFieldUpdaterFactory|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $defaultUpdaterFactoryMock;
+
+    /**
+     * @var OrderFactory|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $orderUpdaterFactoryMock;
+
     protected function setUp() :void
     {
         $this->defaultUpdaterMock = $this->createMock(DataFieldUpdater::class);
         $this->orderUpdaterMock = $this->createMock(Order::class);
+        $this->defaultUpdaterFactoryMock = $this->createMock(DataFieldUpdaterFactory::class);
+        $this->orderUpdaterFactoryMock = $this->createMock(OrderFactory::class);
 
         $this->dataFieldUpdateHandler = new DataFieldUpdateHandler(
-            $this->defaultUpdaterMock,
-            $this->orderUpdaterMock
+            $this->defaultUpdaterFactoryMock,
+            $this->orderUpdaterFactoryMock
         );
     }
 
     public function testUpdateDataFieldsViaDefaultUpdater()
     {
         $defaultTypeAutomations = $this->setupDefaultTypeAutomationData();
+
+        $this->defaultUpdaterFactoryMock->expects($this->exactly(5))
+            ->method('create')
+            ->willReturn($this->defaultUpdaterMock);
 
         $this->defaultUpdaterMock->expects($this->exactly(5))
             ->method('setDefaultDataFields')
@@ -64,6 +82,10 @@ class DataFieldUpdateHandlerTest extends TestCase
     public function testUpdateDataFieldsViaOrderUpdater()
     {
         $orderTypeAutomations = $this->setupOrderTypeAutomationData();
+
+        $this->orderUpdaterFactoryMock->expects($this->exactly(4))
+            ->method('create')
+            ->willReturn($this->orderUpdaterMock);
 
         $this->orderUpdaterMock->expects($this->exactly(4))
             ->method('setDataFields')

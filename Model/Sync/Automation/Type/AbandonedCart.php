@@ -8,9 +8,8 @@ use Dotdigitalgroup\Email\Model\ResourceModel\Automation as AutomationResource;
 use Dotdigitalgroup\Email\Model\Sales\QuoteFactory as DotdigitalQuoteFactory;
 use Dotdigitalgroup\Email\Model\Sync\Automation\AutomationProcessor;
 use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\DataFieldUpdateHandler;
-use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\Updater\AbandonedCart as AbandonedCartUpdater;
+use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\Updater\AbandonedCartFactory as AbandonedCartUpdaterFactory;
 use Dotdigitalgroup\Email\Model\StatusInterface;
-use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Quote\Model\QuoteFactory;
 
 class AbandonedCart extends AutomationProcessor
@@ -21,9 +20,9 @@ class AbandonedCart extends AutomationProcessor
     private $logger;
 
     /**
-     * @var AbandonedCartUpdater
+     * @var AbandonedCartUpdaterFactory
      */
-    private $dataFieldUpdater;
+    private $dataFieldUpdaterFactory;
 
     /**
      * @var DotdigitalQuoteFactory
@@ -36,11 +35,6 @@ class AbandonedCart extends AutomationProcessor
     private $quoteFactory;
 
     /**
-     * @var ScopeConfigInterface
-     */
-    private $scopeConfig;
-
-    /**
      * @var array
      */
     private $quoteItems;
@@ -51,26 +45,23 @@ class AbandonedCart extends AutomationProcessor
      * @param Logger $logger
      * @param AutomationResource $automationResource
      * @param DataFieldUpdateHandler $dataFieldUpdateHandler
-     * @param AbandonedCartUpdater $dataFieldUpdater
+     * @param AbandonedCartUpdaterFactory $dataFieldUpdaterFactory
      * @param DotdigitalQuoteFactory $ddgQuoteFactory
      * @param QuoteFactory $quoteFactory
-     * @param ScopeConfigInterface $scopeConfig
      */
     public function __construct(
         Data $helper,
         Logger $logger,
         AutomationResource $automationResource,
         DataFieldUpdateHandler $dataFieldUpdateHandler,
-        AbandonedCartUpdater $dataFieldUpdater,
+        AbandonedCartUpdaterFactory $dataFieldUpdaterFactory,
         DotdigitalQuoteFactory $ddgQuoteFactory,
-        QuoteFactory $quoteFactory,
-        ScopeConfigInterface $scopeConfig
+        QuoteFactory $quoteFactory
     ) {
         $this->logger = $logger;
-        $this->dataFieldUpdater = $dataFieldUpdater;
+        $this->dataFieldUpdaterFactory = $dataFieldUpdaterFactory;
         $this->ddgQuoteFactory = $ddgQuoteFactory;
         $this->quoteFactory = $quoteFactory;
-        $this->scopeConfig = $scopeConfig;
 
         parent::__construct($helper, $automationResource, $dataFieldUpdateHandler);
     }
@@ -104,13 +95,15 @@ class AbandonedCart extends AutomationProcessor
     {
         $quoteItems = $this->getQuoteItems($automation->getTypeId());
 
-        $this->dataFieldUpdater->setDatafields(
-            $email,
-            $websiteId,
-            $automation->getTypeId(),
-            $automation->getStoreName(),
-            $this->getNominatedAbandonedCartItem($quoteItems)
-        )->updateDataFields();
+        $this->dataFieldUpdaterFactory->create()
+            ->setDataFields(
+                $email,
+                $websiteId,
+                $automation->getTypeId(),
+                $automation->getStoreName(),
+                $this->getNominatedAbandonedCartItem($quoteItems)
+            )
+            ->updateDataFields();
     }
 
     /**
@@ -119,23 +112,23 @@ class AbandonedCart extends AutomationProcessor
      */
     private function getQuoteItems($quoteId)
     {
-        if (isset($this->quoteItems)) {
-            return $this->quoteItems;
+        if (isset($this->quoteItems[$quoteId])) {
+            return $this->quoteItems[$quoteId];
         }
         $quoteModel = $this->quoteFactory->create()
             ->loadByIdWithoutStore($quoteId);
 
         try {
-            $this->quoteItems = $quoteModel->getAllItems();
+            $this->quoteItems[$quoteId] = $quoteModel->getAllItems();
         } catch (\Exception $e) {
-            $this->quoteItems = [];
+            $this->quoteItems[$quoteId] = [];
             $this->logger->debug(
                 sprintf('Error fetching items for quote ID: %s', $quoteId),
                 [(string) $e]
             );
         }
 
-        return $this->quoteItems;
+        return $this->quoteItems[$quoteId];
     }
 
     /**

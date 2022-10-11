@@ -3,31 +3,31 @@
 namespace Dotdigitalgroup\Email\Model\Sync\Automation\DataField;
 
 use Dotdigitalgroup\Email\Model\Sync\Automation\AutomationTypeHandler;
-use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\Updater\Order;
+use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\Updater\OrderFactory;
 
 class DataFieldUpdateHandler
 {
     /**
-     * @var DataFieldUpdater
+     * @var DataFieldUpdaterFactory
      */
-    private $defaultUpdater;
+    private $defaultUpdaterFactory;
 
     /**
-     * @var Order
+     * @var OrderFactory
      */
-    private $orderUpdater;
+    private $orderUpdaterFactory;
 
     /**
      * DataFieldUpdateHandler constructor.
-     * @param DataFieldUpdater $defaultUpdater
-     * @param Order $orderUpdater
+     * @param DataFieldUpdaterFactory $defaultUpdaterFactory
+     * @param OrderFactory $orderUpdaterFactory
      */
     public function __construct(
-        DataFieldUpdater $defaultUpdater,
-        Order $orderUpdater
+        DataFieldUpdaterFactory $defaultUpdaterFactory,
+        OrderFactory $orderUpdaterFactory
     ) {
-        $this->defaultUpdater = $defaultUpdater;
-        $this->orderUpdater = $orderUpdater;
+        $this->defaultUpdaterFactory = $defaultUpdaterFactory;
+        $this->orderUpdaterFactory = $orderUpdaterFactory;
     }
 
     /**
@@ -49,11 +49,13 @@ class DataFieldUpdateHandler
             case AutomationTypeHandler::AUTOMATION_TYPE_NEW_GUEST_ORDER:
             case AutomationTypeHandler::ORDER_STATUS_AUTOMATION:
             case AutomationTypeHandler::AUTOMATION_TYPE_CUSTOMER_FIRST_ORDER:
-                $this->orderUpdater->setDataFields($websiteId, $typeId, $storeName)
+                $this->orderUpdaterFactory->create()
+                    ->setDataFields($websiteId, $typeId, $storeName)
                     ->updateDataFields();
                 break;
             default:
-                $this->defaultUpdater->setDefaultDataFields($email, $websiteId, $storeName)
+                $this->defaultUpdaterFactory->create()
+                    ->setDefaultDataFields($email, $websiteId, $storeName)
                     ->updateDataFields();
                 break;
         }

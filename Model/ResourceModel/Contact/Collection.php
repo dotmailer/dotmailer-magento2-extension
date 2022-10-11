@@ -180,7 +180,8 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     {
         $guestCollection = $this->addFieldToFilter('is_guest', ['notnull' => true])
             ->addFieldToFilter('email_imported', 0)
-            ->addFieldToFilter('website_id', $websiteId);
+            ->addFieldToFilter('website_id', $websiteId)
+            ->addFieldToFilter('customer_id', 0);
 
         if ($onlySubscriber) {
             $guestCollection->addFieldToFilter('is_subscriber', 1)
