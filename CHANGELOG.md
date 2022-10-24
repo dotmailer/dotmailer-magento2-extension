@@ -1,3 +1,8 @@
+# 4.19.3
+
+### Bug fixes
+- We fixed an error in the ROI block that occurred if an order had no grand total.
+
 # 4.19.2
 
 ### Improvements

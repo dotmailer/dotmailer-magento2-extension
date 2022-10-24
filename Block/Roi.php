@@ -65,7 +65,7 @@ class Roi extends \Magento\Framework\View\Element\Template
      */
     public function getTotal()
     {
-        return number_format($this->getOrder()->getBaseGrandTotal(), 2, '.', ',');
+        return number_format((float) $this->getOrder()->getBaseGrandTotal(), 2, '.', ',');
     }
 
     /**
