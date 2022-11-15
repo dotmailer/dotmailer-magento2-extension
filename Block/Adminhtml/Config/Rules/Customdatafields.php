@@ -2,37 +2,42 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Rules;
 
+use Dotdigitalgroup\Email\Block\Adminhtml\Config\Select;
+use Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Condition;
+use Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Value;
+use Magento\Backend\Block\Template\Context;
+use Magento\Config\Block\System\Config\Form\Field\FieldArray\AbstractFieldArray;
+
 /**
  * Class Customdatafields
  * This custom block sets default data for the three columns in the 'Condition' fieldset.
  * These are then overridden via AJAX, either on load (loading saved data)
  * or when <select> elements are manipulated.
  */
-class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\FieldArray\AbstractFieldArray
+class Customdatafields extends AbstractFieldArray
 {
-
     /**
-     * @var \Magento\Framework\View\Element\BlockInterface
+     * @var Select
      */
     protected $getAttributeRenderer;
 
     /**
-     * @var \Magento\Framework\View\Element\BlockInterface
+     * @var Select
      */
     protected $getConditionsRenderer;
 
     /**
-     * @var \Magento\Framework\View\Element\BlockInterface
+     * @var Select
      */
     private $getValueRenderer;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Condition
+     * @var Condition
      */
     private $condition;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Value
+     * @var Value
      */
     private $value;
 
@@ -44,19 +49,19 @@ class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\Fi
     /**
      * Customdatafields constructor.
      *
-     * @param \Magento\Backend\Block\Template\Context                       $context
-     * @param \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Condition $condition
-     * @param \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Value     $value
-     * @param array                                                         $data
+     * @param Context $context
+     * @param Condition $condition
+     * @param Value $value
+     * @param array $data
      */
     public function __construct(
-        \Magento\Backend\Block\Template\Context $context,
-        \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Condition $condition,
-        \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Value $value,
+        Context $context,
+        Condition $condition,
+        Value $value,
         $data = []
     ) {
         $this->condition = $condition;
-        $this->value     = $value;
+        $this->value = $value;
         $this->_addAfter = false;
         $this->className = 'ddg-rules-conditions';
 
@@ -70,8 +75,8 @@ class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\Fi
     protected function _prepareToRender()
     {
         $this->getConditionsRenderer = null;
-        $this->getAttributeRenderer  = null;
-        $this->getValueRenderer      = null;
+        $this->getAttributeRenderer = null;
+        $this->getValueRenderer = null;
         $this->addColumn(
             'attribute',
             [
@@ -96,7 +101,7 @@ class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\Fi
     }
 
     /**
-     * render cell template.
+     * Render cell template.
      *
      * @param string $columnName
      *
@@ -138,8 +143,6 @@ class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\Fi
 
     /**
      * @param \Magento\Framework\DataObject $row
-     *
-     * @return null
      */
     protected function _prepareArrayRow(\Magento\Framework\DataObject $row)
     {
@@ -164,14 +167,14 @@ class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\Fi
     /**
      * Get rendered for attribute field.
      *
-     * @return \Magento\Framework\View\Element\BlockInterface
+     * @return Select
      */
     private function _getAttributeRenderer()
     {
         if (!$this->getAttributeRenderer) {
             $this->getAttributeRenderer = $this->getLayout()
                 ->createBlock(
-                    \Dotdigitalgroup\Email\Block\Adminhtml\Config\Select::class,
+                    Select::class,
                     '',
                     ['data' => ['is_render_to_js_template' => true]]
                 );
@@ -183,14 +186,14 @@ class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\Fi
     /**
      * Get renderer for conditions field.
      *
-     * @return \Magento\Framework\View\Element\BlockInterface
+     * @return Select
      */
     private function _getConditionsRenderer()
     {
         if (!$this->getConditionsRenderer) {
             $this->getConditionsRenderer = $this->getLayout()
                 ->createBlock(
-                    \Dotdigitalgroup\Email\Block\Adminhtml\Config\Select::class,
+                    Select::class,
                     '',
                     ['data' => ['is_render_to_js_template' => true]]
                 );
@@ -202,14 +205,14 @@ class Customdatafields extends \Magento\Config\Block\System\Config\Form\Field\Fi
     /**
      * Get renderer for value field.
      *
-     * @return \Magento\Framework\View\Element\BlockInterface
+     * @return Select
      */
     private function _getValueRenderer()
     {
         if (!$this->getValueRenderer) {
             $this->getValueRenderer = $this->getLayout()
                 ->createBlock(
-                    \Dotdigitalgroup\Email\Block\Adminhtml\Config\Select::class,
+                    Select::class,
                     '',
                     ['data' => ['is_render_to_js_template' => true]]
                 );
