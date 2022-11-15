@@ -2,14 +2,16 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml;
 
-class Dashboard extends \Magento\Backend\App\Action
+use Magento\Backend\App\Action;
+
+class Dashboard extends Action
 {
     /**
      * Authorization level of a basic admin session
      *
      * @see _isAllowed()
      */
-    const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::dashboard';
+    public const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::dashboard';
 
     /**
      * @var \Magento\Framework\View\Result\PageFactory
@@ -31,6 +33,8 @@ class Dashboard extends \Magento\Backend\App\Action
     }
 
     /**
+     * Execute
+     *
      * @return \Magento\Backend\Model\View\Result\Page
      */
     public function execute()

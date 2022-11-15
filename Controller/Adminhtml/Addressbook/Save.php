@@ -2,19 +2,20 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Addressbook;
 
-class Save extends \Magento\Backend\App\AbstractAction
+use Dotdigitalgroup\Email\Helper\Data;
+use Magento\Backend\App\Action;
+use Magento\Framework\App\Action\HttpPostActionInterface;
+use Magento\Framework\App\ResponseInterface;
+use Magento\Framework\Controller\ResultInterface;
+
+class Save extends Action implements HttpPostActionInterface
 {
     /**
      * Authorization level of a basic admin session
      *
      * @see _isAllowed()
      */
-    const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::config';
-
-    /**
-     * @var \Magento\Framework\Escaper
-     */
-    private $escaper;
+    public const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::config';
 
     /**
      * @var \Magento\Framework\Message\ManagerInterface
@@ -28,17 +29,14 @@ class Save extends \Magento\Backend\App\AbstractAction
 
     /**
      * Save constructor.
-     * @param \Dotdigitalgroup\Email\Helper\Data $data
-     * @param \Magento\Framework\Escaper $escaper
-     * @param \Magento\Backend\App\Action\Context $context
+     * @param Data $data
+     * @param Action\Context $context
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Helper\Data $data,
-        \Magento\Framework\Escaper $escaper,
-        \Magento\Backend\App\Action\Context $context
+        Data $data,
+        Action\Context $context
     ) {
-        $this->helperData     = $data;
-        $this->escaper = $escaper;
+        $this->helperData = $data;
         $this->messageManager = $context->getMessageManager();
         parent::__construct($context);
     }
@@ -46,7 +44,7 @@ class Save extends \Magento\Backend\App\AbstractAction
     /**
      * Execute method.
      *
-     * @return null
+     * @return void
      */
     public function execute()
     {

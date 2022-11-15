@@ -2,12 +2,17 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Rules;
 
-class NewAction extends \Magento\Backend\App\AbstractAction
+use Magento\Backend\App\Action;
+use Magento\Framework\App\Action\HttpGetActionInterface;
+use Magento\Framework\App\ResponseInterface;
+use Magento\Framework\Controller\ResultInterface;
+
+class NewAction extends Action implements HttpGetActionInterface
 {
     /**
      * Execute method.
      *
-     * @return null
+     * @return void
      */
     public function execute()
     {

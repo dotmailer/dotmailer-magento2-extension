@@ -3,15 +3,17 @@
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Importer;
 
 use Dotdigitalgroup\Email\Model\ResourceModel\Importer;
+use Dotdigitalgroup\Email\Model\ResourceModel\Importer\CollectionFactory;
+use Magento\Framework\App\Action\HttpPostActionInterface;
 use Magento\Framework\App\Request\Http;
 use Magento\Backend\App\Action\Context;
 use Magento\Backend\App\Action;
+use Magento\Framework\Controller\Result\Redirect;
 use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Ui\Component\MassAction\Filter;
-use Dotdigitalgroup\Email\Model\ResourceModel\Importer\CollectionFactory;
 
-class MassReset extends Action
+class MassReset extends Action implements HttpPostActionInterface
 {
     /**
      * Authorization level of a basic admin session
@@ -64,18 +66,13 @@ class MassReset extends Action
     /**
      * Reset imports selected
      *
-     * @return ResultInterface
+     * @return Redirect
      * @throws LocalizedException
      */
     public function execute(): ResultInterface
     {
-
         $resultRedirect = $this->resultRedirectFactory->create();
         $resultRedirect->setPath('*/*/');
-
-        if (!$this->_request->isPost()) {
-            throw new \Magento\Framework\Exception\NotFoundException(__('Page not found.'));
-        }
 
         $collection = $this->filter->getCollection($this->collectionFactory->create());
         $collectionFilteredIds  = $collection->addFieldToFilter('import_status', ['gt' => 1])->getAllIds();
@@ -89,13 +86,11 @@ class MassReset extends Action
         }
 
         try {
-
             $massUpdatedRecordsCount = $this->collectionResource->massReset($collectionFilteredIds);
             $this->messageManager
                 ->addSuccessMessage(
                     __('Total of %1 record(s) have been reset.', $massUpdatedRecordsCount)
                 );
-
         } catch (\Exception $e) {
             $this->messageManager->addErrorMessage($e->getMessage());
         }

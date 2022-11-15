@@ -2,17 +2,19 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Contact;
 
+use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
+use Magento\Framework\App\Action\HttpGetActionInterface;
 use Magento\Framework\View\Result\PageFactory;
 
-class Index extends \Magento\Backend\App\Action
+class Index extends Action implements HttpGetActionInterface
 {
     /**
      * Authorization level of a basic admin session
      *
      * @see _isAllowed()
      */
-    const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::contact';
+    public const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::contact';
 
     /**
      * @var PageFactory

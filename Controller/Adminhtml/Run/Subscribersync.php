@@ -5,10 +5,12 @@ namespace Dotdigitalgroup\Email\Controller\Adminhtml\Run;
 use Dotdigitalgroup\Email\Model\Sync\SubscriberFactory;
 use Dotdigitalgroup\Email\Model\Newsletter\UnsubscriberFactory;
 use Dotdigitalgroup\Email\Model\Newsletter\ResubscriberFactory;
+use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
+use Magento\Framework\App\Action\HttpGetActionInterface;
 use Magento\Framework\Controller\ResultFactory;
 
-class Subscribersync extends \Magento\Backend\App\AbstractAction
+class Subscribersync extends Action implements HttpGetActionInterface
 {
     /**
      * Authorization level of a basic admin session
@@ -36,7 +38,6 @@ class Subscribersync extends \Magento\Backend\App\AbstractAction
      * @var \Magento\Framework\Message\ManagerInterface
      */
     protected $messageManager;
-
 
     /**
      * @param SubscriberFactory $subscriberFactory

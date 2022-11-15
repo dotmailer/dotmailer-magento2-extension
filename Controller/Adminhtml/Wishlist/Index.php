@@ -2,14 +2,17 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Wishlist;
 
-class Index extends \Magento\Backend\App\Action
+use Magento\Backend\App\Action;
+use Magento\Framework\App\Action\HttpGetActionInterface;
+
+class Index extends Action implements HttpGetActionInterface
 {
     /**
      * Authorization level of a basic admin session
      *
      * @see _isAllowed()
      */
-    const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::wishlist';
+    public const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::wishlist';
 
     /**
      * @var \Magento\Framework\View\Result\PageFactory

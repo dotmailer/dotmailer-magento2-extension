@@ -3,25 +3,25 @@
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Rules;
 
 use Dotdigitalgroup\Email\Model\ExclusionRule\RuleValidator;
+use Magento\Backend\App\Action;
+use Magento\Framework\App\Action\HttpPostActionInterface;
+use Magento\Framework\Controller\Result\Json;
+use Magento\Framework\Controller\Result\JsonFactory;
+use Magento\Framework\View\Element\Html\Select;
 
 /**
  * Class Select
  * If an exclusion rule has saved condition data, this is injected after the main block has rendered.
  * This controller handles an AJAX call to update the default block values.
  */
-class Selected extends \Magento\Backend\App\AbstractAction
+class Selected extends Action implements HttpPostActionInterface
 {
     /**
      * Authorization level of a basic admin session
      *
      * @see _isAllowed()
      */
-    const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::exclusion_rules';
-
-    /**
-     * @var \Magento\Framework\App\Response\Http
-     */
-    private $http;
+    public const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::exclusion_rules';
 
     /**
      * @var \Dotdigitalgroup\Email\Model\RulesFactory
@@ -64,18 +64,22 @@ class Selected extends \Magento\Backend\App\AbstractAction
     private $ruleValidator;
 
     /**
+     * @var JsonFactory
+     */
+    private $resultJsonFactory;
+
+    /**
      * Selected constructor.
      *
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Rules              $rulesResource
-     * @param \Magento\Backend\App\Action\Context                           $context
-     * @param \Dotdigitalgroup\Email\Model\RulesFactory                     $rulesFactory
-     * @param \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Type      $ruleType
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Rules $rulesResource
+     * @param \Magento\Backend\App\Action\Context $context
+     * @param \Dotdigitalgroup\Email\Model\RulesFactory $rulesFactory
+     * @param \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Type $ruleType
      * @param \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Condition $ruleCondition
-     * @param \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Value     $ruleValue
-     * @param \Magento\Framework\Json\Helper\Data                           $jsonEncoder
-     * @param \Magento\Framework\App\Response\Http                          $http
-     * @param \Magento\Framework\Escaper                                    $escaper
+     * @param \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Value $ruleValue
+     * @param \Magento\Framework\Escaper $escaper
      * @param RuleValidator $ruleValidator
+     * @param JsonFactory $resultJsonFactory
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ResourceModel\Rules $rulesResource,
@@ -84,28 +88,26 @@ class Selected extends \Magento\Backend\App\AbstractAction
         \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Type $ruleType,
         \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Condition $ruleCondition,
         \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Value $ruleValue,
-        \Magento\Framework\Json\Helper\Data $jsonEncoder,
-        \Magento\Framework\App\Response\Http $http,
         \Magento\Framework\Escaper $escaper,
-        RuleValidator $ruleValidator
+        RuleValidator $ruleValidator,
+        JsonFactory $resultJsonFactory
     ) {
         $this->rulesFactory = $rulesFactory;
         $this->ruleType = $ruleType;
         $this->ruleCondition = $ruleCondition;
         $this->ruleValue = $ruleValue;
-        $this->jsonEncoder = $jsonEncoder;
         $this->escaper = $escaper;
         $this->rulesResource = $rulesResource;
         $this->ruleValidator = $ruleValidator;
+        $this->resultJsonFactory = $resultJsonFactory;
 
         parent::__construct($context);
-        $this->http = $http;
     }
 
     /**
      * Execute method.
      *
-     * @return \Magento\Framework\App\Response\HttpInterface
+     * @return Json
      */
     public function execute()
     {
@@ -114,18 +116,16 @@ class Selected extends \Magento\Backend\App\AbstractAction
         $arrayKey = $this->getRequest()->getParam('arraykey');
         $conditionName = $this->getRequest()->getParam('condition');
         $valueName = $this->getRequest()->getParam('value');
+        $response = [];
 
         if ($arrayKey && $id && $attribute && $conditionName && $valueName) {
             $rule = $this->rulesFactory->create();
             $this->rulesResource->load($rule, $id);
             //rule not found
             if (!$rule->getId()) {
-                $this->http->getHeaders()->clearHeaders();
-
-                return $this->http->setHeader(
-                    'Content-Type',
-                    'application/json'
-                )->setBody('Rule not found!');
+                $resultJson = $this->resultJsonFactory->create();
+                $resultJson->setData('Rule not found!');
+                return $resultJson;
             }
             $conditions = $rule->getCondition();
             $condition = $conditions[$arrayKey];
@@ -155,23 +155,26 @@ class Selected extends \Magento\Backend\App\AbstractAction
                 $this->escaper->escapeHtml($valueName),
                 $response
             );
-
-            $this->http->getHeaders()->clearHeaders();
-            $this->http->setHeader('Content-Type', 'application/json')
-                ->setBody($this->jsonEncoder->jsonEncode($response));
         }
+
+        $resultJson = $this->resultJsonFactory->create();
+        $resultJson->setData($response);
+
+        return $resultJson;
     }
 
     /**
+     * Set value HTML.
+     *
      * @param string $elmType
      * @param string $inputType
      * @param string $selectedConditions
      * @param string $attribute
      * @param string $selectedValues
      * @param string $valueName
-     * @param string $response
+     * @param array $response
      *
-     * @return null
+     * @return void
      */
     private function setValueHtml(
         $elmType,
@@ -212,6 +215,8 @@ class Selected extends \Magento\Backend\App\AbstractAction
     }
 
     /**
+     * Set option HTML.
+     *
      * @param string $title
      * @param string $name
      * @param array $options
@@ -220,9 +225,8 @@ class Selected extends \Magento\Backend\App\AbstractAction
      */
     private function getOptionHtml($title, $name, $options)
     {
-        $block = $this->_view->getLayout()->createBlock(
-            \Magento\Framework\View\Element\Html\Select::class
-        );
+        $block = $this->_view->getLayout()->createBlock(Select::class);
+        /** @var Select $block */
         $block->setOptions($options)
             ->setId('')
             ->setClass('')

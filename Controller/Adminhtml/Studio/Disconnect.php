@@ -2,17 +2,39 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Studio;
 
-class Disconnect extends \Magento\Backend\App\AbstractAction
+use Magento\Backend\App\Action;
+use Magento\Backend\App\Action\Context;
+use Magento\Framework\App\Action\HttpGetActionInterface;
+use Magento\User\Model\ResourceModel\User as UserResource;
+
+class Disconnect extends Action implements HttpGetActionInterface
 {
     /**
      * Authorization level of a basic admin session
      *
      * @see _isAllowed()
      */
-    const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::automation_studio';
+    public const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::automation_studio';
 
     /**
-     * Disconnect and remote the refresh token.
+     * @var UserResource
+     */
+    private $userResource;
+
+    /**
+     * @param Context $context
+     * @param UserResource $userResource
+     */
+    public function __construct(
+        Context $context,
+        UserResource $userResource
+    ) {
+        $this->userResource = $userResource;
+        parent::__construct($context);
+    }
+
+    /**
+     * Disconnect and reset the refresh token.
      *
      * @return void
      */
@@ -21,9 +43,10 @@ class Disconnect extends \Magento\Backend\App\AbstractAction
         try {
             $adminUser = $this->_auth->getUser();
 
+            /** @var \Magento\User\Model\User $adminUser */
             if ($adminUser->getRefreshToken()) {
-                $adminUser->setRefreshToken('')
-                    ->save();
+                $adminUser->setRefreshToken('');
+                $this->userResource->save($adminUser);
             }
             $this->messageManager->addSuccessMessage('Successfully disconnected');
         } catch (\Exception $e) {

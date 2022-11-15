@@ -11,5 +11,5 @@ abstract class Order extends Action
      *
      * @see _isAllowed()
      */
-    const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::order';
+    public const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::order';
 }

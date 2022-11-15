@@ -3,7 +3,7 @@
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Order;
 
 use Dotdigitalgroup\Email\Controller\Adminhtml\Order as OrderController;
-use Dotdigitalgroup\Email\Helper\MassDeleteCsrf;
+use Dotdigitalgroup\Email\Controller\Adminhtml\MassDeleteCsrf;
 use Magento\Framework\Controller\ResultFactory;
 use Magento\Ui\Component\MassAction\Filter;
 
@@ -14,7 +14,7 @@ class MassDelete extends MassDeleteCsrf
      *
      * @see _isAllowed()
      */
-    const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::order';
+    public const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::order';
 
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory

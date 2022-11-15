@@ -407,7 +407,7 @@ class Client extends Rest
      * @param string $name
      * @param string $visibility
      *
-     * @return null
+     * @return null|\stdClass
      * @throws \Exception
      */
     public function postAddressBooks($name, $visibility = 'Public')
