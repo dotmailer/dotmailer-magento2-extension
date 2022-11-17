@@ -396,7 +396,7 @@ class Template extends \Magento\Framework\DataObject implements SyncInterface
             $template->setTemplateCode($templateName)
                 ->setOrigTemplateCode($origTemplateCode)
                 ->setTemplateSubject($dmCampaign->subject)
-                ->setTemplateText($dmCampaign->processedHtmlContent)
+                ->setTemplateText($dmCampaign->htmlContent)
                 ->setTemplateType(\Magento\Email\Model\Template::TYPE_HTML)
                 ->setTemplateSenderName($dmCampaign->fromName)
                 ->setTemplateSenderEmail($dmCampaign->fromAddress->email);
