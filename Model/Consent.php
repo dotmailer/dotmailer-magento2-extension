@@ -2,6 +2,9 @@
 
 namespace Dotdigitalgroup\Email\Model;
 
+use Dotdigitalgroup\Email\Helper\Config;
+use Magento\Framework\Stdlib\StringUtils;
+
 class Consent extends \Magento\Framework\Model\AbstractModel
 {
     public const CONSENT_TEXT_LIMIT = '1000';
@@ -47,9 +50,14 @@ class Consent extends \Magento\Framework\Model\AbstractModel
     private $contactCollectionFactory;
 
     /**
-     * @var \Dotdigitalgroup\Email\Helper\Config
+     * @var Config
      */
     private $configHelper;
+
+    /**
+     * @var StringUtils
+     */
+    private $stringUtils;
 
     /**
      * @var array
@@ -76,10 +84,11 @@ class Consent extends \Magento\Framework\Model\AbstractModel
      *
      * @param \Magento\Framework\Model\Context $context
      * @param \Magento\Framework\Registry $registry
-     * @param \Dotdigitalgroup\Email\Helper\Config $config
+     * @param Config $config
      * @param ResourceModel\Consent $consent
      * @param ResourceModel\Contact\CollectionFactory $contactCollectionFactory
      * @param \Magento\Framework\Stdlib\DateTime\DateTime $dateTime
+     * @param StringUtils $stringUtils
      * @param \Magento\Framework\Model\ResourceModel\AbstractResource|null $resource
      * @param \Magento\Framework\Data\Collection\AbstractDb|null $resourceCollection
      * @param array $data
@@ -87,10 +96,11 @@ class Consent extends \Magento\Framework\Model\AbstractModel
     public function __construct(
         \Magento\Framework\Model\Context $context,
         \Magento\Framework\Registry $registry,
-        \Dotdigitalgroup\Email\Helper\Config $config,
+        Config $config,
         \Dotdigitalgroup\Email\Model\ResourceModel\Consent $consent,
         \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory $contactCollectionFactory,
         \Magento\Framework\Stdlib\DateTime\DateTime $dateTime,
+        StringUtils $stringUtils,
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         array $data = []
@@ -99,6 +109,7 @@ class Consent extends \Magento\Framework\Model\AbstractModel
         $this->configHelper = $config;
         $this->consentResource = $consent;
         $this->contactCollectionFactory = $contactCollectionFactory;
+        $this->stringUtils = $stringUtils;
         parent::__construct($context, $registry, $resource, $resourceCollection, $data);
     }
 
@@ -134,26 +145,39 @@ class Consent extends \Magento\Framework\Model\AbstractModel
      * @param string $consentUrl
      * @param int $websiteId
      *
-     * @return string|boolean
+     * @return string
      */
-    public function getConsentTextForWebsite($consentUrl, $websiteId)
+    public function getConsentTextForWebsite(string $consentUrl, $websiteId): string
     {
         if (! isset($this->consentText[$websiteId])) {
-            $this->consentText[$websiteId] = $this->configHelper->getConsentSubscriberText($websiteId);
+            $this->consentText[$websiteId] = $this->getConsentSubscriberText($websiteId);
         }
         $consentText = $this->consentText[$websiteId];
 
         if (! isset($this->customerConsentText[$websiteId])) {
-            $this->customerConsentText[$websiteId] = $this->configHelper->getConsentCustomerText($websiteId);
+            $this->customerConsentText[$websiteId] = $this->getConsentCustomerText($websiteId);
         }
         $customerConsentText = $this->customerConsentText[$websiteId];
 
         //customer checkout and registration if consent text not empty
-        if (strlen($customerConsentText) && $this->isLinkMatchCustomerRegistrationOrCheckout((string) $consentUrl)) {
+        if (strlen($customerConsentText) && $this->isLinkMatchCustomerRegistrationOrCheckout($consentUrl)) {
             $consentText = $customerConsentText;
         }
 
         return $consentText;
+    }
+
+    /**
+     * Fetch consent customer text.
+     *
+     * @param int $websiteId
+     * @return string
+     */
+    public function getConsentCustomerText($websiteId): string
+    {
+        return $this->limitLength(
+            $this->configHelper->getWebsiteConfig(Config::XML_PATH_DOTMAILER_CONSENT_CUSTOMER_TEXT, $websiteId)
+        );
     }
 
     /**
@@ -162,13 +186,10 @@ class Consent extends \Magento\Framework\Model\AbstractModel
      * @param string $consentUrl
      * @return bool
      */
-    private function isLinkMatchCustomerRegistrationOrCheckout(string $consentUrl)
+    private function isLinkMatchCustomerRegistrationOrCheckout(string $consentUrl): bool
     {
-        if (strpos($consentUrl, 'checkout/') !== false || strpos($consentUrl, 'customer/account/') !== false) {
-            return true;
-        }
-
-        return false;
+        return (strpos($consentUrl, 'checkout/') !== false ||
+            strpos($consentUrl, 'customer/account/') !== false);
     }
 
     /**
@@ -193,20 +214,47 @@ class Consent extends \Magento\Framework\Model\AbstractModel
     /**
      * Get consent text.
      *
-     * @param int $websiteId
-     *
-     * @return false|string
+     * @param string|int $websiteId
+     * @return string
      */
-    private function getConsentText($websiteId)
+    private function getConsentText($websiteId): string
     {
-        $consentText = $this->configHelper->getConsentSubscriberText($websiteId);
-        $customerConsentText = $this->configHelper->getConsentCustomerText($websiteId);
+        $consentText = $this->getConsentSubscriberText($websiteId);
+        $customerConsentText = $this->getConsentCustomerText($websiteId);
         //customer checkout and registration if consent text not empty
         if (strlen($customerConsentText) &&
-            $this->isLinkMatchCustomerRegistrationOrCheckout((string) $this->getConsentUrl())
+            $this->isLinkMatchCustomerRegistrationOrCheckout($this->getConsentUrl())
         ) {
             $consentText = $customerConsentText;
         }
         return $consentText;
+    }
+
+    /**
+     * Fetch consent subscriber text.
+     *
+     * @param string|int $websiteId
+     * @return string
+     */
+    private function getConsentSubscriberText($websiteId): string
+    {
+        return $this->limitLength(
+            $this->configHelper->getWebsiteConfig(Config::XML_PATH_DOTMAILER_CONSENT_SUBSCRIBER_TEXT, $websiteId)
+        );
+    }
+
+    /**
+     * Fetch length limit.
+     *
+     * @param string|null $value
+     * @return string
+     */
+    private function limitLength($value): string
+    {
+        if ($this->stringUtils->strlen($value) > self::CONSENT_TEXT_LIMIT) {
+            $value = $this->stringUtils->substr($value, 0, self::CONSENT_TEXT_LIMIT);
+        }
+
+        return (string) $value;
     }
 }
