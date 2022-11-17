@@ -2,30 +2,35 @@
 
 namespace Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules;
 
+use Magento\Eav\Model\ConfigFactory;
+use Magento\Eav\Model\Entity\Attribute\AbstractAttribute;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\SalesRule\Model\Rule\Condition\ProductFactory;
+
 class Type
 {
     /**
-     * @var \Magento\Eav\Model\ConfigFactory
+     * @var ConfigFactory
      */
     private $configFactory;
 
     /**
-     * @var \Magento\SalesRule\Model\Rule\Condition\ProductFactory
+     * @var ProductFactory
      */
     private $productFactory;
 
     /**
      * Type constructor.
      *
-     * @param \Magento\Eav\Model\ConfigFactory                       $configFactory
-     * @param \Magento\SalesRule\Model\Rule\Condition\ProductFactory $productFactory
+     * @param ConfigFactory $configFactory
+     * @param ProductFactory $productFactory
      */
     public function __construct(
-        \Magento\Eav\Model\ConfigFactory $configFactory,
-        \Magento\SalesRule\Model\Rule\Condition\ProductFactory $productFactory
+        ConfigFactory $configFactory,
+        ProductFactory $productFactory
     ) {
-        $this->configFactory  = $configFactory->create();
-        $this->productFactory = $productFactory->create();
+        $this->configFactory = $configFactory;
+        $this->productFactory = $productFactory;
     }
 
     /**
@@ -34,6 +39,7 @@ class Type
      * @param string $attribute
      *
      * @return string
+     * @throws LocalizedException
      */
     public function getInputType($attribute)
     {
@@ -55,16 +61,20 @@ class Type
                 return 'select';
 
             default:
-                $attribute = $this->configFactory->getAttribute(
-                    'catalog_product',
-                    $attribute
-                );
+                $attribute = $this->configFactory
+                    ->create()
+                    ->getAttribute(
+                        'catalog_product',
+                        $attribute
+                    );
                 return $this->processAttribute($attribute);
         }
     }
 
     /**
-     * @param string $attribute
+     * Process attribute.
+     *
+     * @param AbstractAttribute $attribute
      *
      * @return string
      */
@@ -110,17 +120,17 @@ class Type
     public function toOptionArray()
     {
         $defaultOptions = $this->defaultOptions();
-        $productCondition = $this->productFactory;
-        $productAttributes = $productCondition->loadAttributeOptions()
+        $productAttributes = $this->productFactory
+            ->create()
+            ->loadAttributeOptions()
             ->getAttributeOption();
+
         $pAttributes = [];
         foreach ($productAttributes as $code => $label) {
             if (strpos($code, 'quote_item_') === false) {
                 $pAttributes[$code] = $label;
             }
         }
-        $options = array_merge($defaultOptions, $pAttributes);
-
-        return $options;
+        return array_merge($defaultOptions, $pAttributes);
     }
 }
