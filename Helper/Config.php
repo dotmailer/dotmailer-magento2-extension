@@ -5,7 +5,6 @@ namespace Dotdigitalgroup\Email\Helper;
 use Dotdigitalgroup\Email\Model\Consent;
 use Magento\Framework\App\Helper\Context;
 use Magento\Framework\App\Helper\AbstractHelper;
-use Magento\Framework\Stdlib\StringUtils;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
 
@@ -479,11 +478,6 @@ class Config extends AbstractHelper
         'connector/email/accountcallback';
 
     /**
-     * @var \Magento\Framework\Stdlib\StringUtils
-     */
-    private $stringUtils;
-
-    /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
     private $storeManager;
@@ -496,15 +490,12 @@ class Config extends AbstractHelper
     /**
      * Config constructor.
      * @param Context $context
-     * @param StringUtils $stringUtils
      * @param StoreManagerInterface $storeManager
      */
     public function __construct(
         Context $context,
-        StringUtils $stringUtils,
         StoreManagerInterface $storeManager
     ) {
-        $this->stringUtils = $stringUtils;
         $this->storeManager = $storeManager;
         parent::__construct($context);
     }
@@ -650,54 +641,13 @@ class Config extends AbstractHelper
     }
 
     /**
-     * Fetch consent customer text.
-     *
-     * @param int $websiteId
-     * @return string
-     */
-    public function getConsentCustomerText($websiteId)
-    {
-        return $this->limitLength(
-            $this->getWebsiteConfig(self::XML_PATH_DOTMAILER_CONSENT_CUSTOMER_TEXT, $websiteId)
-        );
-    }
-
-    /**
      * Fetch status consent subscriber option.
      *
-     * @param int $websiteId
+     * @param string|int $websiteId
      * @return string|boolean
      */
     public function isConsentSubscriberEnabled($websiteId)
     {
         return $this->getWebsiteConfig(self::XML_PATH_DOTMAILER_CONSENT_SUBSCRIBER_ENABLED, $websiteId);
-    }
-
-    /**
-     * Fetch consent subscriber text.
-     *
-     * @param int $websiteId
-     * @return string|boolean
-     */
-    public function getConsentSubscriberText($websiteId)
-    {
-        return $this->limitLength(
-            $this->getWebsiteConfig(self::XML_PATH_DOTMAILER_CONSENT_SUBSCRIBER_TEXT, $websiteId)
-        );
-    }
-
-    /**
-     * Fetch length limit.
-     *
-     * @param string $value
-     * @return string
-     */
-    private function limitLength($value)
-    {
-        if ($this->stringUtils->strlen($value) > Consent::CONSENT_TEXT_LIMIT) {
-            $value = $this->stringUtils->substr($value, 0, \Dotdigitalgroup\Email\Model\Consent::CONSENT_TEXT_LIMIT);
-        }
-
-        return $value;
     }
 }

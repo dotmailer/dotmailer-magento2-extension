@@ -2,6 +2,8 @@
 
 namespace Dotdigitalgroup\Email\Block\Customer\Account;
 
+use Dotdigitalgroup\Email\Model\ConsentFactory;
+
 /**
  * Books block
  *
@@ -32,6 +34,11 @@ class Books extends \Magento\Framework\View\Element\Template
     private $subscriberFactory;
 
     /**
+     * @var ConsentFactory
+     */
+    private $consentFactory;
+
+    /**
      * @var object
      */
     private $contactFromAccount;
@@ -48,6 +55,7 @@ class Books extends \Magento\Framework\View\Element\Template
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Magento\Customer\Model\Session $customerSession
      * @param \Magento\Newsletter\Model\SubscriberFactory $subscriberFactory
+     * @param ConsentFactory $consentFactory
      * @param array $data
      */
     public function __construct(
@@ -55,11 +63,13 @@ class Books extends \Magento\Framework\View\Element\Template
         \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Customer\Model\Session $customerSession,
         \Magento\Newsletter\Model\SubscriberFactory $subscriberFactory,
+        ConsentFactory $consentFactory,
         array $data = []
     ) {
         $this->helper          = $helper;
         $this->customerSession = $customerSession;
         $this->subscriberFactory = $subscriberFactory;
+        $this->consentFactory = $consentFactory;
         parent::__construct($context, $data);
     }
 
@@ -70,7 +80,7 @@ class Books extends \Magento\Framework\View\Element\Template
      */
     public function getCustomerConsentText(): string
     {
-        return $this->helper->configHelperFactory->create()
+        return $this->consentFactory->create()
             ->getConsentCustomerText($this->_storeManager->getWebsite()->getId())
             ?: '';
     }
