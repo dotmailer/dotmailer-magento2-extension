@@ -2,6 +2,17 @@
 
 namespace Dotdigitalgroup\Email\Model\ResourceModel\Order;
 
+use Dotdigitalgroup\Email\Helper\Data;
+use Dotdigitalgroup\Email\Model\Newsletter\SubscriberFilterer;
+use Magento\Framework\Data\Collection\Db\FetchStrategyInterface;
+use Magento\Framework\Data\Collection\EntityFactoryInterface;
+use Magento\Framework\DB\Adapter\AdapterInterface;
+use Magento\Framework\Event\ManagerInterface;
+use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
+use Magento\Quote\Model\ResourceModel\Quote\CollectionFactory as QuoteCollectionFactory;
+use Magento\Sales\Model\ResourceModel\Order\CollectionFactory as OrderCollectionFactory;
+use Psr\Log\LoggerInterface;
+
 class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection
 {
     /**
@@ -15,17 +26,17 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     protected $_idFieldName = 'email_order_id';
 
     /**
-     * @var \Magento\Sales\Api\Data\OrderSearchResultInterfaceFactory
+     * @var OrderCollectionFactory
      */
     private $orderCollection;
 
     /**
-     * @var \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory
+     * @var QuoteCollectionFactory
      */
     private $quoteCollection;
 
     /**
-     * @var \Dotdigitalgroup\Email\Helper\Data
+     * @var Data
      */
     private $helper;
 
@@ -44,28 +55,29 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
 
     /**
      * Collection constructor.
-     * @param \Magento\Framework\Data\Collection\EntityFactoryInterface $entityFactory
-     * @param \Psr\Log\LoggerInterface $logger
-     * @param \Magento\Framework\Data\Collection\Db\FetchStrategyInterface $fetchStrategy
-     * @param \Magento\Framework\Event\ManagerInterface $eventManager
-     * @param \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory $quoteCollection
-     * @param \Magento\Sales\Api\Data\OrderSearchResultInterfaceFactory $orderCollection
-     * @param \Dotdigitalgroup\Email\Helper\Data $helper
-     * @param \Dotdigitalgroup\Email\Model\Newsletter\SubscriberFilterer $subscriberFilterer
-     * @param \Magento\Framework\DB\Adapter\AdapterInterface|null $connection
-     * @param \Magento\Framework\Model\ResourceModel\Db\AbstractDb|null $resource
+     *
+     * @param EntityFactoryInterface $entityFactory
+     * @param LoggerInterface $logger
+     * @param FetchStrategyInterface $fetchStrategy
+     * @param ManagerInterface $eventManager
+     * @param QuoteCollectionFactory $quoteCollection
+     * @param OrderCollectionFactory $orderCollection
+     * @param Data $helper
+     * @param SubscriberFilterer $subscriberFilterer
+     * @param AdapterInterface|null $connection
+     * @param AbstractDb|null $resource
      */
     public function __construct(
-        \Magento\Framework\Data\Collection\EntityFactoryInterface $entityFactory,
-        \Psr\Log\LoggerInterface $logger,
-        \Magento\Framework\Data\Collection\Db\FetchStrategyInterface $fetchStrategy,
-        \Magento\Framework\Event\ManagerInterface $eventManager,
-        \Magento\Quote\Model\ResourceModel\Quote\CollectionFactory $quoteCollection,
-        \Magento\Sales\Api\Data\OrderSearchResultInterfaceFactory $orderCollection,
-        \Dotdigitalgroup\Email\Helper\Data $helper,
-        \Dotdigitalgroup\Email\Model\Newsletter\SubscriberFilterer $subscriberFilterer,
-        \Magento\Framework\DB\Adapter\AdapterInterface $connection = null,
-        \Magento\Framework\Model\ResourceModel\Db\AbstractDb $resource = null
+        EntityFactoryInterface $entityFactory,
+        LoggerInterface $logger,
+        FetchStrategyInterface $fetchStrategy,
+        ManagerInterface $eventManager,
+        QuoteCollectionFactory $quoteCollection,
+        OrderCollectionFactory $orderCollection,
+        Data $helper,
+        SubscriberFilterer $subscriberFilterer,
+        AdapterInterface $connection = null,
+        AbstractDb $resource = null
     ) {
         $this->helper             = $helper;
         $this->quoteCollection    = $quoteCollection;
@@ -93,29 +105,6 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     {
         $collection = $this->addFieldToFilter('order_id', $orderId)
             ->addFieldToFilter('quote_id', $quoteId)
-            ->setPageSize(1);
-
-        if ($collection->getSize()) {
-            return $collection->getFirstItem();
-        }
-
-        return false;
-    }
-
-    /**
-     * Get connector order.
-     *
-     * @param int $orderId
-     * @param int $quoteId
-     * @param int $storeId
-     *
-     * @return boolean|\Dotdigitalgroup\Email\Model\Order
-     */
-    public function getEmailOrderRow($orderId, $quoteId, $storeId)
-    {
-        $collection = $this->addFieldToFilter('order_id', $orderId)
-            ->addFieldToFilter('quote_id', $quoteId)
-            ->addFieldToFilter('store_id', $storeId)
             ->setPageSize(1);
 
         if ($collection->getSize()) {

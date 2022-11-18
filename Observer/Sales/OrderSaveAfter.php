@@ -3,8 +3,8 @@
 namespace Dotdigitalgroup\Email\Observer\Sales;
 
 use Dotdigitalgroup\Email\Model\ResourceModel\Automation;
-use Dotdigitalgroup\Email\Model\Sync\Automation\AutomationTypeHandler;
 use Dotdigitalgroup\Email\Model\StatusInterface;
+use Dotdigitalgroup\Email\Model\Sync\Automation\AutomationTypeHandler;
 
 /**
  * Trigger Order automation based on order state.
@@ -65,7 +65,7 @@ class OrderSaveAfter implements \Magento\Framework\Event\ObserverInterface
     private $helper;
 
     /**
-     * @var Magento\Framework\Serialize\SerializerInterface
+     * @var \Magento\Framework\Serialize\SerializerInterface
      */
     private $serializer;
 
@@ -86,12 +86,13 @@ class OrderSaveAfter implements \Magento\Framework\Event\ObserverInterface
 
     /**
      * SaveStatusSmsAutomation constructor.
+     *
      * @param \Dotdigitalgroup\Email\Model\AutomationFactory $automationFactory
      * @param Automation $automationResource
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Order $orderResource
      * @param \Dotdigitalgroup\Email\Model\OrderFactory $emailOrderFactory
      * @param \Magento\Framework\Registry $registry
-     * @param Magento\Framework\Serialize\SerializerInterface $serializer
+     * @param \Magento\Framework\Serialize\SerializerInterface $serializer
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
      * @param \Magento\Store\Model\App\EmulationFactory $emulationFactory
@@ -151,9 +152,9 @@ class OrderSaveAfter implements \Magento\Framework\Event\ObserverInterface
         $websiteId  = $store->getWebsiteId();
         // start app emulation
         $appEmulation = $this->emulationFactory->create();
-        $initialEnvironmentInfo = $appEmulation->startEnvironmentEmulation($storeId);
+        $appEmulation->startEnvironmentEmulation($storeId);
         $emailOrder = $this->emailOrderFactory->create()
-            ->loadByOrderId($order->getEntityId(), $order->getQuoteId());
+            ->loadOrCreateOrder($order->getEntityId(), $order->getQuoteId());
         //reimport email order
         $emailOrder->setUpdatedAt($order->getUpdatedAt())
             ->setCreatedAt($order->getUpdatedAt())
@@ -165,12 +166,12 @@ class OrderSaveAfter implements \Magento\Framework\Event\ObserverInterface
 
         //api not enabled, stop emulation and exit
         if (! $isEnabled) {
-            $appEmulation->stopEnvironmentEmulation($initialEnvironmentInfo);
+            $appEmulation->stopEnvironmentEmulation();
             return $this;
         }
 
         // set back the current store
-        $appEmulation->stopEnvironmentEmulation($initialEnvironmentInfo);
+        $appEmulation->stopEnvironmentEmulation();
         $this->orderResource->save($emailOrder);
 
         $this->statusCheckAutomationEnrolment($order, $status, $customerEmail, $websiteId, $storeId, $storeName);
