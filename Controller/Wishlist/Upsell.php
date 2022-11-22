@@ -2,20 +2,6 @@
 
 namespace Dotdigitalgroup\Email\Controller\Wishlist;
 
-class Upsell extends \Dotdigitalgroup\Email\Controller\Edc
+class Upsell extends \Dotdigitalgroup\Email\Controller\ExternalDynamicContentController
 {
-    /**
-     * Basket page to display the user items with specific email.
-     *
-     * @return null
-     */
-    public function execute()
-    {
-        //authenticate
-        if ($this->authenticate()) {
-            $this->_view->loadLayout();
-            $this->_view->renderLayout();
-            $this->checkResponse();
-        }
-    }
 }
