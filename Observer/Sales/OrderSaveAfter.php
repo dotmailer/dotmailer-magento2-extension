@@ -150,6 +150,9 @@ class OrderSaveAfter implements \Magento\Framework\Event\ObserverInterface
         $store      = $this->storeManager->getStore($storeId);
         $storeName  = $store->getName();
         $websiteId  = $store->getWebsiteId();
+        if (empty($storeId)) {
+            $storeId = $store->getId();
+        }
         // start app emulation
         $appEmulation = $this->emulationFactory->create();
         $appEmulation->startEnvironmentEmulation($storeId);
