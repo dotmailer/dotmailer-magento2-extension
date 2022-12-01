@@ -19,9 +19,6 @@ class ServerSentEventsTest extends TestCase
         $this->assertEquals(false, $sse->is_reconnect);
     }
 
-    /**
-     * @runInSeparateProcess
-     */
     public function testCreateResponse()
     {
         $logger = new Logger('tests');
