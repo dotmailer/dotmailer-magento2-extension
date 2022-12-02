@@ -635,39 +635,30 @@ class Client extends Rest
     }
 
     /**
-     * Update contact datafields by email.
+     * Update contact data fields by email.
      *
      * @param string $email
      * @param array $dataFields
      *
-     * @return mixed|null
+     * @return \stdClass
      *
      * @throws \Exception
      */
     public function updateContactDatafieldsByEmail($email, $dataFields)
     {
-        $apiContact = $this->postContacts($email);
-        //do not create for non contact id set
-        if (!isset($apiContact->id)) {
-            return $apiContact;
-        } else {
-            //get the contact id for this email
-            $contactId = $apiContact->id;
-        }
         $data = [
             'Email' => $email,
             'EmailType' => 'Html',
+            'DataFields' => $dataFields
         ];
-        $data['DataFields'] = $dataFields;
-        $url = $this->getApiEndpoint() . self::REST_CONTACTS
-            . $contactId;
+        $url = $this->getApiEndpoint() . self::REST_CONTACTS;
         $this->setUrl($url)
-            ->setVerb('PUT')
+            ->setVerb('POST')
             ->buildPostBody($data);
 
         $response = $this->execute();
         if (isset($response->message)) {
-            $this->addClientLog('Error updating contact data field')
+            $this->addClientLog('Error updating contact data fields')
                 ->addClientLog('Failed contact field data', [
                     'data' => $data,
                 ], Logger::DEBUG);
