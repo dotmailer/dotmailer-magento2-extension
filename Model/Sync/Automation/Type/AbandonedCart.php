@@ -4,12 +4,15 @@ namespace Dotdigitalgroup\Email\Model\Sync\Automation\Type;
 
 use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Logger\Logger;
+use Dotdigitalgroup\Email\Model\Contact\ContactResponseHandler;
 use Dotdigitalgroup\Email\Model\ResourceModel\Automation as AutomationResource;
+use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory;
 use Dotdigitalgroup\Email\Model\Sales\QuoteFactory as DotdigitalQuoteFactory;
 use Dotdigitalgroup\Email\Model\Sync\Automation\AutomationProcessor;
 use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\DataFieldUpdateHandler;
 use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\Updater\AbandonedCartFactory as AbandonedCartUpdaterFactory;
 use Dotdigitalgroup\Email\Model\StatusInterface;
+use Magento\Newsletter\Model\SubscriberFactory;
 use Magento\Quote\Model\QuoteFactory;
 
 class AbandonedCart extends AutomationProcessor
@@ -41,10 +44,14 @@ class AbandonedCart extends AutomationProcessor
 
     /**
      * AbandonedCart constructor.
+     *
      * @param Data $helper
      * @param Logger $logger
      * @param AutomationResource $automationResource
+     * @param CollectionFactory $contactCollectionFactory
      * @param DataFieldUpdateHandler $dataFieldUpdateHandler
+     * @param ContactResponseHandler $contactResponseHandler
+     * @param SubscriberFactory $subscriberFactory
      * @param AbandonedCartUpdaterFactory $dataFieldUpdaterFactory
      * @param DotdigitalQuoteFactory $ddgQuoteFactory
      * @param QuoteFactory $quoteFactory
@@ -53,7 +60,10 @@ class AbandonedCart extends AutomationProcessor
         Data $helper,
         Logger $logger,
         AutomationResource $automationResource,
+        CollectionFactory $contactCollectionFactory,
         DataFieldUpdateHandler $dataFieldUpdateHandler,
+        ContactResponseHandler $contactResponseHandler,
+        SubscriberFactory $subscriberFactory,
         AbandonedCartUpdaterFactory $dataFieldUpdaterFactory,
         DotdigitalQuoteFactory $ddgQuoteFactory,
         QuoteFactory $quoteFactory
@@ -63,7 +73,14 @@ class AbandonedCart extends AutomationProcessor
         $this->ddgQuoteFactory = $ddgQuoteFactory;
         $this->quoteFactory = $quoteFactory;
 
-        parent::__construct($helper, $automationResource, $dataFieldUpdateHandler);
+        parent::__construct(
+            $helper,
+            $contactResponseHandler,
+            $automationResource,
+            $contactCollectionFactory,
+            $dataFieldUpdateHandler,
+            $subscriberFactory
+        );
     }
 
     /**

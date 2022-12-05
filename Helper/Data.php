@@ -4,22 +4,15 @@ namespace Dotdigitalgroup\Email\Helper;
 
 use Dotdigitalgroup\Email\Helper\Config as EmailConfig;
 use Dotdigitalgroup\Email\Logger\Logger;
-use Dotdigitalgroup\Email\Model\StatusInterface;
+use Dotdigitalgroup\Email\Model\Contact\ContactResponseHandler;
 use Dotdigitalgroup\Email\Model\Apiconnector\Account;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Encryption\EncryptorInterface;
-use Magento\Framework\Serialize\SerializerInterface;
 use Magento\Store\Model\ScopeInterface;
 
 /**
  * General most used helper to work with config data, saving updating and generating.
- *
- * @SuppressWarnings(PHPMD.ExcessivePublicCount)
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
- * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
- * @SuppressWarnings(PHPMD.ExcessiveParameterList)
- * @SuppressWarnings(PHPMD.TooManyFields)
  */
 class Data extends \Magento\Framework\App\Helper\AbstractHelper
 {
@@ -39,6 +32,11 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @var \Dotdigitalgroup\Email\Model\ContactFactory
      */
     public $contactFactory;
+
+    /**
+     * @var ContactResponseHandler
+     */
+    private $contactResponseHandler;
 
     /**
      * @var \Magento\Framework\App\ProductMetadata
@@ -111,6 +109,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param \Magento\Framework\App\ProductMetadata $productMetadata
      * @param \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contactResource
+     * @param ContactResponseHandler $contactResponseHandler
      * @param \Magento\Config\Model\ResourceModel\Config $resourceConfig
      * @param \Magento\Framework\App\ResourceConnection $adapter
      * @param \Magento\Framework\App\Helper\Context $context
@@ -130,6 +129,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         \Magento\Framework\App\ProductMetadata $productMetadata,
         \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
         \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contactResource,
+        ContactResponseHandler $contactResponseHandler,
         \Magento\Config\Model\ResourceModel\Config $resourceConfig,
         \Magento\Framework\App\ResourceConnection $adapter,
         \Magento\Framework\App\Helper\Context $context,
@@ -157,6 +157,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $this->datetime = $dateTime;
         $this->userResource = $userResource;
         $this->contactResource = $contactResource;
+        $this->contactResponseHandler = $contactResponseHandler;
         $this->logger = $logger;
         $this->request = $request;
         $this->encryptor = $encryptor;
@@ -473,22 +474,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * Disable wishlist sync.
-     *
-     * @param string $scope
-     * @param int $scopeId
-     */
-    public function disableTransactionalDataConfig($scope, $scopeId)
-    {
-        $this->resourceConfig->saveConfig(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_WISHLIST_ENABLED,
-            0,
-            $scope,
-            $scopeId
-        );
-    }
-
-    /**
      * Last order id datafield.
      *
      * @return string
@@ -604,34 +589,13 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             return false;
         }
 
-        $contact = $this->contactFactory->create()
-            ->loadByCustomerEmail($email, $websiteId);
-
         $client = $this->getWebsiteApiClient($websiteId);
         $response = $client->getContactByEmail($email);
         if (!isset($response->id)) {
             $response = $client->postContacts($email);
         }
 
-        if (isset($response->status) &&
-            !in_array($response->status, [StatusInterface::SUBSCRIBED, StatusInterface::PENDING_OPT_IN])
-        ) {
-            $contact->setEmailImported(1);
-            $contact->setSuppressed(1);
-            $this->saveContact($contact);
-            return false;
-        }
-
-        //save contact id
-        if (isset($response->id)) {
-            $contact->setContactId($response->id);
-            $this->saveContact($contact);
-        } else {
-            //curl operation timeout
-            return false;
-        }
-
-        return $response;
+        return $this->contactResponseHandler->updateContactFromResponse($response, $email, $websiteId);
     }
 
     /**
