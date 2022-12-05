@@ -1,3 +1,11 @@
+# 4.19.4
+
+### Improvements
+- There is now a fallback store id set in our OrderSaveAfter observer. [External contribution](https://github.com/dotmailer/dotmailer-magento2-extension/pull/574).
+
+### Bug fixes
+- We fixed a PHP error in subscriber sync that occurred if consent data syncing was enabled but no consent text had been entered for either customers or subscribers.
+
 # 4.19.3
 
 ### Bug fixes
