@@ -6,6 +6,7 @@ use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Catalog\UpdateCatalogBulk;
 use Dotdigitalgroup\Email\Model\Importer;
 use Dotdigitalgroup\Email\Model\ImporterFactory;
+use Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory as OrderCollectionFactory;
 use Dotdigitalgroup\Email\Model\ResourceModel\OrderFactory as OrderResourceFactory;
 
 class BatchProcessor
@@ -31,21 +32,31 @@ class BatchProcessor
     private $orderResourceFactory;
 
     /**
+     * @var OrderCollectionFactory
+     */
+    private $orderCollectionFactory;
+
+    /**
+     * Batch processor constructor.
+     *
      * @param Logger $logger
      * @param UpdateCatalogBulk $bulkUpdate
      * @param ImporterFactory $importerFactory
      * @param OrderResourceFactory $orderResourceFactory
+     * @param OrderCollectionFactory $orderCollectionFactory
      */
     public function __construct(
         Logger $logger,
         UpdateCatalogBulk $bulkUpdate,
         ImporterFactory $importerFactory,
-        OrderResourceFactory $orderResourceFactory
+        OrderResourceFactory $orderResourceFactory,
+        OrderCollectionFactory $orderCollectionFactory
     ) {
         $this->logger = $logger;
         $this->bulkUpdate = $bulkUpdate;
         $this->importerFactory = $importerFactory;
         $this->orderResourceFactory = $orderResourceFactory;
+        $this->orderCollectionFactory = $orderCollectionFactory;
     }
 
     /**
@@ -53,7 +64,7 @@ class BatchProcessor
      *
      * @param array $batch
      */
-    public function process($batch)
+    public function process($batch): void
     {
         $this->addToImportQueue($batch);
         $this->resetOrderedProducts($batch);
@@ -67,7 +78,7 @@ class BatchProcessor
      *
      * @return void
      */
-    private function addToImportQueue(array $ordersBatch)
+    private function addToImportQueue(array $ordersBatch): void
     {
         foreach ($ordersBatch as $websiteId => $orders) {
             $success = $this->importerFactory->create()
@@ -96,7 +107,7 @@ class BatchProcessor
      *
      * @return void
      */
-    private function resetOrderedProducts($ordersBatch)
+    private function resetOrderedProducts($ordersBatch): void
     {
         foreach ($ordersBatch as $orders) {
             $this->bulkUpdate->execute($this->getAllProductsFromBatch($orders));
@@ -112,10 +123,14 @@ class BatchProcessor
      */
     private function markOrdersAsImported($ordersBatch)
     {
-        $this->orderResourceFactory->create()
-            ->setImportedDateByIds(
+        $orderIds = $this->orderCollectionFactory
+            ->create()
+            ->getOrderIdsFromIncrementIds(
                 $this->getOrderIdsFromBatch($ordersBatch)
             );
+
+        $this->orderResourceFactory->create()
+            ->setImportedDateByIds($orderIds);
     }
 
     /**
@@ -125,7 +140,7 @@ class BatchProcessor
      *
      * @return array
      */
-    private function getAllProductsFromBatch($orders)
+    private function getAllProductsFromBatch($orders): array
     {
         $allProducts = [];
         foreach ($orders as $order) {
