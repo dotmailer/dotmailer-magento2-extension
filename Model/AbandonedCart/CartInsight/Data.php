@@ -288,16 +288,16 @@ class Data
     /**
      * Get price, converted to the quote's currency.
      *
-     * @param string $price
+     * @param mixed  $price
      * @param string $storeId
      * @param string $currencyCode
      * @return float
      */
-    private function getConvertedPrice(string $price, string $storeId, string $currencyCode)
+    private function getConvertedPrice($price, string $storeId, string $currencyCode)
     {
         return $this->priceCurrencyInterface
             ->convertAndRound(
-                $price,
+                (is_numeric($price)) ? $price : '0.00',
                 $storeId,
                 $currencyCode
             );
