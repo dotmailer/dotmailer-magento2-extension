@@ -10,7 +10,7 @@ use Magento\Catalog\Block\Product\ImageBuilder;
 use Magento\Catalog\Model\Product;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
-use \Laminas\Uri\Http;
+use Laminas\Uri\Http;
 
 class UrlFinder
 {

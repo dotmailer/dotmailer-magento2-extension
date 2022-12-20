@@ -13,7 +13,7 @@ use Magento\Catalog\Model\Product;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Store\Model\Website;
-use Zend\Uri\Http;
+use Laminas\Uri\Http;
 use PHPUnit\Framework\TestCase;
 
 class UrlFinderTest extends TestCase
