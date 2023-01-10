@@ -1,7 +1,14 @@
+# 4.19.5
+
+### Bug fixes
+- Our getConvertedPrice method now sets a default price if the product price is not numeric.
+- We fixed an issue with `last_imported_at` not being updated for all orders in a batch, during order sync.
+- The external dynamic endpoint for Feefo reviews will now return a 204 No Content if no reviews are found.
+
 # 4.19.4
 
 ### Improvements
-- There is now a fallback store id set in our OrderSaveAfter observer. [External contribution](https://github.com/dotmailer/dotmailer-magento2-extension/pull/574).
+- There is now a fallback store id set in our OrderSaveAfter observer. [External contribution](https://github.com/dotmailer/dotmailer-magento2-extension/pull/596).
 
 ### Bug fixes
 - We fixed a PHP error in subscriber sync that occurred if consent data syncing was enabled but no consent text had been entered for either customers or subscribers.
