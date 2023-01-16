@@ -59,7 +59,7 @@ class TaskRunnerCommand extends Command
      *
      * @param InputInterface $input
      * @param OutputInterface $output
-     * @return int|void|null
+     * @return int
      * @throws LocalizedException
      */
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -83,7 +83,7 @@ class TaskRunnerCommand extends Command
         $taskClass = $this->taskProvider->$requestedTask;
         if ($taskClass === null) {
             $output->writeln(__('Requested task was not recognised')->getText());
-            return;
+            return 0;
         }
 
         $start = microtime(true);
@@ -103,6 +103,8 @@ class TaskRunnerCommand extends Command
             __('Complete in')->getText(),
             round(microtime(true) - $start, 2)
         ));
+
+        return 0;
     }
 
     /**

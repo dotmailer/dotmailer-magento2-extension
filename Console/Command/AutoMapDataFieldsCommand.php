@@ -38,7 +38,7 @@ class AutoMapDataFieldsCommand extends Command
     /**
      * @param InputInterface $input
      * @param OutputInterface $output
-     * @return int|void|null
+     * @return int
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
@@ -53,5 +53,7 @@ class AutoMapDataFieldsCommand extends Command
         } else {
             $output->writeln(__('Data fields have been mapped.')->getText());
         }
+
+        return 0;
     }
 }
