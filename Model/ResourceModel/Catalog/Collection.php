@@ -2,17 +2,14 @@
 
 namespace Dotdigitalgroup\Email\Model\ResourceModel\Catalog;
 
+use Magento\Catalog\Model\ResourceModel\Product\Collection as ProductCollection;
+
 class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection
 {
     /**
      * @var string
      */
     protected $_idFieldName = 'id';
-
-    /**
-     * @var \Dotdigitalgroup\Email\Helper\Data
-     */
-    protected $helper;
 
     /**
      * @var \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory
@@ -22,7 +19,7 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     /**
      * Initialize resource collection.
      *
-     * @return null
+     * @return void
      */
     public function _construct()
     {
@@ -39,7 +36,6 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
      * @param \Psr\Log\LoggerInterface $logger
      * @param \Magento\Framework\Data\Collection\Db\FetchStrategyInterface $fetchStrategy
      * @param \Magento\Framework\Event\ManagerInterface $eventManager
-     * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory $productCollection
      * @param \Magento\Framework\DB\Adapter\AdapterInterface|null $connection
      * @param \Magento\Framework\Model\ResourceModel\Db\AbstractDb|null $resource
@@ -49,13 +45,11 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
         \Psr\Log\LoggerInterface $logger,
         \Magento\Framework\Data\Collection\Db\FetchStrategyInterface $fetchStrategy,
         \Magento\Framework\Event\ManagerInterface $eventManager,
-        \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory $productCollection,
         \Magento\Framework\DB\Adapter\AdapterInterface $connection = null,
         \Magento\Framework\Model\ResourceModel\Db\AbstractDb $resource = null
     ) {
-        $this->helper = $helper;
-        $this->productCollection        = $productCollection;
+        $this->productCollection = $productCollection;
         parent::__construct(
             $entityFactory,
             $logger,
@@ -115,11 +109,17 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
      *
      * @param string|int|null $storeId
      * @param array $productIds
+     * @param array $types
+     * @param array $visibilities
      *
-     * @return \Magento\Catalog\Model\ResourceModel\Product\Collection
+     * @return ProductCollection
      */
-    public function filterProductsByStoreTypeAndVisibility($storeId, $productIds)
-    {
+    public function filterProductsByStoreTypeAndVisibility(
+        $storeId,
+        array $productIds,
+        array $types,
+        array $visibilities
+    ) {
         $productCollection = $this->productCollection->create()
             ->addAttributeToSelect('*')
             ->addAttributeToFilter(
@@ -131,28 +131,17 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
             $productCollection->addStoreFilter($storeId);
         }
 
-        //visibility filter
-        if ($visibility = $this->helper->getWebsiteConfig(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_CATALOG_VISIBILITY
-        )
-        ) {
-            $visibility = explode(',', $visibility);
-            //remove the default option from values
-            $visibility = array_filter($visibility);
+        if ($visibilities) {
             $productCollection->addAttributeToFilter(
                 'visibility',
-                ['in' => $visibility]
+                ['in' => $visibilities]
             );
         }
-        //type filter
-        if ($type = $this->helper->getWebsiteConfig(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_CATALOG_TYPE
-        )
-        ) {
-            $type = explode(',', $type);
+
+        if ($types) {
             $productCollection->addAttributeToFilter(
                 'type_id',
-                ['in' => $type]
+                ['in' => $types]
             );
         }
 
