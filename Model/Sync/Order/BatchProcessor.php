@@ -6,8 +6,8 @@ use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Catalog\UpdateCatalogBulk;
 use Dotdigitalgroup\Email\Model\Importer;
 use Dotdigitalgroup\Email\Model\ImporterFactory;
-use Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory as OrderCollectionFactory;
 use Dotdigitalgroup\Email\Model\ResourceModel\OrderFactory as OrderResourceFactory;
+use Magento\Sales\Model\ResourceModel\Order\CollectionFactory as OrderCollectionFactory;
 
 class BatchProcessor
 {
@@ -123,11 +123,9 @@ class BatchProcessor
      */
     private function markOrdersAsImported($ordersBatch)
     {
-        $orderIds = $this->orderCollectionFactory
-            ->create()
-            ->getOrderIdsFromIncrementIds(
-                $this->getOrderIdsFromBatch($ordersBatch)
-            );
+        $orderIds = $this->getOrderIdsFromIncrementIds(
+            $this->getOrderIdsFromBatch($ordersBatch)
+        );
 
         $this->orderResourceFactory->create()
             ->setImportedDateByIds($orderIds);
@@ -173,5 +171,21 @@ class BatchProcessor
         }
 
         return $ids;
+    }
+
+    /**
+     * Get order ids from increment ids.
+     *
+     * @param array $incrementIds
+     * @return array
+     */
+    private function getOrderIdsFromIncrementIds(array $incrementIds): array
+    {
+        return $this->orderCollectionFactory->create()
+            ->addFieldToFilter(
+                'main_table.increment_id',
+                ['in' => $incrementIds]
+            )
+            ->getColumnValues('entity_id');
     }
 }

@@ -196,52 +196,6 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     }
 
     /**
-     * Get customer last order id.
-     *
-     * @param \Magento\Customer\Model\Customer $customer
-     * @param array $storeIds
-     *
-     * @return boolean|\Magento\Sales\Model\Order
-     */
-    public function getCustomerLastOrderId(\Magento\Customer\Model\Customer $customer, $storeIds)
-    {
-        $collection = $this->orderCollection->create()
-            ->addFieldToFilter('customer_id', $customer->getId())
-            ->addFieldToFilter('store_id', ['in' => $storeIds])
-            ->setPageSize(1)
-            ->setOrder('entity_id');
-
-        if ($collection->getSize()) {
-            return $collection->getFirstItem();
-        }
-
-        return false;
-    }
-
-    /**
-     * Get customer last quote id.
-     *
-     * @param \Magento\Customer\Model\Customer $customer
-     * @param array $storeIds
-     *
-     * @return boolean|\Magento\Quote\Model\Quote
-     */
-    public function getCustomerLastQuoteId(\Magento\Customer\Model\Customer $customer, $storeIds)
-    {
-        $collection = $this->quoteCollection->create()
-            ->addFieldToFilter('customer_id', $customer->getId())
-            ->addFieldToFilter('store_id', ['in' => $storeIds])
-            ->setPageSize(1)
-            ->setOrder('entity_id');
-
-        if ($collection->getSize()) {
-            return $collection->getFirstItem();
-        }
-
-        return false;
-    }
-
-    /**
      * Get store quotes for either guests or customers, excluding inactive and empty.
      *
      * @param int $storeId
@@ -361,21 +315,5 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
             ->addFieldToFilter('store_id', $storeId)
             ->addFieldToFilter('updated_at', ['gt' => $time])
             ->getColumnValues('order_id');
-    }
-
-    /**
-     * Get order ids from increment ids.
-     *
-     * @param array $incrementIds
-     * @return array
-     */
-    public function getOrderIdsFromIncrementIds(array $incrementIds): array
-    {
-        return $this->orderCollection->create()
-            ->addFieldToFilter(
-                'main_table.increment_id',
-                ['in' => $incrementIds]
-            )
-            ->getColumnValues('entity_id');
     }
 }
