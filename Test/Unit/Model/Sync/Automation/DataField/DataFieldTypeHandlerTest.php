@@ -3,19 +3,19 @@
 namespace Dotdigitalgroup\Email\Test\Unit\Model\Sync\Automation\DataField;
 
 use Dotdigitalgroup\Email\Model\Sync\Automation\AutomationTypeHandler;
-use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\DataFieldUpdateHandler;
+use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\DataFieldTypeHandler;
 use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\DataFieldUpdater;
 use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\Updater\Order;
 use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\DataFieldUpdaterFactory;
 use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\Updater\OrderFactory;
 use PHPUnit\Framework\TestCase;
 
-class DataFieldUpdateHandlerTest extends TestCase
+class DataFieldTypeHandlerTest extends TestCase
 {
     /**
-     * @var DataFieldUpdateHandler|\PHPUnit_Framework_MockObject_MockObject
+     * @var DataFieldTypeHandler|\PHPUnit_Framework_MockObject_MockObject
      */
-    private $dataFieldUpdateHandler;
+    private $dataFieldTypeHandler;
 
     /**
      * @var DataFieldUpdater|\PHPUnit_Framework_MockObject_MockObject
@@ -44,7 +44,7 @@ class DataFieldUpdateHandlerTest extends TestCase
         $this->defaultUpdaterFactoryMock = $this->createMock(DataFieldUpdaterFactory::class);
         $this->orderUpdaterFactoryMock = $this->createMock(OrderFactory::class);
 
-        $this->dataFieldUpdateHandler = new DataFieldUpdateHandler(
+        $this->dataFieldTypeHandler = new DataFieldTypeHandler(
             $this->defaultUpdaterFactoryMock,
             $this->orderUpdaterFactoryMock
         );
@@ -63,13 +63,14 @@ class DataFieldUpdateHandlerTest extends TestCase
             ->willReturn($this->defaultUpdaterMock);
 
         $this->defaultUpdaterMock->expects($this->exactly(5))
-            ->method('updateDataFields');
+            ->method('getData')
+            ->willReturn($this->getDefaultDataFields());
 
         $this->orderUpdaterMock->expects($this->never())
             ->method('setDataFields');
 
         foreach ($defaultTypeAutomations as $automation) {
-            $this->dataFieldUpdateHandler->updateDataFieldsByType(
+            $this->dataFieldTypeHandler->retrieveDatafieldsByType(
                 $automation['type'],
                 $automation['email'],
                 $automation['websiteId'],
@@ -92,13 +93,17 @@ class DataFieldUpdateHandlerTest extends TestCase
             ->willReturn($this->orderUpdaterMock);
 
         $this->orderUpdaterMock->expects($this->exactly(4))
-            ->method('updateDataFields');
+            ->method('getData')
+            ->willReturn([
+                ...$this->getDefaultDataFields(),
+                ...$this->getOrderDataFields()
+            ]);
 
         $this->defaultUpdaterMock->expects($this->never())
             ->method('setDefaultDataFields');
 
         foreach ($orderTypeAutomations as $automation) {
-            $this->dataFieldUpdateHandler->updateDataFieldsByType(
+            $this->dataFieldTypeHandler->retrieveDatafieldsByType(
                 $automation['type'],
                 $automation['email'],
                 $automation['websiteId'],
@@ -185,6 +190,34 @@ class DataFieldUpdateHandlerTest extends TestCase
                 'websiteId' => 1,
                 'typeId' => 20,
                 'storeName' => 'Default Store View'
+            ]
+        ];
+    }
+
+    private function getDefaultDataFields()
+    {
+        return [
+            [
+                'Key' => 'STORE_NAME',
+                'Value' => 'Chaz store',
+            ],
+            [
+                'Key' => 'WEBSITE_NAME',
+                'Value' => 'Chaz website',
+            ]
+        ];
+    }
+
+    private function getOrderDataFields()
+    {
+        return [
+            [
+                'Key' => 'LAST_ORDER_ID',
+                'Value' => '101',
+            ],
+            [
+                'Key' => 'LAST_INCREMENT_ID',
+                'Value' => '100000101',
             ]
         ];
     }

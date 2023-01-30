@@ -2,13 +2,17 @@
 
 namespace Dotdigitalgroup\Email\Model\Sync\Automation;
 
+use Dotdigitalgroup\Email\Exception\PendingOptInException;
 use Dotdigitalgroup\Email\Helper\Data;
+use Dotdigitalgroup\Email\Logger\Logger;
+use Dotdigitalgroup\Email\Model\Automation;
+use Dotdigitalgroup\Email\Model\ContactFactory;
 use Dotdigitalgroup\Email\Model\Contact\ContactResponseHandler;
 use Dotdigitalgroup\Email\Model\ResourceModel\Automation as AutomationResource;
-use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory;
-use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\DataFieldUpdateHandler;
 use Dotdigitalgroup\Email\Model\StatusInterface;
-use Magento\Framework\Model\AbstractModel;
+use Dotdigitalgroup\Email\Model\Sync\Automation\ContactManager;
+use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\DataFieldCollector;
+use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\DataFieldTypeHandler;
 use Magento\Newsletter\Model\SubscriberFactory;
 
 class AutomationProcessor
@@ -17,6 +21,11 @@ class AutomationProcessor
      * @var Data
      */
     protected $helper;
+
+    /**
+     * @var Logger
+     */
+    protected $logger;
 
     /**
      * @var ContactResponseHandler
@@ -29,14 +38,24 @@ class AutomationProcessor
     protected $automationResource;
 
     /**
-     * @var CollectionFactory
+     * @var ContactFactory
      */
-    protected $contactCollectionFactory;
+    protected $contactFactory;
 
     /**
-     * @var DataFieldUpdateHandler
+     * @var ContactManager
      */
-    protected $dataFieldUpdateHandler;
+    protected $contactManager;
+
+    /**
+     * @var DataFieldCollector
+     */
+    protected $dataFieldCollector;
+
+    /**
+     * @var DataFieldTypeHandler
+     */
+    protected $dataFieldTypeHandler;
 
     /**
      * @var SubscriberFactory
@@ -47,29 +66,40 @@ class AutomationProcessor
      * AutomationProcessor constructor.
      *
      * @param Data $helper
+     * @param Logger $logger
      * @param ContactResponseHandler $contactResponseHandler
      * @param AutomationResource $automationResource
-     * @param CollectionFactory $contactCollectionFactory
-     * @param DataFieldUpdateHandler $dataFieldUpdateHandler
+     * @param ContactFactory $contactFactory
+     * @param ContactManager $contactManager
+     * @param DataFieldCollector $dataFieldCollector
+     * @param DataFieldTypeHandler $dataFieldTypeHandler
      * @param SubscriberFactory $subscriberFactory
      */
     public function __construct(
         Data $helper,
+        Logger $logger,
         ContactResponseHandler $contactResponseHandler,
         AutomationResource $automationResource,
-        CollectionFactory $contactCollectionFactory,
-        DataFieldUpdateHandler $dataFieldUpdateHandler,
+        ContactFactory $contactFactory,
+        ContactManager $contactManager,
+        DataFieldCollector $dataFieldCollector,
+        DataFieldTypeHandler $dataFieldTypeHandler,
         SubscriberFactory $subscriberFactory
     ) {
         $this->helper = $helper;
+        $this->logger = $logger;
         $this->contactResponseHandler = $contactResponseHandler;
         $this->automationResource = $automationResource;
-        $this->contactCollectionFactory = $contactCollectionFactory;
-        $this->dataFieldUpdateHandler = $dataFieldUpdateHandler;
+        $this->contactFactory = $contactFactory;
+        $this->contactManager = $contactManager;
+        $this->dataFieldCollector = $dataFieldCollector;
+        $this->dataFieldTypeHandler = $dataFieldTypeHandler;
         $this->subscriberFactory = $subscriberFactory;
     }
 
     /**
+     * Process.
+     *
      * @param \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection $collection
      * @return array
      * @throws \Magento\Framework\Exception\LocalizedException
@@ -79,52 +109,45 @@ class AutomationProcessor
         $data = [];
 
         foreach ($collection as $automation) {
+            if ($this->shouldExitLoop($automation)) {
+                continue;
+            }
+
             $email = $automation->getEmail();
             $websiteId = $automation->getWebsiteId();
             $storeId = $automation->getStoreId();
-            $customerAddressBookId = $this->helper->getCustomerAddressBook($websiteId);
-            $guestAddressBookId = $this->helper->getGuestAddressBook($websiteId);
-            $addressBookId = '';
+            $automationDataFields = $this->retrieveAutomationDataFields($automation, $email, $websiteId);
 
-            $automationContact = $this->contactCollectionFactory->create()
+            $automationContact = $this->contactFactory->create()
                 ->loadByCustomerEmail($email, $websiteId);
+            $automationSubscriber = $this->subscriberFactory->create()
+                ->loadBySubscriberEmail($email, $websiteId);
 
-            /** @var AbstractModel $automationContact */
-            if ($automationContact->getCustomerId()) {
-                $addressBookId = $customerAddressBookId;
-            } elseif ($automationContact->getIsGuest()) {
-                $addressBookId = $guestAddressBookId;
-            }
+            try {
+                $contactId = $this->contactManager->prepareDotdigitalContact(
+                    $automationContact,
+                    $automationSubscriber,
+                    $automationDataFields
+                );
 
-            $contact = $addressBookId ?
-                $this->pushContactToAddressBook($email, $websiteId, $addressBookId) :
-                $this->helper->getOrCreateContact($email, $websiteId);
-
-            /** @var \stdClass $contact */
-            if ($contact && isset($contact->id)) {
-                if ($contact->status === StatusInterface::PENDING_OPT_IN) {
-                    $this->automationResource->setStatusAndSaveAutomation(
-                        $automation,
-                        StatusInterface::PENDING_OPT_IN
-                    );
-                    continue;
-                }
-
-                if ($this->shouldExitLoop($automation)) {
-                    continue;
-                }
-
-                $this->pushContactToSubscriberAddressBook($email, $websiteId);
-                $this->orchestrateDataFieldUpdate($automation, $email, $websiteId);
-
-                $data[$websiteId][$storeId]['contacts'][$automation->getId()] = $contact->id;
-            } else {
-                // the contact is suppressed or the request failed
+                $data[$websiteId][$storeId]['contacts'][$automation->getId()] = $contactId;
+            } catch (PendingOptInException) {
+                $this->automationResource->setStatusAndSaveAutomation(
+                    $automation,
+                    StatusInterface::PENDING_OPT_IN
+                );
+                continue;
+            } catch (\Exception $e) {
                 $this->automationResource->setStatusAndSaveAutomation(
                     $automation,
                     StatusInterface::FAILED,
-                    'Contact cannot be created or has been suppressed'
+                    $e->getMessage()
                 );
+                $this->logger->debug(
+                    sprintf('Enrolment failed for automation id: %s', $automation->getId()),
+                    [(string) $e]
+                );
+                continue;
             }
         }
 
@@ -132,21 +155,26 @@ class AutomationProcessor
     }
 
     /**
-     * @param \Dotdigitalgroup\Email\Model\Automation $automation
+     * Check if automation should be processed.
+     *
+     * @param Automation $automation
      * @return bool
      */
-    protected function shouldExitLoop($automation)
+    protected function shouldExitLoop(Automation $automation)
     {
         return false;
     }
 
     /**
-     * @param \Dotdigitalgroup\Email\Model\Automation $automation
+     * Retrieve automation data fields.
+     *
+     * @param Automation $automation
      * @param string $email
      * @param string|int $websiteId
+     * @return array
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    protected function orchestrateDataFieldUpdate($automation, $email, $websiteId)
+    protected function retrieveAutomationDataFields(Automation $automation, $email, $websiteId): array
     {
         $type = $automation->getAutomationType();
         //Set type to generic automation status if type contains constant value
@@ -154,64 +182,12 @@ class AutomationProcessor
             $type = AutomationTypeHandler::ORDER_STATUS_AUTOMATION;
         }
 
-        $this->dataFieldUpdateHandler->updateDatafieldsByType(
+        return $this->dataFieldTypeHandler->retrieveDatafieldsByType(
             $type,
             $email,
             $websiteId,
             $automation->getTypeId(),
             $automation->getStoreName()
         );
-    }
-
-    /**
-     * Add contact to an address book.
-     *
-     * @param string $email
-     * @param int $websiteId
-     * @param string $addressBookId
-     *
-     * @return bool|\stdClass
-     */
-    private function pushContactToAddressBook($email, $websiteId, string $addressBookId)
-    {
-        $client = $this->helper->getWebsiteApiClient($websiteId);
-        $contactParams = [
-            'Email' => $email,
-            'EmailType' => 'Html',
-        ];
-
-        $response = $client->postAddressBookContacts($addressBookId, $contactParams);
-
-        return $this->contactResponseHandler->updateContactFromResponse($response, $email, $websiteId);
-    }
-
-    /**
-     * Add subscribers to subscriber address book
-     *
-     * @param string $email
-     * @param string|int $websiteId
-     *
-     * @return void
-     * @throws \Magento\Framework\Exception\LocalizedException
-     */
-    private function pushContactToSubscriberAddressBook($email, $websiteId): void
-    {
-        $subscriber = $this->subscriberFactory->create()
-            ->loadBySubscriberEmail($email, $websiteId);
-        if (!$subscriber->getId()) {
-            return;
-        }
-
-        $subscriberAddressBookId = $this->helper->getSubscriberAddressBook($websiteId);
-        if (!$subscriberAddressBookId) {
-            return;
-        }
-
-        $client = $this->helper->getWebsiteApiClient($websiteId);
-        $contactParams = [
-            'Email' => $email,
-            'EmailType' => 'Html',
-        ];
-        $client->postAddressBookContacts($subscriberAddressBookId, $contactParams);
     }
 }

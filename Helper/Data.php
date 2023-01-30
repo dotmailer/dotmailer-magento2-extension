@@ -578,6 +578,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
+     * @deprecated Use client methods directly.
+     *
      * @param string $email
      * @param int $websiteId
      *

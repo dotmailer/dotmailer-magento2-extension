@@ -15,6 +15,7 @@ class Consent extends \Magento\Framework\Model\AbstractModel
      * @var array
      */
     public $singleFields = [
+        'TEXT',
         'DATETIMECONSENTED',
         'URL',
         'USERAGENT',
@@ -33,6 +34,18 @@ class Consent extends \Magento\Framework\Model\AbstractModel
         'consent_ip' => 'CONSENTIP',
         'consent_user_agent' => 'CONSENTUSERAGENT'
     ];
+
+    /**
+     * @var string[]
+     */
+    public const BULKFIELDTOSINGLEFIELDNAMEMAP = [
+        'CONSENTTEXT' => 'TEXT',
+        'CONSENTURL' => 'URL',
+        'CONSENTDATETIME' => 'DATETIMECONSENTED',
+        'CONSENTIP' => 'IPADDRESS',
+        'CONSENTUSERAGENT' => 'USERAGENT'
+    ];
+
 
     /**
      * @var \Magento\Framework\Stdlib\DateTime\DateTime

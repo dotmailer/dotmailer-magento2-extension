@@ -2,17 +2,20 @@
 
 namespace Dotdigitalgroup\Email\Test\Unit\Model\Sync\Automation;
 
+use Dotdigitalgroup\Email\Exception\PendingOptInException;
 use Dotdigitalgroup\Email\Helper\Data;
-use Dotdigitalgroup\Email\Model\Apiconnector\Client;
+use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Automation;
 use Dotdigitalgroup\Email\Model\Contact;
+use Dotdigitalgroup\Email\Model\ContactFactory;
 use Dotdigitalgroup\Email\Model\Contact\ContactResponseHandler;
 use Dotdigitalgroup\Email\Model\ResourceModel\Automation as AutomationResource;
-use Dotdigitalgroup\Email\Model\ResourceModel\Contact\Collection as ContactCollection;
-use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory;
 use Dotdigitalgroup\Email\Model\StatusInterface;
 use Dotdigitalgroup\Email\Model\Sync\Automation\AutomationProcessor;
-use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\DataFieldUpdateHandler;
+use Dotdigitalgroup\Email\Model\Sync\Automation\AutomationTypeHandler;
+use Dotdigitalgroup\Email\Model\Sync\Automation\ContactManager;
+use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\DataFieldCollector;
+use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\DataFieldTypeHandler;
 use Dotdigitalgroup\Email\Test\Unit\Traits\AutomationProcessorTrait;
 use Magento\Newsletter\Model\Subscriber;
 use Magento\Newsletter\Model\SubscriberFactory;
@@ -28,6 +31,11 @@ class AutomationProcessorTest extends TestCase
     private $helperMock;
 
     /**
+     * @var Logger|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $loggerMock;
+
+    /**
      * @var ContactResponseHandler|\PHPUnit_Framework_MockObject_MockObject
      */
     private $contactResponseHandlerMock;
@@ -38,19 +46,24 @@ class AutomationProcessorTest extends TestCase
     private $automationResourceMock;
 
     /**
-     * @var ContactCollection|\PHPUnit_Framework_MockObject_MockObject
+     * @var ContactFactory|\PHPUnit_Framework_MockObject_MockObject
      */
-    private $contactCollectionMock;
+    private $contactFactoryMock;
 
     /**
-     * @var CollectionFactory|\PHPUnit_Framework_MockObject_MockObject
+     * @var ContactManager|\PHPUnit_Framework_MockObject_MockObject
      */
-    private $contactCollectionFactoryMock;
+    private $contactManagerMock;
 
     /**
-     * @var DataFieldUpdateHandler|\PHPUnit_Framework_MockObject_MockObject
+     * @var DataFieldCollector|\PHPUnit_Framework_MockObject_MockObject
      */
-    private $dataFieldUpdateHandlerMock;
+    private $dataFieldCollectorMock;
+
+    /**
+     * @var DataFieldTypeHandler|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $dataFieldTypeHandlerMock;
 
     /**
      * @var SubscriberFactory|\PHPUnit_Framework_MockObject_MockObject
@@ -80,229 +93,108 @@ class AutomationProcessorTest extends TestCase
     protected function setUp() :void
     {
         $this->helperMock = $this->createMock(Data::class);
+        $this->loggerMock = $this->createMock(Logger::class);
         $this->contactResponseHandlerMock = $this->createMock(ContactResponseHandler::class);
         $this->automationResourceMock = $this->createMock(AutomationResource::class);
-        $this->contactCollectionMock = $this->createMock(ContactCollection::class);
-        $this->contactCollectionFactoryMock = $this->createMock(CollectionFactory::class);
-        $this->dataFieldUpdateHandlerMock = $this->createMock(DataFieldUpdateHandler::class);
+        $this->contactFactoryMock = $this->createMock(ContactFactory::class);
+        $this->contactManagerMock = $this->createMock(ContactManager::class);
+        $this->dataFieldCollectorMock = $this->createMock(DataFieldCollector::class);
+        $this->dataFieldTypeHandlerMock = $this->createMock(DataFieldTypeHandler::class);
         $this->subscriberFactoryMock = $this->createMock(SubscriberFactory::class);
         $this->subscriberModelMock = $this->createMock(Subscriber::class);
         $this->contactModelMock = $this->getMockBuilder(Contact::class)
+            ->onlyMethods(['loadByCustomerEmail'])
             ->addMethods(['getCustomerId', 'getIsGuest'])
             ->disableOriginalConstructor()
             ->getMock();
         $this->automationModelMock = $this->getMockBuilder(Automation::class)
-            ->addMethods(['getEmail', 'getWebsiteId', 'getAutomationType'])
+            ->addMethods(['getEmail', 'getWebsiteId', 'getStoreId', 'getAutomationType'])
             ->disableOriginalConstructor()
             ->getMock();
 
         $this->automationProcessor = new AutomationProcessor(
             $this->helperMock,
+            $this->loggerMock,
             $this->contactResponseHandlerMock,
             $this->automationResourceMock,
-            $this->contactCollectionFactoryMock,
-            $this->dataFieldUpdateHandlerMock,
+            $this->contactFactoryMock,
+            $this->contactManagerMock,
+            $this->dataFieldCollectorMock,
+            $this->dataFieldTypeHandlerMock,
             $this->subscriberFactoryMock
         );
     }
 
-    public function testEmailIsPushedToCustomerAddressBook()
+    public function testAutomationIsProcessedForNewCustomer()
     {
         $this->setupAutomationModel();
         $this->setupContactModel();
-
-        $this->helperMock->expects($this->once())
-            ->method('getCustomerAddressBook')
-            ->willReturn('123456');
-
-        $this->contactModelMock->expects($this->once())
-            ->method('getCustomerId')
-            ->willReturn('10');
-
-        $clientMock = $this->createMock(Client::class);
-        $this->helperMock->expects($this->once())
-            ->method('getWebsiteApiClient')
-            ->willReturn($clientMock);
-
-        $clientMock->expects($this->once())
-            ->method('postAddressBookContacts');
-
-        $this->helperMock->expects($this->never())
-            ->method('getOrCreateContact');
-
-        $this->automationProcessor->process($this->getAutomationCollectionMock());
-    }
-
-    public function testGuestContactIsPushedToGuestAddressBook()
-    {
-        $this->setupAutomationModel();
-        $this->setupContactModel();
-
-        $this->helperMock->expects($this->once())
-            ->method('getCustomerAddressBook')
-            ->willReturn('123456');
-
-        $this->helperMock->expects($this->once())
-            ->method('getGuestAddressBook')
-            ->willReturn('78999');
-
-        $this->contactModelMock->expects($this->once())
-            ->method('getCustomerId')
-            ->willReturn(0);
-
-        $this->contactModelMock->expects($this->once())
-            ->method('getIsGuest')
-            ->willReturn(1);
-
-        $clientMock = $this->createMock(Client::class);
-        $this->helperMock->expects($this->once())
-            ->method('getWebsiteApiClient')
-            ->willReturn($clientMock);
-
-        $clientMock->expects($this->once())
-            ->method('postAddressBookContacts');
-
-        $this->helperMock->expects($this->never())
-            ->method('getOrCreateContact');
-
-        $this->automationProcessor->process($this->getAutomationCollectionMock());
-    }
-
-    public function testSubscribedContactIsPushedToSubscriberAddressBook()
-    {
-        $contact = $this->getSubscribedContact();
-        $this->setupAutomationModel();
-        $this->setupContactModel();
-
-        $this->helperMock->expects($this->once())
-            ->method('getSubscriberAddressBook')
-            ->willReturn('123456');
-
-        $this->helperMock->expects($this->once())
-            ->method('getOrCreateContact')
-            ->willReturn($contact);
-
-        $this->subscriberFactoryMock->expects($this->once())
-            ->method('create')
-            ->willReturn($this->subscriberModelMock);
-
-        $this->subscriberModelMock->expects($this->once())
-            ->method('loadBySubscriberEmail')
-            ->willReturn($this->subscriberModelMock);
-
-        $this->subscriberModelMock->expects($this->once())
-            ->method('getId')
-            ->willReturn(5);
-
-        $clientMock = $this->createMock(Client::class);
-        $this->helperMock->expects($this->once())
-            ->method('getWebsiteApiClient')
-            ->willReturn($clientMock);
-
-        $clientMock->expects($this->once())
-            ->method('postAddressBookContacts');
+        $this->setupSubscriberModel();
 
         $this->automationModelMock->expects($this->once())
             ->method('getAutomationType')
-            ->willReturn('customer_automation');
+            ->willReturn(AutomationTypeHandler::AUTOMATION_TYPE_NEW_CUSTOMER);
 
-        $this->automationProcessor->process($this->getAutomationCollectionMock());
-    }
+        $this->dataFieldTypeHandlerMock->expects($this->once())
+            ->method('retrieveDatafieldsByType');
 
-    public function testEmailIsNotPushedToAnyAddressBookIfNoAddressBookIsMapped()
-    {
-        $this->setupAutomationModel();
-        $this->setupContactModel();
-
-        $this->helperMock->expects($this->once())
-            ->method('getCustomerAddressBook')
-            ->willReturn(null);
-
-        $this->contactModelMock->expects($this->once())
-            ->method('getCustomerId')
-            ->willReturn('10');
-
-        $clientMock = $this->createMock(Client::class);
-        $this->helperMock->expects($this->never())
-            ->method('getWebsiteApiClient');
-
-        $clientMock->expects($this->never())
-            ->method('postAddressBookContacts');
-
-        $this->helperMock->expects($this->once())
-            ->method('getOrCreateContact');
-
-        $this->automationProcessor->process($this->getAutomationCollectionMock());
-    }
-
-    public function testSubscribedDotdigitalContactTriggersDataFieldUpdate()
-    {
-        $contact = $this->getSubscribedContact();
-        $this->setupAutomationModel();
-        $this->setupContactModel();
-
-        $this->helperMock->expects($this->once())
-            ->method('getOrCreateContact')
-            ->willReturn($contact);
+        $this->contactManagerMock->expects($this->once())
+            ->method('prepareDotdigitalContact')
+            ->willReturn(123456);
 
         $this->automationResourceMock->expects($this->never())
             ->method('setStatusAndSaveAutomation');
 
-        $this->automationModelMock->expects($this->once())
-            ->method('getAutomationType')
-            ->willReturn('customer_automation');
-
-        $this->subscriberFactoryMock->expects($this->once())
-            ->method('create')
-            ->willReturn($this->subscriberModelMock);
-
-        $this->dataFieldUpdateHandlerMock->expects($this->once())
-            ->method('updateDatafieldsByType');
-
         $this->automationProcessor->process($this->getAutomationCollectionMock());
     }
 
-    public function testPendingOptInDotdigitalContactIsSavedNotProcessed()
+    public function testAutomationIsSavedIfContactIsPendingOptIn()
     {
-        $contact = $this->getPendingOptInContact();
         $this->setupAutomationModel();
         $this->setupContactModel();
+        $this->setupSubscriberModel();
 
-        $this->helperMock->expects($this->once())
-            ->method('getOrCreateContact')
-            ->willReturn($contact);
+        $this->automationModelMock->expects($this->once())
+            ->method('getAutomationType')
+            ->willReturn(AutomationTypeHandler::AUTOMATION_TYPE_NEW_CUSTOMER);
+
+        $this->dataFieldTypeHandlerMock->expects($this->once())
+            ->method('retrieveDatafieldsByType');
+
+        $this->contactManagerMock->expects($this->once())
+            ->method('prepareDotdigitalContact')
+            ->willThrowException(new PendingOptInException(__('Contact status is PendingOptIn, cannot be enrolled.')));
 
         $this->automationResourceMock->expects($this->once())
             ->method('setStatusAndSaveAutomation');
 
-        $this->subscriberFactoryMock->expects($this->never())
-            ->method('create');
-
-        $this->dataFieldUpdateHandlerMock->expects($this->never())
-            ->method('updateDatafieldsByType');
-
         $this->automationProcessor->process($this->getAutomationCollectionMock());
     }
 
-    public function testRowIsMarkedAsFailedIfContactNotFound()
+    public function testAutomationIsMarkedAsFailedForAnyOtherException()
     {
         $this->setupAutomationModel();
         $this->setupContactModel();
+        $this->setupSubscriberModel();
 
-        $this->helperMock->expects($this->once())
-            ->method('getOrCreateContact')
-            ->willReturn(false);
+        $this->automationModelMock->expects($this->once())
+            ->method('getAutomationType')
+            ->willReturn(AutomationTypeHandler::AUTOMATION_TYPE_NEW_CUSTOMER);
+
+        $this->dataFieldTypeHandlerMock->expects($this->once())
+            ->method('retrieveDatafieldsByType');
+
+        $this->contactManagerMock->expects($this->once())
+            ->method('prepareDotdigitalContact')
+            ->willThrowException(new \Exception(__('Something went wrong.')));
 
         $this->automationResourceMock->expects($this->once())
             ->method('setStatusAndSaveAutomation')
             ->with(
                 $this->automationModelMock,
                 StatusInterface::FAILED,
-                'Contact cannot be created or has been suppressed'
+                'Something went wrong.'
             );
-
-        $this->dataFieldUpdateHandlerMock->expects($this->never())
-            ->method('updateDatafieldsByType');
 
         $this->automationProcessor->process($this->getAutomationCollectionMock());
     }

@@ -41,7 +41,7 @@ abstract class AbstractExporter
      * @param array $contacts
      * @param WebsiteInterface $website
      *
-     * @return mixed
+     * @return array
      */
     abstract public function export(array $contacts, WebsiteInterface $website);
 

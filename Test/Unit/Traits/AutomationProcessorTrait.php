@@ -32,17 +32,32 @@ trait AutomationProcessorTrait
         $this->automationModelMock->expects($this->once())
             ->method('getWebsiteId')
             ->willReturn('1');
+
+        $this->automationModelMock->expects($this->once())
+            ->method('getStoreId')
+            ->willReturn('1');
     }
 
     private function setupContactModel()
     {
-        $this->contactCollectionFactoryMock->expects($this->once())
+        $this->contactFactoryMock->expects($this->once())
             ->method('create')
-            ->willReturn($this->contactCollectionMock);
+            ->willReturn($this->contactModelMock);
 
-        $this->contactCollectionMock->expects($this->once())
+        $this->contactModelMock->expects($this->once())
             ->method('loadByCustomerEmail')
             ->willReturn($this->contactModelMock);
+    }
+
+    private function setupSubscriberModel()
+    {
+        $this->subscriberFactoryMock->expects($this->once())
+            ->method('create')
+            ->willReturn($this->subscriberModelMock);
+
+        $this->subscriberModelMock->expects($this->once())
+            ->method('loadBySubscriberEmail')
+            ->willReturn($this->subscriberModelMock);
     }
 
     private function getSubscribedContact()
