@@ -2,6 +2,6 @@
 
 namespace Dotdigitalgroup\Email\Controller\Quoteproducts;
 
-class Crosssell extends \Dotdigitalgroup\Email\Controller\Edc
+class Crosssell extends \Dotdigitalgroup\Email\Controller\ExternalDynamicContentController
 {
 }

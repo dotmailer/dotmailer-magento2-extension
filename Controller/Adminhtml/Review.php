@@ -11,5 +11,5 @@ abstract class Review extends Action
      *
      * @see _isAllowed()
      */
-    const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::review';
+    public const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::review';
 }

@@ -2,27 +2,27 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Rules;
 
+use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
 use Dotdigitalgroup\Email\Model\ExclusionRule\RuleValidator;
+use Magento\Framework\App\Action\HttpPostActionInterface;
+use Magento\Framework\Controller\Result\Json;
+use Magento\Framework\Controller\Result\JsonFactory;
+use Magento\Framework\View\Element\Html\Select;
 
 /**
  * Class Ajax
  * If a user selects a different attribute for an exclusion rule condition,
  * the condition and value fields are dynamically updated.
  */
-class Ajax extends \Magento\Backend\App\AbstractAction
+class Ajax extends Action implements HttpPostActionInterface
 {
     /**
      * Authorization level of a basic admin session
      *
      * @see _isAllowed()
      */
-    const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::exclusion_rules';
-
-    /**
-     * @var \Magento\Framework\App\Response\Http
-     */
-    private $http;
+    public const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::exclusion_rules';
 
     /**
      * @var \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Type
@@ -40,61 +40,53 @@ class Ajax extends \Magento\Backend\App\AbstractAction
     private $ruleValue;
 
     /**
-     * @var \Magento\Framework\Json\Helper\Data
-     */
-    private $jsonEncoder;
-
-    /**
-     * @var \Magento\Framework\Escaper
-     */
-    private $escaper;
-
-    /**
      * @var RuleValidator
      */
     private $ruleValidator;
 
     /**
+     * @var JsonFactory
+     */
+    private $resultJsonFactory;
+
+    /**
      * Ajax constructor.
      *
-     * @param Context                                                       $context
-     * @param \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Type      $ruleType
+     * @param Context $context
+     * @param \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Type $ruleType
      * @param \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Condition $ruleCondition
-     * @param \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Value     $ruleValue
-     * @param \Magento\Framework\Json\Helper\Data                           $jsonEncoder
-     * @param \Magento\Framework\App\Response\Http                          $http
-     * @param \Magento\Framework\Escaper                                    $escaper
+     * @param \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Value $ruleValue
+     * @param RuleValidator $ruleValidator
+     * @param JsonFactory $resultJsonFactory
      */
     public function __construct(
         Context $context,
         \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Type $ruleType,
         \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Condition $ruleCondition,
         \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Value $ruleValue,
-        \Magento\Framework\Json\Helper\Data $jsonEncoder,
-        \Magento\Framework\App\Response\Http $http,
-        \Magento\Framework\Escaper $escaper,
-        RuleValidator $ruleValidator
+        RuleValidator $ruleValidator,
+        JsonFactory $resultJsonFactory
     ) {
         $this->ruleType = $ruleType;
         $this->ruleCondition = $ruleCondition;
         $this->ruleValue = $ruleValue;
-        $this->jsonEncoder = $jsonEncoder;
-        $this->escaper = $escaper;
         $this->ruleValidator = $ruleValidator;
+        $this->resultJsonFactory = $resultJsonFactory;
         parent::__construct($context);
-        $this->http = $http;
     }
 
     /**
      * Execute method.
      *
-     * @return void
+     * @return Json
      */
     public function execute()
     {
         $attribute = $this->getRequest()->getParam('attribute');
         $conditionName = $this->getRequest()->getParam('condition');
         $valueName = $this->getRequest()->getParam('value');
+        $response = [];
+
         if ($attribute && $conditionName && $valueName) {
             $inputType = $this->ruleType->getInputType($attribute);
             $conditionOptions = $this->ruleCondition->getInputTypeOptions($inputType);
@@ -124,12 +116,12 @@ class Ajax extends \Magento\Backend\App\AbstractAction
                 $html .= " />";
                 $response['cvalue'] = $html;
             }
-            $this->http->getHeaders()->clearHeaders();
-            $this->http->setHeader('Content-Type', 'application/json')
-                ->setBody(
-                    $this->jsonEncoder->jsonEncode($response)
-                );
         }
+
+        $resultJson = $this->resultJsonFactory->create();
+        $resultJson->setData($response);
+
+        return $resultJson;
     }
 
     /**
@@ -143,9 +135,8 @@ class Ajax extends \Magento\Backend\App\AbstractAction
      */
     private function _getOptionHtml($title, $name, $options)
     {
-        $block = $this->_view->getLayout()->createBlock(
-            \Magento\Framework\View\Element\Html\Select::class
-        );
+        $block = $this->_view->getLayout()->createBlock(Select::class);
+        /** @var Select $block */
         $block->setOptions($options)
             ->setId('')
             ->setClass('ddg-rules-conditions')

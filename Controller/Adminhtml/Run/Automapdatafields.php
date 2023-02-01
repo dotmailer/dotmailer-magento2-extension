@@ -3,15 +3,18 @@
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Run;
 
 use Dotdigitalgroup\Email\Model\Connector\DataFieldAutoMapperFactory;
+use Magento\Backend\App\Action;
+use Magento\Framework\App\Action\HttpGetActionInterface;
+use Magento\Framework\App\ResponseInterface;
 
-class Automapdatafields extends \Magento\Backend\App\AbstractAction
+class Automapdatafields extends Action implements HttpGetActionInterface
 {
     /**
      * Authorization level of a basic admin session
      *
      * @see _isAllowed()
      */
-    const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::config';
+    public const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::config';
 
     /**
      * @var \Magento\Framework\Message\ManagerInterface
@@ -45,7 +48,9 @@ class Automapdatafields extends \Magento\Backend\App\AbstractAction
     }
 
     /**
-     * @return \Magento\Framework\App\ResponseInterface|\Magento\Framework\Controller\ResultInterface
+     * Execute
+     *
+     * @return ResponseInterface|void
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function execute()

@@ -2,6 +2,6 @@
 
 namespace Dotdigitalgroup\Email\Controller\Report;
 
-class Bestsellers extends \Dotdigitalgroup\Email\Controller\Edc
+class Bestsellers extends \Dotdigitalgroup\Email\Controller\ExternalDynamicContentController
 {
 }

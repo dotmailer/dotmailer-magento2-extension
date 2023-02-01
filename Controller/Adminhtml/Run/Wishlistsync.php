@@ -2,20 +2,23 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Run;
 
-class Wishlistsync extends \Magento\Backend\App\AbstractAction
+use Magento\Backend\App\Action;
+use Magento\Framework\App\Action\HttpGetActionInterface;
+
+class Wishlistsync extends Action implements HttpGetActionInterface
 {
     /**
      * Authorization level of a basic admin session
      *
      * @see _isAllowed()
      */
-    const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::config';
+    public const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::config';
 
     /**
      * @var \Magento\Framework\Message\ManagerInterface
      */
     protected $messageManager;
-    
+
     /**
      * @var \Dotdigitalgroup\Email\Model\Sync\WishlistFactory
      */
@@ -39,7 +42,7 @@ class Wishlistsync extends \Magento\Backend\App\AbstractAction
     /**
      * Refresh suppressed contacts.
      *
-     * @return null
+     * @return void
      */
     public function execute()
     {

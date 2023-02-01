@@ -2,6 +2,6 @@
 
 namespace Dotdigitalgroup\Email\Controller\Product;
 
-class Push extends \Dotdigitalgroup\Email\Controller\Edc
+class Push extends \Dotdigitalgroup\Email\Controller\ExternalDynamicContentController
 {
 }

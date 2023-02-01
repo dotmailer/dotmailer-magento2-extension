@@ -2,43 +2,42 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Datafield;
 
-class Save extends \Magento\Backend\App\AbstractAction
+use Dotdigitalgroup\Email\Model\Apiconnector\DataField;
+use Magento\Backend\App\Action;
+use Magento\Backend\App\Action\Context;
+use Magento\Framework\App\Action\HttpPostActionInterface;
+use Magento\Framework\Message\ManagerInterface as MessageManager;
+
+class Save extends Action implements HttpPostActionInterface
 {
     /**
      * Authorization level of a basic admin session
      *
      * @see _isAllowed()
      */
-    const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::automation';
+    public const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::automation';
 
     /**
-     * @var \Magento\Framework\Escaper
-     */
-    private $escaper;
-
-    /**
-     * @var \Magento\Framework\Message\ManagerInterface
+     * @var MessageManager
      */
     protected $messageManager;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\Apiconnector\DataField
+     * @var DataField
      */
     private $datafieldHandler;
 
     /**
      * Save constructor.
-     * @param \Dotdigitalgroup\Email\Model\Apiconnector\DataField $datafieldHandler
-     * @param \Magento\Framework\Escaper $escaper
-     * @param \Magento\Backend\App\Action\Context $context
+     *
+     * @param DataField $datafieldHandler
+     * @param Context $context
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\Apiconnector\DataField $datafieldHandler,
-        \Magento\Framework\Escaper $escaper,
-        \Magento\Backend\App\Action\Context $context
+        DataField $datafieldHandler,
+        Context $context
     ) {
         $this->datafieldHandler = $datafieldHandler;
-        $this->escaper = $escaper;
         $this->messageManager = $context->getMessageManager();
         parent::__construct($context);
     }

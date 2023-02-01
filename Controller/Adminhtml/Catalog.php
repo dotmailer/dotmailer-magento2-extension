@@ -2,12 +2,14 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml;
 
-abstract class Catalog extends \Magento\Backend\App\Action
+use Magento\Backend\App\Action;
+
+abstract class Catalog extends Action
 {
     /**
      * Authorization level of a basic admin session
      *
      * @see _isAllowed()
      */
-    const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::catalog';
+    public const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::catalog';
 }

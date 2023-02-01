@@ -2,6 +2,6 @@
 
 namespace Dotdigitalgroup\Email\Controller\Email;
 
-class Wishlist extends \Dotdigitalgroup\Email\Controller\Edc
+class Wishlist extends \Dotdigitalgroup\Email\Controller\ExternalDynamicContentController
 {
 }

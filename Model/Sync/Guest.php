@@ -7,12 +7,10 @@ use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Connector\ContactData;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory as ContactCollectionFactory;
-use Dotdigitalgroup\Email\Model\Sync\AbstractContactSyncer;
-use Dotdigitalgroup\Email\Model\Sync\AbstractExporter;
 use Dotdigitalgroup\Email\Model\Sync\Batch\GuestBatchProcessor;
 use Dotdigitalgroup\Email\Model\Sync\Export\CsvHandler;
+use Dotdigitalgroup\Email\Model\Sync\Guest\GuestExporterFactory;
 use Magento\Framework\App\Config\ScopeConfigInterface;
-use Magento\Framework\DataObject;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Store\Model\Website;
@@ -65,6 +63,11 @@ class Guest extends AbstractContactSyncer implements SyncInterface
     private $contactData;
 
     /**
+     * @var GuestExporterFactory
+     */
+    private $guestExporterFactory;
+
+    /**
      * Guest constructor.
      *
      * @param ContactCollectionFactory $contactCollectionFactory
@@ -73,7 +76,9 @@ class Guest extends AbstractContactSyncer implements SyncInterface
      * @param StoreManagerInterface $storeManager
      * @param Logger $logger
      * @param GuestBatchProcessor $batchProcessor
+     * @param CsvHandler $csvHandler
      * @param ContactData $contactData
+     * @param GuestExporterFactory $guestExporterFactory
      * @param array $data
      */
     public function __construct(
@@ -85,6 +90,7 @@ class Guest extends AbstractContactSyncer implements SyncInterface
         GuestBatchProcessor $batchProcessor,
         CsvHandler $csvHandler,
         ContactData $contactData,
+        GuestExporterFactory $guestExporterFactory,
         array $data = []
     ) {
         $this->contactCollectionFactory = $contactCollectionFactory;
@@ -95,6 +101,7 @@ class Guest extends AbstractContactSyncer implements SyncInterface
         $this->batchProcessor = $batchProcessor;
         $this->csvHandler = $csvHandler;
         $this->contactData = $contactData;
+        $this->guestExporterFactory = $guestExporterFactory;
         parent::__construct($data);
     }
 
@@ -111,7 +118,7 @@ class Guest extends AbstractContactSyncer implements SyncInterface
         $megaBatchSize = (int) $this->scopeConfig->getValue(Config::XML_PATH_CONNECTOR_MEGA_BATCH_SIZE_CONTACT);
 
         $breakValue = $this->isRunFromDeveloperButton() ?
-            (int) $this->scopeConfig->getValue(Config::XML_PATH_CONNECTOR_SYNC_LIMIT):
+            (int) $this->scopeConfig->getValue(Config::XML_PATH_CONNECTOR_SYNC_LIMIT) :
             (int) $this->scopeConfig->getValue(Config::XML_PATH_CONNECTOR_SYNC_BREAK_VALUE);
 
         /** @var Website $website */
@@ -168,14 +175,14 @@ class Guest extends AbstractContactSyncer implements SyncInterface
         $offset = 0;
         $loopStart = true;
         $filename = '';
-
-        $columns = $this->getGuestColumns($website);
-
         $limit = (int) $this->scopeConfig->getValue(
             Config::XML_PATH_CONNECTOR_SYNC_LIMIT,
             ScopeInterface::SCOPE_WEBSITE,
             $website->getId()
         );
+
+        $guestExporter = $this->guestExporterFactory->create();
+        $guestExporter->setCsvColumns($website);
 
         do {
             $guests = $this->getGuestsToSync($website->getId(), $limit, $offset);
@@ -183,7 +190,7 @@ class Guest extends AbstractContactSyncer implements SyncInterface
                 break;
             }
 
-            $batch = $this->exportGuests($guests, $columns);
+            $batch = $guestExporter->export($guests->getItems());
             $batchCount = count($batch);
 
             if ($batchCount === 0) {
@@ -191,7 +198,7 @@ class Guest extends AbstractContactSyncer implements SyncInterface
             }
 
             if ($loopStart) {
-                $filename = $this->csvHandler->initialiseCsvFile($website, $columns, 'Guest');
+                $filename = $this->csvHandler->initialiseCsvFile($website, $guestExporter->getCsvColumns(), 'Guest');
                 $loopStart = false;
             }
 
@@ -206,48 +213,9 @@ class Guest extends AbstractContactSyncer implements SyncInterface
                 $offset = 0;
                 $loopStart = true;
             }
-
         } while (!$breakValue || $this->totalGuestsSyncedCount < $breakValue);
 
         $this->batchProcessor->process($megaBatch, $website->getId(), $filename);
-    }
-
-    /**
-     * Export guests.
-     *
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Contact\Collection $guests
-     * @param array $columns
-     * @return array
-     * @throws \Magento\Framework\Exception\LocalizedException
-     */
-    private function exportGuests($guests, $columns)
-    {
-        $exportedData = [];
-        foreach ($guests as $guest) {
-            $exportedData[$guest->getEmailContactId()] = $this->contactData
-                ->init($guest, $columns)
-                ->setContactData()
-                ->toCSVArray();
-        }
-
-        return $exportedData;
-    }
-
-    /**
-     * Get guests columns.
-     *
-     * @param Website $website
-     * @return array
-     */
-    private function getGuestColumns(Website $website)
-    {
-        $guestColumns = [
-            'store_name' => $website->getConfig(Config::XML_PATH_CONNECTOR_MAPPING_CUSTOMER_STORENAME),
-            'store_name_additional' => $website->getConfig(Config::XML_PATH_CONNECTOR_CUSTOMER_STORE_NAME_ADDITIONAL),
-            'website_name' => $website->getConfig(Config::XML_PATH_CONNECTOR_CUSTOMER_WEBSITE_NAME)
-        ];
-
-        return AbstractExporter::EMAIL_FIELDS + array_filter($guestColumns);
     }
 
     /**

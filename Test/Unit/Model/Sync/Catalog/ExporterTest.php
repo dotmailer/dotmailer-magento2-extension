@@ -3,11 +3,14 @@
 namespace Dotdigitalgroup\Email\Test\Unit\Model\Sync\Catalog;
 
 use Dotdigitalgroup\Email\Model\Connector\ProductFactory;
+use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\ResourceModel\Catalog\Collection;
 use Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory;
 use Dotdigitalgroup\Email\Model\Sync\Catalog\Exporter;
 use Magento\Catalog\Model\Product;
-use Dotdigitalgroup\Email\Logger\Logger;
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Store\Api\Data\StoreInterface;
+use Magento\Store\Model\StoreManagerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
@@ -38,29 +41,67 @@ class ExporterTest extends TestCase
      */
     private $loggerMock;
 
+    /**
+     * @var ScopeConfigInterface
+     */
+    private $scopeConfigMock;
+
+    /**
+     * @var StoreManagerInterface
+     */
+    private $storeManagerMock;
+
     protected function setUp() :void
     {
         $this->collectionFactoryMock = $this->createMock(CollectionFactory::class);
         $this->productFactoryMock = $this->createMock(ProductFactory::class);
         $this->collectionMock = $this->createMock(Collection::class);
         $this->loggerMock = $this->createMock(Logger::class);
+        $this->scopeConfigMock = $this->createMock(ScopeConfigInterface::class);
+        $this->storeManagerMock = $this->createMock(StoreManagerInterface::class);
+
         $this->exporter = new Exporter(
             $this->collectionFactoryMock,
             $this->productFactoryMock,
-            $this->loggerMock
+            $this->loggerMock,
+            $this->scopeConfigMock,
+            $this->storeManagerMock
         );
     }
 
     /**
-     * @dataProvider getProductAndStoreIds
+     * @dataProvider getProductIdStoreIdsTypesAndVisibilities
      * @param int $storeId
      * @param int $product1Id
      * @param int $product2Id
+     * @param string $types
+     * @param string $visibilities
      * @return void
      */
-    public function testThatExportKeysAndProductsMatches(int $storeId, int $product1Id, int $product2Id)
-    {
+    public function testThatExportKeysAndProductsMatch(
+        int $storeId,
+        int $product1Id,
+        int $product2Id,
+        string $types,
+        string $visibilities
+    ) {
         $productsToProcess = $this->getMockProductsToProcess();
+
+        $storeMock = $this->createMock(StoreInterface::class);
+        $this->storeManagerMock->expects($this->once())
+            ->method('getStore')
+            ->willReturn($storeMock);
+
+        $storeMock->expects($this->once())
+            ->method('getWebsiteId')
+            ->willReturn(1);
+
+        $this->scopeConfigMock->expects($this->exactly(2))
+            ->method('getValue')
+            ->willReturnOnConsecutiveCalls(
+                $types,
+                $visibilities
+            );
 
         $this->collectionFactoryMock->expects($this->once())
             ->method('create')
@@ -146,12 +187,12 @@ class ExporterTest extends TestCase
      * @return array
      * Returns ids for products and store
      */
-    public function getProductAndStoreIds()
+    public function getProductIdStoreIdsTypesAndVisibilities()
     {
         return [
-            [1, 1254, 337],
-            [2, 2234, 554],
-            [4, 332, 2445]
+            [1, 1254, 337, '0', '0'],
+            [2, 2234, 554, '0', '0'],
+            [4, 332, 2445, 'type1,type2', 'visibility1,visibility2']
         ];
     }
 

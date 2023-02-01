@@ -4,21 +4,22 @@ namespace Dotdigitalgroup\Email\Model\Sync\Automation\Type;
 
 use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Logger\Logger;
+use Dotdigitalgroup\Email\Model\Automation;
+use Dotdigitalgroup\Email\Model\ContactFactory;
+use Dotdigitalgroup\Email\Model\Contact\ContactResponseHandler;
 use Dotdigitalgroup\Email\Model\ResourceModel\Automation as AutomationResource;
 use Dotdigitalgroup\Email\Model\Sales\QuoteFactory as DotdigitalQuoteFactory;
 use Dotdigitalgroup\Email\Model\Sync\Automation\AutomationProcessor;
-use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\DataFieldUpdateHandler;
+use Dotdigitalgroup\Email\Model\Sync\Automation\ContactManager;
+use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\DataFieldCollector;
+use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\DataFieldTypeHandler;
 use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\Updater\AbandonedCartFactory as AbandonedCartUpdaterFactory;
 use Dotdigitalgroup\Email\Model\StatusInterface;
+use Magento\Newsletter\Model\SubscriberFactory;
 use Magento\Quote\Model\QuoteFactory;
 
 class AbandonedCart extends AutomationProcessor
 {
-    /**
-     * @var Logger
-     */
-    private $logger;
-
     /**
      * @var AbandonedCartUpdaterFactory
      */
@@ -41,10 +42,16 @@ class AbandonedCart extends AutomationProcessor
 
     /**
      * AbandonedCart constructor.
+     *
      * @param Data $helper
      * @param Logger $logger
      * @param AutomationResource $automationResource
-     * @param DataFieldUpdateHandler $dataFieldUpdateHandler
+     * @param ContactFactory $contactFactory
+     * @param ContactManager $contactManager
+     * @param DataFieldCollector $dataFieldCollector
+     * @param DataFieldTypeHandler $dataFieldTypeHandler
+     * @param ContactResponseHandler $contactResponseHandler
+     * @param SubscriberFactory $subscriberFactory
      * @param AbandonedCartUpdaterFactory $dataFieldUpdaterFactory
      * @param DotdigitalQuoteFactory $ddgQuoteFactory
      * @param QuoteFactory $quoteFactory
@@ -53,24 +60,40 @@ class AbandonedCart extends AutomationProcessor
         Data $helper,
         Logger $logger,
         AutomationResource $automationResource,
-        DataFieldUpdateHandler $dataFieldUpdateHandler,
+        ContactFactory $contactFactory,
+        ContactManager $contactManager,
+        DataFieldCollector $dataFieldCollector,
+        DataFieldTypeHandler $dataFieldTypeHandler,
+        ContactResponseHandler $contactResponseHandler,
+        SubscriberFactory $subscriberFactory,
         AbandonedCartUpdaterFactory $dataFieldUpdaterFactory,
         DotdigitalQuoteFactory $ddgQuoteFactory,
         QuoteFactory $quoteFactory
     ) {
-        $this->logger = $logger;
         $this->dataFieldUpdaterFactory = $dataFieldUpdaterFactory;
         $this->ddgQuoteFactory = $ddgQuoteFactory;
         $this->quoteFactory = $quoteFactory;
 
-        parent::__construct($helper, $automationResource, $dataFieldUpdateHandler);
+        parent::__construct(
+            $helper,
+            $logger,
+            $contactResponseHandler,
+            $automationResource,
+            $contactFactory,
+            $contactManager,
+            $dataFieldCollector,
+            $dataFieldTypeHandler,
+            $subscriberFactory
+        );
     }
 
     /**
-     * @param \Dotdigitalgroup\Email\Model\Automation $automation
+     * Check if automation should be processed.
+     *
+     * @param Automation $automation
      * @return bool
      */
-    protected function shouldExitLoop($automation)
+    protected function shouldExitLoop(Automation $automation)
     {
         $quoteItems = $this->getQuoteItems($automation->getTypeId());
 
@@ -86,16 +109,19 @@ class AbandonedCart extends AutomationProcessor
     }
 
     /**
-     * @param \Dotdigitalgroup\Email\Model\Automation $automation
+     * Retrieve automation data fields.
+     *
+     * @param Automation $automation
      * @param string $email
      * @param string|int $websiteId
+     * @return array
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    protected function orchestrateDataFieldUpdate($automation, $email, $websiteId)
+    protected function retrieveAutomationDataFields(Automation $automation, $email, $websiteId): array
     {
         $quoteItems = $this->getQuoteItems($automation->getTypeId());
 
-        $this->dataFieldUpdaterFactory->create()
+        return $this->dataFieldUpdaterFactory->create()
             ->setDataFields(
                 $email,
                 $websiteId,
@@ -103,10 +129,12 @@ class AbandonedCart extends AutomationProcessor
                 $automation->getStoreName(),
                 $this->getNominatedAbandonedCartItem($quoteItems)
             )
-            ->updateDataFields();
+            ->getData();
     }
 
     /**
+     * Get (and store) quote items.
+     *
      * @param string|int $quoteId
      * @return \Magento\Quote\Model\Quote\Item[]
      */

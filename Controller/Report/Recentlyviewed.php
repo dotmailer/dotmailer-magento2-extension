@@ -2,6 +2,6 @@
 
 namespace Dotdigitalgroup\Email\Controller\Report;
 
-class Recentlyviewed extends \Dotdigitalgroup\Email\Controller\Edc
+class Recentlyviewed extends \Dotdigitalgroup\Email\Controller\ExternalDynamicContentController
 {
 }

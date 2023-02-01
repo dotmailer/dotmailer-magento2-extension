@@ -2,14 +2,18 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Run;
 
-class Importersync extends \Magento\Backend\App\AbstractAction
+use Dotdigitalgroup\Email\Model\Sync\ImporterFactory;
+use Magento\Backend\App\Action;
+use Magento\Framework\App\Action\HttpGetActionInterface;
+
+class Importersync extends Action implements HttpGetActionInterface
 {
     /**
      * Authorization level of a basic admin session
      *
      * @see _isAllowed()
      */
-    const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::config';
+    public const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::config';
 
     /**
      * @var \Magento\Framework\Message\ManagerInterface
@@ -17,22 +21,22 @@ class Importersync extends \Magento\Backend\App\AbstractAction
     protected $messageManager;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\ImporterFactory
+     * @var ImporterFactory
      */
     private $importerFactory;
 
     /**
      * Importersync constructor.
      *
-     * @param \Dotdigitalgroup\Email\Model\Sync\ImporterFactory $importerFactory
+     * @param ImporterFactory $importerFactory
      * @param \Magento\Backend\App\Action\Context $context
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\Sync\ImporterFactory $importerFactory,
+        ImporterFactory $importerFactory,
         \Magento\Backend\App\Action\Context $context
     ) {
         $this->importerFactory = $importerFactory;
-        $this->messageManager  = $context->getMessageManager();
+        $this->messageManager = $context->getMessageManager();
 
         parent::__construct($context);
     }
@@ -40,7 +44,7 @@ class Importersync extends \Magento\Backend\App\AbstractAction
     /**
      * Refresh suppressed contacts.
      *
-     * @return null
+     * @return void
      */
     public function execute()
     {

@@ -2,8 +2,8 @@
 
 namespace Dotdigitalgroup\Email\Controller\Email;
 
-use Dotdigitalgroup\Email\Controller\Edc;
+use Dotdigitalgroup\Email\Controller\ExternalDynamicContentController;
 
-class Coupon extends Edc
+class Coupon extends ExternalDynamicContentController
 {
 }

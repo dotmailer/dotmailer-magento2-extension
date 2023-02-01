@@ -7,7 +7,6 @@ use Magento\Backend\Block\Template\Context;
 use Magento\Framework\Data\Form\Element\Factory;
 use Magento\Framework\DataObject;
 use Dotdigitalgroup\Email\Block\Adminhtml\Config\Select;
-use Magento\Framework\View\Element\BlockInterface;
 
 abstract class AbstractCustomSelectTable extends AbstractFieldArray
 {
@@ -26,7 +25,7 @@ abstract class AbstractCustomSelectTable extends AbstractFieldArray
     protected $buttonLabel = 'Add';
 
     /**
-     * @var BlockInterface
+     * @var Select
      */
     private $fieldRenderer;
 
@@ -144,7 +143,7 @@ EOT;
     }
 
     /**
-     * @return BlockInterface
+     * @return Select
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     private function getFieldRenderer()

@@ -4,6 +4,8 @@ namespace Dotdigitalgroup\Email\Model\Sync\PendingContact;
 
 use Dotdigitalgroup\Email\Helper\Config;
 use Dotdigitalgroup\Email\Helper\Data;
+use Dotdigitalgroup\Email\Model\ResourceModel\Abandoned;
+use Dotdigitalgroup\Email\Model\ResourceModel\Automation;
 use Dotdigitalgroup\Email\Model\StatusInterface;
 use Dotdigitalgroup\Email\Model\Sync\PendingContact\Type\TypeProviderInterface;
 use Magento\Framework\Stdlib\DateTime;
@@ -53,6 +55,8 @@ class PendingContactUpdater
     private $idsToExpire = [];
 
     /**
+     * Constructor.
+     *
      * @param Data $helper
      * @param TimezoneInterface $timeZone
      * @param TypeProviderInterface $typeProvider
@@ -73,6 +77,12 @@ class PendingContactUpdater
         $this->storeManager = $storeManager;
     }
 
+    /**
+     * Update.
+     *
+     * @return void
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
     public function update()
     {
         $dateTimeFromDb = $this->getCollectionFactory()->create()
@@ -93,6 +103,10 @@ class PendingContactUpdater
     }
 
     /**
+     * Check pending contact.
+     *
+     * Check if contact should have been updated based on time.
+     *
      * @param string $dateTimeFromDb
      * @return bool
      */
@@ -106,6 +120,8 @@ class PendingContactUpdater
     }
 
     /**
+     * Check status for pending contacts.
+     *
      * @param \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection $collection
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
@@ -132,6 +148,8 @@ class PendingContactUpdater
     }
 
     /**
+     * Get datetime for expiration.
+     *
      * @return string
      */
     private function getDateTimeForExpiration()
@@ -149,9 +167,11 @@ class PendingContactUpdater
     }
 
     /**
-     * @param \Magento\Framework\Model\ResourceModel\Db\AbstractDb $resourceModel
+     * Update db rows.
+     *
+     * @param Abandoned|Automation $resourceModel
      */
-    private function updateRows($resourceModel)
+    private function updateRows($resourceModel): void
     {
         $updatedAt = $this->dateTime->formatDate(true);
 
@@ -178,6 +198,8 @@ class PendingContactUpdater
     }
 
     /**
+     * Get websiteId from storeId.
+     *
      * @param string|int $storeId
      * @return int
      * @throws \Magento\Framework\Exception\NoSuchEntityException
@@ -188,6 +210,8 @@ class PendingContactUpdater
     }
 
     /**
+     * Get collection factory.
+     *
      * @return mixed
      */
     private function getCollectionFactory()
@@ -196,6 +220,8 @@ class PendingContactUpdater
     }
 
     /**
+     * Get resource model.
+     *
      * @return mixed
      */
     private function getResourceModel()

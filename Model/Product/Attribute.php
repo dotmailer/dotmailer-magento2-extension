@@ -2,11 +2,11 @@
 
 namespace Dotdigitalgroup\Email\Model\Product;
 
-use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Helper\Config;
+use Dotdigitalgroup\Email\Helper\Data;
 use Magento\Catalog\Api\ProductAttributeRepositoryInterface;
-use Magento\Catalog\Model\ResourceModel\Product\Attribute\CollectionFactory as AttributeCollectionFactory;
 use Magento\Catalog\Model\ResourceModel\Product;
+use Magento\Catalog\Model\ResourceModel\Product\Attribute\CollectionFactory as AttributeCollectionFactory;
 use Magento\Eav\Api\AttributeSetRepositoryInterface;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\Stdlib\DateTime\DateTimeFactory;
@@ -55,6 +55,7 @@ class Attribute
 
     /**
      * Attribute constructor.
+     *
      * @param Data $helper
      * @param AttributeCollectionFactory $attributeCollection
      * @param AttributeSetRepositoryInterface $attributeSet
@@ -82,6 +83,8 @@ class Attribute
     }
 
     /**
+     * Get configuration attributes for sync.
+     *
      * @param string|int $websiteId
      *
      * @return bool|string
@@ -116,6 +119,8 @@ class Attribute
     }
 
     /**
+     * Process configuration attributes.
+     *
      * @param array $configAttributes
      * @param mixed $attributesFromAttributeSet
      * @param \Magento\Catalog\Model\Product $productModel
@@ -159,6 +164,8 @@ class Attribute
     }
 
     /**
+     * Process attribute value.
+     *
      * @param string|array $value
      * @param string $attributeCode
      *
@@ -183,11 +190,16 @@ class Attribute
     }
 
     /**
+     * Get attribute set name.
+     *
      * @param \Magento\Catalog\Model\Product $product
      * @return string
      */
     public function getAttributeSetName($product)
     {
+        if (!$product) {
+            return '';
+        }
         try {
             $attributeSetRepository = $this->attributeSet->get($product->getAttributeSetId());
             return $attributeSetRepository->getAttributeSetName();
@@ -197,6 +209,8 @@ class Attribute
     }
 
     /**
+     * Has values.
+     *
      * @return mixed
      */
     public function hasValues()
@@ -205,6 +219,8 @@ class Attribute
     }
 
     /**
+     * Get media image attributes.
+     *
      * @return \Magento\Catalog\Api\Data\ProductAttributeSearchResultsInterface
      */
     public function getMediaImageAttributes()
@@ -227,10 +243,12 @@ class Attribute
      */
     public function __get($name)
     {
-        return (isset($this->$name)) ? $this->$name: null;
+        return (isset($this->$name)) ? $this->$name : null;
     }
 
     /**
+     * Implode recursive.
+     *
      * @param string $separator
      * @param array $array
      *

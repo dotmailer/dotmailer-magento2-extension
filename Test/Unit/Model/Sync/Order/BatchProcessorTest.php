@@ -8,7 +8,7 @@ use Dotdigitalgroup\Email\Model\Importer;
 use Dotdigitalgroup\Email\Model\ImporterFactory;
 use Dotdigitalgroup\Email\Model\ResourceModel\Order as OrderResource;
 use Dotdigitalgroup\Email\Model\ResourceModel\Order\Collection as OrderCollection;
-use Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory as OrderCollectionFactory;
+use Magento\Sales\Model\ResourceModel\Order\CollectionFactory as OrderCollectionFactory;
 use Dotdigitalgroup\Email\Model\ResourceModel\OrderFactory as OrderResourceFactory;
 use Dotdigitalgroup\Email\Model\Sync\Order\BatchProcessor;
 use PHPUnit\Framework\TestCase;
@@ -105,7 +105,12 @@ class BatchProcessorTest extends TestCase
             ->willReturn($this->orderCollectionMock);
 
         $this->orderCollectionMock->expects($this->once())
-            ->method('getOrderIdsFromIncrementIds');
+            ->method('addFieldToFilter')
+            ->willReturn($this->orderCollectionMock);
+
+        $this->orderCollectionMock->expects($this->once())
+            ->method('getColumnValues')
+            ->willReturn(['1,2,3,4,5']);
 
         $this->orderResourceMock->expects($this->atLeastOnce())
             ->method('setImportedDateByIds');

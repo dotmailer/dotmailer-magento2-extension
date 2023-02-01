@@ -2,14 +2,17 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Run;
 
-class Reviewsync extends \Magento\Backend\App\AbstractAction
+use Magento\Backend\App\Action;
+use Magento\Framework\App\Action\HttpGetActionInterface;
+
+class Reviewsync extends Action implements HttpGetActionInterface
 {
     /**
      * Authorization level of a basic admin session
      *
      * @see _isAllowed()
      */
-    const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::config';
+    public const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::config';
 
     /**
      * @var \Magento\Framework\Message\ManagerInterface
@@ -39,7 +42,7 @@ class Reviewsync extends \Magento\Backend\App\AbstractAction
     /**
      * Refresh suppressed contacts.
      *
-     * @return null
+     * @return void
      */
     public function execute()
     {

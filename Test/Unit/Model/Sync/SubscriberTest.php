@@ -10,6 +10,7 @@ use Dotdigitalgroup\Email\Model\Subscriber as SubscriberModel;
 use Dotdigitalgroup\Email\Model\Sync\Batch\SubscriberBatchProcessor;
 use Dotdigitalgroup\Email\Model\Sync\AbstractExporter;
 use Dotdigitalgroup\Email\Model\Sync\Subscriber;
+use Dotdigitalgroup\Email\Model\Sync\Subscriber\OrderHistoryChecker;
 use Dotdigitalgroup\Email\Model\Sync\Subscriber\SubscriberExporterFactory;
 use Dotdigitalgroup\Email\Model\Sync\Subscriber\SubscriberWithSalesExporterFactory;
 use Magento\Framework\App\Config\ScopeConfigInterface;
@@ -61,9 +62,9 @@ class SubscriberTest extends TestCase
     private $scopeConfigMock;
 
     /**
-     * @var OrderSearchResultInterfaceFactory|\PHPUnit\Framework\MockObject\MockObject
+     * @var OrderHistoryChecker|\PHPUnit\Framework\MockObject\MockObject
      */
-    private $orderSearchResultInterfaceFactoryMock;
+    private $orderHistoryCheckerMock;
 
     /**
      * @var StoreManagerInterface|\PHPUnit\Framework\MockObject\MockObject
@@ -80,16 +81,17 @@ class SubscriberTest extends TestCase
      */
     private $subscriber;
 
-    protected function setUp(): void {
+    protected function setUp(): void
+    {
         $this->helperMock = $this->createMock(Data::class);
         $this->loggerMock = $this->createMock(Logger::class);
         $this->contactCollectionMock = $this->createMock(ContactCollection::class);
         $this->contactCollectionFactoryMock = $this->createMock(ContactCollectionFactory::class);
         $this->batchProcessorMock = $this->createMock(SubscriberBatchProcessor::class);
+        $this->orderHistoryCheckerMock = $this->createMock(OrderHistoryChecker::class);
         $this->subscriberExporterFactoryMock = $this->createMock(SubscriberExporterFactory::class);
         $this->subscriberWithSalesExporterFactoryMock = $this->createMock(SubscriberWithSalesExporterFactory::class);
         $this->scopeConfigMock = $this->createMock(ScopeConfigInterface::class);
-        $this->orderSearchResultInterfaceFactoryMock = $this->createMock(OrderSearchResultInterfaceFactory::class);
         $this->storeManagerMock = $this->createMock(StoreManagerInterface::class);
 
         $this->abstractExporterMock = $this->createMock(AbstractExporter::class);
@@ -115,10 +117,10 @@ class SubscriberTest extends TestCase
             $this->loggerMock,
             $this->contactCollectionFactoryMock,
             $this->batchProcessorMock,
+            $this->orderHistoryCheckerMock,
             $this->subscriberExporterFactoryMock,
             $this->subscriberWithSalesExporterFactoryMock,
             $this->scopeConfigMock,
-            $this->orderSearchResultInterfaceFactoryMock,
             $this->storeManagerMock
         );
     }
@@ -317,7 +319,6 @@ class SubscriberTest extends TestCase
         $this->assertEquals(5, $data['syncedSubscribers']);
     }
 
-
     /**
      * @return void
      * @throws \Magento\Framework\Exception\LocalizedException
@@ -506,21 +507,12 @@ class SubscriberTest extends TestCase
 
     private function setupSubsWithSalesData()
     {
-        $orderSearchResultsInterfaceMock = $this->createMock(\Magento\Framework\Data\Collection\AbstractDb::class);
-        $this->orderSearchResultInterfaceFactoryMock->expects($this->exactly(2))
-            ->method('create')
-            ->willReturn($orderSearchResultsInterfaceMock);
-
-        $orderSearchResultsInterfaceMock->expects($this->exactly(2))
-            ->method('addFieldToFilter')
-            ->willReturn($orderSearchResultsInterfaceMock);
-
-        $orderSearchResultsInterfaceMock->expects($this->exactly(2))
-            ->method('getColumnValues')
-            ->willReturnOnConsecutiveCalls(
-                ['chaz2@emailsim.io'],
-                ['chaz6@emailsim.io']
-            );
+        $this->orderHistoryCheckerMock->expects($this->exactly(2))
+            ->method('checkInSales')
+            ->willReturn([
+                'chaz2@emailsim.io',
+                'chaz6@emailsim.io'
+            ]);
     }
 
     /**
@@ -595,7 +587,14 @@ class SubscriberTest extends TestCase
 
         for ($i = 1; $i <= $count; $i++) {
             $batch[] = [
-                $i => ['chaz' . $i . '@emailsim.io', 'Html', 'Chaz store', 'Chaz store view', 'Chaz website', 'Subscribed']
+                $i => [
+                    'chaz' . $i . '@emailsim.io',
+                    'Html',
+                    'Chaz store',
+                    'Chaz store view',
+                    'Chaz website',
+                    'Subscribed'
+                ]
             ];
         }
 

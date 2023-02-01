@@ -2,29 +2,24 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Rules;
 
-class Delete extends \Magento\Backend\App\AbstractAction
+use Magento\Backend\App\Action;
+use Magento\Framework\App\Action\HttpPostActionInterface;
+use Magento\Framework\App\ResponseInterface;
+use Magento\Framework\Controller\ResultInterface;
+
+class Delete extends Action implements HttpPostActionInterface
 {
     /**
      * Authorization level of a basic admin session
      *
      * @see _isAllowed()
      */
-    const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::exclusion_rules';
+    public const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::exclusion_rules';
 
     /**
      * @var \Dotdigitalgroup\Email\Model\Rules
      */
     private $rules;
-
-    /**
-     * @var \Magento\Store\Model\StoreManagerInterface
-     */
-    private $storeManager;
-
-    /**
-     * @var \Magento\Framework\Escaper
-     */
-    private $escaper;
 
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Rules
@@ -35,29 +30,23 @@ class Delete extends \Magento\Backend\App\AbstractAction
      * Delete constructor.
      *
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Rules $rulesResource
-     * @param \Magento\Backend\App\Action\Context        $context
-     * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
-     * @param \Dotdigitalgroup\Email\Model\Rules         $rules
-     * @param \Magento\Framework\Escaper                 $escaper
+     * @param \Magento\Backend\App\Action\Context $context
+     * @param \Dotdigitalgroup\Email\Model\Rules $rules
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ResourceModel\Rules $rulesResource,
         \Magento\Backend\App\Action\Context $context,
-        \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
-        \Dotdigitalgroup\Email\Model\Rules $rules,
-        \Magento\Framework\Escaper $escaper
+        \Dotdigitalgroup\Email\Model\Rules $rules
     ) {
         parent::__construct($context);
-        $this->rules        = $rules;
-        $this->storeManager = $storeManagerInterface;
-        $this->escaper      = $escaper;
+        $this->rules = $rules;
         $this->rulesResource = $rulesResource;
     }
 
     /**
      * Execute method.
      *
-     * @return null
+     * @return void
      */
     public function execute()
     {

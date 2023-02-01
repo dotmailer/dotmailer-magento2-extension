@@ -2,8 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Abandoned;
 
-use Dotdigitalgroup\Email\Helper\MassDeleteCsrf;
-use Magento\Framework\Controller\ResultFactory;
+use Dotdigitalgroup\Email\Controller\Adminhtml\MassDeleteCsrf;
+use \Dotdigitalgroup\Email\Model\ResourceModel\Abandoned as AbandonedResource;
+use Dotdigitalgroup\Email\Model\ResourceModel\Abandoned\CollectionFactory;
+use Magento\Backend\App\Action\Context;
 use Magento\Ui\Component\MassAction\Filter;
 
 class MassDelete extends MassDeleteCsrf
@@ -13,15 +15,15 @@ class MassDelete extends MassDeleteCsrf
      *
      * @see _isAllowed()
      */
-    const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::abandoned';
+    public const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::abandoned';
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Abandoned
+     * @var AbandonedResource
      */
     protected $collectionResource;
 
     /**
-     * @var
+     * @var CollectionFactory
      */
     protected $collectionFactory;
 
@@ -37,16 +39,16 @@ class MassDelete extends MassDeleteCsrf
 
     /**
      * MassDelete constructor.
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Abandoned $collectionResource
-     * @param \Magento\Backend\App\Action\Context $context
+     * @param AbandonedResource $collectionResource
+     * @param Context $context
      * @param Filter $filter
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Abandoned\CollectionFactory $collectionFactory
+     * @param CollectionFactory $collectionFactory
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\ResourceModel\Abandoned $collectionResource,
-        \Magento\Backend\App\Action\Context $context,
+        AbandonedResource $collectionResource,
+        Context $context,
         Filter $filter,
-        \Dotdigitalgroup\Email\Model\ResourceModel\Abandoned\CollectionFactory $collectionFactory
+        CollectionFactory $collectionFactory
     ) {
         $this->filter = $filter;
         $this->collectionFactory = $collectionFactory;

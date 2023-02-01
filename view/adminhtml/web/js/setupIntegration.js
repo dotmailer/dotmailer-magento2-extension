@@ -121,7 +121,7 @@ require([
 
     };
 
-    $(window).load(function(){
+    $(window).on('load', function(){
         $('.ddg-integration').click(showConfirmation);
     });
 });

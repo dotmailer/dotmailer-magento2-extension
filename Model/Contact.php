@@ -27,6 +27,7 @@ class Contact extends \Magento\Framework\Model\AbstractModel
 
     /**
      * Contact constructor.
+     *
      * @param \Magento\Framework\Model\Context $context
      * @param \Magento\Framework\Registry $registry
      * @param ResourceModel\Contact $contactResource
@@ -62,7 +63,7 @@ class Contact extends \Magento\Framework\Model\AbstractModel
     /**
      * Constructor.
      *
-     * @return null
+     * @return void
      */
     public function _construct()
     {
@@ -86,39 +87,6 @@ class Contact extends \Magento\Framework\Model\AbstractModel
     }
 
     /**
-     * Load contact by customer id.
-     *
-     * @param int $customerId
-     *
-     * @return $this
-     */
-    public function loadByCustomerId($customerId)
-    {
-        $contact = $this->getCollection()
-            ->loadByCustomerId($customerId);
-
-        if ($contact) {
-            return $contact;
-        }
-
-        return $this;
-    }
-
-    /**
-     * Get missing contacts.
-     *
-     * @param int $websiteId
-     * @param int $pageSize
-     *
-     * @return \Dotdigitalgroup\Email\Model\ResourceModel\Contact\Collection
-     */
-    public function getMissingContacts($websiteId, $pageSize = 100)
-    {
-        return $this->getCollection()
-            ->getMissingContacts($websiteId, $pageSize);
-    }
-
-    /**
      * Load Contact by Email.
      *
      * @param string $email
@@ -128,7 +96,8 @@ class Contact extends \Magento\Framework\Model\AbstractModel
      */
     public function loadByCustomerEmail($email, $websiteId)
     {
-        $customer = $this->getCollection()
+        $customer = $this->contactCollectionFactory
+            ->create()
             ->loadByCustomerEmail($email, $websiteId);
 
         if ($customer) {
@@ -137,56 +106,6 @@ class Contact extends \Magento\Framework\Model\AbstractModel
             return $this->setEmail($email)
                 ->setWebsiteId($websiteId);
         }
-    }
-
-    /**
-     * Number contacts marked as imported.
-     *
-     * @return int
-     */
-    public function getNumberOfImportedContacts()
-    {
-        return $this->getCollection()
-            ->getNumberOfImportedContacts();
-    }
-
-    /**
-     * Get the number of customers for a website.
-     *
-     * @param int $websiteId
-     *
-     * @return int
-     */
-    public function getNumberCustomerContacts($websiteId = 0)
-    {
-        return $this->getCollection()
-            ->getNumberCustomerContacts($websiteId);
-    }
-
-    /**
-     * Get number of suppressed contacts as customer.
-     *
-     * @param int $websiteId
-     *
-     * @return int
-     */
-    public function getNumberCustomerSuppressed($websiteId = 0)
-    {
-        return $this->getCollection()
-            ->getNumberCustomerSuppressed($websiteId);
-    }
-
-    /**
-     * Get number of synced customers.
-     *
-     * @param int $websiteId
-     *
-     * @return int
-     */
-    public function getNumberCustomerSynced($websiteId = 0)
-    {
-        return $this->getCollection()
-            ->getNumberCustomerSynced($websiteId);
     }
 
     /**
@@ -218,6 +137,6 @@ class Contact extends \Magento\Framework\Model\AbstractModel
      */
     public function reset(string $from = null, string $to = null)
     {
-        return $this->contactResource->resetAllContacts($from, $to);
+        return $this->contactResource->resetAllCustomers($from, $to);
     }
 }

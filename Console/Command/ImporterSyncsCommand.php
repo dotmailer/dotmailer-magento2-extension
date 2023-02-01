@@ -67,7 +67,7 @@ class ImporterSyncsCommand extends Command
      *
      * @param InputInterface $input
      * @param OutputInterface $output
-     * @return int|void|null
+     * @return int
      * @throws LocalizedException
      */
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -91,7 +91,7 @@ class ImporterSyncsCommand extends Command
         $syncClass = $this->syncProvider->$requestedSync;
         if ($syncClass === null || !$syncClass instanceof SyncInterface) {
             $output->writeln(__('Requested sync was not recognised')->getText());
-            return;
+            return 0;
         }
 
         $start = microtime(true);
@@ -118,6 +118,8 @@ class ImporterSyncsCommand extends Command
             __('Complete in')->getText(),
             round(microtime(true) - $start, 2)
         ));
+
+        return 0;
     }
 
     /**

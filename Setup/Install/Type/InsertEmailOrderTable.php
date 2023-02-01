@@ -74,8 +74,9 @@ class InsertEmailOrderTable extends AbstractBatchInserter implements InsertTypeI
                 'customer_id',
                 'customer_email',
             ])
-            ->order('order_id')
-        ;
+            ->where('customer_email is ?', new \Zend_Db_Expr('not null'))
+            ->where('customer_email != ?', '')
+            ->order('order_id');
     }
 
     /**
@@ -153,14 +154,12 @@ class InsertEmailOrderTable extends AbstractBatchInserter implements InsertTypeI
                 );
 
             foreach (array_udiff($guestOrderEmails, $matchingContactEmails, 'strcasecmp') as $email) {
-
                 $guestsToInsert[] = [
                     'is_guest' => '1',
                     'email' => $email,
                     'store_id' => (string) $storeId,
                     'website_id' => $websiteId,
                 ];
-
             }
 
             if (empty($guestsToInsert)) {

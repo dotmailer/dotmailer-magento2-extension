@@ -2,24 +2,26 @@
 
 namespace Dotdigitalgroup\Email\Controller\Feefo;
 
-class Reviews extends \Dotdigitalgroup\Email\Controller\Edc
+use Dotdigitalgroup\Email\Controller\ExternalDynamicContentController;
+
+class Reviews extends ExternalDynamicContentController
 {
     /**
-     * @throws \Magento\Framework\Exception\LocalizedException
-     *
-     * @return null
+     * @inheritdoc
      */
     public function execute()
     {
-        //authenticate
-        if ($this->authenticate()) {
-            $quote = $this->getRequest()->getParam('quote_id');
-            if (!$this->helper->getFeefoLogon() || !$quote) {
-                return $this->sendNoContentResponse();
-            }
-
-            $this->_view->loadLayout();
-            $this->_view->renderLayout();
+        if (!$this->authenticate()) {
+            return $this->response;
         }
+
+        $this->layout = $this->resultLayoutFactory->create();
+        if (!$this->helper->getFeefoLogon()) {
+            $this->setNoContentResponse();
+            return $this->layout;
+        }
+
+        $this->checkResponse();
+        return $this->layout;
     }
 }

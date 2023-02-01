@@ -11,5 +11,5 @@ abstract class Wishlist extends Action
      *
      * @see _isAllowed()
      */
-    const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::wishlist';
+    public const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::wishlist';
 }
