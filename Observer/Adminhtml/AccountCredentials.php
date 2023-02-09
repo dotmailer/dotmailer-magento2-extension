@@ -2,31 +2,38 @@
 
 namespace Dotdigitalgroup\Email\Observer\Adminhtml;
 
+use Dotdigitalgroup\Email\Helper\Data;
+use Dotdigitalgroup\Email\Model\Apiconnector\Test;
+use Magento\Backend\App\Action\Context;
 use Magento\Config\Model\ResourceModel\Config;
+use Magento\Framework\Event\Observer;
+use Magento\Framework\Event\ObserverInterface;
+use Magento\Framework\Message\ManagerInterface;
+use Magento\Framework\MessageQueue\PublisherInterface;
 use Dotdigitalgroup\Email\Model\Sync\DummyRecordsFactory;
 
 /**
  * Validate api when saving credentials in admin.
  */
-class ApiValidate implements \Magento\Framework\Event\ObserverInterface
+class AccountCredentials implements ObserverInterface
 {
     /**
-     * @var \Dotdigitalgroup\Email\Helper\Data
+     * @var Data
      */
     private $helper;
 
     /**
-     * @var \Magento\Backend\App\Action\Context
+     * @var Context
      */
     private $context;
 
     /**
-     * @var \Magento\Framework\Message\ManagerInterface
+     * @var ManagerInterface
      */
     private $messageManager;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\Apiconnector\Test
+     * @var Test
      */
     private $test;
 
@@ -41,38 +48,50 @@ class ApiValidate implements \Magento\Framework\Event\ObserverInterface
     private $resourceConfig;
 
     /**
-     * @param \Dotdigitalgroup\Email\Helper\Data $data
-     * @param \Dotdigitalgroup\Email\Model\Apiconnector\Test $test
-     * @param \Magento\Backend\App\Action\Context $context
+     * @var PublisherInterface
+     */
+    private $publisher;
+
+    /**
+     * @param Data $data
+     * @param Test $test
+     * @param Context $context
      * @param DummyRecordsFactory $dummyRecordsFactory
      * @param Config $resourceConfig
+     * @param PublisherInterface $publisher
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Helper\Data $data,
-        \Dotdigitalgroup\Email\Model\Apiconnector\Test $test,
-        \Magento\Backend\App\Action\Context $context,
+        Data $data,
+        Test $test,
+        Context $context,
         DummyRecordsFactory $dummyRecordsFactory,
-        Config $resourceConfig
+        Config $resourceConfig,
+        PublisherInterface $publisher,
     ) {
-        $this->test           = $test;
-        $this->helper         = $data;
-        $this->context        = $context;
+        $this->test = $test;
+        $this->helper = $data;
+        $this->context = $context;
         $this->messageManager = $context->getMessageManager();
-        $this->dummyRecordsFactory = $dummyRecordsFactory;
         $this->resourceConfig = $resourceConfig;
+        $this->dummyRecordsFactory = $dummyRecordsFactory;
+        $this->publisher = $publisher;
     }
 
     /**
      * Execute method.
      *
-     * @param \Magento\Framework\Event\Observer $observer
+     * Validate account credentials and publish integration insights queue
+     *
+     * @param Observer $observer
      *
      * @return $this
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function execute(\Magento\Framework\Event\Observer $observer)
+    public function execute(Observer $observer)
     {
-        $groups = $this->context->getRequest()->getPost('groups');
+        /** @var \Magento\Framework\App\Request\Http\Proxy $request */
+        $request = $this->context->getRequest();
+        $groups = $request->getPost('groups');
 
         if (isset($groups['api']['fields']['username']['inherit'])
             || isset($groups['api']['fields']['password']['inherit'])
@@ -91,13 +110,15 @@ class ApiValidate implements \Magento\Framework\Event\ObserverInterface
 
                 if ($websiteId) {
                     $this->dummyRecordsFactory->create()
-                    ->syncForWebsite($websiteId);
+                        ->syncForWebsite($websiteId);
 
                     return $this;
                 }
 
                 $this->dummyRecordsFactory->create()
                     ->sync();
+                $this->helper->log('----PUBLISHING INTEGRATION INSIGHTS---');
+                $this->publisher->publish('ddg.sync.integration', '');
             }
         }
 

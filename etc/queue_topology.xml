@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework-message-queue:etc/topology.xsd">
+    <exchange name="magento-db" type="topic" connection="db">
+        <binding id="dotdigitalSyncExchange"
+                 topic="ddg.sync.integration"
+                 destinationType="queue"
+                 destination="ddg.sync.queue"/>
+    </exchange>
+</config>
