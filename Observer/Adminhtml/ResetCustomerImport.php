@@ -36,7 +36,7 @@ class ResetCustomerImport implements \Magento\Framework\Event\ObserverInterface
     public function __construct(
         ContactResource $contactResource,
         ContactCollectionFactory $contactCollectionFactory,
-        Data $data,
+        Data $data
     ) {
         $this->contactResource = $contactResource;
         $this->contactCollectionFactory = $contactCollectionFactory;

@@ -66,7 +66,7 @@ class AccountCredentials implements ObserverInterface
         Context $context,
         DummyRecordsFactory $dummyRecordsFactory,
         Config $resourceConfig,
-        PublisherInterface $publisher,
+        PublisherInterface $publisher
     ) {
         $this->test = $test;
         $this->helper = $data;

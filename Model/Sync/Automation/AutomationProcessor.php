@@ -131,7 +131,7 @@ class AutomationProcessor
                 );
 
                 $data[$websiteId][$storeId]['contacts'][$automation->getId()] = $contactId;
-            } catch (PendingOptInException) {
+            } catch (PendingOptInException $e) {
                 $this->automationResource->setStatusAndSaveAutomation(
                     $automation,
                     StatusInterface::PENDING_OPT_IN
