@@ -15,7 +15,7 @@ class GuestExporter extends AbstractExporter
     /**
      * @var ContactData
      */
-    private ContactData $contactData;
+    private $contactData;
 
     /**
      * Guest exporter constructor.
