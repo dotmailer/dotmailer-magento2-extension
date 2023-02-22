@@ -2,12 +2,16 @@
 
 namespace Dotdigitalgroup\Email\Model\Customer;
 
+use Dotdigitalgroup\Email\Model\Connector\AbstractConnectorModel;
 use Magento\Framework\Stdlib\DateTime\DateTimeFactory;
+use Magento\Review\Model\Review as MagentoReview;
+use Magento\Store\Model\Store;
+use Magento\Store\Model\StoreManagerInterface;
 
 /**
  * Transactional data for customer review.
  */
-class Review
+class Review extends AbstractConnectorModel
 {
     /**
      * @var int
@@ -50,9 +54,14 @@ class Review
     public $storeName;
 
     /**
-     * @var \Magento\Store\Model\StoreManagerInterface
+     * @var array
      */
-    public $storeManager;
+    private $properties = [];
+
+    /**
+     * @var StoreManagerInterface
+     */
+    private $storeManager;
 
     /**
      * @var DateTimeFactory
@@ -60,11 +69,11 @@ class Review
     private $dateTimeFactory;
 
     /**
-     * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
+     * @param StoreManagerInterface $storeManagerInterface
      * @param DateTimeFactory $dateTimeFactory
      */
     public function __construct(
-        \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
+        StoreManagerInterface $storeManagerInterface,
         DateTimeFactory $dateTimeFactory
     ) {
         $this->storeManager = $storeManagerInterface;
@@ -72,6 +81,8 @@ class Review
     }
 
     /**
+     * Set customer.
+     *
      * @param \Magento\Customer\Model\Customer $customer
      *
      * @return $this
@@ -85,6 +96,8 @@ class Review
     }
 
     /**
+     * Set customer id.
+     *
      * @param int $customerId
      *
      * @return $this
@@ -97,6 +110,8 @@ class Review
     }
 
     /**
+     * Get customer id.
+     *
      * @return int
      */
     public function getCustomerId()
@@ -105,6 +120,8 @@ class Review
     }
 
     /**
+     * Set id.
+     *
      * @param int $id
      *
      * @return $this
@@ -117,6 +134,8 @@ class Review
     }
 
     /**
+     * Get id.
+     *
      * @return int
      */
     public function getId()
@@ -125,16 +144,18 @@ class Review
     }
 
     /**
-     * Create rating on runtime.
+     * Set a custom property for rating, keyed on the rating code.
      *
-     * @param string $ratingName
-     * @param \Dotdigitalgroup\Email\Model\Customer\Review\Rating $rating
+     * @param string $ratingCode
+     * @param string|int $ratingScore
      *
-     * @return null
+     * @return void
      */
-    public function createRating($ratingName, $rating)
+    public function addRating(string $ratingCode, $ratingScore): void
     {
-        $this->$ratingName = $rating->expose();
+        $this->properties[$ratingCode] = [
+            'ratingScore' => (int) $ratingScore
+        ];
     }
 
     /**
@@ -149,14 +170,6 @@ class Review
         $this->reviewDate = $date;
 
         return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getReviewDate()
-    {
-        return $this->reviewDate;
     }
 
     /**
@@ -176,12 +189,13 @@ class Review
     /**
      * Set review data.
      *
-     * @param \Magento\Review\Model\Review $review
+     * @param MagentoReview $review
      * @return $this
      */
-    public function setReviewData(\Magento\Review\Model\Review $review)
+    public function setReviewData(MagentoReview $review)
     {
         $store = $this->storeManager->getStore($review->getStoreId());
+        /** @var Store $store */
         $websiteName = $store->getWebsite()->getName();
         $storeName = $store->getName();
         $this->setId($review->getReviewId())
@@ -204,7 +218,7 @@ class Review
      *
      * @param string $name
      *
-     * @return null
+     * @return void
      */
     public function setProductName($name)
     {
@@ -212,6 +226,8 @@ class Review
     }
 
     /**
+     * Get product name.
+     *
      * @return string
      */
     public function getProductName()
@@ -224,7 +240,7 @@ class Review
      *
      * @param string $sku
      *
-     * @return null
+     * @return void
      */
     public function setProductSku($sku)
     {
@@ -232,6 +248,8 @@ class Review
     }
 
     /**
+     * Get product sku.
+     *
      * @return string
      */
     public function getProductSku()
@@ -254,6 +272,8 @@ class Review
     }
 
     /**
+     * Get store name.
+     *
      * @return string
      */
     public function getStoreName()
@@ -276,6 +296,8 @@ class Review
     }
 
     /**
+     * Get website name.
+     *
      * @return string
      */
     public function getWebsiteName()
@@ -284,7 +306,7 @@ class Review
     }
 
     /**
-     * Set email
+     * Set email.
      *
      * @param string $email
      *
@@ -298,17 +320,8 @@ class Review
     }
 
     /**
-     * @return array
-     */
-    public function expose()
-    {
-        return array_diff_key(
-            get_object_vars($this),
-            array_flip(['storeManager', 'dateTimeFactory'])
-        );
-    }
-
-    /**
+     * __sleep
+     *
      * @return array
      */
     public function __sleep()
@@ -317,5 +330,15 @@ class Review
         $properties = array_diff($properties, ['storeManager', 'dateTimeFactory']);
 
         return $properties;
+    }
+
+    /**
+     * Returns any additional properties.
+     *
+     * @return array
+     */
+    public function getAdditionalProperties()
+    {
+        return $this->properties;
     }
 }

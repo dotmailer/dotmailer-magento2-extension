@@ -3,8 +3,6 @@
 namespace Dotdigitalgroup\Email\Test\Unit\Model\Connector;
 
 use Dotdigitalgroup\Email\Api\TierPriceFinderInterface;
-use Dotdigitalgroup\Email\Helper\Data;
-use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Catalog\UrlFinder;
 use Dotdigitalgroup\Email\Model\Connector\Product;
 use Dotdigitalgroup\Email\Model\Product\Attribute;
@@ -37,10 +35,6 @@ use PHPUnit\Framework\TestCase;
 class ProductTest extends TestCase
 {
     use TestInteractsWithSchemaValidatorTrait;
-    /**
-     * @var Data|MockObject
-     */
-    private $helperMock;
 
     /**
      * @var StoreManagerInterface|MockObject
@@ -172,16 +166,10 @@ class ProductTest extends TestCase
      */
     private $taxCalculationInterfaceMock;
 
-    /**
-     * @var Logger|MockObject
-     */
-    private $logger;
-
     protected function setUp() :void
     {
         $this->setUpValidator([]);
         $this->storeManagerMock = $this->createMock(StoreManagerInterface::class);
-        $this->helperMock = $this->createMock(Data::class);
         $this->statusFactoryMock = $this->createMock(StatusFactory::class);
         $this->visibilityFactoryMock = $this->createMock(VisibilityFactory::class);
         $this->mageProductMock = $this->getMockBuilder(MageProduct::class)
@@ -227,10 +215,8 @@ class ProductTest extends TestCase
             $this->createMock(\Magento\Eav\Model\ResourceModel\Entity\Attribute::class)
         );
         $this->taxCalculationInterfaceMock = $this->createMock(TaxCalculationInterface::class);
-        $this->logger = $this->createMock(Logger::class);
         $this->product = new Product(
             $this->storeManagerMock,
-            $this->helperMock,
             $this->statusFactoryMock,
             $this->visibilityFactoryMock,
             $this->urlFinderMock,
@@ -241,7 +227,6 @@ class ProductTest extends TestCase
             $this->stockFinderInterfaceMock,
             $this->imageTypeMock,
             $this->taxCalculationInterfaceMock,
-            $this->logger,
             $this->schemaValidatorFactory
         );
 
