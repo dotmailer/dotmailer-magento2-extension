@@ -116,8 +116,16 @@ class OrderItemProcessorTest extends TestCase
             ->willReturn('chazSku');
 
         $this->attributeMock->expects($this->atLeastOnce())
+            ->method('processConfigAttributes')
+            ->willReturn($this->attributeMock);
+
+        $this->attributeMock->expects($this->atLeastOnce())
             ->method('hasValues')
             ->willReturn(true);
+
+        $this->attributeMock->expects($this->atLeastOnce())
+            ->method('getProperties')
+            ->willReturn(new \stdClass());
 
         $productData = $this->orderItemProcessor->process($this->productItemMock);
         $this->assertValuesForSimpleAndBundleProduct($productData);

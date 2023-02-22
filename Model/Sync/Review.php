@@ -46,11 +46,6 @@ class Review implements SyncInterface
     private $connectorReviewFactory;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\Customer\Review\RatingFactory
-     */
-    private $ratingFactory;
-
-    /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Review\CollectionFactory
      */
     private $reviewCollection;
@@ -80,7 +75,6 @@ class Review implements SyncInterface
      *
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Review\CollectionFactory $reviewCollection
      * @param \Magento\Framework\Stdlib\DateTime\DateTime $coreDate
-     * @param \Dotdigitalgroup\Email\Model\Customer\Review\RatingFactory $ratingFactory
      * @param \Dotdigitalgroup\Email\Model\Customer\ReviewFactory $connectorFactory
      * @param \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
      * @param \Dotdigitalgroup\Email\Helper\Data $data
@@ -91,7 +85,6 @@ class Review implements SyncInterface
     public function __construct(
         \Dotdigitalgroup\Email\Model\ResourceModel\Review\CollectionFactory $reviewCollection,
         \Magento\Framework\Stdlib\DateTime\DateTime $coreDate,
-        \Dotdigitalgroup\Email\Model\Customer\Review\RatingFactory $ratingFactory,
         \Dotdigitalgroup\Email\Model\Customer\ReviewFactory $connectorFactory,
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
         \Dotdigitalgroup\Email\Helper\Data $data,
@@ -99,13 +92,12 @@ class Review implements SyncInterface
         ScopeConfigInterface $scopeConfig,
         OrderFactory $orderFactory
     ) {
-        $this->coreDate               = $coreDate;
-        $this->reviewCollection       = $reviewCollection;
-        $this->ratingFactory          = $ratingFactory;
+        $this->coreDate = $coreDate;
+        $this->reviewCollection = $reviewCollection;
         $this->connectorReviewFactory = $connectorFactory;
-        $this->importerFactory        = $importerFactory;
-        $this->helper                 = $data;
-        $this->reviewResourceFactory  = $reviewResourceFactory;
+        $this->importerFactory = $importerFactory;
+        $this->helper = $data;
+        $this->reviewResourceFactory = $reviewResourceFactory;
         $this->scopeConfig = $scopeConfig;
         $this->orderFactory = $orderFactory;
     }
@@ -145,6 +137,8 @@ class Review implements SyncInterface
         $this->reviews      = [];
         $this->start        = microtime(true);
         $websites           = $this->helper->getwebsites(true);
+
+        /** @var \Magento\Store\Model\Website $website */
         foreach ($websites as $website) {
             $apiEnabled = $this->helper->isEnabled($website);
             $reviewEnabled = $this->helper->getWebsiteConfig(
@@ -153,7 +147,7 @@ class Review implements SyncInterface
             );
             $storeIds = $website->getStoreIds();
             if ($apiEnabled && $reviewEnabled && !empty($storeIds)) {
-                $this->_exportReviewsForWebsite($website, $limit);
+                $this->exportReviewsForWebsite($website, $limit);
             }
 
             if (isset($this->reviews[$website->getId()])) {
@@ -168,7 +162,7 @@ class Review implements SyncInterface
                         $website->getId()
                     );
                 //if no error then set imported
-                $this->_setImported($this->reviewIds);
+                $this->setImported($this->reviewIds);
                 $this->countReviews += count($reviews);
             }
         }
@@ -193,9 +187,9 @@ class Review implements SyncInterface
      * @param string|int $limit
      * @return void
      */
-    public function _exportReviewsForWebsite(\Magento\Store\Model\Website $website, $limit)
+    public function exportReviewsForWebsite(\Magento\Store\Model\Website $website, $limit)
     {
-        $emailReviews = $this->_getReviewsToExport($website, $limit);
+        $emailReviews = $this->getReviewsToExport($website, $limit);
         $this->reviewIds = [];
 
         if (!empty($emailReviews)) {
@@ -221,15 +215,14 @@ class Review implements SyncInterface
                         ->getVoteCollectionByReview($mageReview->getReviewId());
 
                     foreach ($votesCollection as $ratingItem) {
-                        $rating = $this->ratingFactory->create()
-                            ->setRating($ratingItem);
-                        $connectorReview->createRating(
+                        $connectorReview->addRating(
                             $ratingItem->getRatingCode(),
-                            $rating
+                            $ratingItem->getValue()
                         );
                     }
-                    $this->reviews[$website->getId()][$connectorReview->getId()] = $connectorReview->expose();
-                    $this->reviewIds[]                  = $mageReview->getReviewId();
+                    $reviewData = $connectorReview->toArray() + $connectorReview->getAdditionalProperties();
+                    $this->reviews[$website->getId()][$connectorReview->getId()] = $reviewData;
+                    $this->reviewIds[] = $mageReview->getReviewId();
                 } catch (\Exception $e) {
                     $this->helper->debug((string)$e, []);
                 }
@@ -244,7 +237,7 @@ class Review implements SyncInterface
      * @param int $limit
      * @return array
      */
-    private function _getReviewsToExport(\Magento\Store\Model\Website $website, $limit = 100)
+    private function getReviewsToExport(\Magento\Store\Model\Website $website, $limit = 100)
     {
         $reviews = [];
         $collection = $this->reviewCollection->create()
@@ -263,9 +256,9 @@ class Review implements SyncInterface
      *
      * @param array $ids
      *
-     * @return null
+     * @return void
      */
-    public function _setImported($ids)
+    public function setImported($ids)
     {
         $nowDate = $this->coreDate->gmtDate();
         $this->reviewResourceFactory->create()

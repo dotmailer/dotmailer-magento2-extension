@@ -54,6 +54,11 @@ class Attribute
     private $hasValues;
 
     /**
+     * @var array
+     */
+    private $properties = [];
+
+    /**
      * Attribute constructor.
      *
      * @param Data $helper
@@ -182,10 +187,10 @@ class Attribute
         if (is_array($value)) {
             $values = $this->implodeRecursive(',', $value['values'] ?? $value);
             if ($values) {
-                $this->$attributeCode = mb_substr($values, 0, Data::DM_FIELD_LIMIT);
+                $this->properties[$attributeCode] = mb_substr($values, 0, Data::DM_FIELD_LIMIT);
             }
         } else {
-            $this->$attributeCode = mb_substr($value, 0, Data::DM_FIELD_LIMIT);
+            $this->properties[$attributeCode] = mb_substr($value, 0, Data::DM_FIELD_LIMIT);
         }
     }
 
@@ -233,17 +238,13 @@ class Attribute
     }
 
     /**
-     * __get()
+     * Returns any dynamically set attribute properties as a regular stdClass.
      *
-     * Used in a unit test to check dynamically-set class properties.
-     *
-     * @param string $name
-     *
-     * @return null
+     * @return object
      */
-    public function __get($name)
+    public function getProperties()
     {
-        return (isset($this->$name)) ? $this->$name : null;
+        return (object) $this->properties;
     }
 
     /**

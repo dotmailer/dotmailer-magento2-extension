@@ -113,9 +113,9 @@ class AttributeTest extends TestCase
 
         $this->attribute->processConfigAttributes($configAttributes, $attributesFromAttributeSet, $productModelMock);
 
-        $this->assertEquals($this->attribute->__get('size'), 'medium');
-        $this->assertEquals($this->attribute->__get('chaz'), 'foo,bar,big,bob');
-        $this->assertEquals($this->attribute->__get('category_ids'), 'Beer,Wine,Soft drinks');
-        $this->assertEquals($this->attribute->__get('random_int'), '7');
+        $this->assertEquals($this->attribute->getProperties()->size, 'medium');
+        $this->assertEquals($this->attribute->getProperties()->chaz, 'foo,bar,big,bob');
+        $this->assertEquals($this->attribute->getProperties()->category_ids, 'Beer,Wine,Soft drinks');
+        $this->assertEquals($this->attribute->getProperties()->random_int, '7');
     }
 }

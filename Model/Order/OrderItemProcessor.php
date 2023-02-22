@@ -178,11 +178,11 @@ class OrderItemProcessor extends DataObject
             'attribute-set' => $attributeSetName,
             'categories' => $productCat
         ];
-        if ($configAttributes && $attributes && $attributes->hasValues()) {
-            $productData['product_attributes'] = $attributes;
+        if ($attributes && $attributes->hasValues()) {
+            $productData['product_attributes'] = $attributes->getProperties();
         }
-        if ($configAttributes && $childAttributes && $childAttributes->hasValues()) {
-            $productData['child_product_attributes'] = $childAttributes;
+        if ($childAttributes && $attributes->hasValues()) {
+            $productData['child_product_attributes'] = $childAttributes->getProperties();
         }
 
         $customOptions = ($this->getIncludeCustomOptions())

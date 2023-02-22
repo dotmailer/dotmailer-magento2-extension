@@ -5,8 +5,8 @@ namespace Dotdigitalgroup\Email\Model\Connector;
 use Dotdigitalgroup\Email\Api\StockFinderInterface;
 use Dotdigitalgroup\Email\Api\TierPriceFinderInterface;
 use Dotdigitalgroup\Email\Helper\Data;
-use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Catalog\UrlFinder;
+use Dotdigitalgroup\Email\Model\Product\Attribute as AttributeModel;
 use Dotdigitalgroup\Email\Model\Product\AttributeFactory;
 use Dotdigitalgroup\Email\Model\Product\ImageFinder;
 use Dotdigitalgroup\Email\Model\Product\ImageType\Context\CatalogSync;
@@ -131,9 +131,14 @@ class Product extends AbstractConnectorModel
     public $type = '';
 
     /**
-     * @var Data
+     * @var string
      */
-    private $helper;
+    public $attribute_set = '';
+
+    /**
+     * @var AttributeModel
+     */
+    public $attributes;
 
     /**
      * @var StoreManagerInterface
@@ -191,11 +196,6 @@ class Product extends AbstractConnectorModel
     private $taxCalculation;
 
     /**
-     * @var Logger
-     */
-    private $logger;
-
-    /**
      * @var SchemaValidator
      */
     private $schemaValidator;
@@ -203,7 +203,6 @@ class Product extends AbstractConnectorModel
     /**
      * Product constructor.
      * @param StoreManagerInterface $storeManagerInterface
-     * @param Data $helper
      * @param StatusFactory $statusFactory
      * @param VisibilityFactory $visibilityFactory
      * @param UrlFinder $urlFinder
@@ -214,12 +213,10 @@ class Product extends AbstractConnectorModel
      * @param StockFinderInterface $stockFinderInterface
      * @param CatalogSync $imageType
      * @param TaxCalculationInterface $taxCalculation
-     * @param Logger $logger
      * @param SchemaValidatorFactory $schemaValidatorFactory
      */
     public function __construct(
         StoreManagerInterface $storeManagerInterface,
-        Data $helper,
         StatusFactory $statusFactory,
         VisibilityFactory $visibilityFactory,
         UrlFinder $urlFinder,
@@ -230,12 +227,10 @@ class Product extends AbstractConnectorModel
         StockFinderInterface $stockFinderInterface,
         CatalogSync $imageType,
         TaxCalculationInterface $taxCalculation,
-        Logger $logger,
         SchemaValidatorFactory $schemaValidatorFactory
     ) {
         $this->visibilityFactory = $visibilityFactory;
         $this->statusFactory = $statusFactory;
-        $this->helper = $helper;
         $this->storeManager = $storeManagerInterface;
         $this->urlFinder = $urlFinder;
         $this->attributeHandler = $attributeHandler;
@@ -246,7 +241,6 @@ class Product extends AbstractConnectorModel
         $this->imageType = $imageType;
         $this->taxCalculation = $taxCalculation;
         $this->schemaValidator = $schemaValidatorFactory->create(['pattern'=>static::SCHEMA_RULES]);
-        $this->logger = $logger;
     }
 
     /**
@@ -327,7 +321,7 @@ class Product extends AbstractConnectorModel
             ++$count;
         }
 
-        $this->processProductOptions($product, $storeId);
+        $this->processProductAttributes($product, $storeId);
         $this->processParentProducts($product);
 
         if (!$this->schemaValidator->isValid($this->toArray())) {
@@ -349,12 +343,11 @@ class Product extends AbstractConnectorModel
      * @throws \Magento\Framework\Exception\LocalizedException
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
-    private function processProductOptions($product, $storeId): void
+    private function processProductAttributes(MagentoProduct $product, $storeId): void
     {
         $attributeModel = $this->attributeHandler->create();
-
-        $attributeSetKey = 'attribute_set';
-        $this->$attributeSetKey = $attributeModel->getAttributeSetName($product);
+        $this->attribute_set = $attributeModel->getAttributeSetName($product);
+        $this->attributes = $attributeModel;
 
         //selected attributes from config
         $configAttributes = $attributeModel->getConfigAttributesForSync(
@@ -368,16 +361,11 @@ class Product extends AbstractConnectorModel
                 $product->getAttributeSetId()
             );
 
-            $attributes = $attributeModel->processConfigAttributes(
+            $this->attributes = $attributeModel->processConfigAttributes(
                 $configAttributes,
                 $attributesFromAttributeSet,
                 $product
-            );
-
-            if ($attributes->hasValues()) {
-                $attributesKey = 'attributes';
-                $this->$attributesKey = $attributes;
-            }
+            )->getProperties();
         }
     }
 
