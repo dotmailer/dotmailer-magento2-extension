@@ -1,3 +1,8 @@
+# 4.20.1
+
+### Bug fixes
+- We resolved some PHP errors surfaced during DI compile on versions of PHP 7.
+
 # 4.20.0
 
 ### What's new
