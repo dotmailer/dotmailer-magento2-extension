@@ -205,17 +205,9 @@ class Getbasket extends \Magento\Framework\App\Action\Action
                 $currentItemIds[] = $currentSessionItem->getId();
             }
             /** @var \Magento\Quote\Model\Quote\Item $item */
-            foreach ($this->quote->getAllVisibleItems() as $item) {
+            foreach ($this->quote->getAllItems() as $item) {
                 if (!in_array($item->getId(), $currentItemIds)) {
-                    $newItem = clone $item;
-                    $currentQuote->addItem($newItem);
-                    if ($item->getHasChildren()) {
-                        foreach ($item->getChildren() as $child) {
-                            $newChild = clone $child;
-                            $newChild->setParentItem($newItem);
-                            $currentQuote->addItem($newChild);
-                        }
-                    }
+                    $currentQuote->addProduct($item->getProduct());
                 }
             }
             $currentQuote->collectTotals();
