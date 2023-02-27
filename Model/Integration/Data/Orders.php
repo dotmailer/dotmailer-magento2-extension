@@ -161,7 +161,7 @@ class Orders
                 'sales_order' => $collection->getMainTable()
             ])
             ->joinLeft(
-                ['newsletter_subscriber' => $connection->getTableName('newsletter_subscriber')],
+                ['newsletter_subscriber' => $collection->getTable('newsletter_subscriber')],
                 'newsletter_subscriber.subscriber_email = sales_order.customer_email'
             )
             ->where('sales_order.store_id IN (?)', $storeIds)

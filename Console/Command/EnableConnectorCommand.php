@@ -93,8 +93,12 @@ class EnableConnectorCommand extends Command
     }
 
     /**
+     * Execute.
+     *
      * @param InputInterface $input
      * @param OutputInterface $output
+     * @return int
+     * @throws \Symfony\Component\Console\Exception\ExceptionInterface
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
@@ -104,7 +108,7 @@ class EnableConnectorCommand extends Command
 
         if (!$username || !$password) {
             $output->writeln(__('You must specify your API username and password')->getText());
-            return;
+            return 0;
         }
 
         $this->output->writeln(__('Saving your API credentials')->getText());
@@ -119,7 +123,7 @@ class EnableConnectorCommand extends Command
                 __('There was a problem connecting to the API: ' . $accountInfo->message)
                 ->getText()
             );
-            return;
+            return 0;
         }
 
         // add credentials
@@ -162,6 +166,8 @@ class EnableConnectorCommand extends Command
         }
 
         $this->output->writeln(__('Dotdigital connector has been enabled')->getText());
+
+        return 0;
     }
 
     /**

@@ -2,12 +2,14 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml;
 
-abstract class Automation extends \Magento\Backend\App\Action
+use Magento\Backend\App\Action;
+
+abstract class Automation extends Action
 {
     /**
      * Authorization level of a basic admin session
      *
      * @see _isAllowed()
      */
-    const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::automation';
+    public const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::automation';
 }

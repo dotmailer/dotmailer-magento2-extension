@@ -1,3 +1,26 @@
+# 4.20.1
+
+### Bug fixes
+- We resolved some PHP errors surfaced during DI compile on versions of PHP 7.
+
+# 4.20.0
+
+### What's new
+- Contacts are now pushed to the expected address books, with appropriate data fields, prior to automation enrolment.
+- New keys (`product_id`, `parent_id` and `price_inc_tax`) have been added to our insight schema for orders.
+
+### Improvements
+- We've repaired a number of critical errors flagged by the Magento Upgrade Compatibility tool. These were mostly to do with our use of certain classes and methods, in older code.
+- The number of API calls used when updating data fields for a contact by email has been reduced.
+- Catalog sync level (**Configuration > Catalog Sync Settings > Catalog Values**) is now a global setting.
+- Orders with no `customer_email` value will be skipped during data migration.
+- We replaced `Zend_Uri` with the Magento framework’s URL validator.
+
+### Bug fixes
+- We fixed a problem with customer sync for merchants with prefixed database tables.
+- We fixed an error with our CLI `sync` command relating to a change in Symfony 4.4.
+- We updated some legacy jQuery that prevents saving admin configuration in Magento 2.4.6.
+
 # 4.19.5
 
 ### Bug fixes

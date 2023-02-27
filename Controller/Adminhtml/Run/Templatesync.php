@@ -2,14 +2,17 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Run;
 
-class Templatesync extends \Magento\Backend\App\AbstractAction
+use Magento\Backend\App\Action;
+use Magento\Framework\App\Action\HttpGetActionInterface;
+
+class Templatesync extends Action implements HttpGetActionInterface
 {
     /**
      * Authorization level of a basic admin session
      *
      * @see _isAllowed()
      */
-    const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::config';
+    public const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::config';
 
     /**
      * @var \Dotdigitalgroup\Email\Model\Email\TemplateFactory
@@ -37,8 +40,9 @@ class Templatesync extends \Magento\Backend\App\AbstractAction
     }
 
     /**
+     * Execute
      *
-     * @return null
+     * @return void
      */
     public function execute()
     {

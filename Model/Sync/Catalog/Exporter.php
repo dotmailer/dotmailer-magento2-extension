@@ -2,13 +2,14 @@
 
 namespace Dotdigitalgroup\Email\Model\Sync\Catalog;
 
-use Dotdigitalgroup\Email\Model\Connector\Product;
+use Dotdigitalgroup\Email\Helper\Config;
 use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Connector\ProductFactory;
 use Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory;
 use Dotdigitalgroup\Email\Model\Validator\Schema\Exception\SchemaValidationException;
-use Dotdigitalgroup\Email\Model\Validator\Schema\SchemaValidatorFactory;
-use Magento\Framework\Exception\ValidatorException;
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Store\Model\ScopeInterface;
+use Magento\Store\Model\StoreManagerInterface;
 
 class Exporter
 {
@@ -28,18 +29,34 @@ class Exporter
     private $logger;
 
     /**
+     * @var ScopeConfigInterface
+     */
+    private $scopeConfig;
+
+    /**
+     * @var StoreManagerInterface
+     */
+    private $storeManager;
+
+    /**
      * @param CollectionFactory $catalogCollectionFactory
      * @param ProductFactory $connectorProductFactory
      * @param Logger $logger
+     * @param ScopeConfigInterface $scopeConfig
+     * @param StoreManagerInterface $storeManager
      */
     public function __construct(
         CollectionFactory $catalogCollectionFactory,
         ProductFactory $connectorProductFactory,
-        Logger $logger
+        Logger $logger,
+        ScopeConfigInterface $scopeConfig,
+        StoreManagerInterface $storeManager
     ) {
         $this->catalogCollectionFactory = $catalogCollectionFactory;
         $this->connectorProductFactory = $connectorProductFactory;
         $this->logger = $logger;
+        $this->scopeConfig = $scopeConfig;
+        $this->storeManager = $storeManager;
     }
 
     /**
@@ -90,7 +107,54 @@ class Exporter
      */
     private function getProductsToExport($storeId, $productIds)
     {
+        $websiteId = $this->storeManager->getStore($storeId)->getWebsiteId();
+
         return $this->catalogCollectionFactory->create()
-            ->filterProductsByStoreTypeAndVisibility($storeId, $productIds);
+            ->filterProductsByStoreTypeAndVisibility(
+                $storeId,
+                $productIds,
+                $this->getAllowedProductTypes($websiteId),
+                $this->getAllowedProductVisibilities($websiteId)
+            );
+    }
+
+    /**
+     * Get allowed product types.
+     *
+     * @param int $websiteId
+     *
+     * @return array
+     */
+    private function getAllowedProductTypes(int $websiteId): array
+    {
+        $types = explode(
+            ',',
+            $this->scopeConfig->getValue(
+                Config::XML_PATH_CONNECTOR_SYNC_CATALOG_TYPE,
+                ScopeInterface::SCOPE_WEBSITE,
+                $websiteId
+            )
+        );
+        return array_filter($types);
+    }
+
+    /**
+     * Get allowed product visibilities.
+     *
+     * @param int $websiteId
+     *
+     * @return array
+     */
+    private function getAllowedProductVisibilities(int $websiteId): array
+    {
+        $visibilities = explode(
+            ',',
+            $this->scopeConfig->getValue(
+                Config::XML_PATH_CONNECTOR_SYNC_CATALOG_VISIBILITY,
+                ScopeInterface::SCOPE_WEBSITE,
+                $websiteId
+            )
+        );
+        return array_filter($visibilities);
     }
 }

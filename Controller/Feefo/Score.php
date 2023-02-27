@@ -2,21 +2,28 @@
 
 namespace Dotdigitalgroup\Email\Controller\Feefo;
 
-class Score extends \Dotdigitalgroup\Email\Controller\Edc
+use Dotdigitalgroup\Email\Controller\ExternalDynamicContentController;
+use Magento\Framework\Exception\LocalizedException;
+
+class Score extends ExternalDynamicContentController
 {
+
     /**
-     * @throws \Magento\Framework\Exception\LocalizedException
-     *
-     * @return null
+     * @inheritdoc
      */
     public function execute()
     {
-        //authenticate
-        if ($this->authenticate()) {
-            if ($this->helper->getFeefoLogon()) {
-                $this->_view->loadLayout();
-                $this->_view->renderLayout();
-            }
+        if (!$this->authenticate()) {
+            return $this->response;
         }
+
+        $this->layout = $this->resultLayoutFactory->create();
+        if (!$this->helper->getFeefoLogon()) {
+            $this->setNoContentResponse();
+            return $this->layout;
+        }
+
+        $this->checkResponse();
+        return $this->layout;
     }
 }

@@ -3,6 +3,7 @@
 namespace Dotdigitalgroup\Email\Console\Command\Provider;
 
 use Dotdigitalgroup\Email\Model\Cron\CleanerFactory;
+use Dotdigitalgroup\Email\Model\MonitorFactory;
 
 /**
  * Provides factories for all available task models, and exposes its properties to show what's available
@@ -15,13 +16,22 @@ class TaskProvider
     private $cleanerFactory;
 
     /**
+     * @var MonitorFactory
+     */
+    private $monitorFactory;
+
+    /**
      * TaskProvider constructor.
+     *
      * @param CleanerFactory $cleanerFactory
+     * @param MonitorFactory $monitorFactory
      */
     public function __construct(
-        CleanerFactory $cleanerFactory
+        CleanerFactory $cleanerFactory,
+        MonitorFactory $monitorFactory
     ) {
         $this->cleanerFactory = $cleanerFactory;
+        $this->monitorFactory = $monitorFactory;
     }
 
     /**

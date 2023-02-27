@@ -4,16 +4,19 @@ namespace Dotdigitalgroup\Email\Controller\Adminhtml\Run;
 
 use Dotdigitalgroup\Email\Model\Resetter;
 use Dotdigitalgroup\Email\Helper\Data;
+use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
+use Magento\Framework\App\Action\HttpGetActionInterface;
+use Magento\Framework\Controller\Result\Redirect;
 
-class Reset extends \Magento\Backend\App\AbstractAction
+class Reset extends Action implements HttpGetActionInterface
 {
     /**
      * Authorization level of a basic admin session
      *
      * @see _isAllowed()
      */
-    const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::config';
+    public const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::config';
 
     /**
      * @var \Magento\Framework\Message\ManagerInterface
@@ -47,7 +50,9 @@ class Reset extends \Magento\Backend\App\AbstractAction
     }
 
     /**
-     * @return \Magento\Framework\Controller\Result\Redirect
+     * Execute
+     *
+     * @return Redirect
      */
     public function execute()
     {

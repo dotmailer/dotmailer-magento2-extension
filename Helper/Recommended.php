@@ -359,7 +359,7 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
             self::XML_PATH_PRODUCTPUSH_ITEMS
         );
 
-        return explode(',', $productIds);
+        return explode(',', (string) $productIds);
     }
 
     /**

@@ -5,19 +5,23 @@ namespace Dotdigitalgroup\Email\Controller\Adminhtml\Catalog;
 use Dotdigitalgroup\Email\Model\ResourceModel\Catalog;
 use Dotdigitalgroup\Email\Model\ResourceModel\Catalog\Collection as CatalogCollection;
 use Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory;
-use Magento\Framework\App\Request\Http as HttpRequest;
-use Magento\Framework\App\RequestInterface;
+use Magento\Backend\App\Action;
+use Magento\Backend\App\Action\Context;
+use Magento\Framework\App\Action\HttpPostActionInterface;
+use Magento\Framework\App\ResponseInterface;
+use Magento\Framework\Controller\Result\Redirect;
 use Magento\Framework\Controller\ResultFactory;
+use Magento\Framework\Controller\ResultInterface;
 use Magento\Ui\Component\MassAction\Filter;
 
-class MassSetUnprocessed extends \Magento\Backend\App\Action
+class MassSetUnprocessed extends Action implements HttpPostActionInterface
 {
     /**
      * Authorization level
      *
      * @see _isAllowed()
      */
-    const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::catalog';
+    public const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::catalog';
 
     /**
      * @var Filter
@@ -37,13 +41,13 @@ class MassSetUnprocessed extends \Magento\Backend\App\Action
     /**
      * MassSetUnprocessed constructor.
      *
-     * @param \Magento\Backend\App\Action\Context $context
+     * @param Context $context
      * @param Filter $filter
      * @param Catalog $collectionResource
      * @param CollectionFactory $collectionFactory
      */
     public function __construct(
-        \Magento\Backend\App\Action\Context $context,
+        Context $context,
         Filter $filter,
         Catalog $collectionResource,
         CollectionFactory $collectionFactory
@@ -55,15 +59,13 @@ class MassSetUnprocessed extends \Magento\Backend\App\Action
     }
 
     /**
-     * @return \Magento\Backend\Model\View\Result\Redirect|\Magento\Framework\App\ResponseInterface|\Magento\Framework\Controller\ResultInterface
+     * Execute
+     *
+     * @return Redirect
      * @throws \Magento\Framework\Exception\NotFoundException|\Magento\Framework\Exception\LocalizedException
      */
     public function execute()
     {
-        if (!$this->isPost($this->getRequest())) {
-            throw new \Magento\Framework\Exception\NotFoundException(__('Page not found.'));
-        }
-
         /** @var \Magento\Backend\Model\View\Result\Redirect $resultRedirect */
         $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
 
@@ -81,16 +83,5 @@ class MassSetUnprocessed extends \Magento\Backend\App\Action
         );
 
         return $resultRedirect->setPath('*/*/');
-    }
-
-    /**
-     * @param RequestInterface $request
-     *
-     * @return bool
-     */
-    private function isPost(RequestInterface $request)
-    {
-        /** @var HttpRequest $request */
-        return $request->isPost();
     }
 }

@@ -2,14 +2,17 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Rules;
 
-class Edit extends \Magento\Backend\App\AbstractAction
+use Magento\Backend\App\Action;
+use Magento\Framework\App\Action\HttpGetActionInterface;
+
+class Edit extends Action implements HttpGetActionInterface
 {
     /**
      * Authorization level of a basic admin session
      *
      * @see _isAllowed()
      */
-    const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::exclusion_rules';
+    public const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::exclusion_rules';
 
     /**
      * @var \Magento\Framework\Registry
@@ -81,8 +84,10 @@ class Edit extends \Magento\Backend\App\AbstractAction
         $this->registry->unregister('current_ddg_rule'); // additional measure
         $this->registry->register('current_ddg_rule', $emailRules);
 
-        $this->_view->getLayout()->getBlock('dotdigitalgroup.email.rules.edit')
-            ->setData('action', $this->getUrl('*/*/save'));
+        $block = $this->_view->getLayout()->getBlock('dotdigitalgroup.email.rules.edit');
+        /** @var \Dotdigitalgroup\Email\Block\Adminhtml\Rules\Edit $block */
+        $block->setData('action', $this->getUrl('*/*/save'));
+
         $this->_view->renderLayout();
     }
 

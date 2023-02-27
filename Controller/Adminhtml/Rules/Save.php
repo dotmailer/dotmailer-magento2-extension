@@ -3,15 +3,18 @@
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Rules;
 
 use Dotdigitalgroup\Email\Model\ExclusionRule\RuleValidator;
+use Dotdigitalgroup\Email\Model\Rules;
+use Magento\Backend\App\Action;
+use Magento\Framework\App\Action\HttpPostActionInterface;
 
-class Save extends \Magento\Backend\App\AbstractAction
+class Save extends Action implements HttpPostActionInterface
 {
     /**
      * Authorization level of a basic admin session
      *
      * @see _isAllowed()
      */
-    const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::exclusion_rules';
+    public const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::exclusion_rules';
 
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Rules
@@ -29,11 +32,6 @@ class Save extends \Magento\Backend\App\AbstractAction
     private $ruleFactory;
 
     /**
-     * @var \Magento\Framework\Escaper
-     */
-    private $escaper;
-
-    /**
      * @var RuleValidator
      */
     private $ruleValidator;
@@ -45,21 +43,19 @@ class Save extends \Magento\Backend\App\AbstractAction
      * @param \Magento\Backend\App\Action\Context $context
      * @param \Dotdigitalgroup\Email\Model\RulesFactory $rulesFactory
      * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
-     * @param \Magento\Framework\Escaper $escaper
+     * @param RuleValidator $ruleValidator
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ResourceModel\Rules $rulesResource,
         \Magento\Backend\App\Action\Context $context,
         \Dotdigitalgroup\Email\Model\RulesFactory $rulesFactory,
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
-        \Magento\Framework\Escaper $escaper,
         RuleValidator $ruleValidator
     ) {
         parent::__construct($context);
         $this->rulesResource = $rulesResource;
         $this->ruleFactory  = $rulesFactory;
         $this->storeManager = $storeManagerInterface;
-        $this->escaper      = $escaper;
         $this->ruleValidator = $ruleValidator;
     }
 
@@ -142,10 +138,12 @@ class Save extends \Magento\Backend\App\AbstractAction
     }
 
     /**
-     * @param array $data
-     * @param \Dotdigitalgroup\Email\Model\Rules $ruleModel
+     * Evaluate request parameters.
      *
-     * @return null
+     * @param array $data
+     * @param Rules $ruleModel
+     *
+     * @return Rules
      */
     private function evaluateRequestParams($data, $ruleModel)
     {

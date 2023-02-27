@@ -2,14 +2,16 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml;
 
-class Contact extends \Magento\Backend\App\Action
+use Magento\Backend\App\Action;
+
+class Contact extends Action
 {
     /**
      * Authorization level of a basic admin session
      *
      * @see _isAllowed()
      */
-    const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::contact';
+    public const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::contact';
 
     /**
      * @var \Magento\Framework\View\Result\PageFactory

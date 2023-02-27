@@ -206,7 +206,7 @@ class SalesDataManager
                 'sales_order_item.product_id'
             ])
             ->joinLeft(
-                ['sales_order_item' => $connection->getTableName('sales_order_item')],
+                ['sales_order_item' => $collection->getTable('sales_order_item')],
                 'sales_order_item.order_id = sales_order.entity_id',
                 []
             )
@@ -307,7 +307,7 @@ class SalesDataManager
                 'sales_order_item.product_id'
             ])
             ->joinLeft(
-                ['sales_order_item' => $connection->getTableName('sales_order_item')],
+                ['sales_order_item' => $collection->getTable('sales_order_item')],
                 'sales_order_item.order_id = sales_order.entity_id',
                 []
             )
@@ -373,7 +373,7 @@ class SalesDataManager
                 $this->getOrderIdKeyPair($firstOrLast)
             )
             ->joinLeft(
-                ['sales_order_item' => $connection->getTableName('sales_order_item')],
+                ['sales_order_item' => $collection->getTable('sales_order_item')],
                 'sales_order_item.order_id = sales_order.entity_id',
                 []
             )

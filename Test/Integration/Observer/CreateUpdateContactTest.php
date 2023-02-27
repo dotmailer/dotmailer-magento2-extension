@@ -3,6 +3,7 @@
 namespace Dotdigitalgroup\Email\Observer\Customer;
 
 use Dotdigitalgroup\Email\Helper\Data;
+use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory as ContactCollectionFactory;
 
 /**
  * @magentoAdminConfigFixture connector/api/endpoint https://r1-api.dotmailer.com
@@ -40,12 +41,17 @@ class CreateUpdateContactTest extends \PHPUnit\Framework\TestCase
     /**
      * @var int
      */
-    public $customerId ;
+    public $customerId;
 
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
     private $helper;
+
+    /**
+     * @var ContactCollectionFactory
+     */
+    private $contactCollectionFactory;
 
     /**
      * @return void
@@ -56,6 +62,7 @@ class CreateUpdateContactTest extends \PHPUnit\Framework\TestCase
         $this->customerFactory = $this->objectManager->create(\Magento\Customer\Model\CustomerFactory::class);
         $this->contactFactory = $this->objectManager->create(\Dotdigitalgroup\Email\Model\ContactFactory::class);
         $this->helper = $this->objectManager->create(\Dotdigitalgroup\Email\Helper\Data::class);
+        $this->contactCollectionFactory = $this->objectManager->create(ContactCollectionFactory::class);
     }
 
     /**
@@ -130,9 +137,7 @@ class CreateUpdateContactTest extends \PHPUnit\Framework\TestCase
      */
     public function loadContactByCustomerId()
     {
-        $contact = $this->contactFactory->create()
+        return $this->contactCollectionFactory->create()
             ->loadByCustomerId($this->customerId);
-
-        return $contact;
     }
 }

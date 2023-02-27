@@ -23,28 +23,20 @@ class OrderCreditmemoSaveAfter implements \Magento\Framework\Event\ObserverInter
     private $emailOrderFactory;
 
     /**
-     * @var \Magento\Framework\Registry
-     */
-    private $_registry;
-
-    /**
      * RefundReimportOrder constructor.
      *
      * @param \Dotdigitalgroup\Email\Model\OrderFactory $emailOrderFactory
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Order $orderResource
-     * @param \Magento\Framework\Registry $registry
      * @param \Dotdigitalgroup\Email\Helper\Data $data
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\OrderFactory $emailOrderFactory,
         \Dotdigitalgroup\Email\Model\ResourceModel\Order $orderResource,
-        \Magento\Framework\Registry $registry,
         \Dotdigitalgroup\Email\Helper\Data $data
     ) {
         $this->emailOrderFactory = $emailOrderFactory;
         $this->orderResource = $orderResource;
         $this->helper            = $data;
-        $this->_registry         = $registry;
     }
 
     /**
@@ -67,7 +59,7 @@ class OrderCreditmemoSaveAfter implements \Magento\Framework\Event\ObserverInter
              * Reimport transactional data.
              */
             $emailOrder = $this->emailOrderFactory->create()
-                ->loadByOrderId($orderId, $quoteId);
+                ->loadOrCreateOrder($orderId, $quoteId);
             if (!$emailOrder->getId()) {
                 $this->helper->log(
                     'ERROR Creditmemo Order not found :'

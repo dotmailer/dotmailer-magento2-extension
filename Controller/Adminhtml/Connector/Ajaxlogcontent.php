@@ -2,24 +2,27 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Connector;
 
-class Ajaxlogcontent extends \Magento\Backend\App\Action
+use Dotdigitalgroup\Email\Helper\File;
+use Magento\Backend\App\Action;
+use Magento\Backend\App\Action\Context;
+use Magento\Framework\Escaper;
+use Magento\Framework\App\Action\HttpPostActionInterface;
+use Magento\Framework\Controller\Result\Json;
+use Magento\Framework\Controller\Result\JsonFactory;
+
+class Ajaxlogcontent extends Action implements HttpPostActionInterface
 {
     /**
      * Authorization level of a basic admin session
      *
      * @see _isAllowed()
      */
-    const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::config';
+    public const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::config';
 
     /**
-     * @var \Dotdigitalgroup\Email\Helper\File
+     * @var File
      */
     private $file;
-
-    /**
-     * @var \Magento\Framework\Json\Helper\Data
-     */
-    private $jsonHelper;
 
     /**
      * @var \Magento\Framework\Escaper
@@ -27,29 +30,34 @@ class Ajaxlogcontent extends \Magento\Backend\App\Action
     private $escaper;
 
     /**
+     * @var JsonFactory
+     */
+    private $resultJsonFactory;
+
+    /**
      * Ajaxlogcontent constructor.
      *
-     * @param \Dotdigitalgroup\Email\Helper\File $file
-     * @param \Magento\Framework\Json\Helper\Data $jsonHelper
-     * @param \Magento\Backend\App\Action\Context $context
-     * @param \Magento\Framework\Escaper $escaper
+     * @param File $file
+     * @param Context $context
+     * @param Escaper $escaper
+     * @param JsonFactory $resultJsonFactory
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Helper\File $file,
-        \Magento\Framework\Json\Helper\Data $jsonHelper,
-        \Magento\Backend\App\Action\Context $context,
-        \Magento\Framework\Escaper $escaper
+        File $file,
+        Context $context,
+        Escaper $escaper,
+        JsonFactory $resultJsonFactory
     ) {
         $this->file = $file;
-        $this->jsonHelper = $jsonHelper;
         $this->escaper = $escaper;
+        $this->resultJsonFactory = $resultJsonFactory;
         parent::__construct($context);
     }
 
     /**
      * Ajax get log file content.
      *
-     * @return null
+     * @return Json
      */
     public function execute()
     {
@@ -71,10 +79,15 @@ class Ajaxlogcontent extends \Magento\Backend\App\Action
                 $header = 'Marketing Automation Log';
         }
         $content = nl2br($this->escaper->escapeHtml($this->file->getLogFileContent($logFile)));
-        $response = [
-            'content' => $content,
-            'header' => $header
-        ];
-        $this->getResponse()->representJson($this->jsonHelper->jsonEncode($response));
+
+        $resultJson = $this->resultJsonFactory->create();
+        $resultJson->setData(
+            [
+                'content' => $content,
+                'header' => $header
+            ]
+        );
+
+        return $resultJson;
     }
 }

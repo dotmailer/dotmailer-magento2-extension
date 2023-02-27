@@ -8,10 +8,10 @@ use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact\Collection as ContactCollection;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory as ContactCollectionFactory;
 use Dotdigitalgroup\Email\Model\Sync\Batch\SubscriberBatchProcessor;
+use Dotdigitalgroup\Email\Model\Sync\Subscriber\OrderHistoryChecker;
 use Dotdigitalgroup\Email\Model\Sync\Subscriber\SubscriberExporterFactory;
 use Dotdigitalgroup\Email\Model\Sync\Subscriber\SubscriberWithSalesExporterFactory;
 use Magento\Framework\App\Config\ScopeConfigInterface;
-use Magento\Sales\Api\Data\OrderSearchResultInterfaceFactory;
 use Magento\Store\Api\Data\WebsiteInterface;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
@@ -42,6 +42,11 @@ class Subscriber extends AbstractContactSyncer implements SyncInterface
     private $batchProcessor;
 
     /**
+     * @var OrderHistoryChecker
+     */
+    private $orderHistoryChecker;
+
+    /**
      * @var SubscriberExporterFactory
      */
     private $subscriberExporterFactory;
@@ -55,11 +60,6 @@ class Subscriber extends AbstractContactSyncer implements SyncInterface
      * @var ScopeConfigInterface
      */
     private $scopeConfig;
-
-    /**
-     * @var OrderSearchResultInterfaceFactory
-     */
-    private $orderSearchResultInterfaceFactory;
 
     /**
      * @var StoreManagerInterface
@@ -80,7 +80,6 @@ class Subscriber extends AbstractContactSyncer implements SyncInterface
      * @var int
      */
     private $megaBatchSize = 0;
-
 
     /**
      * @var array
@@ -119,10 +118,10 @@ class Subscriber extends AbstractContactSyncer implements SyncInterface
      * @param Logger $logger
      * @param ContactCollectionFactory $contactCollectionFactory
      * @param SubscriberBatchProcessor $batchProcessor
+     * @param OrderHistoryChecker $orderHistoryChecker
      * @param SubscriberExporterFactory $subscriberExporterFactory
      * @param SubscriberWithSalesExporterFactory $subscriberWithSalesExporterFactory
      * @param ScopeConfigInterface $scopeConfig
-     * @param OrderSearchResultInterfaceFactory $orderSearchResultInterfaceFactory
      * @param StoreManagerInterface $storeManager
      * @param array $data
      */
@@ -131,10 +130,10 @@ class Subscriber extends AbstractContactSyncer implements SyncInterface
         Logger $logger,
         ContactCollectionFactory $contactCollectionFactory,
         SubscriberBatchProcessor $batchProcessor,
+        OrderHistoryChecker $orderHistoryChecker,
         SubscriberExporterFactory $subscriberExporterFactory,
         SubscriberWithSalesExporterFactory $subscriberWithSalesExporterFactory,
         ScopeConfigInterface $scopeConfig,
-        OrderSearchResultInterfaceFactory $orderSearchResultInterfaceFactory,
         StoreManagerInterface $storeManager,
         array $data = []
     ) {
@@ -142,10 +141,10 @@ class Subscriber extends AbstractContactSyncer implements SyncInterface
         $this->logger = $logger;
         $this->contactCollectionFactory = $contactCollectionFactory;
         $this->batchProcessor = $batchProcessor;
+        $this->orderHistoryChecker = $orderHistoryChecker;
         $this->subscriberExporterFactory = $subscriberExporterFactory;
         $this->subscriberWithSalesExporterFactory = $subscriberWithSalesExporterFactory;
         $this->scopeConfig = $scopeConfig;
-        $this->orderSearchResultInterfaceFactory = $orderSearchResultInterfaceFactory;
         $this->storeManager = $storeManager;
         parent::__construct($data);
     }
@@ -398,7 +397,7 @@ class Subscriber extends AbstractContactSyncer implements SyncInterface
         }
 
         $guestsWithOrders = $isSubscriberSalesDataEnabled ?
-            $this->checkInSales($guestSubscribers) :
+            $this->orderHistoryChecker->checkInSales($guestSubscribers) :
             [];
         $guestsWithoutOrders = array_diff($guestSubscribers, $guestsWithOrders);
         $subscribersWithNoSalesData = $guestsWithoutOrders + $customerSubscribers;
@@ -408,34 +407,8 @@ class Subscriber extends AbstractContactSyncer implements SyncInterface
     }
 
     /**
-     * Check emails exist in sales order table.
+     * Get cohort name for use in log lines.
      *
-     * This method has some extra logic to return emails in sales,
-     * preserving the original key.
-     *
-     * @param array $emails
-     *
-     * @return array
-     */
-    private function checkInSales($emails)
-    {
-        /** @var \Magento\Framework\Data\Collection\AbstractDb $orderSearchResultsInterface */
-        $orderSearchResultsInterface = $this->orderSearchResultInterfaceFactory->create();
-        $results = $orderSearchResultsInterface
-            ->addFieldToFilter('customer_email', ['in' => $emails])
-            ->getColumnValues('customer_email');
-
-        $inSales = [];
-        foreach ($results as $inSalesEmail) {
-            if (($key = array_search($inSalesEmail, $emails)) !== false) {
-                $inSales[$key] = $inSalesEmail;
-            }
-        }
-
-        return $inSales;
-    }
-
-    /**
      * @param string $name
      *
      * @return string

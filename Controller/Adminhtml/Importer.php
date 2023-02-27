@@ -11,5 +11,5 @@ abstract class Importer extends Action
      *
      * @see _isAllowed()
      */
-    const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::importer';
+    public const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::importer';
 }

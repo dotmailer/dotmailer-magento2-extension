@@ -7,6 +7,7 @@ use Dotdigitalgroup\Email\Helper\File;
 use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Apiconnector\Account;
 use Dotdigitalgroup\Email\Model\Apiconnector\Rest;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Filesystem\DriverInterface;
 
 /**
@@ -233,6 +234,9 @@ class Client extends Rest
     /**
      * Adds a contact to a given address book.
      *
+     * @deprecated The newer method builds the contact inside it, instead of it being passed in.
+     * @see addContactsToAddressBook
+     *
      * @param string|int $addressBookId
      * @param array $apiContact
      *
@@ -251,6 +255,49 @@ class Client extends Rest
 
         if (isset($response->message)) {
             $this->addClientLog('Address book contacts error');
+        }
+
+        return $response;
+    }
+
+    /**
+     * Adds a contact to a given address book.
+     *
+     * @param string $email
+     * @param string $addressBookId
+     * @param string|null $optInType
+     * @param array|null $dataFields
+     *
+     * @return object
+     * @throws LocalizedException
+     */
+    public function addContactToAddressBook(
+        string $email,
+        string $addressBookId,
+        ?string $optInType,
+        ?array $dataFields = []
+    ) {
+        $url = $this->getApiEndpoint() . self::REST_ADDRESS_BOOKS . $addressBookId
+            . '/contacts';
+        $data = [
+            'Email' => $email,
+            'EmailType' => 'Html',
+            'DataFields' => $dataFields
+        ];
+        if ($optInType) {
+            $data['OptInType'] = $optInType;
+        }
+        $this->setUrl($url)
+            ->setVerb('POST')
+            ->buildPostBody($data);
+
+        $response = $this->execute();
+
+        if (isset($response->message)) {
+            $this->addClientLog('Error adding contact to address book')
+                ->addClientLog('Failed contact data', [
+                    'data' => $data,
+                ], Logger::DEBUG);
         }
 
         return $response;
@@ -407,7 +454,7 @@ class Client extends Rest
      * @param string $name
      * @param string $visibility
      *
-     * @return null
+     * @return null|\stdClass
      * @throws \Exception
      */
     public function postAddressBooks($name, $visibility = 'Public')
@@ -583,6 +630,9 @@ class Client extends Rest
     /**
      * Updates a contact.
      *
+     * @deprecated Use updateContactWithConsentAndPreferences instead.
+     * @see updateContactWithConsentAndPreferences
+     *
      * @param string|int $contactId
      * @param array $data
      *
@@ -635,39 +685,30 @@ class Client extends Rest
     }
 
     /**
-     * Update contact datafields by email.
+     * Update contact data fields by email.
      *
      * @param string $email
      * @param array $dataFields
      *
-     * @return mixed|null
+     * @return \stdClass
      *
      * @throws \Exception
      */
     public function updateContactDatafieldsByEmail($email, $dataFields)
     {
-        $apiContact = $this->postContacts($email);
-        //do not create for non contact id set
-        if (!isset($apiContact->id)) {
-            return $apiContact;
-        } else {
-            //get the contact id for this email
-            $contactId = $apiContact->id;
-        }
         $data = [
             'Email' => $email,
             'EmailType' => 'Html',
+            'DataFields' => $dataFields
         ];
-        $data['DataFields'] = $dataFields;
-        $url = $this->getApiEndpoint() . self::REST_CONTACTS
-            . $contactId;
+        $url = $this->getApiEndpoint() . self::REST_CONTACTS;
         $this->setUrl($url)
-            ->setVerb('PUT')
+            ->setVerb('POST')
             ->buildPostBody($data);
 
         $response = $this->execute();
         if (isset($response->message)) {
-            $this->addClientLog('Error updating contact data field')
+            $this->addClientLog('Error updating contact data fields')
                 ->addClientLog('Failed contact field data', [
                     'data' => $data,
                 ], Logger::DEBUG);
@@ -716,6 +757,9 @@ class Client extends Rest
 
     /**
      * Creates a contact.
+     *
+     * @deprecated Use postContactWithConsentAndPreferences instead.
+     * @see postContactWithConsentAndPreferences
      *
      * @param string $email
      *
@@ -1680,7 +1724,10 @@ class Client extends Rest
     }
 
     /**
-     * Create contact with consent
+     * Create contact with consent.
+     *
+     * @deprecated Use postContactWithConsentAndPreferences instead.
+     * @see postContactWithConsentAndPreferences
      *
      * @param array $contact
      * @param array $consentFields
@@ -1734,27 +1781,40 @@ class Client extends Rest
     }
 
     /**
-     * Create contact with consent
+     * Create contact with consent and preferences.
      *
-     * @param array $contact
-     * @param array $consentFields
-     * @param array $preferences
+     * @param string $email
+     * @param array|null $dataFields
+     * @param array|null $consentFields
+     * @param array|null $preferences
      *
-     * @return mixed
-     *
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @return object
+     * @throws LocalizedException
      */
-    public function postContactWithConsentAndPreferences($contact, $consentFields, $preferences)
-    {
+    public function postContactWithConsentAndPreferences(
+        string $email,
+        ?array $dataFields = [],
+        ?array $consentFields = [],
+        ?array $preferences = []
+    ) {
         $url = $this->getApiEndpoint() . self::REST_CONTACT_WITH_CONSENT_AND_PREFERENCES;
         $data = [
-            'Contact' => $contact,
-            'ConsentFields' => [['fields' => $consentFields]],
-            'Preferences' => [$preferences]
+            'Contact' => [
+                'Email' => $email,
+                'EmailType' => 'Html',
+                'DataFields' => $dataFields
+            ]
         ];
+        if (!empty($consentFields)) {
+            $data['ConsentFields'] = [['fields' => $consentFields]];
+        }
+        if (!empty($preferences)) {
+            $data['Preferences'] = [$preferences];
+        }
         $this->setUrl($url)
             ->setVerb('POST')
             ->buildPostBody($data);
+
         $response = $this->execute();
 
         if (isset($response->message)) {
@@ -1762,6 +1822,57 @@ class Client extends Rest
                 ->addClientLog('Failed contact data', [
                     'data' => $data,
                 ], Logger::DEBUG);
+        }
+
+        return $response;
+    }
+
+    /**
+     * Update contact with consent and preferences.
+     *
+     * @param string $contactId
+     * @param string $email
+     * @param array|null $dataFields
+     * @param array|null $consentFields
+     * @param array|null $preferences
+     *
+     * @return object
+     * @throws LocalizedException
+     */
+    public function updateContactWithConsentAndPreferences(
+        string $contactId,
+        string $email,
+        ?array $dataFields = [],
+        ?array $consentFields = [],
+        ?array $preferences = []
+    ) {
+        $url = $this->getApiEndpoint() . self::REST_CONTACTS . $contactId . "/with-consent-and-preferences";
+        $data = [
+            'Contact' => [
+                'Email' => $email,
+                'EmailType' => 'Html',
+                'DataFields' => $dataFields
+            ]
+        ];
+        if (!empty($consentFields)) {
+            $data['ConsentFields'] = [['fields' => $consentFields]];
+        }
+        if (!empty($preferences)) {
+            $data['Preferences'] = [$preferences];
+        }
+        $this->setUrl($url)
+            ->setVerb('PUT')
+            ->buildPostBody($data);
+
+        $response = $this->execute();
+
+        if (isset($response->message)) {
+            $this->addClientLog('Error updating contact', [
+                'contact_id' => $contactId
+            ])
+            ->addClientLog('Failed contact data', [
+                'data' => $data,
+            ], Logger::DEBUG);
         }
 
         return $response;

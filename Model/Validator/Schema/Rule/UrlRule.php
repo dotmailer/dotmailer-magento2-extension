@@ -2,10 +2,24 @@
 
 namespace Dotdigitalgroup\Email\Model\Validator\Schema\Rule;
 
-use Zend_Uri;
+use Magento\Framework\Url\Validator;
 
 class UrlRule implements ValidatorRuleInterface
 {
+    /**
+     * @var Validator
+     */
+    private $urlValidator;
+
+    /**
+     * @param Validator $urlValidator
+     */
+    public function __construct(
+        Validator $urlValidator
+    ) {
+        $this->urlValidator = $urlValidator;
+    }
+
     /**
      * SchemaValidator Execute Rule
      *
@@ -14,6 +28,6 @@ class UrlRule implements ValidatorRuleInterface
      */
     public function passes($value):bool
     {
-        return Zend_Uri::check($value);
+        return $this->urlValidator->isValid($value);
     }
 }

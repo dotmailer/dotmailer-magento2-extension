@@ -108,7 +108,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      * @param string|null $to
      * @return int
      */
-    public function resetAllContacts(string $from = null, string $to = null)
+    public function resetAllCustomers(string $from = null, string $to = null)
     {
         $conn = $this->getConnection();
 

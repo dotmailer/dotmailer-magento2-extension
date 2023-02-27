@@ -14,9 +14,11 @@ use Dotdigitalgroup\Email\Model\Events\SetupIntegration\OrdersHandler;
 use Dotdigitalgroup\Email\Model\Events\SetupIntegration\ProductsHandler;
 use Dotdigitalgroup\Email\Model\Events\SetupIntegration\InvalidConfigurationHandler;
 use Dotdigitalgroup\Email\Model\Events\SetupIntegration\ReInitConfigurationHandler;
+use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
+use Magento\Framework\App\Action\HttpGetActionInterface;
 
-class SetupIntegration extends \Magento\Backend\App\AbstractAction
+class SetupIntegration extends Action implements HttpGetActionInterface
 {
     /**
      * Authorization level of a basic admin session

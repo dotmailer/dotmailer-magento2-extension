@@ -2,12 +2,14 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml;
 
-abstract class Campaign extends \Magento\Backend\App\Action
+use Magento\Backend\App\Action;
+
+abstract class Campaign extends Action
 {
     /**
      * Authorization level of a basic admin session
      *
      * @see _isAllowed()
      */
-    const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::campaign';
+    public const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::campaign';
 }

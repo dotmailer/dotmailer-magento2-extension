@@ -49,7 +49,7 @@ class ImportDataCommand extends Command
      * Execute the data migration
      * @param InputInterface $input
      * @param OutputInterface $output
-     * @return int|void|null
+     * @return int
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
@@ -75,5 +75,7 @@ class ImportDataCommand extends Command
         }
 
         $output->writeln(__(sprintf('Import complete in %s', round(microtime(true) - $start, 2)))->getText());
+
+        return 0;
     }
 }

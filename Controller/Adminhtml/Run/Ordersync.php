@@ -3,8 +3,10 @@
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Run;
 
 use Dotdigitalgroup\Email\Model\Sync\OrderFactory;
+use Magento\Backend\App\Action;
+use Magento\Framework\App\Action\HttpGetActionInterface;
 
-class Ordersync extends \Magento\Backend\App\AbstractAction
+class Ordersync extends Action implements HttpGetActionInterface
 {
     /**
      * Authorization level of a basic admin session

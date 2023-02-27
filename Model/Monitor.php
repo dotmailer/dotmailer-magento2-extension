@@ -6,11 +6,12 @@ use Dotdigitalgroup\Email\Model\Monitor\AbstractMonitor;
 use Dotdigitalgroup\Email\Model\Monitor\MonitorTypeProvider;
 use Dotdigitalgroup\Email\Model\Monitor\AlertFrequency;
 use Dotdigitalgroup\Email\Model\Monitor\EmailNotifier;
+use Dotdigitalgroup\Email\Model\Task\TaskRunInterface;
 use Dotdigitalgroup\Email\Helper\Config;
 use Dotdigitalgroup\Email\Model\Sync\SetsSyncFromTime;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 
-class Monitor
+class Monitor implements TaskRunInterface
 {
     use SetsSyncFromTime;
 
@@ -54,6 +55,8 @@ class Monitor
     }
 
     /**
+     * Run the Monitor task.
+     *
      * @return void
      * @throws \Magento\Framework\Exception\LocalizedException
      */

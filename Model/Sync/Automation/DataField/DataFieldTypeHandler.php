@@ -5,7 +5,7 @@ namespace Dotdigitalgroup\Email\Model\Sync\Automation\DataField;
 use Dotdigitalgroup\Email\Model\Sync\Automation\AutomationTypeHandler;
 use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\Updater\OrderFactory;
 
-class DataFieldUpdateHandler
+class DataFieldTypeHandler
 {
     /**
      * @var DataFieldUpdaterFactory
@@ -18,7 +18,8 @@ class DataFieldUpdateHandler
     private $orderUpdaterFactory;
 
     /**
-     * DataFieldUpdateHandler constructor.
+     * DataFieldTypeHandler constructor.
+     *
      * @param DataFieldUpdaterFactory $defaultUpdaterFactory
      * @param OrderFactory $orderUpdaterFactory
      */
@@ -31,7 +32,7 @@ class DataFieldUpdateHandler
     }
 
     /**
-     * Update single contact data fields for this automation type.
+     * Retrieve contact data fields for this automation type.
      *
      * @param string $type
      * @param string $email
@@ -39,25 +40,27 @@ class DataFieldUpdateHandler
      * @param string|int $typeId
      * @param string $storeName
      *
-     * @return void
+     * @return array
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function updateDatafieldsByType($type, $email, $websiteId, $typeId, $storeName)
+    public function retrieveDatafieldsByType($type, $email, $websiteId, $typeId, $storeName): array
     {
         switch ($type) {
             case AutomationTypeHandler::AUTOMATION_TYPE_NEW_ORDER:
             case AutomationTypeHandler::AUTOMATION_TYPE_NEW_GUEST_ORDER:
             case AutomationTypeHandler::ORDER_STATUS_AUTOMATION:
             case AutomationTypeHandler::AUTOMATION_TYPE_CUSTOMER_FIRST_ORDER:
-                $this->orderUpdaterFactory->create()
+                $data = $this->orderUpdaterFactory->create()
                     ->setDataFields($websiteId, $typeId, $storeName)
-                    ->updateDataFields();
+                    ->getData();
                 break;
             default:
-                $this->defaultUpdaterFactory->create()
+                $data = $this->defaultUpdaterFactory->create()
                     ->setDefaultDataFields($email, $websiteId, $storeName)
-                    ->updateDataFields();
+                    ->getData();
                 break;
         }
+
+        return $data;
     }
 }

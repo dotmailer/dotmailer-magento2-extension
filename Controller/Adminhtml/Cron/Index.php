@@ -2,14 +2,17 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Cron;
 
-class Index extends \Magento\Backend\App\Action
+use Magento\Backend\App\Action;
+use Magento\Framework\App\Action\HttpGetActionInterface;
+
+class Index extends Action implements HttpGetActionInterface
 {
     /**
      * Authorization level of a basic admin session
      *
      * @see _isAllowed()
      */
-    const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::cron';
+    public const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::cron';
 
     /**
      * @var \Magento\Framework\View\Result\PageFactory
@@ -31,6 +34,8 @@ class Index extends \Magento\Backend\App\Action
     }
 
     /**
+     * Execute
+     *
      * @return \Magento\Backend\Model\View\Result\Page
      */
     public function execute()

@@ -2,10 +2,12 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Run;
 
+use Magento\Backend\App\Action;
+use Magento\Framework\App\Action\HttpGetActionInterface;
 use Magento\Framework\Controller\ResultFactory;
 use Dotdigitalgroup\Email\Model\Sync\CustomerFactory;
 
-class Customersync extends \Magento\Backend\App\AbstractAction
+class Customersync extends Action implements HttpGetActionInterface
 {
     /**
      * Authorization level of a basic admin session

@@ -2,6 +2,6 @@
 
 namespace Dotdigitalgroup\Email\Controller\Email;
 
-class Review extends \Dotdigitalgroup\Email\Controller\Edc
+class Review extends \Dotdigitalgroup\Email\Controller\ExternalDynamicContentController
 {
 }

@@ -38,12 +38,12 @@ abstract class AbstractExporter
     /**
      * Export.
      *
-     * @param array $subscribers
+     * @param array $contacts
      * @param WebsiteInterface $website
      *
-     * @return mixed
+     * @return array
      */
-    abstract public function export(array $subscribers, WebsiteInterface $website);
+    abstract public function export(array $contacts, WebsiteInterface $website);
 
     /**
      * Set CSV columns for export.

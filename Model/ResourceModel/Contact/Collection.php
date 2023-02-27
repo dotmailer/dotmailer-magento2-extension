@@ -96,25 +96,6 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     }
 
     /**
-     * Get missing contacts.
-     *
-     * @param int $websiteId
-     * @param int $pageSize
-     *
-     * @return $this
-     */
-    public function getMissingContacts($websiteId, $pageSize = 100)
-    {
-        $collection = $this->addFieldToFilter('contact_id', ['null' => true])
-            ->addFieldToFilter('suppressed', ['null' => true])
-            ->addFieldToFilter('website_id', $websiteId);
-
-        $collection->getSelect()->limit($pageSize);
-
-        return $collection->load();
-    }
-
-    /**
      * Load Contact by Email.
      *
      * @param string $email
@@ -201,55 +182,11 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
      *
      * @return int
      */
-    public function getNumberOfImportedContacts()
+    public function getNumberOfImportedCustomers()
     {
         $this->addFieldToFilter('email_imported', 1);
 
         return $this->getSize();
-    }
-
-    /**
-     * Get the number of customers for a website.
-     *
-     * @param int $websiteId
-     *
-     * @return int
-     */
-    public function getNumberCustomerContacts($websiteId = 0)
-    {
-        return $this->addFieldToFilter('customer_id', ['gt' => '0'])
-            ->addFieldToFilter('website_id', $websiteId)
-            ->getSize();
-    }
-
-    /**
-     * Get number of suppressed contacts as customer.
-     *
-     * @param int $websiteId
-     *
-     * @return int
-     */
-    public function getNumberCustomerSuppressed($websiteId = 0)
-    {
-        return $this->addFieldToFilter('customer_id', ['gt' => 0])
-            ->addFieldToFilter('website_id', $websiteId)
-            ->addFieldToFilter('suppressed', '1')
-            ->getSize();
-    }
-
-    /**
-     * Get number of synced customers.
-     *
-     * @param int $websiteId
-     *
-     * @return int
-     */
-    public function getNumberCustomerSynced($websiteId = 0)
-    {
-        return $this->addFieldToFilter('customer_id', ['gt' => 0])
-            ->addFieldToFilter('website_id', $websiteId)
-            ->addFieldToFilter('email_imported', 1)
-            ->getSize();
     }
 
     /**
@@ -284,7 +221,6 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
 
     /**
      * Get customer scope data.
-
      *
      * @param array $customerIds
      * @param string|int $websiteId

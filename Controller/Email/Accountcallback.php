@@ -5,13 +5,17 @@ namespace Dotdigitalgroup\Email\Controller\Email;
 use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Model\Integration\IntegrationSetup;
 use Dotdigitalgroup\Email\Model\Integration\IntegrationSetupFactory;
+use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Config\ReinitableConfigInterface;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\Controller\ResultInterface;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\MessageQueue\PublisherInterface;
+use Magento\Framework\Module\Manager;
 use Magento\Framework\Stdlib\DateTime\Timezone;
 
-class Accountcallback extends \Magento\Framework\App\Action\Action
+class Accountcallback extends Action
 {
     /**
      * @var Timezone
@@ -29,7 +33,7 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
     private $helper;
 
     /**
-     * @var \Magento\Framework\Module\Manager
+     * @var Manager
      */
     private $moduleManager;
 
@@ -39,29 +43,38 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
     private $reinitableConfig;
 
     /**
+     * @var PublisherInterface
+     */
+    private $publisher;
+
+    /**
      * Accountcallback constructor.
      *
      * @param Context $context
      * @param Timezone $timezone
      * @param IntegrationSetupFactory $integrationSetupFactory
      * @param Data $helper
-     * @param \Magento\Framework\Module\Manager $moduleManager
+     * @param Manager $moduleManager
      * @param ReinitableConfigInterface $reinitableConfig
+     * @param PublisherInterface $publisher
      */
     public function __construct(
         Context $context,
         Timezone $timezone,
         IntegrationSetupFactory $integrationSetupFactory,
         Data $helper,
-        \Magento\Framework\Module\Manager $moduleManager,
-        ReinitableConfigInterface $reinitableConfig
+        Manager $moduleManager,
+        ReinitableConfigInterface $reinitableConfig,
+        PublisherInterface $publisher
     ) {
 
         $this->timezone = $timezone;
+
         $this->integrationSetup = $integrationSetupFactory->create();
         $this->helper = $helper;
         $this->moduleManager = $moduleManager;
         $this->reinitableConfig = $reinitableConfig;
+        $this->publisher = $publisher;
         parent::__construct($context);
     }
 
@@ -69,6 +82,7 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
      * Process the callback
      *
      * @return ResponseInterface|ResultInterface
+     * @throws LocalizedException
      */
     public function execute()
     {
@@ -93,7 +107,6 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
         $this->helper->enableEngagementCloud($website);
         $this->reinitableConfig->reinit();
 
-
         // set up EC account
         $dataFieldsStatus = $this->integrationSetup->setupDataFields();
         $addressBookStatus = $this->integrationSetup->createAddressBooks();
@@ -109,6 +122,9 @@ class Accountcallback extends \Magento\Framework\App\Action\Action
             'address_books_set_up' => $addressBookStatus,
             'syncs_enabled_for_trial' => $syncStatus,
         ]);
+
+        $this->helper->log('----PUBLISHING INTEGRATION INSIGHTS---');
+        $this->publisher->publish('ddg.sync.integration', '');
 
         return $this->getResponse()
             ->setHttpResponseCode(201)
