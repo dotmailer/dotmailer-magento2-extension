@@ -1,3 +1,8 @@
+# 4.20.2
+
+### Improvements
+- We refactored our code to remove dynamic property assignment, which is deprecated in PHP 8.2.
+
 # 4.20.1
 
 ### Bug fixes
