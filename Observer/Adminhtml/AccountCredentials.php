@@ -106,6 +106,9 @@ class AccountCredentials implements ObserverInterface
         if ($apiUsername && $apiPassword) {
             $isValidAccount = $this->isValidAccount($apiUsername, $apiPassword);
             if ($isValidAccount) {
+                $this->helper->log('----PUBLISHING INTEGRATION INSIGHTS---');
+                $this->publisher->publish('ddg.sync.integration', '');
+                
                 $websiteId = $this->context->getRequest()->getParam('website');
 
                 if ($websiteId) {
@@ -117,8 +120,6 @@ class AccountCredentials implements ObserverInterface
 
                 $this->dummyRecordsFactory->create()
                     ->sync();
-                $this->helper->log('----PUBLISHING INTEGRATION INSIGHTS---');
-                $this->publisher->publish('ddg.sync.integration', '');
             }
         }
 
