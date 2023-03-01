@@ -99,7 +99,7 @@ class ParentFinder
         if (!$parentId) {
             return null;
         }
-
+        
         try {
             return $this->productRepository->getById($parentId, false, $product->getStoreId());
         } catch (\Magento\Framework\Exception\NoSuchEntityException $e) {

@@ -316,4 +316,20 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
             ->addFieldToFilter('updated_at', ['gt' => $time])
             ->getColumnValues('order_id');
     }
+
+    /**
+     * Get order ids from increment ids.
+     *
+     * @param array $incrementIds
+     * @return array
+     */
+    public function getOrderIdsFromIncrementIds(array $incrementIds): array
+    {
+        return $this->orderCollection->create()
+            ->addFieldToFilter(
+                'main_table.increment_id',
+                ['in' => $incrementIds]
+            )
+            ->getColumnValues('entity_id');
+    }
 }
