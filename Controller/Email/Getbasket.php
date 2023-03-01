@@ -198,18 +198,30 @@ class Getbasket extends \Magento\Framework\App\Action\Action
         $currentQuote = $checkoutSession->getQuote();
 
         if ($currentQuote->hasItems()) {
-            $currentSessionItems = $currentQuote->getAllItems();
-            $currentItemIds = [];
+            foreach ($this->quote->getAllVisibleItems() as $item) {
+                $found = false;
+                
+                foreach ($currentQuote->getAllItems() as $quoteItem) {
+                    if ($quoteItem->compare($item)) {
+                        $quoteItem->setQty($quoteItem->getQty() + $item->getQty());
+                        $found = true;
+                        break;
+                    }
+                }
 
-            foreach ($currentSessionItems as $currentSessionItem) {
-                $currentItemIds[] = $currentSessionItem->getId();
-            }
-            /** @var \Magento\Quote\Model\Quote\Item $item */
-            foreach ($this->quote->getAllItems() as $item) {
-                if (!in_array($item->getId(), $currentItemIds)) {
-                    $currentQuote->addProduct($item->getProduct());
+                if (!$found) {
+                    $newItem = clone $item;
+                    $currentQuote->addItem($newItem);
+                    if ($item->getHasChildren()) {
+                        foreach ($item->getChildren() as $child) {
+                            $newChild = clone $child;
+                            $newChild->setParentItem($newItem);
+                            $currentQuote->addItem($newChild);
+                        }
+                    }
                 }
             }
+
             $currentQuote->collectTotals();
 
             $this->quoteResource->save($currentQuote);
