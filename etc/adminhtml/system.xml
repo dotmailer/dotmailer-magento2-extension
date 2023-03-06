@@ -397,7 +397,7 @@
                 </field>
                 <field id="subscribers" translate="label" type="select" sortOrder="30" showInDefault="1" showInStore="0"
                        showInWebsite="1">
-                    <label>Add Subscribers To</label>
+                    <label>Add Email Subscribers To</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Settings\Addressbooks</source_model>
                 </field>
                 <field id="guests" translate="label" type="select" sortOrder="40" showInDefault="1" showInStore="0"
@@ -430,7 +430,7 @@
                 </field>
                 <field id="subscriber_enabled" type="select" sortOrder="50" showInDefault="1" showInStore="0"
                        showInWebsite="1">
-                    <label>Subscriber Enabled</label>
+                    <label>Email Subscriber Enabled</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
                 <field id="subscriber_report" type="button" sortOrder="60" showInDefault="1" showInStore="0"
