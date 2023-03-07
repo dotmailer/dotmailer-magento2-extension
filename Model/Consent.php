@@ -189,7 +189,7 @@ class Consent extends \Magento\Framework\Model\AbstractModel
     public function getConsentCustomerText($websiteId): string
     {
         return $this->limitLength(
-            $this->configHelper->getWebsiteConfig(Config::XML_PATH_DOTMAILER_CONSENT_CUSTOMER_TEXT, $websiteId)
+            $this->configHelper->getWebsiteConfig(Config::XML_PATH_CONSENT_CUSTOMER_TEXT, $websiteId)
         );
     }
 
@@ -252,7 +252,7 @@ class Consent extends \Magento\Framework\Model\AbstractModel
     private function getConsentSubscriberText($websiteId): string
     {
         return $this->limitLength(
-            $this->configHelper->getWebsiteConfig(Config::XML_PATH_DOTMAILER_CONSENT_SUBSCRIBER_TEXT, $websiteId)
+            $this->configHelper->getWebsiteConfig(Config::XML_PATH_CONSENT_SUBSCRIBER_TEXT, $websiteId)
         );
     }
 

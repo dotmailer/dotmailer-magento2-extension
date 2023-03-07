@@ -361,12 +361,12 @@ class Config extends AbstractHelper
     /**
      * CONSENT SECTION.
      */
-    public const XML_PATH_DOTMAILER_CONSENT_SUBSCRIBER_ENABLED =
-        'connector_configuration/consent/dotmailer_consent_subscriber_enabled';
-    public const XML_PATH_DOTMAILER_CONSENT_SUBSCRIBER_TEXT =
-        'connector_configuration/consent/dotmailer_consent_subscriber_text';
-    public const XML_PATH_DOTMAILER_CONSENT_CUSTOMER_TEXT =
-        'connector_configuration/consent/dotmailer_consent_customer_text';
+    public const XML_PATH_CONSENT_EMAIL_ENABLED =
+        'connector_consent/email/enabled';
+    public const XML_PATH_CONSENT_SUBSCRIBER_TEXT =
+        'connector_consent/email/text_newsletter_signup_form';
+    public const XML_PATH_CONSENT_CUSTOMER_TEXT =
+        'connector_consent/email/text_newsletter_registration_checkout';
 
     /**
      * OAUTH.
@@ -648,6 +648,6 @@ class Config extends AbstractHelper
      */
     public function isConsentSubscriberEnabled($websiteId)
     {
-        return $this->getWebsiteConfig(self::XML_PATH_DOTMAILER_CONSENT_SUBSCRIBER_ENABLED, $websiteId);
+        return $this->getWebsiteConfig(self::XML_PATH_CONSENT_EMAIL_ENABLED, $websiteId);
     }
 }

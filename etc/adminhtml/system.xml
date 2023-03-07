@@ -1306,6 +1306,29 @@
                 </field>
             </group>
         </section>
+        <section id="connector_consent" translate="label" sortOrder="195" showInStore="1" showInWebsite="1" showInDefault="1">
+            <class>separator-top</class>
+            <label>Consent</label>
+            <tab>ddg_automation</tab>
+            <resource>Dotdigitalgroup_Email::config</resource>
+            <group id="email" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Email</label>
+                <field id="enabled" translate="label" sortOrder="10" type="select" showInStore="1"
+                       showInWebsite="1" showInDefault="1">
+                    <label>Ask for email marketing consent</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment><![CDATA[If yes, adds a consent opt-in checkbox to email signup fields.]]></comment>
+                </field>
+                <field id="text_newsletter_signup_form" translate="label" sortOrder="20" type="textarea" showInWebsite="1" showInStore="1" showInDefault="1">
+                    <label>Consent text for the newsletter signup form</label>
+                    <comment><![CDATA[Explain what you will do with consent, how they can withdraw consent, and where they can learn more.]]></comment>
+                </field>
+                <field id="text_newsletter_registration_checkout" translate="label" sortOrder="20" type="textarea" showInWebsite="1" showInStore="1" showInDefault="1">
+                    <label>Consent text for registration, account dashboard and checkout</label>
+                    <comment><![CDATA[If different from your consent text for the newsletter signup for, explain what you will do with consent, how they can withdraw consent and where they can learn more. This text is also displayed on the newsletter subscription page.]]></comment>
+                </field>
+            </group>
+        </section>
         <section id="connector_configuration" translate="label" sortOrder="200" showInStore="1" showInWebsite="1"
                  showInDefault="1">
             <class>separator-top</class>
@@ -1383,22 +1406,6 @@
                 </field>
                 <field id="host" translate="label" sortOrder="60" showInDefault="0" showInStore="0" showInWebsite="0">
                     <label>Tracking Host</label>
-                </field>
-            </group>
-            <group id="consent" translate="label" sortOrder="25" showInDefault="1" showInWebsite="1" showInStore="0">
-                <label>Consent</label>
-                <field id="dotmailer_consent_subscriber_enabled" translate="comment label" sortOrder="10" type="select" showInStore="0" showInWebsite="1" showInDefault="1">
-                    <label>Import subscribers with their consent information</label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <comment>Enable this if you want to import consent insight data when customers subscribe via the newsletter signup form, registration form or during checkout.</comment>
-                </field>
-                <field id="dotmailer_consent_subscriber_text" translate="comment label" sortOrder="20" type="textarea" showInStore="0" showInWebsite="1" showInDefault="1">
-                    <label>Consent text provided to your subscribers above the newsletter signup form</label>
-                    <comment>Please provide the consent text that is currently displayed to your customers when they subscribe to your newsletter (i.e. via the newsletter signup form)</comment>
-                </field>
-                <field id="dotmailer_consent_customer_text" translate="comment label" sortOrder="30" type="textarea" showInStore="0" showInWebsite="1" showInDefault="1">
-                    <label>Consent text provided on registration, account dashboard and checkout</label>
-                    <comment>If different from above, provide the text that is displayed on your registration and checkout form to get consent from your customers and guests. If provided, this text will also be displayed in the customer's newsletter subscription page.</comment>
                 </field>
             </group>
             <group id="transactional_data" translate="label" sortOrder="30" showInDefault="1" showInWebsite="1"
