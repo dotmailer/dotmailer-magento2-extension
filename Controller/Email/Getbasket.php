@@ -110,8 +110,7 @@ class Getbasket extends \Magento\Framework\App\Action\Action
 
         $this->quoteResource->load($quoteModel, $quoteId);
 
-        //no quote id redirect to base url
-        if (! $quoteModel->getId()) {
+        if (!$quoteModel->getId() || !$quoteModel->getCustomerEmail()) {
             return $this->_redirect($this->getRedirectWithParams(''));
         }
 
