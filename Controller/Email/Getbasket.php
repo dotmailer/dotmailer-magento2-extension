@@ -203,7 +203,6 @@ class Getbasket extends \Magento\Framework\App\Action\Action
                 
                 foreach ($currentQuote->getAllItems() as $quoteItem) {
                     if ($quoteItem->compare($item)) {
-                        $quoteItem->setQty($quoteItem->getQty() + $item->getQty());
                         $found = true;
                         break;
                     }
