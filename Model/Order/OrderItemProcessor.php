@@ -343,7 +343,7 @@ class OrderItemProcessor extends DataObject
      */
     private function getProductId(): string
     {
-        return $this->productItem->getProductId();
+        return (string) $this->productItem->getProductId();
     }
 
     /**
