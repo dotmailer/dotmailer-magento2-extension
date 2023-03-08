@@ -199,16 +199,24 @@ class Getbasket extends \Magento\Framework\App\Action\Action
 
         if ($currentQuote->hasItems()) {
             foreach ($this->quote->getAllVisibleItems() as $item) {
+                $found = false;
+                
                 foreach ($currentQuote->getAllItems() as $quoteItem) {
-                    if (!$quoteItem->compare($item)) {
-                        $newItem = clone $item;
-                        $currentQuote->addItem($newItem);
-                        if ($item->getHasChildren()) {
-                            foreach ($item->getChildren() as $child) {
-                                $newChild = clone $child;
-                                $newChild->setParentItem($newItem);
-                                $currentQuote->addItem($newChild);
-                            }
+                    if ($quoteItem->compare($item)) {
+                        $quoteItem->setQty($quoteItem->getQty() + $item->getQty());
+                        $found = true;
+                        break;
+                    }
+                }
+
+                if (!$found) {
+                    $newItem = clone $item;
+                    $currentQuote->addItem($newItem);
+                    if ($item->getHasChildren()) {
+                        foreach ($item->getChildren() as $child) {
+                            $newChild = clone $child;
+                            $newChild->setParentItem($newItem);
+                            $currentQuote->addItem($newChild);
                         }
                     }
                 }
