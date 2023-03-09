@@ -26,12 +26,12 @@ class AlertFrequency
     /**
      * Set time window for system alerts.
      *
-     * @param \DateTime $syncFromTime
      * @return array
+     * @throws \Exception
      */
-    public function setTimeWindow(\DateTime $syncFromTime)
+    public function setTimeWindow()
     {
-        $toTime = $syncFromTime;
+        $toTime = new \DateTime('now', new \DateTimeZone('UTC'));
 
         $hours = (int) $this->scopeConfig->getValue(
             Config::XML_PATH_CONNECTOR_SYSTEM_ALERTS_FREQUENCY

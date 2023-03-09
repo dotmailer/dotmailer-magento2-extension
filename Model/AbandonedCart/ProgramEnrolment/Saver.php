@@ -4,6 +4,7 @@ namespace Dotdigitalgroup\Email\Model\AbandonedCart\ProgramEnrolment;
 
 use Dotdigitalgroup\Email\Model\Sync\Automation\AutomationTypeHandler;
 use Dotdigitalgroup\Email\Model\StatusInterface;
+use Magento\Quote\Model\Quote;
 
 class Saver
 {
@@ -42,7 +43,7 @@ class Saver
     /**
      * Process abandoned carts for automation program enrolment
      *
-     * @param \Magento\Quote\Model\ResourceModel\Quote
+     * @param Quote $quote
      * @param \Magento\Store\Api\Data\StoreInterface $store
      * @param int $programId
      *

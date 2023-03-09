@@ -3,14 +3,13 @@
 namespace Dotdigitalgroup\Email\Model\AbandonedCart\ProgramEnrolment;
 
 use Dotdigitalgroup\Email\Logger\Logger;
-use Dotdigitalgroup\Email\Model\ResourceModel\Automation\CollectionFactory as AutomationCollectionFactory;
-use Dotdigitalgroup\Email\Model\Sync\SetsSyncFromTime;
+use Dotdigitalgroup\Email\Model\AbandonedCart\Interval;
 use Dotdigitalgroup\Email\Model\AbandonedCart\TimeLimit;
+use Dotdigitalgroup\Email\Model\ResourceModel\Automation\CollectionFactory as AutomationCollectionFactory;
+use Magento\Quote\Model\Quote;
 
 class Enroller
 {
-    use SetsSyncFromTime;
-
     /**
      * @var Logger
      */
@@ -89,6 +88,12 @@ class Enroller
         $this->timeLimit = $timeLimit;
     }
 
+    /**
+     * Process abandoned carts for program enrolment.
+     *
+     * @return void
+     * @throws \Exception
+     */
     public function process()
     {
         foreach ($this->helper->getStores() as $store) {
@@ -117,7 +122,7 @@ class Enroller
             return;
         }
 
-        $updated = $this->interval->getAbandonedCartProgramEnrolmentWindow($storeId, $this->getSyncFromTime());
+        $updated = $this->interval->getAbandonedCartProgramEnrolmentWindow($storeId);
 
         $quoteCollection = $this->getStoreQuotesForGuestsAndCustomers($storeId, $updated);
 
@@ -147,8 +152,8 @@ class Enroller
     /**
      * Retrieve store quotes
      *
-     * @param $storeId
-     * @param $updated
+     * @param int $storeId
+     * @param array $updated
      * @return \Iterator
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
@@ -181,7 +186,9 @@ class Enroller
     }
 
     /**
-     * @param \Magento\Quote\Model\ResourceModel\Quote
+     * Save the automation.
+     *
+     * @param Quote $quote
      * @param \Magento\Store\Api\Data\StoreInterface $store
      * @param int $programId
      * @throws \Exception
@@ -196,7 +203,9 @@ class Enroller
     }
 
     /**
-     * @param \Magento\Quote\Model\ResourceModel\Quote $quote
+     * Check if a matching automation has already been sent inside a limit.
+     *
+     * @param Quote $quote
      * @param string $storeId
      * @return bool
      */
@@ -219,6 +228,6 @@ class Enroller
             return false;
         }
 
-        return $automations->getSize();
+        return (bool) $automations->getSize();
     }
 }

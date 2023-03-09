@@ -1335,6 +1335,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
+     * @deprecated Load directly via dependency injection.
+     *
      * @return ScopeConfigInterface
      */
     public function getScopeConfig()

@@ -3,8 +3,9 @@
 namespace Dotdigitalgroup\Email\Model\Sync\Integration;
 
 use Dotdigitalgroup\Email\Helper\Config;
-use Dotdigitalgroup\Email\Model\Email\Template;
 use Dotdigitalgroup\Email\Helper\Transactional;
+use Dotdigitalgroup\Email\Model\AbandonedCart\Interval;
+use Dotdigitalgroup\Email\Model\Email\Template;
 use Dotdigitalgroup\Email\Model\Sales\Quote;
 
 interface DotdigitalConfigInterface
@@ -217,18 +218,18 @@ interface DotdigitalConfigInterface
         Quote::XML_PATH_LOSTBASKET_CUSTOMER_ENABLED_1,
         Quote::XML_PATH_LOSTBASKET_CUSTOMER_ENABLED_2,
         Quote::XML_PATH_LOSTBASKET_CUSTOMER_ENABLED_3,
-        Quote::XML_PATH_LOSTBASKET_CUSTOMER_INTERVAL_1,
-        Quote::XML_PATH_LOSTBASKET_CUSTOMER_INTERVAL_2,
-        Quote::XML_PATH_LOSTBASKET_CUSTOMER_INTERVAL_3,
+        Interval::XML_PATH_LOSTBASKET_CUSTOMER_INTERVAL_1,
+        Interval::XML_PATH_LOSTBASKET_CUSTOMER_INTERVAL_2,
+        Interval::XML_PATH_LOSTBASKET_CUSTOMER_INTERVAL_3,
         Quote::XML_PATH_LOSTBASKET_CUSTOMER_CAMPAIGN_1,
         Quote::XML_PATH_LOSTBASKET_CUSTOMER_CAMPAIGN_2,
         Quote::XML_PATH_LOSTBASKET_CUSTOMER_CAMPAIGN_3,
         Quote::XML_PATH_LOSTBASKET_GUEST_ENABLED_1,
         Quote::XML_PATH_LOSTBASKET_GUEST_ENABLED_2,
         Quote::XML_PATH_LOSTBASKET_GUEST_ENABLED_3,
-        Quote::XML_PATH_LOSTBASKET_GUEST_INTERVAL_1,
-        Quote::XML_PATH_LOSTBASKET_GUEST_INTERVAL_2,
-        Quote::XML_PATH_LOSTBASKET_GUEST_INTERVAL_3,
+        Interval::XML_PATH_LOSTBASKET_GUEST_INTERVAL_1,
+        Interval::XML_PATH_LOSTBASKET_GUEST_INTERVAL_2,
+        Interval::XML_PATH_LOSTBASKET_GUEST_INTERVAL_3,
         Quote::XML_PATH_LOSTBASKET_GUEST_CAMPAIGN_1,
         Quote::XML_PATH_LOSTBASKET_GUEST_CAMPAIGN_2,
         Quote::XML_PATH_LOSTBASKET_GUEST_CAMPAIGN_3

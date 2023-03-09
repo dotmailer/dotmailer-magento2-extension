@@ -3,13 +3,16 @@
 namespace Dotdigitalgroup\Email\Model\AbandonedCart;
 
 use Dotdigitalgroup\Email\Helper\Config;
-use Dotdigitalgroup\Email\Model\Sync\SetsSyncFromTime;
+use Dotdigitalgroup\Email\Model\Sync\SyncTimeService;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 
 class TimeLimit
 {
-    use SetsSyncFromTime;
+    /**
+     * @var SyncTimeService
+     */
+    private $syncTimeService;
 
     /**
      * @var ScopeConfigInterface
@@ -22,20 +25,27 @@ class TimeLimit
     private $timezone;
 
     /**
+     * @param SyncTimeService $syncTimeService
      * @param TimezoneInterface $timezone
      * @param ScopeConfigInterface $scopeConfig
      */
     public function __construct(
+        SyncTimeService $syncTimeService,
         TimezoneInterface $timezone,
         ScopeConfigInterface $scopeConfig
     ) {
         $this->timezone = $timezone;
         $this->scopeConfig = $scopeConfig;
+        $this->syncTimeService = $syncTimeService;
     }
 
     /**
-     * @param $storeId
+     * Get an updated range according to the configured limit.
+     *
+     * @param int $storeId
+     *
      * @return array|bool
+     * @throws \Exception
      */
     public function getAbandonedCartTimeLimit($storeId)
     {
@@ -50,15 +60,14 @@ class TimeLimit
             return false;
         }
 
-        $fromTime = $this->timezone->scopeDate($storeId, $this->getSyncFromTime()->format('Y-m-d H:i:s'), true);
-        $toTime = clone $fromTime;
-
-        $interval = new \DateInterval(sprintf('PT%sH', $cartLimit));
-        $fromTime->sub($interval);
+        $toTime = $this->syncTimeService->getSyncFromTime() ?: $this->syncTimeService->getUTCNowTime();
+        $scopedToTime = $this->timezone->scopeDate($storeId, $toTime->format('Y-m-d H:i:s'), true);
+        $scopedFromTime = clone $scopedToTime;
+        $scopedFromTime->sub(new \DateInterval(sprintf('PT%sH', $cartLimit)));
 
         return [
-            'from' => $fromTime->getTimestamp(),
-            'to' => $toTime->getTimestamp(),
+            'from' => $scopedFromTime->getTimestamp(),
+            'to' => $scopedToTime->getTimestamp(),
             'date' => true,
         ];
     }
