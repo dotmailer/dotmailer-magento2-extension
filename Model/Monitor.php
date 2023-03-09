@@ -8,13 +8,10 @@ use Dotdigitalgroup\Email\Model\Monitor\AlertFrequency;
 use Dotdigitalgroup\Email\Model\Monitor\EmailNotifier;
 use Dotdigitalgroup\Email\Model\Task\TaskRunInterface;
 use Dotdigitalgroup\Email\Helper\Config;
-use Dotdigitalgroup\Email\Model\Sync\SetsSyncFromTime;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 
 class Monitor implements TaskRunInterface
 {
-    use SetsSyncFromTime;
-
     /**
      * @var MonitorTypeProvider
      */
@@ -74,7 +71,7 @@ class Monitor implements TaskRunInterface
             return;
         }
 
-        $timeWindow = $this->alertFrequency->setTimeWindow($this->getSyncFromTime());
+        $timeWindow = $this->alertFrequency->setTimeWindow();
         $errors = [];
 
         foreach ($this->monitorTypeProvider->getTypes() as $monitor) {

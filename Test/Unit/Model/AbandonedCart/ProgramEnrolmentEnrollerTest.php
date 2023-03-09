@@ -7,7 +7,7 @@ use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\AbandonedCart\CartInsight\Data as CartInsight;
 use Dotdigitalgroup\Email\Model\AbandonedCart\ProgramEnrolment\Enroller;
-use Dotdigitalgroup\Email\Model\AbandonedCart\ProgramEnrolment\Interval;
+use Dotdigitalgroup\Email\Model\AbandonedCart\Interval;
 use Dotdigitalgroup\Email\Model\AbandonedCart\ProgramEnrolment\Rules;
 use Dotdigitalgroup\Email\Model\AbandonedCart\ProgramEnrolment\Saver;
 use Dotdigitalgroup\Email\Model\AbandonedCart\TimeLimit;

@@ -4,13 +4,13 @@ namespace Dotdigitalgroup\Email\Model\Sales;
 
 use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Abandoned as AbandonedModel;
+use Dotdigitalgroup\Email\Model\AbandonedCart\Interval;
 use Dotdigitalgroup\Email\Model\AbandonedFactory;
 use Dotdigitalgroup\Email\Model\ResourceModel\Abandoned\CollectionFactory as AbandonedCollectionFactory;
 use Dotdigitalgroup\Email\Model\ResourceModel\Campaign\CollectionFactory as CampaignCollectionFactory;
 use Dotdigitalgroup\Email\Model\Sync\PendingContact\PendingContactUpdater;
 use Dotdigitalgroup\Email\Model\StatusInterface;
 use Dotdigitalgroup\Email\Model\ResourceModel\Campaign;
-use Dotdigitalgroup\Email\Model\Sync\SetsSyncFromTime;
 use Dotdigitalgroup\Email\Model\AbandonedCart\TimeLimit;
 use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\Updater\AbandonedCartFactory as AbandonedCartUpdaterFactory;
 use Magento\Framework\App\Config\ScopeConfigInterface;
@@ -25,15 +25,10 @@ use Magento\Store\Model\StoreManagerInterface;
  */
 class Quote
 {
-    use SetsSyncFromTime;
-
     //customer
     public const XML_PATH_LOSTBASKET_CUSTOMER_ENABLED_1 = 'abandoned_carts/customers/enabled_1';
     public const XML_PATH_LOSTBASKET_CUSTOMER_ENABLED_2 = 'abandoned_carts/customers/enabled_2';
     public const XML_PATH_LOSTBASKET_CUSTOMER_ENABLED_3 = 'abandoned_carts/customers/enabled_3';
-    public const XML_PATH_LOSTBASKET_CUSTOMER_INTERVAL_1 = 'abandoned_carts/customers/send_after_1';
-    public const XML_PATH_LOSTBASKET_CUSTOMER_INTERVAL_2 = 'abandoned_carts/customers/send_after_2';
-    public const XML_PATH_LOSTBASKET_CUSTOMER_INTERVAL_3 = 'abandoned_carts/customers/send_after_3';
     public const XML_PATH_LOSTBASKET_CUSTOMER_CAMPAIGN_1 = 'abandoned_carts/customers/campaign_1';
     public const XML_PATH_LOSTBASKET_CUSTOMER_CAMPAIGN_2 = 'abandoned_carts/customers/campaign_2';
     public const XML_PATH_LOSTBASKET_CUSTOMER_CAMPAIGN_3 = 'abandoned_carts/customers/campaign_3';
@@ -42,9 +37,6 @@ class Quote
     public const XML_PATH_LOSTBASKET_GUEST_ENABLED_1 = 'abandoned_carts/guests/enabled_1';
     public const XML_PATH_LOSTBASKET_GUEST_ENABLED_2 = 'abandoned_carts/guests/enabled_2';
     public const XML_PATH_LOSTBASKET_GUEST_ENABLED_3 = 'abandoned_carts/guests/enabled_3';
-    public const XML_PATH_LOSTBASKET_GUEST_INTERVAL_1 = 'abandoned_carts/guests/send_after_1';
-    public const XML_PATH_LOSTBASKET_GUEST_INTERVAL_2 = 'abandoned_carts/guests/send_after_2';
-    public const XML_PATH_LOSTBASKET_GUEST_INTERVAL_3 = 'abandoned_carts/guests/send_after_3';
     public const XML_PATH_LOSTBASKET_GUEST_CAMPAIGN_1 = 'abandoned_carts/guests/campaign_1';
     public const XML_PATH_LOSTBASKET_GUEST_CAMPAIGN_2 = 'abandoned_carts/guests/campaign_2';
     public const XML_PATH_LOSTBASKET_GUEST_CAMPAIGN_3 = 'abandoned_carts/guests/campaign_3';
@@ -58,6 +50,11 @@ class Quote
     private const GUEST_LOST_BASKET_THREE = 3;
 
     private const STATUS_SENT = 'Sent';
+
+    /**
+     * @var Interval
+     */
+    private $interval;
 
     /**
      * @var AbandonedFactory
@@ -184,6 +181,7 @@ class Quote
      * @param ScopeConfigInterface $scopeConfig
      */
     public function __construct(
+        Interval $interval,
         AbandonedFactory $abandonedFactory,
         AbandonedCollectionFactory $abandonedCollectionFactory,
         \Dotdigitalgroup\Email\Model\RulesFactory $rulesFactory,
@@ -203,6 +201,7 @@ class Quote
         StoreManagerInterface $storeManager,
         ScopeConfigInterface $scopeConfig
     ) {
+        $this->interval = $interval;
         $this->timeZone = $timezone;
         $this->rulesFactory = $rulesFactory;
         $this->campaignFactory = $campaignFactory;
@@ -353,39 +352,16 @@ class Quote
     }
 
     /**
-     * Get the 'Send After' value for this number in the series.
-     *
-     * @param int $num
-     * @param int $storeId
-     *
-     * @return mixed
-     */
-    public function getLostBasketCustomerInterval($num, $storeId)
-    {
-        return $this->scopeConfig->getValue(
-            constant('self::XML_PATH_LOSTBASKET_CUSTOMER_INTERVAL_' . $num),
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
-            $storeId
-        );
-    }
-
-    /**
      * Get quotes.
      *
-     * @param string|null $from
-     * @param string|null $to
+     * @param array $updated
      * @param bool $guest
      * @param int $storeId
      * @return QuoteCollection|\Magento\Sales\Model\ResourceModel\Order\Collection
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
-    public function getStoreQuotes($from = null, $to = null, $guest = false, $storeId = 0)
+    public function getStoreQuotes(array $updated, $guest = false, $storeId = 0)
     {
-        $updated = [
-            'from' => $from,
-            'to' => $to,
-            'date' => true,
-        ];
         $salesCollection = $this->orderCollection->create()
             ->getStoreQuotes($storeId, $updated, $guest);
 
@@ -467,23 +443,6 @@ class Quote
     }
 
     /**
-     * Get the 'Send After' value for this number in the series.
-     *
-     * @param int $num
-     * @param int $storeId
-     *
-     * @return mixed
-     */
-    public function getLostBasketSendAfterForGuest($num, $storeId)
-    {
-        return $this->scopeConfig->getValue(
-            constant('self::XML_PATH_LOSTBASKET_GUEST_INTERVAL_' . $num),
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
-            $storeId
-        );
-    }
-
-    /**
      * Get the campaign mapped for this number in the series.
      *
      * @param int $num
@@ -501,49 +460,6 @@ class Quote
     }
 
     /**
-     * Get the 'Send After' interval in minutes or hours.
-     *
-     * @param int $storeId
-     * @param int $num
-     *
-     * @return \DateInterval
-     */
-    private function getInterval($storeId, $num)
-    {
-        if ($num == 1) {
-            $minutes = $this->getLostBasketCustomerInterval($num, $storeId);
-            $interval = new \DateInterval(sprintf('PT%sM', $minutes));
-        } else {
-            $hours = (int)$this->getLostBasketCustomerInterval($num, $storeId);
-            $interval = new \DateInterval(sprintf('PT%sH', $hours));
-        }
-
-        return $interval;
-    }
-
-    /**
-     * Get the 'Send After' interval in minutes or hours.
-     *
-     * @param int $storeId
-     * @param int $num
-     *
-     * @return \DateInterval
-     */
-    protected function getSendAfterIntervalForGuest($storeId, $num)
-    {
-        $timeInterval = $this->getLostBasketSendAfterForGuest($num, $storeId);
-
-        //for the  first cart which use the minutes
-        if ($num == 1) {
-            $interval = new \DateInterval(sprintf('PT%sM', $timeInterval));
-        } else {
-            $interval = new \DateInterval(sprintf('PT%sH', $timeInterval));
-        }
-
-        return $interval;
-    }
-
-    /**
      * Process Abandoned Cart 1 for customers.
      *
      * @param int $storeId
@@ -552,19 +468,14 @@ class Quote
     private function processCustomerFirstAbandonedCart($storeId)
     {
         $abandonedNum = 1;
-
-        $fromTime = $this->getSyncFromTime($this->getInterval($storeId, $abandonedNum));
-        $toTime = clone $fromTime;
-        $fromTime->sub(new \DateInterval('PT5M'));
-        $fromDate = $fromTime->format('Y-m-d H:i:s');
-        $toDate = $toTime->format('Y-m-d H:i:s');
+        $updated = $this->interval->getAbandonedCartSeriesCustomerWindow($storeId, $abandonedNum);
 
         //active quotes
-        $quoteCollection = $this->getStoreQuotes($fromDate, $toDate, false, $storeId);
+        $quoteCollection = $this->getStoreQuotes($updated, false, $storeId);
 
         //found abandoned carts
         if ($quoteCollection->getSize()) {
-            $this->helper->log('Customer AC 1 ' . $fromDate . ' - ' . $toDate);
+            $this->helper->log('Customer AC 1 ' . $updated['from'] . ' - ' . $updated['to']);
         }
 
         //campaign id for customers
@@ -811,19 +722,12 @@ class Quote
     private function processGuestFirstAbandonedCart($storeId)
     {
         $abandonedNum = 1;
+        $updated = $this->interval->getAbandonedCartSeriesGuestWindow($storeId, $abandonedNum);
 
-        $fromTime = $this->getSyncFromTime($this->getSendAfterIntervalForGuest($storeId, $abandonedNum));
-        $toTime = clone $fromTime;
-        $fromTime->sub(new \DateInterval('PT5M'));
-
-        //format time
-        $fromDate   = $fromTime->format('Y-m-d H:i:s');
-        $toDate     = $toTime->format('Y-m-d H:i:s');
-
-        $quoteCollection = $this->getStoreQuotes($fromDate, $toDate, true, $storeId);
+        $quoteCollection = $this->getStoreQuotes($updated, true, $storeId);
 
         if ($quoteCollection->getSize()) {
-            $this->helper->log('Guest AC 1 ' . $fromDate . ' - ' . $toDate);
+            $this->helper->log('Guest AC 1 ' . $updated['from'] . ' - ' . $updated['to']);
         }
 
         $guestCampaignId = $this->getLostBasketGuestCampaignId($abandonedNum, $storeId);
@@ -934,23 +838,19 @@ class Quote
     {
         $result = 0;
         if ($guest) {
-            $interval = $this->getSendAfterIntervalForGuest($storeId, $number);
+            $interval = $this->interval->getIntervalForGuestEmailSeries($storeId, $number);
             $message = 'Guest';
         } else {
-            $interval = $this->getInterval($storeId, $number);
+            $interval = $this->interval->getIntervalForCustomerEmailSeries($storeId, $number);
             $message = 'Customer';
         }
 
-        $fromTime = $this->getSyncFromTime($interval);
-        $toTime = clone $fromTime;
-        $fromTime->sub(new \DateInterval('PT5M'));
-        $fromDate   = $fromTime->format('Y-m-d H:i:s');
-        $toDate     = $toTime->format('Y-m-d H:i:s');
+        $updated = $this->interval->getAbandonedCartSeriesWindow($interval);
+
         //get abandoned carts already sent
         $abandonedCollection = $this->getAbandonedCartsForStore(
             $number,
-            $fromDate,
-            $toDate,
+            $updated,
             $storeId,
             $guest
         );
@@ -965,7 +865,7 @@ class Quote
         //found abandoned carts
         if ($quoteCollection->getSize()) {
             $this->helper->log(
-                $message . ' Abandoned Cart ' . $number . ',from ' . $fromDate . '  :  ' . $toDate . ', storeId '
+                $message . ' Abandoned Cart ' . $number . ',from ' . $updated['from'] . '  :  ' . $updated['to'] . ', storeId '
                 . $storeId
             );
         }
@@ -1021,21 +921,14 @@ class Quote
      * Get abandoned carts by store.
      *
      * @param int $number
-     * @param string $from
-     * @param string $to
+     * @param array $updated
      * @param int $storeId
      * @param bool $guest
      *
      * @return mixed
      */
-    private function getAbandonedCartsForStore($number, $from, $to, $storeId, $guest = false)
+    private function getAbandonedCartsForStore($number, array $updated, $storeId, $guest = false)
     {
-        $updated = [
-            'from' => $from,
-            'to'   => $to,
-            'date' => true
-        ];
-
         return $this->abandonedCollectionFactory->create()->getAbandonedCartsForStore(
             --$number,
             $storeId,
