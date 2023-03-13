@@ -181,7 +181,7 @@ class OrderItemProcessor extends DataObject
         if ($attributes && $attributes->hasValues()) {
             $productData['product_attributes'] = $attributes->getProperties();
         }
-        if ($childAttributes && $attributes->hasValues()) {
+        if ($childAttributes && $childAttributes->hasValues()) {
             $productData['child_product_attributes'] = $childAttributes->getProperties();
         }
 
