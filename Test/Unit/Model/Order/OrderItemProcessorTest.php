@@ -115,11 +115,11 @@ class OrderItemProcessorTest extends TestCase
             ->method('getSku')
             ->willReturn('chazSku');
 
-        $this->attributeMock->expects($this->atLeastOnce())
+        $this->attributeMock->expects($this->once())
             ->method('processConfigAttributes')
             ->willReturn($this->attributeMock);
 
-        $this->attributeMock->expects($this->atLeastOnce())
+        $this->attributeMock->expects($this->once())
             ->method('hasValues')
             ->willReturn(true);
 
@@ -296,6 +296,101 @@ class OrderItemProcessorTest extends TestCase
         $this->assertArrayHasKey("isChildOfBundled", $productData);
         $this->assertEquals($productData["parent_id"], '1');
         $this->assertEquals($productData["parent_name"], 'Bundle product');
+    }
+
+    /**
+     * This tests a specific bug we introduced.
+     *
+     * If product attributes have been selected, but we can't load attributes for the parent,
+     * while we can for the child (for some reason) - in this case we should not see product
+     * attributes in the exported data.
+     *
+     * @return void
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function testProductAttributesNotExportedIfAttributesMappedButNoValues()
+    {
+        $this->productItemMock->expects($this->exactly(8))
+            ->method('getProductType')
+            ->willReturnOnConsecutiveCalls(
+                'configurable',
+                'configurable',
+                'simple',
+                'simple',
+                'simple',
+                'simple',
+                'simple',
+                'simple'
+            );
+
+        $this->productItemMock->expects($this->exactly(2))
+            ->method('getProductId')
+            ->willReturnOnConsecutiveCalls('2', '1');
+
+        $this->productItemMock->expects($this->exactly(7))
+            ->method('getId')
+            ->willReturnOnConsecutiveCalls('1', '1', '1', '1', '1', '1', '1');
+
+        $this->productItemMock->expects($this->exactly(7))
+            ->method('getParentItemId')
+            ->willReturnOnConsecutiveCalls(null, '1', '1', '1', '1', '1', '1');
+
+        $this->productItemMock->expects($this->exactly(3))
+            ->method('getProduct')
+            ->willReturn($this->productModelMock);
+
+        // first run for configurable parent
+        $this->orderItemProcessor->process($this->productItemMock);
+
+        $this->productItemMock->expects($this->atLeastOnce())
+            ->method('getProduct')
+            ->willReturn($this->productModelMock);
+
+        $this->productModelMock->expects($this->atLeastOnce())
+            ->method('getCategoryCollection')
+            ->willReturn($this->collectionMock);
+
+        $this->collectionMock->expects($this->atLeastOnce())
+            ->method('addAttributeToSelect');
+
+        $this->collectionMock->expects($this->atLeastOnce())
+            ->method('getIterator')
+            ->willReturn(new \ArrayIterator(
+                [$this->collectionMock, $this->collectionMock]
+            ));
+
+        $this->attributeFactoryMock->expects($this->atLeastOnce())
+            ->method('create')
+            ->willReturn($this->attributeMock);
+
+        $this->attributeMock->expects($this->atLeastOnce())
+            ->method('getConfigAttributesForSync')
+            ->willReturn('size,color');
+
+        $this->attributeMock->expects($this->exactly(2))
+            ->method('processConfigAttributes')
+            ->willReturn(null, $this->attributeMock);
+
+        $this->productItemMock->expects($this->atLeastOnce())
+            ->method('getQtyOrdered')
+            ->willReturn(1);
+
+        $this->productItemMock->expects($this->exactly(2))
+            ->method('getName')
+            ->willReturnOnConsecutiveCalls('Chaz hoodie (child)', 'Chaz hoodie (parent)');
+
+        $this->productItemMock->expects($this->once())
+            ->method('getSku')
+            ->willReturn('chazSku');
+
+        $this->attributeMock->expects($this->once())
+            ->method('hasValues')
+            ->willReturn(false);
+
+        // second run for simple child
+        $productData = $this->orderItemProcessor->process($this->productItemMock);
+        $this->assertArrayNotHasKey("product_attributes", $productData);
+        $this->assertArrayNotHasKey("child_product_attributes", $productData);
     }
 
     private function initValuesForSimpleAndBundleProducts()
