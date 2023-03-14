@@ -46,8 +46,9 @@ class UpdateConsentPaths implements DataPatchInterface
             $this->moduleDataSetup->getTable('core_config_data'),
             ['*']
         )->where(
-            "path LIKE '%{$consentPaths}%'",
+            "path LIKE '%{$consentPaths}%'"
         );
+        
         foreach ($this->moduleDataSetup->getConnection()->fetchAll($select) as $configRow) {
             $elements = explode('/', $configRow['path']);
             $consentConfigType = $elements[2] ?? null;
