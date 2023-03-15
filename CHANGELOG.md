@@ -1,3 +1,14 @@
+# 4.20.3
+
+### Improvements
+- We no longer bypass SSL host and peer verification when making API calls to Dotdigital.
+- We've added an extra check for a quote's email address before redirecting in our `Getbasket` controller.
+
+### Bug fixes
+- A problem with merging abandoned carts containing configurable products has been resolved. [External contribution](https://github.com/dotmailer/dotmailer-magento2-extension/pull/603).
+- We fixed a problem with missing product ids in the order item table breaking the order sync.
+- We fixed a regression from 4.20.2 relating to product attributes in order insight line items.
+
 # 4.20.2
 
 ### Improvements
