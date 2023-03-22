@@ -363,10 +363,10 @@ class Config extends AbstractHelper
      */
     public const XML_PATH_CONSENT_EMAIL_ENABLED =
         'connector_consent/email/enabled';
-    public const XML_PATH_CONSENT_SUBSCRIBER_TEXT =
-        'connector_consent/email/text_newsletter_signup_form';
     public const XML_PATH_CONSENT_CUSTOMER_TEXT =
         'connector_consent/email/text_newsletter_registration_checkout';
+    public const XML_PATH_CONSENT_SUBSCRIBER_TEXT =
+        'connector_consent/email/text_newsletter_signup_form';
 
     /**
      * OAUTH.

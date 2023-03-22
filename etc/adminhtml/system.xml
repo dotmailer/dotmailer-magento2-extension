@@ -1319,13 +1319,13 @@
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <comment><![CDATA[If yes, adds a consent opt-in checkbox to email signup fields.]]></comment>
                 </field>
-                <field id="text_newsletter_signup_form" translate="label" sortOrder="20" type="textarea" showInWebsite="1" showInStore="1" showInDefault="1">
-                    <label>Consent text for the newsletter signup form</label>
-                    <comment><![CDATA[Explain what you will do with consent, how they can withdraw consent, and where they can learn more.]]></comment>
-                </field>
                 <field id="text_newsletter_registration_checkout" translate="label" sortOrder="20" type="textarea" showInWebsite="1" showInStore="1" showInDefault="1">
-                    <label>Consent text for registration, account dashboard and checkout</label>
-                    <comment><![CDATA[If different from your consent text for the newsletter signup for, explain what you will do with consent, how they can withdraw consent and where they can learn more. This text is also displayed on the newsletter subscription page.]]></comment>
+                    <label>Opt-in consent text (checkout, account)</label>
+                    <comment><![CDATA[Enter the consent text you want to record against contacts that opt-in from a page with a URL that includes checkout/ or customer/account/.]]></comment>
+                </field>
+                <field id="text_newsletter_signup_form" translate="label" sortOrder="20" type="textarea" showInWebsite="1" showInStore="1" showInDefault="1">
+                    <label>Opt-in consent text (other pages)</label>
+                    <comment><![CDATA[Enter the consent text you want to record against contacts that opt-in from any page that doesn't have a URL that includes checkout/ or customer/account/.]]></comment>
                 </field>
             </group>
         </section>

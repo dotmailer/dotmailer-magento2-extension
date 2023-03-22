@@ -154,8 +154,8 @@
         <connector_consent>
             <email>
                 <enabled>0</enabled>
-                <text_newsletter_signup_form></text_newsletter_signup_form>
                 <text_newsletter_registration_checkout></text_newsletter_registration_checkout>
+                <text_newsletter_signup_form></text_newsletter_signup_form>
             </email>
         </connector_consent>
         <connector_configuration>
