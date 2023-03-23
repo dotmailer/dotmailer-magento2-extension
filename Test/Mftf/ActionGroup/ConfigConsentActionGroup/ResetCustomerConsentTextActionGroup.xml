@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actionGroups xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/actionGroupSchema.xsd">
+    <actionGroup name="ResetCustomerConsentText">
+        <amOnPage url="{{AdminDotdigitalConsentPage.url}}" stepKey="navigateToDotdigitalConsentPage"/>
+        <waitForPageLoad stepKey="waitForPageLoad7"/>
+        <conditionalClick stepKey="expandConsentTab2" selector="{{AdminDotdigitalConsentSection.consentFieldsetToggle}}" dependentSelector="{{AdminDotdigitalConsentSection.consentFieldset}}" visible="false"/>
+        <clearField selector="{{AdminDotdigitalConsentSection.customerConsentText}}" stepKey="setConsentTextReset"/>
+        <click selector="{{AdminMainActionsSection.save}}" stepKey="saveConfig3"/>
+        <waitForPageLoad stepKey="waitForPageLoad8"/>
+    </actionGroup>
+</actionGroups>

@@ -12,8 +12,8 @@ use Magento\Framework\Setup\ModuleDataSetupInterface;
 use Magento\Framework\Setup\Patch\DataPatchInterface;
 
 /**
-* Patch is mechanism, that allows to do atomic upgrade data changes
-*/
+ * Patch is mechanism, that allows to do atomic upgrade data changes
+ */
 class UpdateConsentPaths implements DataPatchInterface
 {
     private const CONSENT_ENABLED = 'dotmailer_consent_subscriber_enabled';
@@ -48,7 +48,7 @@ class UpdateConsentPaths implements DataPatchInterface
         )->where(
             "path LIKE '%{$consentPaths}%'"
         );
-        
+
         foreach ($this->moduleDataSetup->getConnection()->fetchAll($select) as $configRow) {
             $elements = explode('/', $configRow['path']);
             $consentConfigType = $elements[2] ?? null;
@@ -91,8 +91,8 @@ class UpdateConsentPaths implements DataPatchInterface
     /**
      * Update consent record row paths.
      *
-     * @param $configRow
-     * @param $path
+     * @param array $configRow
+     * @param string $path
      * @return void
      */
     private function updateConsentRow($configRow, $path)

@@ -1,0 +1,29 @@
+<?php
+/**
+ * @var $block \Magento\Framework\View\Element\Template
+ * @var $escaper \Magento\Framework\Escaper
+ * @var $view \Dotdigitalgroup\Email\ViewModel\Customer\Account\Newsletter
+ */
+
+// @codingStandardsIgnoreFile
+$view = $block->getData('config');
+?>
+
+<fieldset class="fieldset">
+    <legend class="legend"><span><?= $escaper->escapeHtml(__('General Subscription')) ?></span></legend>
+    <div class="field choice">
+        <input type="checkbox" name="is_subscribed" id="subscription" value="1" title="General Subscription"
+            <?php if ($view->isSubscribed()): ?> checked="checked"<?php endif; ?> class="checkbox">
+        <label for="subscription" class="label">
+            <span>
+                <?php if (strlen($view->getCustomerConsentText())): ?>
+                    <?= $escaper->escapeHtml($view->getCustomerConsentText()) ?>
+                <?php else: ?>
+                    <?= $escaper->escapeHtml(__('General Subscription')) ?>
+                <?php endif; ?>
+            </span>
+        </label>
+    </div>
+    <?php /* Extensions placeholder */ ?>
+    <?= $block->getChildHtml('customer.form.newsletter.extra') ?>
+</fieldset>

@@ -46,7 +46,6 @@ class Consent extends \Magento\Framework\Model\AbstractModel
         'CONSENTUSERAGENT' => 'USERAGENT'
     ];
 
-
     /**
      * @var \Magento\Framework\Stdlib\DateTime\DateTime
      */
@@ -234,8 +233,10 @@ class Consent extends \Magento\Framework\Model\AbstractModel
     {
         $consentText = $this->getConsentSubscriberText($websiteId);
         $customerConsentText = $this->getConsentCustomerText($websiteId);
+        $consentUrl = $this->getConsentUrl();
+
         //customer checkout and registration if consent text not empty
-        if (strlen($customerConsentText) &&
+        if (strlen($customerConsentText) && $consentUrl &&
             $this->isLinkMatchCustomerRegistrationOrCheckout($this->getConsentUrl())
         ) {
             $consentText = $customerConsentText;

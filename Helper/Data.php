@@ -1217,42 +1217,51 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Can show additional books?
      *
-     * @param \Magento\Store\Model\Website|int $website
+     * @deprecated Use the method in the account configuration class.
+     * @see \Dotdigitalgroup\Email\Model\Customer\Account\Configuration
+     *
+     * @param int $websiteId
      * @return string|boolean
      */
-    public function getCanShowAdditionalSubscriptions($website)
+    public function getCanShowAdditionalSubscriptions($websiteId)
     {
         return $this->getWebsiteConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_ADDRESSBOOK_PREF_CAN_CHANGE_BOOKS,
-            $website
+            $websiteId
         );
     }
 
     /**
      * Can show data fields?
      *
-     * @param \Magento\Store\Model\Website|int $website
+     * @deprecated Use the method in the account configuration class.
+     * @see \Dotdigitalgroup\Email\Model\Customer\Account\Configuration
+     *
+     * @param int $websiteId
      * @return boolean|string
      */
-    public function getCanShowDataFields($website)
+    public function getCanShowDataFields($websiteId)
     {
         return $this->getWebsiteConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_ADDRESSBOOK_PREF_CAN_SHOW_FIELDS,
-            $website
+            $websiteId
         );
     }
 
     /**
      * Address book ids to display
      *
-     * @param \Magento\Store\Model\Website $website
+     * @deprecated Use the method in the account configuration class.
+     * @see \Dotdigitalgroup\Email\Model\Customer\Account\Configuration
+     *
+     * @param int $websiteId
      * @return array
      */
-    public function getAddressBookIdsToShow($website)
+    public function getAddressBookIdsToShow($websiteId)
     {
         $bookIds = $this->getWebsiteConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_ADDRESSBOOK_PREF_SHOW_BOOKS,
-            $website
+            $websiteId
         );
 
         if (empty($bookIds)) {

@@ -13,8 +13,55 @@
             </action>
         </referenceBlock>
         <referenceContainer name="content">
-            <block class="Dotdigitalgroup\Email\Block\Customer\Account\Books" name="ddg_preference_centre"
-                   template="Dotdigitalgroup_Email::email/newsletter-preferences.phtml" after="-" cacheable="false">
+            <block
+                name="dd.account.subscriptions"
+                template="Dotdigitalgroup_Email::customer/account-subscriptions.phtml"
+                after="-"
+                cacheable="false">
+                <arguments>
+                    <argument name="containerConfig" xsi:type="object">
+                        Dotdigitalgroup\Email\ViewModel\Customer\AccountSubscriptions
+                    </argument>
+                </arguments>
+                <block
+                    name="dd.account.subscriptions.newsletter"
+                    template="Dotdigitalgroup_Email::customer/account/newsletter.phtml">
+                    <arguments>
+                        <argument name="config" xsi:type="object">
+                            Dotdigitalgroup\Email\ViewModel\Customer\Account\Newsletter
+                        </argument>
+                    </arguments>
+                </block>
+                <block
+                    name="dd.account.subscriptions.preferences"
+                    template="Dotdigitalgroup_Email::customer/account/preferences.phtml"
+                    ifconfig="connector_configuration/customer_addressbook/show_preferences">
+                    <arguments>
+                        <argument name="config" xsi:type="object">
+                            Dotdigitalgroup\Email\ViewModel\Customer\Account\Preferences
+                        </argument>
+                    </arguments>
+                </block>
+                <block
+                    name="dd.account.subscriptions.addressbooks"
+                    template="Dotdigitalgroup_Email::customer/account/addressbooks.phtml"
+                    ifconfig="connector_configuration/customer_addressbook/can_change">
+                    <arguments>
+                        <argument name="config" xsi:type="object">
+                            Dotdigitalgroup\Email\ViewModel\Customer\Account\AddressBooks
+                        </argument>
+                    </arguments>
+                </block>
+                <block
+                    name="dd.account.subscriptions.datafields"
+                    template="Dotdigitalgroup_Email::customer/account/datafields.phtml"
+                    ifconfig="connector_configuration/customer_addressbook/can_show_fields">
+                    <arguments>
+                        <argument name="config" xsi:type="object">
+                            Dotdigitalgroup\Email\ViewModel\Customer\Account\DataFields
+                        </argument>
+                    </arguments>
+                </block>
             </block>
         </referenceContainer>
     </body>

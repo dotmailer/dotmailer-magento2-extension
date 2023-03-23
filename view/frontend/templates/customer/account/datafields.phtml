@@ -1,0 +1,67 @@
+<?php
+/**
+ * @var $block \Magento\Framework\View\Element\Template
+ * @var $escaper \Magento\Framework\Escaper
+ * @var $view \Dotdigitalgroup\Email\ViewModel\Customer\Account\DataFields
+ */
+
+// @codingStandardsIgnoreFile
+$view = $block->getData('config');
+?>
+
+<?php
+$dataFields = $view->getDataFieldsToShow();
+
+if (!empty($dataFields)): ?>
+    <fieldset class="fieldset">
+        <legend class="legend">
+            <span><?= $escaper->escapeHtml(__('Information')) ?></span>
+        </legend>
+        <ul class="form-list" style="padding-left: 0">
+            <?php foreach ($dataFields as $dataField): ?>
+                <li class="fields" style="display: block">
+                    <div class="field" style="margin-bottom: 10px;">
+                        <label for="<?= $escaper->escapeHtml($dataField['name']) ?>">
+                            <?= $escaper->escapeHtml($dataField['name']) ?>
+                        </label>
+                        <?php if ($dataField['type'] == "Boolean"): ?>
+                            <div class="control">
+                                <select style="width: 50%"
+                                        name="data_fields[<?= $block->escapeHtml($dataField['name']) ?>]"
+                                        id="<?= $escaper->escapeHtml($dataField['name']) ?>"
+                                        title="<?= $escaper->escapeHtml($dataField['name']) ?>">
+                                    <?php //@codingStandardsIgnoreStart ?>
+                                    <option value="1"<?php if ($escaper->escapeHtml($dataField['value'])): ?>
+                                        selected="selected"<?php endif; ?>><?= __('Yes') ?></option>
+                                    <option value="0"<?php if (!$escaper->escapeHtml($dataField['value'])): ?>
+                                        selected="selected"<?php endif; ?>><?= __('No') ?></option>
+                                    <?php //@codingStandardsIgnoreEnd ?>
+                                </select>
+                            </div>
+                        <?php elseif ($dataField['type'] == "Numeric"): ?>
+                            <div class="input-box">
+                                <input style="width: 50%" type="number"
+                                       title="<?= $escaper->escapeHtml($dataField['name']) ?>"
+                                       value="<?= $escaper->escapeHtml($dataField['value']) ?>"
+                                       name="data_fields[<?= $escaper->escapeHtml($dataField['name']) ?>]"
+                                       id="<?= $escaper->escapeHtml($dataField['name']) ?>"
+                                />
+                            </div>
+                        <?php else: ?>
+                            <div class="input-box">
+                                <input style="width: 50%" type="text"
+                                       class="input-text <?php if ($dataField['type'] == "Date"): ?>
+                                               date-field <?php endif; ?>"
+                                       title="<?= $escaper->escapeHtml($dataField['name']) ?>"
+                                       value="<?= $escaper->escapeHtml($dataField['value']) ?>"
+                                       name="data_fields[<?= $escaper->escapeHtml($dataField['name']) ?>]"
+                                       id="<?= $escaper->escapeHtml($dataField['name']) ?>"
+                                />
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                </li>
+            <?php endforeach; ?>
+        </ul>
+    </fieldset>
+<?php endif; ?>

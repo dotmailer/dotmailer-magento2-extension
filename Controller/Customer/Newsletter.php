@@ -2,17 +2,31 @@
 
 namespace Dotdigitalgroup\Email\Controller\Customer;
 
+use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Model\Apiconnector\Client;
+use Dotdigitalgroup\Email\Model\ConsentFactory;
+use Dotdigitalgroup\Email\Model\Contact;
 use Dotdigitalgroup\Email\Model\ContactFactory;
+use Dotdigitalgroup\Email\Model\Customer\Account\Configuration;
 use Dotdigitalgroup\Email\Model\Customer\DataField\Date;
 use Magento\Customer\Api\CustomerRepositoryInterface as CustomerRepository;
+use Magento\Customer\Model\Session;
+use Magento\Framework\App\Action\Action;
+use Magento\Framework\App\Action\Context;
+use Magento\Framework\App\ResponseInterface;
+use Magento\Framework\Data\Form\FormKey\Validator;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Newsletter\Model\Subscriber;
+use Magento\Newsletter\Model\SubscriberFactory;
+use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\StoreManagerInterface;
+use Magento\Store\Model\Website;
 
-class Newsletter extends \Magento\Framework\App\Action\Action
+class Newsletter extends Action
 {
     /**
-     * @var \Dotdigitalgroup\Email\Helper\Data
+     * @var Data
      */
     private $helper;
 
@@ -22,17 +36,22 @@ class Newsletter extends \Magento\Framework\App\Action\Action
     private $contactFactory;
 
     /**
-     * @var \Magento\Customer\Model\Session
+     * @var Configuration
+     */
+    private $accountConfig;
+
+    /**
+     * @var Session
      */
     private $customerSession;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\ConsentFactory
+     * @var ConsentFactory
      */
     private $consentFactory;
 
     /**
-     * @var \Magento\Framework\Data\Form\FormKey\Validator
+     * @var Validator
      */
     private $formKeyValidator;
 
@@ -42,7 +61,7 @@ class Newsletter extends \Magento\Framework\App\Action\Action
     protected $customerRepository;
 
     /**
-     * @var \Magento\Newsletter\Model\SubscriberFactory
+     * @var SubscriberFactory
      */
     protected $subscriberFactory;
 
@@ -59,33 +78,36 @@ class Newsletter extends \Magento\Framework\App\Action\Action
     /**
      * Newsletter constructor.
      *
-     * @param \Dotdigitalgroup\Email\Helper\Data $helper
+     * @param Data $helper
      * @param ContactFactory $contactFactory
-     * @param \Magento\Customer\Model\Session $session
-     * @param \Dotdigitalgroup\Email\Model\ConsentFactory $consentFactory
-     * @param \Magento\Framework\App\Action\Context $context
-     * @param \Magento\Framework\Data\Form\FormKey\Validator $formKeyValidator
+     * @param Configuration $accountConfig
+     * @param Session $session
+     * @param ConsentFactory $consentFactory
+     * @param Context $context
+     * @param Validator $formKeyValidator
      * @param CustomerRepository $customerRepository
-     * @param \Magento\Newsletter\Model\SubscriberFactory $subscriberFactory
+     * @param SubscriberFactory $subscriberFactory
      * @param StoreManagerInterface $storeManager
      * @param Date $dateField
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Helper\Data $helper,
+        Data $helper,
         ContactFactory $contactFactory,
-        \Magento\Customer\Model\Session $session,
-        \Dotdigitalgroup\Email\Model\ConsentFactory $consentFactory,
-        \Magento\Framework\App\Action\Context $context,
-        \Magento\Framework\Data\Form\FormKey\Validator $formKeyValidator,
+        Configuration $accountConfig,
+        Session $session,
+        ConsentFactory $consentFactory,
+        Context $context,
+        Validator $formKeyValidator,
         CustomerRepository $customerRepository,
-        \Magento\Newsletter\Model\SubscriberFactory $subscriberFactory,
+        SubscriberFactory $subscriberFactory,
         StoreManagerInterface $storeManager,
         Date $dateField
     ) {
-        $this->helper           = $helper;
+        $this->helper = $helper;
         $this->contactFactory = $contactFactory;
-        $this->customerSession  = $session;
-        $this->consentFactory   = $consentFactory;
+        $this->accountConfig = $accountConfig;
+        $this->customerSession = $session;
+        $this->consentFactory = $consentFactory;
         $this->formKeyValidator = $formKeyValidator;
         $this->customerRepository = $customerRepository;
         $this->subscriberFactory = $subscriberFactory;
@@ -97,7 +119,9 @@ class Newsletter extends \Magento\Framework\App\Action\Action
     /**
      * Execute.
      *
-     * @return \Magento\Framework\App\ResponseInterface
+     * @return ResponseInterface
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
      */
     public function execute()
     {
@@ -109,30 +133,31 @@ class Newsletter extends \Magento\Framework\App\Action\Action
 
         /** @var \Magento\Store\Model\Store $store */
         $store = $this->storeManager->getStore();
-        $website = $store->getWebsite();
+        $websiteId = $store->getWebsiteId();
 
-        if ($this->helper->isEnabled($website->getId())) {
+        if ($this->helper->isEnabled($websiteId)) {
             $customerEmail = $this->customerSession->getCustomer()->getEmail();
             $contactFromTable = $this->contactFactory->create()
-                ->loadByCustomerEmail($customerEmail, $website->getId());
+                ->loadByCustomerEmail($customerEmail, $websiteId);
             $contactId = $this->getContactId($contactFromTable);
 
-            $client = $this->helper->getWebsiteApiClient($website->getId());
+            $client = $this->helper->getWebsiteApiClient($websiteId);
+
             $contact = isset($contactId)
                 ? $client->getContactById($contactId)
                 : $this->createContact($client, $customerEmail, $store, $contactFromTable);
-
+            
             if (isset($contact->id)) {
                 $additionalSubscriptionsSuccess = $this->processAdditionalSubscriptions(
                     $contact,
                     $client,
-                    $website
+                    $websiteId
                 );
 
                 $contactDataFieldsSuccess = $this->processContactDataFields(
                     $customerEmail,
                     $client,
-                    $website
+                    $websiteId
                 );
 
                 $contactPreferencesSuccess = $this->processContactPreferences($client, $contact);
@@ -164,10 +189,11 @@ class Newsletter extends \Magento\Framework\App\Action\Action
      *
      * @param Client $apiClient
      * @param string $customerEmail
-     * @param \Magento\Store\Api\Data\StoreInterface $store
-     * @param \Dotdigitalgroup\Email\Model\Contact $contactFromTable
+     * @param StoreInterface $store
+     * @param Contact $contactFromTable
      *
      * @return object
+     * @throws LocalizedException
      */
     private function createContact($apiClient, $customerEmail, $store, $contactFromTable)
     {
@@ -210,15 +236,16 @@ class Newsletter extends \Magento\Framework\App\Action\Action
      *
      * @param Object $contact
      * @param Client $client
-     * @param \Magento\Store\Model\Website $website
+     * @param int $websiteId
      *
      * @return bool
+     * @throws LocalizedException
      */
-    private function processAdditionalSubscriptions($contact, $client, $website)
+    private function processAdditionalSubscriptions($contact, $client, $websiteId)
     {
-        $additionalFromConfig = $this->helper->getAddressBookIdsToShow($website);
+        $additionalFromConfig = $this->accountConfig->getAddressBookIdsToShow($websiteId);
 
-        if (!$this->helper->getCanShowAdditionalSubscriptions($website) ||
+        if (!$this->accountConfig->canShowAddressBooks($websiteId) ||
             empty($additionalFromConfig)) {
             return true;
         }
@@ -253,15 +280,17 @@ class Newsletter extends \Magento\Framework\App\Action\Action
      *
      * @param string $customerEmail
      * @param Client $client
-     * @param \Magento\Store\Model\Website $website
+     * @param string|int $websiteId
      *
      * @return bool - success
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
      */
-    private function processContactDataFields($customerEmail, $client, $website)
+    private function processContactDataFields($customerEmail, $client, $websiteId)
     {
         $paramDataFields = $this->getRequest()->getParam('data_fields', []);
 
-        if (!$this->helper->getCanShowDataFields($website) ||
+        if (!$this->accountConfig->canShowDataFields($websiteId) ||
             empty($paramDataFields)) {
             return true;
         }
@@ -279,9 +308,12 @@ class Newsletter extends \Magento\Framework\App\Action\Action
     /**
      * Get data fields.
      *
-     * @param \Dotdigitalgroup\Email\Model\Apiconnector\Client $client
+     * @param Client $client
      * @param array $paramDataFields
+     *
      * @return array
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
      */
     private function getDataFields($client, $paramDataFields)
     {
@@ -327,11 +359,12 @@ class Newsletter extends \Magento\Framework\App\Action\Action
      *
      * @param Client $client
      * @param Object $contact
+     *
      * @return bool
+     * @throws LocalizedException
      */
     private function processContactPreferences($client, $contact)
     {
-        $preferences = [];
         $paramPreferences = $this->getRequest()->getParam('preferences', []);
         $preferencesFromSession = $this->customerSession->getDmContactPreferences();
 
@@ -339,8 +372,8 @@ class Newsletter extends \Magento\Framework\App\Action\Action
             return true;
         }
 
-        $preferences = $this->processParamPreferences($paramPreferences, $preferences);
-        $preferences = $this->processPreferencesFromSession($preferencesFromSession, $preferences);
+        $preferences = $this->processParamPreferences($paramPreferences);
+        $this->augmentPreferencesFromSession($preferencesFromSession, $preferences);
 
         foreach ($preferences as $id => $preference) {
             if (isset($preference["preferences"])) {
@@ -356,11 +389,11 @@ class Newsletter extends \Magento\Framework\App\Action\Action
      * Process preferences.
      *
      * @param array $paramPreferences
-     * @param array $data
      * @return array
      */
-    private function processParamPreferences($paramPreferences, $data)
+    private function processParamPreferences($paramPreferences)
     {
+        $data = [];
         foreach ($paramPreferences as $paramPreference) {
             $idsArray = explode(',', $paramPreference);
             if (count($idsArray) == 2) {
@@ -395,26 +428,38 @@ class Newsletter extends \Magento\Framework\App\Action\Action
     }
 
     /**
-     * Process preferences from session.
+     * Add session preferences to the submitted payload.
+     *
+     * This effectively handles opt-outs. If there's a value checked in
+     * the session but it hasn't been submitted, that's an opt out.
      *
      * @param array $preferencesFromSession
-     * @param array $data
-     *
-     * @return array
+     * @param array $submittedPreferences
      */
-    private function processPreferencesFromSession($preferencesFromSession, $data)
+    private function augmentPreferencesFromSession($preferencesFromSession, &$submittedPreferences)
     {
         foreach ($preferencesFromSession as $id => $preferenceFromSession) {
-            if ($preferenceFromSession['isPreference'] && !isset($data[$id])) {
-                $data[$id] = [
+            if ($preferenceFromSession['isPreference'] && !isset($submittedPreferences[$id])) {
+                $submittedPreferences[$id] = [
                     "id" => $id,
                     "isPreference" => true,
                     "isOptedIn" => false
                 ];
-            } elseif (!$preferenceFromSession['isPreference']) {
+                continue;
+            }
+
+            if (!isset($submittedPreferences[$id])) {
+                $submittedPreferences[$id]  = [
+                    "id" => $id,
+                    "isPreference" => false,
+                    "preferences" => []
+                ];
+            }
+
+            if (isset($preferenceFromSession['catPreferences'])) {
                 foreach ($preferenceFromSession["catPreferences"] as $catPrefId => $catPreference) {
-                    if (!isset($data[$id]["preferences"][$catPrefId])) {
-                        $data[$id]["preferences"][$catPrefId] = [
+                    if (!isset($submittedPreferences[$id]["preferences"][$catPrefId])) {
+                        $submittedPreferences[$id]["preferences"][$catPrefId] = [
                             "id" => $catPrefId,
                             "isPreference" => true,
                             "isOptedIn" => false
@@ -423,20 +468,19 @@ class Newsletter extends \Magento\Framework\App\Action\Action
                 }
             }
         }
-        return $data;
     }
 
     /**
      * Get contact id.
      *
-     * @param \Dotdigitalgroup\Email\Model\Contact $contactFromTable
+     * @param Contact $contactFromTable
      * @return mixed
      */
     private function getContactId($contactFromTable)
     {
         $contactId = null;
 
-        if (!$this->customerSession->getConnectorContactId()) {
+        if ($this->customerSession->getConnectorContactId()) {
             $contactId = $this->customerSession->getConnectorContactId();
         } elseif ($contactFromTable->getContactId()) {
             $contactId = $contactFromTable->getContactId();

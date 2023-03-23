@@ -1,18 +1,19 @@
 <?php
 
-namespace Dotdigitalgroup\Email\Controller\Customer;
+namespace Dotdigitalgroup\Email\Test\Integration\Controller\Customer;
 
 use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Model\Apiconnector\Client;
 use Dotdigitalgroup\Email\Model\Contact;
 use Dotdigitalgroup\Email\Model\ContactFactory;
+use Dotdigitalgroup\Email\Model\Customer\Account\Configuration;
+use Laminas\Http\Headers;
 use Magento\Customer\Model\Customer;
 use Magento\Customer\Model\Session as CustomerSession;
 use Magento\Framework\Data\Form\FormKey\Validator as FormKeyValidator;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
-use Magento\Store\Model\Website;
-use Magento\TestFramework\ObjectManager;
+use Magento\Framework\App\ObjectManager;
 
 class NewsletterTest extends \Magento\TestFramework\TestCase\AbstractController
 {
@@ -22,12 +23,17 @@ class NewsletterTest extends \Magento\TestFramework\TestCase\AbstractController
     private $mockHelper;
 
     /**
+     * @var Configuration|\PHPUnit\Framework\MockObject\MockObject
+     */
+    private $mockAccountConfig;
+
+    /**
      * @var Client|\PHPUnit\Framework\MockObject\MockObject
      */
     private $mockClient;
 
     /**
-     * @var Contact\PHPUnit\Framework\MockObject\MockObject
+     * @var Contact|\PHPUnit\Framework\MockObject\MockObject
      */
     private $mockContact;
 
@@ -42,7 +48,7 @@ class NewsletterTest extends \Magento\TestFramework\TestCase\AbstractController
     private $mockCustomer;
 
     /**
-     * @var object \stdClass
+     * @var \StdClass
      */
     private $mockECContactObject;
 
@@ -66,21 +72,12 @@ class NewsletterTest extends \Magento\TestFramework\TestCase\AbstractController
      */
     private $mockStoreManager;
 
-    /**
-     * @var Website|\PHPUnit\Framework\MockObject\MockObject
-     */
-    private $mockWebsite;
-
-    /**
-     * @var ObjectManager
-     */
-    private $objectManager;
-
     public function setUp(): void
     {
         parent::setUp();
 
-        $this->objectManager = \Magento\TestFramework\Helper\Bootstrap::getObjectManager();
+        $objectManager = ObjectManager::getInstance();
+
         $this->mockFormKeyValidator = $this->createMock(FormKeyValidator::class);
         $this->mockContact = $this->getMockBuilder(Contact::class)
             ->disableOriginalConstructor()
@@ -90,8 +87,8 @@ class NewsletterTest extends \Magento\TestFramework\TestCase\AbstractController
         $this->mockContactFactory = $this->createMock(ContactFactory::class);
         $this->mockCustomer = $this->createMock(Customer::class);
         $this->mockHelper = $this->createMock(Data::class);
+        $this->mockAccountConfig = $this->createMock(Configuration::class);
         $this->mockClient = $this->createMock(Client::class);
-        $this->mockWebsite = $this->createMock(Website::class);
         $this->mockStore = $this->createMock(Store::class);
         $this->mockStoreManager = $this->createMock(StoreManagerInterface::class);
 
@@ -103,19 +100,22 @@ class NewsletterTest extends \Magento\TestFramework\TestCase\AbstractController
 
         $this->mockECContactObject = (object) ['id' => '111'];
 
-        $this->objectManager->addSharedInstance($this->mockFormKeyValidator, FormKeyValidator::class);
-        $this->objectManager->addSharedInstance($this->mockCustomerSession, CustomerSession::class);
-        $this->objectManager->addSharedInstance($this->mockHelper, Data::class);
-        $this->objectManager->addSharedInstance($this->mockContactFactory, ContactFactory::class);
+        $objectManager->addSharedInstance($this->mockFormKeyValidator, FormKeyValidator::class);
+        $objectManager->addSharedInstance($this->mockCustomerSession, CustomerSession::class);
+        $objectManager->addSharedInstance($this->mockHelper, Data::class);
+        $objectManager->addSharedInstance($this->mockContactFactory, ContactFactory::class);
+        $objectManager->addSharedInstance($this->mockAccountConfig, Configuration::class);
     }
 
     public function testAdditionalSubscriptionsAreProcessed()
     {
         $this->setUpSharedMocks();
 
-        $this->mockHelper->method('getAddressBookIdsToShow')
+        $this->mockAccountConfig->expects($this->once())
+            ->method('getAddressBookIdsToShow')
             ->willReturn([0,1,2]);
-        $this->mockHelper->method('getCanShowAdditionalSubscriptions')
+        $this->mockAccountConfig->expects($this->once())
+            ->method('canShowAddressBooks')
             ->willReturn(true);
 
         $this->mockClient->expects($this->exactly(2))
@@ -125,26 +125,26 @@ class NewsletterTest extends \Magento\TestFramework\TestCase\AbstractController
                 [2, $this->mockECContactObject]
             );
 
-        $this->dispatch('connector/customer/newsletter?additional_subscriptions[]=1&additional_subscriptions[]=2');
+        $this->dispatch('/connector/customer/newsletter?additional_subscriptions[]=1&additional_subscriptions[]=2');
     }
 
     public function testContactDataFieldsAreUpdatedByEmail()
     {
         $this->setUpSharedMocks();
 
-        $this->mockHelper->method('getAddressBookIdsToShow')
+        $this->mockAccountConfig->method('getAddressBookIdsToShow')
             ->willReturn([]);
-        $this->mockHelper->method('getCanShowAdditionalSubscriptions')
+        $this->mockAccountConfig->method('canShowAddressBooks')
             ->willReturn(false);
 
         $this->getRequest()->setParam('data_fields', ['key' => 'dummy']);
-        $this->mockHelper->method('getCanShowDataFields')->willReturn(true);
+        $this->mockAccountConfig->method('canShowDataFields')->willReturn(true);
         $this->mockClient->method('getDataFields')->willReturn([]);
         $this->mockClient->expects($this->atLeastOnce())
             ->method('updateContactDatafieldsByEmail')
             ->willReturn(null);
 
-        $this->dispatch('connector/customer/newsletter');
+        $this->dispatch('/connector/customer/newsletter');
     }
 
     private function setUpSharedMocks()
@@ -155,43 +155,32 @@ class NewsletterTest extends \Magento\TestFramework\TestCase\AbstractController
         $this->mockFormKeyValidator->method('validate')
             ->willReturn(true);
 
-        $this->mockCustomerSession->method('getConnectorContactId')
-            ->willReturn(1);
-        $this->mockCustomerSession->method('getCustomerId')
-            ->willReturn(1);
-
         $this->mockStoreManager->method('getStore')
             ->willReturn($this->mockStore);
 
-        $this->mockStore->method('getWebsite')
-            ->willReturn($this->mockWebsite);
+        $this->mockStore->method('getWebsiteId')
+            ->willReturn($websiteId);
 
-        $this->mockContact->method('getContactId')
-            ->willReturn($contactId);
-
-        $this->mockContact->id = $contactId;
-
-        $this->mockCustomer->method('getStore')
-            ->willReturn($this->mockStore);
-
-        $this->mockCustomerSession->method('getCustomer')
-            ->willReturn($this->mockCustomer);
-
-        $this->mockHelper->expects($this->once())
-            ->method('isEnabled')
+        $this->mockHelper->method('isEnabled')
             ->with($websiteId)
             ->willReturn(true);
 
-        $this->mockClient->method('getContactById')
-            ->willReturn($this->mockECContactObject);
-
-        $this->mockHelper->method('getWebsiteApiClient')
-            ->willReturn($this->mockClient);
+        $this->mockCustomerSession->method('getCustomer')
+            ->willReturn($this->mockCustomer);
 
         $this->mockContactFactory->method('create')
             ->willReturn($this->mockContact);
 
         $this->mockContact->method('loadByCustomerEmail')
             ->willReturn($this->mockContact);
+
+        $this->mockCustomerSession->method('getConnectorContactId')
+            ->willReturn($contactId);
+
+        $this->mockHelper->method('getWebsiteApiClient')
+            ->willReturn($this->mockClient);
+
+        $this->mockClient->method('getContactById')
+            ->willReturn($this->mockECContactObject);
     }
 }

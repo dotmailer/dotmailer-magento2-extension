@@ -1699,6 +1699,9 @@ class Client extends Rest
     /**
      * Opts in a given contact to preferences, or opts out a given contact from preferences
      *
+     * @deprecated Use updateContactWithConsentAndPreferences instead.
+     * @see updateContactWithConsentAndPreferences
+     *
      * @param string|int $contactId
      * @param array $preferences
      *
