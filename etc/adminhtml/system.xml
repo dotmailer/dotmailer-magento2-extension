@@ -1315,9 +1315,9 @@
                 <label>Email</label>
                 <field id="enabled" translate="label" sortOrder="10" type="select" showInStore="1"
                        showInWebsite="1" showInDefault="1">
-                    <label>Ask for email marketing consent</label>
+                    <label>Import subscribers with consent</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <comment><![CDATA[If yes, adds a consent opt-in checkbox to email signup fields.]]></comment>
+                    <comment><![CDATA[Enable this to record consent when customers subscribe or opt-in anywhere on your store.]]></comment>
                 </field>
                 <field id="text_newsletter_registration_checkout" translate="label" sortOrder="20" type="textarea" showInWebsite="1" showInStore="1" showInDefault="1">
                     <label>Opt-in consent text (checkout, account)</label>
