@@ -16,7 +16,7 @@ $view = $block->getData('config');
             <?php if ($view->isSubscribed()): ?> checked="checked"<?php endif; ?> class="checkbox">
         <label for="subscription" class="label">
             <span>
-                <?php if (strlen($view->getCustomerConsentText())): ?>
+                <?php if ($view->canDisplayDDAccountConsentText()): ?>
                     <?= $escaper->escapeHtml($view->getCustomerConsentText()) ?>
                 <?php else: ?>
                     <?= $escaper->escapeHtml(__('General Subscription')) ?>

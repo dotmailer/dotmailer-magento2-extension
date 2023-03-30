@@ -4,6 +4,7 @@ namespace Dotdigitalgroup\Email\ViewModel\Customer\Account;
 
 use Dotdigitalgroup\Email\Model\Consent;
 use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\View\Element\Block\ArgumentInterface;
 use Magento\Customer\Model\Session;
 use Magento\Newsletter\Model\SubscriberFactory;
@@ -52,13 +53,26 @@ class Newsletter implements ArgumentInterface
     /**
      * Get customer consent text.
      *
+     * @param string|int|null $storeId
+     *
      * @return string
+     * @throws NoSuchEntityException
+     */
+    public function getCustomerConsentText($storeId = null): string
+    {
+        $storeId = $storeId ?? $this->storeManager->getStore()->getId();
+        return $this->consent->getConsentCustomerTextForStore($storeId) ?: '';
+    }
+
+    /**
+     * @return bool
      * @throws LocalizedException
      */
-    public function getCustomerConsentText(): string
+    public function canDisplayDDAccountConsentText(): bool
     {
-        $websiteId = $this->storeManager->getWebsite()->getId();
-        return $this->consent->getConsentCustomerText($websiteId) ?: '';
+        $storeId = $this->storeManager->getStore()->getId();
+        return $this->consent->isConsentEnabled($storeId) &&
+            strlen($this->getCustomerConsentText($storeId));
     }
 
     /**

@@ -3,24 +3,21 @@
 namespace Dotdigitalgroup\Email\Model;
 
 use Dotdigitalgroup\Email\Helper\Config;
+use Dotdigitalgroup\Email\Model\ResourceModel\Consent as ConsentResource;
+use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory;
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\Data\Collection\AbstractDb;
+use Magento\Framework\Model\AbstractModel;
+use Magento\Framework\Model\Context;
+use Magento\Framework\Model\ResourceModel\AbstractResource;
+use Magento\Framework\Registry;
+use Magento\Framework\Stdlib\DateTime\DateTime;
 use Magento\Framework\Stdlib\StringUtils;
+use Magento\Store\Model\ScopeInterface;
 
-class Consent extends \Magento\Framework\Model\AbstractModel
+class Consent extends AbstractModel
 {
     public const CONSENT_TEXT_LIMIT = '1000';
-
-    /**
-     * Single fields for the consent contact.
-     *
-     * @var array
-     */
-    public $singleFields = [
-        'TEXT',
-        'DATETIMECONSENTED',
-        'URL',
-        'USERAGENT',
-        'IPADDRESS'
-    ];
 
     /**
      * Bulk api import for consent contact fields.
@@ -47,17 +44,17 @@ class Consent extends \Magento\Framework\Model\AbstractModel
     ];
 
     /**
-     * @var \Magento\Framework\Stdlib\DateTime\DateTime
+     * @var DateTime
      */
     private $dateTime;
 
     /**
-     * @var ResourceModel\Consent
+     * @var ConsentResource
      */
     private $consentResource;
 
     /**
-     * @var ResourceModel\Contact\CollectionFactory
+     * @var CollectionFactory
      */
     private $contactCollectionFactory;
 
@@ -70,6 +67,11 @@ class Consent extends \Magento\Framework\Model\AbstractModel
      * @var StringUtils
      */
     private $stringUtils;
+
+    /**
+     * @var ScopeConfigInterface
+     */
+    private $scopeConfig;
 
     /**
      * @var array
@@ -94,33 +96,36 @@ class Consent extends \Magento\Framework\Model\AbstractModel
     /**
      * Consent constructor.
      *
-     * @param \Magento\Framework\Model\Context $context
-     * @param \Magento\Framework\Registry $registry
+     * @param Context $context
+     * @param Registry $registry
      * @param Config $config
-     * @param ResourceModel\Consent $consent
-     * @param ResourceModel\Contact\CollectionFactory $contactCollectionFactory
-     * @param \Magento\Framework\Stdlib\DateTime\DateTime $dateTime
+     * @param ConsentResource $consent
+     * @param CollectionFactory $contactCollectionFactory
+     * @param ScopeConfigInterface $scopeConfig
+     * @param DateTime $dateTime
      * @param StringUtils $stringUtils
-     * @param \Magento\Framework\Model\ResourceModel\AbstractResource|null $resource
-     * @param \Magento\Framework\Data\Collection\AbstractDb|null $resourceCollection
+     * @param AbstractResource|null $resource
+     * @param AbstractDb|null $resourceCollection
      * @param array $data
      */
     public function __construct(
-        \Magento\Framework\Model\Context $context,
-        \Magento\Framework\Registry $registry,
+        Context $context,
+        Registry $registry,
         Config $config,
-        \Dotdigitalgroup\Email\Model\ResourceModel\Consent $consent,
-        \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory $contactCollectionFactory,
-        \Magento\Framework\Stdlib\DateTime\DateTime $dateTime,
+        ConsentResource $consent,
+        CollectionFactory $contactCollectionFactory,
+        ScopeConfigInterface $scopeConfig,
+        DateTime $dateTime,
         StringUtils $stringUtils,
-        \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
-        \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
+        AbstractResource $resource = null,
+        AbstractDb $resourceCollection = null,
         array $data = []
     ) {
         $this->dateTime = $dateTime;
         $this->configHelper = $config;
         $this->consentResource = $consent;
         $this->contactCollectionFactory = $contactCollectionFactory;
+        $this->scopeConfig = $scopeConfig;
         $this->stringUtils = $stringUtils;
         parent::__construct($context, $registry, $resource, $resourceCollection, $data);
     }
@@ -150,6 +155,20 @@ class Consent extends \Magento\Framework\Model\AbstractModel
             ['key' => 'USERAGENT', 'value' => $this->getConsentUserAgent()]
         ];
     }
+
+    /**
+     * @param string|int $storeId
+     *
+     * @return bool
+     */
+	public function isConsentEnabled($storeId)
+	{
+        return $this->scopeConfig->isSetFlag(
+            Config::XML_PATH_CONSENT_EMAIL_ENABLED,
+            ScopeInterface::SCOPE_STORES,
+            $storeId
+        );
+	}
 
     /**
      * Get consent text.
@@ -182,6 +201,9 @@ class Consent extends \Magento\Framework\Model\AbstractModel
     /**
      * Fetch consent customer text.
      *
+     * @deprecated Consent text has store scope.
+     * @see getConsentCustomerTextForStore
+     *
      * @param int $websiteId
      * @return string
      */
@@ -189,6 +211,23 @@ class Consent extends \Magento\Framework\Model\AbstractModel
     {
         return $this->limitLength(
             $this->configHelper->getWebsiteConfig(Config::XML_PATH_CONSENT_CUSTOMER_TEXT, $websiteId)
+        );
+    }
+
+    /**
+     * Fetch consent customer text.
+     *
+     * @param int $storeId
+     * @return string
+     */
+    public function getConsentCustomerTextForStore($storeId): string
+    {
+        return $this->limitLength(
+            $this->scopeConfig->getValue(
+                Config::XML_PATH_CONSENT_CUSTOMER_TEXT,
+                ScopeInterface::SCOPE_STORES,
+                $storeId
+            )
         );
     }
 
@@ -247,6 +286,9 @@ class Consent extends \Magento\Framework\Model\AbstractModel
     /**
      * Fetch consent subscriber text.
      *
+     * @deprecated Consent text has store scope.
+     * @see getConsentSubscriberTextForStore
+     *
      * @param string|int $websiteId
      * @return string
      */
@@ -254,6 +296,23 @@ class Consent extends \Magento\Framework\Model\AbstractModel
     {
         return $this->limitLength(
             $this->configHelper->getWebsiteConfig(Config::XML_PATH_CONSENT_SUBSCRIBER_TEXT, $websiteId)
+        );
+    }
+
+    /**
+     * Fetch consent subscriber text.
+     *
+     * @param string|int $storeId
+     * @return string
+     */
+    private function getConsentSubscriberTextForStore($storeId): string
+    {
+        return $this->limitLength(
+            $this->scopeConfig->getValue(
+                Config::XML_PATH_CONSENT_SUBSCRIBER_TEXT,
+                ScopeInterface::SCOPE_STORES,
+                $storeId
+            )
         );
     }
 

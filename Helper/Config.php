@@ -643,6 +643,9 @@ class Config extends AbstractHelper
     /**
      * Fetch status consent subscriber option.
      *
+     * @deprecated Use the Consent model (and store scope).
+     * @see \Dotdigitalgroup\Email\Model\Consent
+     *
      * @param string|int $websiteId
      * @return string|boolean
      */
