@@ -354,7 +354,7 @@ class OrderItemProcessor extends DataObject
     private function getParentId(): string
     {
         if ($this->isChildProduct()) {
-            return $this->parentLineItem->getProductId();
+            return (string) $this->parentLineItem->getProductId();
         }
 
         return '';
@@ -373,14 +373,16 @@ class OrderItemProcessor extends DataObject
     /**
      * Get product sku.
      *
+     * Note the type cast here is NOT redundant - getSku can return null.
+     *
      * @return string
      */
     private function getSku(): string
     {
         if ($this->productModel && $this->isBundle()) {
-            return $this->productModel->getSku();
+            return (string) $this->productModel->getSku();
         }
-        return $this->productItem->getSku();
+        return (string) $this->productItem->getSku();
     }
 
     /**
@@ -391,7 +393,7 @@ class OrderItemProcessor extends DataObject
     private function getParentName(): string
     {
         if ($this->isChildProduct()) {
-            return $this->parentLineItem->getName();
+            return (string) $this->parentLineItem->getName();
         }
         return '';
     }
