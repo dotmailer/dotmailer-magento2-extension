@@ -1,3 +1,8 @@
+# 4.20.4
+
+### Bug fixes
+- We fixed further order sync problems related to missing values in the order item table.
+
 # 4.20.3
 
 ### Improvements
