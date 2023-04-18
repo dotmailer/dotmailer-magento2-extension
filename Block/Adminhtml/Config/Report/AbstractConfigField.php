@@ -2,7 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Report;
 
-abstract class AbstractConfigField extends \Magento\Config\Block\System\Config\Form\Field
+use Magento\Config\Block\System\Config\Form\Field;
+use Magento\Framework\Data\Form\Element\AbstractElement;
+
+abstract class AbstractConfigField extends Field
 {
     /**
      * @var string
@@ -10,21 +13,12 @@ abstract class AbstractConfigField extends \Magento\Config\Block\System\Config\F
     protected $linkUrlPath;
 
     /**
-     * @deprecated
-     *
-     * @param string $buttonLabel
-     *
-     * @return $this
+     * @var string
      */
-    public function setButtonLabel($buttonLabel)
-    {
-        $this->buttonLabel = $buttonLabel;
-
-        return $this;
-    }
+    protected $_template = 'Dotdigitalgroup_Email::system/config/reportlink.phtml';
 
     /**
-     * @deprecated
+     * Get button link
      *
      * @return string
      */
@@ -34,30 +28,13 @@ abstract class AbstractConfigField extends \Magento\Config\Block\System\Config\F
     }
 
     /**
-     * Set template to itself.
+     * Removes use Default Checkbox.
      *
-     * @return Report
-     */
-    protected function _prepareLayout()
-    {
-        parent::_prepareLayout();
-        if (!$this->getTemplate()) {
-            $this->setTemplate('Dotdigitalgroup_Email::system/config/reportlink.phtml');
-        }
-
-        return $this;
-    }
-
-    /**
-     * Unset some non-related element parameters.
-     *
-     * @deprecated
-     *
-     * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
+     * @param AbstractElement $element
      *
      * @return string
      */
-    public function render(\Magento\Framework\Data\Form\Element\AbstractElement $element)
+    public function render(AbstractElement $element)
     {
         $element->unsScope()->unsCanUseWebsiteValue()->unsCanUseDefaultValue();
 
@@ -67,13 +44,11 @@ abstract class AbstractConfigField extends \Magento\Config\Block\System\Config\F
     /**
      * Get the button and scripts contents.
      *
-     * @deprecated
-     *
-     * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
+     * @param AbstractElement $element
      *
      * @return string
      */
-    public function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
+    public function _getElementHtml(AbstractElement $element)
     {
         $originalData = $element->getOriginalData();
 

@@ -4,20 +4,20 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Config;
 
 use Dotdigitalgroup\Email\Helper\Data;
 use Magento\Backend\Block\Template\Context;
+use Magento\Config\Block\System\Config\Form\Field;
+use Magento\Framework\Data\Form\Element\AbstractElement;
 
-class Createaddressbook extends \Magento\Config\Block\System\Config\Form\Field
+class Createaddressbook extends Field
 {
-    /**
-     * Button label.
-     *
-     * @var string
-     */
-    public $vatButtonLabel = 'New Addressbook';
-
     /**
      * @var Data
      */
     private $helper;
+
+    /**
+     * @var string
+     */
+    protected $_template = 'Dotdigitalgroup_Email::system/config/createaddressbook.phtml';
 
     /**
      * Createaddressbook constructor.
@@ -35,58 +35,31 @@ class Createaddressbook extends \Magento\Config\Block\System\Config\Form\Field
     }
 
     /**
-     * @param string $vatButtonLabel
-     *
-     * @return $this
-     */
-    public function setVatButtonLabel($vatButtonLabel)
-    {
-        $this->vatButtonLabel = $vatButtonLabel;
-
-        return $this;
-    }
-
-    /**
-     * @return $this
-     */
-    protected function _prepareLayout()
-    {
-        parent::_prepareLayout();
-        if (!$this->getTemplate()) {
-            $this->setTemplate('Dotdigitalgroup_Email::system/config/createaddressbook.phtml');
-        }
-
-        return $this;
-    }
-
-    /**
      * Unset some non-related element parameters.
      *
-     * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
+     * @param AbstractElement $element
      *
      * @return string
      */
     public function render(
-        \Magento\Framework\Data\Form\Element\AbstractElement $element
+        AbstractElement $element
     ) {
         $element->unsScope()->unsCanUseWebsiteValue()->unsCanUseDefaultValue();
-
         return parent::render($element);
     }
 
     /**
      * Get the button and scripts contents.
      *
-     * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
+     * @param AbstractElement $element
      *
      * @return string
      */
     public function _getElementHtml(
-        \Magento\Framework\Data\Form\Element\AbstractElement $element
+        AbstractElement $element
     ) {
         $originalData = $element->getOriginalData();
-        $buttonLabel = !empty($originalData['button_label'])
-            ? $originalData['button_label'] : $this->vatButtonLabel;
+        $buttonLabel = $originalData['button_label'];
         $url = $this->_urlBuilder->getUrl(
             'dotdigitalgroup_email/addressbook/save',
             ['website' => $this->helper->getWebsiteForSelectedScopeInAdmin()->getId()]
