@@ -2,27 +2,23 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Accounts;
 
-class IntegrationSetupProgress extends \Magento\Config\Block\System\Config\Form\Field
+use Magento\Config\Block\System\Config\Form\Field;
+use Magento\Framework\Data\Form\Element\AbstractElement;
+
+class IntegrationSetupProgress extends Field
 {
     /**
-     * Prepare layout.
-     *
-     * @return $this|IntegrationSetupProgress
+     * @var string
      */
-    protected function _prepareLayout()
-    {
-        parent::_prepareLayout();
-        $this->setTemplate('integration/setup.phtml');
-        return $this;
-    }
+    protected $_template = 'integration/setup.phtml';
 
     /**
      * Get element html.
      *
-     * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
+     * @param AbstractElement $element
      * @return string
      */
-    protected function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
+    protected function _getElementHtml(AbstractElement $element)
     {
         return $this->toHtml();
     }
@@ -30,10 +26,10 @@ class IntegrationSetupProgress extends \Magento\Config\Block\System\Config\Form\
     /**
      * Removes use Default Checkbox.
      *
-     * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
+     * @param AbstractElement $element
      * @return string
      */
-    public function render(\Magento\Framework\Data\Form\Element\AbstractElement $element)
+    public function render(AbstractElement $element)
     {
         $element->unsScope()->unsCanUseWebsiteValue()->unsCanUseDefaultValue();
         return parent::render($element);
