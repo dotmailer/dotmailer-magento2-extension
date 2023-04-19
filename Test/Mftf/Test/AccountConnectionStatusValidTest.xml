@@ -19,6 +19,7 @@
         </before>
 
         <after>
+            <actionGroup ref="ResetDotmailerAccountData" stepKey="ResetAccountData" />
             <actionGroup ref="AdminLogoutActionGroup" stepKey="logout"/>
         </after>
 
