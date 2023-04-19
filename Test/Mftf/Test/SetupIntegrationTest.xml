@@ -6,7 +6,7 @@
             <features value="Dotdigital module"/>
             <stories value="Test Dotdigital setup integration"/>
             <title value="Test Setup integration action"/>
-            <description value=""/>
+            <description value="Confirm that the Set Up Integration flow proceeds as expected."/>
             <severity value="MINOR"/>
             <group value="dotmailer"/>
         </annotations>
