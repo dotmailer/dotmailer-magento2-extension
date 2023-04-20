@@ -84,11 +84,11 @@ class AccountSubscriptions implements ArgumentInterface
     /**
      * Get contact from table.
      *
-     * @return \Dotdigitalgroup\Email\Model\Contact
+     * @return Contact
      */
     public function getContactFromTable()
     {
-        if (!isset($this->contactFromTable)) {
+        if (!isset($this->contactFromTable) && $this->getCustomer()->getEmail()) {
             $this->contactFromTable = $this->contactFactory->create()
                 ->loadByCustomerEmail(
                     $this->getCustomer()->getEmail(),
