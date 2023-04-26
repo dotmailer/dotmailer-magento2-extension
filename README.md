@@ -4,10 +4,11 @@
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg)](LICENSE.md)
 
 ## Requirements
-- PHP 7.2+
-- Magento 2.3+ 
+- PHP 7.4+
+- Magento 2.3.7+ 
     - Magento 2.1.x is compatible up to version 4.2.0-p1
     - Magento 2.2.x is compatible up to version 4.13.x
+    - Magento 2.3.0-2.3.6 is compatible up to version 4.21.x
 
 ## Version history
 Please see our [Changelog](CHANGELOG.md) or the [Releases](https://github.com/dotmailer/dotmailer-magento2-extension/releases) page.

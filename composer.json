@@ -14,7 +14,7 @@
     "dotmailer/dotmailer-magento2-extension": "*"
   },
   "require": {
-    "php": "^7.2||^8.0",
+    "php": "^7.4||^8.0",
     "magento/framework": ">=101 <104",
     "magento/module-newsletter": "100.*",
     "magento/module-review": ">=100 <102",
@@ -47,7 +47,9 @@
     "magento/module-grouped-product": "100.*",
     "magento/module-url-rewrite": ">=100 <103",
     "magento/module-authorization": "100.*",
-    "magento/module-tax": "100.*"
+    "magento/module-tax": "100.*",
+    "dotdigital/dotdigital-php": "@dev",
+    "php-http/curl-client": "^2.2"
   },
   "autoload": {
     "files": [ "registration.php" ],
