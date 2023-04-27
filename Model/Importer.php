@@ -132,6 +132,10 @@ class Importer extends \Magento\Framework\Model\AbstractModel
      * @param int $websiteId
      * @param bool $file
      * @param int $retryCount
+     * @param int $importStatus
+     * @param string $importId
+     * @param string $message
+     *
      * @return bool
      */
     public function registerQueue(
@@ -140,7 +144,10 @@ class Importer extends \Magento\Framework\Model\AbstractModel
         $importMode,
         $websiteId,
         $file = false,
-        int $retryCount = 0
+        int $retryCount = 0,
+        int $importStatus = 0,
+        string $importId = '',
+        string $message = ''
     ) {
         /**
          * Items that failed to imported for two times in a row should be ignored.
@@ -160,9 +167,12 @@ class Importer extends \Magento\Framework\Model\AbstractModel
 
             if ($importData || $file) {
                 $this->setImportType($importType)
+                    ->setImportStatus($importStatus)
+                    ->setImportId($importId)
                     ->setImportData($importData)
                     ->setWebsiteId($websiteId)
                     ->setImportMode($importMode)
+                    ->setMessage($message)
                     ->setRetryCount($retryCount);
 
                 $this->importerResource->save($this);
