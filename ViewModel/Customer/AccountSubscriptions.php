@@ -112,7 +112,6 @@ class AccountSubscriptions implements ArgumentInterface
             );
             if (isset($contact->id)) {
                 $this->contactFromAccount = $contact;
-                $this->customerSession->setConnectorContactId($contact->id);
             }
         }
 

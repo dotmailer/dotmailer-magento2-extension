@@ -194,13 +194,6 @@ class ImporterProgressHandler extends DataObject
         $file = $item->getImportFile();
         // if a filename is stored in the table and if that file physically exists
         if ($file && $this->fileHelper->isFilePathExistWithFallback($file)) {
-            //remove the consent data for contacts before archiving the file
-            $log = $this->fileHelper->cleanProcessedConsent(
-                $this->fileHelper->getFilePathWithFallback($file)
-            );
-            if ($log) {
-                $this->logger->info($log);
-            }
             if (! $this->fileHelper->isFileAlreadyArchived($file)) {
                 $this->fileHelper->archiveCSV($file);
             }

@@ -3,6 +3,7 @@
 namespace Dotdigitalgroup\Email\Model\Sync\Subscriber;
 
 use Dotdigitalgroup\Email\Model\ConsentFactory;
+use Dotdigitalgroup\Email\Model\Consent\ConsentManager;
 use Dotdigitalgroup\Email\Model\ResourceModel\Consent\CollectionFactory as ConsentCollectionFactory;
 use Magento\Framework\Stdlib\DateTime\DateTime;
 
@@ -24,6 +25,11 @@ class ConsentDataManager
     private $dateTime;
 
     /**
+     * @var ConsentManager
+     */
+    private $consentManager;
+
+    /**
      * @param ConsentFactory $consentFactory
      * @param ConsentCollectionFactory $consentCollectionFactory
      * @param DateTime $dateTime
@@ -31,11 +37,13 @@ class ConsentDataManager
     public function __construct(
         ConsentFactory $consentFactory,
         ConsentCollectionFactory $consentCollectionFactory,
-        DateTime $dateTime
+        DateTime $dateTime,
+        ConsentManager $consentManager
     ) {
         $this->consentFactory = $consentFactory;
         $this->consentCollectionFactory = $consentCollectionFactory;
         $this->dateTime = $dateTime;
+        $this->consentManager = $consentManager;
     }
 
     /**
@@ -65,8 +73,7 @@ class ConsentDataManager
             $consentData[$contactId]['consent_url'] = $row['consent_url'];
             $consentData[$contactId]['consent_ip'] = $row['consent_ip'];
             $consentData[$contactId]['consent_user_agent'] = $row['consent_user_agent'];
-            $consentData[$contactId]['consent_text'] = $this->consentFactory->create()
-                ->getConsentTextForWebsite($row['consent_url'], $websiteId);
+            $consentData[$contactId]['consent_text'] = $row['consent_text'] ?? $this->consentManager->getConsentTextForStoreView($row['consent_url'], $websiteId);
             $consentData[$contactId]['consent_datetime'] = $this->dateTime->date(
                 \DateTime::ATOM,
                 $row['consent_datetime']

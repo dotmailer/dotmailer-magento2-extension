@@ -3,6 +3,7 @@
 namespace Dotdigitalgroup\Email\Model;
 
 use Dotdigitalgroup\Email\Helper\Config;
+use Dotdigitalgroup\Email\Model\Consent\ConsentManager;
 use Dotdigitalgroup\Email\Model\ResourceModel\Consent as ConsentResource;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory;
 use Magento\Framework\App\Config\ScopeConfigInterface;
@@ -131,54 +132,16 @@ class Consent extends AbstractModel
     }
 
     /**
-     * Get formatted consent data by contact.
-     *
-     * @param int $websiteId
-     * @param string $email
-     *
-     * @return array
-     */
-    public function getFormattedConsentDataByContactForApi($websiteId, $email)
-    {
-        if (! $this->configHelper->isConsentSubscriberEnabled($websiteId)) {
-            return [];
-        }
-
-        $this->checkModelLoaded($websiteId, $email);
-        $consentText = $this->getConsentText($websiteId);
-        $consentDatetime = $this->dateTime->date(\DateTime::ATOM, $this->getConsentDatetime());
-        return [
-            ['key' => 'TEXT', 'value' => $consentText],
-            ['key' => 'URL', 'value' => $this->getConsentUrl()],
-            ['key' => 'DATETIMECONSENTED', 'value' => $consentDatetime],
-            ['key' => 'IPADDRESS', 'value' => $this->getConsentIp()],
-            ['key' => 'USERAGENT', 'value' => $this->getConsentUserAgent()]
-        ];
-    }
-
-    /**
-     * @param string|int $storeId
-     *
-     * @return bool
-     */
-	public function isConsentEnabled($storeId)
-	{
-        return $this->scopeConfig->isSetFlag(
-            Config::XML_PATH_CONSENT_EMAIL_ENABLED,
-            ScopeInterface::SCOPE_STORES,
-            $storeId
-        );
-	}
-
-    /**
      * Get consent text.
      *
      * @param string $consentUrl
      * @param int $websiteId
      *
+     * @deprecated We fetch consent text per store.
+     * @see ConsentManager::getConsentTextForStoreView()
      * @return string
      */
-    public function getConsentTextForWebsite(string $consentUrl, $websiteId): string
+    private function getConsentTextForWebsite(string $consentUrl, $websiteId): string
     {
         if (! isset($this->consentText[$websiteId])) {
             $this->consentText[$websiteId] = $this->getConsentSubscriberText($websiteId);
@@ -202,7 +165,7 @@ class Consent extends AbstractModel
      * Fetch consent customer text.
      *
      * @deprecated Consent text has store scope.
-     * @see getConsentCustomerTextForStore
+     * @see ConsentManager::getConsentCustomerTextForStore
      *
      * @param int $websiteId
      * @return string
@@ -215,24 +178,10 @@ class Consent extends AbstractModel
     }
 
     /**
-     * Fetch consent customer text.
-     *
-     * @param int $storeId
-     * @return string
-     */
-    public function getConsentCustomerTextForStore($storeId): string
-    {
-        return $this->limitLength(
-            $this->scopeConfig->getValue(
-                Config::XML_PATH_CONSENT_CUSTOMER_TEXT,
-                ScopeInterface::SCOPE_STORES,
-                $storeId
-            )
-        );
-    }
-
-    /**
      * Check if consent URL matches checkout or customer account paths.
+     *
+     * @deprecated Moved in to ConsentManager class.
+     * @see ConsentManager::isLinkMatchCustomerRegistrationOrCheckout()
      *
      * @param string $consentUrl
      * @return bool
@@ -240,54 +189,15 @@ class Consent extends AbstractModel
     private function isLinkMatchCustomerRegistrationOrCheckout(string $consentUrl): bool
     {
         return (strpos($consentUrl, 'checkout/') !== false ||
+            strpos($consentUrl, 'connector/customer/index/') !== false ||
             strpos($consentUrl, 'customer/account/') !== false);
-    }
-
-    /**
-     * Load consent model.
-     *
-     * @param int $websiteId
-     * @param string $email
-     */
-    private function checkModelLoaded($websiteId, $email)
-    {
-        //model not loaded try to load with contact email data
-        if (!$this->getId()) {
-            //load model using email and website id
-            $contactModel = $this->contactCollectionFactory->create()
-                ->loadByCustomerEmail($email, $websiteId);
-            if ($contactModel) {
-                $this->consentResource->load($this, $contactModel->getEmailContactId(), 'email_contact_id');
-            }
-        }
-    }
-
-    /**
-     * Get consent text.
-     *
-     * @param string|int $websiteId
-     * @return string
-     */
-    private function getConsentText($websiteId): string
-    {
-        $consentText = $this->getConsentSubscriberText($websiteId);
-        $customerConsentText = $this->getConsentCustomerText($websiteId);
-        $consentUrl = $this->getConsentUrl();
-
-        //customer checkout and registration if consent text not empty
-        if (strlen($customerConsentText) && $consentUrl &&
-            $this->isLinkMatchCustomerRegistrationOrCheckout($this->getConsentUrl())
-        ) {
-            $consentText = $customerConsentText;
-        }
-        return $consentText;
     }
 
     /**
      * Fetch consent subscriber text.
      *
      * @deprecated Consent text has store scope.
-     * @see getConsentSubscriberTextForStore
+     * @see ConsentManager::getConsentSubscriberTextForStore
      *
      * @param string|int $websiteId
      * @return string
@@ -300,29 +210,15 @@ class Consent extends AbstractModel
     }
 
     /**
-     * Fetch consent subscriber text.
-     *
-     * @param string|int $storeId
-     * @return string
-     */
-    private function getConsentSubscriberTextForStore($storeId): string
-    {
-        return $this->limitLength(
-            $this->scopeConfig->getValue(
-                Config::XML_PATH_CONSENT_SUBSCRIBER_TEXT,
-                ScopeInterface::SCOPE_STORES,
-                $storeId
-            )
-        );
-    }
-
-    /**
      * Fetch length limit.
+     *
+     * @deprecated Moved in to ConsentManager class.
+     * @see ConsentManager::limitLength()
      *
      * @param string|null $value
      * @return string
      */
-    private function limitLength($value): string
+    private function limitLength(?string $value): string
     {
         if ($this->stringUtils->strlen($value) > self::CONSENT_TEXT_LIMIT) {
             $value = $this->stringUtils->substr($value, 0, self::CONSENT_TEXT_LIMIT);

@@ -7,7 +7,6 @@ use Dotdigitalgroup\Email\Model\Apiconnector\Client;
 use Dotdigitalgroup\Email\Model\Contact;
 use Dotdigitalgroup\Email\Model\ContactFactory;
 use Dotdigitalgroup\Email\Model\Customer\Account\Configuration;
-use Laminas\Http\Headers;
 use Magento\Customer\Model\Customer;
 use Magento\Customer\Model\Session as CustomerSession;
 use Magento\Framework\Data\Form\FormKey\Validator as FormKeyValidator;
@@ -85,19 +84,20 @@ class NewsletterTest extends \Magento\TestFramework\TestCase\AbstractController
             ->addMethods(['getContactId'])
             ->getMock();
         $this->mockContactFactory = $this->createMock(ContactFactory::class);
-        $this->mockCustomer = $this->createMock(Customer::class);
+        $this->mockCustomer = $this->getMockBuilder(Customer::class)
+            ->disableOriginalConstructor()
+            ->setMethods(array_merge(get_class_methods(Customer::class), ['getEmail']))
+            ->getMock();
         $this->mockHelper = $this->createMock(Data::class);
         $this->mockAccountConfig = $this->createMock(Configuration::class);
         $this->mockClient = $this->createMock(Client::class);
         $this->mockStore = $this->createMock(Store::class);
         $this->mockStoreManager = $this->createMock(StoreManagerInterface::class);
-
         $sessionMethods = array_merge(get_class_methods(CustomerSession::class), ['getConnectorContactId']);
         $this->mockCustomerSession = $this->getMockBuilder(CustomerSession::class)
             ->disableOriginalConstructor()
             ->setMethods($sessionMethods)
             ->getMock();
-
         $this->mockECContactObject = (object) ['id' => '111'];
 
         $objectManager->addSharedInstance($this->mockFormKeyValidator, FormKeyValidator::class);
@@ -117,13 +117,6 @@ class NewsletterTest extends \Magento\TestFramework\TestCase\AbstractController
         $this->mockAccountConfig->expects($this->once())
             ->method('canShowAddressBooks')
             ->willReturn(true);
-
-        $this->mockClient->expects($this->exactly(2))
-            ->method('postAddressBookContacts')
-            ->withConsecutive(
-                [1, $this->mockECContactObject],
-                [2, $this->mockECContactObject]
-            );
 
         $this->dispatch('/connector/customer/newsletter?additional_subscriptions[]=1&additional_subscriptions[]=2');
     }
@@ -168,11 +161,17 @@ class NewsletterTest extends \Magento\TestFramework\TestCase\AbstractController
         $this->mockCustomerSession->method('getCustomer')
             ->willReturn($this->mockCustomer);
 
+        $this->mockCustomer->method('getEmail')
+            ->willReturn('test@emailsim.io');
+
         $this->mockContactFactory->method('create')
             ->willReturn($this->mockContact);
 
         $this->mockContact->method('loadByCustomerEmail')
             ->willReturn($this->mockContact);
+
+        $this->mockContact->method('getContactId')
+            ->willReturn(20);
 
         $this->mockCustomerSession->method('getConnectorContactId')
             ->willReturn($contactId);

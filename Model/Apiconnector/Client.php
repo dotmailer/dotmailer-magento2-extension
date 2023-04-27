@@ -235,7 +235,7 @@ class Client extends Rest
      * Adds a contact to a given address book.
      *
      * @deprecated The newer method builds the contact inside it, instead of it being passed in.
-     * @see addContactsToAddressBook
+     * @see addContactToAddressBook
      *
      * @param string|int $addressBookId
      * @param array $apiContact
@@ -274,7 +274,7 @@ class Client extends Rest
     public function addContactToAddressBook(
         string $email,
         string $addressBookId,
-        ?string $optInType,
+        ?string $optInType = null,
         ?array $dataFields = []
     ) {
         $url = $this->getApiEndpoint() . self::REST_ADDRESS_BOOKS . $addressBookId

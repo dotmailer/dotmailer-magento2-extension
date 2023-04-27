@@ -2,7 +2,7 @@
 
 namespace Dotdigitalgroup\Email\ViewModel\Customer\Account;
 
-use Dotdigitalgroup\Email\Model\Consent;
+use Dotdigitalgroup\Email\Model\Consent\ConsentManager;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\View\Element\Block\ArgumentInterface;
@@ -13,9 +13,9 @@ use Magento\Store\Model\StoreManagerInterface;
 class Newsletter implements ArgumentInterface
 {
     /**
-     * @var Consent
+     * @var ConsentManager
      */
-    private $consent;
+    private $consentManager;
 
     /**
      * @var Session
@@ -33,18 +33,18 @@ class Newsletter implements ArgumentInterface
     private $storeManager;
 
     /**
-     * @param Consent $consent
+     * @param ConsentManager $consentManager
      * @param Session $customerSession
      * @param SubscriberFactory $subscriberFactory
      * @param StoreManagerInterface $storeManager
      */
     public function __construct(
-        Consent $consent,
+        ConsentManager $consentManager,
         Session $customerSession,
         SubscriberFactory $subscriberFactory,
         StoreManagerInterface $storeManager
     ) {
-        $this->consent = $consent;
+        $this->consentManager = $consentManager;
         $this->customerSession = $customerSession;
         $this->subscriberFactory = $subscriberFactory;
         $this->storeManager = $storeManager;
@@ -61,17 +61,19 @@ class Newsletter implements ArgumentInterface
     public function getCustomerConsentText($storeId = null): string
     {
         $storeId = $storeId ?? $this->storeManager->getStore()->getId();
-        return $this->consent->getConsentCustomerTextForStore($storeId) ?: '';
+        return $this->consentManager->getConsentCustomerTextForStore($storeId) ?: '';
     }
 
     /**
+     * Can display dd account consent text.
+     *
      * @return bool
      * @throws LocalizedException
      */
     public function canDisplayDDAccountConsentText(): bool
     {
         $storeId = $this->storeManager->getStore()->getId();
-        return $this->consent->isConsentEnabled($storeId) &&
+        return $this->consentManager->isConsentEnabled($storeId) &&
             strlen($this->getCustomerConsentText($storeId));
     }
 

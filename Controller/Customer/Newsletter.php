@@ -4,7 +4,6 @@ namespace Dotdigitalgroup\Email\Controller\Customer;
 
 use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Model\Apiconnector\Client;
-use Dotdigitalgroup\Email\Model\ConsentFactory;
 use Dotdigitalgroup\Email\Model\Contact;
 use Dotdigitalgroup\Email\Model\ContactFactory;
 use Dotdigitalgroup\Email\Model\Customer\Account\Configuration;
@@ -19,9 +18,8 @@ use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Newsletter\Model\Subscriber;
 use Magento\Newsletter\Model\SubscriberFactory;
-use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\StoreManagerInterface;
-use Magento\Store\Model\Website;
+use Dotdigitalgroup\Email\Model\Contact\ContactResponseHandler;
 
 class Newsletter extends Action
 {
@@ -44,11 +42,6 @@ class Newsletter extends Action
      * @var Session
      */
     private $customerSession;
-
-    /**
-     * @var ConsentFactory
-     */
-    private $consentFactory;
 
     /**
      * @var Validator
@@ -76,43 +69,46 @@ class Newsletter extends Action
     private $dateField;
 
     /**
-     * Newsletter constructor.
-     *
+     * @var ContactResponseHandler
+     */
+    private $contactResponseHandler;
+
+    /**
      * @param Data $helper
      * @param ContactFactory $contactFactory
      * @param Configuration $accountConfig
      * @param Session $session
-     * @param ConsentFactory $consentFactory
      * @param Context $context
      * @param Validator $formKeyValidator
      * @param CustomerRepository $customerRepository
      * @param SubscriberFactory $subscriberFactory
      * @param StoreManagerInterface $storeManager
      * @param Date $dateField
+     * @param ContactResponseHandler $contactResponseHandler
      */
     public function __construct(
         Data $helper,
         ContactFactory $contactFactory,
         Configuration $accountConfig,
         Session $session,
-        ConsentFactory $consentFactory,
         Context $context,
         Validator $formKeyValidator,
         CustomerRepository $customerRepository,
         SubscriberFactory $subscriberFactory,
         StoreManagerInterface $storeManager,
-        Date $dateField
+        Date $dateField,
+        ContactResponseHandler $contactResponseHandler
     ) {
         $this->helper = $helper;
         $this->contactFactory = $contactFactory;
         $this->accountConfig = $accountConfig;
         $this->customerSession = $session;
-        $this->consentFactory = $consentFactory;
         $this->formKeyValidator = $formKeyValidator;
         $this->customerRepository = $customerRepository;
         $this->subscriberFactory = $subscriberFactory;
         $this->storeManager = $storeManager;
         $this->dateField = $dateField;
+        $this->contactResponseHandler = $contactResponseHandler;
         parent::__construct($context);
     }
 
@@ -140,16 +136,16 @@ class Newsletter extends Action
             $contactFromTable = $this->contactFactory->create()
                 ->loadByCustomerEmail($customerEmail, $websiteId);
             $contactId = $this->getContactId($contactFromTable);
-
             $client = $this->helper->getWebsiteApiClient($websiteId);
 
-            $contact = isset($contactId)
-                ? $client->getContactById($contactId)
-                : $this->createContact($client, $customerEmail, $store, $contactFromTable);
-            
-            if (isset($contact->id)) {
+            if (!$contactId) {
+                $contactId = $this->createContact($client, $customerEmail, $contactFromTable);
+            }
+
+            if ($contactId) {
                 $additionalSubscriptionsSuccess = $this->processAdditionalSubscriptions(
-                    $contact,
+                    $customerEmail,
+                    $contactId,
                     $client,
                     $websiteId
                 );
@@ -160,7 +156,7 @@ class Newsletter extends Action
                     $websiteId
                 );
 
-                $contactPreferencesSuccess = $this->processContactPreferences($client, $contact);
+                $contactPreferencesSuccess = $this->processContactPreferences($client, $contactId);
 
                 if (! $contactDataFieldsSuccess || ! $additionalSubscriptionsSuccess || ! $contactPreferencesSuccess) {
                     $this->messageManager->addErrorMessage(
@@ -189,59 +185,39 @@ class Newsletter extends Action
      *
      * @param Client $apiClient
      * @param string $customerEmail
-     * @param StoreInterface $store
      * @param Contact $contactFromTable
      *
-     * @return object
+     * @return int
      * @throws LocalizedException
      */
-    private function createContact($apiClient, $customerEmail, $store, $contactFromTable)
+    private function createContact($apiClient, $customerEmail, $contactFromTable)
     {
-        $consentModel = $this->consentFactory->create();
-        $consentData = $consentModel->getFormattedConsentDataByContactForApi(
-            $store->getWebsiteId(),
+        $contact = $apiClient->postContactWithConsentAndPreferences(
             $customerEmail
         );
 
-        if (empty(! $consentData)) {
-            $contactData = [
-                'Email' => $customerEmail,
-                'EmailType' => 'Html'
-            ];
-            /** @var \Magento\Store\Model\Store $store */
-            if ($store->getConfig(Subscriber::XML_PATH_CONFIRMATION_FLAG)) {
-                $contactData['OptInType'] = 'Double';
-            }
+        $contactId = $this->contactResponseHandler->getContactIdFromResponse($contact);
 
-            $contact = $apiClient->postContactWithConsent(
-                $contactData,
-                $consentData
-            );
-        } else {
-            $contact = $apiClient->postContacts(
-                $customerEmail
-            );
-        }
-
-        if (isset($contact->id)) {
-            $contactFromTable->setContactId($contact->id);
+        if ($contactId) {
+            $contactFromTable->setContactId($contactId);
             $this->helper->saveContact($contactFromTable);
         }
 
-        return $contact;
+        return $contactId;
     }
 
     /**
      * Process additional subscriptions.
      *
-     * @param Object $contact
+     * @param string $customerEmail
+     * @param string|int $contactId
      * @param Client $client
      * @param int $websiteId
      *
      * @return bool
      * @throws LocalizedException
      */
-    private function processAdditionalSubscriptions($contact, $client, $websiteId)
+    private function processAdditionalSubscriptions($customerEmail, $contactId, $client, $websiteId)
     {
         $additionalFromConfig = $this->accountConfig->getAddressBookIdsToShow($websiteId);
 
@@ -255,9 +231,9 @@ class Newsletter extends Action
 
         foreach ($additionalFromConfig as $bookId) {
             if (in_array($bookId, $additionalSubscriptions)) {
-                $bookResponse = $client->postAddressBookContacts(
-                    $bookId,
-                    $contact
+                $bookResponse = $client->addContactToAddressBook(
+                    $customerEmail,
+                    $bookId
                 );
                 if (isset($bookResponse->message)) {
                     $success = false;
@@ -268,7 +244,7 @@ class Newsletter extends Action
             if (!in_array($bookId, $additionalSubscriptions)) {
                 $client->deleteAddressBookContact(
                     $bookId,
-                    $contact->id
+                    $contactId
                 );
             }
         }
@@ -358,12 +334,12 @@ class Newsletter extends Action
      * Process contact preferences.
      *
      * @param Client $client
-     * @param Object $contact
+     * @param string|int $contactId
      *
      * @return bool
      * @throws LocalizedException
      */
-    private function processContactPreferences($client, $contact)
+    private function processContactPreferences(Client $client, $contactId): bool
     {
         $paramPreferences = $this->getRequest()->getParam('preferences', []);
         $preferencesFromSession = $this->customerSession->getDmContactPreferences();
@@ -381,7 +357,7 @@ class Newsletter extends Action
             }
         }
 
-        $response = $client->setPreferencesForContact($contact->id, array_values($preferences));
+        $response = $client->setPreferencesForContact($contactId, array_values($preferences));
         return !isset($response->message);
     }
 
@@ -474,19 +450,15 @@ class Newsletter extends Action
      * Get contact id.
      *
      * @param Contact $contactFromTable
-     * @return mixed
+     * @return int|null
      */
     private function getContactId($contactFromTable)
     {
-        $contactId = null;
-
-        if ($this->customerSession->getConnectorContactId()) {
-            $contactId = $this->customerSession->getConnectorContactId();
-        } elseif ($contactFromTable->getContactId()) {
-            $contactId = $contactFromTable->getContactId();
+        if ($contactFromTable->getContactId()) {
+            return $contactFromTable->getContactId();
         }
 
-        return $contactId;
+        return null;
     }
 
     /**

@@ -37,6 +37,7 @@ class Cleaner implements TaskRunInterface
         'automation' => SchemaInterface::EMAIL_AUTOMATION_TABLE,
         'importer' => SchemaInterface::EMAIL_IMPORTER_TABLE,
         'campaign' => SchemaInterface::EMAIL_CAMPAIGN_TABLE,
+        'consent' => SchemaInterface::EMAIL_CONTACT_CONSENT_TABLE
     ];
 
     /**
@@ -61,8 +62,10 @@ class Cleaner implements TaskRunInterface
 
     /**
      * Cleaning for csv files and connector tables.
+     *
+     * @return void
      */
-    public function run()
+    public function run(): void
     {
         if ($this->jobChecker->hasAlreadyBeenRun('ddg_automation_cleaner')) {
             return;
@@ -70,8 +73,11 @@ class Cleaner implements TaskRunInterface
 
         $tables = $this->getTablesForCleanUp();
 
-        foreach ($tables as $key => $table) {
-            $this->cleanTable($table);
+        foreach ($tables as $table) {
+            $dateColumn = $table === SchemaInterface::EMAIL_CONTACT_CONSENT_TABLE ?
+                'consent_datetime' :
+                'created_at';
+            $this->cleanTable($table, $dateColumn);
         }
 
         $archivedFolder = $this->fileHelper->getArchiveFolder();
@@ -91,10 +97,11 @@ class Cleaner implements TaskRunInterface
      * Delete records older than 30 days from the provided table.
      *
      * @param string $tableName
+     * @param string $dateColumn
      *
      * @return \Exception|int
      */
-    private function cleanTable($tableName)
+    private function cleanTable(string $tableName, string $dateColumn)
     {
         try {
             $now = $this->dateTimeFactory->create('now', new \DateTimeZone('UTC'));
@@ -103,7 +110,7 @@ class Cleaner implements TaskRunInterface
             $conn = $this->resourceConnection->getConnection();
             $num = $conn->delete(
                 $this->resourceConnection->getTableName($tableName),
-                ['created_at < ?' => $date]
+                [$dateColumn . ' < ?' => $date]
             );
 
             return $num;
