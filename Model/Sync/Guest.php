@@ -186,7 +186,7 @@ class Guest extends AbstractContactSyncer implements SyncInterface
 
         do {
             $guests = $this->getGuestsToSync($website->getId(), $limit, $offset);
-            if (!$guests->getSize()) {
+            if (count($guests->getItems()) === 0) {
                 break;
             }
 
