@@ -66,7 +66,7 @@ class AccountCredentials implements ObserverInterface
         Context $context,
         DummyRecordsFactory $dummyRecordsFactory,
         Config $resourceConfig,
-        PublisherInterface $publisher,
+        PublisherInterface $publisher
     ) {
         $this->test = $test;
         $this->helper = $data;
@@ -108,7 +108,7 @@ class AccountCredentials implements ObserverInterface
             if ($isValidAccount) {
                 $this->helper->log('----PUBLISHING INTEGRATION INSIGHTS---');
                 $this->publisher->publish('ddg.sync.integration', '');
-                
+
                 $websiteId = $this->context->getRequest()->getParam('website');
 
                 if ($websiteId) {
