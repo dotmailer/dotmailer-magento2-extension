@@ -8,6 +8,9 @@ use Dotdigitalgroup\Email\Helper\Data;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Store\Model\StoreManagerInterface;
 
+/**
+ * @mixin DotdigitalClient
+ */
 class Client
 {
     /**
