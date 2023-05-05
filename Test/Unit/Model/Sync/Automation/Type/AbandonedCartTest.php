@@ -111,6 +111,11 @@ class AbandonedCartTest extends TestCase
      */
     private $abandonedCart;
 
+    /**
+     * @var Contact&\PHPUnit\Framework\MockObject\MockObject|\PHPUnit\Framework\MockObject\MockObject
+     */
+    private $contactModelMock;
+
     protected function setUp() :void
     {
         $this->helperMock = $this->createMock(Data::class);

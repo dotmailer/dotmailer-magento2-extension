@@ -45,6 +45,11 @@ class IntegrationInsightDataUnitTest extends TestCase
      */
     private $storeManagerInterfaceMock;
 
+    /**
+     * @var Module|Module&\PHPUnit\Framework\MockObject\MockObject|\PHPUnit\Framework\MockObject\MockObject
+     */
+    private $moduleManagerMock;
+
     public function setUp() :void
     {
         $this->helperMock = $this->createMock(Data::class);

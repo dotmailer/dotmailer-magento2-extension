@@ -36,6 +36,11 @@ class GuestExporterTest extends TestCase
      */
     private $guests = [];
 
+    /**
+     * @var GuestExporter
+     */
+    private $guestExporter;
+
     protected function setUp(): void
     {
         $this->contactDataMock = $this->createMock(ContactData::class);

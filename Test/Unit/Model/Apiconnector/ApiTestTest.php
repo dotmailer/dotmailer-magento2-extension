@@ -8,7 +8,6 @@ use Dotdigitalgroup\Email\Model\Apiconnector\ClientFactory;
 use Dotdigitalgroup\Email\Model\Apiconnector\Account;
 use Magento\Framework\App\Config\Storage\Writer;
 use Magento\Framework\App\Config\ReinitableConfigInterface;
-use Magento\Store\Api\Data\WebsiteInterface;
 use PHPUnit\Framework\TestCase;
 
 class ApiTestTest extends TestCase
@@ -38,6 +37,11 @@ class ApiTestTest extends TestCase
      */
     private $writerMock;
 
+    /**
+     * @var Test
+     */
+    private $apiTest;
+
     protected function setUp() :void
     {
         $this->helperMock = $this->createMock(Data::class);
@@ -45,7 +49,6 @@ class ApiTestTest extends TestCase
         $this->configInterfaceMock = $this->createMock(ReinitableConfigInterface::class);
         $this->accountMock = $this->createMock(Account::class);
         $this->writerMock = $this->createMock(Writer::class);
-        $this->websiteInterfaceMock = $this->createMock(WebsiteInterface::class);
 
         $this->apiTest = new Test(
             $this->helperMock,

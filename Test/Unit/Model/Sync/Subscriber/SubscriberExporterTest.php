@@ -47,6 +47,16 @@ class SubscriberExporterTest extends TestCase
      */
     private $csvHandlerMock;
 
+    /**
+     * @var WebsiteInterface&\PHPUnit\Framework\MockObject\MockObject|\PHPUnit\Framework\MockObject\MockObject
+     */
+    private $websiteInterfaceMock;
+
+    /**
+     * @var SubscriberExporter
+     */
+    private $exporter;
+
     protected function setUp() :void
     {
         $this->configMock = $this->createMock(Config::class);
