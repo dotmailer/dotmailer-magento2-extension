@@ -2,7 +2,6 @@
 
 namespace Dotdigitalgroup\Email\Test\Unit\Model\Sync\Importer;
 
-use Dotdigitalgroup\Email\Helper\Config;
 use Dotdigitalgroup\Email\Model\Apiconnector\Client;
 use Dotdigitalgroup\Email\Model\Cron\CronOffsetter;
 use Dotdigitalgroup\Email\Model\Importer as ImporterModel;
@@ -67,12 +66,40 @@ class ImporterReportHandlerTest extends TestCase
      */
     private $importerReportHandler;
 
+    /**
+     * @var CronOffsetter|CronOffsetter&\PHPUnit\Framework\MockObject\MockObject|\PHPUnit\Framework\MockObject\MockObject
+     */
+    private $cronOffsetterMock;
+
+    /**
+     * @var Contact|Contact&\PHPUnit\Framework\MockObject\MockObject|\PHPUnit\Framework\MockObject\MockObject
+     */
+    private $contactResourceMock;
+
+    /**
+     * @var ContactCollectionFactory|ContactCollectionFactory&\PHPUnit\Framework\MockObject\MockObject|\PHPUnit\Framework\MockObject\MockObject
+     */
+    private $contactCollectionFactoryMock;
+
+    /**
+     * @var ScopeConfigInterface|ScopeConfigInterface&\PHPUnit\Framework\MockObject\MockObject|\PHPUnit\Framework\MockObject\MockObject
+     */
+    private $scopeConfigInterfaceMock;
+
+    /**
+     * @var DateTime|DateTime&\PHPUnit\Framework\MockObject\MockObject|\PHPUnit\Framework\MockObject\MockObject
+     */
+    private $dateTimeMock;
+
+    /**
+     * @var Logger|Logger&\PHPUnit\Framework\MockObject\MockObject|\PHPUnit\Framework\MockObject\MockObject
+     */
+    private $loggerMock;
+
     protected function setUp(): void
     {
-        $this->configMock = $this->createMock(Config::class);
         $this->clientMock = $this->createMock(Client::class);
         $this->cronOffsetterMock = $this->createMock(CronOffsetter::class);
-        $this->importerModelMock = $this->createMock(ImporterModel::class);
         $this->importerFactoryMock = $this->createMock(ImporterFactory::class);
         $this->contactResourceMock = $this->createMock(Contact::class);
         $this->contactCollectionFactoryMock = $this->createMock(ContactCollectionFactory::class);

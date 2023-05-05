@@ -73,6 +73,11 @@ class OrderTest extends TestCase
      */
     private $websiteInterfaceMock;
 
+    /**
+     * @var Order
+     */
+    private $order;
+
     protected function setUp(): void
     {
         $this->configMock = $this->createMock(Config::class);

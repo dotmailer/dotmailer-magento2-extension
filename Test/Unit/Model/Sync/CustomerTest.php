@@ -68,6 +68,11 @@ class CustomerTest extends TestCase
      */
     private $customer;
 
+    /**
+     * @var ContactCollection|ContactCollection&\PHPUnit\Framework\MockObject\MockObject|\PHPUnit\Framework\MockObject\MockObject
+     */
+    private $contactCollectionMock;
+
     protected function setUp(): void {
         $this->helperMock = $this->createMock(Data::class);
         $this->loggerMock = $this->createMock(Logger::class);

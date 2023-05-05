@@ -81,6 +81,11 @@ class SubscriberTest extends TestCase
      */
     private $subscriber;
 
+    /**
+     * @var ContactCollection|ContactCollection&\PHPUnit\Framework\MockObject\MockObject|\PHPUnit\Framework\MockObject\MockObject 
+     */
+    private $contactCollectionMock;
+
     protected function setUp(): void
     {
         $this->helperMock = $this->createMock(Data::class);

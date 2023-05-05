@@ -125,7 +125,6 @@ class ExporterTest extends TestCase
      */
     public function testExportRetrievesDataAccordingToColumns()
     {
-        $columns = $this->getColumns();
         $customerStubs = $this->createCustomerMocks();
 
         $mageCustomerCollectionMock = $this->createMock(MageCustomerCollection::class);
@@ -177,7 +176,7 @@ class ExporterTest extends TestCase
             ->method('toCSVArray')
             ->willReturn([]);
 
-        $data = $this->exporter->export($this->customerIds, $this->websiteInterfaceMock, $columns);
+        $data = $this->exporter->export($this->customerIds, $this->websiteInterfaceMock);
 
         /**
          * We can't test the data that has been set on the Customer model, because
@@ -193,6 +192,8 @@ class ExporterTest extends TestCase
     {
         $mocks = [];
 
+        $contactIds = ['2', '4', '6', '8', '10'];
+
         for ($i = 1; $i <= 5; $i++) {
             $mageCustomerMock = $this->getMockBuilder(\Magento\Customer\Model\Customer::class)
                 ->onlyMethods(['getId', 'setData', 'clearInstance'])
@@ -201,28 +202,13 @@ class ExporterTest extends TestCase
                 ->getMock();
             $mageCustomerMock->method('getId')->willReturn($i);
             $mageCustomerMock->method('getEmail')->willReturn('chaz' . $i . '@emailsim.io');
-            $mageCustomerMock->method('getEmailContactId')->willReturn(rand(1, 99));
+            $mageCustomerMock->method('getEmailContactId')->willReturn($contactIds[$i-1]);
             $mageCustomerMock->expects($this->exactly(17))->method('setData');
             $mageCustomerMock->expects($this->once())->method('clearInstance');
             $mocks[] = $mageCustomerMock;
         }
 
         return $mocks;
-    }
-
-    /**
-     * @return array
-     */
-    private function getColumns()
-    {
-        $datafield = new Datafield();
-        $columns = [];
-
-        foreach ($datafield->getContactDatafields() as $key => $properties) {
-            $columns[$key] = $properties['name'];
-        }
-
-        return $columns;
     }
 
     /**
