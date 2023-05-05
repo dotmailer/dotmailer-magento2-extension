@@ -384,7 +384,7 @@
             <resource>Dotdigitalgroup_Email::config</resource>
             <group id="addressbook" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1"
                    showInStore="0">
-                <label>Address Book Mapping</label>
+                <label>List Mapping</label>
                 <attribute type="expanded">1</attribute>
                 <field id="allow_non_subscribers" translate="label" type="select" sortOrder="15" showInDefault="1" showInStore="0" showInWebsite="1">
                     <label>Allow non-subscribed contacts to be imported</label>
@@ -476,10 +476,10 @@
             </group>
             <group id="dynamic_addressbook" translate="label" type="text" sortOrder="40" showInDefault="1"
                    showInWebsite="1" showInStore="0">
-                <label>Create Address Book</label>
+                <label>Create List</label>
                 <field id="addressbook_name" type="text" sortOrder="10" showInDefault="1" showInStore="0"
                        showInWebsite="1">
-                    <label>Address Book Name</label>
+                    <label>List Name</label>
                     <backend_model>Dotdigitalgroup\Email\Model\Config\Backend\NoSave</backend_model>
                 </field>
                 <field id="visibility" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="0">
@@ -489,7 +489,7 @@
                 </field>
                 <field id="addressbook_button" translate="button_label" sortOrder="30" showInDefault="1" showInStore="0"
                        showInWebsite="1">
-                    <button_label>Create New Address Book</button_label>
+                    <button_label>Create New List</button_label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Createaddressbook</frontend_model>
                 </field>
             </group>
@@ -1679,14 +1679,14 @@
                 </field>
                 <field id="can_change" translate="label" sortOrder="10" type="select" showInStore="0" showInWebsite="1"
                        showInDefault="1">
-                    <label>Show Addressbooks to Customer</label>
+                    <label>Show Lists to Customer</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
                 <field id="show_books" translate="comment label" sortOrder="20" type="multiselect" showInStore="0"
                        showInWebsite="1" showInDefault="1">
-                    <label>Addressbooks to Show</label>
+                    <label>Lists to Show</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Addressbooks</source_model>
-                    <comment><![CDATA[ Choose additional address books to show in addition to the Magento General Subscription list.]]></comment>
+                    <comment><![CDATA[ Choose additional lists to show in addition to the Magento General Subscription list.]]></comment>
                     <depends><field id="show_addressbooks">1</field></depends>
                 </field>
                 <field id="can_show_fields" translate="label" sortOrder="30" type="select" showInStore="0"

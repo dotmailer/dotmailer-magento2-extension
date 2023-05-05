@@ -259,7 +259,7 @@ class IntegrationSetup
     }
 
     /**
-     * Map the successfully created address book
+     * Map the successfully created list
      *
      * @param string $name
      * @param int $id
@@ -281,7 +281,7 @@ class IntegrationSetup
             $websiteId
         );
 
-        $this->helper->log('successfully connected address book : ' . $name);
+        $this->helper->log('Successfully connected list : ' . $name);
     }
 
     /**
@@ -312,7 +312,6 @@ class IntegrationSetup
      */
     public function enableSyncs($websiteId = 0): bool
     {
-
         $this->saveConfigData(
             Config::XML_PATH_CONNECTOR_SYNC_CUSTOMER_ENABLED,
             '1',

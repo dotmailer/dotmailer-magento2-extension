@@ -6,7 +6,7 @@
         <data key="setupIntegrationLoadingMessage">Running setup integration, please wait...</data>
         <data key="setupIntegrationSuccessClasses">message-success message dd-progress</data>
         <data key="setupIntegrationWarningClasses">message-warning message dd-progress</data>
-        <data key="setupIntegrationAddressBookEventMessage">Address books created</data>
+        <data key="setupIntegrationAddressBookEventMessage">Lists created</data>
         <data key="setupIntegrationDataFieldsEventMessage">Data fields mapped</data>
         <data key="setupIntegrationSyncsEventMessage">Syncs enabled</data>
         <data key="setupIntegrationEasyEmailCaptureEventMessage">Easy email capture</data>

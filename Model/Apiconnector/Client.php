@@ -222,7 +222,7 @@ class Client extends Rest
         $result = json_decode($result);
 
         if (isset($result->message)) {
-            $this->addClientLog('Address book contacts import', [
+            $this->addClientLog('Contacts import to list', [
                 'address_book_id' => $addressBookId,
                 'file' => $filename,
             ]);
@@ -254,7 +254,7 @@ class Client extends Rest
         $response = $this->execute();
 
         if (isset($response->message)) {
-            $this->addClientLog('Address book contacts error');
+            $this->addClientLog('Post contacts to list error');
         }
 
         return $response;
@@ -294,7 +294,7 @@ class Client extends Rest
         $response = $this->execute();
 
         if (isset($response->message)) {
-            $this->addClientLog('Error adding contact to address book')
+            $this->addClientLog('Error adding contact to list')
                 ->addClientLog('Failed contact data', [
                     'data' => $data,
                 ], Logger::DEBUG);
@@ -345,7 +345,7 @@ class Client extends Rest
                 ->setVerb('DELETE');
             $this->execute();
 
-            $this->addClientLog('Deleted contact from address book', [
+            $this->addClientLog('Deleted contact from list', [
                 'contact_id' => $contactId,
                 'address_book_id' => $addressBookId,
             ], Logger::DEBUG);
@@ -403,7 +403,7 @@ class Client extends Rest
     }
 
     /**
-     * Get all address books.
+     * Get all lists.
      *
      * @return mixed
      *
@@ -417,14 +417,14 @@ class Client extends Rest
 
         $response = $this->execute();
         if (isset($response->message)) {
-            $this->addClientLog('Error fetching address books');
+            $this->addClientLog('Error fetching lists');
         }
 
         return $response;
     }
 
     /**
-     * Gets an address book by ID.
+     * Gets a list by ID.
      *
      * @param int $id
      *
@@ -440,7 +440,7 @@ class Client extends Rest
         $response = $this->execute();
 
         if (isset($response->message)) {
-            $this->addClientLog('Error getting address book', [
+            $this->addClientLog('Error getting list', [
                 'address_book_id' => $id,
             ]);
         }
@@ -449,7 +449,7 @@ class Client extends Rest
     }
 
     /**
-     * Creates an address book.
+     * Creates a list.
      *
      * @param string $name
      * @param string $visibility
@@ -471,7 +471,7 @@ class Client extends Rest
         $response = $this->execute();
 
         if (isset($response->message)) {
-            $this->addClientLog('Error creating address book');
+            $this->addClientLog('Error creating list');
         }
 
         return $response;
@@ -1330,7 +1330,7 @@ class Client extends Rest
     }
 
     /**
-     * Get contact address books.
+     * Get contact lists.
      *
      * @param int $contactId
      *
@@ -1347,7 +1347,7 @@ class Client extends Rest
         $response = $this->execute();
 
         if (isset($response->message)) {
-            $this->addClientLog('Error fetching address books for contact', [
+            $this->addClientLog('Error fetching lists for contact', [
                 'contact_id' => $contactId,
             ]);
         }
@@ -1902,7 +1902,7 @@ class Client extends Rest
     }
 
     /**
-     * Resubscribes a previously unsubscribed contact to a given address book
+     * Resubscribes a previously unsubscribed contact to a given list.
      *
      * @param int $addressBookId
      * @param string $email
@@ -1922,7 +1922,7 @@ class Client extends Rest
         $response = $this->execute();
 
         if (isset($response->message)) {
-            $this->addClientLog('Error resubscribing address book contact');
+            $this->addClientLog('Error resubscribing contact to list');
         }
 
         return $response;
