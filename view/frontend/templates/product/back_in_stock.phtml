@@ -1,0 +1,34 @@
+<?php
+use Dotdigitalgroup\Email\ViewModel\ProductNotificationView;
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+
+/**
+ * @var $block Template
+ * @var $escaper Escaper
+ * @var $productNotification ProductNotificationView
+ */
+$productNotification = $block->getProductNotification();
+?>
+<?php if ($productNotification->canDisplay()): ?>
+    <script>
+        require.config({
+            paths: {
+                'ddmbis': "<?= $escaper->escapeJs($productNotification->getProductNotificationScript()) ?>"
+            }
+        });
+    </script>
+    <script type="text/x-magento-init">
+        {
+            "*": {
+                "Dotdigitalgroup_Email/js/backInStock": {
+                    "id": "<?= $escaper->escapeJs($productNotification->getProductNotificationId()); ?>",
+                    "variants": "<?= $escaper->escapeJs($productNotification->getOutOfStockVariants())?>",
+                    "product_id": "<?= $escaper->escapeJs($productNotification->getProductId())?>",
+                    "product_name": "<?= $escaper->escapeJs($productNotification->getProductName())?>",
+                    "product_is_salable": "<?= $escaper->escapeJs($productNotification->getProductIsSalable())?>"
+                }
+            }
+        }
+    </script>
+<?php endif; ?>

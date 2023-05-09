@@ -2,8 +2,20 @@
 
 namespace Dotdigitalgroup\Email\Model\Sync;
 
+use DateTime;
 use Dotdigitalgroup\Email\Helper\Config;
+use Dotdigitalgroup\Email\Helper\Data;
+use Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory;
+use Dotdigitalgroup\Email\Model\Sync\Catalog\CatalogSyncFactory;
+use Dotdigitalgroup\Email\Model\ImporterFactory;
+use Dotdigitalgroup\Email\Model\Importer;
+use Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory;
+use Exception;
+use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\DataObject;
+use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Store\Api\Data\StoreInterface;
+use Magento\Store\Model\Store;
 
 /**
  * Sync account TD for catalog.
@@ -11,53 +23,58 @@ use Magento\Framework\DataObject;
 class Catalog extends DataObject implements SyncInterface
 {
     /**
-     * @var \Dotdigitalgroup\Email\Helper\Data
+     * @cont string
+     */
+    public const DEFAULT_CATALOG_NAME = 'Catalog_Default';
+
+    /**
+     * @var Data
      */
     private $helper;
 
     /**
-     * @var \Magento\Framework\App\Config\ScopeConfigInterface
+     * @var ScopeConfigInterface
      */
     private $scopeConfig;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory
+     * @var CatalogFactory
      */
     public $catalogResourceFactory;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory
+     * @var CollectionFactory
      */
     private $catalogCollectionFactory;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\Sync\Catalog\CatalogSyncFactory
+     * @var CatalogSyncFactory
      */
     private $catalogSyncFactory;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\ImporterFactory
+     * @var ImporterFactory
      */
     private $importerFactory;
 
     /**
      * Catalog constructor.
      *
-     * @param \Dotdigitalgroup\Email\Helper\Data $helper
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory $catalogResourceFactory
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory $catalogCollectionFactory
-     * @param Catalog\CatalogSyncFactory $catalogSyncFactory
-     * @param \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
+     * @param Data $helper
+     * @param ScopeConfigInterface $scopeConfig
+     * @param CatalogFactory $catalogResourceFactory
+     * @param CollectionFactory $catalogCollectionFactory
+     * @param CatalogSyncFactory $catalogSyncFactory
+     * @param ImporterFactory $importerFactory
      * @param array $data
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Helper\Data $helper,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-        \Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory $catalogResourceFactory,
-        \Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory $catalogCollectionFactory,
+        Data $helper,
+        ScopeConfigInterface $scopeConfig,
+        CatalogFactory $catalogResourceFactory,
+        CollectionFactory $catalogCollectionFactory,
         Catalog\CatalogSyncFactory $catalogSyncFactory,
-        \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
+        ImporterFactory $importerFactory,
         array $data = []
     ) {
         $this->helper = $helper;
@@ -66,17 +83,16 @@ class Catalog extends DataObject implements SyncInterface
         $this->catalogCollectionFactory = $catalogCollectionFactory;
         $this->catalogSyncFactory = $catalogSyncFactory;
         $this->importerFactory = $importerFactory;
-
         parent::__construct($data);
     }
 
     /**
      * Catalog sync.
      *
-     * @param \DateTime|null $from
+     * @param DateTime|null $from
      * @return array
      */
-    public function sync(\DateTime $from = null)
+    public function sync(DateTime $from = null)
     {
         $response = ['success' => true, 'message' => 'Done.'];
 
@@ -153,6 +169,41 @@ class Catalog extends DataObject implements SyncInterface
     }
 
     /**
+     * Get catalogue name for sync
+     *
+     * @param StoreInterface $store
+     * @param int|null $catalogSyncLevel
+     * @return string
+     * @throws NoSuchEntityException
+     */
+    public function getStoreCatalogName(
+        StoreInterface $store,
+        ?int $catalogSyncLevel = null
+    ):string {
+        $syncLevel = $catalogSyncLevel ?? $this->getCatalogSyncLevel();
+        if ($syncLevel == CatalogSyncFactory::SYNC_CATALOG_DEFAULT_LEVEL) {
+            return self::DEFAULT_CATALOG_NAME;
+        };
+        /** @var Store $store */
+        $website = $store->getWebsite();
+        return join('_', [
+            'Catalog',
+            $website->getCode(),
+            $store->getCode()
+        ]);
+    }
+
+    /**
+     * Get catalog Sync level
+     *
+     * @return int
+     */
+    public function getCatalogSyncLevel():int
+    {
+        return $this->scopeConfig->getValue(Config::XML_PATH_CONNECTOR_SYNC_CATALOG_VALUES);
+    }
+
+    /**
      * Fetch product ids.
      *
      * @param array $syncedProducts
@@ -181,7 +232,7 @@ class Catalog extends DataObject implements SyncInterface
             return $this->catalogSyncFactory->create()
                 ->sync($products);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->helper->debug((string)$e, []);
         }
 
@@ -264,11 +315,13 @@ class Catalog extends DataObject implements SyncInterface
                 continue;
             }
 
-            $success = $this->importerFactory->create()
+            $importer = $this->importerFactory->create();
+            /** @var Importer $importer */
+            $success = $importer
                 ->registerQueue(
                     $catalogName,
                     $batch['products'],
-                    \Dotdigitalgroup\Email\Model\Importer::MODE_BULK,
+                    Importer::MODE_BULK,
                     $batch['websiteId']
                 );
 

@@ -2,13 +2,18 @@
 
 namespace Dotdigitalgroup\Email\Model\Sync\Catalog;
 
+use Dotdigitalgroup\Email\Helper\Data;
+use Dotdigitalgroup\Email\Model\Sync\Catalog;
 use Magento\Framework\App\Area;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Store\Model\App\Emulation;
+use Magento\Store\Model\Store;
 
 class StoreLevelCatalogSyncer implements CatalogSyncerInterface
 {
     /**
-     * @var \Dotdigitalgroup\Email\Helper\Data
+     * @var Data
      */
     private $helper;
 
@@ -23,20 +28,28 @@ class StoreLevelCatalogSyncer implements CatalogSyncerInterface
     private $appEmulation;
 
     /**
+     * @var Catalog
+     */
+    private $syncCatalog;
+
+    /**
      * StoreLevelCatalogSyncer constructor.
      *
-     * @param \Dotdigitalgroup\Email\Helper\Data $helper
+     * @param Data $helper
      * @param StoreCatalogSyncer $storeCatalogSyncer
      * @param Emulation $appEmulation
+     * @param Catalog $syncCatalog
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Helper\Data $helper,
+        Data $helper,
         StoreCatalogSyncer $storeCatalogSyncer,
-        Emulation $appEmulation
+        Emulation $appEmulation,
+        Catalog $syncCatalog
     ) {
         $this->helper = $helper;
         $this->storeCatalogSyncer = $storeCatalogSyncer;
         $this->appEmulation = $appEmulation;
+        $this->syncCatalog = $syncCatalog;
     }
 
     /**
@@ -45,8 +58,8 @@ class StoreLevelCatalogSyncer implements CatalogSyncerInterface
      * @param array $products
      *
      * @return array
-     * @throws \Magento\Framework\Exception\LocalizedException
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
      * @see CatalogSyncerInterface::sync()
      */
     public function sync($products)
@@ -54,7 +67,7 @@ class StoreLevelCatalogSyncer implements CatalogSyncerInterface
         $stores = $this->helper->getStores();
         $syncedProducts = [];
 
-        /** @var \Magento\Store\Model\Store $store */
+        /** @var Store $store */
         foreach ($stores as $store) {
             $enabled = $this->helper->isEnabled($store->getWebsiteId());
             $catalogSyncEnabled = $this->helper->isCatalogSyncEnabled($store->getWebsiteId());
@@ -70,7 +83,10 @@ class StoreLevelCatalogSyncer implements CatalogSyncerInterface
                 true
             );
 
-            $catalogName = 'Catalog_' . $store->getWebsite()->getCode() . '_' . $store->getCode();
+            $catalogName = $this->syncCatalog->getStoreCatalogName(
+                $store,
+                CatalogSyncFactory::SYNC_CATALOG_STORE_LEVEL
+            );
             $syncedProducts += $this->storeCatalogSyncer->syncByStore(
                 $products,
                 $storeId,

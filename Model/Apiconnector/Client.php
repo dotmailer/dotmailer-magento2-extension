@@ -39,6 +39,7 @@ class Client extends Rest
     private const REST_POST_ABANDONED_CART_CARTINSIGHT = '/v2/contacts/transactional-data/cartInsight';
     private const REST_CHAT_SETUP = '/v2/webchat/setup';
     private const REST_SURVEYS_FORMS = '/v2/surveys';
+    private const REST_PRODUCT_NOTIFICATIONS = '/v2/product-notifications';
 
     //rest error responses
     private const API_ERROR_FEATURENOTACTIVE = 'Error: ERROR_FEATURENOTACTIVE';
@@ -1981,6 +1982,26 @@ class Client extends Rest
 
         if (empty($response) || isset($response->message)) {
             $this->addClientLog('Error getting data for form id ' . $formId);
+        }
+
+        return $response;
+    }
+
+    /**
+     * Get a list of product notifications.
+     *
+     * @return array|\stdClass
+     * @throws LocalizedException
+     */
+    public function getProductNotifications()
+    {
+        $url = $this->getApiEndpoint() . self::REST_PRODUCT_NOTIFICATIONS;
+        $this->setUrl($url)
+            ->setVerb('GET');
+
+        $response = $this->execute();
+        if (isset($response->message)) {
+            $this->addClientLog('Error fetching product notifications');
         }
 
         return $response;

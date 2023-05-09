@@ -4,6 +4,7 @@ namespace Dotdigitalgroup\Email\Model\Sync\Catalog;
 
 use Magento\Framework\App\Area;
 use Magento\Store\Model\App\Emulation;
+use Dotdigitalgroup\Email\Model\Sync\Catalog;
 
 class DefaultLevelCatalogSyncer implements CatalogSyncerInterface
 {
@@ -61,7 +62,7 @@ class DefaultLevelCatalogSyncer implements CatalogSyncerInterface
             $products,
             null,
             0,
-            'Catalog_Default'
+            Catalog::DEFAULT_CATALOG_NAME
         );
 
         $this->appEmulation->stopEnvironmentEmulation();

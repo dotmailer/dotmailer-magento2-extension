@@ -5,7 +5,9 @@
             <values>
                 <value id="dotdigital_trackedlink" type="host">*.trackedlink.net</value>
                 <value id="dotdigital_trackedweb" type="host">*.trackedweb.net</value>
+                <value id="dotdigital_ddlnk" type="host">*.ddlnk.net</value>
                 <value id="dotdigital_pages" type="host">*.dotdigital-pages.com</value>
+                <value id="dotdigital_debug_internal" type="host">debug-tracking.dotdigital.internal</value>
             </values>
         </policy>
         <policy id="connect-src">

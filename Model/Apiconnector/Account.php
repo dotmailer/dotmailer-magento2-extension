@@ -5,7 +5,7 @@ namespace Dotdigitalgroup\Email\Model\Apiconnector;
 class Account
 {
     private const EMAIL_PROPERTY_NAME = 'MainEmail';
-    private const APIENDPOINT_PROPERTY_NAME = 'ApiEndpoint';
+    private const API_ENDPOINT_PROPERTY_NAME = 'ApiEndpoint';
 
     /**
      * Get account owner email.
@@ -13,7 +13,7 @@ class Account
      * @param object $accountDetails
      * @return string
      */
-    public function getAccountOwnerEmail(object $accountDetails)
+    public function getAccountOwnerEmail(object $accountDetails): string
     {
         if (isset($accountDetails->properties)) {
             foreach ($accountDetails->properties as $property) {
@@ -32,17 +32,28 @@ class Account
      * @param object $accountDetails
      * @return string
      */
-    public function getApiEndpoint(object $accountDetails)
+    public function getApiEndpoint(object $accountDetails): string
     {
         if (isset($accountDetails->properties)) {
             foreach ($accountDetails->properties as $property) {
-                if ($property->name == self::APIENDPOINT_PROPERTY_NAME && !empty($property->value)) {
+                if ($property->name == self::API_ENDPOINT_PROPERTY_NAME && !empty($property->value)) {
                     return $property->value;
                 }
             }
         }
 
         return '';
+    }
+
+    /**
+     * Get account id.
+     *
+     * @param object $accountDetails
+     * @return string|null
+     */
+    public function getAccountId(object $accountDetails): ?string
+    {
+        return $accountDetails->id ?? null;
     }
 
     /**

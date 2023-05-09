@@ -3,13 +3,15 @@
 namespace Dotdigitalgroup\Email\Test\Unit\Model\Sync\Catalog;
 
 use Dotdigitalgroup\Email\Helper\Data;
-use Dotdigitalgroup\Email\Model\ResourceModel\Catalog;
+use Dotdigitalgroup\Email\Model\ResourceModel\Catalog as CatalogResource;
 use Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory;
+use Dotdigitalgroup\Email\Model\Sync\Catalog;
 use Dotdigitalgroup\Email\Model\Sync\Catalog\StoreCatalogSyncer;
 use Dotdigitalgroup\Email\Model\Sync\Catalog\StoreLevelCatalogSyncer;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Api\Data\WebsiteInterface;
 use Magento\Store\Model\App\Emulation;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class StoreLevelCatalogSyncerTest extends TestCase
@@ -30,19 +32,24 @@ class StoreLevelCatalogSyncerTest extends TestCase
     private $catalogResourceFactoryMock;
 
     /**
+     * @var Catalog|MockObject
+     */
+    private $catalogMock;
+
+    /**
      * @var StoreCatalogSyncer
      */
     private $storeCatalogSyncerMock;
 
     /**
-     * @var Catalog
+     * @var CatalogResource
      */
     private $catalogResourceMock;
 
     /**
      * @var WebsiteInterface;
      */
-    private $webSiteInterfaceMock;
+    private $websiteInterfaceMock;
 
     /**
      * @var Emulation
@@ -52,15 +59,17 @@ class StoreLevelCatalogSyncerTest extends TestCase
     protected function setUp() :void
     {
         $this->helperMock = $this->createMock(Data::class);
+        $this->catalogMock = $this->createMock(Catalog::class);
         $this->catalogResourceFactoryMock = $this->createMock(CatalogFactory::class);
         $this->storeCatalogSyncerMock = $this->createMock(StoreCatalogSyncer::class);
-        $this->catalogResourceMock = $this->createMock(Catalog::class);
-        $this->webSiteInterfaceMock = $this->createMock(WebsiteInterface::class);
+        $this->catalogResourceMock = $this->createMock(CatalogResource::class);
+        $this->websiteInterfaceMock = $this->createMock(WebsiteInterface::class);
         $this->appEmulation = $this->createMock(Emulation::class);
         $this->storeLevelCatalogSyncer = new StoreLevelCatalogSyncer(
             $this->helperMock,
             $this->storeCatalogSyncerMock,
-            $this->appEmulation
+            $this->appEmulation,
+            $this->catalogMock
         );
     }
 
@@ -75,7 +84,7 @@ class StoreLevelCatalogSyncerTest extends TestCase
 
         $expected = 2;
 
-        $stores = [$store1['store'],$store2['store']];
+        $stores = [$store1['store'], $store2['store']];
         $this->helperMock->expects($this->once())
             ->method('getStores')
             ->willReturn($stores);
@@ -107,9 +116,8 @@ class StoreLevelCatalogSyncerTest extends TestCase
                 [1 => 'product2']
             );
 
-        $this->webSiteInterfaceMock->expects($this->exactly(2))
-            ->method('getCode')
-            ->willReturn(hash("sha256", rand()));
+        $this->catalogMock->expects($this->exactly(2))
+            ->method('getStoreCatalogName');
 
         $result = $this->storeLevelCatalogSyncer->sync($products);
         $this->assertEquals(count($result), $expected);
@@ -126,7 +134,7 @@ class StoreLevelCatalogSyncerTest extends TestCase
 
         $expected = 1;
 
-        $stores = [$store1['store'],$store2['store']];
+        $stores = [$store1['store'], $store2['store']];
         $this->helperMock->expects($this->once())
             ->method('getStores')
             ->willReturn($stores);
@@ -155,9 +163,8 @@ class StoreLevelCatalogSyncerTest extends TestCase
             ->method('syncByStore')
             ->willReturn([0 =>'product1']);
 
-        $this->webSiteInterfaceMock->expects($this->once())
-            ->method('getCode')
-            ->willReturn(hash("sha256", rand()));
+        $this->catalogMock->expects($this->once())
+            ->method('getStoreCatalogName');
 
         $result = $this->storeLevelCatalogSyncer->sync($products);
 
@@ -167,21 +174,14 @@ class StoreLevelCatalogSyncerTest extends TestCase
     private function getMockedStoresEnabled()
     {
         $storeDetails = $this->getStoreDetails();
-        $store = $this->getMockBuilder(StoreInterface::class)
-            ->setMethods(['getWebsite'])
-            ->getMockForAbstractClass();
+        $store = $this->createMock(StoreInterface::class);
+
         $store->expects($this->exactly(3))
             ->method('getWebsiteId')
             ->willReturn($storeDetails['websiteId']);
         $store->expects($this->once())
             ->method('getId')
             ->willReturn($storeDetails['storeId']);
-        $store->expects($this->atLeastOnce())
-            ->method('getCode')
-            ->willReturn($storeDetails['code']);
-        $store->expects($this->exactly(1))
-            ->method('getWebsite')
-            ->willReturn($this->webSiteInterfaceMock);
 
         return [
             'store' => $store,
@@ -200,7 +200,7 @@ class StoreLevelCatalogSyncerTest extends TestCase
 
         $expected = 0;
 
-        $stores = [$store1['store'],$store2['store']];
+        $stores = [$store1['store'], $store2['store']];
         $this->helperMock->expects($this->once())
             ->method('getStores')
             ->willReturn($stores);
@@ -228,9 +228,8 @@ class StoreLevelCatalogSyncerTest extends TestCase
         $this->storeCatalogSyncerMock->expects($this->never())
             ->method('syncByStore');
 
-        $this->webSiteInterfaceMock->expects($this->never())
-            ->method('getCode')
-            ->willReturn(hash("sha256", rand()));
+        $this->catalogMock->expects($this->never())
+            ->method('getStoreCatalogName');
 
         $result = $this->storeLevelCatalogSyncer->sync($products);
         $this->assertEquals(count($result), $expected);
@@ -304,10 +303,6 @@ class StoreLevelCatalogSyncerTest extends TestCase
             ->willReturn($storeDetails['websiteId']);
         $store->expects($this->never())
             ->method('getId');
-        $store->expects($this->never())
-            ->method('getCode');
-        $store->expects($this->never())
-            ->method('getWebsite');
 
         return [
             'store' => $store,
