@@ -668,6 +668,22 @@
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Automation\OrderStatusEnrolment</frontend_model>
                 </field>
             </group>
+            <group id="product_notification" translate="label" sortOrder="25" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Product Notification</label>
+                <attribute type="expanded">1</attribute>
+                <field id="enable" translate="label" type="select" sortOrder="10" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Enable back in stock notification</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <backend_model>Dotdigitalgroup\Email\Model\Adminhtml\Backend\BackInStockEnabled</backend_model>
+                </field>
+                <field id="notification_id" translate="label" type="select" sortOrder="50" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Product Notification</label>
+                    <depends>
+                        <field id="enable">1</field>
+                    </depends>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Automation\ProductNotifications</source_model>
+                </field>
+            </group>
             <group id="review_settings" translate="label" sortOrder="30" showInDefault="1" showInWebsite="1"
                    showInStore="0">
                 <label>Review Settings</label>

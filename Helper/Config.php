@@ -3,8 +3,8 @@
 namespace Dotdigitalgroup\Email\Helper;
 
 use Dotdigitalgroup\Email\Model\Consent;
-use Magento\Framework\App\Helper\Context;
 use Magento\Framework\App\Helper\AbstractHelper;
+use Magento\Framework\App\Helper\Context;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
 
@@ -455,6 +455,7 @@ class Config extends AbstractHelper
     public const PATH_FOR_API_ENDPOINT = 'connector_api_credentials/api/endpoint';
     public const PATH_FOR_PORTAL_ENDPOINT = 'connector/portal/endpoint';
     public const PATH_FOR_API_ENDPOINT_SUBDOMAIN = 'connector_api_credentials/api/endpoint_subdomain';
+    public const PATH_FOR_ACCOUNT_ID = 'connector_api_credentials/api/account_id';
 
     /**
      * Version number to append to _dmpt tracking scripts
@@ -476,6 +477,21 @@ class Config extends AbstractHelper
      */
     public const MAGENTO_ROUTE =
         'connector/email/accountcallback';
+
+    /**
+     * Products back in stock section
+     */
+    public const XML_PATH_BACK_IN_STOCK_ENABLED =
+        'connector_automation/product_notification/enable';
+    public const XML_PATH_BACK_IN_STOCK_ACCOUNT_ID =
+        'connector_automation/product_notification/dd_id';
+    public const XML_PATH_BACK_IN_STOCK_NOTIFICATION_ID =
+        'connector_automation/product_notification/notification_id';
+
+    /**
+     * @var \Magento\Framework\Stdlib\StringUtils
+     */
+    private $stringUtils;
 
     /**
      * @var \Magento\Store\Model\StoreManagerInterface

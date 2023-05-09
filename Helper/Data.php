@@ -444,6 +444,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Save config data.
      *
+     * @deprecated Inject WriterInterface in your classes and call save directly.
+     * @see \Magento\Framework\App\Config\Storage\WriterInterface
+     *
      * @param string $path
      * @param string $value
      * @param string $scope
