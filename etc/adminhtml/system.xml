@@ -473,6 +473,10 @@
                        showInWebsite="1">
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Report\Catalog</frontend_model>
                 </field>
+                <field id="consent_enabled" translate="label" sortOrder="170" type="text" showInStore="0"
+                       showInWebsite="0" showInDefault="0">
+                    <label>Consent Enabled</label>
+                </field>
             </group>
             <group id="dynamic_addressbook" translate="label" type="text" sortOrder="40" showInDefault="1"
                    showInWebsite="1" showInStore="0">

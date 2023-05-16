@@ -26,6 +26,7 @@
                 <wishlist_enabled>0</wishlist_enabled>
                 <review_enabled>0</review_enabled>
                 <catalog_enabled>0</catalog_enabled>
+                <consent_enabled>1</consent_enabled>
             </sync>
             <dynamic_addressbook>
                 <addressbook_name></addressbook_name>

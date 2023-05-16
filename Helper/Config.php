@@ -50,6 +50,8 @@ class Config extends AbstractHelper
         'sync_settings/addressbook/guests';
     public const XML_PATH_CONNECTOR_SYNC_ALLOW_NON_SUBSCRIBERS =
         'sync_settings/addressbook/allow_non_subscribers';
+    public const XML_PATH_CONSENT_SYNC_ENABLED =
+        'sync_settings/sync/consent_enabled';
     // Mapping
     public const XML_PATH_CONNECTOR_MAPPING_LAST_ORDER_ID =
         'connector_data_mapping/customer_data/last_order_id';
@@ -668,5 +670,16 @@ class Config extends AbstractHelper
     public function isConsentSubscriberEnabled($websiteId)
     {
         return $this->getWebsiteConfig(self::XML_PATH_CONSENT_EMAIL_ENABLED, $websiteId);
+    }
+
+    /**
+     * Fetch status consent subscriber option.
+     *
+     * @param string|int $websiteId
+     * @return string|boolean
+     */
+    public function isConsentSyncEnabled($websiteId)
+    {
+        return $this->getWebsiteConfig(self::XML_PATH_CONSENT_SYNC_ENABLED, $websiteId);
     }
 }
