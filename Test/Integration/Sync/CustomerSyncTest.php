@@ -86,7 +86,7 @@ class CustomerSyncTest extends \PHPUnit\Framework\TestCase
 
         $this->helper = $this->instantiateDataHelper();
 
-        $this->contactSync = $this->objectManager->create(Customer::class);
+        $this->customerSync = $this->objectManager->create(Customer::class);
         $this->importer = $this->objectManager->create(Importer::class);
         $this->fileHelper = $this->objectManager->create(File::class);
         $this->fileSystem = $this->objectManager->create(DriverInterface::class);
@@ -97,7 +97,7 @@ class CustomerSyncTest extends \PHPUnit\Framework\TestCase
      */
     public function testContactExportBulkImportQueued()
     {
-        $this->contactSync->sync();
+        $this->customerSync->sync();
         $contactsQueue = $this->getContactImporterQueue();
         $website = $this->helper->getWebsiteById(1);
 
@@ -130,7 +130,7 @@ class CustomerSyncTest extends \PHPUnit\Framework\TestCase
         // To ensure the import filename changes between tests
         sleep(1);
 
-        $this->contactSync->sync();
+        $this->customerSync->sync();
         $contactsQueue = $this->getContactImporterQueue();
 
         $this->assertFileExists($this->fileHelper->getFilePath(end($contactsQueue['items'])['import_file']));
@@ -154,7 +154,7 @@ class CustomerSyncTest extends \PHPUnit\Framework\TestCase
                 0
             )->toArray();
 
-        $this->contactSync->sync();
+        $this->customerSync->sync();
         $contactsQueue = $this->getContactImporterQueue();
         $csv = $this->getCsvContent(end($contactsQueue['items'])['import_file']);
 
@@ -173,7 +173,7 @@ class CustomerSyncTest extends \PHPUnit\Framework\TestCase
         // To ensure the import filename changes between tests
         sleep(1);
 
-        $this->contactSync->sync();
+        $this->customerSync->sync();
         $contactsQueue = $this->getContactImporterQueue();
         $dataFields = $this->getMappedDataFields();
         $csv = $this->getCsvContent(end($contactsQueue['items'])['import_file']);
@@ -206,7 +206,7 @@ class CustomerSyncTest extends \PHPUnit\Framework\TestCase
             ]]),
         ]);
 
-        $this->contactSync->sync();
+        $this->customerSync->sync();
         $contactsQueue = $this->getContactImporterQueue();
         $csv = $this->getCsvContent(end($contactsQueue['items'])['import_file']);
 
