@@ -125,7 +125,11 @@ class Exporter
                     if (array_key_exists($websiteId, $orders)) {
                         $orders[$websiteId][$order->getIncrementId()] = $connectorOrder->toArrayWithEmptyArrayCheck();
                     } else {
-                        $orders += [$websiteId => [$order->getIncrementId() => $connectorOrder->toArrayWithEmptyArrayCheck()]];
+                        $orders += [
+                            $websiteId => [
+                                $order->getIncrementId() => $connectorOrder->toArrayWithEmptyArrayCheck()
+                            ]
+                        ];
                     }
                 } catch (SchemaValidationException $exception) {
                     $this->logger->debug(
@@ -189,9 +193,9 @@ class Exporter
      *
      * @param string|int $websiteId
      *
-     * @return array|bool
+     * @return array
      */
-    private function getSelectedOrderStatuses($websiteId)
+    private function getSelectedOrderStatuses($websiteId): array
     {
         if (!isset($this->selectedStatus[$websiteId])) {
             $this->selectedStatus[$websiteId] = $status = $this->scopeConfig->getValue(
@@ -203,10 +207,6 @@ class Exporter
             $status = $this->selectedStatus[$websiteId];
         }
 
-        if ($status) {
-            return explode(',', $status);
-        } else {
-            return false;
-        }
+        return $status ? explode(',', $status) : [];
     }
 }
