@@ -17,7 +17,11 @@ require(['jquery',
      * @param {Object} element
      */
     function addTooltip(toolTipText, element) {
-        var $toolTip = $('<div class="ddg-tooltip">' + toolTipText + '</div>');
+        if ($(this).prop('disabled')) {
+            return;
+        }
+        let $toolTip = $('<div class="ddg-tooltip">' + toolTipText + '</div>');
+
         $toolTip.css({
             position: 'absolute',
             top: '-15px',
@@ -35,31 +39,40 @@ require(['jquery',
     }
 
     $(document).on('click', '.ddg-dynamic-content', function () {
-        if ($(this).val() == '') {
+        if ($(this).val() === '') {
             return;
         }
 
-        var toolTipText = $.mage.__('Copied!');
-
-        $(this).select();
         removeTooltip($(this));
-        addTooltip(toolTipText, $(this));
-
-        setTimeout(function () {
-            removeTooltip($(this));
-        }.bind(this), 850);
-
-        document.execCommand('copy');
+        navigator
+            .clipboard
+            .writeText($(this).val())
+            .then(() => addTooltip(
+                $.mage.__('Copied!'),
+                $(this)
+            ))
+            .finally(() => {
+                setTimeout(function () {
+                    removeTooltip($(this));
+                }.bind(this), 850);
+            });
     });
 
-    $(document).on('mouseenter', '.ddg-dynamic-content', function () {
-        if ($(this).val() == '') {
-            return;
-        }
+    $(document).on('mouseenter',
+        '.ddg-dynamic-content',
+        function () {
+            if ($(this).prop('disabled')) {
+                return;
+            }
+            if ($(this).val() === '') {
+                return;
+            }
 
-        var toolTipText = $.mage.__('Click to copy URL');
-        addTooltip(toolTipText, $(this));
-    });
+            let toolTipText = $.mage.__('Click to copy URL');
+
+            addTooltip(toolTipText, $(this));
+        });
+
     $(document).on('mouseleave', '.ddg-dynamic-content', function () {
         removeTooltip($(this));
     });
