@@ -1908,44 +1908,39 @@
                     <comment><![CDATA[Enter IP addresses separated by comma (,). An empty list will ignore any security check. Please ensure you keep <a href="https://support.dotdigital.com/hc/en-gb/articles/212217348-What-IP-addresses-does-the-application-use-to-send-email-so-I-can-add-them-to-my-allow-list-" target="_blank">the latest dotdigital IP ranges</a> included.]]></comment>
                 </field>
             </group>
-            <group id="cron_schedules" translate="label" sortOrder="70" showInDefault="1" showInWebsite="1"
-                   showInStore="0">
+            <group id="cron_schedules" translate="label" sortOrder="70" showInDefault="1" showInWebsite="0" showInStore="0">
                 <label>Manage Cron Timings</label>
-                <field id="importer" translate="label" sortOrder="10" type="select" showInStore="0" showInWebsite="1"
-                       showInDefault="1">
+                <field id="importer" translate="label" sortOrder="10" type="select" showInStore="0" showInWebsite="0" showInDefault="1">
                     <label>Importer</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Developer\Cronexpressionsone</source_model>
                     <backend_model>Dotdigitalgroup\Email\Model\Adminhtml\Backend\CronOffset</backend_model>
                 </field>
-                <field id="customer" translate="label" sortOrder="20" type="select" showInStore="0" showInWebsite="1" showInDefault="1">
+                <field id="customer" translate="label" sortOrder="20" type="select" showInStore="0" showInWebsite="0" showInDefault="1">
                     <label>Customer</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Developer\Cronexpressionstwo</source_model>
                     <backend_model>Dotdigitalgroup\Email\Model\Adminhtml\Backend\CronOffset</backend_model>
                 </field>
-                <field id="guest" translate="label" sortOrder="30" type="select" showInStore="0" showInWebsite="1" showInDefault="1">
+                <field id="guest" translate="label" sortOrder="30" type="select" showInStore="0" showInWebsite="0" showInDefault="1">
                     <label>Guest</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Developer\Cronexpressionstwo</source_model>
                     <backend_model>Dotdigitalgroup\Email\Model\Adminhtml\Backend\CronOffset</backend_model>
                 </field>
-                <field id="subscriber" translate="label" sortOrder="40" type="select" showInStore="0" showInWebsite="1" showInDefault="1">
+                <field id="subscriber" translate="label" sortOrder="40" type="select" showInStore="0" showInWebsite="0" showInDefault="1">
                     <label>Subscriber</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Developer\Cronexpressionstwo</source_model>
                     <backend_model>Dotdigitalgroup\Email\Model\Adminhtml\Backend\CronOffset</backend_model>
                 </field>
-                <field id="order" translate="label" sortOrder="50" type="select" showInStore="0" showInWebsite="1"
-                       showInDefault="1">
+                <field id="order" translate="label" sortOrder="50" type="select" showInStore="0" showInWebsite="0" showInDefault="1">
                     <label>Order</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Developer\Cronexpressionstwo</source_model>
                     <backend_model>Dotdigitalgroup\Email\Model\Adminhtml\Backend\CronOffset</backend_model>
                 </field>
-                <field id="catalog" translate="label" sortOrder="60" type="select" showInStore="0" showInWebsite="1"
-                       showInDefault="1">
+                <field id="catalog" translate="label" sortOrder="60" type="select" showInStore="0" showInWebsite="0" showInDefault="1">
                     <label>Catalog</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Developer\Cronexpressionstwo</source_model>
                     <backend_model>Dotdigitalgroup\Email\Model\Adminhtml\Backend\CronOffset</backend_model>
                 </field>
-                <field id="review_wishlist" translate="label" sortOrder="70" type="select" showInStore="0"
-                       showInWebsite="1" showInDefault="1">
+                <field id="review_wishlist" translate="label" sortOrder="70" type="select" showInStore="0" showInWebsite="0" showInDefault="1">
                     <label>Review And Wishlist</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Developer\Cronexpressionstwo</source_model>
                     <backend_model>Dotdigitalgroup\Email\Model\Adminhtml\Backend\CronOffset</backend_model>
