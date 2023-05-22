@@ -4,6 +4,7 @@ namespace Dotdigitalgroup\Email\Model\Sync\Export;
 
 use Dotdigitalgroup\Email\Helper\File;
 use Dotdigitalgroup\Email\Logger\Logger;
+use Magento\Framework\Filesystem\DriverInterface;
 use Magento\Store\Api\Data\WebsiteInterface;
 
 class CsvHandler
@@ -19,17 +20,25 @@ class CsvHandler
     private $logger;
 
     /**
+     * @var DriverInterface
+     */
+    private $driver;
+
+    /**
      * CsvGenerator constructor.
      *
      * @param File $file
      * @param Logger $logger
+     * @param DriverInterface $driver
      */
     public function __construct(
         File $file,
-        Logger $logger
+        Logger $logger,
+        DriverInterface $driver
     ) {
         $this->file = $file;
         $this->logger = $logger;
+        $this->driver = $driver;
     }
 
     /**
@@ -105,6 +114,13 @@ class CsvHandler
      */
     private function outputColumnHeadingsToFile($filepath, $columns)
     {
-        $this->file->outputCSV($filepath, $columns);
+        $handle = $this->driver->fileOpen($filepath, 'a');
+        $this->driver->filePutCsv(
+            $handle,
+            $columns,
+            ',',
+            '"'
+        );
+        $this->driver->fileClose($handle);
     }
 }

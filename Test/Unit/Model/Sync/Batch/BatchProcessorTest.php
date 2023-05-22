@@ -10,37 +10,39 @@ use Dotdigitalgroup\Email\Model\ResourceModel\Contact as ContactResource;
 use Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory as ContactResourceFactory;
 use Dotdigitalgroup\Email\Model\Sync\Batch\CustomerBatchProcessor;
 use Dotdigitalgroup\Email\Model\Sync\Batch\GuestBatchProcessor;
+use Magento\Framework\Filesystem\DriverInterface;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class BatchProcessorTest extends TestCase
 {
     /**
-     * @var File|\PHPUnit\Framework\MockObject\MockObject
+     * @var File|MockObject
      */
     private $fileHelperMock;
 
     /**
-     * @var Logger|\PHPUnit\Framework\MockObject\MockObject
+     * @var Logger|MockObject
      */
     private $loggerMock;
 
     /**
-     * @var ImporterFactory|\PHPUnit\Framework\MockObject\MockObject
+     * @var ImporterFactory|MockObject
      */
     private $importerFactoryMock;
 
     /**
-     * @var Importer|\PHPUnit\Framework\MockObject\MockObject
+     * @var Importer|MockObject
      */
     private $importerMock;
 
     /**
-     * @var ContactResourceFactory|\PHPUnit\Framework\MockObject\MockObject
+     * @var ContactResourceFactory|MockObject
      */
     private $contactResourceFactoryMock;
 
     /**
-     * @var ContactResource|\PHPUnit\Framework\MockObject\MockObject
+     * @var ContactResource|MockObject
      */
     private $contactResourceMock;
 
@@ -54,6 +56,11 @@ class BatchProcessorTest extends TestCase
      */
     private $guestBatchProcessor;
 
+    /**
+     * @var DriverInterface|MockObject
+     */
+    private $driverMock;
+
     protected function setUp(): void
     {
         $this->fileHelperMock = $this->createMock(File::class);
@@ -62,19 +69,22 @@ class BatchProcessorTest extends TestCase
         $this->importerFactoryMock = $this->createMock(ImporterFactory::class);
         $this->contactResourceFactoryMock = $this->createMock(ContactResourceFactory::class);
         $this->contactResourceMock = $this->createMock(ContactResource::class);
+        $this->driverMock = $this->createMock(DriverInterface::class);
 
         $this->batchProcessor = new CustomerBatchProcessor(
             $this->fileHelperMock,
             $this->importerFactoryMock,
             $this->loggerMock,
-            $this->contactResourceFactoryMock
+            $this->contactResourceFactoryMock,
+            $this->driverMock
         );
 
         $this->guestBatchProcessor = new GuestBatchProcessor(
             $this->fileHelperMock,
             $this->importerFactoryMock,
             $this->loggerMock,
-            $this->contactResourceFactoryMock
+            $this->contactResourceFactoryMock,
+            $this->driverMock
         );
     }
 
@@ -85,8 +95,9 @@ class BatchProcessorTest extends TestCase
     {
         $batch = $this->getCustomersBatch();
 
-        $this->fileHelperMock->expects($this->exactly(count($batch)))
-            ->method('outputCSV');
+        $this->driverMock->expects($this->exactly(count($batch)))
+            ->method('filePutCsv')
+            ->willReturn(true);
 
         $this->importerFactoryMock->expects($this->atLeastOnce())
             ->method('create')
@@ -120,8 +131,9 @@ class BatchProcessorTest extends TestCase
     {
         $batch = [];
 
-        $this->fileHelperMock->expects($this->never())
-            ->method('outputCSV');
+        $this->driverMock->expects($this->exactly(count($batch)))
+            ->method('filePutCsv')
+            ->willReturn(true);
 
         $this->importerMock->expects($this->never())
             ->method('registerQueue')
@@ -144,8 +156,9 @@ class BatchProcessorTest extends TestCase
     {
         $batch = $this->getGuestsBatch();
 
-        $this->fileHelperMock->expects($this->exactly(count($batch)))
-            ->method('outputCSV');
+        $this->driverMock->expects($this->exactly(count($batch)))
+            ->method('filePutCsv')
+            ->willReturn(true);
 
         $this->importerFactoryMock->expects($this->atLeastOnce())
             ->method('create')
@@ -179,8 +192,9 @@ class BatchProcessorTest extends TestCase
     {
         $batch = [];
 
-        $this->fileHelperMock->expects($this->never())
-            ->method('outputCSV');
+        $this->driverMock->expects($this->exactly(count($batch)))
+            ->method('filePutCsv')
+            ->willReturn(true);
 
         $this->importerMock->expects($this->never())
             ->method('registerQueue')

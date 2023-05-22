@@ -6,6 +6,7 @@ use Dotdigitalgroup\Email\Helper\File;
 use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\ImporterFactory;
 use Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory as ContactResourceFactory;
+use Magento\Framework\Filesystem\DriverInterface;
 
 abstract class AbstractBatchProcessor
 {
@@ -30,23 +31,31 @@ abstract class AbstractBatchProcessor
     protected $contactResourceFactory;
 
     /**
+     * @var DriverInterface
+     */
+    private $driver;
+
+    /**
      * AbstractBatchProcessor constructor.
      *
      * @param File $file
      * @param ImporterFactory $importerFactory
      * @param Logger $logger
      * @param ContactResourceFactory $contactResourceFactory
+     * @param DriverInterface $driver
      */
     public function __construct(
         File $file,
         ImporterFactory $importerFactory,
         Logger $logger,
-        ContactResourceFactory $contactResourceFactory
+        ContactResourceFactory $contactResourceFactory,
+        DriverInterface $driver
     ) {
         $this->file = $file;
         $this->importerFactory = $importerFactory;
         $this->logger = $logger;
         $this->contactResourceFactory = $contactResourceFactory;
+        $this->driver = $driver;
     }
 
     /**
@@ -105,11 +114,16 @@ abstract class AbstractBatchProcessor
     private function sendDataToFile($batch, $filename)
     {
         $filepath = $this->file->getFilePath($filename);
+        $handle = $this->driver->fileOpen($filepath, 'a');
+
         foreach ($batch as $item) {
-            $this->file->outputCSV(
-                $filepath,
-                $item
+            $this->driver->filePutCsv(
+                $handle,
+                $item,
+                ',',
+                '"'
             );
         }
+        $this->driver->fileClose($handle);
     }
 }

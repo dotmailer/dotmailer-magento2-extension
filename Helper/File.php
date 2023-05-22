@@ -2,6 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Helper;
 
+use Magento\Framework\Exception\FileSystemException;
 use Magento\Framework\Filesystem\DriverInterface;
 
 /**
@@ -144,10 +145,13 @@ class File
      * Open for writing only; place the file pointer at the end of the file.
      * If the file does not exist, attempt to create it.
      *
+     * @deprecated use Magento\Framework\Filesystem\DriverInterface::filePutCsv instead
+     * @see Dotdigitalgroup\Email\Model\Sync\Batch\AbstractBatchProcessor::sendDataToFile
      * @param string $filepath
      * @param array $csv
      *
      * @return void
+     * @throws FileSystemException
      */
     public function outputCSV($filepath, $csv)
     {
