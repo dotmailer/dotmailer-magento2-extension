@@ -2,7 +2,7 @@
   "name": "dotdigital/dotdigital-magento2-extension",
   "description": "Dotdigital for Magento 2",
   "type": "magento2-module",
-  "version": "4.20.4",
+  "version": "4.21.0",
   "license": "MIT",
   "repositories": [
     {
@@ -48,6 +48,7 @@
     "magento/module-url-rewrite": ">=100 <103",
     "magento/module-authorization": "100.*",
     "magento/module-tax": "100.*",
+    "magento/framework-message-queue": "^100.3|^100.4",
     "dotdigital/dotdigital-php": "@dev",
     "php-http/curl-client": "^2.2"
   },

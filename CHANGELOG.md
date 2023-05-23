@@ -1,3 +1,22 @@
+# 4.21.0
+
+### What's new
+- We've shipped an integration with Dotdigital Product Notifications. Merchants can now configure 'back in stock' alerts for products in their catalog.
+- Integration Insights sync now once again happens at account connection, but this time using Magento message queues.
+
+### Improvements
+- Writing to CSV files has been optimised.
+- We refactored 'from time' overrides in abandoned cart sync.
+- We updated some block classes by removing the deprecated `setTemplate()`  method, which was causing a PHPStan error.
+- We fixed a possible PHP 8 error to do with fetching selected order statuses in order sync.
+- Cron timing settings are now in global scope.
+- We updated an MFTF test that caused failures in subsequent tests.
+- We updated some unit tests for compatibility with PHP 8.2.
+
+### Bug fixes
+- We replaced a faulty `getSize()` check in guest sync.
+- The 'click to copy' tooltip no longer displays for disabled form inputs.
+
 # 4.20.4
 
 ### Bug fixes
