@@ -118,12 +118,12 @@ class AutomationProcessor
             $storeId = $automation->getStoreId();
             $automationDataFields = $this->retrieveAutomationDataFields($automation, $email, $websiteId);
 
-            $automationContact = $this->contactFactory->create()
-                ->loadByCustomerEmail($email, $websiteId);
-            $automationSubscriber = $this->subscriberFactory->create()
-                ->loadBySubscriberEmail($email, $websiteId);
-
             try {
+                $automationContact = $this->contactFactory->create()
+                    ->loadByCustomerEmail($email, $websiteId);
+                $automationSubscriber = $this->subscriberFactory->create()
+                    ->loadBySubscriberEmail($email, $websiteId);
+
                 $contactId = $this->contactManager->prepareDotdigitalContact(
                     $automationContact,
                     $automationSubscriber,

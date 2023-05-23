@@ -1357,6 +1357,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
+     * @deprecated Do not use this helper method
+     * @see \Dotdigitalgroup\Email\Model\ResourceModel\Contact\Collection::loadByCustomerEmail
+     *
      * @param $email
      * @param $websiteId
      *
@@ -1370,6 +1373,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
+	 * @deprecated Use resource models directly.
+	 * @see \Dotdigitalgroup\Email\Model\ResourceModel\Contact
+	 *
      * @param \Dotdigitalgroup\Email\Model\Contact $contact
      */
     public function saveContact($contact)

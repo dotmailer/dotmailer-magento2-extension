@@ -5,9 +5,10 @@ namespace Dotdigitalgroup\Email\Controller\Customer;
 use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Model\Apiconnector\Client;
 use Dotdigitalgroup\Email\Model\Contact;
-use Dotdigitalgroup\Email\Model\ContactFactory;
 use Dotdigitalgroup\Email\Model\Customer\Account\Configuration;
 use Dotdigitalgroup\Email\Model\Customer\DataField\Date;
+use Dotdigitalgroup\Email\Model\ResourceModel\Contact as ContactResource;
+use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory as ContactCollectionFactory;
 use Magento\Customer\Api\CustomerRepositoryInterface as CustomerRepository;
 use Magento\Customer\Model\Session;
 use Magento\Framework\App\Action\Action;
@@ -29,9 +30,14 @@ class Newsletter extends Action
     private $helper;
 
     /**
-     * @var ContactFactory
+     * @var ContactResource
      */
-    private $contactFactory;
+    private $contactResource;
+
+    /**
+     * @var ContactCollectionFactory
+     */
+    private $contactCollectionFactory;
 
     /**
      * @var Configuration
@@ -75,7 +81,8 @@ class Newsletter extends Action
 
     /**
      * @param Data $helper
-     * @param ContactFactory $contactFactory
+     * @param ContactResource $contactResource
+     * @param ContactCollectionFactory $contactCollectionFactory
      * @param Configuration $accountConfig
      * @param Session $session
      * @param Context $context
@@ -88,7 +95,8 @@ class Newsletter extends Action
      */
     public function __construct(
         Data $helper,
-        ContactFactory $contactFactory,
+        ContactResource $contactResource,
+        ContactCollectionFactory $contactCollectionFactory,
         Configuration $accountConfig,
         Session $session,
         Context $context,
@@ -100,7 +108,8 @@ class Newsletter extends Action
         ContactResponseHandler $contactResponseHandler
     ) {
         $this->helper = $helper;
-        $this->contactFactory = $contactFactory;
+        $this->contactCollectionFactory = $contactCollectionFactory;
+        $this->contactResource = $contactResource;
         $this->accountConfig = $accountConfig;
         $this->customerSession = $session;
         $this->formKeyValidator = $formKeyValidator;
@@ -133,14 +142,8 @@ class Newsletter extends Action
 
         if ($this->helper->isEnabled($websiteId)) {
             $customerEmail = $this->customerSession->getCustomer()->getEmail();
-            $contactFromTable = $this->contactFactory->create()
-                ->loadByCustomerEmail($customerEmail, $websiteId);
-            $contactId = $this->getContactId($contactFromTable);
             $client = $this->helper->getWebsiteApiClient($websiteId);
-
-            if (!$contactId) {
-                $contactId = $this->createContact($client, $customerEmail, $contactFromTable);
-            }
+            $contactId = $this->loadOrFetchContactId($customerEmail, $websiteId, $client);
 
             if ($contactId) {
                 $additionalSubscriptionsSuccess = $this->processAdditionalSubscriptions(
@@ -181,26 +184,43 @@ class Newsletter extends Action
     }
 
     /**
+     * @param string $customerEmail
+     * @param int $websiteId
+     * @param Client $client
+     *
+     * @return int
+     * @throws LocalizedException
+     */
+    private function loadOrFetchContactId($customerEmail, $websiteId, $client)
+    {
+        $existingContact = $this->contactCollectionFactory->create()
+            ->loadByCustomerEmail($customerEmail, $websiteId);
+
+        return $existingContact->getContactId() ?
+            $existingContact->getContactId() :
+            $this->createContact($client, $existingContact);
+    }
+
+    /**
      * Create contact.
      *
      * @param Client $apiClient
-     * @param string $customerEmail
      * @param Contact $contactFromTable
      *
      * @return int
      * @throws LocalizedException
      */
-    private function createContact($apiClient, $customerEmail, $contactFromTable)
+    private function createContact($apiClient, $contactFromTable)
     {
         $contact = $apiClient->postContactWithConsentAndPreferences(
-            $customerEmail
+            $contactFromTable->getEmail()
         );
 
         $contactId = $this->contactResponseHandler->getContactIdFromResponse($contact);
 
         if ($contactId) {
             $contactFromTable->setContactId($contactId);
-            $this->helper->saveContact($contactFromTable);
+            $this->contactResource->save($contactFromTable);
         }
 
         return $contactId;

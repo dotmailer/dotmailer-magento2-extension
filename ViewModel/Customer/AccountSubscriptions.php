@@ -5,8 +5,9 @@ namespace Dotdigitalgroup\Email\ViewModel\Customer;
 use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Model\Apiconnector\Client;
 use Dotdigitalgroup\Email\Model\Contact;
-use Dotdigitalgroup\Email\Model\ContactFactory;
+use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory as ContactCollectionFactory;
 use Magento\Customer\Model\Session;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\View\Element\Block\ArgumentInterface;
 use Magento\Store\Model\StoreManagerInterface;
 
@@ -23,9 +24,9 @@ class AccountSubscriptions implements ArgumentInterface
     private $client;
 
     /**
-     * @var ContactFactory
+     * @var ContactCollectionFactory
      */
-    private $contactFactory;
+    private $contactCollectionFactory;
 
     /**
      * @var Contact
@@ -49,18 +50,18 @@ class AccountSubscriptions implements ArgumentInterface
 
     /**
      * @param Data $helper
-     * @param ContactFactory $contactFactory
+     * @param ContactCollectionFactory $contactCollectionFactory
      * @param Session $customerSession
      * @param StoreManagerInterface $storeManager
      */
     public function __construct(
         Data $helper,
-        ContactFactory $contactFactory,
+        ContactCollectionFactory $contactCollectionFactory,
         Session $customerSession,
         StoreManagerInterface $storeManager
     ) {
         $this->helper = $helper;
-        $this->contactFactory = $contactFactory;
+        $this->contactCollectionFactory = $contactCollectionFactory;
         $this->customerSession = $customerSession;
         $this->storeManager = $storeManager;
     }
@@ -85,11 +86,12 @@ class AccountSubscriptions implements ArgumentInterface
      * Get contact from table.
      *
      * @return Contact
+     * @throws LocalizedException
      */
     public function getContactFromTable()
     {
         if (!isset($this->contactFromTable) && $this->getCustomer()->getEmail()) {
-            $this->contactFromTable = $this->contactFactory->create()
+            $this->contactFromTable = $this->contactCollectionFactory->create()
                 ->loadByCustomerEmail(
                     $this->getCustomer()->getEmail(),
                     $this->storeManager->getWebsite()->getId()

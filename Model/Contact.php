@@ -87,7 +87,24 @@ class Contact extends \Magento\Framework\Model\AbstractModel
     }
 
     /**
+     * @param string $email
+     *
+     * @return self
+     */
+    public function setEmail(string $email): self
+    {
+        if (empty($email)) {
+            throw new \InvalidArgumentException('Email address must not be an empty string');
+        }
+        $this->setData('email', $email);
+        return $this;
+    }
+
+    /**
      * Load Contact by Email.
+     *
+     * @deprecated Don't fetch and create in one method.
+     * @see \Dotdigitalgroup\Email\Model\ResourceModel\Contact\Collection::loadByCustomerEmail
      *
      * @param string $email
      * @param int $websiteId

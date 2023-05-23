@@ -154,24 +154,28 @@ class OrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
      */
     private function createOrUpdateGuestContact($order, $websiteId)
     {
-        $matchingContact = $this->contactCollectionFactory->create()
-            ->addFieldToFilter('email', $order->getCustomerEmail())
-            ->addFieldToFilter('website_id', $websiteId)
-            ->setPageSize(1);
+        try {
+            $matchingContact = $this->contactCollectionFactory->create()
+                ->addFieldToFilter('email', $order->getCustomerEmail())
+                ->addFieldToFilter('website_id', $websiteId)
+                ->setPageSize(1);
 
-        if ($matchingContact->getSize()) {
-            $this->contactResource->setContactsAsGuest(
-                [$matchingContact->getFirstItem()->getEmail()],
-                $websiteId
-            );
-        } else {
-            $guestToInsert = $this->contactFactory->create()
-                ->setEmail($order->getCustomerEmail())
-                ->setWebsiteId($websiteId)
-                ->setStoreId($order->getStoreId())
-                ->setIsGuest(1);
+            if ($matchingContact->getSize()) {
+                $this->contactResource->setContactsAsGuest(
+                    [$matchingContact->getFirstItem()->getEmail()],
+                    $websiteId
+                );
+            } else {
+                $guestToInsert = $this->contactFactory->create()
+                    ->setEmail($order->getCustomerEmail())
+                    ->setWebsiteId($websiteId)
+                    ->setStoreId($order->getStoreId())
+                    ->setIsGuest(1);
 
-            $this->contactResource->save($guestToInsert);
+                $this->contactResource->save($guestToInsert);
+            }
+        } catch (\Exception $e) {
+            $this->helper->debug('Error when updating email_contact table', [(string) $e]);
         }
     }
 }

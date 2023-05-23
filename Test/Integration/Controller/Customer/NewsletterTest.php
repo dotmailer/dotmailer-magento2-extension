@@ -5,8 +5,9 @@ namespace Dotdigitalgroup\Email\Test\Integration\Controller\Customer;
 use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Model\Apiconnector\Client;
 use Dotdigitalgroup\Email\Model\Contact;
-use Dotdigitalgroup\Email\Model\ContactFactory;
 use Dotdigitalgroup\Email\Model\Customer\Account\Configuration;
+use Dotdigitalgroup\Email\Model\ResourceModel\Contact\Collection as ContactCollection;
+use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory as ContactCollectionFactory;
 use Magento\Customer\Model\Customer;
 use Magento\Customer\Model\Session as CustomerSession;
 use Magento\Framework\Data\Form\FormKey\Validator as FormKeyValidator;
@@ -37,9 +38,14 @@ class NewsletterTest extends \Magento\TestFramework\TestCase\AbstractController
     private $mockContact;
 
     /**
-     * @var ContactFactory|\PHPUnit\Framework\MockObject\MockObject
+     * @var ContactCollection|\PHPUnit\Framework\MockObject\MockObject
      */
-    private $mockContactFactory;
+    private $mockContactCollection;
+
+    /**
+     * @var ContactCollectionFactory|\PHPUnit\Framework\MockObject\MockObject
+     */
+    private $mockContactCollectionFactory;
 
     /**
      * @var Customer|\PHPUnit\Framework\MockObject\MockObject
@@ -83,7 +89,8 @@ class NewsletterTest extends \Magento\TestFramework\TestCase\AbstractController
             ->onlyMethods(['loadByCustomerEmail'])
             ->addMethods(['getContactId'])
             ->getMock();
-        $this->mockContactFactory = $this->createMock(ContactFactory::class);
+        $this->mockContactCollection = $this->createMock(ContactCollection::class);
+        $this->mockContactCollectionFactory = $this->createMock(ContactCollectionFactory::class);
         $this->mockCustomer = $this->getMockBuilder(Customer::class)
             ->disableOriginalConstructor()
             ->setMethods(array_merge(get_class_methods(Customer::class), ['getEmail']))
@@ -103,7 +110,7 @@ class NewsletterTest extends \Magento\TestFramework\TestCase\AbstractController
         $objectManager->addSharedInstance($this->mockFormKeyValidator, FormKeyValidator::class);
         $objectManager->addSharedInstance($this->mockCustomerSession, CustomerSession::class);
         $objectManager->addSharedInstance($this->mockHelper, Data::class);
-        $objectManager->addSharedInstance($this->mockContactFactory, ContactFactory::class);
+        $objectManager->addSharedInstance($this->mockContactCollectionFactory, ContactCollectionFactory::class);
         $objectManager->addSharedInstance($this->mockAccountConfig, Configuration::class);
     }
 
@@ -164,10 +171,10 @@ class NewsletterTest extends \Magento\TestFramework\TestCase\AbstractController
         $this->mockCustomer->method('getEmail')
             ->willReturn('test@emailsim.io');
 
-        $this->mockContactFactory->method('create')
-            ->willReturn($this->mockContact);
+        $this->mockContactCollectionFactory->method('create')
+            ->willReturn($this->mockContactCollection);
 
-        $this->mockContact->method('loadByCustomerEmail')
+        $this->mockContactCollection->method('loadByCustomerEmail')
             ->willReturn($this->mockContact);
 
         $this->mockContact->method('getContactId')

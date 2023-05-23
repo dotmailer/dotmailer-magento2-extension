@@ -57,6 +57,8 @@ class RemoveContact implements \Magento\Framework\Event\ObserverInterface
     }
 
     /**
+     * Execute.
+     *
      * @param \Magento\Framework\Event\Observer $observer
      * @return $this|void
      * @throws \Magento\Framework\Exception\LocalizedException
@@ -89,28 +91,33 @@ class RemoveContact implements \Magento\Framework\Event\ObserverInterface
     }
 
     /**
+     * Unsubscribe customer
+     *
      * @param string $email
      * @param int $websiteId
      * @throws \Magento\Framework\Exception\AlreadyExistsException
      */
     private function unsubscribeCustomer(string $email, int $websiteId)
     {
-        /** @var Contact $contact */
-        $contact = $this->contactFactory->create()
-            ->loadByCustomerEmail($email, $websiteId);
+        try {
+            $contact = $this->contactFactory->create()
+                ->loadByCustomerEmail($email, $websiteId);
 
-        $contact->setSubscriberStatus(null)
-            ->setLastSubscribedAt(null)
-            ->setIsSubscriber(0);
+            $contact->setSubscriberStatus(null)
+                ->setLastSubscribedAt(null)
+                ->setIsSubscriber(0);
 
-        $this->contactResource->save($contact);
+            $this->contactResource->save($contact);
 
-        $this->importerFactory->create()->registerQueue(
-            Importer::IMPORT_TYPE_SUBSCRIBER_UPDATE,
-            ['email' => $email, 'id' => $contact->getId()],
-            Importer::MODE_SUBSCRIBER_UPDATE,
-            $websiteId
-        );
+            $this->importerFactory->create()->registerQueue(
+                Importer::IMPORT_TYPE_SUBSCRIBER_UPDATE,
+                ['email' => $email, 'id' => $contact->getId()],
+                Importer::MODE_SUBSCRIBER_UPDATE,
+                $websiteId
+            );
+        } catch (\Exception $e) {
+            $this->helper->debug('Error when unsubscribing a customer', [(string) $e]);
+        }
     }
 
     /**
@@ -137,7 +144,7 @@ class RemoveContact implements \Magento\Framework\Event\ObserverInterface
                 $this->contactResource->delete($contactModel);
             }
         } catch (\Exception $e) {
-            $this->helper->debug((string)$e, []);
+            $this->helper->debug('Error when deleting a contact', [(string) $e]);
         }
     }
 }
