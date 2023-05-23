@@ -226,16 +226,6 @@ class ContactManager
                 $websiteId
             )
         );
-        $consentFields = $this->dataFieldCollector->extractConsentFromPreparedDataFields($subscriberDataFields);
-
-        if (!empty($consentFields)) {
-            $updateContactResponse = $client->updateContactWithConsentAndPreferences(
-                $contact->getId(),
-                $contact->getEmail(),
-                [],
-                $consentFields
-            );
-        }
 
         // optInType will be set in $subscriberDataFields if it is 'Double'
         $postAddressBookResponse = $client->addContactToAddressBook(
@@ -245,7 +235,7 @@ class ContactManager
             $subscriberDataFields
         );
 
-        if (isset($updateContactResponse->message) || isset($postAddressBookResponse->message)) {
+        if (isset($postAddressBookResponse->message)) {
             return;
         }
 

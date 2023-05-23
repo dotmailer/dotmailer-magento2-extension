@@ -473,10 +473,6 @@
                        showInWebsite="1">
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Report\Catalog</frontend_model>
                 </field>
-                <field id="consent_enabled" translate="label" sortOrder="170" type="text" showInStore="0"
-                       showInWebsite="0" showInDefault="0">
-                    <label>Consent Enabled</label>
-                </field>
             </group>
             <group id="dynamic_addressbook" translate="label" type="text" sortOrder="40" showInDefault="1"
                    showInWebsite="1" showInStore="0">
@@ -1954,6 +1950,12 @@
                 <field id="review_wishlist" translate="label" sortOrder="70" type="select" showInStore="0" showInWebsite="0" showInDefault="1">
                     <label>Review And Wishlist</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Developer\Cronexpressionstwo</source_model>
+                    <backend_model>Dotdigitalgroup\Email\Model\Adminhtml\Backend\CronOffset</backend_model>
+                </field>
+                <field id="consent" translate="label" sortOrder="80" type="select" showInStore="0"
+                       showInWebsite="0" showInDefault="1">
+                    <label>Consent</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Developer\Cronexpressionsthree</source_model>
                     <backend_model>Dotdigitalgroup\Email\Model\Adminhtml\Backend\CronOffset</backend_model>
                 </field>
             </group>

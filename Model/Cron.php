@@ -16,6 +16,7 @@ class Cron
         Config::XML_PATH_CRON_SCHEDULE_CUSTOMER => 15,
         Config::XML_PATH_CRON_SCHEDULE_SUBSCRIBER => 15,
         Config::XML_PATH_CRON_SCHEDULE_GUEST => 15,
+        Config::XML_PATH_CRON_SCHEDULE_CONSENT => 15
     ];
 
     /**
@@ -104,8 +105,11 @@ class Cron
     private $jobChecker;
 
     /**
-     * Cron constructor.
-     *
+     * @var Sync\ConsentFactory
+     */
+    private $consentFactory;
+
+    /**
      * @param Sync\CampaignFactory $campaignFactory
      * @param Sync\OrderFactory $syncOrderFactory
      * @param Sales\QuoteFactory $quoteFactory
@@ -117,6 +121,7 @@ class Cron
      * @param Sync\ImporterFactory $importerFactory
      * @param Sync\AutomationFactory $automationFactory
      * @param Sync\CustomerFactory $customerFactory
+     * @param Sync\ConsentFactory $consentFactory
      * @param Email\TemplateFactory $templateFactory
      * @param Cron\CronSubFactory $cronSubFactory
      * @param AbandonedCart\ProgramEnrolment\Enroller $abandonedCartProgramEnroller
@@ -136,6 +141,7 @@ class Cron
         Sync\ImporterFactory $importerFactory,
         Sync\AutomationFactory $automationFactory,
         Sync\CustomerFactory $customerFactory,
+        Sync\ConsentFactory $consentFactory,
         Email\TemplateFactory $templateFactory,
         Cron\CronSubFactory $cronSubFactory,
         AbandonedCart\ProgramEnrolment\Enroller $abandonedCartProgramEnroller,
@@ -154,6 +160,7 @@ class Cron
         $this->importerFactory   = $importerFactory;
         $this->automationFactory = $automationFactory;
         $this->customerFactory = $customerFactory;
+        $this->consentFactory = $consentFactory;
         $this->templateFactory   = $templateFactory;
         $this->cronHelper        = $cronSubFactory->create();
         $this->abandonedCartProgramEnroller = $abandonedCartProgramEnroller;
@@ -406,5 +413,22 @@ class Cron
                 ['data' => ['fromTime' => $this->jobChecker->getLastJobFinishedAt($jobCode)]]
             )
             ->subscribe();
+    }
+
+    /**
+     * Run contact consent sync.
+     *
+     * @return void
+     */
+    public function consentSync(): void
+    {
+        $jobCode = 'ddg_automation_consent_sync';
+
+        if ($this->jobChecker->hasAlreadyBeenRun($jobCode)) {
+            return;
+        }
+
+        $this->consentFactory->create()
+            ->sync();
     }
 }

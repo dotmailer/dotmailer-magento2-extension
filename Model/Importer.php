@@ -19,6 +19,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
     public const MODE_SUBSCRIBER_UPDATE = 'Subscriber_Update';
     public const MODE_CONTACT_EMAIL_UPDATE = 'Contact_Email_Update';
     public const MODE_SUBSCRIBER_RESUBSCRIBED = 'Subscriber_Resubscribed';
+    public const MODE_CONSENT = 'Consent';
 
     //import type
     public const IMPORT_TYPE_GUEST = 'Guest';

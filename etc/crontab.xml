@@ -40,6 +40,9 @@
         <job name="ddg_automation_monitor" instance="Dotdigitalgroup\Email\Model\Cron" method="monitor">
             <schedule>*/15 * * * *</schedule>
         </job>
+        <job name="ddg_automation_consent_sync" instance="Dotdigitalgroup\Email\Model\Cron" method="consentSync">
+            <config_path>connector_developer_settings/cron_schedules/consent</config_path>
+        </job>
     </group>
     <group id="ddg_automation_ac">
         <job name="ddg_automation_abandonedcarts" instance="Dotdigitalgroup\Email\Model\Cron" method="abandonedCarts">

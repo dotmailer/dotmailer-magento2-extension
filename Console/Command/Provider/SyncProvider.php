@@ -15,6 +15,7 @@ use Dotdigitalgroup\Email\Model\Sync\ReviewFactory;
 use Dotdigitalgroup\Email\Model\Sync\SubscriberFactory;
 use Dotdigitalgroup\Email\Model\Email\TemplateFactory;
 use Dotdigitalgroup\Email\Model\Sync\WishlistFactory;
+use Dotdigitalgroup\Email\Model\Sync\ConsentFactory;
 
 /**
  * Provides factories for all available sync models, and exposes it's properties to show what's available
@@ -87,6 +88,11 @@ class SyncProvider
     private $wishlistFactory;
 
     /**
+     * @var ConsentFactory
+     */
+    private $consentFactory;
+
+    /**
      * SyncProvider constructor.
      *
      * @param AbandonedCartFactory $abandonedCartFactory
@@ -102,6 +108,7 @@ class SyncProvider
      * @param SubscriberFactory $subscriberFactory
      * @param TemplateFactory $templateFactory
      * @param WishlistFactory $wishlistFactory
+     * @param ConsentFactory $consentFactory
      */
     public function __construct(
         AbandonedCartFactory $abandonedCartFactory,
@@ -116,7 +123,8 @@ class SyncProvider
         ReviewFactory $reviewFactory,
         SubscriberFactory $subscriberFactory,
         TemplateFactory $templateFactory,
-        WishlistFactory $wishlistFactory
+        WishlistFactory $wishlistFactory,
+        ConsentFactory $consentFactory
     ) {
         $this->automationFactory = $automationFactory;
         $this->abandonedCartFactory = $abandonedCartFactory;
@@ -131,6 +139,7 @@ class SyncProvider
         $this->subscriberFactory = $subscriberFactory;
         $this->templateFactory = $templateFactory;
         $this->wishlistFactory = $wishlistFactory;
+        $this->consentFactory = $consentFactory;
     }
 
     /**

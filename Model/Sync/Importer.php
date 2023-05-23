@@ -5,12 +5,13 @@ namespace Dotdigitalgroup\Email\Model\Sync;
 use Dotdigitalgroup\Email\Model\Connector\AccountHandler;
 use Dotdigitalgroup\Email\Model\Sync\Importer\ImporterProgressHandlerFactory;
 use Dotdigitalgroup\Email\Model\Sync\Importer\ImporterQueueManager;
+use Dotdigitalgroup\Email\Model\Apiconnector\Client;
 use Magento\Store\Model\StoreManagerInterface;
 
 class Importer implements SyncInterface
 {
-    const TOTAL_IMPORT_SYNC_LIMIT = 100;
-    const CONTACT_IMPORT_SYNC_LIMIT = 25;
+    public const TOTAL_IMPORT_SYNC_LIMIT = 100;
+    public const CONTACT_IMPORT_SYNC_LIMIT = 25;
 
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
@@ -69,10 +70,10 @@ class Importer implements SyncInterface
     }
 
     /**
-     * Importer sync
+     * Importer sync.
      *
-     * @return null
-     * @throws \Magento\Framework\Exception\AlreadyExistsException
+     * @param \DateTime|null $from
+     * @return void
      */
     public function sync(\DateTime $from = null)
     {
@@ -110,12 +111,14 @@ class Importer implements SyncInterface
     }
 
     /**
+     * Process Queue.
+     *
      * @param array $queue
      * @param array $websiteIds
-     * @param \Dotdigitalgroup\Email\Model\Apiconnector\Client $client
+     * @param Client $client
      * @param int $itemsCount
      */
-    private function processQueue($queue, $websiteIds, $client, $itemsCount = 0)
+    private function processQueue(array $queue, array $websiteIds, Client $client, int $itemsCount = 0)
     {
         foreach ($queue as $sync) {
             if ($itemsCount < self::TOTAL_IMPORT_SYNC_LIMIT) {

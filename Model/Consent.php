@@ -14,50 +14,10 @@ use Magento\Framework\Model\ResourceModel\AbstractResource;
 use Magento\Framework\Registry;
 use Magento\Framework\Stdlib\DateTime\DateTime;
 use Magento\Framework\Stdlib\StringUtils;
-use Magento\Store\Model\ScopeInterface;
 
 class Consent extends AbstractModel
 {
     public const CONSENT_TEXT_LIMIT = '1000';
-
-    /**
-     * Bulk api import for consent contact fields.
-     *
-     * @var array
-     */
-    public static $bulkFields = [
-        'consent_text' => 'CONSENTTEXT',
-        'consent_url' => 'CONSENTURL',
-        'consent_datetime' => 'CONSENTDATETIME',
-        'consent_ip' => 'CONSENTIP',
-        'consent_user_agent' => 'CONSENTUSERAGENT'
-    ];
-
-    /**
-     * @var string[]
-     */
-    public const BULKFIELDTOSINGLEFIELDNAMEMAP = [
-        'CONSENTTEXT' => 'TEXT',
-        'CONSENTURL' => 'URL',
-        'CONSENTDATETIME' => 'DATETIMECONSENTED',
-        'CONSENTIP' => 'IPADDRESS',
-        'CONSENTUSERAGENT' => 'USERAGENT'
-    ];
-
-    /**
-     * @var DateTime
-     */
-    private $dateTime;
-
-    /**
-     * @var ConsentResource
-     */
-    private $consentResource;
-
-    /**
-     * @var CollectionFactory
-     */
-    private $contactCollectionFactory;
 
     /**
      * @var Config
@@ -68,11 +28,6 @@ class Consent extends AbstractModel
      * @var StringUtils
      */
     private $stringUtils;
-
-    /**
-     * @var ScopeConfigInterface
-     */
-    private $scopeConfig;
 
     /**
      * @var array
@@ -95,15 +50,9 @@ class Consent extends AbstractModel
     }
 
     /**
-     * Consent constructor.
-     *
      * @param Context $context
      * @param Registry $registry
      * @param Config $config
-     * @param ConsentResource $consent
-     * @param CollectionFactory $contactCollectionFactory
-     * @param ScopeConfigInterface $scopeConfig
-     * @param DateTime $dateTime
      * @param StringUtils $stringUtils
      * @param AbstractResource|null $resource
      * @param AbstractDb|null $resourceCollection
@@ -113,20 +62,12 @@ class Consent extends AbstractModel
         Context $context,
         Registry $registry,
         Config $config,
-        ConsentResource $consent,
-        CollectionFactory $contactCollectionFactory,
-        ScopeConfigInterface $scopeConfig,
-        DateTime $dateTime,
         StringUtils $stringUtils,
         AbstractResource $resource = null,
         AbstractDb $resourceCollection = null,
         array $data = []
     ) {
-        $this->dateTime = $dateTime;
         $this->configHelper = $config;
-        $this->consentResource = $consent;
-        $this->contactCollectionFactory = $contactCollectionFactory;
-        $this->scopeConfig = $scopeConfig;
         $this->stringUtils = $stringUtils;
         parent::__construct($context, $registry, $resource, $resourceCollection, $data);
     }

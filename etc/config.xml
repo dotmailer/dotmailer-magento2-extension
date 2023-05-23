@@ -26,7 +26,6 @@
                 <wishlist_enabled>0</wishlist_enabled>
                 <review_enabled>0</review_enabled>
                 <catalog_enabled>0</catalog_enabled>
-                <consent_enabled>1</consent_enabled>
             </sync>
             <dynamic_addressbook>
                 <addressbook_name></addressbook_name>
@@ -329,6 +328,7 @@
                 <order>*/15 * * * *</order>
                 <catalog>*/15 * * * *</catalog>
                 <review_wishlist>*/15 * * * *</review_wishlist>
+                <consent>*/15 * * * *</consent>
             </cron_schedules>
             <system_alerts>
                 <system_messages>1</system_messages>
