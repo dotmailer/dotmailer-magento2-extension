@@ -50,7 +50,7 @@
     "magento/module-tax": "100.*",
     "magento/framework-message-queue": "^100.3|^100.4",
     "dotdigital/dotdigital-php": "@dev",
-    "php-http/curl-client": "^2.2"
+    "php-http/curl-client": "~2.3.0"
   },
   "autoload": {
     "files": [ "registration.php" ],
