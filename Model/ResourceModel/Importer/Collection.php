@@ -62,7 +62,7 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
      * Get the imports by type and mode.
      *
      * @param string|array $importType
-     * @param string $importMode
+     * @param string|array $importMode
      * @param int $limit
      * @param array $websiteIds
      *
@@ -87,7 +87,7 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
             );
         }
 
-        $this->addFieldToFilter('import_mode', ['eq' => $importMode])
+        $this->addFieldToFilter('import_mode', ['in' => $importMode])
             ->addFieldToFilter(
                 'import_status',
                 ['eq' => \Dotdigitalgroup\Email\Model\Importer::NOT_IMPORTED]

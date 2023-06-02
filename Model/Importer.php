@@ -16,7 +16,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
     public const MODE_SINGLE = 'Single';
     public const MODE_SINGLE_DELETE = 'Single_Delete';
     public const MODE_CONTACT_DELETE = 'Contact_Delete';
-    public const MODE_SUBSCRIBER_UPDATE = 'Subscriber_Update';
+    public const MODE_SUBSCRIBER_UNSUBSCRIBE = 'Subscriber_Unsubscribe';
     public const MODE_CONTACT_EMAIL_UPDATE = 'Contact_Email_Update';
     public const MODE_SUBSCRIBER_RESUBSCRIBED = 'Subscriber_Resubscribed';
     public const MODE_CONSENT = 'Consent';
@@ -38,6 +38,12 @@ class Importer extends \Magento\Framework\Model\AbstractModel
      * @see self::IMPORT_TYPE_CUSTOMER
      */
     public const IMPORT_TYPE_CONTACT = 'Contact';
+
+    /**
+     * @deprecated
+     * @see self::MODE_SUBSCRIBER_UNSUBSCRIBE
+     */
+    public const MODE_SUBSCRIBER_UPDATE = 'Subscriber_Update';
 
     /**
      * @var ResourceModel\Importer

@@ -148,6 +148,7 @@ class Update extends AbstractItemSyncer
                 break;
 
             case ModelImporter::MODE_SUBSCRIBER_UPDATE:
+            case ModelImporter::MODE_SUBSCRIBER_UNSUBSCRIBE:
                 $result = $this->syncItemSubscriberUpdateMode($importData, $websiteId);
                 break;
         }

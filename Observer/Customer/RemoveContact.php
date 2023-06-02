@@ -112,7 +112,7 @@ class RemoveContact implements \Magento\Framework\Event\ObserverInterface
             $this->importerFactory->create()->registerQueue(
                 Importer::IMPORT_TYPE_SUBSCRIBER_UPDATE,
                 ['email' => $email, 'id' => $contact->getId()],
-                Importer::MODE_SUBSCRIBER_UPDATE,
+                Importer::MODE_SUBSCRIBER_UNSUBSCRIBE,
                 $websiteId
             );
         } catch (\Exception $e) {
