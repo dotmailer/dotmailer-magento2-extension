@@ -87,9 +87,14 @@ class ProductNotifications implements OptionSourceInterface
      */
     private function getWebsiteId(): int
     {
-        $websiteName = $this->request->getParam('website', false);
-        return ($websiteName)
-            ? $this->storeManager->getWebsite($websiteName)->getId()
-            : 0;
+        if ($websiteId = $this->request->getParam('website', false)) {
+            return (int)$websiteId;
+        }
+
+        if ($storeId = $this->request->getParam('store', false)) {
+            return $this->storeManager->getStore($storeId)->getWebsiteId();
+        }
+
+        return 0;
     }
 }
