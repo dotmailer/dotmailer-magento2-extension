@@ -15,7 +15,6 @@ Please see our [Changelog](CHANGELOG.md) or the [Releases](https://github.com/do
 ## Installation
 We encourage merchants to install our core modules via our combined **Dotdigital - Marketing Automation** extension:
 - View the listing on [Magento Marketplace](https://marketplace.magento.com/dotdigital-dotdigital-magento2-os-package.html).
-- View the metapackage on [Github](https://github.com/dotmailer/dotdigital-magento2-os-package). 
 
 **Steps:**
 1. You must ‘purchase’ the [core extension](https://marketplace.magento.com/dotdigital-dotdigital-magento2-os-package.html) from the Marketplace.
