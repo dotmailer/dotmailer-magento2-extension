@@ -1,3 +1,8 @@
+# 4.21.1
+
+### Bug fixes
+- Product Notifications can now be configured in store scope.
+
 # 4.21.0
 
 ### What's new
