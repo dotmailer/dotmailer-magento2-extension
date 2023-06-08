@@ -30,7 +30,7 @@ class Product extends AbstractConnectorModel
     public const TYPE_VARIANT = 'Variant';
 
     /**
-     * Dotdigital order required schema
+     * Dotdigital catalog required schema
      */
     public const SCHEMA_RULES = [
         'name' => ':isString',
@@ -73,22 +73,22 @@ class Product extends AbstractConnectorModel
     /**
      * @var float
      */
-    public $price = 0;
+    public $price = 0.0;
 
     /**
      * @var float
      */
-    public $price_incl_tax = 0;
+    public $price_incl_tax = 0.0;
 
     /**
      * @var float
      */
-    public $specialPrice = 0;
+    public $specialPrice = 0.0;
 
     /**
      * @var float
      */
-    public $specialPrice_incl_tax = 0;
+    public $specialPrice_incl_tax = 0.0;
 
     /**
      * @var array
@@ -118,7 +118,7 @@ class Product extends AbstractConnectorModel
     /**
      * @var float
      */
-    public $stock = 0;
+    public $stock = 0.0;
 
     /**
      * @var array
@@ -438,23 +438,19 @@ class Product extends AbstractConnectorModel
      */
     private function formatPriceValues($price, $specialPrice)
     {
-        if ($price) {
-            $this->price = (float) number_format(
-                $price,
-                2,
-                '.',
-                ''
-            );
-        }
+        $this->price = (float) number_format(
+            $price ?? 0,
+            2,
+            '.',
+            ''
+        );
 
-        if ($specialPrice) {
-            $this->specialPrice = (float) number_format(
-                $specialPrice,
-                2,
-                '.',
-                ''
-            );
-        }
+        $this->specialPrice = (float) number_format(
+            $specialPrice ?? 0,
+            2,
+            '.',
+            ''
+        );
     }
 
     /**
