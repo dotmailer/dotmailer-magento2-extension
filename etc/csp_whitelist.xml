@@ -23,5 +23,10 @@
                 <value id="dotdigital_com" type="host">*.dotdigital.com</value>
             </values>
         </policy>
+        <policy id="img-src">
+            <values>
+                <value id="dotdigital_trackedlink" type="host">*.trackedlink.net</value>
+            </values>
+        </policy>
     </policies>
 </csp_whitelist>
