@@ -1,3 +1,11 @@
+# 4.21.2
+
+### Improvements
+- We updated our content security policy rules for the page tracking pixel.
+
+### Bug fixes
+- We resolved a validation error in catalog sync that prevented sync for products with price 0.
+
 # 4.21.1
 
 ### Bug fixes
