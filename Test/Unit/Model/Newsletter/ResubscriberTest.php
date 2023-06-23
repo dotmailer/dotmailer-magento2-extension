@@ -2,14 +2,12 @@
 
 namespace Dotdigitalgroup\Email\Test\Unit\Model\Newsletter;
 
-use Dotdigitalgroup\Email\Helper\Data;
-use Dotdigitalgroup\Email\Model\Apiconnector\Client;
-use Dotdigitalgroup\Email\Model\Connector\AccountHandler;
+use Dotdigital\V3\Models\Contact as SdkContact;
+use Dotdigitalgroup\Email\Logger\Logger;
+use Dotdigitalgroup\Email\Model\Cron\CronFromTimeSetter;
 use Dotdigitalgroup\Email\Model\Newsletter\Resubscriber;
 use Dotdigitalgroup\Email\Model\Newsletter\SubscriberFilterer;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact;
-use Magento\Framework\Stdlib\DateTime\DateTimeFactory;
-use Magento\Framework\Stdlib\DateTime\TimezoneInterfaceFactory;
 use Magento\Newsletter\Model\ResourceModel\Subscriber\Collection as SubscriberCollection;
 use Magento\Store\Api\StoreWebsiteRelationInterface;
 use PHPUnit\Framework\TestCase;
@@ -17,29 +15,19 @@ use PHPUnit\Framework\TestCase;
 class ResubscriberTest extends TestCase
 {
     /**
-     * @var Data|\PHPUnit_Framework_MockObject_MockObject
+     * @var Logger|\PHPUnit_Framework_MockObject_MockObject
      */
-    private $helperMock;
+    private $loggerMock;
+
+    /**
+     * @var CronFromTimeSetter|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $cronFromTimeSetterMock;
 
     /**
      * @var Contact|\PHPUnit_Framework_MockObject_MockObject
      */
     private $contactResourceMock;
-
-    /**
-     * @var DateTimeFactory|\PHPUnit_Framework_MockObject_MockObject
-     */
-    private $dateTimeFactoryMock;
-
-    /**
-     * @var TimezoneInterfaceFactory|\PHPUnit_Framework_MockObject_MockObject
-     */
-    private $timezoneInterfaceFactoryMock;
-
-    /**
-     * @var AccountHandler|\PHPUnit_Framework_MockObject_MockObject
-     */
-    private $accountHandlerMock;
 
     /**
      * @var StoreWebsiteRelationInterface|\PHPUnit_Framework_MockObject_MockObject
@@ -61,20 +49,16 @@ class ResubscriberTest extends TestCase
      */
     protected function setUp() :void
     {
-        $this->helperMock = $this->createMock(Data::class);
+        $this->loggerMock = $this->createMock(Logger::class);
+        $this->cronFromTimeSetterMock = $this->createMock(CronFromTimeSetter::class);
         $this->contactResourceMock = $this->createMock(Contact::class);
-        $this->timezoneInterfaceFactoryMock = $this->createMock(TimezoneInterfaceFactory::class);
-        $this->dateTimeFactoryMock = $this->createMock(DateTimeFactory::class);
-        $this->accountHandlerMock = $this->createMock(AccountHandler::class);
         $this->storeWebsiteRelationInterfaceMock = $this->createMock(StoreWebsiteRelationInterface::class);
         $this->subscriberFiltererMock = $this->createMock(SubscriberFilterer::class);
 
         $this->model = new Resubscriber(
-            $this->helperMock,
+            $this->loggerMock,
+            $this->cronFromTimeSetterMock,
             $this->contactResourceMock,
-            $this->dateTimeFactoryMock,
-            $this->timezoneInterfaceFactoryMock,
-            $this->accountHandlerMock,
             $this->storeWebsiteRelationInterfaceMock,
             $this->subscriberFiltererMock
         );
@@ -88,7 +72,6 @@ class ResubscriberTest extends TestCase
      */
     public function testRecentlyModifiedSubscribersAreResubscribed()
     {
-        $this->generateTimezoneDate();
         $this->sharedFlow();
 
         $subscriberCollectionMock = $this->createMock(SubscriberCollection::class);
@@ -105,7 +88,7 @@ class ResubscriberTest extends TestCase
             ->method('getStoreByWebsiteId')
             ->willReturn(['1', '2']);
 
-        $subscriberCollectionMock->expects($this->exactly(3))
+        $subscriberCollectionMock->expects($this->once())
             ->method('getIterator')
             ->willReturn(new \ArrayIterator([$subscriberModelMock, $subscriberModelMock]));
 
@@ -113,40 +96,35 @@ class ResubscriberTest extends TestCase
             ->method('getSubscriberEmail')
             ->willReturnOnConsecutiveCalls(
                 'chaz@emailsim.io',
-                'chaz2@emailsim.io',
-                'chaz@emailsim.io',
-                'chaz2@emailsim.io',
-                'chaz@emailsim.io',
                 'chaz2@emailsim.io'
             );
 
         $subscriberModelMock->expects($this->any())
             ->method('getChangeStatusAt')
             ->willReturnOnConsecutiveCalls(
-                '2021-11-10T11:24:08.94976Z',
-                '2021-11-19T11:24:08.94976Z',
-                '2021-11-10T11:24:08.94976Z',
-                '2021-11-19T11:24:08.94976Z',
-                '2021-11-10T11:24:08.94976Z',
-                '2021-11-19T12:00:00.94976Z'
+                '2021-11-10T11:23:08.94976Z',
+                '2021-11-10T11:24:08.94976Z'
             );
 
         $subscriberModelMock->expects($this->any())
             ->method('getStoreId')
             ->willReturn(1);
 
-        $this->contactResourceMock->expects($this->exactly(3))
+        $this->contactResourceMock->expects($this->once())
             ->method('subscribeByEmailAndStore')
             ->willReturn(1);
 
-        $unsubscribes = $this->model->subscribe(4);
+        $this->loggerMock->expects($this->once())
+            ->method('info');
 
-        $this->assertEquals(3, $unsubscribes);
+        $this->model->processBatch(
+            $this->getDotdigitalModifiedContacts(),
+            [1, 2]
+        );
     }
 
     public function testContactsAreNotUpdatedIfChangeStatusAtIsNewer()
     {
-        $this->generateTimezoneDate();
         $this->sharedFlow();
 
         $subscriberCollectionMock = $this->createMock(SubscriberCollection::class);
@@ -163,7 +141,7 @@ class ResubscriberTest extends TestCase
             ->method('getStoreByWebsiteId')
             ->willReturn(['1', '2']);
 
-        $subscriberCollectionMock->expects($this->exactly(3))
+        $subscriberCollectionMock->expects($this->once())
             ->method('getIterator')
             ->willReturn(new \ArrayIterator([$subscriberModelMock, $subscriberModelMock]));
 
@@ -171,33 +149,33 @@ class ResubscriberTest extends TestCase
             ->method('getSubscriberEmail')
             ->willReturnOnConsecutiveCalls(
                 'chaz@emailsim.io',
-                'chaz2@emailsim.io',
-                'chaz@emailsim.io',
-                'chaz2@emailsim.io',
-                'chaz@emailsim.io',
                 'chaz2@emailsim.io'
             );
 
         $subscriberModelMock->expects($this->any())
             ->method('getChangeStatusAt')
-            ->willReturn('2021-11-19T12:24:08.94976Z');
+            ->willReturn('2021-11-19T12:34:08.94976Z');
 
         $subscriberModelMock->expects($this->any())
             ->method('getStoreId')
             ->willReturn(1);
 
-        $this->contactResourceMock->expects($this->exactly(3))
+        $this->contactResourceMock->expects($this->once())
             ->method('subscribeByEmailAndStore')
             ->willReturn(0);
 
-        $unsubscribes = $this->model->subscribe(4);
+        $this->loggerMock->expects($this->never())
+            ->method('info');
 
-        $this->assertEquals(0, $unsubscribes);
+        $this->model->processBatch(
+            $this->getDotdigitalModifiedContacts(),
+            [1, 2]
+        );
     }
 
     public function testFilterModifiedContactsMethod()
     {
-        $this->generateTimezoneDate();
+        $this->sharedFlow();
 
         $filterMethod = self::getMethod('filterModifiedContacts');
         $filtered = $filterMethod->invokeArgs($this->model, [
@@ -205,53 +183,6 @@ class ResubscriberTest extends TestCase
         ]);
 
         $this->assertEquals(2, count($filtered));
-    }
-
-    private function sharedFlow()
-    {
-        $this->accountHandlerMock->expects($this->once())
-            ->method('getAPIUsersForECEnabledWebsites')
-            ->willReturn($this->getApiUserData());
-
-        $clientMock = $this->createMock(Client::class);
-        $this->helperMock->expects($this->atLeastOnce())
-            ->method('getWebsiteApiClient')
-            ->willReturn($clientMock);
-
-        // Two batches for the first website id, one for the second
-        $clientMock->expects($this->atLeastOnce())
-            ->method('getContactsModifiedSinceDate')
-            ->willReturnOnConsecutiveCalls(
-                $this->getDotdigitalModifiedContacts(),
-                $this->getDotdigitalModifiedContacts(),
-                new \stdClass(),
-                $this->getDotdigitalModifiedContacts(),
-                new \stdClass()
-            );
-    }
-
-    private function generateTimezoneDate()
-    {
-        $fromTime = '2021-11-18T12:17:47+00:00';
-
-        $dateTimeMock = $this->createMock(\DateTime::class);
-        $magentoDateTimeMock = $this->createMock(\Magento\Framework\Stdlib\DateTime\DateTime::class);
-        $timezoneInterfaceMock = $this->createMock(\Magento\Framework\Stdlib\DateTime\TimezoneInterface::class);
-        $this->timezoneInterfaceFactoryMock->expects($this->once())
-            ->method('create')
-            ->willReturn($timezoneInterfaceMock);
-        $timezoneInterfaceMock->expects($this->once())
-            ->method('date')
-            ->willReturn($dateTimeMock);
-        $dateTimeMock->expects($this->once())
-            ->method('sub');
-
-        $this->dateTimeFactoryMock->expects($this->once())
-            ->method('create')
-            ->willReturn($magentoDateTimeMock);
-        $magentoDateTimeMock->expects($this->once())
-            ->method('date')
-            ->willReturn($fromTime);
     }
 
     /**
@@ -273,59 +204,36 @@ class ResubscriberTest extends TestCase
         return $method;
     }
 
-    /**
-     * Mocked EC account config.
-     */
-    private function getApiUserData()
+    private function sharedFlow()
     {
-        return [
-            'apiuser-12345@apiconnector.com' => [
-                'websites' => ['0', '1']
-            ],
-            'apiuser-6789apiconnector.com' => [
-                'websites' => ['2', '3']
-            ],
-        ];
+        $this->cronFromTimeSetterMock->expects($this->any())
+            ->method('getFromTime')
+            ->willReturn('2021-11-18T12:17:47+00:00');
     }
 
     /**
      * 4 recent modified contacts.
      *
-     * @return \stdClass[]
+     * @return SdkContact[]
+     * @throws \Exception
      */
     private function getDotdigitalModifiedContacts()
     {
-        $contact1 = new \StdClass();
-        $contact1->id = 258613273;
-        $contact1->email = 'chaz@emailsim.io';
-        $recentLastSubscribedDataField = new \StdClass();
-        $recentLastSubscribedDataField->key = 'LASTSUBSCRIBED';
-        $recentLastSubscribedDataField->value = '2021-11-19T11:24:08.94976Z';
-        $contact1->dataFields = [$recentLastSubscribedDataField];
+        $contact1 = new SdkContact();
+        $contact1->setIdentifiers(['email' => 'chaz@emailsim.io']);
+        $contact1->setDataFields(['LASTSUBSCRIBED' => '2021-11-19T11:24:08.94976Z']);
 
-        $contact2 = new \StdClass();
-        $contact2->id = 258613273;
-        $contact2->email = 'chaz2@emailsim.io';
-        $recentLastSubscribedDataField2 = new \StdClass();
-        $recentLastSubscribedDataField2->key = 'LASTSUBSCRIBED';
-        $recentLastSubscribedDataField2->value = '2021-11-19T11:00:00.94976Z';
-        $contact2->dataFields = [$recentLastSubscribedDataField2];
+        $contact2 = new SdkContact();
+        $contact2->setIdentifiers(['email' => 'chaz2@emailsim.io']);
+        $contact2->setDataFields(['LASTSUBSCRIBED' => '2021-11-19T11:00:00.94976Z']);
 
-        $contact3 = new \StdClass();
-        $contact3->id = 258613273;
-        $contact3->email = 'chaz3@emailsim.io';
-        $olderLastSubscribedDataField = new \StdClass();
-        $olderLastSubscribedDataField->key = 'LASTSUBSCRIBED';
-        $olderLastSubscribedDataField->value = '2021-11-17T11:24:08.94976Z';
-        $contact3->dataFields = [$olderLastSubscribedDataField];
+        $contact3 = new SdkContact();
+        $contact3->setIdentifiers(['email' => 'chaz3@emailsim.io']);
+        $contact3->setDataFields(['LASTSUBSCRIBED' => '2021-11-17T11:24:08.94976Z']);
 
-        $contact4 = new \StdClass();
-        $contact4->id = 258613273;
-        $contact4->email = 'chaz-never-subscribed@emailsim.io';
-        $randomDataField = new \StdClass();
-        $randomDataField->key = 'RANDOM_DF';
-        $randomDataField->value = 'chaz';
-        $contact4->dataFields = [$randomDataField];
+        $contact4 = new SdkContact();
+        $contact4->setIdentifiers(['email' => 'chaz-never-subscribed@emailsim.io']);
+        $contact4->setDataFields(['RANDOM_DF' => 'chaz']);
 
         return [$contact1, $contact2, $contact3, $contact4];
     }

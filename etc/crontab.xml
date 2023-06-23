@@ -53,7 +53,7 @@
         <job name="ddg_automation_unsubscribe" instance="Dotdigitalgroup\Email\Model\Cron" method="unsubscribe">
             <schedule>*/15 * * * *</schedule>
         </job>
-        <job name="ddg_automation_resubscribe" instance="Dotdigitalgroup\Email\Model\Cron" method="resubscribe">
+        <job name="ddg_automation_platform_modified_contacts" instance="Dotdigitalgroup\Email\Model\Cron" method="checkModifiedContacts">
             <schedule>*/15 * * * *</schedule>
         </job>
     </group>

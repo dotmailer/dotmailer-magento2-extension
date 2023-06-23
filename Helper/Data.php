@@ -225,7 +225,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @param int $websiteId
      * @return bool
-     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function isEnabled($websiteId = 0)
     {

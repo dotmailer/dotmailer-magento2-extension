@@ -5,12 +5,11 @@ namespace Dotdigitalgroup\Email\Test\Unit\Model\Newsletter;
 use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Model\Apiconnector\Client;
 use Dotdigitalgroup\Email\Model\Connector\AccountHandler;
+use Dotdigitalgroup\Email\Model\Cron\CronFromTimeSetter;
 use Dotdigitalgroup\Email\Model\Newsletter\Unsubscriber;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact\Collection as ContactCollection;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory as ContactCollectionFactory;
-use Magento\Framework\Stdlib\DateTime\DateTimeFactory;
-use Magento\Framework\Stdlib\DateTime\TimezoneInterfaceFactory;
 use Magento\Store\Api\StoreWebsiteRelationInterface;
 use PHPUnit\Framework\TestCase;
 
@@ -22,6 +21,11 @@ class UnsubscriberTest extends TestCase
     private $helperMock;
 
     /**
+     * @var CronFromTimeSetter|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $cronFromTimeSetterMock;
+
+    /**
      * @var Contact|\PHPUnit_Framework_MockObject_MockObject
      */
     private $contactResourceMock;
@@ -30,16 +34,6 @@ class UnsubscriberTest extends TestCase
      * @var ContactCollectionFactory|\PHPUnit_Framework_MockObject_MockObject
      */
     private $contactCollectionFactoryMock;
-
-    /**
-     * @var DateTimeFactory|\PHPUnit_Framework_MockObject_MockObject
-     */
-    private $dateTimeFactoryMock;
-
-    /**
-     * @var TimezoneInterfaceFactory|\PHPUnit_Framework_MockObject_MockObject
-     */
-    private $timezoneInterfaceFactoryMock;
 
     /**
      * @var AccountHandler|\PHPUnit_Framework_MockObject_MockObject
@@ -54,7 +48,7 @@ class UnsubscriberTest extends TestCase
     /**
      * @var Unsubscriber
      */
-    private $model;
+    private $unsubscriber;
 
     /**
      * Prepare data
@@ -62,21 +56,20 @@ class UnsubscriberTest extends TestCase
     protected function setUp() :void
     {
         $this->helperMock = $this->createMock(Data::class);
+        $this->cronFromTimeSetterMock = $this->createMock(CronFromTimeSetter::class);
         $this->contactResourceMock = $this->createMock(Contact::class);
         $this->contactCollectionFactoryMock = $this->createMock(ContactCollectionFactory::class);
-        $this->timezoneInterfaceFactoryMock = $this->createMock(TimezoneInterfaceFactory::class);
-        $this->dateTimeFactoryMock = $this->createMock(DateTimeFactory::class);
         $this->accountHandlerMock = $this->createMock(AccountHandler::class);
         $this->storeWebsiteRelationInterfaceMock = $this->createMock(StoreWebsiteRelationInterface::class);
 
-        $this->model = new Unsubscriber(
+        $this->unsubscriber = new Unsubscriber(
             $this->helperMock,
+            $this->cronFromTimeSetterMock,
             $this->contactResourceMock,
             $this->contactCollectionFactoryMock,
-            $this->dateTimeFactoryMock,
-            $this->timezoneInterfaceFactoryMock,
             $this->accountHandlerMock,
-            $this->storeWebsiteRelationInterfaceMock
+            $this->storeWebsiteRelationInterfaceMock,
+            ['batchSize' => 3]
         );
     }
 
@@ -98,12 +91,12 @@ class UnsubscriberTest extends TestCase
             );
 
         $filterMethod = self::getMethod('filterRecentlyResubscribedEmails');
-        $filteredA = $filterMethod->invokeArgs($this->model, [
+        $filteredA = $filterMethod->invokeArgs($this->unsubscriber, [
             $this->getLocalContactsWebsiteOne(),
             $this->getSuppressedEmails()
         ]);
 
-        $filteredB = $filterMethod->invokeArgs($this->model, [
+        $filteredB = $filterMethod->invokeArgs($this->unsubscriber, [
             $this->getLocalContactsWebsiteTwo(),
             $this->getSuppressedEmails()
         ]);
@@ -116,7 +109,7 @@ class UnsubscriberTest extends TestCase
             ->method('unsubscribeByWebsiteAndStore')
             ->willReturnOnConsecutiveCalls(count($filteredA), count($filteredB));
 
-        $unsubscribes = $this->model->unsubscribe(3);
+        $unsubscribes = $this->unsubscriber->run();
 
         $this->assertEquals(5, $unsubscribes);
     }
@@ -137,7 +130,7 @@ class UnsubscriberTest extends TestCase
         $this->contactResourceMock->expects($this->never())
             ->method('unsubscribeByWebsiteAndStore');
 
-        $unsubscribes = $this->model->unsubscribe();
+        $unsubscribes = $this->unsubscriber->run();
 
         $this->assertEquals(0, $unsubscribes);
     }
@@ -145,14 +138,14 @@ class UnsubscriberTest extends TestCase
     public function testFilterMethod()
     {
         $filterMethod = self::getMethod('filterRecentlyResubscribedEmails');
-        $filteredA = $filterMethod->invokeArgs($this->model, [
+        $filteredA = $filterMethod->invokeArgs($this->unsubscriber, [
             $this->getLocalContactsWebsiteOne(),
             $this->getSuppressedEmails()
         ]);
 
         $this->assertEquals(2, count($filteredA));
 
-        $filteredB = $filterMethod->invokeArgs($this->model, [
+        $filteredB = $filterMethod->invokeArgs($this->unsubscriber, [
             $this->getLocalContactsWebsiteTwo(),
             $this->getSuppressedEmails()
         ]);
@@ -165,27 +158,6 @@ class UnsubscriberTest extends TestCase
         $this->accountHandlerMock->expects($this->once())
             ->method('getAPIUsersForECEnabledWebsites')
             ->willReturn($this->getApiUserData());
-
-        $fromTime = '2021-11-18T12:17:47+00:00';
-
-        $dateTimeMock = $this->createMock(\DateTime::class);
-        $magentoDateTimeMock = $this->createMock(\Magento\Framework\Stdlib\DateTime\DateTime::class);
-        $timezoneInterfaceMock = $this->createMock(\Magento\Framework\Stdlib\DateTime\TimezoneInterface::class);
-        $this->timezoneInterfaceFactoryMock->expects($this->once())
-            ->method('create')
-            ->willReturn($timezoneInterfaceMock);
-        $timezoneInterfaceMock->expects($this->once())
-            ->method('date')
-            ->willReturn($dateTimeMock);
-        $dateTimeMock->expects($this->once())
-            ->method('sub');
-
-        $this->dateTimeFactoryMock->expects($this->once())
-            ->method('create')
-            ->willReturn($magentoDateTimeMock);
-        $magentoDateTimeMock->expects($this->once())
-            ->method('date')
-            ->willReturn($fromTime);
 
         $clientMock = $this->createMock(Client::class);
         $this->helperMock->expects($this->atLeastOnce())

@@ -3,20 +3,27 @@
 namespace Dotdigitalgroup\Email\Model\Apiconnector\V3;
 
 use Dotdigital\V3\Client as DotdigitalClient;
+use Dotdigital\V3\ClientFactory as DotdigitalClientFactory;
 use Dotdigital\Resources\AbstractResource;
 use Dotdigitalgroup\Email\Helper\Data;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Store\Model\StoreManagerInterface;
+use Magento\Framework\DataObject;
 
 /**
  * @mixin DotdigitalClient
  */
-class Client
+class Client extends DataObject
 {
     /**
      * @var DotdigitalClient
      */
     private $sdk;
+
+    /**
+     * @var DotdigitalClientFactory
+     */
+    private $sdkFactory;
 
     /**
      * @var Data
@@ -31,18 +38,24 @@ class Client
     /**
      * @param Data $helper
      * @param StoreManagerInterface $storeManager
-     * @param DotdigitalClient $sdk
+     * @param DotdigitalClientFactory $sdkFactory
+     * @param array $data
+     *
      * @throws LocalizedException
      */
     public function __construct(
         Data $helper,
         StoreManagerInterface $storeManager,
-        DotdigitalClient $sdk
+        DotdigitalClientFactory $sdkFactory,
+        array $data = []
     ) {
-        $this->sdk = $sdk;
+        $this->sdkFactory = $sdkFactory;
         $this->storeManager = $storeManager;
         $this->helper = $helper;
-        $this->setApiClientContext($this->storeManager->getWebsite()->getId());
+
+        parent::__construct($data);
+
+        $this->setApiClientContext($this->getWebsiteId() ?: $this->storeManager->getWebsite()->getId());
     }
 
     /**
@@ -53,6 +66,7 @@ class Client
      */
     public function setApiClientContext(int $websiteId): self
     {
+        $this->sdk = $this->sdkFactory->create();
         $this->sdk->setApiUser((string) $this->helper->getApiUsername($websiteId));
         $this->sdk->setApiPassword((string) $this->helper->getApiPassword($websiteId));
         $this->sdk->setApiEndpoint((string) $this->helper->getApiEndPointFromConfig($websiteId));
@@ -68,5 +82,15 @@ class Client
     public function __get(string $name): AbstractResource
     {
         return $this->sdk->__get($name);
+    }
+
+    /**
+     * Get website id.
+     *
+     * @return string|int|null
+     */
+    private function getWebsiteId()
+    {
+        return $this->_getData('websiteId');
     }
 }

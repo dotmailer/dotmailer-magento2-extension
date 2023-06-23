@@ -3,8 +3,23 @@
 namespace Dotdigitalgroup\Email\Model;
 
 use Dotdigitalgroup\Email\Helper\Config;
+use Dotdigitalgroup\Email\Model\AbandonedCart\ProgramEnrolment\Enroller;
+use Dotdigitalgroup\Email\Model\Contact\PlatformChangeManagerFactory;
+use Dotdigitalgroup\Email\Model\Cron\CronSubFactory;
 use Dotdigitalgroup\Email\Model\Cron\JobChecker;
+use Dotdigitalgroup\Email\Model\Email\TemplateFactory;
+use Dotdigitalgroup\Email\Model\Newsletter\UnsubscriberFactory;
+use Dotdigitalgroup\Email\Model\Sales\QuoteFactory;
+use Dotdigitalgroup\Email\Model\Sync\AutomationFactory;
+use Dotdigitalgroup\Email\Model\Sync\CampaignFactory;
+use Dotdigitalgroup\Email\Model\Sync\CatalogFactory;
+use Dotdigitalgroup\Email\Model\Sync\ConsentFactory;
+use Dotdigitalgroup\Email\Model\Sync\CustomerFactory;
+use Dotdigitalgroup\Email\Model\Sync\GuestFactory;
+use Dotdigitalgroup\Email\Model\Sync\ImporterFactory;
 use Dotdigitalgroup\Email\Model\Sync\Integration\IntegrationInsightsFactory;
+use Dotdigitalgroup\Email\Model\Sync\OrderFactory;
+use Dotdigitalgroup\Email\Model\Sync\SubscriberFactory;
 
 class Cron
 {
@@ -55,9 +70,9 @@ class Cron
     private $unsubscriberFactory;
 
     /**
-     * @var Newsletter\ResubscriberFactory
+     * @var PlatformChangeManagerFactory
      */
-    private $resubscriberFactory;
+    private $platformChangeManagerFactory;
 
     /**
      * @var Sync\GuestFactory
@@ -110,21 +125,21 @@ class Cron
     private $consentFactory;
 
     /**
-     * @param Sync\CampaignFactory $campaignFactory
-     * @param Sync\OrderFactory $syncOrderFactory
-     * @param Sales\QuoteFactory $quoteFactory
-     * @param Sync\GuestFactory $guestFactory
-     * @param Sync\SubscriberFactory $subscriberFactory
-     * @param Newsletter\UnsubscriberFactory $unsubscriberFactory
-     * @param Newsletter\ResubscriberFactory $resubscriberFactory
-     * @param Sync\CatalogFactory $catalogFactory
-     * @param Sync\ImporterFactory $importerFactory
-     * @param Sync\AutomationFactory $automationFactory
-     * @param Sync\CustomerFactory $customerFactory
-     * @param Sync\ConsentFactory $consentFactory
-     * @param Email\TemplateFactory $templateFactory
-     * @param Cron\CronSubFactory $cronSubFactory
-     * @param AbandonedCart\ProgramEnrolment\Enroller $abandonedCartProgramEnroller
+     * @param CampaignFactory $campaignFactory
+     * @param OrderFactory $syncOrderFactory
+     * @param QuoteFactory $quoteFactory
+     * @param GuestFactory $guestFactory
+     * @param SubscriberFactory $subscriberFactory
+     * @param UnsubscriberFactory $unsubscriberFactory
+     * @param PlatformChangeManagerFactory $platformChangeManagerFactory
+     * @param CatalogFactory $catalogFactory
+     * @param ImporterFactory $importerFactory
+     * @param AutomationFactory $automationFactory
+     * @param CustomerFactory $customerFactory
+     * @param ConsentFactory $consentFactory
+     * @param TemplateFactory $templateFactory
+     * @param CronSubFactory $cronSubFactory
+     * @param Enroller $abandonedCartProgramEnroller
      * @param IntegrationInsightsFactory $integrationInsightsFactory
      * @param MonitorFactory $monitorFactory
      * @param JobChecker $jobChecker
@@ -136,7 +151,7 @@ class Cron
         Sync\GuestFactory $guestFactory,
         Sync\SubscriberFactory $subscriberFactory,
         Newsletter\UnsubscriberFactory $unsubscriberFactory,
-        Newsletter\ResubscriberFactory $resubscriberFactory,
+        PlatformChangeManagerFactory $platformChangeManagerFactory,
         Sync\CatalogFactory $catalogFactory,
         Sync\ImporterFactory $importerFactory,
         Sync\AutomationFactory $automationFactory,
@@ -155,7 +170,7 @@ class Cron
         $this->guestFactory      = $guestFactory;
         $this->subscriberFactory = $subscriberFactory;
         $this->unsubscriberFactory = $unsubscriberFactory;
-        $this->resubscriberFactory = $resubscriberFactory;
+        $this->platformChangeManagerFactory = $platformChangeManagerFactory;
         $this->catalogFactory    = $catalogFactory;
         $this->importerFactory   = $importerFactory;
         $this->automationFactory = $automationFactory;
@@ -392,27 +407,27 @@ class Cron
             ->create(
                 ['data' => ['fromTime' => $this->jobChecker->getLastJobFinishedAt($jobCode)]]
             )
-            ->unsubscribe();
+            ->run();
     }
 
     /**
-     * Resubscribe recent subscribers from Dotdigital.
+     * This job checks recently modified contacts on Dotdigital.
      *
      * @return void
      */
-    public function resubscribe()
+    public function checkModifiedContacts()
     {
-        $jobCode = 'ddg_automation_resubscribe';
+        $jobCode = 'ddg_automation_platform_modified_contacts';
 
         if ($this->jobChecker->hasAlreadyBeenRun($jobCode)) {
             return;
         }
 
-        $this->resubscriberFactory
+        $this->platformChangeManagerFactory
             ->create(
                 ['data' => ['fromTime' => $this->jobChecker->getLastJobFinishedAt($jobCode)]]
             )
-            ->subscribe();
+            ->run();
     }
 
     /**
