@@ -2,13 +2,16 @@
 
 namespace Dotdigitalgroup\Email\Model\Sync\Consent;
 
+use Dotdigital\V3\Models\Collection;
+use Dotdigital\V3\Models\ContactCollection;
 use Dotdigitalgroup\Email\Model\Apiconnector\V3\ClientFactory;
 use Dotdigitalgroup\Email\Model\ImporterFactory;
 use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigital\Exception\ResponseValidationException;
-use Http\Client\Exception;
 use Dotdigitalgroup\Email\Model\Importer;
 use Dotdigitalgroup\Email\Model\ResourceModel\Consent;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Serialize\SerializerInterface;
 
 class ConsentBatchProcessor
 {
@@ -33,47 +36,55 @@ class ConsentBatchProcessor
     private $consentResource;
 
     /**
+     * @var SerializerInterface
+     */
+    private $serializer;
+
+    /**
      * @param ClientFactory $clientFactory
      * @param ImporterFactory $importerFactory
      * @param Logger $logger
      * @param Consent $consentResource
+     * @param SerializerInterface $serializer
      */
     public function __construct(
         ClientFactory $clientFactory,
         ImporterFactory $importerFactory,
         Logger $logger,
-        Consent $consentResource
+        Consent $consentResource,
+        SerializerInterface $serializer
     ) {
         $this->clientFactory = $clientFactory;
         $this->importerFactory = $importerFactory;
         $this->logger = $logger;
         $this->consentResource = $consentResource;
+        $this->serializer = $serializer;
     }
 
     /**
      * Process.
      *
-     * @param \Dotdigital\V3\Models\Collection $dotdigitalCollection
+     * @param Collection $dotdigitalCollection
      * @param mixed $websiteId
      * @param array $consentIds
      * @return void
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws LocalizedException
      */
-    public function process(\Dotdigital\V3\Models\Collection $dotdigitalCollection, $websiteId, array $consentIds)
+    public function process(Collection $dotdigitalCollection, $websiteId, array $consentIds)
     {
         if (!$dotdigitalCollection->count()) {
             return;
         }
 
         try {
-            $importId = $this->pushBatch($dotdigitalCollection);
+            $importId = $this->pushBatch($dotdigitalCollection, $websiteId);
             if ($importId) {
-                $this->addInProgressBatchToImportTable($dotdigitalCollection, $websiteId, $importId);
+                $this->addInProgressBatchToImportTable($dotdigitalCollection->all(), $websiteId, $importId);
             }
-        } catch (ResponseValidationException | Exception | \Exception $e) {
+        } catch (ResponseValidationException | \Exception $e) {
             $this->logger->debug((string) $e);
             $this->addFailedBatchToImportTable(
-                $dotdigitalCollection,
+                $dotdigitalCollection->all(),
                 $websiteId,
                 $e->getMessage()
             );
@@ -85,37 +96,65 @@ class ConsentBatchProcessor
     /**
      * Push batch.
      *
-     * @param \Dotdigital\V3\Models\Collection $dotdigitalCollection
+     * @param ContactCollection $dotdigitalCollection
+     * @param string|int $websiteId
      * @return string
-     * @throws \Exception
      */
-    private function pushBatch(\Dotdigital\V3\Models\Collection $dotdigitalCollection)
+    private function pushBatch(Collection $dotdigitalCollection, $websiteId):string
     {
-        //Mocked push
-        $this->logger->info(
-            sprintf('Import id %s pushed to Dotdigital for consent', $importId = base64_encode(random_bytes(10)))
-        );
+        $response = $this->clientFactory
+            ->create(['data' => ['websiteId' => $websiteId]])
+            ->contacts
+            ->import($dotdigitalCollection);
 
-        return $importId;
+        return $this->getImportIdFromResponse($response);
     }
 
     /**
-     * Add in progress batch to import table.
+     * Get import id from serialized JSON.
      *
-     * @param \Dotdigital\V3\Models\Collection $dotdigitalCollection
-     * @param mixed $websiteId
+     * @param string $response
+     *
+     * @return string
+     */
+    private function getImportIdFromResponse($response)
+    {
+        try {
+            $responseData = $this->serializer->unserialize($response);
+            return $responseData['importId'] ?? '';
+        } catch (\InvalidArgumentException $e) {
+            $this->logger->error($e->getMessage());
+            return '';
+        }
+    }
+
+    /**
+     * Mark as imported.
+     *
+     * @param array $consentIds
+     * @return void
+     * @throws LocalizedException
+     */
+    private function markAsImported(array $consentIds)
+    {
+        $this->consentResource->setConsentRecordsImportedByIds($consentIds);
+    }
+
+    /**
+     * Add batch to importer as 'Importing'.
+     *
+     * @param array $batch
+     * @param string|int $websiteId
      * @param string $importId
+     *
      * @return void
      */
-    private function addInProgressBatchToImportTable(
-        \Dotdigital\V3\Models\Collection $dotdigitalCollection,
-        $websiteId,
-        string $importId
-    ) {
+    private function addInProgressBatchToImportTable(array $batch, $websiteId, string $importId)
+    {
         $this->importerFactory->create()
             ->registerQueue(
                 Importer::MODE_CONSENT,
-                $dotdigitalCollection->toJson(),
+                $batch,
                 Importer::MODE_BULK,
                 $websiteId,
                 false,
@@ -126,40 +165,29 @@ class ConsentBatchProcessor
     }
 
     /**
-     * Mark as imported.
-     *
-     * @param array $consentIds
-     * @return void
-     * @throws \Magento\Framework\Exception\LocalizedException
-     */
-    private function markAsImported(array $consentIds)
-    {
-        $this->consentResource->setConsentRecordsImportedByIds($consentIds);
-    }
-
-    /**
      * Add failed batch to import table.
      *
-     * @param \Dotdigital\V3\Models\Collection $dotdigitalCollection
-     * @param mixed $websiteId
-     * @param string $importId
+     * @param array $batch
+     * @param string|int $websiteId
+     * @param string $message
      * @return void
      */
     private function addFailedBatchToImportTable(
-        \Dotdigital\V3\Models\Collection $dotdigitalCollection,
+        array $batch,
         $websiteId,
-        string $importId
+        string $message = ''
     ) {
         $this->importerFactory->create()
             ->registerQueue(
                 Importer::MODE_CONSENT,
-                $dotdigitalCollection->toJson(),
+                $batch,
                 Importer::MODE_BULK,
                 $websiteId,
                 false,
                 0,
                 Importer::FAILED,
-                $importId
+                '',
+                $message
             );
     }
 }
