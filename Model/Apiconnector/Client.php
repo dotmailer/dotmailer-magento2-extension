@@ -13,7 +13,7 @@ use Magento\Framework\Filesystem\DriverInterface;
 /**
  * Dotdigital REST V2 api client.
  */
-class Client extends Rest
+class Client extends Rest implements ClientInterface
 {
     private const REST_ACCOUNT_INFO = '/v2/account-info';
     private const REST_CONTACTS = '/v2/contacts/';

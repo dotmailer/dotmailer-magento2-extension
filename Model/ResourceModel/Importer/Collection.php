@@ -36,10 +36,11 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
      * Get imports marked as importing for one or more websites.
      *
      * @param array $websiteIds
+     * @param array $types
      *
      * @return $this|boolean
      */
-    public function getItemsWithImportingStatus($websiteIds)
+    public function getItemsWithImportingStatus($websiteIds, array $types)
     {
         $collection = $this->addFieldToFilter(
             'import_status',
@@ -50,6 +51,16 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
                 'website_id',
                 ['in' => $websiteIds]
             );
+
+        $importTypeFilter = [
+            ['in' => $types]
+        ];
+
+        if (in_array('Catalog', $types)) {
+            $importTypeFilter[] = ['like' => '%Catalog%'];
+        }
+
+        $this->addFieldToFilter('import_type', $importTypeFilter);
 
         if ($collection->getSize()) {
             return $collection;

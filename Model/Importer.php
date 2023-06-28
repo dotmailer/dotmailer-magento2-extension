@@ -200,6 +200,9 @@ class Importer extends \Magento\Framework\Model\AbstractModel
     /**
      * Saves item.
      *
+     * @deprecated Use the resource model directly in classes.
+     * @see \Dotdigitalgroup\Email\Model\ResourceModel\Importer
+     *
      * @param \Dotdigitalgroup\Email\Model\Importer $itemToSave
      *
      * @return void
@@ -213,6 +216,9 @@ class Importer extends \Magento\Framework\Model\AbstractModel
     /**
      * Get imports marked as importing for one or more websites.
      *
+     * @deprecated Use a collection factory directly in classes.
+     * @see \Dotdigitalgroup\Email\Model\ResourceModel\Importer\Collection::getItemsWithImportingStatus()
+     *
      * @param array $websiteIds
      *
      * @return \Dotdigitalgroup\Email\Model\ResourceModel\Importer\Collection|bool
@@ -220,7 +226,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
     public function _getImportingItems($websiteIds)
     {
         return $this->importerCollection->create()
-            ->getItemsWithImportingStatus($websiteIds);
+            ->getItemsWithImportingStatus($websiteIds, []);
     }
 
     /**

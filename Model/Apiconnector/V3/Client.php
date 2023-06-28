@@ -6,14 +6,15 @@ use Dotdigital\V3\Client as DotdigitalClient;
 use Dotdigital\V3\ClientFactory as DotdigitalClientFactory;
 use Dotdigital\Resources\AbstractResource;
 use Dotdigitalgroup\Email\Helper\Data;
+use Dotdigitalgroup\Email\Model\Apiconnector\ClientInterface;
+use Magento\Framework\DataObject;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Store\Model\StoreManagerInterface;
-use Magento\Framework\DataObject;
 
 /**
  * @mixin DotdigitalClient
  */
-class Client extends DataObject
+class Client extends DataObject implements ClientInterface
 {
     /**
      * @var DotdigitalClient
