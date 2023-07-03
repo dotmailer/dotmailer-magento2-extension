@@ -4,7 +4,7 @@ namespace Dotdigitalgroup\Email\Helper;
 
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Store\Model\ScopeInterface;
-use Zend\Mail\Transport\SmtpOptions;
+use Laminas\Mail\Transport\SmtpOptions;
 
 /**
  * Transactional emails configuration data values.

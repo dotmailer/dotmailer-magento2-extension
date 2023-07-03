@@ -2,8 +2,8 @@
 
 namespace Dotdigitalgroup\Email\Model\Mail;
 
-use Zend\Mail\Transport\Smtp;
-use Zend\Mail\Transport\SmtpOptions;
+use Laminas\Mail\Transport\Smtp;
+use Laminas\Mail\Transport\SmtpOptions;
 
 class ZendMailTransportSmtp2Factory
 {

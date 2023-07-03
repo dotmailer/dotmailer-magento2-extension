@@ -2,7 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Model\Events\Response;
 
-use Zend\Http\Response;
+use Laminas\Http\Response;
 
 class StreamedResponse extends Response
 {

@@ -4,8 +4,8 @@ namespace Dotdigitalgroup\Email\Helper;
 
 use Dotdigitalgroup\Email\Model\Events\EventInterface;
 use Dotdigitalgroup\Email\Model\Events\Response\StreamedResponse;
-use Zend\Http\Response;
-use Zend\Http\Request;
+use Laminas\Http\Response;
+use Laminas\Http\Request;
 use Magento\Setup\Exception;
 use Psr\Log\LoggerInterface;
 
