@@ -81,8 +81,15 @@ class ConsentBatchProcessor
             if ($importId) {
                 $this->addInProgressBatchToImportTable($dotdigitalCollection->all(), $websiteId, $importId);
             }
-        } catch (ResponseValidationException | \Exception $e) {
-            $this->logger->debug((string) $e);
+        } catch (ResponseValidationException $e) {
+            $this->logger->debug(
+                sprintf(
+                    '%s: %s.',
+                    'Error when pushing consent batch',
+                    $e->getMessage()
+                ),
+                [$e->getDetails()]
+            );
             $this->addFailedBatchToImportTable(
                 $dotdigitalCollection->all(),
                 $websiteId,
