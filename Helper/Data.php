@@ -655,7 +655,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                 ScopeConfigInterface::SCOPE_TYPE_DEFAULT
             );
         }
-        return $apiEndpoint;
+        return trim($apiEndpoint);
     }
 
     /**
@@ -665,10 +665,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getApiUsername($websiteId = 0)
     {
-        return $this->getWebsiteConfig(
+        return trim($this->getWebsiteConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_USERNAME,
             $websiteId
-        );
+        ));
     }
 
     /**
@@ -678,10 +678,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getApiPassword($websiteId = 0)
     {
-        return $this->getWebsiteConfig(
+        return trim($this->getWebsiteConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_PASSWORD,
             $websiteId
-        );
+        ));
     }
 
     /**

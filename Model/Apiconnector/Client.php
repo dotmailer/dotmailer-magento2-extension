@@ -125,7 +125,7 @@ class Client extends Rest implements ClientInterface
      */
     public function setApiEndpoint($apiEndpoint)
     {
-        $this->apiEndpoint = trim($apiEndpoint);
+        $this->apiEndpoint = $apiEndpoint;
     }
 
     /**
