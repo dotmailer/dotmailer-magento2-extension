@@ -20,7 +20,7 @@ abstract class AbstractBulkUpdater extends AbstractDataMigration
      *
      * @return void
      */
-    private function bulkUpdate()
+    protected function bulkUpdate()
     {
         foreach ($this->fetchRecords() as $record) {
             $this->rowsAffected += $this->resourceConnection
@@ -38,7 +38,7 @@ abstract class AbstractBulkUpdater extends AbstractDataMigration
      *
      * @return array
      */
-    private function fetchRecords()
+    protected function fetchRecords()
     {
         return $this->resourceConnection
             ->getConnection()
@@ -47,6 +47,8 @@ abstract class AbstractBulkUpdater extends AbstractDataMigration
 
     /**
      * Get the bindings for this update
+     *
+     * The bindings are the column-value pairs we are updating in the query.
      *
      * @param mixed $bind
      *

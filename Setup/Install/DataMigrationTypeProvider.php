@@ -57,6 +57,11 @@ class DataMigrationTypeProvider
     private $updateEmailContactTableGuestSales;
 
     /**
+     * @var array
+     */
+    private array $enabledMigrationTypes;
+
+    /**
      * @param Type\InsertEmailContactTableCustomers $insertEmailContactTableCustomers
      * @param Type\InsertEmailContactTableSubscribers $insertEmailContactTableSubscribers
      * @param Type\InsertEmailContactTableCustomerSales $insertEmailContactTableCustomerSales
@@ -93,43 +98,18 @@ class DataMigrationTypeProvider
     }
 
     /**
-     * Get types associated with this provider
+     * Get types.
+     *
+     * If migration is being run for a single table, get the related migration types.
+     * Otherwise, get all available types.
      *
      * @param string|null $table
+     * @param array $afterMigrationTypes
      *
      * @return array
-     * @throws \ErrorException
-     * @throws \Magento\Framework\Exception\LocalizedException
-     * @throws \Zend_Db_Statement_Exception
      */
-    public function getTypes($table = null)
+    public function getTypes(string $table = null, array $afterMigrationTypes = [])
     {
-        return $table ? $this->getTypesFromTable($table) : get_object_vars($this);
-    }
-
-    /**
-     * Filter all types for those that are enabled.
-     *
-     * @param string|null $table
-     * @return mixed
-     */
-    public function getEnabledTypes($table = null)
-    {
-        return $this->filterTypes($this->getTypes($table));
-    }
-
-    /**
-     * If migration is being run for a single table, get the related migration types.
-     *
-     * @param string $table
-     * @throws \ErrorException
-     * @throws \Magento\Framework\Exception\LocalizedException
-     * @throws \Zend_Db_Statement_Exception
-     */
-    private function getTypesFromTable($table)
-    {
-        $types = [];
-
         switch ($table) {
             case SchemaInterface::EMAIL_CONTACT_TABLE:
                 $types = $this->getContactTypes();
@@ -146,9 +126,31 @@ class DataMigrationTypeProvider
             case SchemaInterface::EMAIL_WISHLIST_TABLE:
                 $types = $this->getWishlistTypes();
                 break;
+            default:
+                $types = $this->getContactTypes() +
+                    $this->getCatalogTypes() +
+                    $this->getOrderTypes() +
+                    $this->getReviewTypes() +
+                    $this->getWishlistTypes();
         }
 
-        return $types;
+        return $types + $afterMigrationTypes;
+    }
+
+    /**
+     * Filter all types for those that are enabled.
+     *
+     * @param string|null $table
+     *
+     * @return array
+     */
+    public function getEnabledTypes(string $table = null)
+    {
+        if (isset($this->enabledMigrationTypes)) {
+            return $this->enabledMigrationTypes;
+        }
+        $this->enabledMigrationTypes = $this->filterTypes($this->getTypes($table));
+        return $this->enabledMigrationTypes;
     }
 
     /**
@@ -159,53 +161,61 @@ class DataMigrationTypeProvider
     public function getContactTypes()
     {
         return [
-            $this->insertEmailContactTableCustomers,
-            $this->insertEmailContactTableSubscribers,
-            $this->updateContactsWithSubscriberCustomers,
-            $this->insertEmailContactTableCustomerSales,
-            $this->updateEmailContactTableCustomerSales,
-            $this->updateEmailContactTableGuestSales
+            'insertEmailContactTableCustomers' => $this->insertEmailContactTableCustomers,
+            'insertEmailContactTableSubscribers' => $this->insertEmailContactTableSubscribers,
+            'updateContactsWithSubscriberCustomers' => $this->updateContactsWithSubscriberCustomers,
+            'insertEmailContactTableCustomerSales' => $this->insertEmailContactTableCustomerSales,
+            'updateEmailContactTableCustomerSales' => $this->updateEmailContactTableCustomerSales,
+            'updateEmailContactTableGuestSales' => $this->updateEmailContactTableGuestSales
         ];
     }
 
     /**
      * Migration types for email_order.
      *
-     * @return Type\InsertEmailOrderTable[]
+     * @return array
      */
     public function getOrderTypes()
     {
-        return [$this->insertEmailOrderTable];
+        return [
+            'insertEmailOrderTable' => $this->insertEmailOrderTable
+        ];
     }
 
     /**
      * Migration types for email_review.
      *
-     * @return Type\InsertEmailReviewTable[]
+     * @return array
      */
     public function getReviewTypes()
     {
-        return [$this->insertEmailReviewTable];
+        return [
+            'insertEmailReviewTable' => $this->insertEmailReviewTable
+        ];
     }
 
     /**
      * Migration types for email_wishlist.
      *
-     * @return Type\InsertEmailWishlistTable[]
+     * @return array
      */
     public function getWishlistTypes()
     {
-        return [$this->insertEmailWishlistTable];
+        return [
+            'insertEmailWishlistTable' => $this->insertEmailWishlistTable
+        ];
     }
 
     /**
      * Migration types for email_catalog.
      *
-     * @return Type\InsertEmailCatalogTable[]
+     * @return array
      */
     public function getCatalogTypes()
     {
-        return [$this->insertEmailCatalogTable];
+        return [
+            'insertEmailCatalogTable' => $this->insertEmailCatalogTable
+        ];
     }
 
     /**
