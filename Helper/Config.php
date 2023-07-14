@@ -2,7 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Helper;
 
-use Dotdigitalgroup\Email\Model\Consent;
+use Magento\Customer\Model\Config\Share;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\Store\Model\ScopeInterface;
@@ -671,5 +671,19 @@ class Config extends AbstractHelper
     public function isConsentSubscriberEnabled($websiteId)
     {
         return $this->getWebsiteConfig(self::XML_PATH_CONSENT_EMAIL_ENABLED, $websiteId);
+    }
+
+    /**
+     * Check if Share Customer Accounts is set to 'Global' in settings.
+     *
+     * @return bool
+     */
+    public function isAccountSharingGlobal(): bool
+    {
+        $config = $this->scopeConfig->getValue(
+            Share::XML_PATH_CUSTOMER_ACCOUNT_SHARE
+        );
+
+       return $config == Share::SHARE_GLOBAL;
     }
 }

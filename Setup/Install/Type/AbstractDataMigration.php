@@ -2,7 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Setup\Install\Type;
 
-use Magento\Customer\Model\Config\Share;
+use Dotdigitalgroup\Email\Helper\Config;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\ResourceConnection;
 use Magento\Framework\DB\Select;
@@ -38,16 +38,23 @@ abstract class AbstractDataMigration
     protected $scopeConfig;
 
     /**
-     * AbstractType constructor
+     * @var Config
+     */
+    protected $config;
+
+    /**
      * @param ResourceConnection $resourceConnection
      * @param ScopeConfigInterface $scopeConfig
+     * @param Config $config
      */
     public function __construct(
         ResourceConnection $resourceConnection,
-        ScopeConfigInterface $scopeConfig
+        ScopeConfigInterface $scopeConfig,
+        Config $config
     ) {
         $this->resourceConnection = $resourceConnection;
         $this->scopeConfig = $scopeConfig;
+        $this->config = $config;
     }
 
     /**
@@ -82,24 +89,6 @@ abstract class AbstractDataMigration
     public function getTableName()
     {
         return $this->tableName;
-    }
-
-    /**
-     * Check if Share Customer Accounts is set to 'Global' in settings.
-     *
-     * @return bool
-     */
-    public function isAccountSharingGlobal(): bool
-    {
-        $config = $this->scopeConfig->getValue(
-            Share::XML_PATH_CUSTOMER_ACCOUNT_SHARE
-        );
-
-        if ($config == Share::SHARE_GLOBAL) {
-            return true;
-        }
-
-        return false;
     }
 
     /**

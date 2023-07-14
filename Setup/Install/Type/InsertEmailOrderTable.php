@@ -2,6 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Setup\Install\Type;
 
+use Dotdigitalgroup\Email\Helper\Config;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory;
 use Dotdigitalgroup\Email\Setup\SchemaInterface as Schema;
 use Magento\Framework\App\Config\ScopeConfigInterface;
@@ -38,19 +39,22 @@ class InsertEmailOrderTable extends AbstractBatchInserter implements InsertTypeI
      * @param StoreManagerInterface $storeManager
      * @param ResourceConnection $resourceConnection
      * @param ScopeConfigInterface $scopeConfig
+     * @param Config $config
      */
     public function __construct(
         CollectionFactory $contactCollectionFactory,
         StoreManagerInterface $storeManager,
         ResourceConnection $resourceConnection,
-        ScopeConfigInterface $scopeConfig
+        ScopeConfigInterface $scopeConfig,
+        Config $config
     ) {
         $this->contactCollectionFactory = $contactCollectionFactory;
         $this->storeManager = $storeManager;
         $this->resourceConnection = $resourceConnection;
         $this->scopeConfig = $scopeConfig;
+        $this->config = $config;
 
-        parent::__construct($resourceConnection, $scopeConfig);
+        parent::__construct($resourceConnection, $scopeConfig, $config);
     }
 
     /**
