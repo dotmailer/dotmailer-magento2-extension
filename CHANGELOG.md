@@ -1,3 +1,24 @@
+# 4.22.0-RC1
+
+### What's new
+- Consent configuration has been moved to its own section of the Dotdigital admin.
+- Consent insight is no longer synced alongside subscribers; it has its own separate cron.
+- There is a new cron to reflect changes to subscription status in Dotdigital; `ddg_automation_platform_modified_contacts` replaces `ddg_automation_resubscribe`.
+- We have integrated our own PHP SDK to make API calls to the new V3 Dotdigital API (for multi-channel sync).
+- Address books have been renamed to 'Lists' in line with the Dotdigital convention.
+- Subscriber_Update imports are now named Subscriber_Unsubscribe.
+- The module now requires PHP 7.4+ and Magento 2.3.7+.
+
+### Improvements
+- The code powering our customer account subscriptions dashboard has been updated to make it more efficient and extensible.
+- We have refactored our importer code to handle imports to both V2 and V3 endpoints.
+- We updated our code to prevent saving an empty string in the `email` column in `email_contact`.
+- All references to Zend classes have been replaced with their Laminas equivalents.
+- We've made some changes to the table migration code to allow it to be extended by our other modules.
+
+### Bug fixes
+- We've prevented `null` values being passed to `round()` in cart insight.
+
 # 4.21.2
 
 ### Improvements
