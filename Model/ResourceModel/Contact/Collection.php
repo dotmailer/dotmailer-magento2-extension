@@ -117,6 +117,20 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     }
 
     /**
+     * Get guest by email and website id.
+     *
+     * @param string $email
+     * @param string|int $websiteId
+     * @return $this
+     */
+    public function loadNonCustomerByEmailAndWebsiteId(string $email, $websiteId)
+    {
+        return $this->addFieldToFilter('email', $email)
+            ->addFieldToFilter('website_id', $websiteId)
+            ->addFieldToFilter('customer_id', 0);
+    }
+
+    /**
      * Load all customers matching the supplied customer id.
      *
      * @param string $id

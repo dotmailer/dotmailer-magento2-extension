@@ -10,8 +10,8 @@ use Dotdigitalgroup\Email\Model\ImporterFactory;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory;
 use Dotdigitalgroup\Email\Helper\Config;
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\Exception\AlreadyExistsException;
 use Magento\Framework\Registry;
-use Magento\Framework\Stdlib\DateTime;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Store\Api\StoreWebsiteRelationInterface;
 
@@ -52,11 +52,6 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
     private $importerFactory;
 
     /**
-     * @var \Magento\Framework\Stdlib\DateTime
-     */
-    private $dateTime;
-
-    /**
      * @var StoreManagerInterface
      */
     private $storeManager;
@@ -83,7 +78,6 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
      * @param Data $data
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contactResource
      * @param ImporterFactory $importerFactory
-     * @param DateTime $dateTime
      * @param StoreManagerInterface $storeManager
      * @param ScopeConfigInterface $scopeConfig
      * @param Config $config
@@ -96,7 +90,6 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contactResource,
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
-        \Magento\Framework\Stdlib\DateTime $dateTime,
         StoreManagerInterface $storeManager,
         ScopeConfigInterface $scopeConfig,
         Config $config,
@@ -108,7 +101,6 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
         $this->helper = $data;
         $this->registry = $registry;
         $this->importerFactory = $importerFactory;
-        $this->dateTime = $dateTime;
         $this->storeManager = $storeManager;
         $this->scopeConfig = $scopeConfig;
         $this->config = $config;
@@ -146,10 +138,9 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
             $matchingCustomers = $this->contactCollectionFactory->create()
                 ->loadCustomersById($customerId);
 
-            // Create
             if ($matchingCustomers->getSize() == 0) {
                 $contactModel = $this->contactCollectionFactory->create()
-                    ->loadByCustomerEmail($email, $customer->getWebsiteId());
+                    ->loadByCustomerEmail($email, $websiteId);
 
                 if ($contactModel) {
                     $contactModel->setCustomerId($customerId);
@@ -166,17 +157,10 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
                 return $this;
             }
 
-            // Update matching customers
             foreach ($matchingCustomers as $contactModel) {
                 $contactModel = $this->checkForEmailUpdate($contactModel, $email);
-                $websiteIdBefore = $contactModel->getWebsiteId();
-                if ($websiteId != $websiteIdBefore) {
-                    if ($this->config->isAccountSharingGlobal()) {
-                        $this->createNewRowForMatchingCustomer($contactModel, $websiteId);
-                    } else {
-                        $contactModel = $this->updateRowForMatchingCustomer($contactModel, $websiteId);
-                    }
-                }
+                $contactModel = $this->checkForWebsiteUpdate($contactModel, $websiteId);
+
                 $contactModel->setEmailImported(Contact::EMAIL_CONTACT_NOT_IMPORTED);
                 $this->contactResource->save($contactModel);
             }
@@ -192,8 +176,9 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
      *
      * @param Contact $contactModel
      * @param string|int $websiteId
+     *
      * @return void
-     * @throws \Magento\Framework\Exception\AlreadyExistsException
+     * @throws AlreadyExistsException
      */
     private function createNewRowForMatchingCustomer(Contact $contactModel, $websiteId)
     {
@@ -216,8 +201,9 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
      *
      * @param Contact $contactModel
      * @param string|int $websiteId
+     *
      * @return Contact
-     * @throws \Magento\Framework\Exception\AlreadyExistsException
+     * @throws AlreadyExistsException
      */
     private function updateRowForMatchingCustomer(Contact $contactModel, $websiteId)
     {
@@ -230,19 +216,21 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
      * Check for email update.
      *
      * @param Contact $contactModel
-     * @param string $email
+     * @param string $newEmail
+     *
      * @return Contact
+     * @throws AlreadyExistsException|\Exception
      */
-    private function checkForEmailUpdate(Contact $contactModel, string $email)
+    private function checkForEmailUpdate(Contact $contactModel, string $newEmail)
     {
         $emailBefore = $contactModel->getEmail();
         // email change detected
-        if ($email != $emailBefore) {
-            $contactModel->setEmail($email);
+        if ($newEmail != $emailBefore) {
+            $contactModel->setEmail($newEmail);
 
             $data = [
                 'emailBefore' => $emailBefore,
-                'email' => $email
+                'email' => $newEmail
             ];
 
             $this->importerFactory->create()
@@ -252,8 +240,32 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
                     Importer::MODE_CONTACT_EMAIL_UPDATE,
                     $contactModel->getWebsiteId()
                 );
+
+            $this->removeAnyNonCustomerRowMatchingNewEmail($newEmail, $contactModel->getWebsiteId());
         }
 
+        return $contactModel;
+    }
+
+    /**
+     * Check for change of website association.
+     *
+     * @param Contact $contactModel
+     * @param string|int $newWebsiteId
+     *
+     * @return Contact
+     * @throws AlreadyExistsException
+     */
+    private function checkForWebsiteUpdate(Contact $contactModel, $newWebsiteId)
+    {
+        $websiteIdBefore = $contactModel->getWebsiteId();
+        if ($newWebsiteId != $websiteIdBefore) {
+            if ($this->config->isAccountSharingGlobal()) {
+                $this->createNewRowForMatchingCustomer($contactModel, $newWebsiteId);
+            } else {
+                $contactModel = $this->updateRowForMatchingCustomer($contactModel, $newWebsiteId);
+            }
+        }
         return $contactModel;
     }
 
@@ -267,5 +279,29 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
     {
         $storeIds = $this->storeWebsiteRelation->getStoreByWebsiteId($websiteId);
         return reset($storeIds);
+    }
+
+    /**
+     * Remove any non-customer matching the updated email.
+     *
+     * @param string $email
+     * @param string|int $websiteId
+     *
+     * @return void
+     * @throws \Exception
+     */
+    private function removeAnyNonCustomerRowMatchingNewEmail($email, $websiteId)
+    {
+        $orphaned = $this->contactCollectionFactory->create()
+            ->loadNonCustomerByEmailAndWebsiteId(
+                $email,
+                $websiteId
+            );
+
+        if ($orphaned->getSize()) {
+            /** @var Contact $row */
+            $row = $orphaned->getFirstItem();
+            $this->contactResource->delete($row);
+        }
     }
 }
