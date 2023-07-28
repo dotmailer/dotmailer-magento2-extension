@@ -10,6 +10,7 @@ use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory as Conta
 use Dotdigitalgroup\Email\Model\Sync\Export\CsvHandler;
 use Dotdigitalgroup\Email\Model\Sync\Export\SalesDataManager;
 use Dotdigitalgroup\Email\Model\Sync\Subscriber\SubscriberExporter;
+use Dotdigitalgroup\Email\Model\Sync\Subscriber\SubscriberExporterFactory;
 use Dotdigitalgroup\Email\Model\Sync\Subscriber\SubscriberWithSalesExporter;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Store\Api\Data\WebsiteInterface;
@@ -43,9 +44,9 @@ class SubscriberWithSalesExporterTest extends TestCase
     private $salesDataManagerMock;
 
     /**
-     * @var SubscriberExporter|\PHPUnit\Framework\MockObject\MockObject
+     * @var SubscriberExporterFactory|\PHPUnit\Framework\MockObject\MockObject
      */
-    private $subscriberExporterMock;
+    private $subscriberExporterFactoryMock;
 
     /**
      * @var ScopeConfigInterface|\PHPUnit\Framework\MockObject\MockObject
@@ -74,7 +75,7 @@ class SubscriberWithSalesExporterTest extends TestCase
         $this->connectorSubscriberFactoryMock = $this->createMock(ConnectorSubscriberFactory::class);
         $this->contactCollectionFactoryMock = $this->createMock(ContactCollectionFactory::class);
         $this->salesDataManagerMock = $this->createMock(SalesDataManager::class);
-        $this->subscriberExporterMock = $this->createMock(SubscriberExporter::class);
+        $this->subscriberExporterFactoryMock = $this->createMock(SubscriberExporterFactory::class);
         $this->scopeConfigMock = $this->createMock(ScopeConfigInterface::class);
         $this->csvHandlerMock = $this->createMock(CsvHandler::class);
 
@@ -101,7 +102,7 @@ class SubscriberWithSalesExporterTest extends TestCase
             $this->connectorSubscriberFactoryMock,
             $this->contactCollectionFactoryMock,
             $this->salesDataManagerMock,
-            $this->subscriberExporterMock,
+            $this->subscriberExporterFactoryMock,
             $this->scopeConfigMock,
             $this->csvHandlerMock
         );
