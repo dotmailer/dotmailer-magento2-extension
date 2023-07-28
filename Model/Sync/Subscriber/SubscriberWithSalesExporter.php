@@ -46,9 +46,9 @@ class SubscriberWithSalesExporter extends AbstractExporter
     private $consentDataManager;
 
     /**
-     * @var SubscriberExporter
+     * @var SubscriberExporterFactory
      */
-    private $subscriberExporter;
+    private $subscriberExporterFactory;
 
     /**
      * @var ScopeConfigInterface
@@ -62,7 +62,7 @@ class SubscriberWithSalesExporter extends AbstractExporter
      * @param ContactCollectionFactory $contactCollectionFactory
      * @param SalesDataManager $salesDataManager
      * @param ConsentDataManager $consentDataManager
-     * @param SubscriberExporter $subscriberExporter
+     * @param SubscriberExporterFactory $subscriberExporterFactory
      * @param ScopeConfigInterface $scopeConfig
      * @param CsvHandler $csvHandler
      */
@@ -73,7 +73,7 @@ class SubscriberWithSalesExporter extends AbstractExporter
         ContactCollectionFactory $contactCollectionFactory,
         SalesDataManager $salesDataManager,
         ConsentDataManager $consentDataManager,
-        SubscriberExporter $subscriberExporter,
+        SubscriberExporterFactory $subscriberExporterFactory,
         ScopeConfigInterface $scopeConfig,
         CsvHandler $csvHandler
     ) {
@@ -83,7 +83,7 @@ class SubscriberWithSalesExporter extends AbstractExporter
         $this->contactCollectionFactory = $contactCollectionFactory;
         $this->salesDataManager = $salesDataManager;
         $this->consentDataManager = $consentDataManager;
-        $this->subscriberExporter = $subscriberExporter;
+        $this->subscriberExporterFactory = $subscriberExporterFactory;
         $this->scopeConfig = $scopeConfig;
         parent::__construct($csvHandler);
     }
@@ -163,11 +163,10 @@ class SubscriberWithSalesExporter extends AbstractExporter
      */
     public function setCsvColumns(WebsiteInterface $website)
     {
-        if (empty($this->subscriberExporter->getCsvColumns())) {
-            $this->subscriberExporter->setCsvColumns($website);
-        }
+        $subscriberExporter = $this->subscriberExporterFactory->create();
+        $subscriberExporter->setCsvColumns($website);
 
-        $this->columns = $this->subscriberExporter->getCsvColumns() +
+        $this->columns = $subscriberExporter->getCsvColumns() +
             $this->getColumnsForMappedSalesDataFields($website);
     }
 
