@@ -19,6 +19,11 @@
 ### Bug fixes
 - We've prevented `null` values being passed to `round()` in cart insight.
 
+# 4.21.3
+
+### Bug fixes
+- We fixed a bug relating to incorrect subscriber export columns.
+
 # 4.21.2
 
 ### Improvements
