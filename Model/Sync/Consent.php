@@ -16,6 +16,8 @@ use Magento\Framework\App\Config\ScopeConfigInterface;
 
 class Consent implements SyncInterface
 {
+    private const CONSENT_RECORD_IMPORT_LIMIT = 5;
+
     /**
      * @var Logger
      */
@@ -185,30 +187,30 @@ class Consent implements SyncInterface
     /**
      * Export.
      *
-     * @param \Dotdigital\V3\Models\ContactCollection $dotdigitalCollection
-     * @param ConsentCollection $consentRecords
+     * @param ContactCollection $dotdigitalCollection
+     * @param ConsentCollection $consentCollection
      * @return array
      * @throws \Exception
      */
-    private function export(ContactCollection &$dotdigitalCollection, ConsentCollection $consentRecords): array
+    private function export(ContactCollection &$dotdigitalCollection, ConsentCollection $consentCollection): array
     {
         $consentData = [];
         $consentIds = [];
         $syncedRecords = 0;
 
-        foreach ($consentRecords as $consent) {
-            $record = array_map(function ($consent) use (&$consentIds) {
-                $consentIds[] = $consent['id'];
-                return [
-                    'text' => $consent['consent_text'],
-                    'dateTimeConsented' => $consent['consent_datetime'],
-                    'url' => $consent['consent_url'],
-                    'ipAddress' => $consent['consent_ip'],
-                    'userAgent' => $consent['consent_user_agent']
-                ];
-            }, [$consent->getData()]);
-
-            $consentData[$consent['email']][] = reset($record);
+        foreach ($consentCollection as $consent) {
+            if (isset($consentData[$consent->getEmail()]) &&
+                count($consentData[$consent->getEmail()]) >= self::CONSENT_RECORD_IMPORT_LIMIT
+            ) {
+                continue;
+            }
+            $consentData[$consent->getEmail()][$consent->getId()] = [
+                'text' => $consent->getConsentText(),
+                'dateTimeConsented' => $consent->getConsentDatetime(),
+                'url' => $consent->getConsentUrl(),
+                'ipAddress' => $consent->getConsentIp(),
+                'userAgent' => $consent->getConsentUserAgent()
+            ];
         }
 
         foreach ($consentData as $email => $consentRecords) {
@@ -218,12 +220,14 @@ class Consent implements SyncInterface
                 $contact->setIdentifiers(['email' => $email]);
                 $contact->setConsentRecords($consentRecords);
                 $dotdigitalCollection->add($contact);
+
+                $this->addConsentIds($consentRecords, $consentIds);
                 $syncedRecords += count($consentRecords);
 
             } catch (\Exception $e) {
                 $this->logger->debug(
                     sprintf(
-                        'Error exporting consent data for contact: %d',
+                        'Error exporting consent data for contact: %s',
                         $email
                     ),
                     [(string)$e]
@@ -233,5 +237,20 @@ class Consent implements SyncInterface
         }
 
         return [ 'consentIds' => $consentIds, 'syncedRecords' => $syncedRecords];
+    }
+
+    /**
+     * Add consent ids to an array, preserving their keys.
+     *
+     * @param array $records
+     * @param array $consentIds
+     *
+     * @return void
+     */
+    private function addConsentIds(array $records, array &$consentIds)
+    {
+        foreach ($records as $id => $record) {
+            $consentIds[] = $id;
+        }
     }
 }
