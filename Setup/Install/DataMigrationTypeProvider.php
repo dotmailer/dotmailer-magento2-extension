@@ -59,7 +59,7 @@ class DataMigrationTypeProvider
     /**
      * @var array
      */
-    private array $enabledMigrationTypes;
+    private $enabledMigrationTypes;
 
     /**
      * @param Type\InsertEmailContactTableCustomers $insertEmailContactTableCustomers

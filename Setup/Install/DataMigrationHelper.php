@@ -83,9 +83,13 @@ class DataMigrationHelper
 
         // loop through types and execute
         foreach ($types as $dataMigration) {
-            /** @var AbstractDataMigration $dataMigration */
-            $dataMigration->execute();
-            $this->logActions($dataMigration);
+            try {
+                /** @var AbstractDataMigration $dataMigration */
+                $dataMigration->execute();
+                $this->logActions($dataMigration);
+            } catch (\Exception $e) {
+                $this->logErrors($dataMigration, $e->getMessage());
+            }
         }
     }
 
@@ -180,6 +184,28 @@ class DataMigrationHelper
                 '%s: rows affected %s',
                 get_class($dataMigration),
                 $dataMigration->getRowsAffected()
+            ));
+        }
+    }
+
+    /**
+     * Log errors from a data migration.
+     *
+     * @param AbstractDataMigration $dataMigration
+     * @param string $exceptionMessage
+     */
+    public function logErrors(AbstractDataMigration $dataMigration, string $exceptionMessage)
+    {
+        $this->logger->error('Dotdigitalgroup_Email data installer', [
+            'type' => get_class($dataMigration),
+            'error' => $exceptionMessage,
+        ]);
+
+        if ($this->output) {
+            $this->output->writeln(sprintf(
+                'ERROR [%s]: %s',
+                get_class($dataMigration),
+                $exceptionMessage
             ));
         }
     }
