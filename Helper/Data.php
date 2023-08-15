@@ -659,26 +659,30 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
+     * Get API username.
+     *
      * @param int $websiteId
      *
-     * @return string|boolean
+     * @return string
      */
     public function getApiUsername($websiteId = 0)
     {
-        return trim($this->getWebsiteConfig(
+        return trim((string) $this->getWebsiteConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_USERNAME,
             $websiteId
         ));
     }
 
     /**
+     * Get API password.
+     *
      * @param int $websiteId
      *
-     * @return string|boolean
+     * @return string
      */
     public function getApiPassword($websiteId = 0)
     {
-        return trim($this->getWebsiteConfig(
+        return trim((string) $this->getWebsiteConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_PASSWORD,
             $websiteId
         ));
