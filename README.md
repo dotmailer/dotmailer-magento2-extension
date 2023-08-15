@@ -1,4 +1,4 @@
-# Dotdigital for Magento 2
+# Dotdigital for Magento 2 (Magento Open Source and Adobe Commerce)
 [![Packagist Version](https://img.shields.io/packagist/v/dotdigital/dotdigital-magento2-extension?color=green&label=stable)](https://github.com/dotmailer/dotmailer-magento2-extension/releases)
 [![Packagist Version (including pre-releases)](https://img.shields.io/packagist/v/dotdigital/dotdigital-magento2-extension?color=blue&include_prereleases&label=feature)](https://github.com/dotmailer/dotmailer-magento2-extension/releases)
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg)](LICENSE.md)
