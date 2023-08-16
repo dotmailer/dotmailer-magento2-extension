@@ -10,12 +10,12 @@ use Dotdigitalgroup\Email\Model\Contact\ContactResponseHandler;
 use Dotdigitalgroup\Email\Model\ResourceModel\Automation as AutomationResource;
 use Dotdigitalgroup\Email\Model\Sales\QuoteFactory as DotdigitalQuoteFactory;
 use Dotdigitalgroup\Email\Model\Sync\Automation\AutomationProcessor;
+use Dotdigitalgroup\Email\Model\Sync\Automation\BackportedSubscriberLoader;
 use Dotdigitalgroup\Email\Model\Sync\Automation\ContactManager;
 use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\DataFieldCollector;
 use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\DataFieldTypeHandler;
 use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\Updater\AbandonedCartFactory as AbandonedCartUpdaterFactory;
 use Dotdigitalgroup\Email\Model\StatusInterface;
-use Magento\Newsletter\Model\SubscriberFactory;
 use Magento\Quote\Model\QuoteFactory;
 
 class AbandonedCart extends AutomationProcessor
@@ -51,7 +51,7 @@ class AbandonedCart extends AutomationProcessor
      * @param DataFieldCollector $dataFieldCollector
      * @param DataFieldTypeHandler $dataFieldTypeHandler
      * @param ContactResponseHandler $contactResponseHandler
-     * @param SubscriberFactory $subscriberFactory
+     * @param BackportedSubscriberLoader $backportedSubscriberLoader
      * @param AbandonedCartUpdaterFactory $dataFieldUpdaterFactory
      * @param DotdigitalQuoteFactory $ddgQuoteFactory
      * @param QuoteFactory $quoteFactory
@@ -65,7 +65,7 @@ class AbandonedCart extends AutomationProcessor
         DataFieldCollector $dataFieldCollector,
         DataFieldTypeHandler $dataFieldTypeHandler,
         ContactResponseHandler $contactResponseHandler,
-        SubscriberFactory $subscriberFactory,
+        BackportedSubscriberLoader $backportedSubscriberLoader,
         AbandonedCartUpdaterFactory $dataFieldUpdaterFactory,
         DotdigitalQuoteFactory $ddgQuoteFactory,
         QuoteFactory $quoteFactory
@@ -83,7 +83,7 @@ class AbandonedCart extends AutomationProcessor
             $contactManager,
             $dataFieldCollector,
             $dataFieldTypeHandler,
-            $subscriberFactory
+            $backportedSubscriberLoader
         );
     }
 

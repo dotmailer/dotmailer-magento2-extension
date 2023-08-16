@@ -1,3 +1,8 @@
+# 4.21.4
+
+### Bug fixes
+- We fixed a bug with automation sync in Magento 2.3.x.
+
 # 4.21.3
 
 ### Bug fixes
