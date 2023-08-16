@@ -10,6 +10,7 @@ use Dotdigitalgroup\Email\Model\ContactFactory;
 use Dotdigitalgroup\Email\Model\Contact\ContactResponseHandler;
 use Dotdigitalgroup\Email\Model\ResourceModel\Automation as AutomationResource;
 use Dotdigitalgroup\Email\Model\Sales\QuoteFactory as DotdigitalQuoteFactory;
+use Dotdigitalgroup\Email\Model\Sync\Automation\BackportedSubscriberLoader;
 use Dotdigitalgroup\Email\Model\Sync\Automation\ContactManager;
 use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\DataFieldCollector;
 use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\DataFieldTypeHandler;
@@ -18,9 +19,7 @@ use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\Updater\AbandonedCartF
 use Dotdigitalgroup\Email\Model\Sync\Automation\Type\AbandonedCart;
 use Dotdigitalgroup\Email\Model\StatusInterface;
 use Dotdigitalgroup\Email\Test\Unit\Traits\AutomationProcessorTrait;
-use Magento\Newsletter\Model\Subscriber;
 use Magento\Quote\Model\QuoteFactory;
-use Magento\Newsletter\Model\SubscriberFactory;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -97,14 +96,9 @@ class AbandonedCartTest extends TestCase
     private $quoteFactoryMock;
 
     /**
-     * @var SubscriberFactory|\PHPUnit_Framework_MockObject_MockObject
+     * @var BackportedSubscriberLoader|\PHPUnit_Framework_MockObject_MockObject
      */
-    private $subscriberFactoryMock;
-
-    /**
-     * @var Subscriber|\PHPUnit\Framework\MockObject\MockObject
-     */
-    private $subscriberModelMock;
+    private $backportedSubscriberLoaderMock;
 
     /**
      * @var AbandonedCart
@@ -130,8 +124,7 @@ class AbandonedCartTest extends TestCase
         $this->dataFieldUpdaterFactoryMock = $this->createMock(AbandonedCartUpdaterFactory::class);
         $this->ddgQuoteFactoryMock = $this->createMock(DotdigitalQuoteFactory::class);
         $this->quoteFactoryMock = $this->createMock(QuoteFactory::class);
-        $this->subscriberFactoryMock = $this->createMock(SubscriberFactory::class);
-        $this->subscriberModelMock = $this->createMock(Subscriber::class);
+        $this->backportedSubscriberLoaderMock = $this->createMock(BackportedSubscriberLoader::class);
         $this->contactModelMock = $this->getMockBuilder(Contact::class)
             ->onlyMethods(['loadByCustomerEmail'])
             ->addMethods(['getCustomerId', 'getIsGuest'])
@@ -151,7 +144,7 @@ class AbandonedCartTest extends TestCase
             $this->dataFieldCollectorMock,
             $this->dataFieldTypeHandlerMock,
             $this->contactResponseHandlerMock,
-            $this->subscriberFactoryMock,
+            $this->backportedSubscriberLoaderMock,
             $this->dataFieldUpdaterFactoryMock,
             $this->ddgQuoteFactoryMock,
             $this->quoteFactoryMock

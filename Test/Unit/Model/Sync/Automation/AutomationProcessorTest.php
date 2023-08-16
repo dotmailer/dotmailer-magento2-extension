@@ -13,12 +13,11 @@ use Dotdigitalgroup\Email\Model\ResourceModel\Automation as AutomationResource;
 use Dotdigitalgroup\Email\Model\StatusInterface;
 use Dotdigitalgroup\Email\Model\Sync\Automation\AutomationProcessor;
 use Dotdigitalgroup\Email\Model\Sync\Automation\AutomationTypeHandler;
+use Dotdigitalgroup\Email\Model\Sync\Automation\BackportedSubscriberLoader;
 use Dotdigitalgroup\Email\Model\Sync\Automation\ContactManager;
 use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\DataFieldCollector;
 use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\DataFieldTypeHandler;
 use Dotdigitalgroup\Email\Test\Unit\Traits\AutomationProcessorTrait;
-use Magento\Newsletter\Model\Subscriber;
-use Magento\Newsletter\Model\SubscriberFactory;
 use PHPUnit\Framework\TestCase;
 
 class AutomationProcessorTest extends TestCase
@@ -66,9 +65,9 @@ class AutomationProcessorTest extends TestCase
     private $dataFieldTypeHandlerMock;
 
     /**
-     * @var SubscriberFactory|\PHPUnit_Framework_MockObject_MockObject
+     * @var BackportedSubscriberLoader|\PHPUnit_Framework_MockObject_MockObject
      */
-    private $subscriberFactoryMock;
+    private $backportedSubscriberLoaderMock;
 
     /**
      * @var AutomationProcessor
@@ -85,11 +84,6 @@ class AutomationProcessorTest extends TestCase
      */
     private $contactModelMock;
 
-    /**
-     * @var Subscriber|\PHPUnit\Framework\MockObject\MockObject
-     */
-    private $subscriberModelMock;
-
     protected function setUp() :void
     {
         $this->helperMock = $this->createMock(Data::class);
@@ -100,8 +94,7 @@ class AutomationProcessorTest extends TestCase
         $this->contactManagerMock = $this->createMock(ContactManager::class);
         $this->dataFieldCollectorMock = $this->createMock(DataFieldCollector::class);
         $this->dataFieldTypeHandlerMock = $this->createMock(DataFieldTypeHandler::class);
-        $this->subscriberFactoryMock = $this->createMock(SubscriberFactory::class);
-        $this->subscriberModelMock = $this->createMock(Subscriber::class);
+        $this->backportedSubscriberLoaderMock = $this->createMock(BackportedSubscriberLoader::class);
         $this->contactModelMock = $this->getMockBuilder(Contact::class)
             ->onlyMethods(['loadByCustomerEmail'])
             ->addMethods(['getCustomerId', 'getIsGuest'])
@@ -121,7 +114,7 @@ class AutomationProcessorTest extends TestCase
             $this->contactManagerMock,
             $this->dataFieldCollectorMock,
             $this->dataFieldTypeHandlerMock,
-            $this->subscriberFactoryMock
+            $this->backportedSubscriberLoaderMock
         );
     }
 

@@ -10,10 +10,8 @@ use Dotdigitalgroup\Email\Model\ContactFactory;
 use Dotdigitalgroup\Email\Model\Contact\ContactResponseHandler;
 use Dotdigitalgroup\Email\Model\ResourceModel\Automation as AutomationResource;
 use Dotdigitalgroup\Email\Model\StatusInterface;
-use Dotdigitalgroup\Email\Model\Sync\Automation\ContactManager;
 use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\DataFieldCollector;
 use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\DataFieldTypeHandler;
-use Magento\Newsletter\Model\SubscriberFactory;
 
 class AutomationProcessor
 {
@@ -58,9 +56,9 @@ class AutomationProcessor
     protected $dataFieldTypeHandler;
 
     /**
-     * @var SubscriberFactory
+     * @var BackportedSubscriberLoader
      */
-    protected $subscriberFactory;
+    protected $backportedSubscriberLoader;
 
     /**
      * AutomationProcessor constructor.
@@ -73,7 +71,7 @@ class AutomationProcessor
      * @param ContactManager $contactManager
      * @param DataFieldCollector $dataFieldCollector
      * @param DataFieldTypeHandler $dataFieldTypeHandler
-     * @param SubscriberFactory $subscriberFactory
+     * @param BackportedSubscriberLoader $backportedSubscriberLoader
      */
     public function __construct(
         Data $helper,
@@ -84,7 +82,7 @@ class AutomationProcessor
         ContactManager $contactManager,
         DataFieldCollector $dataFieldCollector,
         DataFieldTypeHandler $dataFieldTypeHandler,
-        SubscriberFactory $subscriberFactory
+        BackportedSubscriberLoader $backportedSubscriberLoader
     ) {
         $this->helper = $helper;
         $this->logger = $logger;
@@ -94,7 +92,7 @@ class AutomationProcessor
         $this->contactManager = $contactManager;
         $this->dataFieldCollector = $dataFieldCollector;
         $this->dataFieldTypeHandler = $dataFieldTypeHandler;
-        $this->subscriberFactory = $subscriberFactory;
+        $this->backportedSubscriberLoader = $backportedSubscriberLoader;
     }
 
     /**
@@ -121,8 +119,7 @@ class AutomationProcessor
             try {
                 $automationContact = $this->contactFactory->create()
                     ->loadByCustomerEmail($email, $websiteId);
-                $automationSubscriber = $this->subscriberFactory->create()
-                    ->loadBySubscriberEmail($email, $websiteId);
+                $automationSubscriber = $this->backportedSubscriberLoader->loadBySubscriberEmail($email, $websiteId);
 
                 $contactId = $this->contactManager->prepareDotdigitalContact(
                     $automationContact,
