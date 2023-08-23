@@ -406,13 +406,21 @@ class Client extends Rest implements ClientInterface
     /**
      * Get all lists.
      *
-     * @return mixed
-     *
-     * @throws \Exception
+     * @param int $skip
+     * @param int $select
+     * @return array|\stdClass|null
+     * @throws LocalizedException
      */
-    public function getAddressBooks()
+    public function getAddressBooks(int $skip = 0, int $select = 1000)
     {
-        $url = $this->getApiEndpoint() . self::REST_ADDRESS_BOOKS;
+        $url = sprintf(
+            '%s%s?select=%s&skip=%s',
+            $this->getApiEndpoint(),
+            self::REST_ADDRESS_BOOKS,
+            $select,
+            $skip
+        );
+
         $this->setUrl($url)
             ->setVerb('GET');
 

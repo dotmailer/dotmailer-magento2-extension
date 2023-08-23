@@ -393,17 +393,17 @@
                 <field id="customers" translate="label" type="select" sortOrder="20" showInDefault="1" showInStore="0"
                        showInWebsite="1">
                     <label>Add Customers To</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Settings\Addressbooks</source_model>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Sync\Lists</source_model>
                 </field>
                 <field id="subscribers" translate="label" type="select" sortOrder="30" showInDefault="1" showInStore="0"
                        showInWebsite="1">
                     <label>Add Email Subscribers To</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Settings\Addressbooks</source_model>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Sync\Lists</source_model>
                 </field>
                 <field id="guests" translate="label" type="select" sortOrder="40" showInDefault="1" showInStore="0"
                        showInWebsite="1">
                     <label>Add Guests To</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Settings\Addressbooks</source_model>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Sync\Lists</source_model>
                 </field>
             </group>
             <group id="sync" translate="label" type="text" sortOrder="30" showInDefault="1" showInStore="0"
@@ -1701,7 +1701,7 @@
                 <field id="show_books" translate="comment label" sortOrder="20" type="multiselect" showInStore="0"
                        showInWebsite="1" showInDefault="1">
                     <label>Lists to Show</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Addressbooks</source_model>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Customer\Lists</source_model>
                     <comment><![CDATA[ Choose additional lists to show in addition to the Magento General Subscription list.]]></comment>
                     <depends><field id="show_addressbooks">1</field></depends>
                 </field>

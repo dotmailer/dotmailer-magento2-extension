@@ -10,6 +10,7 @@ use Dotdigitalgroup\Email\Model\Integration\Data\Products;
 use Dotdigitalgroup\Email\Model\ResourceModel\Cron\CollectionFactory as CronCollectionFactory;
 use Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory as OrderCollectionFactory;
 use Dotdigitalgroup\Email\Model\SetsTimezoneAndCultureTrait as SetsTimezoneAndCulture;
+use Dotdigitalgroup\Email\Model\Lists\ListFetcher;
 use Magento\Framework\App\Config\ReinitableConfigInterface;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\ProductMetadataInterface;
@@ -140,6 +141,11 @@ class IntegrationSetup
     private $reinitableConfig;
 
     /**
+     * @var ListFetcher
+     */
+    private $listFetcher;
+
+    /**
      * IntegrationSetup constructor.
      *
      * @param Data $helper
@@ -157,6 +163,7 @@ class IntegrationSetup
      * @param Orders $orderData
      * @param Products $productData
      * @param ReinitableConfigInterface $reinitableConfig
+     * @param ListFetcher $listFetcher
      */
     public function __construct(
         Data $helper,
@@ -173,7 +180,8 @@ class IntegrationSetup
         ResourceConfig $resourceConfig,
         Orders $orderData,
         Products $productData,
-        ReinitableConfigInterface $reinitableConfig
+        ReinitableConfigInterface $reinitableConfig,
+        ListFetcher $listFetcher
     ) {
         $this->helper = $helper;
         $this->randomMath = $randomMath;
@@ -190,6 +198,7 @@ class IntegrationSetup
         $this->orderData = $orderData;
         $this->productData = $productData;
         $this->reinitableConfig = $reinitableConfig;
+        $this->listFetcher = $listFetcher;
     }
 
     /**
@@ -423,12 +432,12 @@ class IntegrationSetup
                     $mappedAddressBooks[] = $addressBookName;
                 } else {
                     //Need to fetch address book id to map. Address-book already exist.
-                    $response = $client->getAddressBooks();
-                    if (isset($response->message)) {
+                    $response = $this->listFetcher->fetchAllLists($client);
+                    if (isset($response['message'])) {
                         continue;
                     }
                     foreach ($response as $book) {
-                        if ($book->name == $addressBookName) {
+                        if (isset($book->name) && isset($book->id) && $book->name == $addressBookName) {
                             $this->mapAddressBook($addressBookName, $book->id, $websiteId);
                             $mappedAddressBooks[] = $book->name;
                             break;
