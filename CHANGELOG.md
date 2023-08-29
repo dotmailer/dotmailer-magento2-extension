@@ -19,6 +19,11 @@
 ### Bug fixes
 - We've prevented `null` values being passed to `round()` in cart insight.
 
+# 4.21.5
+
+### Bug fixes
+- We removed a specific connection type from our queue_topology.xml.
+
 # 4.21.4
 
 ### Bug fixes
