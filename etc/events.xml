@@ -6,7 +6,7 @@
     <event name="review_save_after">
         <observer name="ddg_save_review" instance="Dotdigitalgroup\Email\Observer\Customer\ReviewSaveAutomation"/>
     </event>
-    <event name="wishlist_add_product">
+    <event name="wishlist_product_add_after">
         <observer name="ddg_add_product_wishlist" instance="Dotdigitalgroup\Email\Observer\Customer\RegisterWishlist"/>
     </event>
     <event name="wishlist_delete_after">
