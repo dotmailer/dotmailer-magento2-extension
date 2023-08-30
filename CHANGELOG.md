@@ -23,6 +23,7 @@
 
 ### Bug fixes
 - We removed a specific connection type from our queue_topology.xml.
+- Our add to wishlist observer now works as expected in PWA environments.
 
 # 4.21.4
 

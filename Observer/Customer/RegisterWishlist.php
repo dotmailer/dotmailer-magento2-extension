@@ -120,22 +120,25 @@ class RegisterWishlist implements \Magento\Framework\Event\ObserverInterface
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
         try {
-            $wishlist = $observer->getEvent()->getWishlist();
-            $website = $this->storeManager->getWebsite();
-            $storeId = $this->storeManager->getStore()->getId();
+            foreach ($observer->getItems() as $addedProduct) {
+                $wishlist = $addedProduct->getWishlist();
+                $website = $this->storeManager->getWebsite();
+                $storeId = $this->storeManager->getStore()->getId();
 
-            if ($this->helper->isEnabled($website->getId())) {
-                /** @var \Magento\Store\Model\Website $website */
-                $itemCount = $this->getWishlistItemCountByStoreIds(
-                    $wishlist,
-                    $website->getStoreIds()
-                );
-                $emailWishlist = $this->getEmailWishlistById($wishlist->getId(), $storeId);
+                if ($this->helper->isEnabled($website->getId())) {
+                    /** @var \Magento\Store\Model\Website $website */
+                    $itemCount = $this->getWishlistItemCountByStoreIds(
+                        $wishlist,
+                        $website->getStoreIds()
+                    );
 
-                if ($emailWishlist) {
-                    $this->updateWishlistAndReset($emailWishlist, $itemCount);
-                } else {
-                    $this->registerWishlist($wishlist, $itemCount, $website->getId(), $storeId);
+                    $emailWishlist = $this->getEmailWishlistById($wishlist->getId(), $storeId);
+
+                    if ($emailWishlist) {
+                        $this->updateWishlistAndReset($emailWishlist, $itemCount);
+                    } else {
+                        $this->registerWishlist($wishlist, $itemCount, $website->getId(), $storeId);
+                    }
                 }
             }
         } catch (\Exception $e) {
