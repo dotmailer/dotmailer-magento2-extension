@@ -4,24 +4,25 @@ namespace Dotdigitalgroup\Email\Test\Unit\Traits;
 
 use Dotdigitalgroup\Email\Model\ResourceModel\Automation\Collection as AutomationCollection;
 use Dotdigitalgroup\Email\Model\StatusInterface;
-use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
 use Magento\Newsletter\Model\Subscriber;
+use PHPUnit\Framework\MockObject\Exception;
 
 trait AutomationProcessorTrait
 {
     /**
-     * Use ObjectManager to give us an iterable AutomationCollection.
+     * Get an iterable AutomationCollection.
      *
-     * @return \PHPUnit_Framework_MockObject_MockObject
+     * @return AutomationCollection|(AutomationCollection&\PHPUnit\Framework\MockObject\MockObject)|\PHPUnit\Framework\MockObject\MockObject
+     * @throws Exception
      */
     private function getAutomationCollectionMock()
     {
-        $objectManager = new ObjectManager($this);
+        $automationCollectionMock = $this->createMock(AutomationCollection::class);
+        $automationCollectionMock->expects($this->once())
+            ->method('getIterator')
+            ->willReturn(new \ArrayIterator([$this->automationModelMock]));
 
-        return $objectManager->getCollectionMock(
-            AutomationCollection::class,
-            [$this->automationModelMock]
-        );
+        return $automationCollectionMock;
     }
 
     private function setupAutomationModel()

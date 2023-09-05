@@ -14,7 +14,6 @@ use Dotdigitalgroup\Email\Model\AbandonedCart\TimeLimit;
 use Dotdigitalgroup\Email\Model\ResourceModel\Automation\CollectionFactory as AutomationCollectionFactory;
 use Dotdigitalgroup\Email\Model\ResourceModel\Order\Collection;
 use Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory;
-use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
 use PHPUnit\Framework\TestCase;
 
 class ProgramEnrolmentEnrollerTest extends TestCase
@@ -106,10 +105,12 @@ class ProgramEnrolmentEnrollerTest extends TestCase
         $this->rules = $this->createMock(Rules::class);
         $this->cartInsight = $this->createMock(CartInsight::class);
 
-        //We need to mock an Object to behave as a Collection (of Quote objects) in order to pass the tests
-        $this->objectManager = new ObjectManager($this);
         $this->quoteMock = $this->createMock(\Magento\Quote\Model\Quote::class);
-        $this->orderCollectionMock = $this->objectManager->getCollectionMock(Collection::class, [$this->quoteMock]);
+        $this->orderCollectionMock = $this->createMock(Collection::class);
+        $this->orderCollectionMock->expects($this->any())
+            ->method('getIterator')
+            ->willReturn(new \ArrayIterator([$this->quoteMock]));
+
         $this->automationCollectionFactoryMock = $this->getMockBuilder(AutomationCollectionFactory::class)
             ->disableOriginalConstructor()
             ->setMethods(['create','getAbandonedCartAutomationsForContactByInterval','getSize'])
