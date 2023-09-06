@@ -43,14 +43,14 @@ class AdditionalTemplateMappings extends ArraySerialized
         $this->templateFactory = $templateFactory;
         $this->helper = $helper;
         parent::__construct(
+            $serializer,
             $context,
             $registry,
             $config,
             $cacheTypeList,
             $resource,
             $resourceCollection,
-            $data,
-            $serializer
+            $data
         );
     }
 
