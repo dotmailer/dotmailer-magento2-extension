@@ -2,5 +2,6 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework-message-queue:etc/consumer.xsd">
     <consumer name="ddg.sync.integration"
               queue="ddg.sync.queue"
-              handler="Dotdigitalgroup\Email\Model\Queue\Sync\IntegrationInsightsConsumer::process"/>
+              handler="Dotdigitalgroup\Email\Model\Queue\Sync\IntegrationInsightsConsumer::process"
+              connection="db" />
 </config>
