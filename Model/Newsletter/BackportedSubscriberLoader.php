@@ -1,6 +1,8 @@
 <?php
 
-namespace Dotdigitalgroup\Email\Model\Sync\Automation;
+declare(strict_types=1);
+
+namespace Dotdigitalgroup\Email\Model\Newsletter;
 
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Newsletter\Model\ResourceModel\SubscriberFactory as SubscriberResourceFactory;
@@ -9,6 +11,10 @@ use Magento\Newsletter\Model\SubscriberFactory;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Store\Model\Website;
 
+/**
+ * These methods were only introduced to the core Magento Newsletter module resource model
+ * in Magento 2.4.0-p1 so are backported here to support 2.3.x.
+ */
 class BackportedSubscriberLoader
 {
     /**
@@ -44,9 +50,6 @@ class BackportedSubscriberLoader
     /**
      * Load by subscriber email.
      *
-     * This method was only introduced to the core Magento Newsletter module resource model
-     * in Magento 2.4.0-p1 so is backported here to support 2.3.x.
-     *
      * @param string $email
      * @param int $websiteId
      *
@@ -62,6 +65,32 @@ class BackportedSubscriberLoader
         $select = $subscriberResource->getConnection()->select()
             ->from($subscriberResource->getMainTable())
             ->where('subscriber_email = ?', $email)
+            ->where('store_id IN (?)', $storeIds)
+            ->limit(1);
+
+        $data = $subscriberResource->getConnection()->fetchRow($select) ?: [];
+
+        return $this->subscriberFactory->create()
+            ->addData($data)
+            ->setOrigData();
+    }
+
+    /**
+     * @param int $customerId
+     * @param int $websiteId
+     *
+     * @return Subscriber
+     * @throws LocalizedException
+     */
+    public function loadByCustomer(int $customerId, int $websiteId)
+    {
+        $subscriberResource = $this->subscriberResourceFactory->create();
+        /** @var Website $website */
+        $website = $this->storeManager->getWebsite($websiteId);
+        $storeIds = $website->getStoreIds();
+        $select = $subscriberResource->getConnection()->select()
+            ->from($subscriberResource->getMainTable())
+            ->where('customer_id = ?', $customerId)
             ->where('store_id IN (?)', $storeIds)
             ->limit(1);
 

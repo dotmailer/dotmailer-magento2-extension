@@ -3,11 +3,11 @@
 namespace Dotdigitalgroup\Email\ViewModel\Customer\Account;
 
 use Dotdigitalgroup\Email\Model\Consent\ConsentManager;
+use Dotdigitalgroup\Email\Model\Newsletter\BackportedSubscriberLoader;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\View\Element\Block\ArgumentInterface;
 use Magento\Customer\Model\Session;
-use Magento\Newsletter\Model\SubscriberFactory;
 use Magento\Store\Model\StoreManagerInterface;
 
 class Newsletter implements ArgumentInterface
@@ -18,14 +18,14 @@ class Newsletter implements ArgumentInterface
     private $consentManager;
 
     /**
+     * @var BackportedSubscriberLoader
+     */
+    private $backportedSubscriberLoader;
+
+    /**
      * @var Session
      */
     private $customerSession;
-
-    /**
-     * @var SubscriberFactory
-     */
-    private $subscriberFactory;
 
     /**
      * @var StoreManagerInterface
@@ -34,19 +34,19 @@ class Newsletter implements ArgumentInterface
 
     /**
      * @param ConsentManager $consentManager
+     * @param BackportedSubscriberLoader $backportedSubscriberLoader
      * @param Session $customerSession
-     * @param SubscriberFactory $subscriberFactory
      * @param StoreManagerInterface $storeManager
      */
     public function __construct(
         ConsentManager $consentManager,
+        BackportedSubscriberLoader $backportedSubscriberLoader,
         Session $customerSession,
-        SubscriberFactory $subscriberFactory,
         StoreManagerInterface $storeManager
     ) {
         $this->consentManager = $consentManager;
+        $this->backportedSubscriberLoader = $backportedSubscriberLoader;
         $this->customerSession = $customerSession;
-        $this->subscriberFactory = $subscriberFactory;
         $this->storeManager = $storeManager;
     }
 
@@ -85,11 +85,10 @@ class Newsletter implements ArgumentInterface
      */
     public function isSubscribed()
     {
-        $subscriber = $this->subscriberFactory->create()
-            ->loadByCustomer(
-                $this->customerSession->getCustomerId(),
-                $this->storeManager->getWebsite()->getId()
-            );
+        $subscriber = $this->backportedSubscriberLoader->loadByCustomer(
+            $this->customerSession->getCustomerId(),
+            $this->storeManager->getWebsite()->getId()
+        );
         if ($subscriber->getId()) {
             return $subscriber->isSubscribed();
         }
