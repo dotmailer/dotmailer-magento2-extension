@@ -46,7 +46,7 @@ class ImporterSyncsCommand extends Command
     {
         $this
             ->setName('dotdigital:sync')
-            ->setDescription(__('Run syncs to populate email_ tables before importing to Dotdigital'))
+            ->setDescription(__('Run syncs to collect data from email_ tables and import to Dotdigital'))
             ->addArgument(
                 'sync',
                 InputArgument::OPTIONAL,
