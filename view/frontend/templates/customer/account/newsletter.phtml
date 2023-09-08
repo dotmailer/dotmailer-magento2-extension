@@ -10,16 +10,16 @@ $view = $block->getData('config');
 ?>
 
 <fieldset class="fieldset">
-    <legend class="legend"><span><?= $escaper->escapeHtml(__('General Subscription')) ?></span></legend>
+    <legend class="legend"><span><?= $block->escapeHtml(__('General Subscription')) ?></span></legend>
     <div class="field choice">
         <input type="checkbox" name="is_subscribed" id="subscription" value="1" title="General Subscription"
             <?php if ($view->isSubscribed()): ?> checked="checked"<?php endif; ?> class="checkbox">
         <label for="subscription" class="label">
             <span>
                 <?php if ($view->canDisplayDDAccountConsentText()): ?>
-                    <?= $escaper->escapeHtml($view->getCustomerConsentText()) ?>
+                    <?= $block->escapeHtml($view->getCustomerConsentText()) ?>
                 <?php else: ?>
-                    <?= $escaper->escapeHtml(__('General Subscription')) ?>
+                    <?= $block->escapeHtml(__('General Subscription')) ?>
                 <?php endif; ?>
             </span>
         </label>

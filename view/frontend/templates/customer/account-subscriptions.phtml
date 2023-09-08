@@ -5,7 +5,9 @@
  * @var $view \Dotdigitalgroup\Email\ViewModel\Customer\AccountSubscriptions
  */
 ?>
-<form id="connector-newsletter-form-validate" method="post" action="<?= $escaper->escapeHtml($block->getUrl('connector/customer/newsletter')) ?>">
+<form id="connector-newsletter-form-validate"
+      method="post"
+      action="<?= $block->escapeHtml($block->getUrl('connector/customer/newsletter')) ?>">
     <?= $block->getBlockHtml('formkey') ?>
 
     <?= $block->getChildHtml() ?>

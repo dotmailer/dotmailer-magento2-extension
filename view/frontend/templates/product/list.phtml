@@ -13,8 +13,8 @@
     <?php $dynamicStyle = $block->getDynamicStyles(); ?>
     <style>
         .product-name{
-            color: <?= $escaper->escapeHtml($dynamicStyle['nameColor']); ?>;
-            font-size: <?= $escaper->escapeHtml($dynamicStyle['fontSize']); ?>;
+            color: <?= $block->escapeHtml($dynamicStyle['nameColor']); ?>;
+            font-size: <?= $block->escapeHtml($dynamicStyle['fontSize']); ?>;
         <?php if (in_array('bold', $dynamicStyle['nameStyle'])): ?>
             font-weight: bold;
         <?php endif; ?><?php if (in_array('italic', $dynamicStyle['nameStyle'])): ?>
@@ -24,8 +24,8 @@
         <?php endif; ?>
         }
         .product-price{
-            color: <?= $escaper->escapeHtml($dynamicStyle['priceColor']);?>;
-            font-size: <?= $escaper->escapeHtml($dynamicStyle['priceFontSize']);?>;
+            color: <?= $block->escapeHtml($dynamicStyle['priceColor']);?>;
+            font-size: <?= $block->escapeHtml($dynamicStyle['priceFontSize']);?>;
         <?php if (in_array('bold', $dynamicStyle['priceStyle'])): ?>
             font-weight: bold;
         <?php endif; ?><?php if (in_array('italic', $dynamicStyle['priceStyle'])): ?>
@@ -35,8 +35,8 @@
         <?php endif; ?>
         }
         .product-url{
-            color: <?= $escaper->escapeHtml($dynamicStyle['urlColor']); ?>;
-            font-size: <?= $escaper->escapeHtml($dynamicStyle['urlFontSize']); ?>;
+            color: <?= $block->escapeHtml($dynamicStyle['urlColor']); ?>;
+            font-size: <?= $block->escapeHtml($dynamicStyle['urlFontSize']); ?>;
         <?php if (in_array('bold', $dynamicStyle['linkStyle'])): ?>
             font-weight: bold;
         <?php endif; ?><?php if (in_array('italic', $dynamicStyle['linkStyle'])): ?>
@@ -47,7 +47,7 @@
         }
         .product-table{
             font-family: <?= /* @noEscape */ $dynamicStyle['docFont']; ?>;
-            background-color: <?= $escaper->escapeHtml($dynamicStyle['docBackgroundColor']); ?>;
+            background-color: <?= $block->escapeHtml($dynamicStyle['docBackgroundColor']); ?>;
             width: 100% !important;
         }
         .product-table img{
@@ -60,7 +60,7 @@
             padding-bottom: 10px;
         }
         /** Styling from config field **/
-        <?= $escaper->escapeHtml($dynamicStyle['dynamicStyling']); ?>
+        <?= $block->escapeHtml($dynamicStyle['dynamicStyling']); ?>
         /** Responsive  **/
         @media (max-width: 760px) {
             /* Force table to not be like tables anymore */
@@ -86,7 +86,7 @@
         <?php endif;?>
 
         <td style="vertical-align: text-top; padding-right: 2px;">
-            <a href="<?= $escaper->escapeHtml($productUrl); ?>" title="<?= $escaper->escapeHtml(
+            <a href="<?= $block->escapeHtml($productUrl); ?>" title="<?= $block->escapeHtml(
                 $block->stripTags(
                     $block->getImageLabel(
                         $_product,
@@ -97,9 +97,9 @@
                 )
                      ); // @codingStandardsIgnoreLine ?>" class="product-image">
                 <img src="<?= /* @noEscape */ $block->getProductImageUrl($_product, 'product_small_image') ?>"
-                     alt="<?= $escaper->escapeHtml($_product->getName()) ?>">
+                     alt="<?= $block->escapeHtml($_product->getName()) ?>">
             </a>
-            <div class="product-name" align="center"><b><?= $escaper->escapeHtml(
+            <div class="product-name" align="center"><b><?= $block->escapeHtml(
                 mb_substr($_product->getName(), 0, 40)
                     ); // @codingStandardsIgnoreLine ?></b></div>
             <div class="product-price" align="center">
@@ -108,11 +108,11 @@
                 <?= /* @noEscape */ $productPriceHtml; ?>
             </div>
             <div align="center">
-                <a class="product-url" href="<?= $escaper->escapeHtml($productUrl); ?>">
+                <a class="product-url" href="<?= $block->escapeHtml($productUrl); ?>">
                     <?php if ($urlText = $block->getTextForUrl($_product->getStoreId())): ?>
-                        <?= $escaper->escapeHtml($urlText); ?>
+                        <?= $block->escapeHtml($urlText); ?>
                     <?php else: ?>
-                        <?= $escaper->escapehtml(__('View Now')); ?>
+                        <?= $block->escapehtml(__('View Now')); ?>
                     <?php endif;?>
                 </a>
             </div>

@@ -15,21 +15,21 @@ $additionalBooks = $view->getAdditionalBooksToShow();
 if (!empty($additionalBooks)): ?>
     <fieldset class="fieldset">
         <legend class="legend">
-            <span><?= $escaper->escapeHtml(__('Lists')) ?></span>
+            <span><?= $block->escapeHtml(__('Lists')) ?></span>
         </legend>
         <ul class="form-list" style="padding-left: 0">
             <?php foreach ($additionalBooks as $books): ?>
                 <li class="control" style="display: block; margin: 5px 0 5px 10px">
                     <input type="checkbox" name="additional_subscriptions[]"
-                           id="<?= $escaper->escapeHtml($books["name"]); ?>"
-                           value="<?= $escaper->escapeHtml($books["value"]) ?>"
-                           title="<?= $escaper->escapeHtml($books["name"]) ?>"
+                           id="<?= $block->escapeHtml($books["name"]); ?>"
+                           value="<?= $block->escapeHtml($books["value"]) ?>"
+                           title="<?= $block->escapeHtml($books["name"]) ?>"
                         <?php if ($books["subscribed"]): ?>
                             checked="checked"
                         <?php endif; ?> class="checkbox"
                     />
-                    <label for="<?= $escaper->escapeHtml($books["name"]); ?>">
-                        <?= $escaper->escapeHtml($books["name"]) ?>
+                    <label for="<?= $block->escapeHtml($books["name"]); ?>">
+                        <?= $block->escapeHtml($books["name"]) ?>
                     </label>
                 </li>
             <?php endforeach; ?>
