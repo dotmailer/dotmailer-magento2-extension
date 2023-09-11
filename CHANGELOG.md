@@ -1,3 +1,8 @@
+# 4.21.6
+
+### Bug fixes
+- We restored a specific connection type to our queue_topology.xml, and set one in queue_consumer.xml as well.
+
 # 4.21.5
 
 ### Bug fixes
