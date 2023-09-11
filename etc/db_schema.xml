@@ -391,6 +391,8 @@
         <column xsi:type="datetime" name="consent_datetime" on_update="false" nullable="true" comment="Contact consent datetime"/>
         <column xsi:type="varchar" name="consent_ip" nullable="true" length="255" comment="Contact consent ip"/>
         <column xsi:type="varchar" name="consent_user_agent" nullable="true" length="255" comment="Contact consent user agent"/>
+        <column xsi:type="mediumtext" name="consent_text" nullable="true" comment="Consent text"/>
+        <column xsi:type="smallint" name="consent_imported" padding="5" unsigned="true" nullable="false" identity="false" default="0" comment="Consent Imported"/>
         <constraint xsi:type="primary" referenceId="PRIMARY">
             <column name="id"/>
         </constraint>

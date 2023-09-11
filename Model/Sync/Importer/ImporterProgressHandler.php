@@ -2,75 +2,54 @@
 
 namespace Dotdigitalgroup\Email\Model\Sync\Importer;
 
-use Dotdigitalgroup\Email\Logger\Logger;
-use Dotdigitalgroup\Email\Helper\File;
-use Dotdigitalgroup\Email\Model\Apiconnector\Client;
 use Dotdigitalgroup\Email\Model\Importer as ImporterModel;
-use Dotdigitalgroup\Email\Model\ImporterFactory;
-use Magento\Framework\DataObject;
+use Dotdigitalgroup\Email\Model\ResourceModel\Importer\CollectionFactory;
+use Dotdigitalgroup\Email\Model\Sync\Importer\V2InProgressImportResponseHandlerFactory as V2HandlerFactory;
+use Dotdigitalgroup\Email\Model\Sync\Importer\V3InProgressImportResponseHandlerFactory as V3HandlerFactory;
 
-class ImporterProgressHandler extends DataObject
+class ImporterProgressHandler
 {
-    /**
-     * @var Logger
-     */
-    private $logger;
+    public const PROGRESS_GROUP_MODEL = 'model';
+    public const PROGRESS_GROUP_METHOD = 'method';
+    public const PROGRESS_GROUP_RESOURCE = 'resource';
+    public const PROGRESS_GROUP_TYPES = 'types';
+
+    public const VERSION_2 = 'v2';
+    public const VERSION_3 = 'v3';
+
+    public const TRANSACTIONAL = 'Transactional';
+    public const CONTACT = 'Contact';
 
     /**
-     * @var File
+     * @var CollectionFactory
      */
-    private $fileHelper;
+    private $importerCollectionFactory;
 
     /**
-     * @var ImporterFactory
+     * @var V2HandlerFactory
      */
-    private $importerFactory;
+    private $v2HandlerFactory;
 
     /**
-     * @var ImporterReportHandler
+     * @var V3HandlerFactory
      */
-    private $reportHandler;
-
-    /**
-     * @var Client
-     */
-    private $client;
-
-    /**
-     * @var array
-     */
-    private $importStatuses
-        = [
-            'RejectedByWatchdog',
-            'InvalidFileFormat',
-            'Unknown',
-            'Failed',
-            'ExceedsAllowedContactLimit',
-            'NotAvailableInThisVersion',
-        ];
+    private $v3HandlerFactory;
 
     /**
      * ImporterProgressHandler constructor.
      *
-     * @param Logger $logger
-     * @param File $fileHelper
-     * @param ImporterFactory $importerFactory
-     * @param ImporterReportHandler $reportHandler
-     * @param array $data
+     * @param CollectionFactory $importerCollectionFactory
+     * @param V2HandlerFactory $v2HandlerFactory
+     * @param V3HandlerFactory $v3HandlerFactory
      */
     public function __construct(
-        Logger $logger,
-        File $fileHelper,
-        ImporterFactory $importerFactory,
-        ImporterReportHandler $reportHandler,
-        array $data = []
+        CollectionFactory $importerCollectionFactory,
+        V2HandlerFactory $v2HandlerFactory,
+        V3HandlerFactory $v3HandlerFactory
     ) {
-        $this->logger = $logger;
-        $this->fileHelper = $fileHelper;
-        $this->importerFactory = $importerFactory;
-        $this->reportHandler = $reportHandler;
-
-        parent::__construct($data);
+        $this->importerCollectionFactory = $importerCollectionFactory;
+        $this->v2HandlerFactory = $v2HandlerFactory;
+        $this->v3HandlerFactory = $v3HandlerFactory;
     }
 
     /**
@@ -85,162 +64,74 @@ class ImporterProgressHandler extends DataObject
     public function checkImportsInProgress($websiteIds)
     {
         $itemCount = 0;
-        $importerModel = $this->importerFactory->create();
-        $items = $importerModel->_getImportingItems($websiteIds);
-        if (!$items) {
-            return $itemCount;
-        }
 
-        $this->client = $this->getClient();
-
-        foreach ($items as $item) {
-            try {
-                if ($item->getImportType() == ImporterModel::IMPORT_TYPE_CONTACT ||
-                    $item->getImportType() == ImporterModel::IMPORT_TYPE_CUSTOMER ||
-                    $item->getImportType() == ImporterModel::IMPORT_TYPE_SUBSCRIBERS ||
-                    $item->getImportType() == ImporterModel::IMPORT_TYPE_GUEST
-                ) {
-                    $response = $this->client->getContactsImportByImportId($item->getImportId());
-                } else {
-                    $response = $this->client->getContactsTransactionalDataImportByImportId(
-                        $item->getImportId()
+        foreach ($this->getInProgressGroups() as $groups) {
+            foreach ($groups as $group) {
+                $items = $this->importerCollectionFactory->create()
+                    ->getItemsWithImportingStatus(
+                        $websiteIds,
+                        $group[ self::PROGRESS_GROUP_TYPES ]
                     );
+
+                if (!$items) {
+                    continue;
                 }
-            } catch (\Exception $e) {
-                $item->setMessage($e->getMessage())
-                    ->setImportStatus(ImporterModel::FAILED);
-                $importerModel->saveItem($item);
-                continue;
-            }
 
-            $itemCount += $this->processResponse($response, $item);
+                $handler = $group['model']->create();
+                /** @var AbstractInProgressImportResponseHandler $handler */
+                $itemCount += $handler->process($group, $items);
+            }
         }
 
         return $itemCount;
     }
 
     /**
-     * Process Response.
+     * Get in progress groups.
      *
-     * @param Object $response
-     * @param ImporterModel $item
-     * @return int
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @return array[]
      */
-    private function processResponse($response, $item)
+    public function getInProgressGroups()
     {
-        $itemCount = 0;
-        if (isset($response->message)) {
-            $item->setImportStatus(ImporterModel::FAILED)
-                ->setMessage($response->message);
-        } elseif (isset($response->status)) {
-            if ($response->status == 'Finished') {
-                $item = $this->processFinishedItem($item);
-            } elseif (in_array($response->status, $this->importStatuses)) {
-                $item->setImportStatus(ImporterModel::FAILED)
-                    ->setMessage('Import failed with status ' . $response->status);
-            } else {
-                //Not finished
-                $itemCount = 1;
-            }
-        }
-        //Save item
-        $this->importerFactory->create()
-            ->saveItem($item);
+        $transactionalBulk = [
+            self::PROGRESS_GROUP_MODEL => $this->v2HandlerFactory,
+            self::PROGRESS_GROUP_METHOD => 'getContactsTransactionalDataImportByImportId',
+            self::PROGRESS_GROUP_TYPES => [
+                ImporterModel::IMPORT_TYPE_ORDERS,
+                ImporterModel::IMPORT_TYPE_REVIEWS,
+                ImporterModel::IMPORT_TYPE_WISHLIST,
+                'Catalog'
+            ]
+        ];
 
-        return $itemCount;
-    }
+        $transactionalV3Bulk = [
+            self::PROGRESS_GROUP_TYPES => [
+                ImporterModel::MODE_CONSENT
+            ],
+            self::PROGRESS_GROUP_MODEL => $this->v3HandlerFactory,
+            self::PROGRESS_GROUP_RESOURCE => 'contacts',
+            self::PROGRESS_GROUP_METHOD => 'getImportById'
+        ];
 
-    /**
-     * Process finished item.
-     *
-     * @param ImporterModel $item
-     * @return ImporterModel $item
-     * @throws \Magento\Framework\Exception\LocalizedException
-     */
-    private function processFinishedItem($item)
-    {
-        $now = gmdate('Y-m-d H:i:s');
+        $contactsBulk = [
+            self::PROGRESS_GROUP_TYPES => [
+                ImporterModel::IMPORT_TYPE_CONTACT,
+                ImporterModel::IMPORT_TYPE_CUSTOMER,
+                ImporterModel::IMPORT_TYPE_GUEST,
+                ImporterModel::IMPORT_TYPE_SUBSCRIBERS,
+            ],
+            self::PROGRESS_GROUP_MODEL => $this->v2HandlerFactory,
+            self::PROGRESS_GROUP_METHOD => 'getContactsImportByImportId'
+        ];
 
-        $item->setImportStatus(ImporterModel::IMPORTED)
-            ->setImportFinished($now)
-            ->setMessage('');
-
-        switch ($item->getImportType()) {
-            case ImporterModel::IMPORT_TYPE_CONTACT:
-            case ImporterModel::IMPORT_TYPE_CUSTOMER:
-            case ImporterModel::IMPORT_TYPE_SUBSCRIBERS:
-            case ImporterModel::IMPORT_TYPE_GUEST:
-                $this->processContactFinishedItems($item);
-                break;
-            case ImporterModel::IMPORT_TYPE_ORDERS:
-            case ImporterModel::IMPORT_TYPE_REVIEWS:
-            case ImporterModel::IMPORT_TYPE_WISHLIST:
-                $this->processInsightDataItems($item);
-                break;
-        }
-
-        return $item;
-    }
-
-    /**
-     * Process contact import items.
-     *
-     * @param ImporterModel $item
-     * @return void
-     */
-    private function processContactFinishedItems($item)
-    {
-        $file = $item->getImportFile();
-        // if a filename is stored in the table and if that file physically exists
-        if ($file && $this->fileHelper->isFilePathExistWithFallback($file)) {
-            //remove the consent data for contacts before archiving the file
-            $log = $this->fileHelper->cleanProcessedConsent(
-                $this->fileHelper->getFilePathWithFallback($file)
-            );
-            if ($log) {
-                $this->logger->info($log);
-            }
-            if (! $this->fileHelper->isFileAlreadyArchived($file)) {
-                $this->fileHelper->archiveCSV($file);
-            }
-        }
-
-        if ($item->getImportId()) {
-            $this->reportHandler->processContactImportReportFaults(
-                $item->getImportId(),
-                $item->getWebsiteId(),
-                $item->getImportType(),
-                $this->client
-            );
-        }
-    }
-
-    /**
-     * Process insight data items.
-     *
-     * @param ImporterModel $item
-     * @return void
-     */
-    private function processInsightDataItems($item)
-    {
-        if ($item->getImportId()) {
-            $this->reportHandler->processInsightReportFaults(
-                $item->getImportId(),
-                $item->getWebsiteId(),
-                $this->client,
-                $item->getImportType()
-            );
-        }
-    }
-
-    /**
-     * Fetch client object.
-     *
-     * @return Client
-     */
-    private function getClient()
-    {
-        return $this->_getData('client');
+        return [
+            self::VERSION_2 => [
+                self::TRANSACTIONAL => $transactionalBulk,
+                self::CONTACT => $contactsBulk
+            ],
+            self::VERSION_3 => [
+                self::CONTACT => $transactionalV3Bulk,
+            ]
+        ];
     }
 }

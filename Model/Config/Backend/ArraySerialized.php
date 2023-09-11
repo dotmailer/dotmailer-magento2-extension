@@ -2,12 +2,12 @@
 
 namespace Dotdigitalgroup\Email\Model\Config\Backend;
 
-class ArraySerialized extends \Dotdigitalgroup\Email\Model\Config\Backend\Serialized
+class ArraySerialized extends Serialized
 {
     /**
      * Unset array element with '__empty' key
      *
-     * @return \Dotdigitalgroup\Email\Model\Config\Backend\Serialized
+     * @return Serialized
      */
     public function beforeSave()
     {

@@ -6,8 +6,9 @@ use Dotdigitalgroup\Email\Exception\PendingOptInException;
 use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Automation;
-use Dotdigitalgroup\Email\Model\ContactFactory;
 use Dotdigitalgroup\Email\Model\Contact\ContactResponseHandler;
+use Dotdigitalgroup\Email\Model\ContactFactory;
+use Dotdigitalgroup\Email\Model\Newsletter\BackportedSubscriberLoader;
 use Dotdigitalgroup\Email\Model\ResourceModel\Automation as AutomationResource;
 use Dotdigitalgroup\Email\Model\StatusInterface;
 use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\DataFieldCollector;
@@ -116,11 +117,11 @@ class AutomationProcessor
             $storeId = $automation->getStoreId();
             $automationDataFields = $this->retrieveAutomationDataFields($automation, $email, $websiteId);
 
-            $automationContact = $this->contactFactory->create()
-                ->loadByCustomerEmail($email, $websiteId);
-            $automationSubscriber = $this->backportedSubscriberLoader->loadBySubscriberEmail($email, $websiteId);
-
             try {
+                $automationContact = $this->contactFactory->create()
+                    ->loadByCustomerEmail($email, $websiteId);
+                $automationSubscriber = $this->backportedSubscriberLoader->loadBySubscriberEmail($email, $websiteId);
+
                 $contactId = $this->contactManager->prepareDotdigitalContact(
                     $automationContact,
                     $automationSubscriber,

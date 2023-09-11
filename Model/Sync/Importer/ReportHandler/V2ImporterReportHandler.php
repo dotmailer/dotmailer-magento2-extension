@@ -1,21 +1,22 @@
 <?php
 
-namespace Dotdigitalgroup\Email\Model\Sync\Importer;
+namespace Dotdigitalgroup\Email\Model\Sync\Importer\ReportHandler;
 
+use Dotdigitalgroup\Email\Model\Contact as ContactModel;
 use Dotdigitalgroup\Email\Helper\Config;
+use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Apiconnector\Client;
 use Dotdigitalgroup\Email\Model\Cron\CronOffsetter;
 use Dotdigitalgroup\Email\Model\Importer as ImporterModel;
 use Dotdigitalgroup\Email\Model\ImporterFactory;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory as ContactCollectionFactory;
-use Magento\Framework\App\Config\ScopeConfigInterface;
-use Magento\Framework\Stdlib\DateTime;
 use Dotdigitalgroup\Email\Model\ResourceModel\Importer\CollectionFactory as ImporterCollectionFactory;
-use Dotdigitalgroup\Email\Logger\Logger;
+use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Serialize\SerializerInterface;
+use Magento\Framework\Stdlib\DateTime;
 
-class ImporterReportHandler
+class V2ImporterReportHandler
 {
     /**
      * @var ScopeConfigInterface
@@ -141,6 +142,7 @@ class ImporterReportHandler
                 $contactsToResubscribe = $contactsToUnsubscribe = [];
 
                 foreach ($recordsToCheck as $contact) {
+                    /** @var ContactModel $contact*/
                     if (!$contact->getLastSubscribedAt() ||
                         !$contact->getIsSubscriber() ||
                         $contact->getSuppressed()) {

@@ -9,7 +9,6 @@ use Dotdigitalgroup\Email\Model\ResourceModel\Contact\Collection as ContactColle
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory as ContactCollectionFactory;
 use Dotdigitalgroup\Email\Model\Sync\Export\CsvHandler;
 use Dotdigitalgroup\Email\Model\Sync\Export\SalesDataManager;
-use Dotdigitalgroup\Email\Model\Sync\Subscriber\ConsentDataManager;
 use Dotdigitalgroup\Email\Model\Sync\Subscriber\SubscriberExporter;
 use Dotdigitalgroup\Email\Model\Sync\Subscriber\SubscriberExporterFactory;
 use Dotdigitalgroup\Email\Model\Sync\Subscriber\SubscriberWithSalesExporter;
@@ -45,11 +44,6 @@ class SubscriberWithSalesExporterTest extends TestCase
     private $salesDataManagerMock;
 
     /**
-     * @var ConsentDataManager|\PHPUnit\Framework\MockObject\MockObject
-     */
-    private $consentDataManagerMock;
-
-    /**
      * @var SubscriberExporterFactory|\PHPUnit\Framework\MockObject\MockObject
      */
     private $subscriberExporterFactoryMock;
@@ -81,7 +75,6 @@ class SubscriberWithSalesExporterTest extends TestCase
         $this->connectorSubscriberFactoryMock = $this->createMock(ConnectorSubscriberFactory::class);
         $this->contactCollectionFactoryMock = $this->createMock(ContactCollectionFactory::class);
         $this->salesDataManagerMock = $this->createMock(SalesDataManager::class);
-        $this->consentDataManagerMock = $this->createMock(ConsentDataManager::class);
         $this->subscriberExporterFactoryMock = $this->createMock(SubscriberExporterFactory::class);
         $this->scopeConfigMock = $this->createMock(ScopeConfigInterface::class);
         $this->csvHandlerMock = $this->createMock(CsvHandler::class);
@@ -109,7 +102,6 @@ class SubscriberWithSalesExporterTest extends TestCase
             $this->connectorSubscriberFactoryMock,
             $this->contactCollectionFactoryMock,
             $this->salesDataManagerMock,
-            $this->consentDataManagerMock,
             $this->subscriberExporterFactoryMock,
             $this->scopeConfigMock,
             $this->csvHandlerMock
@@ -145,11 +137,6 @@ class SubscriberWithSalesExporterTest extends TestCase
                 $subscriberMocks[3],
                 $subscriberMocks[4]
             ]));
-
-        /* Consent data */
-        $this->consentDataManagerMock->expects($this->once())
-            ->method('setSubscriberConsentData')
-            ->willReturn($this->getSubscriberConsentData());
 
         /* Subscriber sales data */
         $this->salesDataManagerMock->expects($this->once())
@@ -213,7 +200,7 @@ class SubscriberWithSalesExporterTest extends TestCase
             $contactMock->method('getId')->willReturn($i);
             $contactMock->method('getEmail')->willReturn('chaz' . $i . '@emailsim.io');
             $contactMock->method('getEmailContactId')->willReturn(rand(1, 99));
-            $contactMock->expects($this->exactly(18))->method('setData');
+            $contactMock->expects($this->exactly(13))->method('setData');
             $contactMock->expects($this->once())->method('clearInstance');
             $mocks[] = $contactMock;
         }

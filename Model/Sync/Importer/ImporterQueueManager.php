@@ -72,7 +72,7 @@ class ImporterQueueManager
      * Set importing priority for bulk imports.
      *
      * @param array $additionalImportTypes
-     * @return null
+     * @return array
      */
     public function getBulkQueue(array $additionalImportTypes = [])
     {
@@ -119,6 +119,11 @@ class ImporterQueueManager
         ];
     }
 
+    /**
+     * Set importing priority for single imports.
+     *
+     * @return array
+     */
     public function getSingleQueue()
     {
         /*
@@ -137,9 +142,12 @@ class ImporterQueueManager
         $subscriberResubscribe['type'] = ImporterModel::IMPORT_TYPE_SUBSCRIBER_RESUBSCRIBED;
 
         //Subscriber update/suppressed
-        $subscriberUpdate = $defaultSingleUpdate;
-        $subscriberUpdate['mode'] = ImporterModel::MODE_SUBSCRIBER_UPDATE;
-        $subscriberUpdate['type'] = ImporterModel::IMPORT_TYPE_SUBSCRIBER_UPDATE;
+        $subscriberUnsubscribe = $defaultSingleUpdate;
+        $subscriberUnsubscribe['mode'] = [
+            ImporterModel::MODE_SUBSCRIBER_UPDATE,
+            ImporterModel::MODE_SUBSCRIBER_UNSUBSCRIBE
+        ];
+        $subscriberUnsubscribe['type'] = ImporterModel::IMPORT_TYPE_SUBSCRIBER_UPDATE;
 
         //Email Change
         $emailChange = $defaultSingleUpdate;
@@ -187,7 +195,7 @@ class ImporterQueueManager
 
         return [
             $subscriberResubscribe,
-            $subscriberUpdate,
+            $subscriberUnsubscribe,
             $emailChange,
             $orderUpdate,
             $updateCartInsightTd,

@@ -6,7 +6,7 @@ require([
     'eventsource'
 ], function ($, confirmation) {
     'use strict';
-    const confirmationBody = 'By clicking confirm you agree to reset your data.',
+    const confirmationBody = 'Clicking confirm will reset some Dotdigital configuration settings (lists, sync settings, data mapping and email capture).',
         confirmationTitle = 'Are you sure?',
         errorMessage = 'There was a problem setting up your integration. Please check your logs for more detail.',
         placeholderElement = '' +

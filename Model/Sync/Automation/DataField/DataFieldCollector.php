@@ -3,7 +3,6 @@
 namespace Dotdigitalgroup\Email\Model\Sync\Automation\DataField;
 
 use Dotdigitalgroup\Email\Helper\Config;
-use Dotdigitalgroup\Email\Model\Consent;
 use Dotdigitalgroup\Email\Model\Contact;
 use Dotdigitalgroup\Email\Model\Sync\AbstractExporter;
 use Dotdigitalgroup\Email\Model\Sync\Customer\Exporter as CustomerExporter;
@@ -216,34 +215,5 @@ class DataFieldCollector
             ];
         }
         return $combinedDataFields;
-    }
-
-    /**
-     * Extract consent fields from data fields.
-     *
-     * Data fields are passed by reference. If we find a consent field, we add it
-     * to a separate array and _remove_ it from the original data fields array.
-     * Will return an empty array if either consent fields are present but have no values,
-     * OR if there are no consent fields (i.e. it hasn't been enabled in the config).
-     *
-     * @param array $dataFields
-     *
-     * @return array
-     */
-    public function extractConsentFromPreparedDataFields(array &$dataFields): array
-    {
-        $consentFields = [];
-        foreach ($dataFields as $key => $field) {
-            if (in_array($field['Key'], Consent::$bulkFields)) {
-                if ($field['Value']) {
-                    $consentFields[] = [
-                        'Key' => Consent::BULKFIELDTOSINGLEFIELDNAMEMAP[$field['Key']],
-                        'Value' => $field['Value']
-                    ];
-                }
-                unset($dataFields[$key]);
-            }
-        }
-        return $consentFields;
     }
 }

@@ -164,10 +164,10 @@ class Data
                 'createdDate' => $this->dateTime->date(\DateTime::ATOM, $quote->getCreatedAt()),
                 'modifiedDate' => $this->dateTime->date(\DateTime::ATOM, $quote->getUpdatedAt()),
                 'currency' => $quoteCurrency,
-                'subTotal' => round($quote->getSubtotal(), 2),
-                'taxAmount' => round($quote->getShippingAddress()->getTaxAmount(), 2),
-                'shipping' => round($quote->getShippingAddress()->getShippingAmount(), 2),
-                'grandTotal' => round($quote->getGrandTotal(), 2)
+                'subTotal' => round($quote->getSubtotal() ?: 0, 2),
+                'taxAmount' => round($quote->getShippingAddress()->getTaxAmount() ?: 0, 2),
+                'shipping' => round($quote->getShippingAddress()->getShippingAmount() ?: 0, 2),
+                'grandTotal' => round($quote->getGrandTotal() ?: 0, 2)
             ]
         ];
 
@@ -189,9 +189,9 @@ class Data
                 'unitPrice_incl_tax' => $this->getUnitPriceIncTax($item, $product),
                 'quantity' => $item->getQty(),
                 'salePrice' => $this->getConvertedPrice($item->getBasePrice(), $store->getId(), $quoteCurrency),
-                'salePrice_incl_tax' => round($item->getPriceInclTax(), 2),
-                'totalPrice' => round($item->getRowTotal(), 2),
-                'totalPrice_incl_tax' => round($item->getRowTotalInclTax(), 2)
+                'salePrice_incl_tax' => round($item->getPriceInclTax() ?: 0, 2),
+                'totalPrice' => round($item->getRowTotal() ?: 0, 2),
+                'totalPrice_incl_tax' => round($item->getRowTotalInclTax() ?: 0, 2)
             ];
         }
 

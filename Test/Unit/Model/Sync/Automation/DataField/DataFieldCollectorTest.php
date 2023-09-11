@@ -256,19 +256,6 @@ class DataFieldCollectorTest extends TestCase
         ], $merged);
     }
 
-    public function testConsentFieldsExtracted()
-    {
-        $dataFields = $this->getDummySubscriberDataFields();
-        $consentFields = $this->dataFieldCollector->extractConsentFromPreparedDataFields($dataFields);
-
-        $this->assertEquals([
-            [
-                'Key' => 'TEXT',
-                'Value' => 'You have consented!',
-            ]
-        ], $consentFields);
-    }
-
     private function getDummyExportData()
     {
         return [

@@ -2,10 +2,10 @@
 <actionGroups xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/actionGroupSchema.xsd">
     <actionGroup name="SetCustomerConsentText">
-        <amOnPage url="{{AdminDotmailerConfigurationPage.url}}" stepKey="navigateToDotmailerConfigurationPage3"/>
+        <amOnPage url="{{AdminDotdigitalConsentPage.url}}" stepKey="navigateToDotdigitalConsentPage"/>
         <waitForPageLoad stepKey="waitForPageLoad5"/>
-        <conditionalClick stepKey="expandConsentTab" selector="{{AdminDotmailerConfigurationConsentSection.consentFieldsetToggle}}" dependentSelector="{{AdminDotmailerConfigurationConsentSection.consentFieldset}}" visible="false"/>
-        <fillField selector="{{AdminDotmailerConfigurationConsentSection.customerConsentText}}" userInput="Test consent text" stepKey="setConsentText"/>
+        <conditionalClick stepKey="expandConsentTab" selector="{{AdminDotdigitalConsentSection.consentFieldsetToggle}}" dependentSelector="{{AdminDotdigitalConsentSection.consentFieldset}}" visible="false"/>
+        <fillField selector="{{AdminDotdigitalConsentSection.customerConsentText}}" userInput="Test consent text" stepKey="setConsentText"/>
         <click selector="{{AdminMainActionsSection.save}}" stepKey="saveConfig2"/>
         <waitForPageLoad stepKey="waitForPageLoad6"/>
     </actionGroup>

@@ -1,0 +1,22 @@
+<?php
+/**
+ * @var $block \Magento\Framework\View\Element\Template
+ * @var $escaper \Magento\Framework\Escaper
+ * @var $view \Dotdigitalgroup\Email\ViewModel\Customer\AccountSubscriptions
+ */
+?>
+<form id="connector-newsletter-form-validate"
+      method="post"
+      action="<?= $block->escapeHtml($block->getUrl('connector/customer/newsletter')) ?>">
+    <?= $block->getBlockHtml('formkey') ?>
+
+    <?= $block->getChildHtml() ?>
+
+    <div class="actions-toolbar">
+        <div class="primary">
+            <button type="submit" title="Save" class="action save primary">
+                <span>Save</span>
+            </button>
+        </div>
+    </div>
+</form>

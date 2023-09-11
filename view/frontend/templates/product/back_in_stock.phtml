@@ -14,7 +14,7 @@ $productNotification = $block->getProductNotification();
     <script>
         require.config({
             paths: {
-                'ddmbis': "<?= $escaper->escapeJs($productNotification->getProductNotificationScript()) ?>"
+                'ddmbis': "<?= $block->escapeJs($productNotification->getProductNotificationScript()) ?>"
             }
         });
     </script>
@@ -22,11 +22,11 @@ $productNotification = $block->getProductNotification();
         {
             "*": {
                 "Dotdigitalgroup_Email/js/backInStock": {
-                    "id": "<?= $escaper->escapeJs($productNotification->getProductNotificationId()); ?>",
-                    "variants": "<?= $escaper->escapeJs($productNotification->getOutOfStockVariants())?>",
-                    "product_id": "<?= $escaper->escapeJs($productNotification->getProductId())?>",
-                    "product_name": "<?= $escaper->escapeJs($productNotification->getProductName())?>",
-                    "product_is_salable": "<?= $escaper->escapeJs($productNotification->getProductIsSalable())?>"
+                    "id": "<?= $block->escapeJs($productNotification->getProductNotificationId()); ?>",
+                    "variants": "<?= $block->escapeJs($productNotification->getOutOfStockVariants())?>",
+                    "product_id": "<?= $block->escapeJs($productNotification->getProductId())?>",
+                    "product_name": "<?= $block->escapeJs($productNotification->getProductName())?>",
+                    "product_is_salable": "<?= $block->escapeJs($productNotification->getProductIsSalable())?>"
                 }
             }
         }

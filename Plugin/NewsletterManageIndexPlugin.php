@@ -2,72 +2,71 @@
 
 namespace Dotdigitalgroup\Email\Plugin;
 
-/**
- * Newsletter manage index plugin for customer
- *
- * @SuppressWarnings(PHPMD.UnusedFormalParameter)
- */
+use Dotdigitalgroup\Email\Model\Customer\Account\Configuration;
+use Magento\Customer\Model\Session;
+use Magento\Framework\App\Response\Http;
+use Magento\Framework\UrlFactory;
+use Magento\Newsletter\Controller\Manage\Index;
+
 class NewsletterManageIndexPlugin
 {
     /**
-     * @var \Magento\Framework\App\Response\Http
+     * @var Configuration
+     */
+    private $config;
+
+    /**
+     * @var Session
+     */
+    private $customerSession;
+
+    /**
+     * @var Http
      */
     private $response;
 
     /**
-     * @var \Magento\Framework\UrlFactory
+     * @var UrlFactory
      */
     private $urlFactory;
 
     /**
-     * @var \Dotdigitalgroup\Email\Helper\Data
+     * @param Configuration $config
+     * @param Session $customerSession
+     * @param Http $response
+     * @param UrlFactory $urlFactory
      */
-    private $helper;
-
-    /**
-     * @var \Magento\Customer\Model\Session
-     */
-    public $customerSession;
-
     public function __construct(
-        \Magento\Framework\App\Response\Http $response,
-        \Magento\Framework\UrlFactory $urlFactory,
-        \Dotdigitalgroup\Email\Helper\Data $helper,
-        \Magento\Customer\Model\Session $customerSession
+        Configuration $config,
+        Session $customerSession,
+        Http $response,
+        UrlFactory $urlFactory
     ) {
+        $this->config = $config;
         $this->customerSession = $customerSession;
-        $this->helper = $helper;
         $this->response = $response;
         $this->urlFactory = $urlFactory;
     }
 
     /**
-     * @param \Magento\Newsletter\Controller\Manage\Index $subject
+     * Around execute.
+     *
+     * @param Index $subject
      * @param callable $proceed
+     *
+     * @return callable|void
      */
     public function aroundExecute(
-        \Magento\Newsletter\Controller\Manage\Index $subject,
+        Index $subject,
         callable $proceed
     ) {
         $websiteId = $this->customerSession->getCustomer()->getWebsiteId();
-        $isEnabled = $this->helper->isEnabled($websiteId);
-        $dataFields = $this->helper->getCanShowDataFields(
-            $websiteId
-        );
-        $addressBooks = $this->helper->getCanShowAdditionalSubscriptions(
-            $websiteId
-        );
-        $preferences = $this->helper->getWebsiteConfig(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SHOW_PREFERENCES,
-            $websiteId
-        );
-
-        if ($isEnabled && ($dataFields || $addressBooks || $preferences)) {
-            $this->response->setRedirect(
-                $this->urlFactory->create()->getUrl('connector/customer/index')
-            );
-        } else {
+        if (!$this->config->shouldRedirectToConnectorCustomerIndex($websiteId)) {
             return $proceed();
         }
+
+        $this->response->setRedirect(
+            $this->urlFactory->create()->getUrl('connector/customer/index')
+        );
     }
 }

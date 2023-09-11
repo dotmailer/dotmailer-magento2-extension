@@ -2,14 +2,21 @@
 
 namespace Dotdigitalgroup\Email\Console\Command\Provider;
 
+use Dotdigitalgroup\Email\Model\Contact\PlatformChangeManagerFactory;
 use Dotdigitalgroup\Email\Model\Cron\CleanerFactory;
 use Dotdigitalgroup\Email\Model\MonitorFactory;
+use Dotdigitalgroup\Email\Model\Newsletter\UnsubscriberFactory;
 
 /**
  * Provides factories for all available task models, and exposes its properties to show what's available
  */
 class TaskProvider
 {
+    /**
+     * @var PlatformChangeManagerFactory
+     */
+    private $platformChangeManagerFactory;
+
     /**
      * @var CleanerFactory
      */
@@ -21,17 +28,28 @@ class TaskProvider
     private $monitorFactory;
 
     /**
+     * @var UnsubscriberFactory
+     */
+    private $unsubscriberFactory;
+
+    /**
      * TaskProvider constructor.
      *
+     * @param PlatformChangeManagerFactory $platformChangeManagerFactory
      * @param CleanerFactory $cleanerFactory
      * @param MonitorFactory $monitorFactory
+     * @param UnsubscriberFactory $unsubscriberFactory
      */
     public function __construct(
+        PlatformChangeManagerFactory $platformChangeManagerFactory,
         CleanerFactory $cleanerFactory,
-        MonitorFactory $monitorFactory
+        MonitorFactory $monitorFactory,
+        UnsubscriberFactory $unsubscriberFactory
     ) {
+        $this->platformChangeManagerFactory = $platformChangeManagerFactory;
         $this->cleanerFactory = $cleanerFactory;
         $this->monitorFactory = $monitorFactory;
+        $this->unsubscriberFactory = $unsubscriberFactory;
     }
 
     /**

@@ -29,6 +29,7 @@ class SubscriberFilterer
 
     /**
      * Add filter to collection for subscribers with subscribed status.
+     *
      * @param Object $collection
      * @param string $emailColumn
      * @return Object
@@ -54,6 +55,8 @@ class SubscriberFilterer
     }
 
     /**
+     * Get subscribers by emails, stores and status.
+     *
      * @param array $emails
      * @param array $storeIds
      * @param int $status

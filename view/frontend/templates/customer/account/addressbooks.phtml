@@ -1,0 +1,38 @@
+<?php
+/**
+ * @var $block \Magento\Framework\View\Element\Template
+ * @var $escaper \Magento\Framework\Escaper
+ * @var $view \Dotdigitalgroup\Email\ViewModel\Customer\Account\AddressBooks
+ */
+
+// @codingStandardsIgnoreFile
+$view = $block->getData('config');
+?>
+
+<?php
+$additionalBooks = $view->getAdditionalBooksToShow();
+
+if (!empty($additionalBooks)): ?>
+    <fieldset class="fieldset">
+        <legend class="legend">
+            <span><?= $block->escapeHtml(__('Lists')) ?></span>
+        </legend>
+        <ul class="form-list" style="padding-left: 0">
+            <?php foreach ($additionalBooks as $books): ?>
+                <li class="control" style="display: block; margin: 5px 0 5px 10px">
+                    <input type="checkbox" name="additional_subscriptions[]"
+                           id="<?= $block->escapeHtml($books["name"]); ?>"
+                           value="<?= $block->escapeHtml($books["value"]) ?>"
+                           title="<?= $block->escapeHtml($books["name"]) ?>"
+                        <?php if ($books["subscribed"]): ?>
+                            checked="checked"
+                        <?php endif; ?> class="checkbox"
+                    />
+                    <label for="<?= $block->escapeHtml($books["name"]); ?>">
+                        <?= $block->escapeHtml($books["name"]) ?>
+                    </label>
+                </li>
+            <?php endforeach; ?>
+        </ul>
+    </fieldset>
+<?php endif; ?>

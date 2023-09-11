@@ -73,25 +73,29 @@ class DataMigrationHelper
     }
 
     /**
+     * Run.
+     *
      * @param string|null $table
-     * @throws \ErrorException
-     * @throws \Magento\Framework\Exception\LocalizedException
-     * @throws \Zend_Db_Statement_Exception
      */
-    public function run($table = null)
+    public function run(string $table = null)
     {
         $types = $this->dataMigrationTypeProvider->getEnabledTypes($table);
 
         // loop through types and execute
         foreach ($types as $dataMigration) {
-            /** @var AbstractDataMigration $dataMigration */
-            $dataMigration->execute();
-            $this->logActions($dataMigration);
+            try {
+                /** @var AbstractDataMigration $dataMigration */
+                $dataMigration->execute();
+                $this->logActions($dataMigration);
+            } catch (\Exception $e) {
+                $this->logErrors($dataMigration, $e->getMessage());
+            }
         }
     }
 
     /**
-     * Set an output interface for logging to the console
+     * Set an output interface for logging to the console.
+     *
      * @param OutputInterface $output
      * @return $this
      */
@@ -102,6 +106,8 @@ class DataMigrationHelper
     }
 
     /**
+     * Get tables from types.
+     *
      * @return array
      */
     public function getTablesFromAvailableTypes()
@@ -115,26 +121,33 @@ class DataMigrationHelper
     }
 
     /**
-     * Truncate relevant tables before running
-     * @param null $table
+     * Truncate relevant tables before running.
+     *
+     * @param string|null $table
+     *
      * @return $this
      */
-    public function emptyTables($table = null)
+    public function emptyTables(string $table = null)
     {
         foreach ($this->dataMigrationTypeProvider->getEnabledTypes($table) as $migrationType) {
             /** @var AbstractDataMigration $migrationType */
             $tableName = $this->resourceConnection->getTableName($migrationType->getTableName());
-            $this->resourceConnection->getConnection()->delete($tableName);
+            $connection = $this->resourceConnection->getConnection();
 
-            $this->resourceConnection->getConnection()
-                ->query(sprintf('ALTER TABLE %s AUTO_INCREMENT = 1', $tableName));
+            if (!$connection->isTableExists($tableName)) {
+                continue;
+            }
+
+            $connection->delete($tableName);
+            $connection->query(sprintf('ALTER TABLE %s AUTO_INCREMENT = 1', $tableName));
         }
 
         return $this;
     }
 
     /**
-     * Generate a random string and save in config
+     * Generate a random string and save in config.
+     *
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function generateAndSaveCode()
@@ -155,10 +168,11 @@ class DataMigrationHelper
     }
 
     /**
-     * Log actions of each data migration
+     * Log actions of each data migration.
+     *
      * @param AbstractDataMigration $dataMigration
      */
-    private function logActions(AbstractDataMigration $dataMigration)
+    public function logActions(AbstractDataMigration $dataMigration)
     {
         $this->logger->debug('Dotdigitalgroup_Email data installer', [
             'type' => get_class($dataMigration),
@@ -170,6 +184,28 @@ class DataMigrationHelper
                 '%s: rows affected %s',
                 get_class($dataMigration),
                 $dataMigration->getRowsAffected()
+            ));
+        }
+    }
+
+    /**
+     * Log errors from a data migration.
+     *
+     * @param AbstractDataMigration $dataMigration
+     * @param string $exceptionMessage
+     */
+    public function logErrors(AbstractDataMigration $dataMigration, string $exceptionMessage)
+    {
+        $this->logger->error('Dotdigitalgroup_Email data installer', [
+            'type' => get_class($dataMigration),
+            'error' => $exceptionMessage,
+        ]);
+
+        if ($this->output) {
+            $this->output->writeln(sprintf(
+                'ERROR [%s]: %s',
+                get_class($dataMigration),
+                $exceptionMessage
             ));
         }
     }

@@ -4,6 +4,7 @@ namespace Dotdigitalgroup\Email\Console\Command;
 
 use Dotdigitalgroup\Email\Setup\Install\DataMigrationHelper;
 use Magento\Framework\Exception\InputException;
+use Magento\Framework\Exception\LocalizedException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -47,9 +48,13 @@ class ImportDataCommand extends Command
 
     /**
      * Execute the data migration
+     *
      * @param InputInterface $input
      * @param OutputInterface $output
+     *
      * @return int
+     * @throws InputException
+     * @throws LocalizedException
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
@@ -68,7 +73,9 @@ class ImportDataCommand extends Command
         $start = microtime(true);
         $output->writeln(__('Starting data import')->getText());
 
-        $this->migrateData->setOutputInterface($output)->emptyTables($requestedTable)->run($requestedTable);
+        $this->migrateData->setOutputInterface($output)
+            ->emptyTables($requestedTable)
+            ->run($requestedTable);
 
         if (!$requestedTable) {
             $this->migrateData->generateAndSaveCode();

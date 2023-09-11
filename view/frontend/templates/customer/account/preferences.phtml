@@ -1,0 +1,52 @@
+<?php
+/**
+ * @var $block \Magento\Framework\View\Element\Template
+ * @var $escaper \Magento\Framework\Escaper
+ * @var $container \Dotdigitalgroup\Email\ViewModel\Customer\AccountSubscriptions
+ * @var $view \Dotdigitalgroup\Email\ViewModel\Customer\Account\Preferences
+ */
+
+// @codingStandardsIgnoreFile
+$view = $block->getData('config');
+?>
+
+<fieldset class="fieldset">
+    <legend class="legend"><span><?= $block->escapeHtml(__('Preferences')) ?></span></legend>
+    <ul class="form-list" style="padding-left: 0">
+        <?php foreach ($view->getPreferencesToShow() as $prefId => $preferences): ?>
+            <?php $uniqId = uniqid('pr-'); ?>
+            <?php if (! $preferences['isPreference']): ?>
+                <h5 style="margin-bottom: 10px"><?= $block->escapeHtml($preferences['catLabel']) ?></h5>
+                <?php foreach ($preferences['catPreferences'] as $catPrefId => $catPref): ?>
+                    <li class="control" style="display: block; margin: 5px 0 5px 10px">
+                        <input type="checkbox" name="preferences[]"
+                               id="<?= $block->escapeHtml($uniqId . $catPrefId); ?>"
+                               value="<?= $block->escapeHtml($prefId . ',' . $catPrefId) ?>"
+                               title="<?= $block->escapeHtml($catPref["label"]) ?>"
+                            <?php if ($catPref["isOptedIn"]): ?>
+                                checked="checked"
+                            <?php endif; ?> class="checkbox"
+                        />
+                        <label for="<?= $block->escapeHtml($uniqId . $catPrefId); ?>">
+                            <?= $block->escapeHtml($catPref["label"]) ?>
+                        </label>
+                    </li>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <li class="control" style="display: block; margin: 17px 0 17px 10px">
+                    <input type="checkbox" name="preferences[]"
+                           id="<?= $block->escapeHtml($uniqId . $prefId); ?>"
+                           value="<?= $block->escapeHtml($prefId) ?>"
+                           title="<?= $block->escapeHtml($preferences["label"]) ?>"
+                        <?php if ($preferences["isOptedIn"]): ?>
+                            checked="checked"
+                        <?php endif; ?> class="checkbox"
+                    />
+                    <label for="<?= $block->escapeHtml($uniqId . $prefId); ?>">
+                        <?= $block->escapeHtml($preferences["label"]) ?>
+                    </label>
+                </li>
+            <?php endif; ?>
+        <?php endforeach; ?>
+    </ul>
+</fieldset>

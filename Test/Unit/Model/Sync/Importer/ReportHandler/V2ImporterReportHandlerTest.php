@@ -1,25 +1,24 @@
 <?php
 
-namespace Dotdigitalgroup\Email\Test\Unit\Model\Sync\Importer;
+namespace Dotdigitalgroup\Email\Test\Unit\Model\Sync\Importer\ReportHandler;
 
+use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Apiconnector\Client;
 use Dotdigitalgroup\Email\Model\Cron\CronOffsetter;
-use Dotdigitalgroup\Email\Model\Importer as ImporterModel;
-use Dotdigitalgroup\Email\Model\ImporterFactory;
 use Dotdigitalgroup\Email\Model\Importer;
+use Dotdigitalgroup\Email\Model\ImporterFactory;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory as ContactCollectionFactory;
-use Magento\Framework\App\Config\ScopeConfigInterface;
-use Magento\Framework\Stdlib\DateTime;
-use Dotdigitalgroup\Email\Model\ResourceModel\Importer\CollectionFactory as ImporterCollectionFactory;
 use Dotdigitalgroup\Email\Model\ResourceModel\Importer\Collection as ImporterCollection;
-use Dotdigitalgroup\Email\Logger\Logger;
-use Magento\Framework\Serialize\SerializerInterface;
-use Dotdigitalgroup\Email\Model\Sync\Importer\ImporterReportHandler;
+use Dotdigitalgroup\Email\Model\ResourceModel\Importer\CollectionFactory as ImporterCollectionFactory;
+use Dotdigitalgroup\Email\Model\Sync\Importer\ReportHandler\V2ImporterReportHandler;
+use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\DataObject;
+use Magento\Framework\Serialize\SerializerInterface;
+use Magento\Framework\Stdlib\DateTime;
 use PHPUnit\Framework\TestCase;
 
-class ImporterReportHandlerTest extends TestCase
+class V2ImporterReportHandlerTest extends TestCase
 {
     /**
      * @var Client|\PHPUnit\Framework\MockObject\MockObject
@@ -62,7 +61,7 @@ class ImporterReportHandlerTest extends TestCase
     private $importerMock;
 
     /**
-     * @var ImporterReportHandler
+     * @var V2ImporterReportHandler
      */
     private $importerReportHandler;
 
@@ -113,7 +112,7 @@ class ImporterReportHandlerTest extends TestCase
         $this->dataObjectMockTwo = $this->createMock(DataObject::class);
         $this->importerMock = $this->createMock(Importer::class);
 
-        $this->importerReportHandler = new ImporterReportHandler(
+        $this->importerReportHandler = new V2ImporterReportHandler(
             $this->scopeConfigInterfaceMock,
             $this->importerFactoryMock,
             $this->contactCollectionFactoryMock,

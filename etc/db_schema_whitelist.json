@@ -293,7 +293,9 @@
             "consent_url": true,
             "consent_datetime": true,
             "consent_ip": true,
-            "consent_user_agent": true
+            "consent_user_agent": true,
+            "consent_text": true,
+            "consent_imported": true
         },
         "index": {
             "EMAIL_CONTACT_CONSENT_EMAIL_CONTACT_ID": true

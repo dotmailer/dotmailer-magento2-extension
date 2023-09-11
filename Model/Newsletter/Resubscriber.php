@@ -2,45 +2,32 @@
 
 namespace Dotdigitalgroup\Email\Model\Newsletter;
 
-use Dotdigitalgroup\Email\Helper\Data;
-use Dotdigitalgroup\Email\Model\Connector\AccountHandler;
+use Dotdigital\V3\Models\DataFieldCollection;
+use Dotdigitalgroup\Email\Logger\Logger;
+use Dotdigitalgroup\Email\Model\Contact\ContactUpdaterInterface;
+use Dotdigitalgroup\Email\Model\Cron\CronFromTimeSetter;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact;
-use Magento\Framework\DataObject;
-use Magento\Framework\Stdlib\DateTime\DateTimeFactory;
-use Magento\Framework\Stdlib\DateTime\TimezoneInterfaceFactory;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Newsletter\Model\ResourceModel\Subscriber\Collection as SubscriberCollection;
+use Magento\Newsletter\Model\Subscriber;
 use Magento\Store\Api\StoreWebsiteRelationInterface;
 
-class Resubscriber extends DataObject
+class Resubscriber implements ContactUpdaterInterface
 {
-    use SetsCronFromTime;
-
-    const BATCH_SIZE = 1000;
+    /**
+     * @var Logger
+     */
+    private $logger;
 
     /**
-     * @var Data
+     * @var CronFromTimeSetter
      */
-    private $helper;
+    private $cronFromTimeSetter;
 
     /**
      * @var Contact
      */
     private $contactResource;
-
-    /**
-     * @var DateTimeFactory
-     */
-    private $dateTimeFactory;
-
-    /**
-     * @var TimezoneInterfaceFactory
-     */
-    private $timezoneInterfaceFactory;
-
-    /**
-     * @var AccountHandler
-     */
-    private $accountHandler;
 
     /**
      * @var StoreWebsiteRelationInterface
@@ -53,117 +40,70 @@ class Resubscriber extends DataObject
     private $subscriberFilterer;
 
     /**
-     * @param Data $helper
+     * @param Logger $logger
+     * @param CronFromTimeSetter $cronFromTimeSetter
      * @param Contact $contactResource
-     * @param DateTimeFactory $dateTimeFactory
-     * @param TimezoneInterfaceFactory $timezoneInterfaceFactory
-     * @param AccountHandler $accountHandler
      * @param StoreWebsiteRelationInterface $storeWebsiteRelation
      * @param SubscriberFilterer $subscriberFilterer
-     * @param array $data
      */
     public function __construct(
-        Data $helper,
+        Logger $logger,
+        CronFromTimeSetter $cronFromTimeSetter,
         Contact $contactResource,
-        DateTimeFactory $dateTimeFactory,
-        TimezoneInterfaceFactory $timezoneInterfaceFactory,
-        AccountHandler $accountHandler,
         StoreWebsiteRelationInterface $storeWebsiteRelation,
-        SubscriberFilterer $subscriberFilterer,
-        array $data = []
+        SubscriberFilterer $subscriberFilterer
     ) {
-        $this->helper = $helper;
+        $this->logger = $logger;
+        $this->cronFromTimeSetter = $cronFromTimeSetter;
         $this->contactResource = $contactResource;
-        $this->dateTimeFactory = $dateTimeFactory;
-        $this->timezoneInterfaceFactory = $timezoneInterfaceFactory;
-        $this->accountHandler = $accountHandler;
         $this->storeWebsiteRelation = $storeWebsiteRelation;
         $this->subscriberFilterer = $subscriberFilterer;
-        parent::__construct($data);
     }
 
     /**
-     * Subscribe by enabled account.
-     *
-     * @param int $batchSize This argument enables unit testing of the while loop.
-     *
-     * @return int
+     * @inheritdoc
      */
-    public function subscribe($batchSize = self::BATCH_SIZE)
+    public function processBatch(array $batch, array $websiteIds)
     {
-        $resubscribes = 0;
+        $resubscribeCount = 0;
 
-        $activeApiUsers = $this->accountHandler->getAPIUsersForECEnabledWebsites();
-        if (!$activeApiUsers) {
-            return 0;
-        }
-
-        foreach ($activeApiUsers as $apiUser) {
-            $resubscribes += $this->batchProcessModifiedContacts($apiUser['websites'], $batchSize);
-        }
-
-        return $resubscribes;
-    }
-
-    /**
-     * Loop through modified Dotdigital contacts and process resubscribes.
-     *
-     * @param array $websiteIds
-     *
-     * @param int $batchSize
-     *
-     * @return int
-     * @throws \Exception
-     */
-    private function batchProcessModifiedContacts($websiteIds, $batchSize)
-    {
-        $skip = 0;
-        $resubscribes = 0;
-        $client = $this->helper->getWebsiteApiClient($websiteIds[0]);
-
-        do {
-            try {
-                $apiContacts = $client->getContactsModifiedSinceDate(
-                    $this->getFromTime(),
-                    'true',
-                    $batchSize,
-                    $skip
-                );
-            } catch (\Exception $e) {
-                break;
-            }
-
-            if (!is_array($apiContacts)) {
-                break;
-            }
-
-            $recentlySubscribedContacts = $this->filterModifiedContacts($apiContacts);
+        try {
+            $recentlySubscribedContacts = $this->filterModifiedContacts($batch);
 
             if (count($recentlySubscribedContacts) === 0) {
-                $skip += $batchSize;
-                continue;
+                return;
             }
 
-            $resubscribes += $this->doResubscribes($recentlySubscribedContacts, $websiteIds);
+            $resubscribeCount = $this->doResubscribes($recentlySubscribedContacts, $websiteIds);
+        } catch (\Exception $e) {
+            $this->logger->debug('Error processing batch', [(string) $e]);
+        }
 
-            $skip += $batchSize;
-        } while (count($apiContacts) === $batchSize);
+        if (!$resubscribeCount) {
+            return;
+        }
 
-        return $resubscribes;
+        $this->logger->info(
+            sprintf(
+                '%s contacts resubscribed in website ids %s',
+                $resubscribeCount,
+                implode(',', $websiteIds)
+            )
+        );
     }
 
     /**
      * Retrieve the LASTSUBSCRIBED data field value.
      *
-     * @param array $dataFields
+     * @param DataFieldCollection|null $dataFields
      *
      * @return string|bool
      */
-    private function getLastSubscribedAt(array $dataFields)
+    private function getLastSubscribedAt(?DataFieldCollection $dataFields)
     {
-        foreach ($dataFields as $dataField) {
-            if ($dataField->key === 'LASTSUBSCRIBED') {
-                return $dataField->value;
+        foreach ($dataFields->all() as $dataField) {
+            if ($dataField->getKey() === 'LASTSUBSCRIBED') {
+                return $dataField->getValue();
             }
         }
 
@@ -171,7 +111,10 @@ class Resubscriber extends DataObject
     }
 
     /**
-     * Trim the set to include only contacts with a recent subscribed date.
+     * Filter modified contacts.
+     *
+     * Trim the set to include only contacts with an email identifier
+     * and a recent LASTSUBSCRIBED data field.
      *
      * @param Object[] $contacts
      *
@@ -183,13 +126,13 @@ class Resubscriber extends DataObject
         $recentlySubscribedContacts = [];
 
         $utcFromTime = new \DateTime(
-            $this->getFromTime(),
+            $this->cronFromTimeSetter->getFromTime(),
             new \DateTimeZone('UTC')
         );
 
         foreach ($contacts as $contact) {
-            $lastSubscribedAt = $this->getLastSubscribedAt($contact->dataFields);
-            if (!$lastSubscribedAt) {
+            $lastSubscribedAt = $this->getLastSubscribedAt($contact->getDataFields());
+            if (!$lastSubscribedAt || !$contact->getIdentifiers()->getEmail()) {
                 continue;
             }
 
@@ -202,7 +145,7 @@ class Resubscriber extends DataObject
                 continue;
             }
 
-            $recentlySubscribedContacts[strtolower($contact->email)] = [
+            $recentlySubscribedContacts[strtolower($contact->getIdentifiers()->getEmail())] = [
                 'subscribed_at' => $utcLastSubscribedAt,
             ];
         }
@@ -217,13 +160,14 @@ class Resubscriber extends DataObject
      * @param array $websiteIds
      *
      * @return int
+     * @throws LocalizedException
      */
     private function doResubscribes(array $contacts, array $websiteIds)
     {
         $matchingSubscribers = $this->subscriberFilterer->getSubscribersByEmailsStoresAndStatus(
             array_keys($contacts),
             $this->getStoreIdsFromWebsiteIds($websiteIds),
-            \Magento\Newsletter\Model\Subscriber::STATUS_UNSUBSCRIBED
+            Subscriber::STATUS_UNSUBSCRIBED
         );
 
         return $this->contactResource->subscribeByEmailAndStore(
@@ -256,13 +200,14 @@ class Resubscriber extends DataObject
      * @param SubscriberCollection $collection
      * @param array $contacts
      *
+     * @return array
      * @throws \Exception
      */
     private function filterSubscribersByChangeStatusAt(SubscriberCollection $collection, array $contacts)
     {
         $filteredSubscribers = [];
 
-        /** @var \Magento\Newsletter\Model\Subscriber $subscriber */
+        /** @var Subscriber $subscriber */
         foreach ($collection as $subscriber) {
             $email = $subscriber->getSubscriberEmail();
 

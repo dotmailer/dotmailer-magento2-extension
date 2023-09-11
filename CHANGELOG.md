@@ -1,3 +1,35 @@
+# 4.22.0
+
+### What's new
+- Consent configuration has been moved to its own section of the Dotdigital admin.
+- Consent insight is no longer synced alongside subscribers; it has its own separate cron.
+- There is a new cron to reflect changes to subscription status in Dotdigital; `ddg_automation_platform_modified_contacts` replaces `ddg_automation_resubscribe`.
+- We have integrated our own PHP SDK to make API calls to the new V3 Dotdigital API (for multi-channel sync).
+- Address books have been renamed to 'Lists' in line with the Dotdigital convention.
+- Subscriber_Update imports are now named Subscriber_Unsubscribe.
+- The module now requires PHP 7.4+ and Magento 2.3.7+.
+
+### Improvements
+- The code powering our customer account subscriptions dashboard has been updated to make it more efficient and extensible.
+- We have refactored our importer code to handle imports to both V2 and V3 endpoints.
+- We updated our code to prevent saving an empty string in the `email` column in `email_contact`.
+- All references to Zend classes have been replaced with their Laminas equivalents.
+- We've made some changes to the table migration code to allow it to be extended by our other modules.
+- Merchants can now select from up to 5000 lists in **Dotdigital > Sync Settings > List Mapping**.
+- We've removed some Magento license headers from places in our code.
+- Messaging in the 'Are you sure?' modal for Set Up Integration has been made clearer.
+- We removed direct usage of `$escaper` in templates, to keep support for 2.3.7.
+- We removed usage of ObjectManager from backend models and unit tests.
+- The LogViewer class filename has been renamed to the use the correct caps format.
+- We updated the help description for our `sync`  CLI command.
+
+### Bug fixes
+- We restored a specific connection type to our queue_topology.xml, and set one in queue_consumer.xml as well.
+- We've prevented `null` values being passed to `round()` in cart insight.
+- Data migration in a split database setup will now complete all possible steps without breaking.
+- Changes to customer website association, made from the admin, will now update the matching row in `email_contact`.
+- We fixed a bug that occurred if a customer changed email address to match an existing guest row in `email_contact`.
+
 # 4.21.5
 
 ### Bug fixes

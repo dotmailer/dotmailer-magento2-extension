@@ -5,12 +5,10 @@ namespace Dotdigitalgroup\Email\Test\Unit\Model\Sync\Subscriber;
 use Dotdigitalgroup\Email\Helper\Config;
 use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Connector\ContactData\SubscriberFactory as ConnectorSubscriberFactory;
-use Dotdigitalgroup\Email\Model\Consent;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact\Collection as ContactCollection;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory as ContactCollectionFactory;
 use Dotdigitalgroup\Email\Model\Sync\AbstractExporter;
 use Dotdigitalgroup\Email\Model\Sync\Export\CsvHandler;
-use Dotdigitalgroup\Email\Model\Sync\Subscriber\ConsentDataManager;
 use Dotdigitalgroup\Email\Model\Sync\Subscriber\SubscriberExporter;
 use Magento\Store\Api\Data\WebsiteInterface;
 use PHPUnit\Framework\TestCase;
@@ -38,11 +36,6 @@ class SubscriberExporterTest extends TestCase
     private $contactCollectionFactoryMock;
 
     /**
-     * @var ConsentDataManager|\PHPUnit\Framework\MockObject\MockObject
-     */
-    private $consentDataManagerMock;
-
-    /**
      * @var CsvHandler|\PHPUnit\Framework\MockObject\MockObject
      */
     private $csvHandlerMock;
@@ -63,7 +56,6 @@ class SubscriberExporterTest extends TestCase
         $this->loggerMock = $this->createMock(Logger::class);
         $this->connectorSubscriberFactoryMock = $this->createMock(ConnectorSubscriberFactory::class);
         $this->contactCollectionFactoryMock = $this->createMock(ContactCollectionFactory::class);
-        $this->consentDataManagerMock = $this->createMock(ConsentDataManager::class);
         $this->csvHandlerMock = $this->createMock(CsvHandler::class);
 
         $this->websiteInterfaceMock = $this->getMockBuilder(WebsiteInterface::class)
@@ -88,7 +80,6 @@ class SubscriberExporterTest extends TestCase
             $this->loggerMock,
             $this->connectorSubscriberFactoryMock,
             $this->contactCollectionFactoryMock,
-            $this->consentDataManagerMock,
             $this->csvHandlerMock
         );
     }
@@ -123,13 +114,11 @@ class SubscriberExporterTest extends TestCase
                 $subscriberMocks[4]
             ]));
 
-        /* Consent data */
-        $this->consentDataManagerMock->expects($this->once())
-            ->method('setSubscriberConsentData')
-            ->willReturn($this->getSubscriberConsentData());
-
         /* Set data on the model */
-        $connectorSubscriberMock = $this->createMock(\Dotdigitalgroup\Email\Model\Connector\ContactData\Subscriber::class);
+        $connectorSubscriberMock = $this->createMock(
+            \Dotdigitalgroup\Email\Model\Connector\ContactData\Subscriber::class
+        );
+
         $this->connectorSubscriberFactoryMock->expects($this->exactly(5))
             ->method('create')
             ->willReturn($connectorSubscriberMock);
@@ -189,27 +178,6 @@ class SubscriberExporterTest extends TestCase
         $this->assertEquals($this->getColumnsWithOptInType(), $this->exporter->getCsvColumns());
     }
 
-    public function testConsentColumnsAreAddedIfConfigured()
-    {
-        $this->websiteInterfaceMock->expects($this->exactly(5))
-            ->method('getConfig')
-            ->willReturnOnConsecutiveCalls(
-                'STORE_NAME',
-                'STORE_NAME_ADDITIONAL',
-                'WEBSITE_NAME',
-                'SUBSCRIBER_STATUS',
-                1
-            );
-
-        $this->configMock->expects($this->once())
-            ->method('isConsentSubscriberEnabled')
-            ->willReturn(1);
-
-        $this->exporter->setCsvColumns($this->websiteInterfaceMock);
-
-        $this->assertEquals($this->getAllPossibleColumns(), $this->exporter->getCsvColumns());
-    }
-
     /**
      * @return string[]
      */
@@ -240,30 +208,12 @@ class SubscriberExporterTest extends TestCase
             $mageCustomerMock->method('getId')->willReturn($i);
             $mageCustomerMock->method('getEmail')->willReturn('chaz' . $i . '@emailsim.io');
             $mageCustomerMock->method('getEmailContactId')->willReturn(rand(1, 99));
-            $mageCustomerMock->expects($this->exactly(5))->method('setData');
+            $mageCustomerMock->expects($this->exactly(0))->method('setData');
             $mageCustomerMock->expects($this->once())->method('clearInstance');
             $mocks[] = $mageCustomerMock;
         }
 
         return $mocks;
-    }
-
-    /**
-     * @return array
-     */
-    private function getSubscriberConsentData()
-    {
-        $data = [];
-        for ($i = 1; $i <= 5; $i++) {
-            $data[$i] = [
-                'consent_url' => 'http://yousite.com',
-                'consent_ip' => '123.0.0.0',
-                'consent_user_agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)',
-                'consent_text' => 'You signed up for some wrong mail',
-                'consent_datetime' => '2022-06-01 10:41:26'
-            ];
-        }
-        return $data;
     }
 
     private function getColumns()
@@ -285,6 +235,6 @@ class SubscriberExporterTest extends TestCase
 
     private function getAllPossibleColumns()
     {
-        return $this->getColumnsWithOptInType() + Consent::$bulkFields;
+        return $this->getColumnsWithOptInType();
     }
 }

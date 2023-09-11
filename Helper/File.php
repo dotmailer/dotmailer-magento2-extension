@@ -246,34 +246,6 @@ class File
     }
 
     /**
-     * Clean processed consent.
-     *
-     * @param string $file full path to the csv file.
-     * @return bool|string
-     */
-    public function cleanProcessedConsent($file)
-    {
-        //read file and get the email addresses
-        $index = $this->csv->getDataPairs($file, 0, 0);
-        //remove header data for Email
-        unset($index['Email']);
-        $emails = array_values($index);
-        $log = false;
-
-        try {
-            $result = $this->consentResource
-                ->deleteConsentByEmails($emails);
-            if ($count = count($result)) {
-                $log = 'Consent data removed : ' . $count;
-            }
-        } catch (\Exception $e) {
-            $log = $e->getMessage();
-        }
-
-        return $log;
-    }
-
-    /**
      * Return the full file path with checking in archive as fallback.
      *
      * @param string $filename

@@ -1,8 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dotdigitalgroup\Email\Model\Config\Backend;
 
-use Magento\Framework\App\ObjectManager;
+use Magento\Framework\App\Cache\TypeListInterface;
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\Data\Collection\AbstractDb;
+use Magento\Framework\Model\Context;
+use Magento\Framework\Model\ResourceModel\AbstractResource;
+use Magento\Framework\Registry;
 use Magento\Framework\Serialize\SerializerInterface;
 
 class Serialized extends \Magento\Framework\App\Config\Value
@@ -15,31 +22,33 @@ class Serialized extends \Magento\Framework\App\Config\Value
     /**
      * Serialized constructor
      *
-     * @param \Magento\Framework\Model\Context $context
-     * @param \Magento\Framework\Registry $registry
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface $config
-     * @param \Magento\Framework\App\Cache\TypeListInterface $cacheTypeList
-     * @param \Magento\Framework\Model\ResourceModel\AbstractResource|null $resource
-     * @param \Magento\Framework\Data\Collection\AbstractDb|null $resourceCollection
+     * @param SerializerInterface $serializer
+     * @param Context $context
+     * @param Registry $registry
+     * @param ScopeConfigInterface $config
+     * @param TypeListInterface $cacheTypeList
+     * @param AbstractResource|null $resource
+     * @param AbstractDb|null $resourceCollection
      * @param array $data
-     * @param SerializerInterface|null $serializer
      */
     public function __construct(
+        SerializerInterface $serializer,
         \Magento\Framework\Model\Context $context,
         \Magento\Framework\Registry $registry,
         \Magento\Framework\App\Config\ScopeConfigInterface $config,
         \Magento\Framework\App\Cache\TypeListInterface $cacheTypeList,
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
-        array $data = [],
-        SerializerInterface $serializer = null
+        array $data = []
     ) {
-        $this->serializer = $serializer ?: ObjectManager::getInstance()->get(SerializerInterface::class);
+        $this->serializer = $serializer;
         parent::__construct($context, $registry, $config, $cacheTypeList, $resource, $resourceCollection, $data);
     }
 
     /**
-     * @return null
+     * After load.
+     *
+     * @return void
      */
     protected function _afterLoad()
     {
@@ -50,6 +59,8 @@ class Serialized extends \Magento\Framework\App\Config\Value
     }
 
     /**
+     * Before save.
+     *
      * @return $this
      */
     public function beforeSave()
@@ -62,7 +73,9 @@ class Serialized extends \Magento\Framework\App\Config\Value
     }
 
     /**
-     * @param $value
+     * Unserialize.
+     *
+     * @param string $value
      * @return array|string
      */
     private function unserializeMethod($value)
@@ -76,6 +89,8 @@ class Serialized extends \Magento\Framework\App\Config\Value
     }
 
     /**
+     * Serialize.
+     *
      * @param array $value
      * @return bool|string
      */

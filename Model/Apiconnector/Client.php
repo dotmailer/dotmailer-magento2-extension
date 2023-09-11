@@ -13,7 +13,7 @@ use Magento\Framework\Filesystem\DriverInterface;
 /**
  * Dotdigital REST V2 api client.
  */
-class Client extends Rest
+class Client extends Rest implements ClientInterface
 {
     private const REST_ACCOUNT_INFO = '/v2/account-info';
     private const REST_CONTACTS = '/v2/contacts/';
@@ -125,7 +125,7 @@ class Client extends Rest
      */
     public function setApiEndpoint($apiEndpoint)
     {
-        $this->apiEndpoint = trim($apiEndpoint);
+        $this->apiEndpoint = $apiEndpoint;
     }
 
     /**
@@ -223,7 +223,7 @@ class Client extends Rest
         $result = json_decode($result);
 
         if (isset($result->message)) {
-            $this->addClientLog('Address book contacts import', [
+            $this->addClientLog('Contacts import to list', [
                 'address_book_id' => $addressBookId,
                 'file' => $filename,
             ]);
@@ -236,7 +236,7 @@ class Client extends Rest
      * Adds a contact to a given address book.
      *
      * @deprecated The newer method builds the contact inside it, instead of it being passed in.
-     * @see addContactsToAddressBook
+     * @see addContactToAddressBook
      *
      * @param string|int $addressBookId
      * @param array $apiContact
@@ -255,7 +255,7 @@ class Client extends Rest
         $response = $this->execute();
 
         if (isset($response->message)) {
-            $this->addClientLog('Address book contacts error');
+            $this->addClientLog('Post contacts to list error');
         }
 
         return $response;
@@ -275,7 +275,7 @@ class Client extends Rest
     public function addContactToAddressBook(
         string $email,
         string $addressBookId,
-        ?string $optInType,
+        ?string $optInType = null,
         ?array $dataFields = []
     ) {
         $url = $this->getApiEndpoint() . self::REST_ADDRESS_BOOKS . $addressBookId
@@ -295,7 +295,7 @@ class Client extends Rest
         $response = $this->execute();
 
         if (isset($response->message)) {
-            $this->addClientLog('Error adding contact to address book')
+            $this->addClientLog('Error adding contact to list')
                 ->addClientLog('Failed contact data', [
                     'data' => $data,
                 ], Logger::DEBUG);
@@ -346,7 +346,7 @@ class Client extends Rest
                 ->setVerb('DELETE');
             $this->execute();
 
-            $this->addClientLog('Deleted contact from address book', [
+            $this->addClientLog('Deleted contact from list', [
                 'contact_id' => $contactId,
                 'address_book_id' => $addressBookId,
             ], Logger::DEBUG);
@@ -404,28 +404,36 @@ class Client extends Rest
     }
 
     /**
-     * Get all address books.
+     * Get all lists.
      *
-     * @return mixed
-     *
-     * @throws \Exception
+     * @param int $skip
+     * @param int $select
+     * @return array|\stdClass|null
+     * @throws LocalizedException
      */
-    public function getAddressBooks()
+    public function getAddressBooks(int $skip = 0, int $select = 1000)
     {
-        $url = $this->getApiEndpoint() . self::REST_ADDRESS_BOOKS;
+        $url = sprintf(
+            '%s%s?select=%s&skip=%s',
+            $this->getApiEndpoint(),
+            self::REST_ADDRESS_BOOKS,
+            $select,
+            $skip
+        );
+
         $this->setUrl($url)
             ->setVerb('GET');
 
         $response = $this->execute();
         if (isset($response->message)) {
-            $this->addClientLog('Error fetching address books');
+            $this->addClientLog('Error fetching lists');
         }
 
         return $response;
     }
 
     /**
-     * Gets an address book by ID.
+     * Gets a list by ID.
      *
      * @param int $id
      *
@@ -441,7 +449,7 @@ class Client extends Rest
         $response = $this->execute();
 
         if (isset($response->message)) {
-            $this->addClientLog('Error getting address book', [
+            $this->addClientLog('Error getting list', [
                 'address_book_id' => $id,
             ]);
         }
@@ -450,7 +458,7 @@ class Client extends Rest
     }
 
     /**
-     * Creates an address book.
+     * Creates a list.
      *
      * @param string $name
      * @param string $visibility
@@ -472,7 +480,7 @@ class Client extends Rest
         $response = $this->execute();
 
         if (isset($response->message)) {
-            $this->addClientLog('Error creating address book');
+            $this->addClientLog('Error creating list');
         }
 
         return $response;
@@ -1331,7 +1339,7 @@ class Client extends Rest
     }
 
     /**
-     * Get contact address books.
+     * Get contact lists.
      *
      * @param int $contactId
      *
@@ -1348,7 +1356,7 @@ class Client extends Rest
         $response = $this->execute();
 
         if (isset($response->message)) {
-            $this->addClientLog('Error fetching address books for contact', [
+            $this->addClientLog('Error fetching lists for contact', [
                 'contact_id' => $contactId,
             ]);
         }
@@ -1700,6 +1708,9 @@ class Client extends Rest
     /**
      * Opts in a given contact to preferences, or opts out a given contact from preferences
      *
+     * @deprecated Use updateContactWithConsentAndPreferences instead.
+     * @see updateContactWithConsentAndPreferences
+     *
      * @param string|int $contactId
      * @param array $preferences
      *
@@ -1900,7 +1911,7 @@ class Client extends Rest
     }
 
     /**
-     * Resubscribes a previously unsubscribed contact to a given address book
+     * Resubscribes a previously unsubscribed contact to a given list.
      *
      * @param int $addressBookId
      * @param string $email
@@ -1920,7 +1931,7 @@ class Client extends Rest
         $response = $this->execute();
 
         if (isset($response->message)) {
-            $this->addClientLog('Error resubscribing address book contact');
+            $this->addClientLog('Error resubscribing contact to list');
         }
 
         return $response;

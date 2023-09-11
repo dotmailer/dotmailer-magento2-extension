@@ -384,7 +384,7 @@
             <resource>Dotdigitalgroup_Email::config</resource>
             <group id="addressbook" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1"
                    showInStore="0">
-                <label>Address Book Mapping</label>
+                <label>List Mapping</label>
                 <attribute type="expanded">1</attribute>
                 <field id="allow_non_subscribers" translate="label" type="select" sortOrder="15" showInDefault="1" showInStore="0" showInWebsite="1">
                     <label>Allow non-subscribed contacts to be imported</label>
@@ -393,17 +393,17 @@
                 <field id="customers" translate="label" type="select" sortOrder="20" showInDefault="1" showInStore="0"
                        showInWebsite="1">
                     <label>Add Customers To</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Settings\Addressbooks</source_model>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Sync\Lists</source_model>
                 </field>
                 <field id="subscribers" translate="label" type="select" sortOrder="30" showInDefault="1" showInStore="0"
                        showInWebsite="1">
-                    <label>Add Subscribers To</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Settings\Addressbooks</source_model>
+                    <label>Add Email Subscribers To</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Sync\Lists</source_model>
                 </field>
                 <field id="guests" translate="label" type="select" sortOrder="40" showInDefault="1" showInStore="0"
                        showInWebsite="1">
                     <label>Add Guests To</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Settings\Addressbooks</source_model>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Sync\Lists</source_model>
                 </field>
             </group>
             <group id="sync" translate="label" type="text" sortOrder="30" showInDefault="1" showInStore="0"
@@ -430,7 +430,7 @@
                 </field>
                 <field id="subscriber_enabled" type="select" sortOrder="50" showInDefault="1" showInStore="0"
                        showInWebsite="1">
-                    <label>Subscriber Enabled</label>
+                    <label>Email Subscriber Enabled</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
                 <field id="subscriber_report" type="button" sortOrder="60" showInDefault="1" showInStore="0"
@@ -476,10 +476,10 @@
             </group>
             <group id="dynamic_addressbook" translate="label" type="text" sortOrder="40" showInDefault="1"
                    showInWebsite="1" showInStore="0">
-                <label>Create Address Book</label>
+                <label>Create List</label>
                 <field id="addressbook_name" type="text" sortOrder="10" showInDefault="1" showInStore="0"
                        showInWebsite="1">
-                    <label>Address Book Name</label>
+                    <label>List Name</label>
                     <backend_model>Dotdigitalgroup\Email\Model\Config\Backend\NoSave</backend_model>
                 </field>
                 <field id="visibility" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="0">
@@ -489,7 +489,7 @@
                 </field>
                 <field id="addressbook_button" translate="button_label" sortOrder="30" showInDefault="1" showInStore="0"
                        showInWebsite="1">
-                    <button_label>Create New Address Book</button_label>
+                    <button_label>Create New List</button_label>
                     <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Createaddressbook</frontend_model>
                 </field>
             </group>
@@ -1322,6 +1322,29 @@
                 </field>
             </group>
         </section>
+        <section id="connector_consent" translate="label" sortOrder="195" showInStore="1" showInWebsite="1" showInDefault="1">
+            <class>separator-top</class>
+            <label>Consent</label>
+            <tab>ddg_automation</tab>
+            <resource>Dotdigitalgroup_Email::config</resource>
+            <group id="email" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Email</label>
+                <field id="enabled" translate="label" sortOrder="10" type="select" showInStore="1"
+                       showInWebsite="1" showInDefault="1">
+                    <label>Import subscribers with consent</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment><![CDATA[Enable this to record consent when customers subscribe or opt-in anywhere on your store.]]></comment>
+                </field>
+                <field id="text_newsletter_registration_checkout" translate="label" sortOrder="20" type="textarea" showInWebsite="1" showInStore="1" showInDefault="1">
+                    <label>Opt-in consent text (checkout, account)</label>
+                    <comment><![CDATA[Enter the consent text you want to record against contacts that opt-in from a page with a URL that includes checkout/ or customer/account/.]]></comment>
+                </field>
+                <field id="text_newsletter_signup_form" translate="label" sortOrder="20" type="textarea" showInWebsite="1" showInStore="1" showInDefault="1">
+                    <label>Opt-in consent text (other pages)</label>
+                    <comment><![CDATA[Enter the consent text you want to record against contacts that opt-in from any page that doesn't have a URL that includes checkout/ or customer/account/.]]></comment>
+                </field>
+            </group>
+        </section>
         <section id="connector_configuration" translate="label" sortOrder="200" showInStore="1" showInWebsite="1"
                  showInDefault="1">
             <class>separator-top</class>
@@ -1399,22 +1422,6 @@
                 </field>
                 <field id="host" translate="label" sortOrder="60" showInDefault="0" showInStore="0" showInWebsite="0">
                     <label>Tracking Host</label>
-                </field>
-            </group>
-            <group id="consent" translate="label" sortOrder="25" showInDefault="1" showInWebsite="1" showInStore="0">
-                <label>Consent</label>
-                <field id="dotmailer_consent_subscriber_enabled" translate="comment label" sortOrder="10" type="select" showInStore="0" showInWebsite="1" showInDefault="1">
-                    <label>Import subscribers with their consent information</label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <comment>Enable this if you want to import consent insight data when customers subscribe via the newsletter signup form, registration form or during checkout.</comment>
-                </field>
-                <field id="dotmailer_consent_subscriber_text" translate="comment label" sortOrder="20" type="textarea" showInStore="0" showInWebsite="1" showInDefault="1">
-                    <label>Consent text provided to your subscribers above the newsletter signup form</label>
-                    <comment>Please provide the consent text that is currently displayed to your customers when they subscribe to your newsletter (i.e. via the newsletter signup form)</comment>
-                </field>
-                <field id="dotmailer_consent_customer_text" translate="comment label" sortOrder="30" type="textarea" showInStore="0" showInWebsite="1" showInDefault="1">
-                    <label>Consent text provided on registration, account dashboard and checkout</label>
-                    <comment>If different from above, provide the text that is displayed on your registration and checkout form to get consent from your customers and guests. If provided, this text will also be displayed in the customer's newsletter subscription page.</comment>
                 </field>
             </group>
             <group id="transactional_data" translate="label" sortOrder="30" showInDefault="1" showInWebsite="1"
@@ -1688,14 +1695,14 @@
                 </field>
                 <field id="can_change" translate="label" sortOrder="10" type="select" showInStore="0" showInWebsite="1"
                        showInDefault="1">
-                    <label>Show Addressbooks to Customer</label>
+                    <label>Show Lists to Customer</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
                 <field id="show_books" translate="comment label" sortOrder="20" type="multiselect" showInStore="0"
                        showInWebsite="1" showInDefault="1">
-                    <label>Addressbooks to Show</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Configuration\Addressbooks</source_model>
-                    <comment><![CDATA[ Choose additional address books to show in addition to the Magento General Subscription list.]]></comment>
+                    <label>Lists to Show</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Customer\Lists</source_model>
+                    <comment><![CDATA[ Choose additional lists to show in addition to the Magento General Subscription list.]]></comment>
                     <depends><field id="show_addressbooks">1</field></depends>
                 </field>
                 <field id="can_show_fields" translate="label" sortOrder="30" type="select" showInStore="0"
@@ -1943,6 +1950,12 @@
                 <field id="review_wishlist" translate="label" sortOrder="70" type="select" showInStore="0" showInWebsite="0" showInDefault="1">
                     <label>Review And Wishlist</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Developer\Cronexpressionstwo</source_model>
+                    <backend_model>Dotdigitalgroup\Email\Model\Adminhtml\Backend\CronOffset</backend_model>
+                </field>
+                <field id="consent" translate="label" sortOrder="80" type="select" showInStore="0"
+                       showInWebsite="0" showInDefault="1">
+                    <label>Consent</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Developer\Cronexpressionsthree</source_model>
                     <backend_model>Dotdigitalgroup\Email\Model\Adminhtml\Backend\CronOffset</backend_model>
                 </field>
             </group>

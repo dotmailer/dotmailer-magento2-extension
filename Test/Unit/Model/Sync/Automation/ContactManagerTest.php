@@ -295,19 +295,12 @@ class ContactManagerTest extends TestCase
             ->method('mergeFields')
             ->willReturn($this->getDummySubscriberDataFields());
 
-        $this->dataFieldCollectorMock->expects($this->once())
-            ->method('extractConsentFromPreparedDataFields')
-            ->willReturn($this->getConsentDataFields());
-
         $this->helperMock->expects($this->exactly(2))
             ->method('getWebsiteApiClient')
             ->willReturn($this->clientMock);
 
         $this->clientMock->expects($this->once())
             ->method('postContactWithConsentAndPreferences');
-
-        $this->clientMock->expects($this->once())
-            ->method('updateContactWithConsentAndPreferences');
 
         $this->clientMock->expects($this->once())
             ->method('addContactToAddressBook');

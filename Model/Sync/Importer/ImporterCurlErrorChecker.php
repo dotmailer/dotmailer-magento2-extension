@@ -2,6 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Model\Sync\Importer;
 
+use Dotdigitalgroup\Email\Model\Apiconnector\Client;
 use Dotdigitalgroup\Email\Model\ResourceModel\Importer;
 
 class ImporterCurlErrorChecker
@@ -22,8 +23,10 @@ class ImporterCurlErrorChecker
     }
 
     /**
+     * Check curl error.
+     *
      * @param mixed $item
-     * @param
+     * @param Client $client
      * @return bool
      */
     public function _checkCurlError($item, $client)

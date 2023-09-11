@@ -9,4 +9,7 @@
     <event name="customer_login">
         <observer name="customer_login_observer" instance="Dotdigitalgroup\Email\Observer\Customer\CustomerLogin" />
     </event>
+    <event name="layout_generate_blocks_after">
+        <observer name="dd_email_layout_generate_blocks_after" instance="Dotdigitalgroup\Email\Observer\Frontend\RemoveBlocks"/>
+    </event>
 </config>

@@ -41,11 +41,6 @@ class SubscriberWithSalesExporter extends AbstractExporter
     private $salesDataManager;
 
     /**
-     * @var ConsentDataManager
-     */
-    private $consentDataManager;
-
-    /**
      * @var SubscriberExporterFactory
      */
     private $subscriberExporterFactory;
@@ -61,7 +56,6 @@ class SubscriberWithSalesExporter extends AbstractExporter
      * @param ConnectorSubscriberFactory $connectorSubscriberFactory
      * @param ContactCollectionFactory $contactCollectionFactory
      * @param SalesDataManager $salesDataManager
-     * @param ConsentDataManager $consentDataManager
      * @param SubscriberExporterFactory $subscriberExporterFactory
      * @param ScopeConfigInterface $scopeConfig
      * @param CsvHandler $csvHandler
@@ -72,7 +66,6 @@ class SubscriberWithSalesExporter extends AbstractExporter
         ConnectorSubscriberFactory $connectorSubscriberFactory,
         ContactCollectionFactory $contactCollectionFactory,
         SalesDataManager $salesDataManager,
-        ConsentDataManager $consentDataManager,
         SubscriberExporterFactory $subscriberExporterFactory,
         ScopeConfigInterface $scopeConfig,
         CsvHandler $csvHandler
@@ -82,7 +75,6 @@ class SubscriberWithSalesExporter extends AbstractExporter
         $this->connectorSubscriberFactory = $connectorSubscriberFactory;
         $this->contactCollectionFactory = $contactCollectionFactory;
         $this->salesDataManager = $salesDataManager;
-        $this->consentDataManager = $consentDataManager;
         $this->subscriberExporterFactory = $subscriberExporterFactory;
         $this->scopeConfig = $scopeConfig;
         parent::__construct($csvHandler);
@@ -103,11 +95,6 @@ class SubscriberWithSalesExporter extends AbstractExporter
         $subscriberCollection = $this->contactCollectionFactory->create()
             ->getContactsByContactIds($subscriberIds);
 
-        $subscriberConsentData = $this->consentDataManager->setSubscriberConsentData(
-            $subscriberIds,
-            $website->getId(),
-            $this->columns
-        );
         $subscriberSalesData = $this->salesDataManager->setContactSalesData(
             $subscribers,
             $website,
@@ -116,13 +103,6 @@ class SubscriberWithSalesExporter extends AbstractExporter
 
         foreach ($subscriberCollection as $subscriber) {
             try {
-                if (isset($subscriberConsentData[$subscriber->getId()])) {
-                    $this->setAdditionalDataOnModel(
-                        $subscriber,
-                        $subscriberConsentData[$subscriber->getId()]
-                    );
-                }
-
                 if (isset($subscriberSalesData[$subscriber->getEmail()])) {
                     $this->setAdditionalDataOnModel(
                         $subscriber,

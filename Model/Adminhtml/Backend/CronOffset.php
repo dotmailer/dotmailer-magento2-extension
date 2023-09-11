@@ -39,14 +39,18 @@ class CronOffset extends \Magento\Framework\App\Config\Value
     }
 
     /**
+     * After load.
+     *
      * @return CronOffset
      */
     protected function _afterLoad()
     {
-        if (strpos($this->getValue(), "/") !== false) {
+        if ($this->getValue() && strpos($this->getValue(), "/") !== false) {
             $parsed = explode("/", $this->getValue());
             $valueToSet = explode("*", $parsed[1]);
             $this->setValue((int) $valueToSet[0]);
+        } elseif ($this->getValue() && strpos($this->getValue(), "30 2") !== false) {
+            $this->setValue('disabled');
         } else {
             $this->setValue('00');
         }
@@ -54,6 +58,8 @@ class CronOffset extends \Magento\Framework\App\Config\Value
     }
 
     /**
+     * Before save.
+     *
      * @return void
      */
     public function beforeSave()
@@ -66,6 +72,8 @@ class CronOffset extends \Magento\Framework\App\Config\Value
     }
 
     /**
+     * Is cron value changed.
+     *
      * @return bool
      */
     private function isCronValueChanged()

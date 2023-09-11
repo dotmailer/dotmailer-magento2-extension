@@ -59,7 +59,7 @@ class Save extends Action implements HttpPostActionInterface
                 if (isset($response->message)) {
                     $this->messageManager->addErrorMessage($response->message);
                 } else {
-                    $this->messageManager->addSuccessMessage('Address book successfully created.');
+                    $this->messageManager->addSuccessMessage('List successfully created.');
                 }
             }
         }

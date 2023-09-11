@@ -225,7 +225,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @param int $websiteId
      * @return bool
-     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function isEnabled($websiteId = 0)
     {
@@ -656,33 +655,37 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
                 ScopeConfigInterface::SCOPE_TYPE_DEFAULT
             );
         }
-        return $apiEndpoint;
+        return trim($apiEndpoint);
     }
 
     /**
+     * Get API username.
+     *
      * @param int $websiteId
      *
-     * @return string|boolean
+     * @return string
      */
     public function getApiUsername($websiteId = 0)
     {
-        return $this->getWebsiteConfig(
+        return trim((string) $this->getWebsiteConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_USERNAME,
             $websiteId
-        );
+        ));
     }
 
     /**
+     * Get API password.
+     *
      * @param int $websiteId
      *
-     * @return string|boolean
+     * @return string
      */
     public function getApiPassword($websiteId = 0)
     {
-        return $this->getWebsiteConfig(
+        return trim((string) $this->getWebsiteConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_PASSWORD,
             $websiteId
-        );
+        ));
     }
 
     /**
@@ -1220,42 +1223,51 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Can show additional books?
      *
-     * @param \Magento\Store\Model\Website|int $website
+     * @deprecated Use the method in the account configuration class.
+     * @see \Dotdigitalgroup\Email\Model\Customer\Account\Configuration
+     *
+     * @param int $websiteId
      * @return string|boolean
      */
-    public function getCanShowAdditionalSubscriptions($website)
+    public function getCanShowAdditionalSubscriptions($websiteId)
     {
         return $this->getWebsiteConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_ADDRESSBOOK_PREF_CAN_CHANGE_BOOKS,
-            $website
+            $websiteId
         );
     }
 
     /**
      * Can show data fields?
      *
-     * @param \Magento\Store\Model\Website|int $website
+     * @deprecated Use the method in the account configuration class.
+     * @see \Dotdigitalgroup\Email\Model\Customer\Account\Configuration
+     *
+     * @param int $websiteId
      * @return boolean|string
      */
-    public function getCanShowDataFields($website)
+    public function getCanShowDataFields($websiteId)
     {
         return $this->getWebsiteConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_ADDRESSBOOK_PREF_CAN_SHOW_FIELDS,
-            $website
+            $websiteId
         );
     }
 
     /**
      * Address book ids to display
      *
-     * @param \Magento\Store\Model\Website $website
+     * @deprecated Use the method in the account configuration class.
+     * @see \Dotdigitalgroup\Email\Model\Customer\Account\Configuration
+     *
+     * @param int $websiteId
      * @return array
      */
-    public function getAddressBookIdsToShow($website)
+    public function getAddressBookIdsToShow($websiteId)
     {
         $bookIds = $this->getWebsiteConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_ADDRESSBOOK_PREF_SHOW_BOOKS,
-            $website
+            $websiteId
         );
 
         if (empty($bookIds)) {
@@ -1348,6 +1360,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
+     * @deprecated Do not use this helper method
+     * @see \Dotdigitalgroup\Email\Model\ResourceModel\Contact\Collection::loadByCustomerEmail
+     *
      * @param $email
      * @param $websiteId
      *
@@ -1361,6 +1376,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
+	 * @deprecated Use resource models directly.
+	 * @see \Dotdigitalgroup\Email\Model\ResourceModel\Contact
+	 *
      * @param \Dotdigitalgroup\Email\Model\Contact $contact
      */
     public function saveContact($contact)

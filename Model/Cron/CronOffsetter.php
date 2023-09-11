@@ -12,7 +12,9 @@ class CronOffsetter
      */
     public function getCronPatternWithOffset($cronValue)
     {
-        if ($cronValue !== '00') {
+        if ($cronValue === 'disabled') {
+            return '* * 30 2 *'; //Disabled crons will run every 30th of February
+        } elseif ($cronValue !== '00') {
             $valueWithOffset = rand(1, (int) $cronValue - 1) . '-59' . '/' . $cronValue;
             return sprintf('%s * * * *', $valueWithOffset);
         } else {

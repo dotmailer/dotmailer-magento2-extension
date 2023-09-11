@@ -2,7 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Helper;
 
-use Dotdigitalgroup\Email\Model\Consent;
+use Magento\Customer\Model\Config\Share;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\Store\Model\ScopeInterface;
@@ -50,6 +50,7 @@ class Config extends AbstractHelper
         'sync_settings/addressbook/guests';
     public const XML_PATH_CONNECTOR_SYNC_ALLOW_NON_SUBSCRIBERS =
         'sync_settings/addressbook/allow_non_subscribers';
+
     // Mapping
     public const XML_PATH_CONNECTOR_MAPPING_LAST_ORDER_ID =
         'connector_data_mapping/customer_data/last_order_id';
@@ -361,12 +362,12 @@ class Config extends AbstractHelper
     /**
      * CONSENT SECTION.
      */
-    public const XML_PATH_DOTMAILER_CONSENT_SUBSCRIBER_ENABLED =
-        'connector_configuration/consent/dotmailer_consent_subscriber_enabled';
-    public const XML_PATH_DOTMAILER_CONSENT_SUBSCRIBER_TEXT =
-        'connector_configuration/consent/dotmailer_consent_subscriber_text';
-    public const XML_PATH_DOTMAILER_CONSENT_CUSTOMER_TEXT =
-        'connector_configuration/consent/dotmailer_consent_customer_text';
+    public const XML_PATH_CONSENT_EMAIL_ENABLED =
+        'connector_consent/email/enabled';
+    public const XML_PATH_CONSENT_CUSTOMER_TEXT =
+        'connector_consent/email/text_newsletter_registration_checkout';
+    public const XML_PATH_CONSENT_SUBSCRIBER_TEXT =
+        'connector_consent/email/text_newsletter_signup_form';
 
     /**
      * OAUTH.
@@ -448,6 +449,8 @@ class Config extends AbstractHelper
         'connector_developer_settings/cron_schedules/order';
     public const XML_PATH_CRON_SCHEDULE_CATALOG =
         'connector_developer_settings/cron_schedules/catalog';
+    public const XML_PATH_CRON_SCHEDULE_CONSENT =
+        'connector_developer_settings/cron_schedules/consent';
 
     /**
      * API and portal endpoints
@@ -659,11 +662,28 @@ class Config extends AbstractHelper
     /**
      * Fetch status consent subscriber option.
      *
+     * @deprecated Use the Consent model (and store scope).
+     * @see \Dotdigitalgroup\Email\Model\Consent
+     *
      * @param string|int $websiteId
      * @return string|boolean
      */
     public function isConsentSubscriberEnabled($websiteId)
     {
-        return $this->getWebsiteConfig(self::XML_PATH_DOTMAILER_CONSENT_SUBSCRIBER_ENABLED, $websiteId);
+        return $this->getWebsiteConfig(self::XML_PATH_CONSENT_EMAIL_ENABLED, $websiteId);
+    }
+
+    /**
+     * Check if Share Customer Accounts is set to 'Global' in settings.
+     *
+     * @return bool
+     */
+    public function isAccountSharingGlobal(): bool
+    {
+        $config = $this->scopeConfig->getValue(
+            Share::XML_PATH_CUSTOMER_ACCOUNT_SHARE
+        );
+
+       return $config == Share::SHARE_GLOBAL;
     }
 }

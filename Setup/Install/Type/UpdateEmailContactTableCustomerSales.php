@@ -3,7 +3,6 @@
 namespace Dotdigitalgroup\Email\Setup\Install\Type;
 
 use Dotdigitalgroup\Email\Setup\SchemaInterface as Schema;
-use Magento\Framework\DB\Select;
 
 class UpdateEmailContactTableCustomerSales extends AbstractBulkUpdater implements BulkUpdateTypeInterface
 {
@@ -89,7 +88,7 @@ class UpdateEmailContactTableCustomerSales extends AbstractBulkUpdater implement
      */
     public function isEnabled(): bool
     {
-        return $this->isAccountSharingGlobal();
+        return $this->config->isAccountSharingGlobal();
     }
 
     /**

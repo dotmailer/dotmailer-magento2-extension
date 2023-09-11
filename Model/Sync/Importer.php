@@ -2,15 +2,16 @@
 
 namespace Dotdigitalgroup\Email\Model\Sync;
 
+use Dotdigitalgroup\Email\Model\Apiconnector\V3\ClientFactory;
 use Dotdigitalgroup\Email\Model\Connector\AccountHandler;
 use Dotdigitalgroup\Email\Model\Sync\Importer\ImporterProgressHandlerFactory;
 use Dotdigitalgroup\Email\Model\Sync\Importer\ImporterQueueManager;
-use Magento\Store\Model\StoreManagerInterface;
+use Dotdigitalgroup\Email\Model\Apiconnector\Client;
 
 class Importer implements SyncInterface
 {
-    const TOTAL_IMPORT_SYNC_LIMIT = 100;
-    const CONTACT_IMPORT_SYNC_LIMIT = 25;
+    public const TOTAL_IMPORT_SYNC_LIMIT = 100;
+    public const CONTACT_IMPORT_SYNC_LIMIT = 25;
 
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
@@ -18,14 +19,14 @@ class Importer implements SyncInterface
     private $helper;
 
     /**
+     * @var ClientFactory
+     */
+    private $v3ClientFactory;
+
+    /**
      * @var \Dotdigitalgroup\Email\Model\ImporterFactory
      */
     private $importerFactory;
-
-    /**
-     * @var StoreManagerInterface $storeManager
-     */
-    private $storeManager;
 
     /**
      * @var ImporterQueueManager $queueManager
@@ -43,36 +44,35 @@ class Importer implements SyncInterface
     private $accountHandler;
 
     /**
-     * Importer constructor.
-     *
      * @param AccountHandler $accountHandler
      * @param \Dotdigitalgroup\Email\Helper\Data $helper
+     * @param ClientFactory $v3ClientFactory
      * @param \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
-     * @param StoreManagerInterface $storeManager
      * @param ImporterQueueManager $queueManager
      * @param ImporterProgressHandlerFactory $progressHandler
      */
     public function __construct(
         AccountHandler $accountHandler,
         \Dotdigitalgroup\Email\Helper\Data $helper,
+        ClientFactory $v3ClientFactory,
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
-        StoreManagerInterface $storeManager,
         ImporterQueueManager $queueManager,
         ImporterProgressHandlerFactory $progressHandler
     ) {
         $this->accountHandler = $accountHandler;
         $this->helper = $helper;
+        $this->v3ClientFactory = $v3ClientFactory;
         $this->importerFactory = $importerFactory;
-        $this->storeManager = $storeManager;
         $this->queueManager = $queueManager;
         $this->progressHandler = $progressHandler;
     }
 
     /**
-     * Importer sync
+     * Importer sync.
      *
-     * @return null
-     * @throws \Magento\Framework\Exception\AlreadyExistsException
+     * @param \DateTime|null $from
+     * @return void
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function sync(\DateTime $from = null)
     {
@@ -85,37 +85,36 @@ class Importer implements SyncInterface
         $singleQueue = $this->queueManager->getSingleQueue();
 
         foreach ($activeApiUsers as $apiUser) {
-            $client = $this->helper->getWebsiteApiClient(
+            $v2Client = $this->helper->getWebsiteApiClient(
                 $apiUser['websites'][0]
             );
-            if (!$client) {
-                continue;
-            }
 
-            $inProgressImports = $this->progressHandler->create(['data' => ['client' => $client]])
+            $inProgressImports = $this->progressHandler->create()
                 ->checkImportsInProgress($apiUser['websites']);
 
             $this->processQueue(
                 $bulkQueue,
                 $apiUser['websites'],
-                $client,
+                $v2Client,
                 $inProgressImports
             );
             $this->processQueue(
                 $singleQueue,
                 $apiUser['websites'],
-                $client
+                $v2Client
             );
         }
     }
 
     /**
+     * Process Queue.
+     *
      * @param array $queue
      * @param array $websiteIds
-     * @param \Dotdigitalgroup\Email\Model\Apiconnector\Client $client
+     * @param Client $client
      * @param int $itemsCount
      */
-    private function processQueue($queue, $websiteIds, $client, $itemsCount = 0)
+    private function processQueue(array $queue, array $websiteIds, Client $client, int $itemsCount = 0)
     {
         foreach ($queue as $sync) {
             if ($itemsCount < self::TOTAL_IMPORT_SYNC_LIMIT) {

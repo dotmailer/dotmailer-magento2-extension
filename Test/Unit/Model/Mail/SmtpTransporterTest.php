@@ -6,8 +6,8 @@ use Dotdigitalgroup\Email\Helper\Transactional;
 use Dotdigitalgroup\Email\Model\Mail\SmtpTransporter;
 use Dotdigitalgroup\Email\Model\Mail\ZendMailTransportSmtp2Factory;
 use Magento\Framework\Mail\TransportInterface;
-use Zend\Mail\Message;
-use Zend\Mail\Transport\Smtp;
+use Laminas\Mail\Message;
+use Laminas\Mail\Transport\Smtp;
 
 class SmtpTransporterTest extends \PHPUnit\Framework\TestCase
 {

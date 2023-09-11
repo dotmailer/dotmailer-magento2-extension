@@ -2,6 +2,8 @@
 
 namespace Dotdigitalgroup\Email\Model\ResourceModel\Consent;
 
+use Dotdigitalgroup\Email\Setup\SchemaInterface;
+
 class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection
 {
     /**
@@ -50,5 +52,52 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
             ->where('a.email_contact_id IN (?)', $contactIds);
 
         return $connection->fetchAll($select);
+    }
+
+    /**
+     * Get consent records to sync.
+     *
+     * @param int $pageSize
+     * @param int $offset
+     * @param mixed $websiteId
+     * @return Collection
+     */
+    public function getConsentRecordsToSync(int $pageSize, int $offset, $websiteId)
+    {
+        $collection = $this->addFieldToSelect('*')
+            ->addFieldToFilter('consent_imported', 0);
+
+        $collection->getSelect()
+            ->joinLeft(
+                ['email_contact' => $this->getTable(SchemaInterface::EMAIL_CONTACT_TABLE)],
+                'main_table.email_contact_id = email_contact.email_contact_id',
+                ['email', 'website_id']
+            )->where('website_id = ?', $websiteId)
+            ->limit($pageSize, $offset);
+
+        return $collection;
+    }
+
+    /**
+     * Get available websites to sync.
+     *
+     * @return array
+     */
+    public function getWebsitesToSync()
+    {
+        $connection = $this->getResource()->getConnection();
+        $select = $connection->select()
+            ->from(
+                ['email_contact' => $connection->getTableName(SchemaInterface::EMAIL_CONTACT_TABLE)],
+                ['email_contact.website_id']
+            )->joinLeft(
+                ['email_contact_consent' => $this->getMainTable()],
+                'email_contact_consent.email_contact_id = email_contact.email_contact_id',
+                []
+            )
+            ->where('email_contact_consent.consent_imported = (?)', 0)
+            ->group('website_id');
+
+        return $connection->fetchCol($select);
     }
 }

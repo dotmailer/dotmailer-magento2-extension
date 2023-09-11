@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sections xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:noNamespaceSchemaLocation="urn:magento:mftf:Page/etc/SectionObject.xsd">
+    <section name="AdminDotdigitalConsentSection">
+        <element name="consentFieldsetToggle" type="button" selector="#connector_consent_email-head"/>
+        <element name="consentFieldset" type="button" selector="#connector_consent_email"/>
+        <element name="customerConsentText" type="textarea" selector="#connector_consent_email_text_newsletter_registration_checkout" />
+    </section>
+</sections>

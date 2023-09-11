@@ -152,4 +152,11 @@
             </argument>
         </arguments>
     </type>
+    <type name="Dotdigitalgroup\Email\Model\Contact\ContactUpdaterPool">
+        <arguments>
+            <argument name="updaters" xsi:type="array">
+                <item name="newsletterResubscriber" xsi:type="object">Dotdigitalgroup\Email\Model\Newsletter\Resubscriber</item>
+            </argument>
+        </arguments>
+    </type>
 </config>

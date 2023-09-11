@@ -4,23 +4,27 @@ namespace Dotdigitalgroup\Email\Model\Newsletter;
 
 use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Model\Connector\AccountHandler;
+use Dotdigitalgroup\Email\Model\Cron\CronFromTimeSetter;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory as ContactCollectionFactory;
+use Dotdigitalgroup\Email\Model\Task\TaskRunInterface;
 use Magento\Framework\DataObject;
-use Magento\Framework\Stdlib\DateTime\DateTimeFactory;
-use Magento\Framework\Stdlib\DateTime\TimezoneInterfaceFactory;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Store\Api\StoreWebsiteRelationInterface;
 
-class Unsubscriber extends DataObject
+class Unsubscriber extends DataObject implements TaskRunInterface
 {
-    use SetsCronFromTime;
-
-    const BATCH_SIZE = 1000;
+    private const BATCH_SIZE = 1000;
 
     /**
      * @var Data
      */
     private $helper;
+
+    /**
+     * @var CronFromTimeSetter
+     */
+    private $cronFromTimeSetter;
 
     /**
      * @var Contact
@@ -33,16 +37,6 @@ class Unsubscriber extends DataObject
     private $contactCollectionFactory;
 
     /**
-     * @var DateTimeFactory
-     */
-    private $dateTimeFactory;
-
-    /**
-     * @var TimezoneInterfaceFactory
-     */
-    private $timezoneInterfaceFactory;
-
-    /**
      * @var AccountHandler
      */
     private $accountHandler;
@@ -53,32 +47,34 @@ class Unsubscriber extends DataObject
     private $storeWebsiteRelation;
 
     /**
+     * @var int
+     */
+    private $batchSize;
+
+    /**
      * Subscriber constructor.
      *
      * @param Data $helper
+     * @param CronFromTimeSetter $cronFromTimeSetter
      * @param Contact $contactResource
      * @param ContactCollectionFactory $contactCollectionFactory
-     * @param DateTimeFactory $dateTimeFactory
-     * @param TimezoneInterfaceFactory $timezoneInterfaceFactory
      * @param AccountHandler $accountHandler
      * @param StoreWebsiteRelationInterface $storeWebsiteRelation
      * @param array $data
      */
     public function __construct(
         Data $helper,
+        CronFromTimeSetter $cronFromTimeSetter,
         Contact $contactResource,
         ContactCollectionFactory $contactCollectionFactory,
-        DateTimeFactory $dateTimeFactory,
-        TimezoneInterfaceFactory $timezoneInterfaceFactory,
         AccountHandler $accountHandler,
         StoreWebsiteRelationInterface $storeWebsiteRelation,
         array $data = []
     ) {
         $this->helper = $helper;
+        $this->cronFromTimeSetter = $cronFromTimeSetter;
         $this->contactResource = $contactResource;
         $this->contactCollectionFactory = $contactCollectionFactory;
-        $this->dateTimeFactory = $dateTimeFactory;
-        $this->timezoneInterfaceFactory = $timezoneInterfaceFactory;
         $this->accountHandler = $accountHandler;
         $this->storeWebsiteRelation = $storeWebsiteRelation;
         parent::__construct($data);
@@ -87,12 +83,17 @@ class Unsubscriber extends DataObject
     /**
      * Unsubscribe suppressed contacts by account.
      *
-     * @param int $batchSize This argument enables unit testing of the while loop.
-     *
      * @return int Count of unsubscribes.
+     * @throws LocalizedException
      */
-    public function unsubscribe($batchSize = self::BATCH_SIZE)
+    public function run()
     {
+        if ($fromTime = $this->_getData('fromTime')) {
+            $this->cronFromTimeSetter->setFromTime($fromTime);
+        }
+
+        $this->setBatchSize();
+
         $unsubscribes = 0;
 
         $activeApiUsers = $this->accountHandler->getAPIUsersForECEnabledWebsites();
@@ -101,19 +102,21 @@ class Unsubscriber extends DataObject
         }
 
         foreach ($activeApiUsers as $apiUser) {
-            $unsubscribes += $this->batchProcessSuppressions($apiUser['websites'], $batchSize);
+            $unsubscribes += $this->batchProcessSuppressions($apiUser['websites']);
         }
 
         return $unsubscribes;
     }
 
     /**
+     * Batch process suppressions.
+     *
      * @param array $websiteIds
-     * @param int $batchSize
      *
      * @return int
+     * @throws LocalizedException
      */
-    private function batchProcessSuppressions($websiteIds, $batchSize)
+    private function batchProcessSuppressions($websiteIds)
     {
         $skip = 0;
         $unsubscribes = 0;
@@ -121,8 +124,8 @@ class Unsubscriber extends DataObject
 
         do {
             $apiContacts = $client->getContactsSuppressedSinceDate(
-                $this->getFromTime(),
-                $batchSize,
+                $this->cronFromTimeSetter->getFromTime(),
+                $this->getBatchSize(),
                 $skip
             );
 
@@ -134,6 +137,7 @@ class Unsubscriber extends DataObject
             $suppressedContacts = [];
 
             foreach ($apiContacts as $apiContact) {
+                /** @var \stdClass $apiContact */
                 if (isset($apiContact->suppressedContact)) {
                     $suppressedContacts[] = [
                         'email' => $apiContact->suppressedContact->email,
@@ -147,8 +151,8 @@ class Unsubscriber extends DataObject
                 $websiteIds
             );
 
-            $skip += $batchSize;
-        } while (count($apiContacts) === $batchSize);
+            $skip += $this->getBatchSize();
+        } while (count($apiContacts) === $this->getBatchSize());
 
         return $unsubscribes;
     }
@@ -160,7 +164,7 @@ class Unsubscriber extends DataObject
      * @param array $websiteIds
      * @return int
      */
-    private function unsubscribeWithResubscriptionCheck(array $suppressions, $websiteIds)
+    private function unsubscribeWithResubscriptionCheck(array $suppressions, array $websiteIds)
     {
         if (empty($suppressions)) {
             return 0;
@@ -259,5 +263,25 @@ class Unsubscriber extends DataObject
         }
 
         return $data;
+    }
+
+    /**
+     * This method enables the unit test to set a batch size that is different from the class constant.
+     *
+     * @return void
+     */
+    private function setBatchSize()
+    {
+        $this->batchSize = $this->_getData('batchSize') ?: self::BATCH_SIZE;
+    }
+
+    /**
+     * Get batch size.
+     *
+     * @return int
+     */
+    private function getBatchSize(): int
+    {
+        return $this->batchSize;
     }
 }

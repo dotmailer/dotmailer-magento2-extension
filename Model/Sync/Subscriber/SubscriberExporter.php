@@ -5,7 +5,6 @@ namespace Dotdigitalgroup\Email\Model\Sync\Subscriber;
 use Dotdigitalgroup\Email\Helper\Config;
 use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Connector\ContactData\SubscriberFactory as ConnectorSubscriberFactory;
-use Dotdigitalgroup\Email\Model\Consent;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory as ContactCollectionFactory;
 use Dotdigitalgroup\Email\Model\Sync\AbstractExporter;
 use Dotdigitalgroup\Email\Model\Sync\Export\CsvHandler;
@@ -34,16 +33,10 @@ class SubscriberExporter extends AbstractExporter
     private $contactCollectionFactory;
 
     /**
-     * @var ConsentDataManager
-     */
-    private $consentDataManager;
-
-    /**
      * @param Config $config
      * @param Logger $logger
      * @param ConnectorSubscriberFactory $connectorSubscriberFactory
      * @param ContactCollectionFactory $contactCollectionFactory
-     * @param ConsentDataManager $consentDataManager
      * @param CsvHandler $csvHandler
      */
     public function __construct(
@@ -51,14 +44,12 @@ class SubscriberExporter extends AbstractExporter
         Logger $logger,
         ConnectorSubscriberFactory $connectorSubscriberFactory,
         ContactCollectionFactory $contactCollectionFactory,
-        ConsentDataManager $consentDataManager,
         CsvHandler $csvHandler
     ) {
         $this->config = $config;
         $this->logger = $logger;
         $this->connectorSubscriberFactory = $connectorSubscriberFactory;
         $this->contactCollectionFactory = $contactCollectionFactory;
-        $this->consentDataManager = $consentDataManager;
         parent::__construct($csvHandler);
     }
 
@@ -81,21 +72,8 @@ class SubscriberExporter extends AbstractExporter
         $subscriberCollection = $this->contactCollectionFactory->create()
             ->getContactsByContactIds($contactIds);
 
-        $subscriberConsentData = $this->consentDataManager->setSubscriberConsentData(
-            $contactIds,
-            $website->getId(),
-            $this->columns
-        );
-
         foreach ($subscriberCollection as $subscriber) {
             try {
-                if (isset($subscriberConsentData[$subscriber->getId()])) {
-                    $this->setAdditionalDataOnModel(
-                        $subscriber,
-                        $subscriberConsentData[$subscriber->getId()]
-                    );
-                }
-
                 $exportedData[$subscriber->getId()] = $this->connectorSubscriberFactory->create()
                     ->init($subscriber, $this->columns)
                     ->setContactData()
@@ -141,10 +119,6 @@ class SubscriberExporter extends AbstractExporter
 
         if ($this->isOptInTypeDouble($website)) {
             $this->columns += ['opt_in_type' => 'OptInType'];
-        }
-
-        if ($this->config->isConsentSubscriberEnabled($website->getId())) {
-            $this->columns += Consent::$bulkFields;
         }
     }
 

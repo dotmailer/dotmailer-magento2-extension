@@ -2,7 +2,6 @@
 
 namespace Dotdigitalgroup\Email\Model\Sync\Importer\Type;
 
-use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Model\Apiconnector\Client;
 use Dotdigitalgroup\Email\Model\ResourceModel\Importer;
 use Dotdigitalgroup\Email\Model\Sync\Importer\ImporterCurlErrorChecker;
@@ -12,12 +11,7 @@ use Magento\Framework\DataObject;
 class BulkItemPostProcessor extends DataObject implements ItemPostProcessorInterface
 {
     /**
-     * @var Data
-     */
-    private $helper;
-
-    /**
-     * @var $importerResource
+     * @var Importer
      */
     private $importerResource;
 
@@ -33,20 +27,17 @@ class BulkItemPostProcessor extends DataObject implements ItemPostProcessorInter
 
     /**
      * BulkItemPostProcessor constructor.
-     * @param Data $helper
      * @param Importer $importerResource
      * @param ImporterCurlErrorChecker $curlErrorChecker
      * @param DateTime $dateTime
      * @param array $data
      */
     public function __construct(
-        Data $helper,
         Importer $importerResource,
         ImporterCurlErrorChecker $curlErrorChecker,
         DateTime $dateTime,
         array $data = []
     ) {
-        $this->helper = $helper;
         $this->importerResource = $importerResource;
         $this->curlErrorChecker = $curlErrorChecker;
         $this->dateTime = $dateTime;
@@ -55,9 +46,11 @@ class BulkItemPostProcessor extends DataObject implements ItemPostProcessorInter
     }
 
     /**
+     * Handle item after sync.
+     *
      * @param mixed $item
      * @param mixed $result
-     * @return null
+     * @return void
      * @throws \Magento\Framework\Exception\AlreadyExistsException
      */
     public function handleItemAfterSync($item, $result)
@@ -99,6 +92,8 @@ class BulkItemPostProcessor extends DataObject implements ItemPostProcessorInter
     }
 
     /**
+     * Get client.
+     *
      * @return Client
      */
     private function getClient()

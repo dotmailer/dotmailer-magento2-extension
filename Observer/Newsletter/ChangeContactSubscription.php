@@ -192,7 +192,7 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
                 $this->importerFactory->create()->registerQueue(
                     \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_SUBSCRIBER_UPDATE,
                     ['email' => $email, 'id' => $contactEmail->getId()],
-                    \Dotdigitalgroup\Email\Model\Importer::MODE_SUBSCRIBER_UPDATE,
+                    \Dotdigitalgroup\Email\Model\Importer::MODE_SUBSCRIBER_UNSUBSCRIBE,
                     $websiteId
                 );
             }
@@ -264,6 +264,8 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
     }
 
     /**
+     * Returns true if current and previous statuses indicate a subscriber is confirming their subscription.
+     *
      * @param \Magento\Newsletter\Model\Subscriber $subscriber
      *
      * @return bool
@@ -281,6 +283,7 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
 
     /**
      * Check if a subscriber_automation has already been processed for an email address
+     *
      * @param string $email
      * @param string|int $websiteId
      * @return bool

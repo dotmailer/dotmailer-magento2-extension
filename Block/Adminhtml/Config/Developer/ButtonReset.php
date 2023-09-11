@@ -3,6 +3,7 @@
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer;
 
 use Magento\Backend\Block\Template\Context;
+use Magento\Backend\Block\Widget\Button;
 use Magento\Framework\View\Helper\SecureHtmlRenderer;
 
 class ButtonReset extends \Magento\Config\Block\System\Config\Form\Field
@@ -12,11 +13,24 @@ class ButtonReset extends \Magento\Config\Block\System\Config\Form\Field
      */
     public $resetType;
 
+    /**
+     * @var string
+     */
+    public $modulePath;
+
+    /**
+     * @param Context $context
+     * @param string $modulePath
+     * @param string $resetType
+     * @param array $data
+     */
     public function __construct(
         Context $context,
-        $resetType,
+        string $resetType,
+        string $modulePath = 'dotdigitalgroup_email',
         array $data = []
     ) {
+        $this->modulePath = $modulePath;
         $this->resetType = $resetType;
         parent::__construct($context, $data);
     }
@@ -28,9 +42,11 @@ class ButtonReset extends \Magento\Config\Block\System\Config\Form\Field
      */
     public function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
     {
-        return $this->getLayout()
-            ->createBlock(\Magento\Backend\Block\Widget\Button::class)
-            ->setType('button')
+        $block = $this->getLayout()
+            ->createBlock(Button::class);
+
+        /** @var Button $block */
+        return $block->setType('button')
             ->setLabel(__('Run Now'))
             ->setClass('ddg-reset')
             ->setDataAttribute(['ddg-url' => $this->getButtonUrl()])
@@ -58,6 +74,9 @@ class ButtonReset extends \Magento\Config\Block\System\Config\Form\Field
                 'reset-type' => $this->resetType
             ]
         ];
-        return  $this->_urlBuilder->getUrl('dotdigitalgroup_email/run/reset', $query);
+        return $this->_urlBuilder->getUrl(
+            sprintf('%s/run/reset', $this->modulePath),
+            $query
+        );
     }
 }

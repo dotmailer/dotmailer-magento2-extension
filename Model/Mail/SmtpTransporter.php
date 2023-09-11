@@ -4,7 +4,7 @@ namespace Dotdigitalgroup\Email\Model\Mail;
 
 use Dotdigitalgroup\Email\Helper\Transactional;
 use Magento\Framework\Mail\TransportInterface;
-use Zend\Mail\Message;
+use Laminas\Mail\Message;
 
 class SmtpTransporter
 {
