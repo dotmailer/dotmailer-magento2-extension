@@ -1,4 +1,4 @@
-# 4.22.0-RC1
+# 4.22.0
 
 ### What's new
 - Consent configuration has been moved to its own section of the Dotdigital admin.
@@ -15,9 +15,20 @@
 - We updated our code to prevent saving an empty string in the `email` column in `email_contact`.
 - All references to Zend classes have been replaced with their Laminas equivalents.
 - We've made some changes to the table migration code to allow it to be extended by our other modules.
+- Merchants can now select from up to 5000 lists in **Dotdigital > Sync Settings > List Mapping**.
+- We've removed some Magento license headers from places in our code.
+- Messaging in the 'Are you sure?' modal for Set Up Integration has been made clearer.
+- We removed direct usage of `$escaper` in templates, to keep support for 2.3.7.
+- We removed usage of ObjectManager from backend models and unit tests.
+- The LogViewer class filename has been renamed to the use the correct caps format.
+- We updated the help description for our `sync`  CLI command.
 
 ### Bug fixes
+- We restored a specific connection type to our queue_topology.xml, and set one in queue_consumer.xml as well.
 - We've prevented `null` values being passed to `round()` in cart insight.
+- Data migration in a split database setup will now complete all possible steps without breaking.
+- Changes to customer website association, made from the admin, will now update the matching row in `email_contact`.
+- We fixed a bug that occurred if a customer changed email address to match an existing guest row in `email_contact`.
 
 # 4.21.5
 
