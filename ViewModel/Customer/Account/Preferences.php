@@ -42,7 +42,7 @@ class Preferences implements ArgumentInterface
         $processedPreferences = [];
         $contactFromTable = $this->containerViewModel->getContactFromTable();
 
-        if ($contactFromTable->getContactId()) {
+        if ($contactFromTable && $contactFromTable->getContactId()) {
             $contact = $this->containerViewModel->getConnectorContact();
             if (isset($contact->id)) {
                 $preferences = $this->containerViewModel->getApiClient()->getPreferencesForContact($contact->id);

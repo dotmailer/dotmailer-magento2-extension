@@ -54,7 +54,7 @@ class AddressBooks implements ArgumentInterface
             $this->storeManager->getWebsite()->getId()
         );
         $contactFromTable = $this->containerViewModel->getContactFromTable();
-        if (! empty($additionalFromConfig) && $contactFromTable->getContactId()) {
+        if (! empty($additionalFromConfig) && $contactFromTable && $contactFromTable->getContactId()) {
             $contact = $this->containerViewModel->getConnectorContact();
             if (isset($contact->id) && isset($contact->status) && $contact->status !== 'PendingOptIn') {
                 $addressBooks = $this->containerViewModel->getApiClient()

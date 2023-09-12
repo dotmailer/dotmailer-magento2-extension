@@ -69,7 +69,7 @@ class DataFields implements ArgumentInterface
         $contactFromTable = $this->containerViewModel->getContactFromTable();
         $dataFieldsFromConfig = explode(',', $dataFieldsFromConfig);
 
-        if ($contactFromTable->getContactId()) {
+        if ($contactFromTable && $contactFromTable->getContactId()) {
             $contact = $this->containerViewModel->getConnectorContact();
             if (isset($contact->id)) {
                 $contactDataFields = $contact->dataFields ?? [];
