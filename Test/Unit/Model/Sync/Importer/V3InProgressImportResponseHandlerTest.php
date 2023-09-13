@@ -100,11 +100,9 @@ class V3InProgressImportResponseHandlerTest extends TestCase
         $this->reportHandlerMock = $this->createMock(V3ImporterReportHandler::class);
         $this->clientFactoryMock = $this->createMock(ClientFactory::class);
 
-        //@codingStandardsIgnoreStart
         $this->importerCollectionMock->expects($this->atLeastOnce())
             ->method('getIterator')
-            ->willReturn(new \ArrayObject([$this->importerModelMock]));
-        //@codingStandardsIgnoreEnd
+            ->willReturn(new \ArrayIterator([$this->importerModelMock]));
 
         $this->importerModelMock->expects($this->atLeastOnce())
             ->method('getWebsiteId')
