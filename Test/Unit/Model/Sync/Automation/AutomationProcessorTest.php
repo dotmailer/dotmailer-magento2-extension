@@ -14,7 +14,6 @@ use Dotdigitalgroup\Email\Model\ResourceModel\Automation as AutomationResource;
 use Dotdigitalgroup\Email\Model\StatusInterface;
 use Dotdigitalgroup\Email\Model\Sync\Automation\AutomationProcessor;
 use Dotdigitalgroup\Email\Model\Sync\Automation\AutomationTypeHandler;
-use Dotdigitalgroup\Email\Model\Sync\Automation\BackportedSubscriberLoader;
 use Dotdigitalgroup\Email\Model\Sync\Automation\ContactManager;
 use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\DataFieldCollector;
 use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\DataFieldTypeHandler;
