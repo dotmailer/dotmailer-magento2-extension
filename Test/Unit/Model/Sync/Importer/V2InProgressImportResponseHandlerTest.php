@@ -88,11 +88,9 @@ class V2InProgressImportResponseHandlerTest extends TestCase
 
         $this->importerCollectionMock = $this->createMock(ImporterCollection::class);
 
-        //@codingStandardsIgnoreStart
         $this->importerCollectionMock->expects($this->atLeastOnce())
             ->method('getIterator')
-            ->willReturn(new \ArrayObject([$this->importerModelMock]));
-        //@codingStandardsIgnoreEnd
+            ->willReturn(new \ArrayIterator([$this->importerModelMock]));
 
         $this->importerModelMock->expects($this->atLeastOnce())
             ->method('getWebsiteId')
