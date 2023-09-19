@@ -60,7 +60,7 @@ class Client extends Rest implements ClientInterface
     /**
      * @var Logger
      */
-    protected $logger;
+    private $logger;
 
     /**
      * @var Account

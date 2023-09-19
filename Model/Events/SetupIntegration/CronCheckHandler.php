@@ -2,8 +2,33 @@
 
 namespace Dotdigitalgroup\Email\Model\Events\SetupIntegration;
 
+use Dotdigitalgroup\Email\Logger\Logger;
+use Dotdigitalgroup\Email\Model\Integration\IntegrationSetup;
+
 class CronCheckHandler extends AbstractSetupIntegrationHandler
 {
+    /**
+     * @var IntegrationSetup
+     */
+    private $integrationSetup;
+
+    /**
+     * @var Logger
+     */
+    private $logger;
+
+    /**
+     * @param Logger $logger
+     * @param IntegrationSetup $integrationSetup
+     */
+    public function __construct(
+        Logger $logger,
+        IntegrationSetup $integrationSetup
+    ) {
+        $this->logger = $logger;
+        $this->integrationSetup = $integrationSetup;
+    }
+
     /**
      * Event Process
      *

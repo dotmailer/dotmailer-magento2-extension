@@ -75,12 +75,12 @@ class Newsletter implements HttpPostActionInterface
     /**
      * @var CustomerRepository
      */
-    protected $customerRepository;
+    private $customerRepository;
 
     /**
      * @var SubscriberFactory
      */
-    protected $subscriberFactory;
+    private $subscriberFactory;
 
     /**
      * @var StoreManagerInterface

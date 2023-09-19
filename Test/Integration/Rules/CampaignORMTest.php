@@ -12,7 +12,7 @@ class CampaignORMTest extends \PHPUnit\Framework\TestCase
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Campaign
      */
-    protected $campaignResource;
+    private $campaignResource;
 
     /**
      * @return Campaign

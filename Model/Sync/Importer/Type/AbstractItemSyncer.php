@@ -19,26 +19,6 @@ abstract class AbstractItemSyncer extends DataObject
     public const ERROR_UNKNOWN = 'Error unknown';
 
     /**
-     * @var Data
-     */
-    protected $helper;
-
-    /**
-     * @var File
-     */
-    protected $fileHelper;
-
-    /**
-     * @var SerializerInterface
-     */
-    protected $serializer;
-
-    /**
-     * @var Importer
-     */
-    protected $importerResource;
-
-    /**
      * @var ItemPostProcessorInterfaceFactory
      */
     protected $postProcessor;
@@ -55,25 +35,13 @@ abstract class AbstractItemSyncer extends DataObject
 
     /**
      * AbstractItemSyncer constructor.
-     * @param Data $helper
-     * @param File $fileHelper
-     * @param SerializerInterface $serializer
-     * @param Importer $importerResource
      * @param Logger $logger
      * @param array $data
      */
     public function __construct(
-        Data $helper,
-        File $fileHelper,
-        SerializerInterface $serializer,
-        Importer $importerResource,
         Logger $logger,
         array $data = []
     ) {
-        $this->helper = $helper;
-        $this->fileHelper = $fileHelper;
-        $this->serializer = $serializer;
-        $this->importerResource = $importerResource;
         $this->logger = $logger;
 
         parent::__construct($data);

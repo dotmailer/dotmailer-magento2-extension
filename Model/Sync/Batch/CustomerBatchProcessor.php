@@ -3,10 +3,43 @@
 namespace Dotdigitalgroup\Email\Model\Sync\Batch;
 
 use Dotdigitalgroup\Email\Helper\File;
+use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Importer;
+use Dotdigitalgroup\Email\Model\ImporterFactory;
+use Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory as ContactResourceFactory;
+use Magento\Framework\Filesystem\DriverInterface;
 
 class CustomerBatchProcessor extends AbstractBatchProcessor
 {
+    /**
+     * @var ImporterFactory
+     */
+    private $importerFactory;
+
+    /**
+     * @var Logger
+     */
+    private $logger;
+
+    /**
+     * @param File $file
+     * @param ContactResourceFactory $contactResourceFactory
+     * @param DriverInterface $driver
+     * @param ImporterFactory $importerFactory
+     * @param Logger $logger
+     */
+    public function __construct(
+        File $file,
+        ImporterFactory $importerFactory,
+        Logger $logger,
+        ContactResourceFactory $contactResourceFactory,
+        DriverInterface $driver
+    ) {
+        $this->importerFactory = $importerFactory;
+        $this->logger = $logger;
+        parent::__construct($file, $contactResourceFactory, $driver);
+    }
+
     /**
      * Queue batch with importer.
      *

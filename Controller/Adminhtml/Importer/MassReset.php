@@ -25,17 +25,17 @@ class MassReset extends Action implements HttpPostActionInterface
     /**
      * @var Filter
      */
-    protected $filter;
+    private $filter;
 
     /**
      * @var CollectionFactory
      */
-    protected $collectionFactory;
+    private $collectionFactory;
 
     /**
      * @var Importer
      */
-    protected $collectionResource;
+    private $collectionResource;
 
     /**
      * @var Http

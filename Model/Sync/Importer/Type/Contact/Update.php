@@ -3,11 +3,9 @@
 namespace Dotdigitalgroup\Email\Model\Sync\Importer\Type\Contact;
 
 use Dotdigitalgroup\Email\Helper\Data;
-use Dotdigitalgroup\Email\Helper\File;
 use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Connector\ContactData;
 use Dotdigitalgroup\Email\Model\Importer as ModelImporter;
-use Dotdigitalgroup\Email\Model\ResourceModel\Importer;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact;
 use Dotdigitalgroup\Email\Model\Sync\Importer\Type\AbstractItemSyncer;
 use Dotdigitalgroup\Email\Model\Sync\Importer\Type\SingleItemPostProcessorFactory;
@@ -29,9 +27,14 @@ class Update extends AbstractItemSyncer
     ];
 
     /**
+     * @var Data
+     */
+    private $helper;
+
+    /**
      * @var Contact
      */
-    public $contactResource;
+    private $contactResource;
 
     /**
      * @var ContactData
@@ -44,6 +47,11 @@ class Update extends AbstractItemSyncer
     protected $postProcessor;
 
     /**
+     * @var SerializerInterface
+     */
+    private $serializer;
+
+    /**
      * Keep the suppressed contact ids that needs to update.
      *
      * @var array
@@ -54,9 +62,7 @@ class Update extends AbstractItemSyncer
      * Update constructor.
      *
      * @param Data $helper
-     * @param File $fileHelper
      * @param SerializerInterface $serializer
-     * @param Importer $importerResource
      * @param Contact $contactResource
      * @param ContactData $contactData
      * @param SingleItemPostProcessorFactory $postProcessor
@@ -65,19 +71,19 @@ class Update extends AbstractItemSyncer
      */
     public function __construct(
         Data $helper,
-        File $fileHelper,
         SerializerInterface $serializer,
-        Importer $importerResource,
         Contact $contactResource,
         ContactData $contactData,
         SingleItemPostProcessorFactory $postProcessor,
         Logger $logger,
         array $data = []
     ) {
+        $this->helper = $helper;
         $this->contactResource = $contactResource;
         $this->contactData = $contactData;
         $this->postProcessor = $postProcessor;
-        parent::__construct($helper, $fileHelper, $serializer, $importerResource, $logger, $data);
+        $this->serializer = $serializer;
+        parent::__construct($logger, $data);
     }
 
     /**

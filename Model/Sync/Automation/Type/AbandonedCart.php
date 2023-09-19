@@ -2,10 +2,8 @@
 
 namespace Dotdigitalgroup\Email\Model\Sync\Automation\Type;
 
-use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Automation;
-use Dotdigitalgroup\Email\Model\Contact\ContactResponseHandler;
 use Dotdigitalgroup\Email\Model\ContactFactory;
 use Dotdigitalgroup\Email\Model\Newsletter\BackportedSubscriberLoader;
 use Dotdigitalgroup\Email\Model\ResourceModel\Automation as AutomationResource;
@@ -43,28 +41,24 @@ class AbandonedCart extends AutomationProcessor
     /**
      * AbandonedCart constructor.
      *
-     * @param Data $helper
      * @param Logger $logger
      * @param AutomationResource $automationResource
      * @param ContactFactory $contactFactory
      * @param ContactManager $contactManager
      * @param DataFieldCollector $dataFieldCollector
      * @param DataFieldTypeHandler $dataFieldTypeHandler
-     * @param ContactResponseHandler $contactResponseHandler
      * @param BackportedSubscriberLoader $backportedSubscriberLoader
      * @param AbandonedCartUpdaterFactory $dataFieldUpdaterFactory
      * @param DotdigitalQuoteFactory $ddgQuoteFactory
      * @param QuoteFactory $quoteFactory
      */
     public function __construct(
-        Data $helper,
         Logger $logger,
         AutomationResource $automationResource,
         ContactFactory $contactFactory,
         ContactManager $contactManager,
         DataFieldCollector $dataFieldCollector,
         DataFieldTypeHandler $dataFieldTypeHandler,
-        ContactResponseHandler $contactResponseHandler,
         BackportedSubscriberLoader $backportedSubscriberLoader,
         AbandonedCartUpdaterFactory $dataFieldUpdaterFactory,
         DotdigitalQuoteFactory $ddgQuoteFactory,
@@ -75,9 +69,7 @@ class AbandonedCart extends AutomationProcessor
         $this->quoteFactory = $quoteFactory;
 
         parent::__construct(
-            $helper,
             $logger,
-            $contactResponseHandler,
             $automationResource,
             $contactFactory,
             $contactManager,

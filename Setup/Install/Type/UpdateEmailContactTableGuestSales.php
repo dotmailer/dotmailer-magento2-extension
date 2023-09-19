@@ -10,7 +10,7 @@ class UpdateEmailContactTableGuestSales extends AbstractBulkUpdater implements B
     /**
      * @var string
      */
-    protected $resourceName = 'sales';
+    private $resourceName = 'sales';
 
     /**
      * @var string

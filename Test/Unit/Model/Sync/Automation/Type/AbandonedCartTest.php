@@ -136,14 +136,12 @@ class AbandonedCartTest extends TestCase
             ->getMock();
 
         $this->abandonedCart = new AbandonedCart(
-            $this->helperMock,
             $this->loggerMock,
             $this->automationResourceMock,
             $this->contactFactoryMock,
             $this->contactManagerMock,
             $this->dataFieldCollectorMock,
             $this->dataFieldTypeHandlerMock,
-            $this->contactResponseHandlerMock,
             $this->backportedSubscriberLoaderMock,
             $this->dataFieldUpdaterFactoryMock,
             $this->ddgQuoteFactoryMock,
