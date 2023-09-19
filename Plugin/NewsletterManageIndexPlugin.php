@@ -49,20 +49,20 @@ class NewsletterManageIndexPlugin
     }
 
     /**
-     * Around execute.
+     * After execute.
      *
      * @param Index $subject
-     * @param callable $proceed
+     * @param void $result
      *
-     * @return callable|void
+     * @return void
      */
-    public function aroundExecute(
+    public function afterExecute(
         Index $subject,
-        callable $proceed
+        $result
     ) {
         $websiteId = $this->customerSession->getCustomer()->getWebsiteId();
         if (!$this->config->shouldRedirectToConnectorCustomerIndex($websiteId)) {
-            return $proceed();
+            return $result;
         }
 
         $this->response->setRedirect(
