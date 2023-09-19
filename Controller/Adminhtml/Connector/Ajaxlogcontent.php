@@ -7,6 +7,7 @@ use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\Escaper;
 use Magento\Framework\App\Action\HttpPostActionInterface;
+use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Controller\Result\Json;
 use Magento\Framework\Controller\Result\JsonFactory;
 
@@ -30,6 +31,11 @@ class Ajaxlogcontent extends Action implements HttpPostActionInterface
     private $escaper;
 
     /**
+     * @var RequestInterface
+     */
+    private $request;
+
+    /**
      * @var JsonFactory
      */
     private $resultJsonFactory;
@@ -50,7 +56,9 @@ class Ajaxlogcontent extends Action implements HttpPostActionInterface
     ) {
         $this->file = $file;
         $this->escaper = $escaper;
+        $this->request = $context->getRequest();
         $this->resultJsonFactory = $resultJsonFactory;
+
         parent::__construct($context);
     }
 
@@ -61,7 +69,7 @@ class Ajaxlogcontent extends Action implements HttpPostActionInterface
      */
     public function execute()
     {
-        $logFile = $this->getRequest()->getParam('log');
+        $logFile = $this->request->getParam('log');
         switch ($logFile) {
             case "connector":
                 $header = 'Marketing Automation Log';

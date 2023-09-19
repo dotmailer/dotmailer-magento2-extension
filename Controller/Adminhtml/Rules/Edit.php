@@ -2,8 +2,12 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Rules;
 
+use Dotdigitalgroup\Email\Model\ResourceModel\Rules;
 use Magento\Backend\App\Action;
+use Magento\Backend\App\Action\Context;
 use Magento\Framework\App\Action\HttpGetActionInterface;
+use Magento\Framework\App\RequestInterface;
+use Magento\Framework\Registry;
 
 class Edit extends Action implements HttpGetActionInterface
 {
@@ -25,36 +29,35 @@ class Edit extends Action implements HttpGetActionInterface
     private $rules;
 
     /**
-     * @var \Magento\Framework\Escaper
-     */
-    private $escaper;
-
-    /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Rules
      */
     private $rulesResource;
 
     /**
+     * @var RequestInterface
+     */
+    private $request;
+
+    /**
      * Edit constructor.
      *
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Rules $rulesResource
-     * @param \Magento\Backend\App\Action\Context $context
+     * @param Rules $rulesResource
+     * @param Context $context
      * @param \Dotdigitalgroup\Email\Model\Rules $rules
-     * @param \Magento\Framework\Registry $registry
-     * @param \Magento\Framework\Escaper $escaper
+     * @param Registry $registry
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ResourceModel\Rules $rulesResource,
         \Magento\Backend\App\Action\Context $context,
         \Dotdigitalgroup\Email\Model\Rules $rules,
-        \Magento\Framework\Registry $registry,
-        \Magento\Framework\Escaper $escaper
+        \Magento\Framework\Registry $registry
     ) {
-        parent::__construct($context);
         $this->rules = $rules;
         $this->registry = $registry;
-        $this->escaper = $escaper;
         $this->rulesResource = $rulesResource;
+        $this->request = $context->getRequest();
+
+        parent::__construct($context);
     }
 
     /**
@@ -64,7 +67,7 @@ class Edit extends Action implements HttpGetActionInterface
      */
     public function execute()
     {
-        $id = $this->getRequest()->getParam('id');
+        $id = $this->request->getParam('id');
 
         $this->_view->loadLayout();
         $this->_setActiveMenu(

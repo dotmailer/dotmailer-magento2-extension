@@ -6,12 +6,14 @@ use Magento\Backend\App\Action;
 use Magento\Backend\Model\View\Result\Redirect;
 use Magento\Framework\App\Action\HttpPostActionInterface;
 use Magento\Framework\Controller\ResultFactory;
+use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
+use Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollectionFactory;
 use Magento\Ui\Component\MassAction\Filter;
 
 abstract class MassDeleteCsrf extends Action implements HttpPostActionInterface
 {
     /**
-     * Inherited
+     * @var AbstractDb
      */
     protected $collectionResource;
 
@@ -21,11 +23,13 @@ abstract class MassDeleteCsrf extends Action implements HttpPostActionInterface
     protected $filter;
 
     /**
-     * Inherited
+     * @var AbstractCollectionFactory
      */
     protected $collectionFactory;
 
     /**
+     * Execute.
+     *
      * @return Redirect
      * @throws \Magento\Framework\Exception\NotFoundException|\Magento\Framework\Exception\LocalizedException
      */

@@ -17,6 +17,7 @@ use Dotdigitalgroup\Email\Model\Events\SetupIntegration\ReInitConfigurationHandl
 use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\App\Action\HttpGetActionInterface;
+use Magento\Framework\App\RequestInterface;
 
 class SetupIntegration extends Action implements HttpGetActionInterface
 {
@@ -88,6 +89,11 @@ class SetupIntegration extends Action implements HttpGetActionInterface
     private $helper;
 
     /**
+     * @var RequestInterface
+     */
+    private $request;
+
+    /**
      * @param Context $context
      * @param AddressBooksHandler $addressBooksHandler
      * @param CronCheckHandler $cronCheckHandler
@@ -129,6 +135,8 @@ class SetupIntegration extends Action implements HttpGetActionInterface
         $this->serverSentEvents = $serverSentEvents;
         $this->reInitConfigurationHandler = $reInitConfigurationHandler;
         $this->helper = $helper;
+        $this->request = $context->getRequest();
+
         parent::__construct($context);
     }
 
@@ -141,7 +149,7 @@ class SetupIntegration extends Action implements HttpGetActionInterface
     public function execute()
     {
         $broadcaster = $this->serverSentEvents;
-        $websiteId = $this->getRequest()->getParam('website', 0);
+        $websiteId = $this->request->getParam('website', 0);
         if (!$this->helper->isEnabled($websiteId) ||
             !$this->helper->getWebsiteApiClient($websiteId)
         ) {

@@ -2,10 +2,12 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Rules;
 
+use Dotdigitalgroup\Email\Model\ResourceModel\Rules as RulesResource;
+use Dotdigitalgroup\Email\Model\Rules;
 use Magento\Backend\App\Action;
+use Magento\Backend\App\Action\Context;
 use Magento\Framework\App\Action\HttpPostActionInterface;
-use Magento\Framework\App\ResponseInterface;
-use Magento\Framework\Controller\ResultInterface;
+use Magento\Framework\App\RequestInterface;
 
 class Delete extends Action implements HttpPostActionInterface
 {
@@ -17,30 +19,37 @@ class Delete extends Action implements HttpPostActionInterface
     public const ADMIN_RESOURCE = 'Dotdigitalgroup_Email::exclusion_rules';
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\Rules
+     * @var Rules
      */
     private $rules;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Rules
+     * @var RulesResource
      */
     private $rulesResource;
+
+    /**
+     * @var RequestInterface
+     */
+    private $request;
 
     /**
      * Delete constructor.
      *
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Rules $rulesResource
-     * @param \Magento\Backend\App\Action\Context $context
      * @param \Dotdigitalgroup\Email\Model\Rules $rules
+     * @param \Magento\Backend\App\Action\Context $context
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\ResourceModel\Rules $rulesResource,
-        \Magento\Backend\App\Action\Context $context,
-        \Dotdigitalgroup\Email\Model\Rules $rules
+        RulesResource $rulesResource,
+        Rules $rules,
+        Context $context
     ) {
-        parent::__construct($context);
         $this->rules = $rules;
         $this->rulesResource = $rulesResource;
+        $this->request = $context->getRequest();
+
+        parent::__construct($context);
     }
 
     /**
@@ -50,7 +59,7 @@ class Delete extends Action implements HttpPostActionInterface
      */
     public function execute()
     {
-        $id = $this->getRequest()->getParam('id');
+        $id = $this->request->getParam('id');
         if ($id) {
             try {
                 $model = $this->rules;

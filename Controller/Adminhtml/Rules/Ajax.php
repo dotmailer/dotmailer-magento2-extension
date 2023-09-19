@@ -6,6 +6,7 @@ use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
 use Dotdigitalgroup\Email\Model\ExclusionRule\RuleValidator;
 use Magento\Framework\App\Action\HttpPostActionInterface;
+use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Controller\Result\Json;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\View\Element\Html\Select;
@@ -45,6 +46,11 @@ class Ajax extends Action implements HttpPostActionInterface
     private $ruleValidator;
 
     /**
+     * @var RequestInterface
+     */
+    private $request;
+
+    /**
      * @var JsonFactory
      */
     private $resultJsonFactory;
@@ -71,7 +77,9 @@ class Ajax extends Action implements HttpPostActionInterface
         $this->ruleCondition = $ruleCondition;
         $this->ruleValue = $ruleValue;
         $this->ruleValidator = $ruleValidator;
+        $this->request = $context->getRequest();
         $this->resultJsonFactory = $resultJsonFactory;
+
         parent::__construct($context);
     }
 
@@ -82,9 +90,9 @@ class Ajax extends Action implements HttpPostActionInterface
      */
     public function execute()
     {
-        $attribute = $this->getRequest()->getParam('attribute');
-        $conditionName = $this->getRequest()->getParam('condition');
-        $valueName = $this->getRequest()->getParam('value');
+        $attribute = $this->request->getParam('attribute');
+        $conditionName = $this->request->getParam('condition');
+        $valueName = $this->request->getParam('value');
         $response = [];
 
         if ($attribute && $conditionName && $valueName) {

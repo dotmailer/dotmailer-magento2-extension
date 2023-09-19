@@ -2,9 +2,15 @@
 
 namespace Dotdigitalgroup\Email\Controller\Ajax;
 
+use Dotdigitalgroup\Email\Helper\Data;
+use Magento\Checkout\Model\Session;
 use Magento\Framework\App\Action\Context;
+use Magento\Framework\App\Action\HttpPostActionInterface;
+use Magento\Framework\App\RequestInterface;
+use Magento\Framework\Controller\Result\JsonFactory;
+use Magento\Quote\Model\ResourceModel\Quote;
 
-class Emailcapture extends \Magento\Framework\App\Action\Action
+class Emailcapture implements HttpPostActionInterface
 {
     /**
      * @var \Magento\Quote\Model\ResourceModel\Quote
@@ -22,38 +28,59 @@ class Emailcapture extends \Magento\Framework\App\Action\Action
     private $checkoutSession;
 
     /**
+     * @var RequestInterface
+     */
+    private $request;
+
+    /**
+     * @var JsonFactory
+     */
+    protected $resultJsonFactory;
+
+    /**
      * Emailcapture constructor.
-     * @param \Dotdigitalgroup\Email\Helper\Data $data
-     * @param \Magento\Quote\Model\ResourceModel\Quote $quoteResource
-     * @param \Magento\Checkout\Model\Session $session
+     *
+     * @param Data $data
+     * @param Quote $quoteResource
+     * @param Session $session
      * @param Context $context
+     * @param JsonFactory $resultJsonFactory
      */
     public function __construct(
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Magento\Quote\Model\ResourceModel\Quote $quoteResource,
         \Magento\Checkout\Model\Session $session,
-        Context $context
+        Context $context,
+        JsonFactory $resultJsonFactory
     ) {
         $this->helper = $data;
         $this->quoteResource = $quoteResource;
         $this->checkoutSession = $session;
-        parent::__construct($context);
+        $this->request = $context->getRequest();
+        $this->resultJsonFactory = $resultJsonFactory;
     }
 
     /**
      * Easy email capture for Newsletter and Checkout.
-     * @return \Magento\Framework\App\ResponseInterface|\Magento\Framework\Controller\ResultInterface|null
+     *
+     * @return \Magento\Framework\Controller\ResultInterface
      * @throws \Magento\Framework\Exception\LocalizedException
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function execute()
     {
-        $email = $this->getRequest()->getParam('email');
+        $email = $this->request->getParam('email');
+        $resultJson = $this->resultJsonFactory->create();
+
+        $responseCode = '400';
 
         if ($email && $quote = $this->checkoutSession->getQuote()) {
             if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                return null;
+                $resultJson->setHttpResponseCode($responseCode);
+                return $resultJson;
             }
+
+            $responseCode = '200';
 
             if ($quote->hasItems() && !$quote->getCustomerEmail()) {
                 try {
@@ -64,5 +91,8 @@ class Emailcapture extends \Magento\Framework\App\Action\Action
                 }
             }
         }
+
+        $resultJson->setHttpResponseCode($responseCode);
+        return $resultJson;
     }
 }

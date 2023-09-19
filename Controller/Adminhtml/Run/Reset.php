@@ -7,6 +7,7 @@ use Dotdigitalgroup\Email\Helper\Data;
 use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\App\Action\HttpGetActionInterface;
+use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Controller\Result\Redirect;
 
 class Reset extends Action implements HttpGetActionInterface
@@ -34,7 +35,13 @@ class Reset extends Action implements HttpGetActionInterface
     private $helper;
 
     /**
+     * @var RequestInterface
+     */
+    private $request;
+
+    /**
      * Reset constructor.
+     *
      * @param Context $context
      * @param Resetter $resetter
      * @param Data $helper
@@ -46,6 +53,8 @@ class Reset extends Action implements HttpGetActionInterface
     ) {
         $this->resetter = $resetter;
         $this->helper = $helper;
+        $this->request = $context->getRequest();
+
         parent::__construct($context);
     }
 
@@ -56,7 +65,7 @@ class Reset extends Action implements HttpGetActionInterface
      */
     public function execute()
     {
-        $params = $this->getRequest()->getParams();
+        $params = $this->request->getParams();
         $from = $params['from'] ?? null;
         $to = $params['to'] ?? null;
         $resetType = $params['reset-type'];

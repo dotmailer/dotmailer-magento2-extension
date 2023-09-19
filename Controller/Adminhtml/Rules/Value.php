@@ -5,7 +5,9 @@ namespace Dotdigitalgroup\Email\Controller\Adminhtml\Rules;
 use Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Type;
 use Dotdigitalgroup\Email\Model\ExclusionRule\RuleValidator;
 use Magento\Backend\App\Action;
+use Magento\Backend\App\Action\Context;
 use Magento\Framework\App\Action\HttpPostActionInterface;
+use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Controller\Result\Json;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\View\Element\Html\Select;
@@ -40,6 +42,11 @@ class Value extends Action implements HttpPostActionInterface
     private $ruleValidator;
 
     /**
+     * @var RequestInterface
+     */
+    private $request;
+
+    /**
      * @var JsonFactory
      */
     private $resultJsonFactory;
@@ -49,7 +56,7 @@ class Value extends Action implements HttpPostActionInterface
      *
      * @param \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Value $ruleValue
      * @param Type $ruleType
-     * @param \Magento\Backend\App\Action\Context $context
+     * @param Context $context
      * @param RuleValidator $ruleValidator
      * @param JsonFactory $resultJsonFactory
      */
@@ -63,7 +70,9 @@ class Value extends Action implements HttpPostActionInterface
         $this->ruleValue = $ruleValue;
         $this->ruleType = $ruleType;
         $this->ruleValidator = $ruleValidator;
+        $this->request = $context->getRequest();
         $this->resultJsonFactory = $resultJsonFactory;
+
         parent::__construct($context);
     }
 
@@ -75,10 +84,9 @@ class Value extends Action implements HttpPostActionInterface
     public function execute()
     {
         $response = [];
-        $valueName = $this->getRequest()->getParam('value');
-        $conditionValue = $this->getRequest()->getParam('condValue');
-        $attributeValue = $this->getRequest()->getParam('attributeValue');
-        $response = [];
+        $valueName = $this->request->getParam('value');
+        $conditionValue = $this->request->getParam('condValue');
+        $attributeValue = $this->request->getParam('attributeValue');
 
         if ($valueName && $attributeValue && $conditionValue) {
             $inputType = $this->ruleType->getInputType($attributeValue);
