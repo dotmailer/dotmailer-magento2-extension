@@ -113,9 +113,11 @@ define([
             if (body.classList.contains('catalogsearch-result-index')) {
                 var search = document.getElementById('search');
 
-                this.wbtTrack({
-                    'searched_term': search.getAttribute('value')
-                });
+                if (search && search.hasAttribute('value')) {
+                    this.wbtTrack({
+                        'searched_term': search.getAttribute('value')
+                    });
+                }
             } else if (body.classList.contains('catalog-product-view')) {
                 wbt.initIdsStorage();
             } else {
