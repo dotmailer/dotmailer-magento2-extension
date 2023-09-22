@@ -245,7 +245,7 @@ class Rest
      *
      * @throws \Exception
      *
-     * @return array|stdClass
+     * @return string|array|stdClass
      */
     public function execute()
     {
