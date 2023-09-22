@@ -473,6 +473,8 @@ class Config extends AbstractHelper
         'https://magentosignup.dotdigital.com';
     public const XML_PATH_CONNECTOR_TRIAL_URL_OVERRIDE =
         'connector/microsite/url';
+    public const ACCOUNT_CALLBACK_ROUTE =
+        'connector/email/callback';
     public const INTERNAL_SUB_DOMAIN = 'internal';
 
     /**

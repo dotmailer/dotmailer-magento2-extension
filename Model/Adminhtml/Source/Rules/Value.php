@@ -4,6 +4,7 @@ namespace Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules;
 
 use Magento\Eav\Api\AttributeSetRepositoryInterface;
 use Magento\Framework\Api\SearchCriteriaBuilder;
+use Magento\Framework\Exception\LocalizedException;
 
 class Value
 {
@@ -76,13 +77,13 @@ class Value
         AttributeSetRepositoryInterface $attributeSetRepository,
         SearchCriteriaBuilder $searchCriteriaBuilder
     ) {
-        $this->configFactory      = $configFactory->create();
-        $this->yesno              = $yesno;
-        $this->country            = $country;
-        $this->allregion          = $allregion;
+        $this->configFactory = $configFactory;
+        $this->yesno = $yesno;
+        $this->country = $country;
+        $this->allregion = $allregion;
         $this->allShippingMethods = $allShippingMethods;
         $this->allPaymentMethods  = $allPaymentMethods;
-        $this->sourceGroup              = $group;
+        $this->sourceGroup = $group;
         $this->attributeSetRepository = $attributeSetRepository;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
     }
@@ -93,6 +94,7 @@ class Value
      * @param string $attribute
      *
      * @return string
+     * @throws LocalizedException
      */
     public function getValueElementType($attribute)
     {
@@ -106,7 +108,7 @@ class Value
                 return 'select';
             default:
                 $attribute
-                    = $this->configFactory->getAttribute(
+                    = $this->configFactory->create()->getAttribute(
                         'catalog_product',
                         $attribute
                     );
@@ -125,15 +127,13 @@ class Value
      * @param bool $isEmpty
      *
      * @return array
+     * @throws LocalizedException
      */
     public function getValueSelectOptions($attribute, $isEmpty = false)
     {
         $options = [];
         if ($isEmpty) {
-            $options
-                = $this->yesno->toOptionArray();
-
-            return $options;
+            return $this->yesno->toOptionArray();
         }
 
         switch ($attribute) {
@@ -171,7 +171,7 @@ class Value
 
             default:
                 $attribute
-                    = $this->configFactory->getAttribute(
+                    = $this->configFactory->create()->getAttribute(
                         'catalog_product',
                         $attribute
                     );

@@ -2,8 +2,19 @@
 
 namespace Dotdigitalgroup\Email\Model\ResourceModel;
 
+use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Model\Product\AttributeFactory;
+use Dotdigitalgroup\Email\Model\Product\Index\Collection;
 use Dotdigitalgroup\Email\Setup\SchemaInterface as Schema;
+use Magento\Catalog\Model\CategoryFactory;
+use Magento\Catalog\Model\Config;
+use Magento\Catalog\Model\Product\Visibility;
+use Magento\Catalog\Model\ProductFactory;
+use Magento\Catalog\Model\ResourceModel\Category;
+use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
+use Magento\Framework\Model\ResourceModel\Db\Context;
+use Magento\Reports\Model\ResourceModel\Product\CollectionFactory;
+use Zend_Db_Statement_Exception;
 
 /**
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
@@ -12,7 +23,7 @@ use Dotdigitalgroup\Email\Setup\SchemaInterface as Schema;
 class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
     /**
-     * @var \Magento\Reports\Model\ResourceModel\Product\Index\Collection\AbstractCollection
+     * @var \Dotdigitalgroup\Email\Model\Product\Index\Collection
      */
     private $productIndexcollection;
 
@@ -67,9 +78,14 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     private $attributeHandler;
 
     /**
+     * @var ProductCollectionFactory
+     */
+    private $productCollectionFactory;
+
+    /**
      * Initialize resource.
      *
-     * @return null
+     * @return void
      */
     public function _construct()
     {
@@ -79,18 +95,19 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Catalog constructor.
      *
-     * @param \Magento\Framework\Model\ResourceModel\Db\Context $context
-     * @param \Magento\Catalog\Model\ResourceModel\Category $categoryResource
-     * @param \Dotdigitalgroup\Email\Helper\Data $helper
-     * @param \Dotdigitalgroup\Email\Model\Product\Index\Collection $productIndexCollection
-     * @param \Magento\Catalog\Model\Config $config
-     * @param \Magento\Catalog\Model\Product\Visibility $productVisibility
-     * @param \Magento\Catalog\Model\CategoryFactory $categoryFactory
-     * @param \Magento\Reports\Model\ResourceModel\Product\CollectionFactory $reportProductCollection
-     * @param \Magento\Catalog\Model\ProductFactory $productFactory
+     * @param Context $context
+     * @param Category $categoryResource
+     * @param Data $helper
+     * @param Collection $productIndexCollection
+     * @param Config $config
+     * @param Visibility $productVisibility
+     * @param CategoryFactory $categoryFactory
+     * @param CollectionFactory $reportProductCollection
+     * @param ProductFactory $productFactory
      * @param \Magento\Reports\Model\ResourceModel\Product\Sold\CollectionFactory $productSoldFactory
      * @param AttributeFactory $attributeHandler
-     * @param null $connectionName
+     * @param ProductCollectionFactory $productCollectionFactory
+     * @param ?string $connectionName
      */
     public function __construct(
         \Magento\Framework\Model\ResourceModel\Db\Context $context,
@@ -104,6 +121,7 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         \Magento\Catalog\Model\ProductFactory $productFactory,
         \Magento\Reports\Model\ResourceModel\Product\Sold\CollectionFactory $productSoldFactory,
         AttributeFactory $attributeHandler,
+        ProductCollectionFactory $productCollectionFactory,
         $connectionName = null
     ) {
         $this->helper                   = $helper;
@@ -116,6 +134,7 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         $this->productSoldFactory       = $productSoldFactory;
         $this->categoryResource         = $categoryResource;
         $this->attributeHandler = $attributeHandler;
+        $this->productCollectionFactory = $productCollectionFactory;
         parent::__construct(
             $context,
             $connectionName
@@ -237,12 +256,11 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
                 $collectionAttributes[] = $item->getAttributeCode();
             }
 
-            $productCollection = $this->productFactory->create()
-                ->getCollection()
-                ->addIdFilter($ids)
-                ->addAttributeToSelect(
-                    $collectionAttributes
-                );
+            $productCollection = $this->productCollectionFactory->create();
+            $productCollection->addIdFilter($ids);
+            $productCollection->addAttributeToSelect(
+                $collectionAttributes
+            );
 
             if ($limit) {
                 $productCollection->getSelect()->limit($limit);
@@ -265,11 +283,10 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         $productCollection = [];
 
         if (! empty($productsSku)) {
-            $productCollection = $this->productFactory->create()
-                ->getCollection()
-                ->addAttributeToSelect(
-                    ['product_url', 'name', 'store_id', 'small_image', 'price', 'visibility']
-                )->addFieldToFilter('sku', ['in' => $productsSku]);
+            $productCollection = $this->productCollectionFactory->create();
+            $productCollection->addAttributeToSelect(
+                ['product_url', 'name', 'store_id', 'small_image', 'price', 'visibility']
+            )->addFieldToFilter('sku', ['in' => $productsSku]);
 
             if ($limit) {
                 $productCollection->getSelect()->limit($limit);
@@ -281,6 +298,7 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 
     /**
      * Get product collection from sku.
+     *
      * Collection includes all media_image attributes.
      *
      * @param array $productsSku
@@ -307,12 +325,10 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
                 $collectionAttributes[] = $item->getAttributeCode();
             }
 
-            $productCollection = $this->productFactory->create()
-                ->getCollection()
-                ->addFieldToFilter('sku', ['in' => $productsSku])
-                ->addAttributeToSelect(
-                    $collectionAttributes
-                );
+            $productCollection = $this->productCollectionFactory->create();
+            $productCollection->addAttributeToSelect(
+                $collectionAttributes
+            )->addFieldToFilter('sku', ['in' => $productsSku]);
 
             if ($limit) {
                 $productCollection->getSelect()->limit($limit);
@@ -353,7 +369,6 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      * @param string|null $to
      *
      * @return int
-     *
      */
     public function resetCatalog($from = null, $to = null)
     {
@@ -384,7 +399,7 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      *
      * @param array $ids
      *
-     * @return null
+     * @return void
      */
     public function setProcessedByIds($ids)
     {
@@ -434,7 +449,7 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      *
      * @param array $ids
      *
-     * @return null
+     * @return void
      */
     public function setImportedDateByIds($ids)
     {
@@ -457,7 +472,8 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Remove product with product id set and no product
      *
-     * @return null
+     * @return void
+     * @throws Zend_Db_Statement_Exception
      */
     public function removeOrphanProducts()
     {
@@ -497,6 +513,8 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
+     * Bulk product import.
+     *
      * @param array $products
      */
     public function bulkProductImport($products)

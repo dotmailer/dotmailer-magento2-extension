@@ -17,6 +17,7 @@ use Magento\Backend\Helper\Data as BackendData;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\FlagManager;
+use Magento\Framework\Mail\EmailMessageInterface;
 use Magento\Framework\Mail\Template\TransportBuilder;
 use Magento\Framework\UrlInterface;
 use Magento\Store\Model\Store;
@@ -24,7 +25,7 @@ use Magento\User\Model\ResourceModel\User\Collection as UserCollection;
 
 class EmailNotifier
 {
-    const MONITOR_EMAIL_SENT_FLAG_CODE = 'ddg_monitor_email_sent';
+    public const MONITOR_EMAIL_SENT_FLAG_CODE = 'ddg_monitor_email_sent';
 
     /**
      * @var UrlInterface
@@ -98,6 +99,7 @@ class EmailNotifier
 
     /**
      * EmailNotifier constructor.
+     *
      * @param UrlInterface $urlBuilder
      * @param ScopeConfigInterface $scopeConfig
      * @param Role $roleResource
@@ -146,6 +148,8 @@ class EmailNotifier
     }
 
     /**
+     * Notify.
+     *
      * @param array $timeWindow
      * @param array $errors
      * @throws LocalizedException
@@ -159,6 +163,8 @@ class EmailNotifier
     }
 
     /**
+     * Send notifications.
+     *
      * @param array $errors
      * @throws LocalizedException
      */
@@ -188,11 +194,13 @@ class EmailNotifier
                 //API METHOD TO SEND MAILS
                 $client = $this->helper->getWebsiteApiClient();
 
+                /** @var EmailMessageInterface $emailMessage */
+                $emailMessage = $transport->getMessage();
                 $content = [
-                    "Subject" => $transport->getMessage()->getSubject(),
+                    "Subject" => $emailMessage->getSubject(),
                     "ToAddresses" => [$recipient->getEmail()],
                     "FromAddress" => $this->scopeConfig->getValue('trans_email/ident_general/email'),
-                    "HtmlContent" => quoted_printable_decode($transport->getMessage()->getBodyText())
+                    "HtmlContent" => quoted_printable_decode($emailMessage->getBodyText())
                 ];
 
                 $client->sendApiTransactionalEmail($content);
@@ -203,6 +211,8 @@ class EmailNotifier
     }
 
     /**
+     * Can send email notification.
+     *
      * Determine if the stored flag time (i.e. the last time we sent an email notification)
      * is older than the start of the $timeWindow e.g. 24 hours ago if Alert Frequency = 24 Hours
      *
@@ -221,6 +231,8 @@ class EmailNotifier
     }
 
     /**
+     * Save sent time.
+     *
      * @param string $time
      */
     private function saveSentTime($time)
@@ -229,6 +241,8 @@ class EmailNotifier
     }
 
     /**
+     * Fetch contacts from selected roles.
+     *
      * @return UserCollection
      */
     private function fetchContactsFromSelectedRoles()
@@ -242,6 +256,8 @@ class EmailNotifier
     }
 
     /**
+     * Gather template vars.
+     *
      * @param \Magento\User\Model\User $recipient
      * @param array $data
      * @return array

@@ -14,7 +14,7 @@ class Abandoned extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Initialize resource.
      *
-     * @return null
+     * @return void
      */
     public function _construct()
     {
@@ -34,6 +34,8 @@ class Abandoned extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
+     * Update.
+     *
      * @param array $ids
      * @param string $date
      * @param bool $contactStatus
@@ -55,6 +57,8 @@ class Abandoned extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
+     * Update by quote ids.
+     *
      * @param array $ids
      * @param string $date
      * @param string $contactStatus

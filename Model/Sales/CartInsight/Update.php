@@ -3,6 +3,7 @@
 namespace Dotdigitalgroup\Email\Model\Sales\CartInsight;
 
 use Dotdigitalgroup\Email\Model\AbandonedCart\CartInsight\Data;
+use Magento\Store\Model\StoreManagerInterface;
 
 class Update
 {
@@ -50,7 +51,7 @@ class Update
      * Update cart phase
      *
      * @param \Magento\Sales\Model\Order $order
-     * @param \Magento\Store\Api\Data\StoreInterface $store
+     * @param StoreManagerInterface $store
      *
      * @return void
      * @throws \Magento\Framework\Exception\NoSuchEntityException

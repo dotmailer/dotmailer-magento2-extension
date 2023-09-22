@@ -9,6 +9,7 @@ use Dotdigitalgroup\Email\Setup\SchemaInterface;
 use Magento\Framework\Setup\ModuleDataSetupInterface;
 use Magento\Framework\Setup\Patch\DataPatchInterface;
 use Magento\Store\Model\StoreManagerInterface;
+use Magento\Store\Model\Website;
 
 class SetDefaultStoreIdForEmailAutomations implements DataPatchInterface
 {
@@ -61,7 +62,9 @@ class SetDefaultStoreIdForEmailAutomations implements DataPatchInterface
                 if (array_key_exists($automation["website_id"], $bulkUpdateByWebsite)) {
                     continue;
                 }
-                $storeId = $this->storeManager->getWebsite($automation['website_id'])->getDefaultStore()->getId();
+                /** @var Website $website */
+                $website = $this->storeManager->getWebsite($automation['website_id']);
+                $storeId = $website->getDefaultStore()->getId();
                 $bulkUpdateByWebsite[$automation['website_id']] = $storeId;
             }
 

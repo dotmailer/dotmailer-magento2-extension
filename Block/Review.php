@@ -7,6 +7,8 @@ use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Product\ImageFinder;
 use Dotdigitalgroup\Email\Model\Product\ImageType\Context\DynamicContent;
 use Magento\Catalog\Model\ProductRepository;
+use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Store\Model\Store;
 
 /**
  * Review block
@@ -128,16 +130,20 @@ class Review extends Recommended
     }
 
     /**
+     * Get mode.
+     *
      * @param string $mode
      *
      * @return boolean|string
+     * @throws NoSuchEntityException
      */
     public function getMode($mode = 'list')
     {
         if ($this->getOrder()) {
-            $website = $this->_storeManager
-                ->getStore($this->getOrder()->getStoreId())
-                ->getWebsite();
+            /** @var Store $store */
+            $store = $this->_storeManager
+                ->getStore($this->getOrder()->getStoreId());
+            $website = $store->getWebsite();
             $mode = $this->helper->getReviewDisplayType($website);
         }
 
@@ -177,6 +183,8 @@ class Review extends Recommended
     }
 
     /**
+     * Get items.
+     *
      * @return array|\Magento\Framework\Data\Collection\AbstractDb
      */
     public function getItems()
@@ -192,19 +200,24 @@ class Review extends Recommended
     }
 
     /**
+     * Get review item url.
+     *
      * If 'Link to product page' is 'Yes', fetch the URL.
      * If that fails, or if set to 'No', fall back to the review list URL.
      *
      * @param int|string $productId
      *
      * @return string
+     * @throws NoSuchEntityException
      */
     public function getReviewItemUrl($productId)
     {
+        /** @var Store $store */
+        $store = $this->_storeManager->getStore($this->getStoreIdFromOrder());
         $linkToProductPage = $this->_scopeConfig->getValue(
             Config::XML_PATH_AUTOMATION_REVIEW_PRODUCT_PAGE,
             \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
-            $this->_storeManager->getStore($this->getStoreIdFromOrder())->getWebsite()->getId()
+            $store->getWebsite()->getId()
         );
 
         if ($linkToProductPage) {
@@ -220,19 +233,25 @@ class Review extends Recommended
     }
 
     /**
+     * Get review reminder anchor.
+     *
      * @return string|null
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function getReviewReminderAnchor()
     {
+        /** @var Store $store */
+        $store = $this->_storeManager->getStore($this->getStoreIdFromOrder());
         return $this->_scopeConfig->getValue(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_AUTOMATION_REVIEW_ANCHOR,
             \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
-            $this->_storeManager->getStore($this->getStoreIdFromOrder())->getWebsite()->getId()
+            $store->getWebsite()->getId()
         );
     }
 
     /**
+     * Get store id from order.
+     *
      * @return int
      */
     private function getStoreIdFromOrder()

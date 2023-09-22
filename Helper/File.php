@@ -93,7 +93,7 @@ class File
     }
 
     /**
-     *  Return the full filepath.
+     * Return the full filepath.
      *
      * @param string $filename
      *
@@ -109,7 +109,8 @@ class File
      *
      * @param string $filename
      *
-     * @return null
+     * @return void
+     * @throws FileSystemException
      */
     public function archiveCSV($filename)
     {
@@ -127,7 +128,8 @@ class File
      * @param string $destFolder
      * @param string $filename
      *
-     * @return null
+     * @return void
+     * @throws FileSystemException
      */
     private function moveFile($sourceFolder, $destFolder, $filename)
     {
@@ -165,7 +167,8 @@ class File
      *
      * @param string $path
      *
-     * @return null
+     * @return void
+     * @throws FileSystemException
      */
     private function createDirectoryIfNotExists($path)
     {
@@ -180,6 +183,7 @@ class File
      * @param string $path
      *
      * @return bool
+     * @throws FileSystemException
      */
     public function deleteDir($path)
     {
@@ -250,6 +254,7 @@ class File
      *
      * @param string $filename
      * @return string
+     * @throws FileSystemException
      */
     public function getFilePathWithFallback($filename)
     {
@@ -263,6 +268,7 @@ class File
      *
      * @param string $filepath
      * @return boolean
+     * @throws FileSystemException
      */
     public function isFile($filepath)
     {
@@ -274,6 +280,7 @@ class File
      *
      * @param string $filename
      * @return boolean
+     * @throws FileSystemException
      */
     public function isFilePathExistWithFallback($filename)
     {
@@ -287,6 +294,7 @@ class File
      *
      * @param string $filename
      * @return bool
+     * @throws FileSystemException
      */
     public function isFileAlreadyArchived($filename)
     {

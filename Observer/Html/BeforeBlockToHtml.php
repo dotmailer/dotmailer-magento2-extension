@@ -9,10 +9,15 @@ namespace Dotdigitalgroup\Email\Observer\Html;
 class BeforeBlockToHtml implements \Magento\Framework\Event\ObserverInterface
 {
     /**
-     * @var \Dotdigitalgroup\Email\Model\Sales\CouponGridFilterer
+     * @var \Dotdigitalgroup\Email\Model\Sales\CouponGridFiltererFactory
      */
     private $couponGridFiltererFactory;
 
+    /**
+     * Constructor.
+     *
+     * @param \Dotdigitalgroup\Email\Model\Sales\CouponGridFiltererFactory $couponGridFiltererFactory
+     */
     public function __construct(
         \Dotdigitalgroup\Email\Model\Sales\CouponGridFiltererFactory $couponGridFiltererFactory
     ) {
@@ -20,9 +25,11 @@ class BeforeBlockToHtml implements \Magento\Framework\Event\ObserverInterface
     }
 
     /**
+     * Execute.
+     *
      * @param \Magento\Framework\Event\Observer $observer
      *
-     * @return null
+     * @return void
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {

@@ -7,6 +7,7 @@ use Magento\Framework\App\Area;
 use Magento\Framework\View\ConfigInterface as ViewConfig;
 use Magento\Theme\Model\Config\Customization as ThemeCustomizationConfig;
 use Magento\Theme\Model\ResourceModel\Theme\Collection as ThemeCollection;
+use Magento\Theme\Model\Theme;
 
 class ImageTypeService
 {
@@ -37,6 +38,7 @@ class ImageTypeService
 
     /**
      * ImageTypeService constructor.
+     *
      * @param ViewConfig $viewConfig
      * @param ThemeCustomizationConfig $themeCustomizationConfig
      * @param ThemeCollection $themeCollection
@@ -52,6 +54,8 @@ class ImageTypeService
     }
 
     /**
+     * Set options.
+     *
      * @param array $options
      */
     public function setOptions($options)
@@ -60,6 +64,8 @@ class ImageTypeService
     }
 
     /**
+     * Get options.
+     *
      * @return array
      */
     public function getOptions(): array
@@ -82,7 +88,9 @@ class ImageTypeService
     }
 
     /**
+     * Set view images.
      *
+     * @return void
      */
     private function setViewImages()
     {
@@ -110,6 +118,8 @@ class ImageTypeService
     }
 
     /**
+     * Get themes in use.
+     *
      * @return array
      */
     private function getThemesInUse(): array

@@ -16,7 +16,7 @@ class Rules extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Initialize resource.
      *
-     * @return null
+     * @return void
      */
     public function _construct()
     {
@@ -28,7 +28,7 @@ class Rules extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      *
      * @param \Magento\Framework\Model\ResourceModel\Db\Context $context
      * @param SerializerInterface $serializer
-     * @param null $connectionName
+     * @param ?string $connectionName
      */
     public function __construct(
         \Magento\Framework\Model\ResourceModel\Db\Context $context,
@@ -42,6 +42,12 @@ class Rules extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         );
     }
 
+    /**
+     * After load.
+     *
+     * @param \Magento\Framework\Model\AbstractModel $object
+     * @return Rules
+     */
     protected function _afterLoad(\Magento\Framework\Model\AbstractModel $object)
     {
         if (!empty($object->getConditions())) {

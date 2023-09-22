@@ -7,7 +7,7 @@ use Magento\Store\Model\StoreManagerInterface;
 use Magento\Checkout\Model\Session;
 use Magento\Quote\Model\ResourceModel\Quote;
 use Magento\Framework\Controller\Result\Redirect;
-use Magento\Framework\App\RequestInterface;
+use Magento\Framework\Webapi\Rest\Request;
 use Dotdigitalgroup\Email\Logger\Logger;
 
 class NewsletterEmailCapturePlugin
@@ -33,7 +33,7 @@ class NewsletterEmailCapturePlugin
     private $quoteResource;
 
     /**
-     * @var RequestInterface
+     * @var Request
      */
     private $request;
 
@@ -43,11 +43,13 @@ class NewsletterEmailCapturePlugin
     private $logger;
 
     /**
+     * Constructor.
+     *
      * @param ScopeConfigInterface $scopeConfig
      * @param StoreManagerInterface $storeManager
      * @param Session $session
      * @param Quote $quoteResource
-     * @param RequestInterface $request
+     * @param Request $request
      * @param Logger $logger
      */
     public function __construct(
@@ -55,7 +57,7 @@ class NewsletterEmailCapturePlugin
         StoreManagerInterface $storeManager,
         Session $session,
         Quote $quoteResource,
-        RequestInterface $request,
+        Request $request,
         Logger $logger
     ) {
         $this->scopeConfig = $scopeConfig;
@@ -67,6 +69,8 @@ class NewsletterEmailCapturePlugin
     }
 
     /**
+     * After execute.
+     *
      * @param \Magento\Newsletter\Controller\Subscriber\NewAction $subject
      * @param Redirect $result
      * @return Redirect|null
@@ -95,6 +99,8 @@ class NewsletterEmailCapturePlugin
     }
 
     /**
+     * Is email capture for newsletter enabled.
+     *
      * @return mixed
      * @throws \Magento\Framework\Exception\LocalizedException
      */

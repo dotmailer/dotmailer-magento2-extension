@@ -9,7 +9,6 @@ use Dotdigitalgroup\Email\Model\ResourceModel\Automation\CollectionFactory;
 use Dotdigitalgroup\Email\Model\Sync\Automation\AutomationProcessorFactory;
 use Dotdigitalgroup\Email\Model\Sync\Automation\AutomationTypeHandler;
 use Dotdigitalgroup\Email\Model\Sync\Automation\Sender;
-use Dotdigitalgroup\Email\Model\StatusInterface;
 use Dotdigitalgroup\Email\Model\Sync\PendingContact\PendingContactUpdater;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Serialize\SerializerInterface;
@@ -22,7 +21,7 @@ use Magento\Store\Model\ScopeInterface;
  */
 class Automation implements SyncInterface
 {
-    const AUTOMATION_SYNC_LIMIT = 100;
+    private const AUTOMATION_SYNC_LIMIT = 100;
 
     /**
      * @var Data
@@ -139,6 +138,8 @@ class Automation implements SyncInterface
     }
 
     /**
+     * Get program id.
+     *
      * @param string $type
      * @param int $storeId
      * @return false|string
@@ -171,5 +172,7 @@ class Automation implements SyncInterface
                 $storeId
             );
         }
+
+        return false;
     }
 }

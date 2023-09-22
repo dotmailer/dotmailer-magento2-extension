@@ -2,6 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Helper;
 
+use Magento\Framework\App\Helper\Context;
 use Magento\Framework\Intl\DateTimeFactory;
 
 /**
@@ -9,51 +10,49 @@ use Magento\Framework\Intl\DateTimeFactory;
  */
 class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
 {
-    const XML_PATH_RELATED_PRODUCTS_TYPE = 'connector_dynamic_content/products/related_display_type';
-    const XML_PATH_UPSELL_PRODUCTS_TYPE = 'connector_dynamic_content/products/upsell_display_type';
-    const XML_PATH_CROSSSELL_PRODUCTS_TYPE = 'connector_dynamic_content/products/crosssell_display_type';
-    const XML_PATH_BESTSELLER_PRODUCT_TYPE = 'connector_dynamic_content/products/bestsellers_display_type';
-    const XML_PATH_MOSTVIEWED_PRODUCT_TYPE = 'connector_dynamic_content/products/most_viewed_display_type';
-    const XML_PATH_RECENTLYVIEWED_PRODUCT_TYPE = 'connector_dynamic_content/products/recently_viewed_display_type';
-    const XML_PATH_PRODUCTPUSH_TYPE = 'connector_dynamic_content/manual_product_push/display_type';
+    private const XML_PATH_RELATED_PRODUCTS_TYPE
+        = 'connector_dynamic_content/products/related_display_type';
+    private const XML_PATH_UPSELL_PRODUCTS_TYPE
+        = 'connector_dynamic_content/products/upsell_display_type';
+    private const XML_PATH_CROSSSELL_PRODUCTS_TYPE
+        = 'connector_dynamic_content/products/crosssell_display_type';
+    private const XML_PATH_BESTSELLER_PRODUCT_TYPE
+        = 'connector_dynamic_content/products/bestsellers_display_type';
+    private const XML_PATH_MOSTVIEWED_PRODUCT_TYPE
+        = 'connector_dynamic_content/products/most_viewed_display_type';
+    private const XML_PATH_RECENTLYVIEWED_PRODUCT_TYPE
+        = 'connector_dynamic_content/products/recently_viewed_display_type';
+    private const XML_PATH_PRODUCTPUSH_TYPE
+        = 'connector_dynamic_content/manual_product_push/display_type';
 
-    const XML_PATH_RELATED_PRODUCTS_ITEMS = 'connector_dynamic_content/products/related_items_to_display';
-    const XML_PATH_UPSELL_PRODUCTS_ITEMS = 'connector_dynamic_content/products/upsell_items_to_display';
-    const XML_PATH_CROSSSELL_PRODUCTS_ITEMS = 'connector_dynamic_content/products/crosssell_items_to_display';
-    const XML_PATH_BESTSELLER_PRODUCT_ITEMS = 'connector_dynamic_content/products/bestsellers_items_to_display';
-    const XML_PATH_MOSTVIEWED_PRODUCT_ITEMS = 'connector_dynamic_content/products/most_viewed_items_to_display';
-    const XML_PATH_RECENTLYVIEWED_PRODUCT_ITEMS = 'connector_dynamic_content/products/recently_viewed_items_to_display';
+    private const XML_PATH_RELATED_PRODUCTS_ITEMS
+        = 'connector_dynamic_content/products/related_items_to_display';
+    private const XML_PATH_UPSELL_PRODUCTS_ITEMS
+        = 'connector_dynamic_content/products/upsell_items_to_display';
+    private const XML_PATH_CROSSSELL_PRODUCTS_ITEMS
+        = 'connector_dynamic_content/products/crosssell_items_to_display';
+    private const XML_PATH_BESTSELLER_PRODUCT_ITEMS
+        = 'connector_dynamic_content/products/bestsellers_items_to_display';
+    private const XML_PATH_MOSTVIEWED_PRODUCT_ITEMS
+        = 'connector_dynamic_content/products/most_viewed_items_to_display';
+    private const XML_PATH_RECENTLYVIEWED_PRODUCT_ITEMS
+        = 'connector_dynamic_content/products/recently_viewed_items_to_display';
 
-    const XML_PATH_PRODUCTPUSH_DISPLAY_ITEMS = 'connector_dynamic_content/manual_product_push/items_to_display';
-    const XML_PATH_BESTSELLER_TIME_PERIOD = 'connector_dynamic_content/products/bestsellers_time_period';
-    const XML_PATH_MOSTVIEWED_TIME_PERIOD = 'connector_dynamic_content/products/most_viewed_time_period';
-    const XML_PATH_PRODUCTPUSH_ITEMS = 'connector_dynamic_content/manual_product_push/products_push_items';
-    const XML_PATH_FALLBACK_PRODUCTS_ITEMS = 'connector_dynamic_content/fallback_products/product_ids';
-
-    /**
-     * @var \Magento\Framework\App\Helper\Context
-     */
-    private $context;
-
-    /**
-     * @var Data
-     */
-    private $helper;
-
-    /**
-     * @var \Magento\Store\Model\StoreManagerInterface
-     */
-    private $storeManager;
-
-    /**
-     * @var \Magento\Framework\App\ResourceConnection
-     */
-    private $adapter;
+    private const XML_PATH_PRODUCTPUSH_DISPLAY_ITEMS
+        = 'connector_dynamic_content/manual_product_push/items_to_display';
+    private const XML_PATH_BESTSELLER_TIME_PERIOD
+        = 'connector_dynamic_content/products/bestsellers_time_period';
+    private const XML_PATH_MOSTVIEWED_TIME_PERIOD
+        = 'connector_dynamic_content/products/most_viewed_time_period';
+    private const XML_PATH_PRODUCTPUSH_ITEMS
+        = 'connector_dynamic_content/manual_product_push/products_push_items';
+    private const XML_PATH_FALLBACK_PRODUCTS_ITEMS
+        = 'connector_dynamic_content/fallback_products/product_ids';
 
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Catalog
      */
-    public $catalog;
+    private $catalog;
 
     /**
      * @var \Dotdigitalgroup\Email\Model\DateTimeFactory
@@ -63,26 +62,16 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Recommended constructor.
      *
-     * @param \Magento\Framework\App\ResourceConnection $adapter
-     * @param \Dotdigitalgroup\Email\Helper\Data $data
      * @param \Magento\Framework\App\Helper\Context $context
-     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalog
      * @param DateTimeFactory $dateTimeFactory
      */
     public function __construct(
-        \Magento\Framework\App\ResourceConnection $adapter,
-        \Dotdigitalgroup\Email\Helper\Data $data,
-        \Magento\Framework\App\Helper\Context $context,
-        \Magento\Store\Model\StoreManagerInterface $storeManager,
+        Context $context,
         \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalog,
         DateTimeFactory $dateTimeFactory
     ) {
-        $this->adapter      = $adapter;
-        $this->helper       = $data;
-        $this->context      = $context;
-        $this->storeManager = $storeManager;
-        $this->catalog    = $catalog;
+        $this->catalog = $catalog;
         $this->dateTimeFactory = $dateTimeFactory;
 
         parent::__construct($context);
@@ -95,7 +84,7 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getDisplayType()
     {
-        $mode = $this->context->getRequest()->getActionName();
+        $mode = $this->_request->getActionName();
 
         $type = '';
 
@@ -286,10 +275,11 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
      * @param string $config
      *
      * @return string
+     * @throws \Exception
      */
     public function getTimeFromConfig($config)
     {
-        $now = $this->dateTimeFactory->create('now', new \DateTimeZone('UTC'));
+        $now = $this->dateTimeFactory->create();
         $period = $this->processConfig($config);
         $sub = $this->processPeriod($period);
 
@@ -303,6 +293,8 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
+     * Process config.
+     *
      * @param string $config
      *
      * @return boolean|string
@@ -328,6 +320,8 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
+     * Process period.
+     *
      * @param string $period
      *
      * @return null|string
@@ -412,7 +406,7 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
      * @param array $recommendedProducts
      * @param array $productsToDisplay
      *
-     * @return null
+     * @return void
      */
     private function addRecommendedProducts(
         &$productsToDisplayCounter,

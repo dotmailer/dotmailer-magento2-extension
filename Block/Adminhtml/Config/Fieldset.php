@@ -2,6 +2,8 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config;
 
+use Dotdigitalgroup\Email\Block\Adminhtml\Config\Configuration\Preview;
+
 class Fieldset extends \Magento\Config\Block\System\Config\Form\Fieldset
 {
     /**
@@ -11,12 +13,12 @@ class Fieldset extends \Magento\Config\Block\System\Config\Form\Fieldset
      */
     public function render(\Magento\Framework\Data\Form\Element\AbstractElement $element)
     {
+        /** @var Preview $block */
         $block = $this->getLayout()->createBlock(
             \Dotdigitalgroup\Email\Block\Adminhtml\Config\Configuration\Preview::class,
             'ddg_automation_dynamic_preview'
-        )->setTemplate(
-            'Dotdigitalgroup_Email::system/preview.phtml'
         );
+
         $this->setElement($element);
         $header = $this->_getHeaderHtml($element);
 

@@ -2,6 +2,8 @@
 
 namespace Dotdigitalgroup\Email\Model\ResourceModel\Wishlist;
 
+use Magento\Store\Model\Website;
+
 class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection
 {
     /**
@@ -12,7 +14,7 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     /**
      * Initialize resource collection.
      *
-     * @return null
+     * @return void
      */
     public function _construct()
     {
@@ -62,12 +64,14 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     }
 
     /**
-     * @param \Magento\Store\Api\Data\WebsiteInterface $website
-     * @param int                                      $limit
+     * Get wishlists to import by website.
+     *
+     * @param Website $website
+     * @param int $limit
      *
      * @return $this
      */
-    public function getWishlistsToImportByWebsite(\Magento\Store\Api\Data\WebsiteInterface $website, $limit = 100)
+    public function getWishlistsToImportByWebsite(Website $website, $limit = 100)
     {
         $collection = $this->addFieldToFilter('wishlist_imported', 0)
             ->addFieldToFilter(

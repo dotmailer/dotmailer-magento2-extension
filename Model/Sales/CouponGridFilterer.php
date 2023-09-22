@@ -2,7 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Model\Sales;
 
-use Magento\Backend\Block\Widget\Grid\Column\Extended;
+use Magento\Backend\Block\Widget\Grid\Column\Filter\Select\Extended;
 use Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
 
 class CouponGridFilterer
@@ -11,7 +11,7 @@ class CouponGridFilterer
      * Callback action for cart price rule coupon grid.
      *
      * @param AbstractCollection $collection
-     * @param Column $column
+     * @param Extended $column
      * @return void
      */
     public function filterByGeneratedByDotdigital($collection, $column)
@@ -27,8 +27,10 @@ class CouponGridFilterer
     }
 
     /**
+     * Filter generated for email.
+     *
      * @param AbstractCollection $collection
-     * @param Column $column
+     * @param Extended $column
      */
     public function filterGeneratedForEmail($collection, $column)
     {

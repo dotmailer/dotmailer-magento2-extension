@@ -10,22 +10,17 @@ class Review extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
      */
-    public $helper;
+    private $helper;
 
     /**
      * @var \Magento\Review\Model\ResourceModel\Review\CollectionFactory
      */
-    public $mageReviewCollection;
+    private $mageReviewCollectionFactory;
 
     /**
      * @var \Magento\Catalog\Model\ProductFactory
      */
-    public $productFactory;
-
-    /**
-     * @var \Magento\Review\Model\Rating\Option\Vote
-     */
-    public $vote;
+    private $productFactory;
 
     /**
      * @var Option\Vote\CollectionFactory
@@ -33,24 +28,14 @@ class Review extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     private $voteCollection;
 
     /**
-     * @var \Magento\Quote\Model\QuoteFactory
-     */
-    private $quoteFactory;
-
-    /**
-     * @var \Magento\Review\Model\ReviewFactory
-     */
-    private $reviewFactory;
-
-    /**
      * @var \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory
      */
-    private $productCollection;
+    private $productCollectionFactory;
 
     /**
      * Initialize resource.
      *
-     * @return null
+     * @return void
      */
     public function _construct()
     {
@@ -62,35 +47,26 @@ class Review extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      *
      * @param \Magento\Framework\Model\ResourceModel\Db\Context $context
      * @param \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory $productCollectionFactory
-     * @param \Magento\Quote\Model\QuoteFactory $quoteFactory
-     * @param \Magento\Review\Model\ReviewFactory $reviewFactory
      * @param \Dotdigitalgroup\Email\Helper\Data $data
-     * @param \Magento\Review\Model\ResourceModel\Review\CollectionFactory $mageReviewCollection
+     * @param \Magento\Review\Model\ResourceModel\Review\CollectionFactory $mageReviewCollectionFactory
      * @param \Magento\Catalog\Model\ProductFactory $productFactory
      * @param Option\Vote\CollectionFactory $voteCollection
-     * @param \Magento\Review\Model\Rating\Option\Vote $vote
-     * @param null $connectionName
+     * @param ?string $connectionName
      */
     public function __construct(
         \Magento\Framework\Model\ResourceModel\Db\Context $context,
         \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory $productCollectionFactory,
-        \Magento\Quote\Model\QuoteFactory $quoteFactory,
-        \Magento\Review\Model\ReviewFactory $reviewFactory,
         \Dotdigitalgroup\Email\Helper\Data $data,
-        \Magento\Review\Model\ResourceModel\Review\CollectionFactory $mageReviewCollection,
+        \Magento\Review\Model\ResourceModel\Review\CollectionFactory $mageReviewCollectionFactory,
         \Magento\Catalog\Model\ProductFactory $productFactory,
         \Magento\Review\Model\ResourceModel\Rating\Option\Vote\CollectionFactory $voteCollection,
-        \Magento\Review\Model\Rating\Option\Vote $vote,
         $connectionName = null
     ) {
         $this->helper = $data;
-        $this->mageReviewCollection = $mageReviewCollection;
+        $this->mageReviewCollectionFactory = $mageReviewCollectionFactory;
         $this->productFactory = $productFactory;
-        $this->vote = $vote;
-        $this->quoteFactory = $quoteFactory;
-        $this->reviewFactory = $reviewFactory;
         $this->voteCollection = $voteCollection;
-        $this->productCollection = $productCollectionFactory;
+        $this->productCollectionFactory = $productCollectionFactory;
         parent::__construct(
             $context,
             $connectionName
@@ -140,7 +116,7 @@ class Review extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         foreach ($items as $key => $item) {
             $productId = $item->getProduct()->getId();
 
-            $collection = $this->reviewFactory->create()->getCollection()
+            $collection = $this->mageReviewCollectionFactory->create()
                 ->addCustomerFilter($customerId)
                 ->addStoreFilter($order->getStoreId())
                 ->addFieldToFilter('main_table.entity_pk_value', $productId);
@@ -173,7 +149,7 @@ class Review extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         }
 
         if (!empty($productIds)) {
-            $products = $this->productCollection->create()
+            $products = $this->productCollectionFactory->create()
                 ->addAttributeToSelect('*')
                 ->addFieldToFilter('entity_id', ['in' => $productIds]);
         }
@@ -187,7 +163,7 @@ class Review extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      * @param array $ids
      * @param string $nowDate
      *
-     * @return null
+     * @return void
      */
     public function setImported($ids, $nowDate)
     {
@@ -213,7 +189,7 @@ class Review extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      */
     public function getMageReviewsByIds($ids)
     {
-        $reviews = $this->mageReviewCollection->create()
+        $reviews = $this->mageReviewCollectionFactory->create()
             ->addFieldToFilter(
                 'main_table.review_id',
                 ['in' => $ids]
@@ -240,8 +216,7 @@ class Review extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      */
     public function getProductByIdAndStore($id, $storeId)
     {
-        $product = $this->productFactory->create()
-            ->getCollection()
+        $product = $this->productCollectionFactory->create()
             ->addIdFilter($id)
             ->setStoreId($storeId)
             ->addAttributeToSelect(
@@ -275,6 +250,7 @@ class Review extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 
     /**
      * Get store id from review.
+     *
      * @param string $reviewId
      * @return string
      */
@@ -282,7 +258,7 @@ class Review extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     {
         $storeId = '0';
 
-        $collection = $this->mageReviewCollection->create()
+        $collection = $this->mageReviewCollectionFactory->create()
             ->addStoreData()
             ->addFieldToFilter('main_table.review_id', $reviewId)
             ->getFirstItem();

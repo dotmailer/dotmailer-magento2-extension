@@ -3,6 +3,7 @@
 namespace Dotdigitalgroup\Email\Model\ResourceModel;
 
 use Dotdigitalgroup\Email\Setup\SchemaInterface as Schema;
+use Magento\Wishlist\Model\ResourceModel\Wishlist\Collection;
 use Magento\Wishlist\Model\ResourceModel\Wishlist\CollectionFactory;
 
 class Wishlist extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
@@ -20,7 +21,7 @@ class Wishlist extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Initialize resource.
      *
-     * @return null
+     * @return void
      */
     public function _construct()
     {
@@ -51,7 +52,6 @@ class Wishlist extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      * @param string|null $to
      *
      * @return int
-     *
      */
     public function resetWishlists($from = null, $to = null)
     {
@@ -77,9 +77,11 @@ class Wishlist extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
+     * Get wishlists for customer.
+     *
      * @param int $customerId
      *
-     * @return bool|\Magento\Framework\DataObject
+     * @return bool|\Magento\Wishlist\Model\Wishlist
      */
     public function getWishlistsForCustomer($customerId)
     {
@@ -90,7 +92,9 @@ class Wishlist extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
                 ->setPageSize(1);
 
             if ($collection->getSize()) {
-                return $collection->getFirstItem();
+                /** @var \Magento\Wishlist\Model\Wishlist $wishlist */
+                $wishlist = $collection->getFirstItem();
+                return $wishlist;
             }
         }
 
@@ -98,8 +102,10 @@ class Wishlist extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
+     * Get magento wishlists by ids.
+     *
      * @param array $ids
-     * @return \Magento\Wishlist\Model\ResourceModel\Wishlist\Collection
+     * @return Collection
      */
     public function getMagentoWishlistsByIds($ids)
     {
@@ -118,7 +124,10 @@ class Wishlist extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
+     * Set imported.
+     *
      * @param array $ids
+     * @return void
      */
     public function setImported($ids)
     {

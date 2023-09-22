@@ -35,6 +35,8 @@ class Configuration extends \Magento\Config\Block\System\Config\Edit
     }
 
     /**
+     * Prepare layout.
+     *
      * @return $this
      */
     protected function _prepareLayout()
@@ -46,23 +48,33 @@ class Configuration extends \Magento\Config\Block\System\Config\Edit
     }
 
     /**
+     * Prepare request params.
      *
+     * @return void
      */
     public function _prepareRequestParams()
     {
-        $this->originalParams = $this->getRequest()->getParam('section');
-        $this->getRequest()->setParam('section', 'connector_developer_settings');
+        /** @var \Magento\Framework\App\Request\Http $request */
+        $request = $this->getRequest();
+        $this->originalParams = $request->getParam('section');
+        $request->setParam('section', 'connector_developer_settings');
     }
 
     /**
+     * Reset request params.
      *
+     * @return void
      */
     public function _resetRequestParams()
     {
-        $this->getRequest()->setParam('section', $this->originalParams);
+        /** @var \Magento\Framework\App\Request\Http $request */
+        $request = $this->getRequest();
+        $request->setParam('section', $this->originalParams);
     }
 
     /**
+     * Get save url.
+     *
      * @return string
      */
     public function getSaveUrl()

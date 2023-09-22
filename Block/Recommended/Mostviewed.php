@@ -4,6 +4,7 @@ namespace Dotdigitalgroup\Email\Block\Recommended;
 
 use Dotdigitalgroup\Email\Model\Product\ImageFinder;
 use Dotdigitalgroup\Email\Model\Product\ImageType\Context\DynamicContent;
+use Magento\Store\Model\Store;
 
 /**
  * Most viewed block
@@ -28,7 +29,7 @@ class Mostviewed extends \Dotdigitalgroup\Email\Block\Recommended
     public $recommendedHelper;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Catalog
      */
     public $catalog;
 
@@ -116,12 +117,15 @@ class Mostviewed extends \Dotdigitalgroup\Email\Block\Recommended
     }
 
     /**
+     * Get text for url.
+     *
      * @param null|string|bool|int|\Magento\Store\Api\Data\StoreInterface $store
      *
      * @return string|boolean
      */
     public function getTextForUrl($store)
     {
+        /** @var Store $store */
         $store = $this->_storeManager->getStore($store);
 
         return $store->getConfig(

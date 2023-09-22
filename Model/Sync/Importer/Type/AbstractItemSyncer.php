@@ -2,14 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\Sync\Importer\Type;
 
-use Dotdigitalgroup\Email\Helper\Data;
-use Dotdigitalgroup\Email\Helper\File;
 use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Apiconnector\Client;
-use Dotdigitalgroup\Email\Model\ResourceModel\Importer;
 use Dotdigitalgroup\Email\Model\Sync\Importer\Type\ItemPostProcessorInterfaceFactory;
 use Magento\Framework\DataObject;
-use Magento\Framework\Serialize\SerializerInterface;
 
 abstract class AbstractItemSyncer extends DataObject
 {

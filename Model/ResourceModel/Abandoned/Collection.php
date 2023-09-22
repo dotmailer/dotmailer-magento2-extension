@@ -44,7 +44,7 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     /**
      * Initialize resource collection.
      *
-     * @return null
+     * @return void
      */
     public function _construct()
     {
@@ -55,6 +55,8 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     }
 
     /**
+     * Get last pending status check time.
+     *
      * @return string
      */
     public function getLastPendingStatusCheckTime()
@@ -68,6 +70,8 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     }
 
     /**
+     * Get collection by bending status.
+     *
      * @return $this
      */
     public function getCollectionByPendingStatus()
@@ -79,6 +83,8 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     }
 
     /**
+     * Get collection by confirmed status.
+     *
      * @param int $storeId
      * @param boolean $guest
      *
@@ -100,10 +106,12 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     }
 
     /**
-     * @param $number
-     * @param $storeId
-     * @param $updated
-     * @param $status
+     * Get abandoned carts for store.
+     *
+     * @param int $number
+     * @param int $storeId
+     * @param array $updated
+     * @param string $status
      * @param bool $isOnlySubscribersForAC
      * @param bool $guest
      *

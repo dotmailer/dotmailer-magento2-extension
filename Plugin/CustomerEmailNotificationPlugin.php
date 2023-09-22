@@ -3,7 +3,11 @@
 namespace Dotdigitalgroup\Email\Plugin;
 
 use Dotdigitalgroup\Email\Helper\Config;
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Store\Model\ScopeInterface;
+use Magento\Store\Model\StoreManagerInterface;
+use Magento\Store\Model\Website;
 
 /**
  * Disable customer email depending on settings value.
@@ -24,7 +28,9 @@ class CustomerEmailNotificationPlugin
 
     /**
      * CustomerEmailNotificationPlugin constructor.
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+     *
+     * @param ScopeConfigInterface $scopeConfig
+     * @param StoreManagerInterface $storeManager
      */
     public function __construct(
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
@@ -35,15 +41,18 @@ class CustomerEmailNotificationPlugin
     }
 
     /**
+     * Around new account.
+     *
      * @param \Magento\Customer\Model\EmailNotificationInterface $emailNotification
      * @param callable $proceed
      * @param \Magento\Customer\Api\Data\CustomerInterface $customer
      * @param string $type
      * @param string $backUrl
-     * @param string|int $storeId
-     * @param string|null $sendemailStoreId
-     *
+     * @param int $storeId
+     * @param ?int $sendemailStoreId
      * @return void
+     * @throws LocalizedException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function aroundNewAccount(
         \Magento\Customer\Model\EmailNotificationInterface $emailNotification,
@@ -71,17 +80,22 @@ class CustomerEmailNotificationPlugin
     }
 
     /**
+     * Get website store id.
+     *
      * Get either first store ID from a set website or the provided as default
-     * @see \Magento\Customer\Model\EmailNotification
      *
      * @param \Magento\Customer\Api\Data\CustomerInterface $customer
      * @param int|string|null $defaultStoreId
      * @return int
+     * @throws LocalizedException
+     * @see \Magento\Customer\Model\EmailNotification
      */
     private function getWebsiteStoreId($customer, $defaultStoreId = null)
     {
         if ($customer->getWebsiteId() != 0 && empty($defaultStoreId)) {
-            $storeIds = $this->storeManager->getWebsite($customer->getWebsiteId())->getStoreIds();
+            /** @var Website $website */
+            $website = $this->storeManager->getWebsite($customer->getWebsiteId());
+            $storeIds = $website->getStoreIds();
             $defaultStoreId = reset($storeIds);
         }
         return $defaultStoreId;

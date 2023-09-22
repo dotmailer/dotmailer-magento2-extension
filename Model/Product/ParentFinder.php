@@ -56,11 +56,13 @@ class ParentFinder
     }
 
     /**
-     * @param $product
+     * Get parent product.
+     *
+     * @param Product $product
      * @param string $type
      * @return \Magento\Catalog\Api\Data\ProductInterface|null
      */
-    public function getParentProduct($product, $type = 'first_parent_id')
+    public function getParentProduct(Product $product, $type = 'first_parent_id')
     {
         switch ($type) {
             case 'grouped':
@@ -86,13 +88,14 @@ class ParentFinder
     }
 
     /**
+     * Get configurable parent product.
+     *
      * Like getParentProduct(), but restricted to configurable parents only.
      *
-     * @param $product
-     * @param string $type
+     * @param Product $product
      * @return \Magento\Catalog\Api\Data\ProductInterface|null
      */
-    private function getConfigurableParentProduct($product)
+    private function getConfigurableParentProduct(Product $product)
     {
         $parentId = $this->getFirstConfigurableParentId($product);
 
@@ -114,6 +117,8 @@ class ParentFinder
     }
 
     /**
+     * Get parent product for no image selection.
+     *
      * @param Product $product
      * @param string $imageRole
      * @return \Magento\Catalog\Api\Data\ProductInterface|Product|null
@@ -121,7 +126,6 @@ class ParentFinder
      */
     public function getParentProductForNoImageSelection(Product $product, $imageRole = 'small_image')
     {
-        $imageRole = $imageRole ?? 'small_image';
         if ($product->getTypeId() == \Magento\Catalog\Model\Product\Type::TYPE_SIMPLE
             && (empty($product->getData($imageRole)) || $product->getData($imageRole) == 'no_selection')
             && $parentProduct = $this->getParentProduct($product)
@@ -133,10 +137,12 @@ class ParentFinder
     }
 
     /**
-     * @param $product
+     * Get product parent id to catalog sync.
+     *
+     * @param Product $product
      * @return int|null
      */
-    public function getProductParentIdToCatalogSync($product)
+    public function getProductParentIdToCatalogSync(Product $product)
     {
         $parent = $this->getParentProduct($product);
 
@@ -148,6 +154,8 @@ class ParentFinder
     }
 
     /**
+     * Get configurable parent id's from product id's.
+     *
      * @param array $productIds
      * @return array
      */
@@ -166,6 +174,7 @@ class ParentFinder
             }
 
             if ($product instanceof Product) {
+                /** @var Product|null $parentProduct */
                 $parentProduct = $this->getConfigurableParentProduct($product);
                 if (isset($parentProduct)) {
                     $configurableParentIds[] = $parentProduct->getEntityId();
@@ -177,10 +186,12 @@ class ParentFinder
     }
 
     /**
-     * @param $product
+     * Get first parent id.
+     *
+     * @param Product $product
      * @return string|null
      */
-    private function getFirstParentId($product)
+    private function getFirstParentId(Product $product)
     {
         $configurableProducts = $this->configurableType->getParentIdsByChild($product->getId());
         if (isset($configurableProducts[0])) {
@@ -201,10 +212,12 @@ class ParentFinder
     }
 
     /**
-     * @param $product
+     * Get first configurable parent id.
+     *
+     * @param Product $product
      * @return string|null
      */
-    private function getFirstConfigurableParentId($product)
+    private function getFirstConfigurableParentId(Product $product)
     {
         $configurableProducts = $this->configurableType->getParentIdsByChild($product->getId());
         if (isset($configurableProducts[0])) {
@@ -215,10 +228,12 @@ class ParentFinder
     }
 
     /**
-     * @param $product
+     * Get first grouped parent id.
+     *
+     * @param Product $product
      * @return string|null
      */
-    private function getFirstGroupedParentId($product)
+    private function getFirstGroupedParentId(Product $product)
     {
         $groupedProducts = $this->groupedType->getParentIdsByChild($product->getId());
         if (isset($groupedProducts[0])) {

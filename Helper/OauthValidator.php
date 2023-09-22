@@ -65,7 +65,9 @@ class OauthValidator
      */
     private function generateToken()
     {
-        $refreshToken = $this->auth->getUser()->getRefreshToken();
+        $user = $this->auth->getUser();
+        /** @var \Magento\User\Model\User $user */
+        $refreshToken = $user->getRefreshToken();
 
         if ($refreshToken) {
             $accessToken = $this->helper

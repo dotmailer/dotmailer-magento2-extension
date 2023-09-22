@@ -2,6 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Plugin;
 
+use Dotdigitalgroup\Email\Model\Coupon\CouponAttribute;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\SalesRule\Api\CouponRepositoryInterface;
@@ -76,6 +77,7 @@ class CouponExpiredPlugin
             }
 
             if ($ddgExtensionAttributes = $coupon->getExtensionAttributes()->getDdgExtensionAttributes()) {
+                /** @var CouponAttribute $ddgExtensionAttributes */
                 $expiresAt = $ddgExtensionAttributes->getExpiresAtDate();
                 if ($expiresAt && $this->timezone->date($expiresAt) < $this->timezone->date()) {
                     // individual coupon has expired

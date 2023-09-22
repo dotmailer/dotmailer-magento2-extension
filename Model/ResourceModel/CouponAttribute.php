@@ -9,7 +9,7 @@ class CouponAttribute extends \Magento\Framework\Model\ResourceModel\Db\Abstract
     /**
      * Initialize resource
      *
-     * @return null
+     * @return void
      */
     public function _construct()
     {
