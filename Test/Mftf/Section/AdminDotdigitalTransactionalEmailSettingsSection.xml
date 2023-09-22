@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sections xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:noNamespaceSchemaLocation="urn:magento:mftf:Page/etc/SectionObject.xsd">
+    <section name="AdminDotdigitalTransactionalEmailSettingsSection">
+        <element name="transactionalEmailSettingsToggle" type="button" selector="#transactional_emails_ddg_transactional-head"/>
+        <element name="transactionalEmailSettingsFieldset" type="block" selector="#transactional_emails_ddg_transactional"/>
+
+        <element name="enableTransactionalEmail" type="select" selector="#transactional_emails_ddg_transactional_enabled"/>
+        <element name="transactionalSendMode" type="select" selector="#transactional_emails_ddg_transactional_send_mode"/>
+        <element name="transactionalHost" type="select" selector="#transactional_emails_ddg_transactional_host"/>
+        <element name="transactionalUsername" type="input" selector="#transactional_emails_ddg_transactional_username"/>
+        <element name="transactionalPassword" type="input" selector="#transactional_emails_ddg_transactional_send_mode"/>
+
+        <element name="emailTemplatesToggle" type="button" selector="#transactional_emails_email_templates-head"/>
+        <element name="emailTemplatesFieldset" type="block" selector="#transactional_emails_email_templates"/>
+
+        <element name="mapNewAccountTemplate" type="select" selector="#transactional_emails_email_templates_customer_create_account_email_template"/>
+
+        <element name="save" type="button" selector="#save" />
+    </section>
+</sections>

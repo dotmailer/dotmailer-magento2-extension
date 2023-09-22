@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
+    <test name="TransactionalEmailSettingsTest">
+        <annotations>
+            <features value="Dotdigital module"/>
+            <stories value="Test transactional email settings page"/>
+            <title value="Test transactional email settings page"/>
+            <description value="The Transactional Emails settings page can be viewed."/>
+            <severity value="AVERAGE"/>
+            <group value="dotmailer"/>
+        </annotations>
+
+        <before>
+            <actionGroup ref="AdminLoginActionGroup" stepKey="AdminLoginActionGroup1"/>
+        </before>
+
+        <after>
+            <actionGroup ref="AdminLogoutActionGroup" stepKey="logout"/>
+        </after>
+
+        <amOnPage url="{{AdminDotdigitalTransactionalEmailSettingsPage.url}}" stepKey="amOnTransactionalEmailSettingsPage"/>
+        <waitForPageLoad stepKey="waitForPageLoad"/>
+
+        <conditionalClick stepKey="expandTransactionalEmailSettingsTab" selector="{{AdminDotdigitalTransactionalEmailSettingsSection.transactionalEmailSettingsToggle}}" dependentSelector="{{AdminDotdigitalTransactionalEmailSettingsSection.transactionalEmailSettingsFieldset}}" visible="false"/>
+
+        <!-- Confirm that principal fields exist -->
+        <seeElement selector="{{AdminDotdigitalTransactionalEmailSettingsSection.enableTransactionalEmail}}" stepKey="seeEnableTransactionalEmail"/>
+        <seeElement selector="{{AdminDotdigitalTransactionalEmailSettingsSection.transactionalSendMode}}" stepKey="seeTransactionalSendMode"/>
+        <seeElement selector="{{AdminDotdigitalTransactionalEmailSettingsSection.transactionalHost}}" stepKey="seeTransactionalHost"/>
+        <seeElement selector="{{AdminDotdigitalTransactionalEmailSettingsSection.transactionalUsername}}" stepKey="seeTransactionalUsername"/>
+        <seeElement selector="{{AdminDotdigitalTransactionalEmailSettingsSection.transactionalPassword}}" stepKey="seeTransactionalPassword"/>
+
+        <conditionalClick stepKey="expandEmailTemplatesTab" selector="{{AdminDotdigitalTransactionalEmailSettingsSection.emailTemplatesToggle}}" dependentSelector="{{AdminDotdigitalTransactionalEmailSettingsSection.emailTemplatesFieldset}}" visible="false"/>
+
+        <!-- Confirm that at least one field exists -->
+        <seeElement selector="{{AdminDotdigitalTransactionalEmailSettingsSection.mapNewAccountTemplate}}" stepKey="seeOptionToMapNewAccountTemplate"/>
+    </test>
+</tests>
