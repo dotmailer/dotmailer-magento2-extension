@@ -1,3 +1,10 @@
+# 4.22.1
+
+### Bug fixes
+- We've added extra checks to prevent different HTML structures breaking the WBT script on search results pages.
+- The LogViewer's class name has been updated to match its filename.
+- The Transactional Emails settings page was broken; this has been fixed.
+
 # 4.22.0
 
 ### What's new
