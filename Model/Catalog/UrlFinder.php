@@ -134,33 +134,6 @@ class UrlFinder
     }
 
     /**
-     * Get a product image URL, or that of its parent if no image is set
-     *
-     * @deprecated
-     * @see \Dotdigitalgroup\Email\Model\Product\ImageFinder
-     *
-     * @param Product $product
-     * @param string $imageId
-     * @return string|null
-     * @throws \Magento\Framework\Exception\LocalizedException
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
-     */
-    public function getProductImageUrl(Product $product, string $imageId)
-    {
-        $product = $this->parentFinder->getParentProductForNoImageSelection(
-            $this->getScopedProduct($product)
-        );
-
-        $imageData = $this->imageBuilder
-            ->setProduct($product)
-            ->setImageId($imageId)
-            ->create()
-            ->getData();
-
-        return $imageData['image_url'] ?? null;
-    }
-
-    /**
      * In default-level catalog sync, the supplied Product's store ID can be 1 even though the product is not in store 1
      * This method finds the default store of the first website the product belongs to,
      * and uses that to get a new product.

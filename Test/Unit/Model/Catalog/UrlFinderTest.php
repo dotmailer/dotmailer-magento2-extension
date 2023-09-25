@@ -182,58 +182,6 @@ class UrlFinderTest extends TestCase
         $this->urlFinder->fetchFor($this->productMock);
     }
 
-    public function testGetProductImage()
-    {
-        $imagePath = 'some-image-path';
-        $imageId = 'product_small_image';
-
-        $this->productMock = $this->getInScopeProduct($this->productMock);
-
-        $this->parentFinderMock->expects($this->once())
-            ->method('getParentProductForNoImageSelection')
-            ->with($this->productMock)
-            ->willReturn($this->productMock);
-
-        $this->imageBuilderMock->expects($this->once())
-            ->method('setProduct')
-            ->with($this->productMock)
-            ->willReturn(new class($imageId, $imagePath) {
-                private $imageId;
-                private $imagePath;
-
-                public function __construct($imageId, $imagePath)
-                {
-                    $this->imageId = $imageId;
-                    $this->imagePath = $imagePath;
-                }
-
-                public function setImageId($imageId)
-                {
-                    if ($imageId !== $this->imageId) {
-                        throw new \Exception('Image ID did not match');
-                    }
-                    return $this;
-                }
-
-                public function create()
-                {
-                    return $this;
-                }
-
-                public function getData()
-                {
-                    return [
-                        'image_url' => $this->imagePath,
-                    ];
-                }
-            });
-
-        $this->assertEquals(
-            $imagePath,
-            $this->urlFinder->getProductImageUrl($this->productMock, $imageId)
-        );
-    }
-
     public function testGetPathRemovesPubSubStringIfEnabledInConfig()
     {
         $path = 'https://magento2.dev/pub/media/chaz-kangaroo.jpg';
