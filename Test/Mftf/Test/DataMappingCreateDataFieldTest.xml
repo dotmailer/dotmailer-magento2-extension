@@ -10,9 +10,6 @@
             <severity value="MINOR"/>
             <group value="dotmailer"/>
             <testCaseId value="BUNDLE-16"/>
-            <skip>
-                <issueId value="BUNDLE-2973"/>
-            </skip>
         </annotations>
 
         <before>
@@ -36,6 +33,9 @@
         </actionGroup>
 
         <scrollToTopOfPage stepKey="scrollToTopOfPage"/>
+
+        <!-- Wait for any delay returning the new DF from the platform -->
+        <wait time="30" stepKey="waitForPlatformDataFields"/>
 
         <!-- Now compare with the new option list -->
         <grabMultiple selector="{{AdminDotdigitalDataMappingSection.customerFirstnameOptions}}" userInput="value" stepKey="grabUpdatedOptions"/>
