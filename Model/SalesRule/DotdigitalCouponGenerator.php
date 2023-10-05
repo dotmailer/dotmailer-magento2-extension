@@ -2,6 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Model\SalesRule;
 
+use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Coupon\CouponAttribute;
 use Dotdigitalgroup\Email\Model\DateTimeFactory;
 use Magento\Framework\Stdlib\DateTime;
@@ -13,6 +14,11 @@ use Magento\SalesRule\Api\CouponRepositoryInterface;
 
 class DotdigitalCouponGenerator
 {
+	/**
+	 * @var Logger
+	 */
+	private $logger;
+
     /**
      * @var DotdigitalCouponCodeGenerator
      */
@@ -43,15 +49,17 @@ class DotdigitalCouponGenerator
      */
     private $couponAttributeFactory;
 
-    /**
-     * @param CodegeneratorInterface $couponCodeGenerator
-     * @param DateTime $dateTime
-     * @param DateTimeFactory $dateTimeFactory
-     * @param CouponAttributeFactory $couponAttributeFactory
-     * @param CouponExtensionFactory $couponExtensionFactory
-     * @param CouponRepositoryInterface $couponRepository
-     */
+	/**
+	 * @param Logger $logger
+	 * @param CodegeneratorInterface $couponCodeGenerator
+	 * @param DateTime $dateTime
+	 * @param DateTimeFactory $dateTimeFactory
+	 * @param CouponAttributeFactory $couponAttributeFactory
+	 * @param CouponExtensionFactory $couponExtensionFactory
+	 * @param CouponRepositoryInterface $couponRepository
+	 */
     public function __construct(
+		Logger $logger,
         CodegeneratorInterface $couponCodeGenerator,
         DateTime $dateTime,
         DateTimeFactory $dateTimeFactory,
@@ -59,7 +67,8 @@ class DotdigitalCouponGenerator
         CouponExtensionFactory $couponExtensionFactory,
         CouponRepositoryInterface $couponRepository
     ) {
-        $this->couponCodeGenerator = $couponCodeGenerator;
+		$this->logger = $logger;
+		$this->couponCodeGenerator = $couponCodeGenerator;
         $this->dateTime = $dateTime;
         $this->dateTimeFactory = $dateTimeFactory;
         $this->couponAttributeFactory = $couponAttributeFactory;
@@ -88,6 +97,18 @@ class DotdigitalCouponGenerator
         string $emailAddress = null,
         int $expireDays = null
     ) {
+		$this->logger->debug(
+			"Begin coupon generation",
+			[
+				$rule->getId(),
+				$codeFormat,
+				$codePrefix,
+				$codeSuffix,
+				$emailAddress,
+				$expireDays
+			]
+		);
+
         // set format/prefix/suffix to code generator
         $this->couponCodeGenerator->setData([
             'codeFormat' => $codeFormat,
@@ -127,7 +148,16 @@ class DotdigitalCouponGenerator
             $coupon->setExtensionAttributes($couponExtension);
         }
 
+		$this->logger->debug(
+			"Coupon created, saving ..."
+		);
+
         $this->couponRepository->save($coupon);
+
+		$this->logger->debug(
+			"Coupon data",
+			[$coupon->toArray()]
+		);
 
         return $coupon->getCode();
     }

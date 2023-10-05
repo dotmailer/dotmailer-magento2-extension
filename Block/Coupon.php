@@ -79,6 +79,8 @@ class Coupon extends \Magento\Framework\View\Element\Template
      */
     public function generateCoupon()
     {
+        $this->helper->debug('Starting Dotdigital coupon generation from Block');
+
         try {
             // Protects against repeat generation
             if (!empty($this->couponCode)) {
