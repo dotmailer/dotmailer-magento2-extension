@@ -99,6 +99,8 @@ class Edc extends \Magento\Framework\App\Action\Action
             return false;
         }
 
+        $this->helper->debug('EDC request passed authentication');
+
         return true;
     }
 
@@ -141,6 +143,8 @@ class Edc extends \Magento\Framework\App\Action\Action
      */
     public function sendNoContentResponse(int $statusCode = 204)
     {
+        $this->helper->debug('Sending 204 no-content response');
+
         try {
             $this->getResponse()
                 ->setHttpResponseCode($statusCode)
@@ -163,6 +167,7 @@ class Edc extends \Magento\Framework\App\Action\Action
     public function checkResponse()
     {
         if (strlen($this->_view->getLayout()->getOutput()) < 10) {
+            $this->helper->debug('Output is less than 10 characters, no content');
             $this->sendNoContentResponse();
         }
     }
