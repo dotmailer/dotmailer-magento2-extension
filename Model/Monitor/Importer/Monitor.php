@@ -15,7 +15,7 @@ class Monitor extends AbstractMonitor implements MonitorInterface
     /**
      * @var CollectionFactory
      */
-    protected $importerCollection;
+    private $importerCollection;
 
     /**
      * @var string

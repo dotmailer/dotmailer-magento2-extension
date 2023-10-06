@@ -20,7 +20,7 @@ class InsertEmailOrderTable extends AbstractBatchInserter implements InsertTypeI
     /**
      * @var string
      */
-    protected $resourceName = 'sales';
+    private $resourceName = 'sales';
 
     /**
      * @var CollectionFactory

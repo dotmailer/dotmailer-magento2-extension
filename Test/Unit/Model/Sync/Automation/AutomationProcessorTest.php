@@ -86,9 +86,7 @@ class AutomationProcessorTest extends TestCase
 
     protected function setUp() :void
     {
-        $this->helperMock = $this->createMock(Data::class);
         $this->loggerMock = $this->createMock(Logger::class);
-        $this->contactResponseHandlerMock = $this->createMock(ContactResponseHandler::class);
         $this->automationResourceMock = $this->createMock(AutomationResource::class);
         $this->contactFactoryMock = $this->createMock(ContactFactory::class);
         $this->contactManagerMock = $this->createMock(ContactManager::class);
@@ -106,9 +104,7 @@ class AutomationProcessorTest extends TestCase
             ->getMock();
 
         $this->automationProcessor = new AutomationProcessor(
-            $this->helperMock,
             $this->loggerMock,
-            $this->contactResponseHandlerMock,
             $this->automationResourceMock,
             $this->contactFactoryMock,
             $this->contactManagerMock,

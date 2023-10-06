@@ -5,9 +5,9 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml;
 class Rules extends \Magento\Backend\Block\Widget\Grid\Container
 {
     /**
-     * Constructor.
+     * Rules constructor.
      *
-     * @return null
+     * @return void
      */
     public function _construct()
     {

@@ -5,7 +5,7 @@ namespace Dotdigitalgroup\Email\Model;
 class Abandoned extends \Magento\Framework\Model\AbstractModel
 {
     /**
-     * @var ResourceModel\Abandoned\Collection
+     * @var ResourceModel\Abandoned\CollectionFactory
      */
     public $abandonedCollectionFactory;
 
@@ -48,7 +48,7 @@ class Abandoned extends \Magento\Framework\Model\AbstractModel
     /**
      * Constructor.
      *
-     * @return null
+     * @return void
      */
     public function _construct()
     {
@@ -73,6 +73,8 @@ class Abandoned extends \Magento\Framework\Model\AbstractModel
     }
 
     /**
+     * Load by quote id.
+     *
      * @param int $quoteId
      * @return \Dotdigitalgroup\Email\Model\Abandoned
      */

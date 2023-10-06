@@ -2,14 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\Sync\Importer\Type;
 
-use Dotdigitalgroup\Email\Helper\Data;
-use Dotdigitalgroup\Email\Helper\File;
 use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Apiconnector\Client;
-use Dotdigitalgroup\Email\Model\ResourceModel\Importer;
 use Dotdigitalgroup\Email\Model\Sync\Importer\Type\ItemPostProcessorInterfaceFactory;
 use Magento\Framework\DataObject;
-use Magento\Framework\Serialize\SerializerInterface;
 
 abstract class AbstractItemSyncer extends DataObject
 {
@@ -17,26 +13,6 @@ abstract class AbstractItemSyncer extends DataObject
      * Legendary error message
      */
     public const ERROR_UNKNOWN = 'Error unknown';
-
-    /**
-     * @var Data
-     */
-    protected $helper;
-
-    /**
-     * @var File
-     */
-    protected $fileHelper;
-
-    /**
-     * @var SerializerInterface
-     */
-    protected $serializer;
-
-    /**
-     * @var Importer
-     */
-    protected $importerResource;
 
     /**
      * @var ItemPostProcessorInterfaceFactory
@@ -55,25 +31,13 @@ abstract class AbstractItemSyncer extends DataObject
 
     /**
      * AbstractItemSyncer constructor.
-     * @param Data $helper
-     * @param File $fileHelper
-     * @param SerializerInterface $serializer
-     * @param Importer $importerResource
      * @param Logger $logger
      * @param array $data
      */
     public function __construct(
-        Data $helper,
-        File $fileHelper,
-        SerializerInterface $serializer,
-        Importer $importerResource,
         Logger $logger,
         array $data = []
     ) {
-        $this->helper = $helper;
-        $this->fileHelper = $fileHelper;
-        $this->serializer = $serializer;
-        $this->importerResource = $importerResource;
         $this->logger = $logger;
 
         parent::__construct($data);

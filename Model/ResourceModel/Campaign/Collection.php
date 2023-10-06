@@ -12,7 +12,7 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     /**
      * Initialize resource collection.
      *
-     * @return null
+     * @return void
      */
     public function _construct()
     {
@@ -27,8 +27,7 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
      *
      * @param int $quoteId
      * @param int $storeId
-     *
-     * @return \Dotdigitalgroup\Email\Model\Campaign|boolean
+     * @return false|\Magento\Framework\DataObject
      */
     public function loadByQuoteId($quoteId, $storeId)
     {
@@ -79,6 +78,7 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
      *
      * @param array $storeIds
      * @return Collection
+     * @throws \Exception
      */
     public function getExpiredEmailCampaignsByStoreIds($storeIds)
     {
@@ -111,7 +111,7 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     /**
      * Get number of campaigns for contact by interval.
      *
-     * @param string  $email
+     * @param string $email
      * @param array $updated
      *
      * @return int
@@ -125,6 +125,8 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     }
 
     /**
+     * Get number of AC campaigns.
+     *
      * @param string $email
      *
      * @return int
@@ -138,9 +140,12 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     }
 
     /**
+     * Fetch campaigns with error status in time window.
+     *
      * Search the email_campaign table for jobs with sent_status = '3'(failed),
      * with a created_at time inside the specified time window.
-     * @param $timeWindow
+     *
+     * @param array $timeWindow
      * @return Collection
      */
     public function fetchCampaignsWithErrorStatusInTimeWindow($timeWindow)

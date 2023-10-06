@@ -5,7 +5,9 @@ namespace Dotdigitalgroup\Email\Model\Sync;
 use Dotdigitalgroup\Email\Helper\Config;
 use Dotdigitalgroup\Email\Model\Importer;
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Store\Api\Data\WebsiteInterface;
+use Magento\Store\Model\Website;
 
 /**
  * Sync Wishlists.
@@ -110,6 +112,7 @@ class Wishlist implements SyncInterface
 
         $start = microtime(true);
 
+        /** @var Website $website */
         foreach ($websites as $website) {
             $wishlistEnabled = $this->helper->getWebsiteConfig(
                 Config::XML_PATH_CONNECTOR_SYNC_WISHLIST_ENABLED,
@@ -153,11 +156,12 @@ class Wishlist implements SyncInterface
     /**
      * Wishlist exporter.
      *
-     * @param WebsiteInterface $website
+     * @param Website $website
      * @param array $emailWishlists
      * @return array
+     * @throws LocalizedException
      */
-    private function exportWishlistsForWebsite(WebsiteInterface $website, $emailWishlists)
+    private function exportWishlistsForWebsite(Website $website, $emailWishlists)
     {
         $wishlists = [];
 
@@ -194,11 +198,11 @@ class Wishlist implements SyncInterface
     /**
      * Fetch wishlists by website.
      *
-     * @param WebsiteInterface $website
+     * @param Website $website
      * @param int $limit
      * @return array
      */
-    private function getEmailWishlistsToImport(WebsiteInterface $website, $limit = 100)
+    private function getEmailWishlistsToImport(Website $website, $limit = 100)
     {
         $wishlists = [];
         $collection = $this->wishlistCollectionFactory->create()

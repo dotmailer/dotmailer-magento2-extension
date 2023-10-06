@@ -22,12 +22,12 @@ class DataFieldUpdater
     /**
      * @var Website
      */
-    protected $website;
+    private $website;
 
     /**
      * @var string
      */
-    protected $email;
+    private $email;
 
     /**
      * @var array

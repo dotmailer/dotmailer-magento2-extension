@@ -18,7 +18,7 @@ class Module
     /**
      * @var ReadFactory
      */
-    protected $readFactory;
+    private $readFactory;
 
     /**
      * Module constructor.

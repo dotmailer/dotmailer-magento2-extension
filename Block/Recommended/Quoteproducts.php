@@ -5,8 +5,10 @@ namespace Dotdigitalgroup\Email\Block\Recommended;
 use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Product\ImageFinder;
 use Dotdigitalgroup\Email\Model\Product\ImageType\Context\DynamicContent;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Quote\Model\QuoteFactory;
 use Magento\Quote\Model\ResourceModel\Quote;
+use Magento\Store\Model\Store;
 
 /**
  * Quote products block
@@ -166,12 +168,16 @@ class Quoteproducts extends \Dotdigitalgroup\Email\Block\Recommended
     }
 
     /**
-     * @param null|string|bool|int|\Magento\Store\Api\Data\StoreInterface $store
+     * Get text for url.
+     *
+     * @param \Magento\Store\Api\Data\StoreInterface $store
      *
      * @return string
+     * @throws NoSuchEntityException
      */
     public function getTextForUrl($store)
     {
+        /** @var Store $store */
         $store = $this->_storeManager->getStore($store);
 
         return $store->getConfig(
@@ -180,6 +186,10 @@ class Quoteproducts extends \Dotdigitalgroup\Email\Block\Recommended
     }
 
     /**
+     * Get quote all items.
+     *
+     * Fetches all quote items by quote id.
+     *
      * @param int $quoteId
      * @return array
      */

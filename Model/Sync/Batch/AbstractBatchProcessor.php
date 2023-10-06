@@ -16,16 +16,6 @@ abstract class AbstractBatchProcessor
     private $file;
 
     /**
-     * @var ImporterFactory
-     */
-    protected $importerFactory;
-
-    /**
-     * @var Logger
-     */
-    protected $logger;
-
-    /**
      * @var ContactResourceFactory
      */
     protected $contactResourceFactory;
@@ -39,21 +29,15 @@ abstract class AbstractBatchProcessor
      * AbstractBatchProcessor constructor.
      *
      * @param File $file
-     * @param ImporterFactory $importerFactory
-     * @param Logger $logger
      * @param ContactResourceFactory $contactResourceFactory
      * @param DriverInterface $driver
      */
     public function __construct(
         File $file,
-        ImporterFactory $importerFactory,
-        Logger $logger,
         ContactResourceFactory $contactResourceFactory,
         DriverInterface $driver
     ) {
         $this->file = $file;
-        $this->importerFactory = $importerFactory;
-        $this->logger = $logger;
         $this->contactResourceFactory = $contactResourceFactory;
         $this->driver = $driver;
     }

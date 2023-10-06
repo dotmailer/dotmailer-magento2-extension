@@ -2,11 +2,19 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Rules;
 
+use Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Condition;
+use Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Type;
+use Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Value;
 use Dotdigitalgroup\Email\Model\ExclusionRule\RuleValidator;
+use Dotdigitalgroup\Email\Model\ResourceModel\Rules;
+use Dotdigitalgroup\Email\Model\RulesFactory;
 use Magento\Backend\App\Action;
+use Magento\Backend\App\Action\Context;
 use Magento\Framework\App\Action\HttpPostActionInterface;
+use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Controller\Result\Json;
 use Magento\Framework\Controller\Result\JsonFactory;
+use Magento\Framework\Escaper;
 use Magento\Framework\View\Element\Html\Select;
 
 /**
@@ -64,6 +72,11 @@ class Selected extends Action implements HttpPostActionInterface
     private $ruleValidator;
 
     /**
+     * @var RequestInterface
+     */
+    private $request;
+
+    /**
      * @var JsonFactory
      */
     private $resultJsonFactory;
@@ -71,13 +84,13 @@ class Selected extends Action implements HttpPostActionInterface
     /**
      * Selected constructor.
      *
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Rules $rulesResource
-     * @param \Magento\Backend\App\Action\Context $context
-     * @param \Dotdigitalgroup\Email\Model\RulesFactory $rulesFactory
-     * @param \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Type $ruleType
-     * @param \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Condition $ruleCondition
-     * @param \Dotdigitalgroup\Email\Model\Adminhtml\Source\Rules\Value $ruleValue
-     * @param \Magento\Framework\Escaper $escaper
+     * @param Rules $rulesResource
+     * @param Context $context
+     * @param RulesFactory $rulesFactory
+     * @param Type $ruleType
+     * @param Condition $ruleCondition
+     * @param Value $ruleValue
+     * @param Escaper $escaper
      * @param RuleValidator $ruleValidator
      * @param JsonFactory $resultJsonFactory
      */
@@ -99,6 +112,7 @@ class Selected extends Action implements HttpPostActionInterface
         $this->escaper = $escaper;
         $this->rulesResource = $rulesResource;
         $this->ruleValidator = $ruleValidator;
+        $this->request = $context->getRequest();
         $this->resultJsonFactory = $resultJsonFactory;
 
         parent::__construct($context);
@@ -111,11 +125,11 @@ class Selected extends Action implements HttpPostActionInterface
      */
     public function execute()
     {
-        $id = $this->getRequest()->getParam('ruleid');
-        $attribute = $this->getRequest()->getParam('attribute');
-        $arrayKey = $this->getRequest()->getParam('arraykey');
-        $conditionName = $this->getRequest()->getParam('condition');
-        $valueName = $this->getRequest()->getParam('value');
+        $id = $this->request->getParam('ruleid');
+        $attribute = $this->request->getParam('attribute');
+        $arrayKey = $this->request->getParam('arraykey');
+        $conditionName = $this->request->getParam('condition');
+        $valueName = $this->request->getParam('value');
         $response = [];
 
         if ($arrayKey && $id && $attribute && $conditionName && $valueName) {

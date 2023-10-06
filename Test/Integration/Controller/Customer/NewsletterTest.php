@@ -10,6 +10,7 @@ use Dotdigitalgroup\Email\Model\ResourceModel\Contact\Collection as ContactColle
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory as ContactCollectionFactory;
 use Magento\Customer\Model\Customer;
 use Magento\Customer\Model\Session as CustomerSession;
+use Magento\Framework\App\Request\Http as HttpRequest;
 use Magento\Framework\Data\Form\FormKey\Validator as FormKeyValidator;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
@@ -125,6 +126,7 @@ class NewsletterTest extends \Magento\TestFramework\TestCase\AbstractController
             ->method('canShowAddressBooks')
             ->willReturn(true);
 
+        $this->getRequest()->setMethod(HttpRequest::METHOD_POST);
         $this->dispatch('/connector/customer/newsletter?additional_subscriptions[]=1&additional_subscriptions[]=2');
     }
 
@@ -144,6 +146,7 @@ class NewsletterTest extends \Magento\TestFramework\TestCase\AbstractController
             ->method('updateContactDatafieldsByEmail')
             ->willReturn(null);
 
+        $this->getRequest()->setMethod(HttpRequest::METHOD_POST);
         $this->dispatch('/connector/customer/newsletter');
     }
 

@@ -78,7 +78,7 @@ class Program implements \Magento\Framework\Data\OptionSourceInterface
             } elseif (!empty($programs)) {
                 //loop for all programs option
                 foreach ($programs as $program) {
-                    if (isset($program->id)) {
+                    if (isset($program->id) && isset($program->name) && isset($program->status)) {
                         $fields[] = [
                             'value' => $program->id,
                             'label' => $program->name . $this->getProgramStatus($program->status),

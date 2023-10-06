@@ -66,7 +66,7 @@ class ProgramEnrolmentEnrollerTest extends TestCase
     /**
      * @var ObjectManager
      */
-    protected $objectManager;
+    private $objectManager;
 
     /**
      * @var \PHPUnit\Framework\MockObject\MockObject

@@ -21,28 +21,28 @@ class Delete extends AbstractItemSyncer
     protected $postProcessor;
 
     /**
+     * @var SerializerInterface
+     */
+    private $serializer;
+
+    /**
      * Update constructor.
      *
-     * @param Data $helper
-     * @param File $fileHelper
      * @param SerializerInterface $serializer
-     * @param Importer $importerResource
      * @param SingleItemPostProcessorFactory $postProcessor
      * @param Logger $logger
      * @param array $data
      */
     public function __construct(
-        Data $helper,
-        File $fileHelper,
         SerializerInterface $serializer,
-        Importer $importerResource,
         SingleItemPostProcessorFactory $postProcessor,
         Logger $logger,
         array $data = []
     ) {
         $this->postProcessor = $postProcessor;
+        $this->serializer = $serializer;
 
-        parent::__construct($helper, $fileHelper, $serializer, $importerResource, $logger, $data);
+        parent::__construct($logger, $data);
     }
 
     /**

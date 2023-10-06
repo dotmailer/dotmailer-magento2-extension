@@ -382,7 +382,7 @@ class SalesDataManager
             ->where('sales_order_item.product_type = ?', 'simple');
 
         if (!empty($statuses)) {
-            $select->where('status in (?)', $statuses);
+            $select->where('sales_order.status in (?)', $statuses);
         }
         $select->group('customer_email');
 

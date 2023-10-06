@@ -5,6 +5,7 @@ namespace Dotdigitalgroup\Email\Block\Recommended;
 use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Product\ImageFinder;
 use Dotdigitalgroup\Email\Model\Product\ImageType\Context\DynamicContent;
+use Magento\Store\Model\Store;
 
 /**
  * Product block
@@ -175,12 +176,15 @@ class Product extends \Dotdigitalgroup\Email\Block\Recommended
     }
 
     /**
+     * Get text for url.
+     *
      * @param null|string|bool|int|\Magento\Store\Api\Data\StoreInterface $store
      *
      * @return string
      */
     public function getTextForUrl($store)
     {
+        /** @var Store $store */
         $store = $this->_storeManager->getStore($store);
 
         return $store->getConfig(

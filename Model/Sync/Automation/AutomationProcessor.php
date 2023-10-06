@@ -3,10 +3,8 @@
 namespace Dotdigitalgroup\Email\Model\Sync\Automation;
 
 use Dotdigitalgroup\Email\Exception\PendingOptInException;
-use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Automation;
-use Dotdigitalgroup\Email\Model\Contact\ContactResponseHandler;
 use Dotdigitalgroup\Email\Model\ContactFactory;
 use Dotdigitalgroup\Email\Model\Newsletter\BackportedSubscriberLoader;
 use Dotdigitalgroup\Email\Model\ResourceModel\Automation as AutomationResource;
@@ -17,19 +15,9 @@ use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\DataFieldTypeHandler;
 class AutomationProcessor
 {
     /**
-     * @var Data
-     */
-    protected $helper;
-
-    /**
      * @var Logger
      */
     protected $logger;
-
-    /**
-     * @var ContactResponseHandler
-     */
-    protected $contactResponseHandler;
 
     /**
      * @var AutomationResource
@@ -39,34 +27,32 @@ class AutomationProcessor
     /**
      * @var ContactFactory
      */
-    protected $contactFactory;
+    private $contactFactory;
 
     /**
      * @var ContactManager
      */
-    protected $contactManager;
+    private $contactManager;
 
     /**
      * @var DataFieldCollector
      */
-    protected $dataFieldCollector;
+    private $dataFieldCollector;
 
     /**
      * @var DataFieldTypeHandler
      */
-    protected $dataFieldTypeHandler;
+    private $dataFieldTypeHandler;
 
     /**
      * @var BackportedSubscriberLoader
      */
-    protected $backportedSubscriberLoader;
+    private $backportedSubscriberLoader;
 
     /**
      * AutomationProcessor constructor.
      *
-     * @param Data $helper
      * @param Logger $logger
-     * @param ContactResponseHandler $contactResponseHandler
      * @param AutomationResource $automationResource
      * @param ContactFactory $contactFactory
      * @param ContactManager $contactManager
@@ -75,9 +61,7 @@ class AutomationProcessor
      * @param BackportedSubscriberLoader $backportedSubscriberLoader
      */
     public function __construct(
-        Data $helper,
         Logger $logger,
-        ContactResponseHandler $contactResponseHandler,
         AutomationResource $automationResource,
         ContactFactory $contactFactory,
         ContactManager $contactManager,
@@ -85,9 +69,7 @@ class AutomationProcessor
         DataFieldTypeHandler $dataFieldTypeHandler,
         BackportedSubscriberLoader $backportedSubscriberLoader
     ) {
-        $this->helper = $helper;
         $this->logger = $logger;
-        $this->contactResponseHandler = $contactResponseHandler;
         $this->automationResource = $automationResource;
         $this->contactFactory = $contactFactory;
         $this->contactManager = $contactManager;

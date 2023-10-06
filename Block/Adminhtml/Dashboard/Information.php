@@ -6,15 +6,15 @@ use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Model\Apiconnector\Test;
 use Dotdigitalgroup\Email\Model\Connector\Module;
 use Dotdigitalgroup\Email\Model\ResourceModel\FailedAuth\CollectionFactory;
+use Dotdigitalgroup\Email\Model\FailedAuth;
 use IntlDateFormatter;
 use Magento\Backend\Block\Template;
 use Magento\Backend\Block\Template\Context;
-use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\ProductMetadata;
 use Magento\Framework\App\ProductMetadataFactory;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Phrase;
-use Magento\Store\Model\StoreManagerInterface;
+use Magento\Store\Model\Website;
 
 /**
  * Dashboard information block
@@ -24,14 +24,11 @@ use Magento\Store\Model\StoreManagerInterface;
 class Information extends Template
 {
     /**
-     * Helper.
-     *
      * @var Data
      */
     private $helper;
 
     /**
-     * Test class.
      * @var Test
      */
     private $test;
@@ -41,8 +38,8 @@ class Information extends Template
      */
     private $productMetadata;
 
-    /*
-     * @var \Dotdigitalgroup\Email\Model\ResourceModel\FailedAuth\Collection
+    /**
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\FailedAuth\CollectionFactory
      */
     private $failedAuthCollectionFactory;
 
@@ -58,6 +55,7 @@ class Information extends Template
 
     /**
      * Information constructor.
+     *
      * @param Context $context
      * @param Test $test
      * @param Data $helper
@@ -86,6 +84,8 @@ class Information extends Template
     }
 
     /**
+     * Get PHP version.
+     *
      * @return string
      */
     public function getPhpVersion()
@@ -94,6 +94,8 @@ class Information extends Template
     }
 
     /**
+     * Get php max execution time.
+     *
      * @return string
      */
     public function getPhpMaxExecutionTime()
@@ -102,6 +104,8 @@ class Information extends Template
     }
 
     /**
+     * Get developer mode.
+     *
      * @return string
      */
     public function getDeveloperMode()
@@ -110,8 +114,9 @@ class Information extends Template
     }
 
     /**
-     * Magento version
-     * @return Phrase | string
+     * Get magento version.
+     *
+     * @return string
      */
     public function getMagentoVersion()
     {
@@ -121,6 +126,8 @@ class Information extends Template
     }
 
     /**
+     * Fetch active modules.
+     *
      * @return array|array[]
      */
     public function fetchActiveModules()
@@ -130,6 +137,7 @@ class Information extends Template
 
     /**
      * Return HTML indicating the validity of stored API credentials.
+     *
      * @return string
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
@@ -182,12 +190,16 @@ class Information extends Template
     }
 
     /**
-     * @return Phrase|string]
+     * Get auth status.
+     *
+     * @return string
      */
     public function getAuthStatus()
     {
         $collection = $this->failedAuthCollectionFactory->create()
             ->loadByStoreId($this->storeIdFromParam);
+
+        /** @var FailedAuth $failedAuth */
         $failedAuth = $collection->getFirstItem();
 
         //check if the failed auth is set for the store
@@ -199,12 +211,16 @@ class Information extends Template
     }
 
     /**
+     * Get last failed auth.
+     *
      * @return string|Phrase
      */
     public function getLastFailedAuth()
     {
         $collection = $this->failedAuthCollectionFactory->create()
             ->loadByStoreId($this->storeIdFromParam);
+
+        /** @var FailedAuth $failedAuth */
         $failedAuth = $collection->getFirstItem();
 
         if ($failedAuth->getId()) {
@@ -215,6 +231,8 @@ class Information extends Template
     }
 
     /**
+     * Get store id param.
+     *
      * @throws LocalizedException
      */
     private function getStoreIdParam()
@@ -226,7 +244,9 @@ class Information extends Template
             $this->storeIdFromParam = $this->_storeManager->getStore($storeCode)->getId();
         } else {
             //website level
-            $this->storeIdFromParam = $this->_storeManager->getWebsite($websiteCode)->getDefaultStore()->getId();
+            /** @var Website $website */
+            $website = $this->_storeManager->getWebsite($websiteCode);
+            $this->storeIdFromParam = $website->getDefaultStore()->getId();
         }
     }
 }

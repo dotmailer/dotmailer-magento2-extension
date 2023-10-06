@@ -3,6 +3,8 @@
 namespace Dotdigitalgroup\Email\Model\ResourceModel;
 
 use Dotdigitalgroup\Email\Setup\SchemaInterface as Schema;
+use Magento\Framework\Exception\AlreadyExistsException;
+use Magento\Framework\Exception\LocalizedException;
 
 class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
@@ -13,7 +15,8 @@ class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 
     /**
      * Initialize resource.
-     * @return null
+     *
+     * @return void
      */
     public function _construct()
     {
@@ -25,7 +28,7 @@ class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      *
      * @param \Magento\Framework\Model\ResourceModel\Db\Context $context
      * @param \Magento\Framework\Stdlib\DateTime\DateTime $dateTime
-     * @param null $connectionName
+     * @param ?string $connectionName
      */
     public function __construct(
         \Magento\Framework\Model\ResourceModel\Db\Context       $context,
@@ -45,7 +48,8 @@ class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      * @param array $ids
      * @param string $message
      *
-     * @return null
+     * @return void
+     * @throws LocalizedException
      */
     public function setMessage($ids, $message)
     {
@@ -62,10 +66,13 @@ class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
+     * Set message with send id.
+     *
      * @param int $sendId
      * @param string $message
      *
-     * @return null
+     * @return void
+     * @throws LocalizedException
      */
     public function setMessageWithSendId($sendId, $message)
     {
@@ -83,12 +90,14 @@ class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 
     /**
      * Set a campaign as sent.
+     *
      * The sent_at date is set via the response data from Engagement Cloud.
      *
      * @param int $sendId
      * @param string $sendDate
      *
-     * @return null
+     * @return void
+     * @throws LocalizedException
      */
     public function setSent($sendId, $sendDate)
     {
@@ -112,7 +121,8 @@ class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      * @param array $ids
      * @param int $sendId
      *
-     * @return null
+     * @return void
+     * @throws LocalizedException
      */
     public function setProcessing($ids, $sendId)
     {
@@ -129,10 +139,11 @@ class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
-     * Save item
+     * Save item.
      *
      * @param \Dotdigitalgroup\Email\Model\Campaign $item
-     * @return \Magento\Framework\Model\ResourceModel\Db\AbstractDb
+     * @return Campaign
+     * @throws AlreadyExistsException
      */
     public function saveItem($item)
     {
@@ -140,9 +151,12 @@ class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
+     * Expire campagins.
+     *
      * @param array $ids
      *
-     * @return null
+     * @return void
+     * @throws LocalizedException
      */
     public function expireCampaigns($ids)
     {

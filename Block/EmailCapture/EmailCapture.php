@@ -2,7 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Block\EmailCapture;
 
-use Magento\Framework\View\Element\Template\Context;
+use Magento\Store\Model\Store;
 
 /**
  * Coupon block
@@ -12,18 +12,24 @@ use Magento\Framework\View\Element\Template\Context;
 class EmailCapture extends \Magento\Framework\View\Element\Template
 {
     /**
+     * Get email capture url.
+     *
      * @return mixed
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function getEmailCaptureUrl()
     {
-        return $this->_storeManager->getStore()->getUrl(
+        /** @var Store $store */
+        $store = $this->_storeManager->getStore();
+        return $store->getUrl(
             'connector/ajax/emailcapture',
-            ['_secure' => $this->_storeManager->getStore()->isCurrentlySecure()]
+            ['_secure' => $store->isCurrentlySecure()]
         );
     }
 
     /**
+     * Is WBT enabled.
+     *
      * @return bool
      * @throws \Magento\Framework\Exception\LocalizedException
      */

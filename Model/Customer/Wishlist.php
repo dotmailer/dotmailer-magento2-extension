@@ -48,6 +48,7 @@ class Wishlist
 
     /**
      * Wishlist constructor.
+     *
      * @param DateTime $dateTime
      */
     public function __construct(
@@ -55,7 +56,10 @@ class Wishlist
     ) {
         $this->dateTime = $dateTime;
     }
+
     /**
+     * Set customer.
+     *
      * @param \Magento\Customer\Model\Customer $customer
      *
      * @return $this
@@ -69,43 +73,51 @@ class Wishlist
     }
 
     /**
+     * Set customer id.
+     *
      * @param int $customerId
      *
      * @return $this
      */
     public function setCustomerId($customerId)
     {
-        $this->customerId = (int)$customerId;
+        $this->customerId = (int) $customerId;
 
         return $this;
     }
 
     /**
+     * Get customer id.
+     *
      * @return int
      */
     public function getCustomerId()
     {
-        return (int)$this->customerId;
+        return $this->customerId;
     }
 
     /**
+     * Set id.
+     *
      * @param int $id
      *
      * @return $this
      */
     public function setId($id)
     {
-        $this->id = (int)$id;
+        $this->id = (int) $id;
 
         return $this;
     }
 
     /**
+     * Get id.
+     *
      * @return int
      */
     public function getId()
     {
-        return (int)$this->id;
+        return $this->id;
     }
 
     /**
@@ -113,7 +125,7 @@ class Wishlist
      *
      * @param \Dotdigitalgroup\Email\Model\Customer\Wishlist\Item $item
      *
-     * @return null
+     * @return void
      */
     public function setItem($item)
     {
@@ -123,6 +135,8 @@ class Wishlist
     }
 
     /**
+     * Expose.
+     *
      * @return array
      */
     public function expose()
@@ -153,6 +167,8 @@ class Wishlist
     }
 
     /**
+     * Get updated at.
+     *
      * @return string
      */
     public function getUpdatedAt()
@@ -175,6 +191,8 @@ class Wishlist
     }
 
     /**
+     * Get data.
+     *
      * @return array
      */
     public function getData()

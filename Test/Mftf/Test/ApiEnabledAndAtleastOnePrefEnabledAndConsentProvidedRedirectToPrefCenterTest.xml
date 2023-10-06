@@ -20,7 +20,6 @@
             </actionGroup>
             <actionGroup ref="AdminLoginActionGroup" stepKey="AdminLoginActionGroup"/>
             <actionGroup ref="SetDotmailerAccountData" stepKey="SetDotmailerAccountData"/>
-            <actionGroup ref="SetCustomerConsentText" stepKey="setCustomerConsentText"/>
         </before>
         <after>
             <actionGroup ref="ResetDotmailerAccountData" stepKey="resetAccountData"/>
@@ -29,6 +28,7 @@
             <actionGroup ref="AdminLogoutActionGroup" stepKey="logoutAsAdmin"/>
         </after>
         <actionGroup ref="SetOnePreferenceTypeToShowYes" stepKey="setOnePreferenceTypeToShowYes"/>
+        <actionGroup ref="SetCustomerConsentText" stepKey="setCustomerConsentText"/>
         <amOnPage url="newsletter/manage/" stepKey="amOnCustomerNewsletterManagePage"/>
         <waitForPageLoad stepKey="waitForPageLoad"/>
         <seeInCurrentUrl url="connector" stepKey="dotmailerPreferencesPage"/>

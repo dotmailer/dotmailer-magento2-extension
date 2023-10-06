@@ -9,7 +9,7 @@ class FailedAuth extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Initialize resource.
      *
-     * @return null
+     * @return void
      */
     public function _construct()
     {

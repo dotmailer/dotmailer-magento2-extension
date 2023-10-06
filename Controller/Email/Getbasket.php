@@ -4,9 +4,22 @@ namespace Dotdigitalgroup\Email\Controller\Email;
 
 use Dotdigitalgroup\Email\Helper\Config;
 use Dotdigitalgroup\Email\Model\Frontend\PwaUrlConfig;
+use Magento\Checkout\Model\Session;
+use Magento\Customer\Model\SessionFactory;
+use Magento\Framework\App\Action\Context;
+use Magento\Framework\App\Action\HttpGetActionInterface;
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\App\RequestInterface;
+use Magento\Framework\Controller\Result\Redirect;
+use Magento\Framework\Controller\Result\RedirectFactory;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Quote\Model\Quote;
+use Magento\Quote\Model\QuoteFactory;
+use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
 
-class Getbasket extends \Magento\Framework\App\Action\Action
+class Getbasket implements HttpGetActionInterface
 {
     /**
      * @var \Magento\Quote\Model\ResourceModel\Quote
@@ -14,27 +27,32 @@ class Getbasket extends \Magento\Framework\App\Action\Action
     private $quoteResource;
 
     /**
-     * @var \Magento\Quote\Model\QuoteFactory
+     * @var QuoteFactory
      */
     private $quoteFactory;
 
     /**
-     * @var \Magento\Customer\Model\SessionFactory
+     * @var SessionFactory
      */
     private $checkoutSessionFactory;
 
     /**
-     * @var \Magento\Quote\Model\Quote
+     * @var RedirectFactory
+     */
+    private $redirectFactory;
+
+    /**
+     * @var Quote
      */
     private $quote;
 
     /**
-     * @var \Magento\Customer\Model\SessionFactory
+     * @var SessionFactory
      */
     private $customerSessionFactory;
 
     /**
-     * @var \Magento\Framework\App\Config\ScopeConfigInterface
+     * @var ScopeConfigInterface
      */
     private $scopeConfig;
 
@@ -42,6 +60,11 @@ class Getbasket extends \Magento\Framework\App\Action\Action
      * @var PwaUrlConfig
      */
     private $pwaUrlConfig;
+
+    /**
+     * @var RequestInterface
+     */
+    private $request;
 
     /**
      * @var StoreManagerInterface
@@ -58,37 +81,44 @@ class Getbasket extends \Magento\Framework\App\Action\Action
      *
      * @param \Magento\Quote\Model\ResourceModel\Quote $quoteResource
      * @param \Magento\Checkout\Model\SessionFactory $checkoutSessionFactory
-     * @param \Magento\Quote\Model\QuoteFactory $quoteFactory
-     * @param \Magento\Framework\App\Action\Context $context
-     * @param \Magento\Customer\Model\SessionFactory $customerSessionFactory
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+     * @param RedirectFactory $redirectFactory
+     * @param QuoteFactory $quoteFactory
+     * @param Context $context
+     * @param SessionFactory $customerSessionFactory
+     * @param ScopeConfigInterface $scopeConfig
      * @param PwaUrlConfig $pwaUrlConfig
      * @param StoreManagerInterface $storeManager
      */
     public function __construct(
         \Magento\Quote\Model\ResourceModel\Quote $quoteResource,
         \Magento\Checkout\Model\SessionFactory $checkoutSessionFactory,
-        \Magento\Quote\Model\QuoteFactory $quoteFactory,
-        \Magento\Framework\App\Action\Context $context,
-        \Magento\Customer\Model\SessionFactory $customerSessionFactory,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
+        RedirectFactory $redirectFactory,
+        QuoteFactory $quoteFactory,
+        Context $context,
+        SessionFactory $customerSessionFactory,
+        ScopeConfigInterface $scopeConfig,
         PwaUrlConfig $pwaUrlConfig,
         StoreManagerInterface $storeManager
     ) {
         $this->checkoutSessionFactory = $checkoutSessionFactory;
-        $this->quoteFactory    = $quoteFactory;
+        $this->quoteFactory = $quoteFactory;
         $this->quoteResource = $quoteResource;
+        $this->redirectFactory = $redirectFactory;
         $this->customerSessionFactory = $customerSessionFactory;
         $this->scopeConfig = $scopeConfig;
         $this->pwaUrlConfig = $pwaUrlConfig;
+        $this->request = $context->getRequest();
         $this->storeManager = $storeManager;
-        parent::__construct($context);
     }
 
     /**
      * Handles redirection from e.g. /connector/email/getbasket/quote_id/1/
      * to a re-populated basket for customers,
      * and a generic basket path for guests and PWA carts.
+     *
+     * @return Redirect
+     * @throws NoSuchEntityException
+     * @throws LocalizedException
      */
     public function execute()
     {
@@ -99,19 +129,21 @@ class Getbasket extends \Magento\Framework\App\Action\Action
             return $this->handlePwaBasket($pwaUrl, $websiteId);
         }
 
-        $quoteId = $this->getRequest()->getParam('quote_id');
+        $quoteId = $this->request->getParam('quote_id');
         //no quote id redirect to base url
         if (!$quoteId) {
-            return $this->_redirect($this->getRedirectWithParams(''));
+            return $this->redirectFactory->create()
+                ->setPath($this->getRedirectWithParams(''));
         }
 
-        /** @var \Magento\Quote\Model\Quote $quoteModel */
+        /** @var Quote $quoteModel */
         $quoteModel = $this->quoteFactory->create();
 
         $this->quoteResource->load($quoteModel, $quoteId);
 
         if (!$quoteModel->getId() || !$quoteModel->getCustomerEmail()) {
-            return $this->_redirect($this->getRedirectWithParams(''));
+            return $this->redirectFactory->create()
+                ->setPath($this->getRedirectWithParams(''));
         }
 
         //set quoteModel to _quote property for later use
@@ -126,6 +158,9 @@ class Getbasket extends \Magento\Framework\App\Action\Action
 
     /**
      * Process customer basket.
+     *
+     * @return Redirect
+     * @throws NoSuchEntityException
      */
     private function handleCustomerBasket()
     {
@@ -156,9 +191,8 @@ class Getbasket extends \Magento\Framework\App\Action\Action
                 );
             }
 
-            $this->_redirect(
-                $this->getRedirectWithParams($url)
-            );
+            return $this->redirectFactory->create()
+                ->setPath($url);
         } else {
             if ($configCartUrl) {
                 $cartUrl = $configCartUrl;
@@ -181,9 +215,8 @@ class Getbasket extends \Magento\Framework\App\Action\Action
                 $loginUrl = 'customer/account/login';
             }
 
-            $this->_redirect(
-                $this->getRedirectWithParams($this->quote->getStore()->getUrl($loginUrl))
-            );
+            return $this->redirectFactory->create()
+                ->setPath($this->quote->getStore()->getUrl($loginUrl));
         }
     }
 
@@ -192,14 +225,14 @@ class Getbasket extends \Magento\Framework\App\Action\Action
      */
     private function checkMissingAndAdd()
     {
-        /** @var \Magento\Checkout\Model\Session $checkoutSession */
+        /** @var Session $checkoutSession */
         $checkoutSession = $this->checkoutSessionFactory->create();
         $currentQuote = $checkoutSession->getQuote();
 
         if ($currentQuote->hasItems()) {
             foreach ($this->quote->getAllVisibleItems() as $item) {
                 $found = false;
-                
+
                 foreach ($currentQuote->getAllItems() as $quoteItem) {
                     if ($quoteItem->compare($item)) {
                         $found = true;
@@ -228,10 +261,12 @@ class Getbasket extends \Magento\Framework\App\Action\Action
 
     /**
      * Process guest basket.
+     *
+     * @return Redirect
      */
     private function handleGuestBasket()
     {
-        /** @var \Magento\Checkout\Model\Session $checkoutSession */
+        /** @var Session $checkoutSession */
         $checkoutSession = $this->checkoutSessionFactory->create();
         if (!$checkoutSession->getQuoteId()) {
             $checkoutSession->setQuoteId($this->quote->getId());
@@ -249,9 +284,8 @@ class Getbasket extends \Magento\Framework\App\Action\Action
             $url = 'checkout/cart';
         }
 
-        $this->_redirect(
-            $this->getRedirectWithParams($this->quote->getStore()->getUrl($url))
-        );
+        return $this->redirectFactory->create()
+            ->setPath($this->quote->getStore()->getUrl($url));
     }
 
     /**
@@ -268,7 +302,7 @@ class Getbasket extends \Magento\Framework\App\Action\Action
         }
 
         // get any params without quote_id
-        $params = array_diff_key($this->getRequest()->getParams(), ['quote_id' => null]);
+        $params = array_diff_key($this->request->getParams(), ['quote_id' => null]);
         if (empty($params)) {
             return $path;
         }
@@ -303,18 +337,17 @@ class Getbasket extends \Magento\Framework\App\Action\Action
      *
      * @param string $pwaUrl
      * @param int $websiteId
-     * @return \Magento\Framework\App\ResponseInterface
+     * @return Redirect
      */
     private function handlePwaBasket($pwaUrl, $websiteId)
     {
         $cartRoute = $this->scopeConfig->getValue(
             Config::XML_PATH_CONNECTOR_CONTENT_CART_URL,
-            \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
+            ScopeInterface::SCOPE_WEBSITE,
             $websiteId
         );
 
-        return $this->_redirect(
-            $this->getRedirectWithParams($pwaUrl . $cartRoute)
-        );
+        return $this->redirectFactory->create()
+            ->setPath($$pwaUrl . $cartRoute);
     }
 }

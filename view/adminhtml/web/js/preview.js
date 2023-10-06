@@ -150,17 +150,17 @@ require(['jquery', 'domReady!'], function ($j) {
                     position: 'fixed', top: '80px', left: $j(document).innerWidth() - 250
                 });
             } else if (windowpos >=
-                $j('#connector_configuration_dynamic_content_style_coupon_font_style').position().top - 350) {
+                $j('#connector_configuration_dynamic_content_style_coupon_font_style').position().top + 350) {
                 s.css({
                     position: 'absolute',
                     top:
-                    $j('#connector_configuration_dynamic_content_style_coupon_font_style').position().top - 350 + 'px',
+                    windowpos + 80 + 'px',
                     left: $j(document).innerWidth() - 250
                 });
             } else {
                 s.css({
                     position: 'absolute',
-                    top: pos.top + 'px',
+                    top: pos.top + 350 + 'px',
                     left: $j(document).innerWidth() - 250
                 });
             }

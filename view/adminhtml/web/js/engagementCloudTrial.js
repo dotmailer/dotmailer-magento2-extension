@@ -13,7 +13,7 @@ define(['jquery', 'domReady!'], function ($) {
         }
 
         window[eventMethod](eventMessage, function (e) {
-            if (e.origin !== config.micrositeUrl) {
+            if (e.origin !== config.micrositeUrl || typeof e.data.code === "undefined") {
                 return;
             }
 

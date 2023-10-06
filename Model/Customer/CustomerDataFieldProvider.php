@@ -12,7 +12,7 @@ class CustomerDataFieldProvider extends DataObject
     /**
      * @var array
      */
-    protected $additionalDataFields = [];
+    private $additionalDataFields = [];
 
     /**
      * Customer data fields which aren't included

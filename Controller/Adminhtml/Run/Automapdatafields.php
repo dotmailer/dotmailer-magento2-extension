@@ -2,9 +2,12 @@
 
 namespace Dotdigitalgroup\Email\Controller\Adminhtml\Run;
 
+use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Model\Connector\DataFieldAutoMapperFactory;
 use Magento\Backend\App\Action;
+use Magento\Backend\App\Action\Context;
 use Magento\Framework\App\Action\HttpGetActionInterface;
+use Magento\Framework\App\RequestInterface;
 use Magento\Framework\App\ResponseInterface;
 
 class Automapdatafields extends Action implements HttpGetActionInterface
@@ -32,8 +35,13 @@ class Automapdatafields extends Action implements HttpGetActionInterface
     private $dataFieldAutoMapperFactory;
 
     /**
-     * @param \Dotdigitalgroup\Email\Helper\Data $data
-     * @param \Magento\Backend\App\Action\Context $context
+     * @var RequestInterface
+     */
+    private $request;
+
+    /**
+     * @param Data $data
+     * @param Context $context
      * @param DataFieldAutoMapperFactory $dataFieldAutoMapperFactory
      */
     public function __construct(
@@ -41,9 +49,11 @@ class Automapdatafields extends Action implements HttpGetActionInterface
         \Magento\Backend\App\Action\Context $context,
         DataFieldAutoMapperFactory $dataFieldAutoMapperFactory
     ) {
-        $this->data           = $data;
+        $this->data = $data;
         $this->messageManager = $context->getMessageManager();
         $this->dataFieldAutoMapperFactory = $dataFieldAutoMapperFactory;
+        $this->request = $context->getRequest();
+
         parent::__construct($context);
     }
 
@@ -55,7 +65,7 @@ class Automapdatafields extends Action implements HttpGetActionInterface
      */
     public function execute()
     {
-        $websiteId = $this->getRequest()->getParam('website', 0);
+        $websiteId = $this->request->getParam('website', 0);
         $redirectUrl = $this->getUrl('adminhtml/system_config/edit', [
             'section' => 'connector_developer_settings',
             'website' => $websiteId

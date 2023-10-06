@@ -2,8 +2,11 @@
 
 namespace Dotdigitalgroup\Email\Block;
 
+use Dotdigitalgroup\Email\Block\Helper\Font;
+use Dotdigitalgroup\Email\Model\Catalog\UrlFinder;
 use Dotdigitalgroup\Email\Model\Product\ImageFinder;
 use Dotdigitalgroup\Email\Model\Product\ImageType\Context\DynamicContent;
+use Magento\Catalog\Block\Product\Context;
 
 /**
  * Recommended  block
@@ -13,12 +16,12 @@ use Dotdigitalgroup\Email\Model\Product\ImageType\Context\DynamicContent;
 class Recommended extends \Magento\Catalog\Block\Product\AbstractProduct
 {
     /**
-     * @var \Dotdigitalgroup\Email\Model\Catalog\UrlFinder
+     * @var UrlFinder
      */
     protected $urlFinder;
 
     /**
-     * @var \Dotdigitalgroup\Email\Block\Helper\Font
+     * @var Font
      */
     private $font;
 
@@ -35,17 +38,17 @@ class Recommended extends \Magento\Catalog\Block\Product\AbstractProduct
     /**
      * Recommended constructor.
      *
-     * @param \Magento\Catalog\Block\Product\Context $context
+     * @param Context $context
      * @param Helper\Font $font
-     * @param \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder
+     * @param UrlFinder $urlFinder
      * @param DynamicContent $imageType
      * @param ImageFinder $imageFinder
      * @param array $data
      */
     public function __construct(
-        \Magento\Catalog\Block\Product\Context $context,
-        \Dotdigitalgroup\Email\Block\Helper\Font $font,
-        \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder,
+        Context $context,
+        Font $font,
+        UrlFinder $urlFinder,
         DynamicContent $imageType,
         ImageFinder $imageFinder,
         array $data = []

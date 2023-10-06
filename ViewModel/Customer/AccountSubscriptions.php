@@ -10,6 +10,7 @@ use Magento\Customer\Model\Session;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\View\Element\Block\ArgumentInterface;
 use Magento\Store\Model\StoreManagerInterface;
+use stdClass;
 
 class AccountSubscriptions implements ArgumentInterface
 {
@@ -104,7 +105,8 @@ class AccountSubscriptions implements ArgumentInterface
     /**
      * Get connector contact.
      *
-     * @return object
+     * @return stdClass
+     * @throws LocalizedException
      */
     public function getConnectorContact()
     {

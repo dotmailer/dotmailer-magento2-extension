@@ -11,53 +11,37 @@ class StreamedResponse extends Response
      *
      * @var int
      */
-    protected $contentStreamed = 0;
+    private $contentStreamed = 0;
 
     /**
      * Response as stream
      *
      * @var callable
      */
-    protected $stream;
+    private $stream;
+
+    /**
+     * @var array
+     */
+    private $responseHeaders;
 
     /**
      * @var bool
      */
-    protected $headersSent = false;
+    private $headersSent = false;
 
     /**
-     * The name of the file containing the stream
-     *
-     * Will be empty if stream is not file-based.
-     *
-     * @var string
-     */
-    protected $streamName;
-
-    /**
-     * Array of headers to be applied at the point of SEND
-     *
-     * @var array
-     */
-    protected $headers;
-
-    /**
-     * @var string
-     */
-    protected $version;
-
-    /**
-     * StreamedResponse Contructor.
+     * StreamedResponse Constructor.
      *
      * @param callable $stream
      * @param int $status
-     * @param array $headers
+     * @param array $responseHeaders
      */
-    public function __construct(callable $stream, $status = 200, $headers = [])
+    public function __construct(callable $stream, $status = 200, $responseHeaders = [])
     {
         $this->setStream($stream);
         $this->statusCode = $status;
-        $this->headers = $headers;
+        $this->responseHeaders = $responseHeaders;
     }
 
     /**
@@ -126,7 +110,7 @@ class StreamedResponse extends Response
      */
     public function setHeader($key, $value)
     {
-        $this->headers[$key] = $value;
+        $this->responseHeaders[$key] = $value;
     }
 
     /**
@@ -137,7 +121,7 @@ class StreamedResponse extends Response
      */
     public function getHeader($key)
     {
-        return (array_key_exists($key, $this->headers)) ? $this->headers[$key] : null;
+        return (array_key_exists($key, $this->responseHeaders)) ? $this->responseHeaders[$key] : null;
     }
 
     /**
@@ -157,10 +141,9 @@ class StreamedResponse extends Response
             return $this;
         }
 
-        foreach ($this->headers as $name => $value) {
+        foreach ($this->responseHeaders as $name => $value) {
             $replace = 0 === strcasecmp($name, 'Content-Type');
             header($name.': '.$value, $replace, $this->statusCode); // phpcs:ignore
-
         }
 
         header( // phpcs:ignore

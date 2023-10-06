@@ -10,12 +10,12 @@ abstract class AbstractStatusProvider
     /**
      * @var FlagManager
      */
-    protected $flagManager;
+    private $flagManager;
 
     /**
      * @var Logger
      */
-    protected $logger;
+    private $logger;
 
     /**
      * @var string

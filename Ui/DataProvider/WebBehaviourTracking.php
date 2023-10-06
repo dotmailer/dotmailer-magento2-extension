@@ -13,6 +13,7 @@ use Magento\Catalog\Ui\DataProvider\Product\ProductRenderCollectorInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Store\Model\StoreManagerInterface;
+use Magento\Catalog\Model\Product;
 
 class WebBehaviourTracking implements ProductRenderCollectorInterface
 {
@@ -71,8 +72,11 @@ class WebBehaviourTracking implements ProductRenderCollectorInterface
     }
 
     /**
+     * Collect.
+     *
      * @param ProductInterface $product
      * @param ProductRenderInterface $productRender
+     * @throws NoSuchEntityException
      */
     public function collect(ProductInterface $product, ProductRenderInterface $productRender)
     {
@@ -83,7 +87,6 @@ class WebBehaviourTracking implements ProductRenderCollectorInterface
             return;
         }
 
-        /** @var \Magento\Catalog\Api\Data\ProductRenderExtension $extensionAttributes */
         if (!$extensionAttributes = $productRender->getExtensionAttributes()) {
             $extensionAttributes = $this->productRenderExtensionFactory->create();
         }
@@ -107,6 +110,8 @@ class WebBehaviourTracking implements ProductRenderCollectorInterface
     }
 
     /**
+     * Get product image.
+     *
      * @param ProductInterface $product
      * @return string|null
      */
@@ -125,11 +130,14 @@ class WebBehaviourTracking implements ProductRenderCollectorInterface
     }
 
     /**
+     * Get product categories.
+     *
      * @param ProductInterface $product
      * @return array|null
      */
     private function getProductCategories(ProductInterface $product)
     {
+        /** @var Product $product */
         if (!$categoryIds = $product->getCategoryIds()) {
             return null;
         }
@@ -152,6 +160,8 @@ class WebBehaviourTracking implements ProductRenderCollectorInterface
     }
 
     /**
+     * Get product brand.
+     *
      * @param ProductInterface $product
      * @return string|null
      */
@@ -167,5 +177,7 @@ class WebBehaviourTracking implements ProductRenderCollectorInterface
         } catch (NoSuchEntityException $e) {
             return null;
         }
+
+        return null;
     }
 }

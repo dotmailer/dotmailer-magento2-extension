@@ -11,26 +11,17 @@ trait TestInteractsWithSchemaValidatorTrait
     /**
      * @var SchemaValidatorFactory
      */
-    protected $schemaValidatorFactory;
+    private $schemaValidatorFactory;
 
     /**
      * @var SchemaValidator
      */
-    protected $schemaValidator;
-
-    /**
-     * Returns a mock object for the specified class.
-     *
-     * @psalm-template RealInstanceType of object
-     * @psalm-param class-string<RealInstanceType> $originalClassName
-     * @psalm-return MockObject&RealInstanceType
-     */
-    abstract protected function createMock(string $originalClassName): MockObject;
+    private $schemaValidator;
 
     /**
      * @param array $pattern
      */
-    protected function setUpValidator($pattern = [])
+    private function setUpValidator($pattern = [])
     {
         $this->schemaValidator = $this->createMock(SchemaValidator::class);
         $this->schemaValidator

@@ -19,12 +19,12 @@ class Customdatafields extends AbstractFieldArray
     /**
      * @var Select
      */
-    protected $getAttributeRenderer;
+    private $getAttributeRenderer;
 
     /**
      * @var Select
      */
-    protected $getConditionsRenderer;
+    private $getConditionsRenderer;
 
     /**
      * @var Select

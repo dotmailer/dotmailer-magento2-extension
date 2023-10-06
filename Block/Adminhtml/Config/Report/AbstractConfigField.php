@@ -50,19 +50,7 @@ abstract class AbstractConfigField extends Field
      */
     public function _getElementHtml(AbstractElement $element)
     {
-        $originalData = $element->getOriginalData();
-
-        $buttonLabel = !empty($originalData['button_label'])
-            ? $originalData['button_label']
-            : $this->buttonLabel;
-
-        $url = $this->_urlBuilder->getUrl('dotdigitalgroup_email/addressbook/save');
-        $this->addData([
-            'button_label' => $buttonLabel,
-            'html_id' => $element->getHtmlId(),
-            'ajax_url' => $url,
-        ]);
-
+        $this->addData(['html_id' => $element->getHtmlId()]);
         return $this->_toHtml();
     }
 }

@@ -1,11 +1,10 @@
 <?php
 
-namespace Dotdigitalgroup\Email\Controller\Ajax;
+namespace Dotdigitalgroup\Email\Test\Integration\Controller\Ajax;
 
-use Dotdigitalgroup\Email\Model\Chat\Config;
-use Dotdigitalgroup\Email\Model\Chat\Profile\UpdateChatProfile;
 use Dotdigitalgroup\Email\Test\Integration\MocksApiResponses;
 use Magento\Framework\App\ObjectManager;
+use Magento\Framework\App\Request\Http as HttpRequest;
 use Magento\Quote\Model\Quote;
 use Magento\Quote\Model\ResourceModel\Quote as QuoteResource;
 use Magento\TestFramework\TestCase\AbstractController;
@@ -41,7 +40,6 @@ class EmailcaptureTest extends AbstractController
             ->disableOriginalConstructor()
             ->setMethods(['hasItems', 'getCustomerEmail', 'setCustomerEmail'])
             ->getMock();
-
         $this->quoteResourceMock = $this->createMock(QuoteResource::class);
 
         $objectManager->addSharedInstance($this->quoteResourceMock, QuoteResource::class);
@@ -57,7 +55,7 @@ class EmailcaptureTest extends AbstractController
         $this->quoteMock->expects($this->never())
             ->method('hasItems');
 
-        $this->getRequest()->setParam('email', 'chaz@kangaroo.com');
+        $this->getRequest()->setParams(['email' => 'chaz@kangaroo.com'])->setMethod(HttpRequest::METHOD_POST);
         $this->dispatch('/connector/ajax/emailcapture');
     }
 
@@ -65,7 +63,7 @@ class EmailcaptureTest extends AbstractController
     {
         $this->setUpForAvailableQuote();
 
-        $this->getRequest()->setParam('email', 'chaz@kangaroo.com');
+        $this->getRequest()->setParams(['email' => 'chaz@kangaroo.com'])->setMethod(HttpRequest::METHOD_POST);
         $this->dispatch('/connector/ajax/emailcapture');
     }
 
@@ -78,7 +76,7 @@ class EmailcaptureTest extends AbstractController
         $this->quoteMock->expects($this->never())
             ->method('hasItems');
 
-        $this->getRequest()->setParam('email', 'datatifileds');
+        $this->getRequest()->setParams(['email' => 'datatifileds'])->setMethod(HttpRequest::METHOD_POST);
         $this->dispatch('/connector/ajax/emailcapture');
     }
 
@@ -89,7 +87,7 @@ class EmailcaptureTest extends AbstractController
         $this->quoteMock->expects($this->never())
             ->method('setCustomerEmail');
 
-        $this->getRequest()->setParam('email', 'chaz@kangaroo.com');
+        $this->getRequest()->setParams(['email' => 'chaz@kangaroo.com'])->setMethod(HttpRequest::METHOD_POST);
         $this->dispatch('/connector/ajax/emailcapture');
     }
 

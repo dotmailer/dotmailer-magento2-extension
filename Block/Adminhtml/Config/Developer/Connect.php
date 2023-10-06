@@ -3,6 +3,8 @@
 namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer;
 
 use Dotdigitalgroup\Email\Block\Adminhtml\Config\AbstractButton;
+use Dotdigitalgroup\Email\Helper\Config;
+use Magento\User\Model\User;
 
 class Connect extends AbstractButton
 {
@@ -125,8 +127,9 @@ class Connect extends AbstractButton
 
         //callback uri if not set custom
         $redirectUri = $this->helper->getRedirectUri();
-        $redirectUri .= 'connector/email/callback';
+        $redirectUri .= Config::ACCOUNT_CALLBACK_ROUTE;
 
+        /** @var User $adminUser */
         $adminUser = $this->auth->getUser();
 
         //query params
@@ -135,14 +138,13 @@ class Connect extends AbstractButton
             'scope' => 'Account',
             'state' => $adminUser->getId(),
             'response_type' => 'code',
+            'client_id=' => $clientId
         ];
 
         $authorizeBaseUrl = $this->configHelper
             ->getAuthorizeLink();
-        $url = $authorizeBaseUrl . http_build_query($params)
-            . '&client_id=' . $this->escapeUrl($clientId);
 
-        return $url;
+        return $authorizeBaseUrl . http_build_query($params);
     }
 
     /**
@@ -156,6 +158,8 @@ class Connect extends AbstractButton
             return $this->refreshToken;
         }
 
-        return $this->refreshToken = $this->auth->getUser()->getRefreshToken();
+        /** @var User $user */
+        $user = $this->auth->getUser();
+        return $this->refreshToken = $user->getRefreshToken();
     }
 }

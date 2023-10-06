@@ -4,6 +4,10 @@ namespace Dotdigitalgroup\Email\Block\Recommended;
 
 use Dotdigitalgroup\Email\Model\Product\ImageFinder;
 use Dotdigitalgroup\Email\Model\Product\ImageType\Context\DynamicContent;
+use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Store\Model\Store;
+use Magento\Wishlist\Model\ResourceModel\Wishlist\Collection;
+use Magento\Wishlist\Model\Wishlist;
 
 /**
  * Wishlist products block
@@ -98,6 +102,7 @@ class Wishlistproducts extends \Dotdigitalgroup\Email\Block\Recommended
     public function _getWishlistItems()
     {
         $wishlist = $this->_getWishlist();
+        /** @var Wishlist $wishlist */
         if ($wishlist && $wishlist->getItemCollection()->getSize()) {
             return $wishlist->getItemCollection();
         } else {
@@ -108,7 +113,7 @@ class Wishlistproducts extends \Dotdigitalgroup\Email\Block\Recommended
     /**
      * Get wishlist for customer.
      *
-     * @return array|bool
+     * @return array|Wishlist
      */
     public function _getWishlist()
     {
@@ -187,6 +192,8 @@ class Wishlistproducts extends \Dotdigitalgroup\Email\Block\Recommended
     }
 
     /**
+     * Get products to display.
+     *
      * @param array $items
      * @param string $mode
      * @param int $productsToDisplayCounter
@@ -236,7 +243,7 @@ class Wishlistproducts extends \Dotdigitalgroup\Email\Block\Recommended
      * @param array $productsToDisplay
      * @param \Magento\Catalog\Model\Product $product
      *
-     * @return null
+     * @return void
      */
     private function addRecommendedProducts(
         &$productsToDisplayCounter,
@@ -342,12 +349,15 @@ class Wishlistproducts extends \Dotdigitalgroup\Email\Block\Recommended
 
     /**
      * AC link to dynamic content.
+     *
      * @param null|string|bool|int|\Magento\Store\Api\Data\StoreInterface $store
      *
      * @return string|boolean
+     * @throws NoSuchEntityException
      */
     public function getTextForUrl($store)
     {
+        /** @var Store $store */
         $store = $this->_storeManager->getStore($store);
 
         return $store->getConfig(

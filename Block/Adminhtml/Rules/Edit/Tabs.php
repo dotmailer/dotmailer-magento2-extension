@@ -10,9 +10,9 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Rules\Edit;
 class Tabs extends \Magento\Backend\Block\Widget\Tabs
 {
     /**
-     * Constructor.
+     * Tabs constructor.
      *
-     * @return null
+     * @return void
      */
     public function _construct()
     {

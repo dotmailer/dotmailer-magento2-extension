@@ -5,6 +5,7 @@ namespace Dotdigitalgroup\Email\Controller\Email;
 use Dotdigitalgroup\Email\Helper\Config;
 use Dotdigitalgroup\Email\Model\Integration\IntegrationSetup;
 use Dotdigitalgroup\Email\Test\Integration\MocksApiResponses;
+use Magento\Framework\App\Request\Http as HttpRequest;
 use Magento\TestFramework\TestCase\AbstractController;
 
 class AccountcallbackTest extends AbstractController
@@ -40,6 +41,7 @@ class AccountcallbackTest extends AbstractController
      */
     public function testExecuteNoCode()
     {
+        $this->getRequest()->setMethod(HttpRequest::METHOD_POST);
         $this->dispatch(Config::MAGENTO_ROUTE);
 
         $response = $this->getResponse();
@@ -51,9 +53,11 @@ class AccountcallbackTest extends AbstractController
      */
     public function testExecuteWrongCode()
     {
-        $this->getRequest()->setParams([
-            'code' => 'wingman',
-        ]);
+        $this->getRequest()
+            ->setParams([
+                'code' => 'wingman',
+            ])
+            ->setMethod(HttpRequest::METHOD_POST);
         $this->dispatch(Config::MAGENTO_ROUTE);
 
         $response = $this->getResponse();
@@ -97,9 +101,11 @@ class AccountcallbackTest extends AbstractController
      */
     private function sendValidRequest(array $additionalParams = [])
     {
-        $this->getRequest()->setParams($additionalParams + self::TEST_CREDS + [
-            'code' => $this->trialSetup->generateTemporaryPasscode(),
-        ]);
+        $this->getRequest()
+            ->setParams($additionalParams + self::TEST_CREDS + [
+                'code' => $this->trialSetup->generateTemporaryPasscode(),
+            ])
+            ->setMethod(HttpRequest::METHOD_POST);
 
         $this->dispatch(Config::MAGENTO_ROUTE);
         return $this->getResponse();

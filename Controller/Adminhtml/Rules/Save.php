@@ -4,8 +4,12 @@ namespace Dotdigitalgroup\Email\Controller\Adminhtml\Rules;
 
 use Dotdigitalgroup\Email\Model\ExclusionRule\RuleValidator;
 use Dotdigitalgroup\Email\Model\Rules;
+use Dotdigitalgroup\Email\Model\RulesFactory;
 use Magento\Backend\App\Action;
+use Magento\Backend\App\Action\Context;
 use Magento\Framework\App\Action\HttpPostActionInterface;
+use Magento\Framework\App\RequestInterface;
+use Magento\Store\Model\StoreManagerInterface;
 
 class Save extends Action implements HttpPostActionInterface
 {
@@ -37,12 +41,17 @@ class Save extends Action implements HttpPostActionInterface
     private $ruleValidator;
 
     /**
+     * @var RequestInterface
+     */
+    private $request;
+
+    /**
      * Save constructor.
      *
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Rules $rulesResource
-     * @param \Magento\Backend\App\Action\Context $context
-     * @param \Dotdigitalgroup\Email\Model\RulesFactory $rulesFactory
-     * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
+     * @param Context $context
+     * @param RulesFactory $rulesFactory
+     * @param StoreManagerInterface $storeManagerInterface
      * @param RuleValidator $ruleValidator
      */
     public function __construct(
@@ -52,11 +61,13 @@ class Save extends Action implements HttpPostActionInterface
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
         RuleValidator $ruleValidator
     ) {
-        parent::__construct($context);
         $this->rulesResource = $rulesResource;
         $this->ruleFactory  = $rulesFactory;
         $this->storeManager = $storeManagerInterface;
         $this->ruleValidator = $ruleValidator;
+        $this->request = $context->getRequest();
+
+        parent::__construct($context);
     }
 
     /**
@@ -66,9 +77,9 @@ class Save extends Action implements HttpPostActionInterface
      */
     public function execute()
     {
-        if ($this->getRequest()->getParams()) {
-            $data = $this->getRequest()->getParams();
-            $id = $this->getRequest()->getParam('id');
+        if ($this->request->getParams()) {
+            $data = $this->request->getParams();
+            $id = $this->request->getParam('id');
             try {
                 $ruleModel = $this->ruleFactory->create();
 
@@ -116,7 +127,7 @@ class Save extends Action implements HttpPostActionInterface
                     __('The rule has been saved.')
                 );
                 $this->_getSession()->setPageData(false);
-                if ($this->getRequest()->getParam('back')) {
+                if ($this->request->getParam('back')) {
                     return $this->_redirect(
                         '*/*/edit',
                         ['id' => $ruleModel->getId()]

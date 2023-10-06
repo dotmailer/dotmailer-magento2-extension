@@ -12,7 +12,7 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     /**
      * Initialize resource collection.
      *
-     * @return null
+     * @return void
      */
     public function _construct()
     {
@@ -23,6 +23,8 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     }
 
     /**
+     * Load by store id.
+     *
      * @param int $storeId
      * @return $this
      */

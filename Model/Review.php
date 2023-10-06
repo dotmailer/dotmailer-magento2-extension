@@ -3,11 +3,14 @@
 namespace Dotdigitalgroup\Email\Model;
 
 use Dotdigitalgroup\Email\Model\ResourceModel\Review as ReviewResource;
+use Magento\Framework\Data\Collection\AbstractDb;
+use Magento\Framework\Model\Context;
+use Magento\Framework\Model\ResourceModel\AbstractResource;
+use Magento\Framework\Registry;
+use Magento\Framework\Stdlib\DateTime;
 
 class Review extends \Magento\Framework\Model\AbstractModel
 {
-    const EMAIL_REVIEW_IMPORTED = 1;
-
     /**
      * @var \Magento\Framework\Stdlib\DateTime
      */
@@ -21,11 +24,12 @@ class Review extends \Magento\Framework\Model\AbstractModel
     /**
      * Review constructor.
      *
-     * @param \Magento\Framework\Model\Context $context
-     * @param \Magento\Framework\Registry $registry
-     * @param \Magento\Framework\Stdlib\DateTime $dateTime
-     * @param \Magento\Framework\Model\ResourceModel\AbstractResource|null $resource
-     * @param \Magento\Framework\Data\Collection\AbstractDb|null $resourceCollection
+     * @param Context $context
+     * @param Registry $registry
+     * @param DateTime $dateTime
+     * @param ReviewResource $reviewResource
+     * @param AbstractResource|null $resource
+     * @param AbstractDb|null $resourceCollection
      * @param array $data
      */
     public function __construct(
@@ -51,7 +55,7 @@ class Review extends \Magento\Framework\Model\AbstractModel
     /**
      * Constructor.
      *
-     * @return null
+     * @return void
      */
     public function _construct()
     {
@@ -76,6 +80,8 @@ class Review extends \Magento\Framework\Model\AbstractModel
     }
 
     /**
+     * Reset.
+     *
      * @param string|null $from
      * @param string|null $to
      * @return int

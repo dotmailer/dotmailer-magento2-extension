@@ -5,23 +5,17 @@ namespace Dotdigitalgroup\Email\Controller\Email;
 use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Model\Integration\IntegrationSetup;
 use Dotdigitalgroup\Email\Model\Integration\IntegrationSetupFactory;
-use Magento\Framework\App\Action\Action;
+use Magento\Framework\App\Action\HttpPostActionInterface;
 use Magento\Framework\App\Config\ReinitableConfigInterface;
 use Magento\Framework\App\Action\Context;
-use Magento\Framework\App\ResponseInterface;
+use Magento\Framework\App\RequestInterface;
+use Magento\Framework\Controller\ResultFactory;
 use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\MessageQueue\PublisherInterface;
-use Magento\Framework\Module\Manager;
-use Magento\Framework\Stdlib\DateTime\Timezone;
 
-class Accountcallback extends Action
+class Accountcallback implements HttpPostActionInterface
 {
-    /**
-     * @var Timezone
-     */
-    private $timezone;
-
     /**
      * @var IntegrationSetup
      */
@@ -33,14 +27,19 @@ class Accountcallback extends Action
     private $helper;
 
     /**
-     * @var Manager
-     */
-    private $moduleManager;
-
-    /**
      * @var ReinitableConfigInterface
      */
     private $reinitableConfig;
+
+    /**
+     * @var RequestInterface
+     */
+    private $request;
+
+    /**
+     * @var ResultFactory
+     */
+    private $resultFactory;
 
     /**
      * @var PublisherInterface
@@ -51,42 +50,37 @@ class Accountcallback extends Action
      * Accountcallback constructor.
      *
      * @param Context $context
-     * @param Timezone $timezone
      * @param IntegrationSetupFactory $integrationSetupFactory
      * @param Data $helper
-     * @param Manager $moduleManager
      * @param ReinitableConfigInterface $reinitableConfig
+     * @param ResultFactory $resultFactory
      * @param PublisherInterface $publisher
      */
     public function __construct(
         Context $context,
-        Timezone $timezone,
         IntegrationSetupFactory $integrationSetupFactory,
         Data $helper,
-        Manager $moduleManager,
         ReinitableConfigInterface $reinitableConfig,
+        ResultFactory $resultFactory,
         PublisherInterface $publisher
     ) {
-
-        $this->timezone = $timezone;
-
         $this->integrationSetup = $integrationSetupFactory->create();
         $this->helper = $helper;
-        $this->moduleManager = $moduleManager;
         $this->reinitableConfig = $reinitableConfig;
+        $this->request = $context->getRequest();
+        $this->resultFactory = $resultFactory;
         $this->publisher = $publisher;
-        parent::__construct($context);
     }
 
     /**
      * Process the callback
      *
-     * @return ResponseInterface|ResultInterface
+     * @return ResultInterface
      * @throws LocalizedException
      */
     public function execute()
     {
-        $params = $this->getRequest()->getParams();
+        $params = $this->request->getParams();
         $website = $this->helper->getWebsiteForSelectedScopeInAdmin();
 
         $this->helper->debug('Account callback request', $params);
@@ -126,20 +120,18 @@ class Accountcallback extends Action
         $this->helper->log('----PUBLISHING INTEGRATION INSIGHTS---');
         $this->publisher->publish('ddg.sync.integration', '');
 
-        return $this->getResponse()
-            ->setHttpResponseCode(201)
-            ->sendHeaders();
+        return $this->resultFactory->create(ResultFactory::TYPE_RAW)
+            ->setHttpResponseCode(201);
     }
 
     /**
      * Send error response
      *
-     * @return ResponseInterface
+     * @return ResultInterface
      */
     private function sendErrorResponse()
     {
-        return $this->getResponse()
-            ->setHttpResponseCode(401)
-            ->sendHeaders();
+        return $this->resultFactory->create(ResultFactory::TYPE_RAW)
+            ->setHttpResponseCode(401);
     }
 }

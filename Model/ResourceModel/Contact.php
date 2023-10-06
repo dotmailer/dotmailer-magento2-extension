@@ -2,43 +2,24 @@
 
 namespace Dotdigitalgroup\Email\Model\ResourceModel;
 
-use Dotdigitalgroup\Email\Helper\Config;
 use Dotdigitalgroup\Email\Setup\SchemaInterface as Schema;
+use Magento\Cron\Model\ResourceModel\Schedule\CollectionFactory as ScheduleCollectionFactory;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Model\ResourceModel\Db\Context;
 use Magento\Newsletter\Model\Subscriber;
 use Magento\Framework\DB\Sql\ExpressionFactory;
-use Magento\Store\Model\Website;
 
 class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
-    /**
-     * @var \Magento\Newsletter\Model\ResourceModel\Subscriber\CollectionFactory
-     */
-    private $subscribersCollection;
-
-    /**
-     * @var \Magento\Customer\Model\ResourceModel\Customer\CollectionFactory
-     */
-    private $customerCollection;
-
-    /**
-     * @var \Magento\Cron\Model\ScheduleFactory
-     */
-    private $scheduleFactory;
-
     /**
      * @var ExpressionFactory
      */
     private $expressionFactory;
 
     /**
-     * @var \Magento\Sales\Model\ResourceModel\Order\CollectionFactory
+     * @var ScheduleCollectionFactory
      */
-    private $orderCollectionFactory;
-
-    /**
-     * @var Config
-     */
-    private $config;
+    private $scheduleCollectionFactory;
 
     /**
      * Initialize resource.
@@ -53,31 +34,19 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Contact constructor.
      *
-     * @param \Magento\Framework\Model\ResourceModel\Db\Context $context
-     * @param \Magento\Newsletter\Model\ResourceModel\Subscriber\CollectionFactory $subscriberCollection
-     * @param \Magento\Customer\Model\ResourceModel\Customer\CollectionFactory $customerCollectionFactory
-     * @param \Magento\Cron\Model\ScheduleFactory $schedule
+     * @param Context $context
      * @param ExpressionFactory $expressionFactory
-     * @param \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollectionFactory
-     * @param Config $config
+     * @param ScheduleCollectionFactory $scheduleCollectionFactory
      * @param string|null $connectionName
      */
     public function __construct(
         \Magento\Framework\Model\ResourceModel\Db\Context $context,
-        \Magento\Newsletter\Model\ResourceModel\Subscriber\CollectionFactory $subscriberCollection,
-        \Magento\Customer\Model\ResourceModel\Customer\CollectionFactory $customerCollectionFactory,
-        \Magento\Cron\Model\ScheduleFactory $schedule,
         ExpressionFactory $expressionFactory,
-        \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollectionFactory,
-        Config $config,
+        ScheduleCollectionFactory $scheduleCollectionFactory,
         string $connectionName = null
     ) {
-        $this->config                   = $config;
         $this->expressionFactory        = $expressionFactory;
-        $this->scheduleFactory         = $schedule;
-        $this->customerCollection       = $customerCollectionFactory;
-        $this->subscribersCollection    = $subscriberCollection;
-        $this->orderCollectionFactory   = $orderCollectionFactory;
+        $this->scheduleCollectionFactory = $scheduleCollectionFactory;
         parent::__construct($context, $connectionName);
     }
 
@@ -89,7 +58,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     public function deleteContactIds()
     {
         $conn = $this->getConnection();
-        $num = $conn->update(
+        return $conn->update(
             $this->getTable(Schema::EMAIL_CONTACT_TABLE),
             ['contact_id' => $this->expressionFactory->create(["expression" => 'null'])],
             $conn->quoteInto(
@@ -97,8 +66,6 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
                 $this->expressionFactory->create(["expression" => 'not null'])
             )
         );
-
-        return $num;
     }
 
     /**
@@ -122,13 +89,11 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             $where = ['email_imported = ?' => 1];
         }
 
-        $num = $conn->update(
+        return $conn->update(
             $this->getTable(Schema::EMAIL_CONTACT_TABLE),
             ['email_imported' => 0],
             $where
         );
-
-        return $num;
     }
 
     /**
@@ -239,6 +204,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      * @param array $websiteIds
      * @param array $storeIds
      * @return int
+     * @throws LocalizedException
      */
     public function unsubscribeByWebsiteAndStore(array $emails, array $websiteIds, array $storeIds = [])
     {
@@ -306,6 +272,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      *
      * @param array $guestEmails
      * @param string $websiteId
+     * @throws LocalizedException
      */
     public function setContactsAsGuest($guestEmails, $websiteId)
     {
@@ -327,6 +294,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      * @param array $suppressedContactIds
      *
      * @return int
+     * @throws LocalizedException
      */
     public function setContactSuppressedForContactIds($suppressedContactIds)
     {
@@ -349,6 +317,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      *
      * @param array $emailContactIds
      * @return int
+     * @throws LocalizedException
      */
     public function setSubscribersImportedByIds($emailContactIds)
     {
@@ -371,6 +340,8 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      *
      * @param array $ids
      * @param string|int $websiteId
+     *
+     * @return void
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function setContactsImportedByCustomerIds($ids, $websiteId = 0)
@@ -389,6 +360,8 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      * Set imported by ids.
      *
      * @param array $ids
+     *
+     * @return void
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function setContactsImportedByIds($ids)
@@ -411,10 +384,10 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      */
     public function getDateLastCronRun($cronJob)
     {
-        $collection = $this->scheduleFactory->create()
-            ->getCollection()
+        $collection = $this->scheduleCollectionFactory->create()
             ->addFieldToFilter('status', \Magento\Cron\Model\Schedule::STATUS_SUCCESS)
             ->addFieldToFilter('job_code', $cronJob);
+
         //limit and order the results
         $collection->getSelect()
             ->limit(1)
@@ -423,8 +396,6 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         if ($collection->getSize() == 0) {
             return false;
         }
-        $executedAt = $collection->getFirstItem()->getExecutedAt();
-
-        return $executedAt;
+        return $collection->getFirstItem()->getExecutedAt();
     }
 }

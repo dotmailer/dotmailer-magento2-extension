@@ -4,7 +4,8 @@
           xsi:noNamespaceSchemaLocation="urn:magento:mftf:Page/etc/SectionObject.xsd">
     <section name="AdminDotdigitalConsentSection">
         <element name="consentFieldsetToggle" type="button" selector="#connector_consent_email-head"/>
-        <element name="consentFieldset" type="button" selector="#connector_consent_email"/>
+        <element name="consentFieldset" type="block" selector="#connector_consent_email"/>
+        <element name="consentEmailEnabled" type="select" selector="#connector_consent_email_enabled" />
         <element name="customerConsentText" type="textarea" selector="#connector_consent_email_text_newsletter_registration_checkout" />
     </section>
 </sections>

@@ -2,6 +2,8 @@
 
 namespace Dotdigitalgroup\Email\Model\Sales;
 
+use Magento\Store\Model\Website;
+
 /**
  * Transactional data for orders to sync.
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
@@ -14,7 +16,7 @@ class Order
     private $campaignResource;
 
     /**
-     * @var string
+     * @var \Magento\Framework\Stdlib\DateTime
      */
     private $dateTime;
 
@@ -88,7 +90,7 @@ class Order
     /**
      * Create review campaigns
      *
-     * @return null
+     * @return void
      */
     public function createReviewCampaigns()
     {
@@ -105,7 +107,7 @@ class Order
      * @param \Magento\Sales\Model\ResourceModel\Order\Collection $collection
      * @param int $websiteId
      *
-     * @return null
+     * @return void
      */
     public function registerCampaign($collection, $websiteId)
     {
@@ -143,12 +145,14 @@ class Order
     /**
      * Search for orders to review per website.
      *
-     * @return null
+     * @return void
+     * @throws \Exception
      */
     public function searchOrdersForReview()
     {
         $websites = $this->helper->getwebsites(true);
 
+        /** @var Website $website */
         foreach ($websites as $website) {
             $apiEnabled = $this->helper->isEnabled($website);
             if ($apiEnabled

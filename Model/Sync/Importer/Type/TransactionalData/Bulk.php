@@ -2,10 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Model\Sync\Importer\Type\TransactionalData;
 
-use Dotdigitalgroup\Email\Helper\Data;
-use Dotdigitalgroup\Email\Helper\File;
 use Dotdigitalgroup\Email\Logger\Logger;
-use Dotdigitalgroup\Email\Model\ResourceModel\Importer;
 use Dotdigitalgroup\Email\Model\Sync\Importer\Type\AbstractItemSyncer;
 use Dotdigitalgroup\Email\Model\Sync\Importer\Type\BulkItemPostProcessorFactory;
 use Magento\Framework\Serialize\SerializerInterface;
@@ -21,27 +18,27 @@ class Bulk extends AbstractItemSyncer
     protected $postProcessor;
 
     /**
+     * @var SerializerInterface
+     */
+    private $serializer;
+
+    /**
      * Bulk constructor.
      *
-     * @param Data $helper
-     * @param File $fileHelper
      * @param SerializerInterface $serializer
-     * @param Importer $importerResource
      * @param BulkItemPostProcessorFactory $postProcessor
      * @param Logger $logger
      * @param array $data
      */
     public function __construct(
-        Data $helper,
-        File $fileHelper,
         SerializerInterface $serializer,
-        Importer $importerResource,
         BulkItemPostProcessorFactory $postProcessor,
         Logger $logger,
         array $data = []
     ) {
         $this->postProcessor = $postProcessor;
-        parent::__construct($helper, $fileHelper, $serializer, $importerResource, $logger, $data);
+        $this->serializer = $serializer;
+        parent::__construct($logger, $data);
     }
 
     /**

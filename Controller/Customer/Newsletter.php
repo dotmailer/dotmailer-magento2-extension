@@ -11,10 +11,13 @@ use Dotdigitalgroup\Email\Model\ResourceModel\Contact as ContactResource;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory as ContactCollectionFactory;
 use Magento\Customer\Api\CustomerRepositoryInterface as CustomerRepository;
 use Magento\Customer\Model\Session;
-use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
-use Magento\Framework\App\ResponseInterface;
+use Magento\Framework\App\Action\HttpPostActionInterface;
+use Magento\Framework\App\RequestInterface;
+use Magento\Framework\Controller\Result\Redirect;
+use Magento\Framework\Controller\Result\RedirectFactory;
 use Magento\Framework\Data\Form\FormKey\Validator;
+use Magento\Framework\Message\ManagerInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Newsletter\Model\Subscriber;
@@ -22,7 +25,7 @@ use Magento\Newsletter\Model\SubscriberFactory;
 use Magento\Store\Model\StoreManagerInterface;
 use Dotdigitalgroup\Email\Model\Contact\ContactResponseHandler;
 
-class Newsletter extends Action
+class Newsletter implements HttpPostActionInterface
 {
     /**
      * @var Data
@@ -50,19 +53,34 @@ class Newsletter extends Action
     private $customerSession;
 
     /**
+     * @var RequestInterface
+     */
+    private $request;
+
+    /**
+     * @var RedirectFactory
+     */
+    protected $resultRedirectFactory;
+
+    /**
      * @var Validator
      */
     private $formKeyValidator;
 
     /**
+     * @var ManagerInterface
+     */
+    private $messageManager;
+
+    /**
      * @var CustomerRepository
      */
-    protected $customerRepository;
+    private $customerRepository;
 
     /**
      * @var SubscriberFactory
      */
-    protected $subscriberFactory;
+    private $subscriberFactory;
 
     /**
      * @var StoreManagerInterface
@@ -86,7 +104,9 @@ class Newsletter extends Action
      * @param Configuration $accountConfig
      * @param Session $session
      * @param Context $context
+     * @param RedirectFactory $resultRedirectFactory
      * @param Validator $formKeyValidator
+     * @param ManagerInterface $messageManager
      * @param CustomerRepository $customerRepository
      * @param SubscriberFactory $subscriberFactory
      * @param StoreManagerInterface $storeManager
@@ -100,7 +120,9 @@ class Newsletter extends Action
         Configuration $accountConfig,
         Session $session,
         Context $context,
+        RedirectFactory $resultRedirectFactory,
         Validator $formKeyValidator,
+        ManagerInterface $messageManager,
         CustomerRepository $customerRepository,
         SubscriberFactory $subscriberFactory,
         StoreManagerInterface $storeManager,
@@ -112,26 +134,29 @@ class Newsletter extends Action
         $this->contactResource = $contactResource;
         $this->accountConfig = $accountConfig;
         $this->customerSession = $session;
+        $this->request = $context->getRequest();
+        $this->resultRedirectFactory = $resultRedirectFactory;
         $this->formKeyValidator = $formKeyValidator;
+        $this->messageManager = $messageManager;
         $this->customerRepository = $customerRepository;
         $this->subscriberFactory = $subscriberFactory;
         $this->storeManager = $storeManager;
         $this->dateField = $dateField;
         $this->contactResponseHandler = $contactResponseHandler;
-        parent::__construct($context);
     }
 
     /**
      * Execute.
      *
-     * @return ResponseInterface
+     * @return Redirect
      * @throws LocalizedException
      * @throws NoSuchEntityException
      */
     public function execute()
     {
-        if (! $this->formKeyValidator->validate($this->getRequest())) {
-            return $this->_redirect('customer/account/');
+        if (! $this->formKeyValidator->validate($this->request)) {
+            return $this->resultRedirectFactory->create()
+                ->setPath('customer/account/');
         }
 
         $this->processGeneralSubscription();
@@ -180,10 +205,13 @@ class Newsletter extends Action
                 );
             }
         }
-        return $this->_redirect('connector/customer/index/');
+        return $this->resultRedirectFactory->create()
+            ->setPath('connector/customer/index/');
     }
 
     /**
+     * Load or fetch contact id.
+     *
      * @param string $customerEmail
      * @param int $websiteId
      * @param Client $client
@@ -247,7 +275,7 @@ class Newsletter extends Action
         }
 
         $success = true;
-        $additionalSubscriptions = $this->getRequest()->getParam('additional_subscriptions', []);
+        $additionalSubscriptions = $this->request->getParam('additional_subscriptions', []);
 
         foreach ($additionalFromConfig as $bookId) {
             if (in_array($bookId, $additionalSubscriptions)) {
@@ -284,7 +312,7 @@ class Newsletter extends Action
      */
     private function processContactDataFields($customerEmail, $client, $websiteId)
     {
-        $paramDataFields = $this->getRequest()->getParam('data_fields', []);
+        $paramDataFields = $this->request->getParam('data_fields', []);
 
         if (!$this->accountConfig->canShowDataFields($websiteId) ||
             empty($paramDataFields)) {
@@ -361,7 +389,7 @@ class Newsletter extends Action
      */
     private function processContactPreferences(Client $client, $contactId): bool
     {
-        $paramPreferences = $this->getRequest()->getParam('preferences', []);
+        $paramPreferences = $this->request->getParam('preferences', []);
         $preferencesFromSession = $this->customerSession->getDmContactPreferences();
 
         if (empty($paramPreferences) || empty($preferencesFromSession)) {
@@ -501,7 +529,7 @@ class Newsletter extends Action
                 $customer->setStoreId($storeId);
 
                 $isSubscribedState = $this->getIsSubscribedState($customerId);
-                $isSubscribedParam = (bool) $this->getRequest()->getParam('is_subscribed', false);
+                $isSubscribedParam = (bool) $this->request->getParam('is_subscribed', false);
 
                 if ($isSubscribedParam !== $isSubscribedState) {
                     $this->customerRepository->save($customer);

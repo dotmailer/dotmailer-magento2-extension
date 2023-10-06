@@ -5,10 +5,10 @@ namespace Dotdigitalgroup\Email\Model\Apiconnector;
 use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Helper\File;
 use Dotdigitalgroup\Email\Logger\Logger;
-use Dotdigitalgroup\Email\Model\Apiconnector\Account;
-use Dotdigitalgroup\Email\Model\Apiconnector\Rest;
+use Exception;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Filesystem\DriverInterface;
+use stdClass;
 
 /**
  * Dotdigital REST V2 api client.
@@ -60,7 +60,7 @@ class Client extends Rest implements ClientInterface
     /**
      * @var Logger
      */
-    protected $logger;
+    private $logger;
 
     /**
      * @var Account
@@ -151,7 +151,7 @@ class Client extends Rest implements ClientInterface
      * @param string $id
      *
      * @return null
-     * @throws \Exception
+     * @throws Exception
      */
     public function getContactById($id)
     {
@@ -308,7 +308,7 @@ class Client extends Rest implements ClientInterface
      * Create abandoned cart in dotdigital.
      *
      * @param array $content
-     * @return array|\stdClass|null
+     * @return array|stdClass|null
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function postAbandonedCartCartInsight($content)
@@ -408,7 +408,7 @@ class Client extends Rest implements ClientInterface
      *
      * @param int $skip
      * @param int $select
-     * @return array|\stdClass|null
+     * @return array|stdClass|null
      * @throws LocalizedException
      */
     public function getAddressBooks(int $skip = 0, int $select = 1000)
@@ -437,8 +437,8 @@ class Client extends Rest implements ClientInterface
      *
      * @param int $id
      *
-     * @return null
-     * @throws \Exception
+     * @return stdClass
+     * @throws Exception
      */
     public function getAddressBookById($id)
     {
@@ -463,8 +463,8 @@ class Client extends Rest implements ClientInterface
      * @param string $name
      * @param string $visibility
      *
-     * @return null|\stdClass
-     * @throws \Exception
+     * @return null|stdClass
+     * @throws Exception
      */
     public function postAddressBooks($name, $visibility = 'Public')
     {
@@ -493,7 +493,7 @@ class Client extends Rest implements ClientInterface
      * @param int $select   Number of campaigns to select
      * @return mixed
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function getCampaigns($skip = 0, $select = 1000)
     {
@@ -673,8 +673,8 @@ class Client extends Rest implements ClientInterface
      *
      * @param int $contactId
      *
-     * @return void|array|null|\stdClass
-     * @throws \Exception
+     * @return void|array|null|stdClass
+     * @throws Exception
      */
     public function deleteContact($contactId)
     {
@@ -699,9 +699,9 @@ class Client extends Rest implements ClientInterface
      * @param string $email
      * @param array $dataFields
      *
-     * @return \stdClass
+     * @return stdClass
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function updateContactDatafieldsByEmail($email, $dataFields)
     {
@@ -772,8 +772,8 @@ class Client extends Rest implements ClientInterface
      *
      * @param string $email
      *
-     * @return \stdClass
-     * @throws \Exception
+     * @return stdClass
+     * @throws Exception
      */
     public function postContacts($email)
     {
@@ -884,7 +884,7 @@ class Client extends Rest implements ClientInterface
      * @param string $collectionName
      *
      * @return null
-     * @throws \Exception
+     * @throws Exception
      */
     public function postContactsTransactionalDataImport(
         $transactionalData,
@@ -926,7 +926,7 @@ class Client extends Rest implements ClientInterface
      * @param string $collectionName
      *
      * @return object
-     * @throws \Exception
+     * @throws Exception
      */
     public function postContactsTransactionalData(
         $data,
@@ -973,8 +973,8 @@ class Client extends Rest implements ClientInterface
      * @param array $data
      * @param string $collectionName
      *
-     * @return null
-     * @throws \Exception
+     * @return stdClass
+     * @throws Exception
      */
     public function postAccountTransactionalData(
         $data,
@@ -1021,8 +1021,8 @@ class Client extends Rest implements ClientInterface
      * @param string $name
      * @param int $key
      *
-     * @return null
-     * @throws \Exception
+     * @return stdClass
+     * @throws Exception
      */
     public function getContactsTransactionalDataByKey($name, $key)
     {
@@ -1040,8 +1040,8 @@ class Client extends Rest implements ClientInterface
      * @param string $email
      * @param string $collectionName
      *
-     * @return void|array|null|\stdClass
-     * @throws \Exception
+     * @return void|array|null|stdClass
+     * @throws Exception
      */
     public function deleteContactTransactionalData(
         $email,
@@ -1067,7 +1067,7 @@ class Client extends Rest implements ClientInterface
      * @param int $websiteId
      *
      * @return object
-     * @throws \Exception
+     * @throws Exception
      */
     public function getAccountInfo($websiteId = 0)
     {
@@ -1102,7 +1102,7 @@ class Client extends Rest implements ClientInterface
      *
      * @return object
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function postContactsResubscribe($apiContact)
     {
@@ -1130,7 +1130,7 @@ class Client extends Rest implements ClientInterface
      *
      * @return object
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function getCustomFromAddresses()
     {
@@ -1153,7 +1153,7 @@ class Client extends Rest implements ClientInterface
      * @param array $data
      *
      * @return null
-     * @throws \Exception
+     * @throws Exception
      */
     public function postCampaign($data)
     {
@@ -1181,7 +1181,7 @@ class Client extends Rest implements ClientInterface
      *
      * @param int $skip
      * @param int $select
-     * @return \stdClass
+     * @return stdClass
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getPrograms($skip = 0, $select = 1000)
@@ -1212,7 +1212,7 @@ class Client extends Rest implements ClientInterface
      * @param array $data
      *
      * @return null
-     * @throws \Exception
+     * @throws Exception
      */
     public function postProgramsEnrolments($data)
     {
@@ -1238,8 +1238,8 @@ class Client extends Rest implements ClientInterface
      *
      * @param int $id
      *
-     * @return null
-     * @throws \Exception
+     * @return stdClass
+     * @throws Exception
      */
     public function getProgramById($id)
     {
@@ -1263,7 +1263,7 @@ class Client extends Rest implements ClientInterface
      * @param int $campaignId
      *
      * @return null
-     * @throws \Exception
+     * @throws Exception
      */
     public function getCampaignSummary($campaignId)
     {
@@ -1289,8 +1289,8 @@ class Client extends Rest implements ClientInterface
      * @param int $key
      * @param string $collectionName
      *
-     * @return void|\stdClass
-     * @throws \Exception
+     * @return void|stdClass
+     * @throws Exception
      */
     public function deleteContactsTransactionalData(
         $key,
@@ -1319,7 +1319,7 @@ class Client extends Rest implements ClientInterface
      * @param array $data
      *
      * @return null
-     * @throws \Exception
+     * @throws Exception
      */
     public function postCampaignAttachments($campaignId, $data)
     {
@@ -1419,7 +1419,7 @@ class Client extends Rest implements ClientInterface
      * @param string $collectionName
      *
      * @return null
-     * @throws \Exception
+     * @throws Exception
      */
     public function postAccountTransactionalDataImport(
         $transactionalData,
@@ -1486,7 +1486,7 @@ class Client extends Rest implements ClientInterface
      * @param string $importId
      *
      * @return null
-     * @throws \Exception
+     * @throws Exception
      */
     public function getContactsImportByImportId($importId)
     {
@@ -1537,7 +1537,7 @@ class Client extends Rest implements ClientInterface
      * Get transactional data report.
      *
      * @param string $importId
-     * @return \stdClass
+     * @return stdClass
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getTransactionalDataReportById($importId)
@@ -1566,7 +1566,7 @@ class Client extends Rest implements ClientInterface
      *
      * @return bool|null
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function getContactImportReportFaults($id)
     {
@@ -1894,7 +1894,7 @@ class Client extends Rest implements ClientInterface
      * Setup New Chat Account.
      *
      * @param array $data
-     * @return array|null|\stdClass
+     * @return array|null|stdClass
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function setUpChatAccount(array $data = [])
@@ -1974,7 +1974,7 @@ class Client extends Rest implements ClientInterface
      * Get form by id.
      *
      * @param string $formId
-     * @return array|\stdClass|null
+     * @return array|stdClass|null
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getFormById($formId)
@@ -2001,7 +2001,7 @@ class Client extends Rest implements ClientInterface
     /**
      * Get a list of product notifications.
      *
-     * @return array|\stdClass
+     * @return array|stdClass
      * @throws LocalizedException
      */
     public function getProductNotifications()

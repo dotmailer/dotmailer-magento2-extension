@@ -3,6 +3,8 @@
 namespace Dotdigitalgroup\Email\Model\Mail;
 
 use Dotdigitalgroup\Email\Helper\Transactional;
+use Magento\Framework\Mail\EmailMessageInterface;
+use Magento\Framework\Mail\MailMessageInterface;
 use Magento\Framework\Mail\TransportInterface;
 use Laminas\Mail\Message;
 
@@ -21,10 +23,11 @@ class SmtpTransporter
     /**
      * Default encoding
      */
-    const ENCODING = 'utf-8';
+    private const ENCODING = 'utf-8';
 
     /**
      * SmtpTransporter constructor.
+     *
      * @param Transactional $transactionalEmailSettings
      * @param ZendMailTransportSmtp2Factory $zendMailTransportSmtp2Factory
      */
@@ -37,6 +40,8 @@ class SmtpTransporter
     }
 
     /**
+     * Send.
+     *
      * @param TransportInterface $subject
      * @param int $storeId
      * @throws \Magento\Framework\Exception\LocalizedException
@@ -48,16 +53,21 @@ class SmtpTransporter
     }
 
     /**
+     * Extract zend mail message.
+     *
      * @param TransportInterface $subject
      * @return Message
      */
     private function extractZendMailMessage($subject)
     {
+        /** @var EmailMessageInterface $message */
         $message = $subject->getMessage();
         return Message::fromString($message->getRawMessage());
     }
 
     /**
+     * Send message.
+     *
      * @param Message $message
      * @param int $storeId
      * @throws \Magento\Framework\Exception\LocalizedException

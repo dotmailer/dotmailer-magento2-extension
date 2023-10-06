@@ -33,17 +33,18 @@ class CouponPlugin
     }
 
     /**
+     * After get by id.
+     *
      * @param CouponRepositoryInterface $subject
      * @param CouponInterface $entity
      * @return CouponInterface
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function afterGetById(
         CouponRepositoryInterface $subject,
         CouponInterface $entity
     ) {
         try {
-            $couponAttribute = $this->couponAttributeRepository->getById($entity->getId());
+            $couponAttribute = $this->couponAttributeRepository->getById($entity->getCouponId());
         } catch (NoSuchEntityException $e) {
             return $entity;
         }
@@ -58,6 +59,8 @@ class CouponPlugin
     }
 
     /**
+     * After save.
+     *
      * @param CouponRepositoryInterface $subject
      * @param CouponInterface $coupon
      * @return CouponInterface

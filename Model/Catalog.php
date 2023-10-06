@@ -61,7 +61,7 @@ class Catalog extends \Magento\Framework\Model\AbstractModel
     /**
      * Constructor.
      *
-     * @return null
+     * @return void
      */
     public function _construct()
     {
@@ -101,6 +101,8 @@ class Catalog extends \Magento\Framework\Model\AbstractModel
     }
 
     /**
+     * Reset.
+     *
      * @param string|null $from
      * @param string|null $to
      * @return int

@@ -6,6 +6,7 @@ use Dotdigitalgroup\Email\Model\Apiconnector\DataField;
 use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\App\Action\HttpPostActionInterface;
+use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Message\ManagerInterface as MessageManager;
 
 class Save extends Action implements HttpPostActionInterface
@@ -28,6 +29,11 @@ class Save extends Action implements HttpPostActionInterface
     private $datafieldHandler;
 
     /**
+     * @var RequestInterface
+     */
+    private $request;
+
+    /**
      * Save constructor.
      *
      * @param DataField $datafieldHandler
@@ -39,6 +45,8 @@ class Save extends Action implements HttpPostActionInterface
     ) {
         $this->datafieldHandler = $datafieldHandler;
         $this->messageManager = $context->getMessageManager();
+        $this->request = $context->getRequest();
+
         parent::__construct($context);
     }
 
@@ -49,7 +57,7 @@ class Save extends Action implements HttpPostActionInterface
      */
     public function execute()
     {
-        $datafield  = $this->getRequest()->getParam('name');
+        $datafield  = $this->request->getParam('name');
 
         if (!empty($datafield)) {
             if (!$this->datafieldHandler->hasValidLength($datafield)) {
@@ -57,11 +65,11 @@ class Save extends Action implements HttpPostActionInterface
                 return;
             }
             $response = $this->datafieldHandler->createDatafield(
-                (int) $this->getRequest()->getParam('website_id'),
+                (int) $this->request->getParam('website_id'),
                 $datafield,
-                $this->getRequest()->getParam('type'),
-                $this->getRequest()->getParam('visibility'),
-                $this->getRequest()->getParam('default')
+                $this->request->getParam('type'),
+                $this->request->getParam('visibility'),
+                $this->request->getParam('default')
             );
 
             if (isset($response->message)) {

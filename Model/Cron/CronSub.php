@@ -2,6 +2,8 @@
 
 namespace Dotdigitalgroup\Email\Model\Cron;
 
+use Magento\Framework\Exception\LocalizedException;
+
 class CronSub
 {
     /**
@@ -10,7 +12,7 @@ class CronSub
     private $reviewFactory;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\Sync\Wishlist
+     * @var \Dotdigitalgroup\Email\Model\Sync\WishlistFactory
      */
     private $wishlistFactory;
 
@@ -32,6 +34,7 @@ class CronSub
      * Review sync.
      *
      * @return array
+     * @throws LocalizedException
      */
     public function reviewSync()
     {
