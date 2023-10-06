@@ -5,6 +5,7 @@
         <amOnPage url="{{AdminDotdigitalConsentPage.url}}" stepKey="navigateToDotdigitalConsentPage"/>
         <waitForPageLoad stepKey="waitForPageLoad5"/>
         <conditionalClick stepKey="expandConsentTab" selector="{{AdminDotdigitalConsentSection.consentFieldsetToggle}}" dependentSelector="{{AdminDotdigitalConsentSection.consentFieldset}}" visible="false"/>
+        <selectOption selector="{{AdminDotdigitalConsentSection.consentEmailEnabled}}" userInput="Yes" stepKey="consentEmailEnabled"/>
         <fillField selector="{{AdminDotdigitalConsentSection.customerConsentText}}" userInput="Test consent text" stepKey="setConsentText"/>
         <click selector="{{AdminMainActionsSection.save}}" stepKey="saveConfig2"/>
         <waitForPageLoad stepKey="waitForPageLoad6"/>
