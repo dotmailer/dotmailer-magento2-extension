@@ -1,3 +1,17 @@
+# 4.23.0
+
+### Improvements
+- We refactored many controller classes to replace usage of `$this→getRequest()`.
+- We've removed avoidable usages of protected access for properties and methods.
+- The `NewsletterManageIndexPlugin` is now an 'after' plugin not an 'around' plugin.
+- We fixed all outstanding PHPStan errors (level 2).
+- We removed a deprecated method in the `UrlFinder` class which was calling a non-API core method.
+- We now specify the `sales_order` table in a `WHERE` clause for order statuses in customer sync.
+
+### Bug fixes
+- We updated a block reference in the LogViewer layout XML.
+- We fixed a 401 console error that appeared when viewing URLs from *.dotdigital.com in an iframe via the admin.
+
 # 4.22.1
 
 ### Bug fixes
