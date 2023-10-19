@@ -1626,7 +1626,7 @@ class Client extends Rest implements ClientInterface
      * @param string $url
      * @param array|string $params
      *
-     * @return string/object
+     * @return string|bool|object
      */
     public function getAccessToken($url, $params)
     {

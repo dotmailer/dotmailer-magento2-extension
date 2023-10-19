@@ -2,6 +2,10 @@
 
 namespace Dotdigitalgroup\Email\Model\Config\Source\Transactional\Email;
 
+use Magento\Email\Model\ResourceModel\Template\CollectionFactory;
+use Magento\Email\Model\Template\Config;
+use Magento\Framework\Registry;
+
 class Template extends \Magento\Framework\DataObject implements \Magento\Framework\Option\ArrayInterface
 {
     /**
@@ -17,23 +21,23 @@ class Template extends \Magento\Framework\DataObject implements \Magento\Framewo
     /**
      * @var \Magento\Email\Model\ResourceModel\Template\CollectionFactory
      */
-    private $templatesFactory;
+    private $templateCollectionFactory;
 
     /**
-     * @param \Magento\Framework\Registry $coreRegistry
-     * @param \Magento\Email\Model\ResourceModel\Template\CollectionFactory $templatesFactory
-     * @param \Magento\Email\Model\Template\Config $emailConfig
+     * @param Registry $coreRegistry
+     * @param CollectionFactory $templateCollectionFactory
+     * @param Config $emailConfig
      * @param array $data
      */
     public function __construct(
         \Magento\Framework\Registry $coreRegistry,
-        \Magento\Email\Model\ResourceModel\Template\CollectionFactory $templatesFactory,
+        \Magento\Email\Model\ResourceModel\Template\CollectionFactory $templateCollectionFactory,
         \Magento\Email\Model\Template\Config $emailConfig,
         array $data = []
     ) {
         parent::__construct($data);
         $this->coreRegistry = $coreRegistry;
-        $this->templatesFactory = $templatesFactory;
+        $this->templateCollectionFactory = $templateCollectionFactory;
         $this->emailConfig = $emailConfig;
     }
 
@@ -44,9 +48,8 @@ class Template extends \Magento\Framework\DataObject implements \Magento\Framewo
      */
     public function toOptionArray()
     {
-        /** @var $collection \Magento\Email\Model\ResourceModel\Template\Collection */
-        if (!($collection = $this->coreRegistry->registry('config_system_email_template'))) {
-            $collection = $this->templatesFactory->create();
+        if (!($this->coreRegistry->registry('config_system_email_template'))) {
+            $collection = $this->templateCollectionFactory->create();
             $collection->load();
             $this->coreRegistry->register('config_system_email_template', $collection);
         }

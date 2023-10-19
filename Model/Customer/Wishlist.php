@@ -157,7 +157,7 @@ class Wishlist
      *
      * @param string $date
      *
-     * @return $this;
+     * @return $this
      */
     public function setUpdatedAt($date)
     {
