@@ -240,11 +240,11 @@ class Attribute
     /**
      * Returns any dynamically set attribute properties as a regular stdClass.
      *
-     * @return object
+     * @return array|object
      */
     public function getProperties()
     {
-        return (object) $this->properties;
+        return $this->properties ? (object) $this->properties : $this->properties;
     }
 
     /**
