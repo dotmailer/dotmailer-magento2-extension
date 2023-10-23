@@ -25,7 +25,7 @@ class MonitorTypeProvider
     private $automationMonitor;
 
     /**
-     * @var Smtp\Monitor;
+     * @var Smtp\Monitor
      */
     private $smtpMonitor;
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dotdigitalgroup\Email\Block;
 
 use Dotdigitalgroup\Email\Helper\Config;
@@ -79,6 +81,10 @@ class Coupon extends \Magento\Framework\View\Element\Template
      */
     public function generateCoupon()
     {
+        if ($this->_request->getParam('debug')) {
+            $this->helper->debug('Starting Dotdigital coupon generation from Block');
+        }
+
         try {
             // Protects against repeat generation
             if (!empty($this->couponCode)) {

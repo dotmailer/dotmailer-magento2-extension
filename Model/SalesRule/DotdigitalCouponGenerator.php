@@ -1,9 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dotdigitalgroup\Email\Model\SalesRule;
 
+use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Coupon\CouponAttribute;
 use Dotdigitalgroup\Email\Model\DateTimeFactory;
+use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Stdlib\DateTime;
 use Magento\SalesRule\Model\Coupon\CodegeneratorInterface;
 use Magento\SalesRule\Model\Rule as RuleModel;
@@ -13,6 +17,11 @@ use Magento\SalesRule\Api\CouponRepositoryInterface;
 
 class DotdigitalCouponGenerator
 {
+	/**
+	 * @var Logger
+	 */
+	private $logger;
+
     /**
      * @var DotdigitalCouponCodeGenerator
      */
@@ -44,27 +53,38 @@ class DotdigitalCouponGenerator
     private $couponAttributeFactory;
 
     /**
+     * @var RequestInterface
+     */
+    private $request;
+
+    /**
+     * @param Logger $logger
      * @param CodegeneratorInterface $couponCodeGenerator
      * @param DateTime $dateTime
      * @param DateTimeFactory $dateTimeFactory
      * @param CouponAttributeFactory $couponAttributeFactory
      * @param CouponExtensionFactory $couponExtensionFactory
      * @param CouponRepositoryInterface $couponRepository
+     * @param RequestInterface $request
      */
     public function __construct(
+		Logger $logger,
         CodegeneratorInterface $couponCodeGenerator,
         DateTime $dateTime,
         DateTimeFactory $dateTimeFactory,
         CouponAttributeFactory $couponAttributeFactory,
         CouponExtensionFactory $couponExtensionFactory,
-        CouponRepositoryInterface $couponRepository
+        CouponRepositoryInterface $couponRepository,
+        RequestInterface $request
     ) {
-        $this->couponCodeGenerator = $couponCodeGenerator;
+		$this->logger = $logger;
+		$this->couponCodeGenerator = $couponCodeGenerator;
         $this->dateTime = $dateTime;
         $this->dateTimeFactory = $dateTimeFactory;
         $this->couponAttributeFactory = $couponAttributeFactory;
         $this->couponExtensionFactory = $couponExtensionFactory;
         $this->couponRepository = $couponRepository;
+        $this->request = $request;
     }
 
     /**
@@ -88,6 +108,20 @@ class DotdigitalCouponGenerator
         string $emailAddress = null,
         int $expireDays = null
     ) {
+        if ($this->request->getParam('debug')) {
+            $this->logger->debug(
+                "Begin coupon generation",
+                [
+                    $rule->getId(),
+                    $codeFormat,
+                    $codePrefix,
+                    $codeSuffix,
+                    $emailAddress,
+                    $expireDays
+                ]
+            );
+        }
+
         // set format/prefix/suffix to code generator
         $this->couponCodeGenerator->setData([
             'codeFormat' => $codeFormat,
@@ -127,7 +161,20 @@ class DotdigitalCouponGenerator
             $coupon->setExtensionAttributes($couponExtension);
         }
 
+        if ($this->request->getParam('debug')) {
+            $this->logger->debug(
+                "Coupon created, saving ..."
+            );
+        }
+
         $this->couponRepository->save($coupon);
+
+        if ($this->request->getParam('debug')) {
+            $this->logger->debug(
+                "Coupon data",
+                [$coupon->toArray()]
+            );
+        }
 
         return $coupon->getCode();
     }

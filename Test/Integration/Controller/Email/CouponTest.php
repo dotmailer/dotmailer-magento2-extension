@@ -1,6 +1,6 @@
 <?php
 
-namespace Dotdigitalgroup\Email\Controller\Email;
+namespace Dotdigitalgroup\Email\Test\Integration\Controller\Email;
 
 use Dotdigitalgroup\Email\Helper\Config;
 use Dotdigitalgroup\Email\Model\Coupon\CouponAttributeCollection;

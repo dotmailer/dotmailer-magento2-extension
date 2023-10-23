@@ -163,7 +163,7 @@ class Review extends AbstractConnectorModel
      *
      * @param string $date
      *
-     * @return $this;
+     * @return $this
      */
     public function setReviewDate($date)
     {

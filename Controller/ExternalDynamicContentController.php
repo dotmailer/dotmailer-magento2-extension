@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dotdigitalgroup\Email\Controller;
 
 use Dotdigitalgroup\Email\Helper\Data;
@@ -18,9 +20,6 @@ use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Dotdigitalgroup\Email\Model\ResourceModel\FailedAuth as FailedAuthResource;
 
-/**
- * @SuppressWarnings(PHPMD.NumberOfChildren)
- */
 class ExternalDynamicContentController implements ActionInterface
 {
     /**
@@ -77,7 +76,6 @@ class ExternalDynamicContentController implements ActionInterface
      * @param HttpInterface $response
      * @param UrlInterface $url
      * @param LayoutFactory $resultLayoutFactory
-     * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
     public function __construct(
         Data $data,
@@ -100,7 +98,7 @@ class ExternalDynamicContentController implements ActionInterface
     }
 
     /**
-     * Get the  request object
+     * Get the request object
      *
      * @return RequestInterface
      */
@@ -132,6 +130,10 @@ class ExternalDynamicContentController implements ActionInterface
         if (!$this->helper->isIpAllowed()) {
             $this->setUnauthorizedResponse();
             return false;
+        }
+
+        if ($this->request->getParam('debug')) {
+            $this->helper->debug('EDC request passed authentication');
         }
 
         return true;
@@ -203,6 +205,12 @@ class ExternalDynamicContentController implements ActionInterface
     public function checkResponse()
     {
         if (strlen($this->layout->getLayout()->getOutput()) < 10) {
+            if ($this->request->getParam('debug')) {
+                $this->helper->debug(
+                    'Output is less than 10 characters, no content',
+                    ['Output' => $this->layout->getLayout()->getOutput()]
+                );
+            }
             $this->setNoContentResponse();
         }
     }
@@ -232,7 +240,7 @@ class ExternalDynamicContentController implements ActionInterface
                 $this->helper->log(sprintf('Resource locked time : %s ,store : %s', $lastAttemptDate, $storeId));
                 return;
             } else {
-                //reset with the first lock after the the lock expired
+                //reset with the first lock after the lock expired
                 $numOfFails = 0;
                 $failedAuth->setFirstAttemptDate(time());
             }

@@ -360,12 +360,18 @@ class Product extends AbstractConnectorModel
             $attributesFromAttributeSet = $attributeModel->getAttributesArray(
                 $product->getAttributeSetId()
             );
-
-            $this->attributes = $attributeModel->processConfigAttributes(
+            $attributeProperties = $attributeModel->processConfigAttributes(
                 $configAttributes,
                 $attributesFromAttributeSet,
                 $product
             )->getProperties();
+
+            if (empty($attributeProperties)) {
+                unset($this->attributes);
+                return;
+            }
+
+            $this->attributes = $attributeProperties;
         }
     }
 

@@ -572,7 +572,7 @@ class Rest
     /**
      * Get response body.
      *
-     * @return string/object
+     * @return string|object
      */
     public function getResponseBody()
     {

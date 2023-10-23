@@ -613,7 +613,7 @@ class Quote
     {
         $mostExpensiveItem = false;
         foreach ($items as $item) {
-            /** @var $item \Magento\Quote\Model\Quote\Item */
+            /** @var \Magento\Quote\Model\Quote\Item $item */
             if ($mostExpensiveItem == false) {
                 $mostExpensiveItem = $item;
             } elseif ($item->getPrice() > $mostExpensiveItem->getPrice()) {
