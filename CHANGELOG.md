@@ -1,3 +1,12 @@
+# 4.23.1
+
+### Improvements
+- We've completed a handful of small changes that [Adobe](https://business.adobe.com/) identified as PHPStan failures.
+- Added extra logging to the coupon request scripts to assist with debugging.
+
+### Bug fixes
+- Fixed a bug where sending attributes, if a product has no attribute values, was not working as expected.
+
 # 4.23.0
 
 ### Improvements
