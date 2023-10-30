@@ -111,7 +111,8 @@ define([
                 body = document.getElementsByTagName('body')[0];
 				
             if (body.classList.contains('catalogsearch-result-index')) {
-				var search = document.getElementsByName('q')[0];
+				var search = document.getElementById('search') ? document.getElementById('search') : document.getElementsByName('q').length ? document.getElementsByName('q')[0] : null;
+				
                 if (search && search.hasAttribute('value')) {
                     this.wbtTrack({
                         'searched_term': search.getAttribute('value')
