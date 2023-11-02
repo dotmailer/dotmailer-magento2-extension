@@ -108,11 +108,12 @@ define([
          */
         'Dotdigitalgroup_Email/js/webBehaviorTracking': function (settings) {
             var wbt = this.initWbt(settings.id, settings.subdomain, settings.region),
-                body = document.getElementsByTagName('body')[0];
+                body = document.getElementsByTagName('body')[0],
+                search = document.getElementById('search') ?
+                    document.getElementById('search') :
+                    document.getElementsByName('q').length ? document.getElementsByName('q')[0] : null;
 
             if (body.classList.contains('catalogsearch-result-index')) {
-                var search = document.getElementById('search');
-
                 if (search && search.hasAttribute('value')) {
                     this.wbtTrack({
                         'searched_term': search.getAttribute('value')
