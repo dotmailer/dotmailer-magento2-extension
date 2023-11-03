@@ -394,16 +394,19 @@
                        showInWebsite="1">
                     <label>Add Customers To</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Sync\Lists</source_model>
+                    <backend_model>Dotdigitalgroup\Email\Model\Config\Backend\UniqueList</backend_model>
                 </field>
                 <field id="subscribers" translate="label" type="select" sortOrder="30" showInDefault="1" showInStore="0"
                        showInWebsite="1">
                     <label>Add Email Subscribers To</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Sync\Lists</source_model>
+                    <backend_model>Dotdigitalgroup\Email\Model\Config\Backend\UniqueList</backend_model>
                 </field>
                 <field id="guests" translate="label" type="select" sortOrder="40" showInDefault="1" showInStore="0"
                        showInWebsite="1">
                     <label>Add Guests To</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Sync\Lists</source_model>
+                    <backend_model>Dotdigitalgroup\Email\Model\Config\Backend\UniqueList</backend_model>
                 </field>
             </group>
             <group id="sync" translate="label" type="text" sortOrder="30" showInDefault="1" showInStore="0"
