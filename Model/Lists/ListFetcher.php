@@ -9,6 +9,11 @@ use Magento\Framework\Exception\LocalizedException;
 class ListFetcher
 {
     /**
+     * @var array|\stdClass
+     */
+    private $lists = [];
+
+    /**
      * Fetch all lists.
      *
      * @param Client $client
@@ -17,14 +22,15 @@ class ListFetcher
      */
     public function fetchAllLists(Client $client)
     {
-        $lists = [];
-        do {
-            if (!is_array($listsResponse = $client->getAddressBooks(count($lists)))) {
-                return (array) $listsResponse;
-            }
-            $lists = array_merge($lists, $listsResponse);
-        } while (count($listsResponse) === 1000);
+        if (empty($this->lists)) {
+            do {
+                if (!is_array($listsResponse = $client->getAddressBooks(count($this->lists)))) {
+                    return (array) $listsResponse;
+                }
+                $this->lists = array_merge($this->lists, $listsResponse);
+            } while (count($listsResponse) === 1000);
+        }
 
-        return $lists;
+        return $this->lists;
     }
 }

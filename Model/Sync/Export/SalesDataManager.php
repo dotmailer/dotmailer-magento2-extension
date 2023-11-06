@@ -245,7 +245,7 @@ class SalesDataManager
             ->order(new \Zend_Db_Expr('(COUNT(*)) DESC'));
 
         if (!empty($statuses)) {
-            $select->where('status in (?)', $statuses);
+            $select->where('sales_order.status in (?)', $statuses);
         }
 
         $select->group('customer_email');
@@ -278,7 +278,7 @@ class SalesDataManager
             ->order(new \Zend_Db_Expr('(COUNT(*)) DESC'));
 
         if (!empty($statuses)) {
-            $select->where('status in (?)', $statuses);
+            $select->where('sales_order.status in (?)', $statuses);
         }
 
         $select->group('customer_email');
@@ -316,7 +316,7 @@ class SalesDataManager
             ->order(new \Zend_Db_Expr('COUNT(*) DESC'));
 
         if (!empty($statuses)) {
-            $subSelect->where('status in (?)', $statuses);
+            $subSelect->where('sales_order.status in (?)', $statuses);
         }
 
         $subSelect->group(['sales_order_item.product_id', 'customer_email']);
