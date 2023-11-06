@@ -1,3 +1,10 @@
+# 4.23.2
+
+### Improvements
+- Merchants will now be prevented from using the same lists to sync customers, subscribers and guests.
+- We added a fallback selector to identify search terms for web behavior tracking. [External contribution](https://github.com/dotmailer/dotmailer-magento2-extension/pull/620)
+- We made further amendments to order status queries when fetching sales data in customer sync and automation sync.
+
 # 4.23.1
 
 ### Improvements
