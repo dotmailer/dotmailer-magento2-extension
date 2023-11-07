@@ -1,3 +1,8 @@
+# 4.23.3
+
+### Bug fixes
+- We have fixed a bug where the external link in the "Unique list" validation message was broken.
+
 # 4.23.2
 
 ### Improvements
