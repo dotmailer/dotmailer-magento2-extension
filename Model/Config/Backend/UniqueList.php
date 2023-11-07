@@ -24,22 +24,18 @@ class UniqueList extends Value
             'guests',
             'sms_subscribers'
         ];
-        
+
         foreach ($fields as $field) {
             $value = $comparisonValues[$field] ?? null;
             if ($value == "0") {
                 continue;
             }
             if ($value !== null && in_array($value, $selectedValues)) {
-                throw new ValidatorException(__(
-                    sprintf(
-                        str_replace(["\r", "\n"], '', 'Choose different lists to avoid mixing your Customers,
-                                     Subscribers, and Guests. <a href="%s" target="_blank">Learn more.</a>
-                        '),
-                        str_replace(["\r", "\n"], '', 'https://support.dotdigital.com
-                        /en/articles/8199589-map-lists-in-magento-open-source-and-adobe-commerce')
+                throw new ValidatorException(
+                    __(
+                        'Choose different lists to avoid mixing your Customers, Subscribers and Guests. <a href="https://support.dotdigital.com/en/articles/8199589-map-lists-in-magento-open-source-and-adobe-commerce" target="_blank">Learn more.</a>' //@phpcs:ignore Generic.Files.LineLength.TooLong
                     )
-                ));
+                );
             }
             $selectedValues[] = $value;
         }
