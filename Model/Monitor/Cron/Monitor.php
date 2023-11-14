@@ -10,7 +10,7 @@ use Magento\Framework\App\Config\ScopeConfigInterface;
 
 class Monitor extends AbstractMonitor implements MonitorInterface
 {
-    const MONITOR_ERROR_FLAG_CODE = 'ddg_monitor_cron_errors';
+    public const MONITOR_ERROR_FLAG_CODE = 'ddg_monitor_cron_errors';
 
     /**
      * @var CollectionFactory
@@ -28,9 +28,11 @@ class Monitor extends AbstractMonitor implements MonitorInterface
     protected $typeName = 'cron';
 
     /**
-     * @param CollectionFactory $cronCollectionFactory
+     * Monitor constructor.
+     *
      * @param FlagManager $flagManager
      * @param ScopeConfigInterface $scopeConfig
+     * @param CollectionFactory $cronCollectionFactory
      */
     public function __construct(
         FlagManager $flagManager,
@@ -44,6 +46,8 @@ class Monitor extends AbstractMonitor implements MonitorInterface
     }
 
     /**
+     * Fetch errors for the given time window.
+     *
      * @param array $timeWindow
      * @return array
      */
@@ -55,6 +59,8 @@ class Monitor extends AbstractMonitor implements MonitorInterface
     }
 
     /**
+     * Filter the error items.
+     *
      * @param array $items
      * @return array
      */

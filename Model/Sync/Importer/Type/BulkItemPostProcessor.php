@@ -3,6 +3,7 @@
 namespace Dotdigitalgroup\Email\Model\Sync\Importer\Type;
 
 use Dotdigitalgroup\Email\Model\Apiconnector\Client;
+use Dotdigitalgroup\Email\Model\Importer as ImporterModel;
 use Dotdigitalgroup\Email\Model\ResourceModel\Importer;
 use Dotdigitalgroup\Email\Model\Sync\Importer\ImporterCurlErrorChecker;
 use Magento\Framework\Stdlib\DateTime;
@@ -27,6 +28,7 @@ class BulkItemPostProcessor extends DataObject implements ItemPostProcessorInter
 
     /**
      * BulkItemPostProcessor constructor.
+     *
      * @param Importer $importerResource
      * @param ImporterCurlErrorChecker $curlErrorChecker
      * @param DateTime $dateTime
@@ -48,7 +50,7 @@ class BulkItemPostProcessor extends DataObject implements ItemPostProcessorInter
     /**
      * Handle item after sync.
      *
-     * @param mixed $item
+     * @param ImporterModel $item
      * @param mixed $result
      * @return void
      * @throws \Magento\Framework\Exception\AlreadyExistsException

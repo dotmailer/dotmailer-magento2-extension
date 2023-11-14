@@ -6,5 +6,5 @@ class Upsell extends ReadonlyFormField
 {
     use OrderRecommendation;
 
-    const URL_SLUG = 'upsell';
+    public const URL_SLUG = 'upsell';
 }

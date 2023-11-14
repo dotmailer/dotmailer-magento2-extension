@@ -14,6 +14,7 @@ class CustomerPlugin
 
     /**
      * CustomerPlugin constructor.
+     *
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      */
     public function __construct(
@@ -23,6 +24,8 @@ class CustomerPlugin
     }
 
     /**
+     * Around send new account email.
+     *
      * @param \Magento\Customer\Model\Customer $customer
      * @param callable $proceed
      * @param string $type

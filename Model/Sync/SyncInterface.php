@@ -5,7 +5,8 @@ namespace Dotdigitalgroup\Email\Model\Sync;
 interface SyncInterface
 {
     /**
-     * Run this sync
+     * Run this sync.
+     *
      * @param \DateTime|null $from   A date to sync from (if supported)
      * @return void
      */

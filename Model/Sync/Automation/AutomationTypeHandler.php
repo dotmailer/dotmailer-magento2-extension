@@ -9,15 +9,15 @@ use Dotdigitalgroup\Email\Model\Sync\Automation\Type\AbandonedCartFactory;
 
 class AutomationTypeHandler
 {
-    const AUTOMATION_TYPE_NEW_CUSTOMER = 'customer_automation';
-    const AUTOMATION_TYPE_NEW_SUBSCRIBER = 'subscriber_automation';
-    const AUTOMATION_TYPE_NEW_ORDER = 'order_automation';
-    const AUTOMATION_TYPE_NEW_GUEST_ORDER = 'guest_order_automation';
-    const AUTOMATION_TYPE_NEW_REVIEW = 'review_automation';
-    const AUTOMATION_TYPE_NEW_WISHLIST = 'wishlist_automation';
-    const AUTOMATION_TYPE_CUSTOMER_FIRST_ORDER = 'first_order_automation';
-    const AUTOMATION_TYPE_ABANDONED_CART_PROGRAM_ENROLMENT = 'abandoned_cart_automation';
-    const ORDER_STATUS_AUTOMATION = 'order_automation_';
+    public const AUTOMATION_TYPE_NEW_CUSTOMER = 'customer_automation';
+    public const AUTOMATION_TYPE_NEW_SUBSCRIBER = 'subscriber_automation';
+    public const AUTOMATION_TYPE_NEW_ORDER = 'order_automation';
+    public const AUTOMATION_TYPE_NEW_GUEST_ORDER = 'guest_order_automation';
+    public const AUTOMATION_TYPE_NEW_REVIEW = 'review_automation';
+    public const AUTOMATION_TYPE_NEW_WISHLIST = 'wishlist_automation';
+    public const AUTOMATION_TYPE_CUSTOMER_FIRST_ORDER = 'first_order_automation';
+    public const AUTOMATION_TYPE_ABANDONED_CART_PROGRAM_ENROLMENT = 'abandoned_cart_automation';
+    public const ORDER_STATUS_AUTOMATION = 'order_automation_';
 
     /**
      * @var array
@@ -50,6 +50,7 @@ class AutomationTypeHandler
 
     /**
      * AutomationTypeHandler constructor.
+     *
      * @param CollectionFactory $automationCollectionFactory
      * @param AutomationProcessorFactory $defaultAutomationProcessorFactory
      * @param AbandonedCartFactory $abandonedCartAutomationFactory
@@ -65,7 +66,8 @@ class AutomationTypeHandler
     }
 
     /**
-     * Fetch automation types
+     * Fetch automation types.
+     *
      * @return array
      */
     public function getAutomationTypes()
@@ -86,6 +88,8 @@ class AutomationTypeHandler
     }
 
     /**
+     * Get path from automation type.
+     *
      * @param string $type
      * @return string
      */

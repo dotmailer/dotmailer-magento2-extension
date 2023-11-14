@@ -6,6 +6,7 @@ use Dotdigitalgroup\Email\Block\Helper\Font;
 use Dotdigitalgroup\Email\Model\Catalog\UrlFinder;
 use Dotdigitalgroup\Email\Model\Product\ImageFinder;
 use Dotdigitalgroup\Email\Model\Product\ImageType\Context\DynamicContent;
+use Magento\Catalog\Model\Product;
 use Magento\Catalog\Block\Product\Context;
 
 /**
@@ -61,6 +62,8 @@ class Recommended extends \Magento\Catalog\Block\Product\AbstractProduct
     }
 
     /**
+     * Get dynamic styles.
+     *
      * @return array
      */
     public function getDynamicStyles()
@@ -69,11 +72,13 @@ class Recommended extends \Magento\Catalog\Block\Product\AbstractProduct
     }
 
     /**
+     * Get product image URL.
+     *
      * Use the ImageFinder to get a product's image URL.
      * If image types configuration for Dynamic Content is set to 'Default',
      * we use the id specified in the block (or the fallback product_small_image).
      *
-     * @param $product
+     * @param Product $product
      * @param string $imageId
      * @return string
      * @throws \Magento\Framework\Exception\LocalizedException

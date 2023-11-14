@@ -178,9 +178,12 @@ class ResubscriberTest extends TestCase
         $this->sharedFlow();
 
         $filterMethod = self::getMethod('filterModifiedContacts');
-        $filtered = $filterMethod->invokeArgs($this->model, [
+        $filtered = $filterMethod->invokeArgs(
+            $this->model,
+            [
             $this->getDotdigitalModifiedContacts()
-        ]);
+            ]
+        );
 
         $this->assertEquals(2, count($filtered));
     }
@@ -192,7 +195,7 @@ class ResubscriberTest extends TestCase
      * than putting the method either in its own class, or in the Contact
      * Resource Model (where it doesn't really belong).
      *
-     * @param $name
+     * @param  $name
      * @return \ReflectionMethod
      * @throws \ReflectionException
      */

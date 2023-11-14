@@ -77,14 +77,16 @@ class AttributeTest extends TestCase
         );
     }
 
-    public function  testCanProcessProductAttributesYieldingNestedArrays()
+    public function testCanProcessProductAttributesYieldingNestedArrays()
     {
         $configAttributes = ['color', 'size', 'width', 'height', 'chaz', 'category_ids', 'random_int'];
         $attributesFromAttributeSet = ['size', 'chaz', 'category_ids', 'media_gallery', 'random_int'];
         $productModelMock = $this->createMock(\Magento\Catalog\Model\Product::class);
 
         $abstractAttributeMock = $this->createMock(AbstractAttribute::class);
-        $this->productResourceMock->expects($this->atLeastOnce())->method('getAttribute')->willReturn($abstractAttributeMock);
+        $this->productResourceMock->expects($this->atLeastOnce())
+            ->method('getAttribute')
+            ->willReturn($abstractAttributeMock);
         $frontEndMock = $this->createMock(AbstractFrontend::class);
         $abstractAttributeMock->expects($this->atLeastOnce())->method('getFrontend')->willReturn($frontEndMock);
         $frontEndMock->expects($this->atLeastOnce())->method('getInputType');

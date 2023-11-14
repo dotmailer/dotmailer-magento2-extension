@@ -28,6 +28,7 @@ class ProductNotificationView implements ArgumentInterface
      * Ignored product types
      *
      * A full list of product types can be found in:
+     *
      * @ref \Magento\Catalog\Model\Product\Type
      * @ref \Magento\GroupedProduct\Model\Product\Type\Grouped
      */
@@ -236,7 +237,8 @@ class ProductNotificationView implements ArgumentInterface
                     Visibility::VISIBILITY_NOT_VISIBLE,
                     $allowedProductVisibilities,
                     true
-                )) {
+                )
+                ) {
                     return false;
                 }
             }
@@ -275,7 +277,8 @@ class ProductNotificationView implements ArgumentInterface
                 ProductType::TYPE_SIMPLE,
                 $allowedProductTypes,
                 true
-            )) {
+            )
+            ) {
                 return false;
             }
         }

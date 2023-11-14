@@ -73,12 +73,15 @@ class CampaignsTest extends TestCase
                 'value' => '0',
                 'label' => '-- Please Select --',
             ]],
-            array_map(function ($field) {
-                return [
+            array_map(
+                function ($field) {
+                    return [
                     'value' => $field->id,
                     'label' => $field->name,
-                ];
-            }, $testApiResponse)
+                    ];
+                },
+                $testApiResponse
+            )
         );
         $this->assertEquals($expectedResponse, $fields);
     }
@@ -86,7 +89,7 @@ class CampaignsTest extends TestCase
     /**
      * Perform getAllCampaigns tests
      *
-     * @param array $testApiResponse    The API response
+     * @param  array $testApiResponse The API response
      * @return array
      */
     private function getCampaignsTest(array $testApiResponse)
@@ -144,17 +147,20 @@ class CampaignsTest extends TestCase
     /**
      * Get a test API response
      *
-     * @param $numberOfResponses    Number of campaigns returned by API
+     * @param  $numberOfResponses Number of campaigns returned by API
      * @return array
      */
     private function getTestApiResponse($numberOfResponses)
     {
         // example API response with > 1000 campaigns
-        return array_map(function ($number) {
-            return (object) [
+        return array_map(
+            function ($number) {
+                return (object) [
                 'id' => $number,
                 'name' => 'campaign' . $number,
-            ];
-        }, range(0, $numberOfResponses));
+                ];
+            },
+            range(0, $numberOfResponses)
+        );
     }
 }

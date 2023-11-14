@@ -7,9 +7,24 @@ use PHPUnit\Framework\TestCase;
 
 class KeyValidatorTest extends TestCase
 {
+    /**
+     * @var KeyValidator $keyValidatorTest
+     */
     private $keyValidatorTest;
+
+    /**
+     * @var string $spaceReplacer
+     */
     private $spaceReplacer;
+
+    /**
+     * @var string $characterReplacer
+     */
     private $characterReplacer;
+
+    /**
+     * @var string $suffix
+     */
     private $suffix;
 
     protected function setUp() :void

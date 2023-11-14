@@ -23,6 +23,7 @@ class TemplatePlugin
 
     /**
      * TemplatePlugin constructor.
+     *
      * @param Transactional $transactionalHelper
      */
     public function __construct(
@@ -31,13 +32,15 @@ class TemplatePlugin
         $this->transactionalHelper = $transactionalHelper;
     }
 
-    //@codingStandardsIgnoreStart
     /**
+     * Before call.
+     *
      * @param \Magento\Email\Model\Template $subject
-     * @param $method
-     * @param $args
+     * @param string $method
+     * @param array $args
      * @return array|void
      */
+    //@codingStandardsIgnoreLine
     public function before__call(\Magento\Email\Model\Template $subject, $method, $args)
     {
         if ($method == 'setTemplateText') {
@@ -51,11 +54,14 @@ class TemplatePlugin
     }
 
     /**
+     * After call.
+     *
      * @param \Magento\Email\Model\Template $subject
-     * @param $result
-     * @param $method
+     * @param mixed $result
+     * @param string $method
      * @return string
      */
+    //@codingStandardsIgnoreLine
     public function after__call(\Magento\Email\Model\Template $subject, $result, $method)
     {
         if ($method == 'getTemplateText') {
@@ -66,12 +72,13 @@ class TemplatePlugin
         //leave everything unchanged
         return $result;
     }
-    //@codingStandardsIgnoreEnd
 
     /**
+     * After get data.
+     *
      * @param \Magento\Email\Model\Template $subject
-     * @param $result
-     * @param mixed ...$args
+     * @param mixed $result
+     * @param mixed $args
      * @return mixed
      */
     public function afterGetData(\Magento\Email\Model\Template $subject, $result, ...$args)
@@ -88,6 +95,8 @@ class TemplatePlugin
     }
 
     /**
+     * After before save.
+     *
      * @param \Magento\Email\Model\AbstractTemplate $subject
      */
     public function afterBeforeSave(\Magento\Email\Model\AbstractTemplate $subject)
@@ -96,6 +105,8 @@ class TemplatePlugin
     }
 
     /**
+     * After before load.
+     *
      * @param \Magento\Email\Model\AbstractTemplate $subject
      */
     public function afterBeforeLoad(\Magento\Email\Model\AbstractTemplate $subject)
@@ -104,6 +115,8 @@ class TemplatePlugin
     }
 
     /**
+     * After after load.
+     *
      * @param \Magento\Email\Model\AbstractTemplate $subject
      */
     public function afterAfterLoad(\Magento\Email\Model\AbstractTemplate $subject)
@@ -112,6 +125,8 @@ class TemplatePlugin
     }
 
     /**
+     * Compress string.
+     *
      * @param string $templateText
      * @return string
      */
@@ -122,6 +137,8 @@ class TemplatePlugin
     }
 
     /**
+     * Decompress string.
+     *
      * @param string $templateText
      * @return string
      */

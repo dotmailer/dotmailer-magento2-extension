@@ -30,6 +30,7 @@ abstract class AbstractMonitor
 
     /**
      * AbstractMonitor constructor.
+     *
      * @param FlagManager $flagManager
      * @param ScopeConfigInterface $scopeConfig
      */
@@ -42,6 +43,8 @@ abstract class AbstractMonitor
     }
 
     /**
+     * Get the flag code for the monitor error flag.
+     *
      * @return string
      */
     public function getTypeName()
@@ -50,6 +53,8 @@ abstract class AbstractMonitor
     }
 
     /**
+     * Get the flag code for the monitor error flag.
+     *
      * @param array $errors
      */
     public function setSystemMessages($errors)
@@ -68,12 +73,16 @@ abstract class AbstractMonitor
     }
 
     /**
+     * Fetch errors for the given time window.
+     *
      * @param array $timeWindow
      * @return array
      */
     abstract public function fetchErrors(array $timeWindow);
 
     /**
+     * Filter error items.
+     *
      * @param array $items
      * @return mixed
      */

@@ -104,6 +104,8 @@ class Coupon extends \Magento\Framework\View\Element\Template
     }
 
     /**
+     * Get coupon request processor.
+     *
      * @return DotdigitalCouponRequestProcessor
      */
     public function getCouponRequestProcessor()
@@ -113,6 +115,8 @@ class Coupon extends \Magento\Framework\View\Element\Template
     }
 
     /**
+     * Get style.
+     *
      * @return array
      */
     public function getStyle()
@@ -153,6 +157,8 @@ class Coupon extends \Magento\Framework\View\Element\Template
     }
 
     /**
+     * Get HTML font family.
+     *
      * @return bool|string
      */
     public function getHtmlFontFamily()

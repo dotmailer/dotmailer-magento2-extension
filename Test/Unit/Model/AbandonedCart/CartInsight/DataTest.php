@@ -73,12 +73,12 @@ class DataTest extends TestCase
     private $class;
 
     /**
-     * @var
+     * @var int
      */
     private $websiteId = 10;
 
     /**
-     * @var
+     * @var int
      */
     private $storeId = 1;
 

@@ -15,7 +15,9 @@ class SyncContextService
     private $customerGroupId = null;
 
     /**
-     * @param $module
+     * Set module.
+     *
+     * @param string $module
      */
     public function setModule($module)
     {
@@ -23,7 +25,9 @@ class SyncContextService
     }
 
     /**
-     * @param $customerGroupId
+     * Set customer group id.
+     *
+     * @param int $customerGroupId
      */
     public function setCustomerGroupId($customerGroupId)
     {
@@ -31,6 +35,8 @@ class SyncContextService
     }
 
     /**
+     * Get module.
+     *
      * @return string
      */
     public function getModule()
@@ -39,6 +45,8 @@ class SyncContextService
     }
 
     /**
+     * Get customer group id.
+     *
      * @return int|null
      */
     public function getCustomerGroupId()

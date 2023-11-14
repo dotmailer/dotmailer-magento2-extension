@@ -56,6 +56,8 @@ class Conditions extends \Magento\Backend\Block\Widget\Form\Generic implements
     }
 
     /**
+     * Show tab.
+     *
      * @return true
      */
     public function canShowTab()
@@ -66,7 +68,7 @@ class Conditions extends \Magento\Backend\Block\Widget\Form\Generic implements
     /**
      * Returns status flag about this tab hidden or not.
      *
-     * @return true
+     * @return bool
      */
     public function isHidden()
     {
@@ -74,6 +76,8 @@ class Conditions extends \Magento\Backend\Block\Widget\Form\Generic implements
     }
 
     /**
+     * Prepare form.
+     *
      * @return \Magento\Backend\Block\Widget\Form\Generic
      *
      * @throws \Magento\Framework\Exception\LocalizedException
@@ -98,8 +102,8 @@ class Conditions extends \Magento\Backend\Block\Widget\Form\Generic implements
                 '1' => __('ALL'),
                 '2' => __('ANY'),
             ],
-            'after_element_html' => '<small>Choose ANY if using multi line conditions 
-for same attribute. If multi line conditions for same attribute is used and ALL is chosen 
+            'after_element_html' => '<small>Choose ANY if using multi line conditions
+for same attribute. If multi line conditions for same attribute is used and ALL is chosen
 then multiple lines for same attribute will be ignored.</small>',
         ]);
 

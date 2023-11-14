@@ -2,6 +2,8 @@
 
 namespace Dotdigitalgroup\Email\Model\Adminhtml\Backend;
 
+use Dotdigitalgroup\Email\Model\Email\Template as DotdigitalTemplateModel;
+
 class EmailTemplateFieldValue extends \Magento\Framework\App\Config\Value
 {
     /**
@@ -68,6 +70,8 @@ class EmailTemplateFieldValue extends \Magento\Framework\App\Config\Value
     }
 
     /**
+     * Before delete.
+     *
      * @return \Magento\Framework\App\Config\Value
      * @throws \Magento\Framework\Exception\LocalizedException
      */
@@ -83,6 +87,8 @@ class EmailTemplateFieldValue extends \Magento\Framework\App\Config\Value
     }
 
     /**
+     * Before save.
+     *
      * @return \Magento\Framework\App\Config\Value
      * @throws \Magento\Framework\Exception\LocalizedException
      */
@@ -133,10 +139,12 @@ class EmailTemplateFieldValue extends \Magento\Framework\App\Config\Value
     }
 
     /**
-     * @param $dotTemplate
-     * @param $templateConfigId
-     * @param $scope
-     * @param $scopeId
+     * Check if this is the first time a template has been mapped.
+     *
+     * @param DotdigitalTemplateModel $dotTemplate
+     * @param string $templateConfigId
+     * @param string $scope
+     * @param int $scopeId
      * @return bool
      */
     private function isFirstTimeMapped($dotTemplate, $templateConfigId, $scope, $scopeId)

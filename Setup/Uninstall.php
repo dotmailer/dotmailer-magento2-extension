@@ -47,6 +47,8 @@ class Uninstall implements UninstallInterface
     }
 
     /**
+     * Drop table.
+     *
      * @param SchemaSetupInterface $setup
      * @param string $tableName
      */
@@ -57,6 +59,8 @@ class Uninstall implements UninstallInterface
     }
 
     /**
+     * Get table name with prefix.
+     *
      * @param SchemaSetupInterface $setup
      * @param string $tableName
      *

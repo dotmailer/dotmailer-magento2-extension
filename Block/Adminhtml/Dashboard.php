@@ -50,6 +50,8 @@ class Dashboard extends \Magento\Backend\Block\Widget\Container
     }
 
     /**
+     * Get contact sync link.
+     *
      * @return string
      */
     public function getContactSyncLink()
@@ -58,6 +60,8 @@ class Dashboard extends \Magento\Backend\Block\Widget\Container
     }
 
     /**
+     * Get importer link.
+     *
      * @return string
      */
     public function getImporterLink()

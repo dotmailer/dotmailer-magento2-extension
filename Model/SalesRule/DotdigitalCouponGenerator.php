@@ -17,10 +17,10 @@ use Magento\SalesRule\Api\CouponRepositoryInterface;
 
 class DotdigitalCouponGenerator
 {
-	/**
-	 * @var Logger
-	 */
-	private $logger;
+    /**
+     * @var Logger
+     */
+    private $logger;
 
     /**
      * @var DotdigitalCouponCodeGenerator
@@ -68,7 +68,7 @@ class DotdigitalCouponGenerator
      * @param RequestInterface $request
      */
     public function __construct(
-		Logger $logger,
+        Logger $logger,
         CodegeneratorInterface $couponCodeGenerator,
         DateTime $dateTime,
         DateTimeFactory $dateTimeFactory,
@@ -77,8 +77,8 @@ class DotdigitalCouponGenerator
         CouponRepositoryInterface $couponRepository,
         RequestInterface $request
     ) {
-		$this->logger = $logger;
-		$this->couponCodeGenerator = $couponCodeGenerator;
+        $this->logger = $logger;
+        $this->couponCodeGenerator = $couponCodeGenerator;
         $this->dateTime = $dateTime;
         $this->dateTimeFactory = $dateTimeFactory;
         $this->couponAttributeFactory = $couponAttributeFactory;

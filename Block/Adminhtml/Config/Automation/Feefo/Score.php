@@ -25,6 +25,8 @@ class Score extends \Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Readon
     }
 
     /**
+     * Get HTML.
+     *
      * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
      *
      * @return string

@@ -9,8 +9,8 @@ use Magento\Framework\DataObject;
 
 class DotdigitalCouponCodeGenerator extends DataObject implements CodegeneratorInterface
 {
-    const SPLIT = 3;
-    const LENGTH = 9;
+    private const SPLIT = 3;
+    private const LENGTH = 9;
 
     /**
      * @var Coupon
@@ -30,6 +30,8 @@ class DotdigitalCouponCodeGenerator extends DataObject implements CodegeneratorI
     }
 
     /**
+     * Generate coupon code.
+     *
      * @return string
      * @throws \Magento\Framework\Exception\LocalizedException
      */

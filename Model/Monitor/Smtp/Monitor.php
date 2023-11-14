@@ -10,8 +10,8 @@ use Magento\Framework\App\Config\ScopeConfigInterface;
 
 class Monitor extends AbstractMonitor implements MonitorInterface
 {
-    const MONITOR_ERROR_FLAG_CODE = 'ddg_monitor_smtp_errors';
-    const SMTP_ERROR_FLAG_CODE = 'ddg_smtp_errors';
+    public const MONITOR_ERROR_FLAG_CODE = 'ddg_monitor_smtp_errors';
+    public const SMTP_ERROR_FLAG_CODE = 'ddg_smtp_errors';
 
     /**
      * @var CollectionFactory
@@ -29,6 +29,8 @@ class Monitor extends AbstractMonitor implements MonitorInterface
     protected $typeName = 'smtp';
 
     /**
+     * Monitor constructor.
+     *
      * @param FlagManager $flagManager
      * @param ScopeConfigInterface $scopeConfig
      * @param CollectionFactory $importerCollectionFactory
@@ -45,6 +47,8 @@ class Monitor extends AbstractMonitor implements MonitorInterface
     }
 
     /**
+     * Fetch errors for the given time window.
+     *
      * @param array $timeWindow
      * @return array
      * @throws \Exception
@@ -67,6 +71,8 @@ class Monitor extends AbstractMonitor implements MonitorInterface
     }
 
     /**
+     * Filter error items.
+     *
      * @param array $items
      * @return array
      */
@@ -83,8 +89,10 @@ class Monitor extends AbstractMonitor implements MonitorInterface
     }
 
     /**
-     * @param $errors
-     * @param $timeWindow
+     * Filter errors by date range.
+     *
+     * @param array $timeWindow
+     * @param array $errors
      * @return mixed
      */
     private function filterDateRangeErrors($timeWindow, $errors = [])

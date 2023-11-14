@@ -18,11 +18,11 @@ class ReviewTest extends \PHPUnit\Framework\TestCase
 {
     use MocksApiResponses;
 
-    const BASE_WEBSITE_CODE = 'base';
-    const SECOND_WEBSITE_CODE = 'test';
+    private const BASE_WEBSITE_CODE = 'base';
+    private const SECOND_WEBSITE_CODE = 'test';
 
-    const BASE_WEBSITE_ID = 1;
-    const SECOND_WEBSITE_ID = 2;
+    private const BASE_WEBSITE_ID = 1;
+    private const SECOND_WEBSITE_ID = 2;
 
     /**
      * @var Review

@@ -40,6 +40,8 @@ class OrderSaveBefore implements \Magento\Framework\Event\ObserverInterface
     }
 
     /**
+     * Execute.
+     *
      * @param \Magento\Framework\Event\Observer $observer
      *
      * @return $this

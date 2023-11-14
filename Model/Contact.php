@@ -87,6 +87,8 @@ class Contact extends \Magento\Framework\Model\AbstractModel
     }
 
     /**
+     * Set email.
+     *
      * @param string $email
      *
      * @return self

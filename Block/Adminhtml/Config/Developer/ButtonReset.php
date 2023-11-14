@@ -20,8 +20,8 @@ class ButtonReset extends \Magento\Config\Block\System\Config\Form\Field
 
     /**
      * @param Context $context
-     * @param string $modulePath
      * @param string $resetType
+     * @param string $modulePath
      * @param array $data
      */
     public function __construct(
@@ -36,6 +36,8 @@ class ButtonReset extends \Magento\Config\Block\System\Config\Form\Field
     }
 
     /**
+     * Get element HTML.
+     *
      * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
      * @return string
      * @throws \Magento\Framework\Exception\LocalizedException
@@ -54,7 +56,8 @@ class ButtonReset extends \Magento\Config\Block\System\Config\Form\Field
     }
 
     /**
-     * Removes use Default Checkbox
+     * Removes use Default Checkbox.
+     *
      * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
      * @return string
      */
@@ -65,6 +68,8 @@ class ButtonReset extends \Magento\Config\Block\System\Config\Form\Field
     }
 
     /**
+     * Get button URL.
+     *
      * @return string
      */
     protected function getButtonUrl()

@@ -26,6 +26,8 @@ class Upsell extends \Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Reado
     }
 
     /**
+     * Get element HTML.
+     *
      * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
      *
      * @return string

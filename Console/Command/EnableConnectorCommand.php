@@ -171,6 +171,8 @@ class EnableConnectorCommand extends Command
     }
 
     /**
+     * Add API credentials.
+     *
      * @param \stdClass $accountInfo
      * @param string $username
      * @param string $password
@@ -194,6 +196,8 @@ class EnableConnectorCommand extends Command
     }
 
     /**
+     * Save config.
+     *
      * @param array $configData
      */
     private function saveConfig(array $configData)
@@ -205,6 +209,8 @@ class EnableConnectorCommand extends Command
     }
 
     /**
+     * Get helper.
+     *
      * @return Data
      */
     private function getEmailHelper()

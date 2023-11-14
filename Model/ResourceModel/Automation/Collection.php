@@ -26,6 +26,8 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     }
 
     /**
+     * Get types for pending and confirmed automations.
+     *
      * @return array
      */
     public function getTypesForPendingAndConfirmedAutomations()
@@ -49,7 +51,6 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
      *
      * @param string $type
      * @param string $limit
-     *
      * @return $this
      */
     public function getCollectionByType($type, $limit)
@@ -73,8 +74,9 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     }
 
     /**
-     * @param boolean $expireTime
+     * Get collection by pending status.
      *
+     * @param boolean $expireTime
      * @return $this
      */
     public function getCollectionByPendingStatus($expireTime = false)
@@ -91,6 +93,8 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     }
 
     /**
+     * Get last time pending status was checked.
+     *
      * @return \Magento\Framework\DataObject
      */
     public function getLastPendingStatusCheckTime()
@@ -104,8 +108,9 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     }
 
     /**
-     * @param int $quoteId
+     * Get abandoned cart automation by quote id.
      *
+     * @param int $quoteId
      * @return Collection
      */
     public function getAbandonedCartAutomationByQuoteId($quoteId)
@@ -120,6 +125,8 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     }
 
     /**
+     * Get subscriber automation by email.
+     *
      * @param string $email
      * @param string|int $websiteId
      * @return Collection
@@ -135,6 +142,8 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     }
 
     /**
+     * Get AC automations for contact in a time window.
+     *
      * @param string $email
      * @param array $updated
      * @param string|int $storeId
@@ -152,6 +161,8 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     }
 
     /**
+     * Fetch failed automations.
+     *
      * Search the email_automation table for jobs with automation_status = 'Failed',
      * with a created_at time inside the specified time window.
      *
@@ -166,6 +177,8 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     }
 
     /**
+     * Fetch pending automations.
+     *
      * Search the email_automation table for jobs with automation_status = 'pending',
      * with a created_at time inside the time window but older than 1 hour.
      *

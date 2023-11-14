@@ -75,6 +75,8 @@ class Main extends \Magento\Backend\Block\Widget\Form\Generic implements \Magent
     }
 
     /**
+     * Prepare form.
+     *
      * @return \Magento\Backend\Block\Widget\Form\Generic
      *
      * @throws \Magento\Framework\Exception\LocalizedException

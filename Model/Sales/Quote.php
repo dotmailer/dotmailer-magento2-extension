@@ -2,18 +2,24 @@
 
 namespace Dotdigitalgroup\Email\Model\Sales;
 
+use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Abandoned as AbandonedModel;
 use Dotdigitalgroup\Email\Model\AbandonedCart\Interval;
 use Dotdigitalgroup\Email\Model\AbandonedFactory;
+use Dotdigitalgroup\Email\Model\CampaignFactory;
+use Dotdigitalgroup\Email\Model\ResourceModel\Abandoned;
 use Dotdigitalgroup\Email\Model\ResourceModel\Abandoned\CollectionFactory as AbandonedCollectionFactory;
 use Dotdigitalgroup\Email\Model\ResourceModel\Campaign\CollectionFactory as CampaignCollectionFactory;
+use Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory;
+use Dotdigitalgroup\Email\Model\RulesFactory;
 use Dotdigitalgroup\Email\Model\Sync\PendingContact\PendingContactUpdater;
 use Dotdigitalgroup\Email\Model\StatusInterface;
 use Dotdigitalgroup\Email\Model\ResourceModel\Campaign;
 use Dotdigitalgroup\Email\Model\AbandonedCart\TimeLimit;
 use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\Updater\AbandonedCartFactory as AbandonedCartUpdaterFactory;
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 use Magento\Quote\Model\ResourceModel\Quote\Collection as QuoteCollection;
 use Magento\Quote\Model\ResourceModel\Quote\CollectionFactory as QuoteCollectionFactory;
 use Magento\Store\Model\StoreManagerInterface;
@@ -161,17 +167,18 @@ class Quote
     /**
      * Quote constructor.
      *
+     * @param Interval $interval
      * @param AbandonedFactory $abandonedFactory
      * @param AbandonedCollectionFactory $abandonedCollectionFactory
-     * @param \Dotdigitalgroup\Email\Model\RulesFactory $rulesFactory
+     * @param RulesFactory $rulesFactory
      * @param Campaign $campaignResource
-     * @param \Dotdigitalgroup\Email\Model\CampaignFactory $campaignFactory
+     * @param CampaignFactory $campaignFactory
      * @param CampaignCollectionFactory $campaignCollectionFactory
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Abandoned $abandonedResource
-     * @param \Dotdigitalgroup\Email\Helper\Data $data
+     * @param Abandoned $abandonedResource
+     * @param Data $data
      * @param QuoteCollectionFactory $quoteCollectionFactory
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory $collectionFactory
-     * @param \Magento\Framework\Stdlib\DateTime\TimezoneInterface $timezone
+     * @param CollectionFactory $collectionFactory
+     * @param TimezoneInterface $timezone
      * @param PendingContactUpdater $pendingContactUpdater
      * @param \Dotdigitalgroup\Email\Model\AbandonedCart\CartInsight\Data $cartInsight
      * @param TimeLimit $timeLimit
@@ -865,7 +872,7 @@ class Quote
         //found abandoned carts
         if ($quoteCollection->getSize()) {
             $this->helper->log(
-                $message . ' Abandoned Cart ' . $number . ',from ' . $updated['from'] . '  :  ' . $updated['to'] . ', storeId '
+                $message.' Abandoned Cart '.$number.',from '.$updated['from'].'  :  '.$updated['to'].', storeId '
                 . $storeId
             );
         }

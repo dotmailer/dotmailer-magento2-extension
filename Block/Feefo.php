@@ -12,8 +12,8 @@ use Magento\Framework\Filesystem\DriverInterface;
  */
 class Feefo extends \Magento\Framework\View\Element\Template
 {
-    const FEEFO_LOGO_ROOT = 'https://api.feefo.com/api/logo?';
-    const FEEFO_PRODUCT_REVIEWS_ROOT = 'https://api.feefo.com/api/10/reviews/product?';
+    private const FEEFO_LOGO_ROOT = 'https://api.feefo.com/api/logo?';
+    private const FEEFO_PRODUCT_REVIEWS_ROOT = 'https://api.feefo.com/api/10/reviews/product?';
 
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data
@@ -180,6 +180,8 @@ class Feefo extends \Magento\Framework\View\Element\Template
     }
 
     /**
+     * Get CSS path.
+     *
      * @return string
      */
     public function getCssUrl()
@@ -190,6 +192,7 @@ class Feefo extends \Magento\Framework\View\Element\Template
     }
 
     /**
+     * Get star image path.
      *
      * @param int $rating
      */

@@ -41,6 +41,8 @@ class TransportBuilderPlugin
     }
 
     /**
+     * Before set template options.
+     *
      * @param TransportBuilder $transportBuilder
      * @param array $templateOptions
      *
@@ -58,8 +60,10 @@ class TransportBuilderPlugin
     }
 
     /**
+     * Before set template identifier.
+     *
      * @param TransportBuilder $transportBuilder
-     * @param $templateIdentifier
+     * @param string $templateIdentifier
      *
      * @return array
      */

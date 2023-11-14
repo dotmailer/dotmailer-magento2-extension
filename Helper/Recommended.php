@@ -320,7 +320,7 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * Process period.
+     * Process time period.
      *
      * @param string $period
      *
@@ -357,7 +357,7 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * Get products to display
+     * Get products to display.
      *
      * @param array $items
      * @param string $mode
@@ -398,7 +398,7 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * Add recommended products
+     * Add recommended products.
      *
      * @param int $productsToDisplayCounter
      * @param int $limit
@@ -433,7 +433,7 @@ class Recommended extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * Fill products to display
+     * Fill products to display.
      *
      * @param array $productsToDisplay
      * @param array $productsToDisplayCounter

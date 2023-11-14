@@ -5,6 +5,7 @@ namespace Dotdigitalgroup\Email\Model\Connector;
 use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Model\Apiconnector\Client;
 use Magento\Framework\App\Config\ReinitableConfigInterface;
+use Magento\Framework\Exception\LocalizedException;
 
 class DataFieldAutoMapper
 {
@@ -46,8 +47,12 @@ class DataFieldAutoMapper
     }
 
     /**
+     * Run.
+     *
      * @param int $websiteId
+     *
      * @return $this
+     * @throws LocalizedException
      */
     public function run(int $websiteId = 0): self
     {
@@ -80,6 +85,8 @@ class DataFieldAutoMapper
     }
 
     /**
+     * Get mapping errors.
+     *
      * @return array
      */
     public function getMappingErrors(): array

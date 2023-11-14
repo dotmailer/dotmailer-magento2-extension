@@ -4,9 +4,11 @@ namespace Dotdigitalgroup\Email\Model\Connector;
 
 class KeyValidator
 {
-    const ENGAGEMENT_CLOUD_PERMISSIBLE_KEY_PATTERN = '/[^A-Za-z0-9-_]/';
+    private const ENGAGEMENT_CLOUD_PERMISSIBLE_KEY_PATTERN = '/[^A-Za-z0-9-_]/';
 
     /**
+     * Clean label.
+     *
      * @param string $label
      * @param string $replaceSpaceWith
      * @param string $replaceCharactersWith
@@ -28,6 +30,8 @@ class KeyValidator
     }
 
     /**
+     * Has invalid pattern for insight data key.
+     *
      * @param string $label
      *
      * https://support.dotdigital.com/hc/en-gb/articles/212214538-Using-Insight-data-developers-guide-#restrictkeys

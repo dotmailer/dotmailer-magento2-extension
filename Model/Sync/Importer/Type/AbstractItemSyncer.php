@@ -4,16 +4,12 @@ namespace Dotdigitalgroup\Email\Model\Sync\Importer\Type;
 
 use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Apiconnector\Client;
+use Dotdigitalgroup\Email\Model\ResourceModel\Importer\Collection;
 use Dotdigitalgroup\Email\Model\Sync\Importer\Type\ItemPostProcessorInterfaceFactory;
 use Magento\Framework\DataObject;
 
 abstract class AbstractItemSyncer extends DataObject
 {
-    /**
-     * Legendary error message
-     */
-    public const ERROR_UNKNOWN = 'Error unknown';
-
     /**
      * @var ItemPostProcessorInterfaceFactory
      */
@@ -31,6 +27,7 @@ abstract class AbstractItemSyncer extends DataObject
 
     /**
      * AbstractItemSyncer constructor.
+     *
      * @param Logger $logger
      * @param array $data
      */
@@ -44,9 +41,9 @@ abstract class AbstractItemSyncer extends DataObject
     }
 
     /**
-     * Run Sync(s)
+     * Run Sync(s).
      *
-     * @param mixed $collection
+     * @param Collection $collection
      * @return void
      */
     public function sync($collection)
@@ -73,7 +70,7 @@ abstract class AbstractItemSyncer extends DataObject
     }
 
     /**
-     * Process sync
+     * Process sync.
      *
      * @param mixed $item
      * @return mixed

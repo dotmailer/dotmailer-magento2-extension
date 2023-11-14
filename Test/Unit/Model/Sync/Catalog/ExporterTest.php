@@ -71,12 +71,12 @@ class ExporterTest extends TestCase
 
     /**
      * @dataProvider getProductIdStoreIdsTypesAndVisibilities
-     * @param int $storeId
-     * @param int $product1Id
-     * @param int $product2Id
-     * @param string $types
-     * @param string $visibilities
-     * @return void
+     * @param        int    $storeId
+     * @param        int    $product1Id
+     * @param        int    $product2Id
+     * @param        string $types
+     * @param        string $visibilities
+     * @return       void
      */
     public function testThatExportKeysAndProductsMatch(
         int $storeId,
@@ -142,7 +142,8 @@ class ExporterTest extends TestCase
 
     /**
      * Returns the mocked Products
-     * @param int $productId
+     *
+     * @param  int $productId
      * @return MockObject
      */
     private function getMockProducts(int $productId)
@@ -161,8 +162,9 @@ class ExporterTest extends TestCase
 
     /**
      * Returns the connector Mock Products
-     * @param MockObject $productMock
-     * @param array $exposedMock
+     *
+     * @param  MockObject $productMock
+     * @param  array      $exposedMock
      * @return MockObject
      */
     private function getMockConnectorProducts(MockObject $productMock, array $exposedMock)
@@ -218,7 +220,7 @@ class ExporterTest extends TestCase
     }
 
     /**
-     * @param int $id
+     * @param  int $id
      * @return array
      */
     private function getExposedProduct(int $id)

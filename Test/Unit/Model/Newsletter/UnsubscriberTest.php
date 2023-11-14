@@ -91,15 +91,21 @@ class UnsubscriberTest extends TestCase
             );
 
         $filterMethod = self::getMethod('filterRecentlyResubscribedEmails');
-        $filteredA = $filterMethod->invokeArgs($this->unsubscriber, [
+        $filteredA = $filterMethod->invokeArgs(
+            $this->unsubscriber,
+            [
             $this->getLocalContactsWebsiteOne(),
             $this->getSuppressedEmails()
-        ]);
+            ]
+        );
 
-        $filteredB = $filterMethod->invokeArgs($this->unsubscriber, [
+        $filteredB = $filterMethod->invokeArgs(
+            $this->unsubscriber,
+            [
             $this->getLocalContactsWebsiteTwo(),
             $this->getSuppressedEmails()
-        ]);
+            ]
+        );
 
         $this->storeWebsiteRelationInterfaceMock->expects($this->atLeastOnce())
             ->method('getStoreByWebsiteId')
@@ -138,17 +144,23 @@ class UnsubscriberTest extends TestCase
     public function testFilterMethod()
     {
         $filterMethod = self::getMethod('filterRecentlyResubscribedEmails');
-        $filteredA = $filterMethod->invokeArgs($this->unsubscriber, [
+        $filteredA = $filterMethod->invokeArgs(
+            $this->unsubscriber,
+            [
             $this->getLocalContactsWebsiteOne(),
             $this->getSuppressedEmails()
-        ]);
+            ]
+        );
 
         $this->assertEquals(2, count($filteredA));
 
-        $filteredB = $filterMethod->invokeArgs($this->unsubscriber, [
+        $filteredB = $filterMethod->invokeArgs(
+            $this->unsubscriber,
+            [
             $this->getLocalContactsWebsiteTwo(),
             $this->getSuppressedEmails()
-        ]);
+            ]
+        );
 
         $this->assertEquals(3, count($filteredB));
     }
@@ -183,7 +195,7 @@ class UnsubscriberTest extends TestCase
      * than putting the method either in its own class, or in the Contact
      * Resource Model (where it doesn't really belong).
      *
-     * @param $name
+     * @param  $name
      * @return \ReflectionMethod
      * @throws \ReflectionException
      */

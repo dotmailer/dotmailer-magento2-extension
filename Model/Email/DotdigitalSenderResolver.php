@@ -68,6 +68,7 @@ class DotdigitalSenderResolver extends SenderResolver
     }
 
     /**
+     * Resolve.
      *
      * @param string|array $sender
      * @param int|null $scopeId
@@ -94,6 +95,7 @@ class DotdigitalSenderResolver extends SenderResolver
     }
 
     /**
+     * Should intercept?
      *
      * @return bool
      */
@@ -109,6 +111,7 @@ class DotdigitalSenderResolver extends SenderResolver
     }
 
     /**
+     * Is Dotmailer template code?
      *
      * @param string $templateCode
      *

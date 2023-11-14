@@ -3,6 +3,7 @@
 namespace Dotdigitalgroup\Email\Plugin;
 
 use Dotdigitalgroup\Email\Helper\Config;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
 
@@ -23,6 +24,7 @@ class SubscriberPlugin
 
     /**
      * SubscriberPlugin constructor.
+     *
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      * @param StoreManagerInterface $storeManager
      */
@@ -35,9 +37,13 @@ class SubscriberPlugin
     }
 
     /**
+     * Around send confirmation success email.
+     *
      * @param \Magento\Newsletter\Model\Subscriber $subscriber
      * @param callable $proceed
+     *
      * @return \Magento\Newsletter\Model\Subscriber
+     * @throws NoSuchEntityException
      */
     public function aroundSendConfirmationSuccessEmail(
         \Magento\Newsletter\Model\Subscriber $subscriber,

@@ -31,6 +31,7 @@ class MonitorTypeProvider
 
     /**
      * MonitorTypeProvider constructor.
+     *
      * @param Cron\Monitor $cronMonitor
      * @param Importer\Monitor $importerMonitor
      * @param Campaign\Monitor $campaignMonitor
@@ -52,7 +53,8 @@ class MonitorTypeProvider
     }
 
     /**
-     * Get all types associated with this provider
+     * Get all types associated with this provider.
+     *
      * @return array
      */
     public function getTypes()

@@ -34,6 +34,8 @@ class SetCronTimingsForSplitContactSync implements DataPatchInterface
     private $config;
 
     /**
+     * SetCronTimingsForSplitContactSync constructor.
+     *
      * @param ModuleDataSetupInterface $moduleDataSetup
      * @param CronOffsetter $cronOffsetter
      * @param ConfigResource $configResource
@@ -81,7 +83,6 @@ class SetCronTimingsForSplitContactSync implements DataPatchInterface
             '15'
         );
         $this->config->reinit();
-
     }
 
     /**

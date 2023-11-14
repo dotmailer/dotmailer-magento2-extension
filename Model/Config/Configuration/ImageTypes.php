@@ -32,16 +32,17 @@ class ImageTypes implements \Magento\Framework\Data\OptionSourceInterface
 
     /**
      * ImageTypes constructor.
+     *
      * @param ImageTypeService $imageTypeService
      * @param Data $helper
      * @param Logger $logger
-     * @param $imageRole
+     * @param string $imageRole
      */
     public function __construct(
         ImageTypeService $imageTypeService,
         Data $helper,
         Logger $logger,
-        $imageRole
+        string $imageRole
     ) {
         $this->imageTypeService = $imageTypeService;
         $this->helper = $helper;
@@ -50,6 +51,8 @@ class ImageTypes implements \Magento\Framework\Data\OptionSourceInterface
     }
 
     /**
+     * Get image types for the selected scope in admin.
+     *
      * @return array
      * @throws \Magento\Framework\Exception\LocalizedException
      */
@@ -82,6 +85,8 @@ class ImageTypes implements \Magento\Framework\Data\OptionSourceInterface
     }
 
     /**
+     * Set default option.
+     *
      * @return array
      */
     private function setDefaultOption()

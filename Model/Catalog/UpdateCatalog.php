@@ -2,6 +2,8 @@
 
 namespace Dotdigitalgroup\Email\Model\Catalog;
 
+use Dotdigitalgroup\Email\Model\Catalog;
+
 class UpdateCatalog
 {
     /**
@@ -21,6 +23,7 @@ class UpdateCatalog
 
     /**
      * UpdateCatalog constructor.
+     *
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalogResource
      * @param \Dotdigitalgroup\Email\Model\CatalogFactory $catalogFactory
      * @param \Dotdigitalgroup\Email\Model\Product\ParentFinder $parentFinder
@@ -36,6 +39,8 @@ class UpdateCatalog
     }
 
     /**
+     * Update catalog.
+     *
      * @param \Magento\Catalog\Api\Data\ProductInterface $product
      * @throws \Magento\Framework\Exception\AlreadyExistsException
      * @throws \Magento\Framework\Exception\NoSuchEntityException
@@ -53,6 +58,8 @@ class UpdateCatalog
     }
 
     /**
+     * Update email catalog item.
+     *
      * @param \Magento\Catalog\Api\Data\ProductInterface $product
      */
     private function updateEmailCatalog($product)
@@ -64,9 +71,10 @@ class UpdateCatalog
     }
 
     /**
-     * create new email catalog item
-     * @param $emailCatalogModel
-     * @param $productId
+     * Create new email catalog item.
+     *
+     * @param Catalog $emailCatalogModel
+     * @param string $productId
      * @throws \Magento\Framework\Exception\AlreadyExistsException
      */
     private function createEmailCatalog($emailCatalogModel, $productId)

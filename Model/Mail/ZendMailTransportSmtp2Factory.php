@@ -8,6 +8,8 @@ use Laminas\Mail\Transport\SmtpOptions;
 class ZendMailTransportSmtp2Factory
 {
     /**
+     * Create SMTP object.
+     *
      * @param SmtpOptions $smtpOptions
      *
      * @return Smtp

@@ -26,6 +26,8 @@ class Recentlyviewed extends \Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynam
     }
 
     /**
+     * Get element HTML.
+     *
      * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
      *
      * @return string

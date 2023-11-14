@@ -7,6 +7,8 @@ use Dotdigitalgroup\Email\Model\StatusInterface;
 class Options implements \Magento\Framework\Data\OptionSourceInterface
 {
     /**
+     * To option array.
+     *
      * @return array|null
      */
     public function toOptionArray()

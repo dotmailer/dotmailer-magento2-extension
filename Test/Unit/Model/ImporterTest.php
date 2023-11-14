@@ -171,6 +171,7 @@ class ImporterTest extends TestCase
     }
     /**
      * Returns PayloadData
+     *
      * @return array
      */
     private function getData()

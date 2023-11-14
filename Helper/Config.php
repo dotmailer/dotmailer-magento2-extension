@@ -577,7 +577,7 @@ class Config extends AbstractHelper
     }
 
     /**
-     * Region-aware EC portal URL
+     * Region-aware EC portal url.
      *
      * @param int $website
      * @return string
@@ -686,6 +686,6 @@ class Config extends AbstractHelper
             Share::XML_PATH_CUSTOMER_ACCOUNT_SHARE
         );
 
-       return $config == Share::SHARE_GLOBAL;
+        return $config == Share::SHARE_GLOBAL;
     }
 }

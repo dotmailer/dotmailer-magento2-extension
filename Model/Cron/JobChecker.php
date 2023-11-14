@@ -12,7 +12,6 @@ class JobChecker
     private $cronCollection;
 
     /**
-     * JobChecker constructor.
      * @param CollectionFactory $cronCollection
      */
     public function __construct(
@@ -22,7 +21,7 @@ class JobChecker
     }
 
     /**
-     * Check if a cron job has already run at the same time
+     * Check if a cron job has already run at the same time.
      *
      * @param string $jobCode
      * @return bool
@@ -47,6 +46,8 @@ class JobChecker
     }
 
     /**
+     * Get last job finished at.
+     *
      * @param string $jobCode
      *
      * @return string

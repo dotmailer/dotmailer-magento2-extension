@@ -22,18 +22,20 @@ class GuestBatchProcessor extends AbstractBatchProcessor
     private $logger;
 
     /**
+     * GuestBatchProcessor constructor.
+     *
      * @param File $file
-     * @param ContactResourceFactory $contactResourceFactory
-     * @param DriverInterface $driver
      * @param ImporterFactory $importerFactory
      * @param Logger $logger
+     * @param ContactResourceFactory $contactResourceFactory
+     * @param DriverInterface $driver
      */
     public function __construct(
         File $file,
-		ImporterFactory $importerFactory,
-		Logger $logger,
-		ContactResourceFactory $contactResourceFactory,
-		DriverInterface $driver
+        ImporterFactory $importerFactory,
+        Logger $logger,
+        ContactResourceFactory $contactResourceFactory,
+        DriverInterface $driver
     ) {
         $this->importerFactory = $importerFactory;
         $this->logger = $logger;

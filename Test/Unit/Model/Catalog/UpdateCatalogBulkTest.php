@@ -69,7 +69,7 @@ class UpdateCatalogBulkTest extends TestCase
 
     /**
      * @dataProvider getProductCount
-     * @param $numberOfProducts
+     * @param        $numberOfProducts
      */
     public function testIfWeHaveOnlyNewProducts($numberOfProducts)
     {
@@ -94,6 +94,7 @@ class UpdateCatalogBulkTest extends TestCase
 
     /**
      * $numberOfProducts;
+     *
      * @dataProvider getProductCount
      */
     public function testIfWeHaveNoNewProducts($numberOfProducts)
@@ -120,6 +121,7 @@ class UpdateCatalogBulkTest extends TestCase
 
     /**
      * $numberOfProducts;
+     *
      * @dataProvider getProductCount
      */
     public function testIfWeHaveBothNewAndAlreadyExistingEntries($numberOfProducts)
@@ -151,6 +153,7 @@ class UpdateCatalogBulkTest extends TestCase
      * 1 => No New Entries
      * 2 => Both new and already existing Entries
      * Prepares and Generates test scenarios based on scope
+     *
      * @param $scope
      */
 
@@ -182,7 +185,8 @@ class UpdateCatalogBulkTest extends TestCase
 
     /**
      * Generates random values for product and catalogIds depending on scope
-     * @param $scope
+     *
+     * @param  $scope
      * @return array
      */
     private function getMinMaxValues($scope, $numberOfProducts)
@@ -215,7 +219,8 @@ class UpdateCatalogBulkTest extends TestCase
 
     /**
      * Generates Random Sku's
-     * @param $numberOfProducts
+     *
+     * @param  $numberOfProducts
      * @return array
      */
     private function generateBunches($numberOfProducts)
@@ -232,8 +237,9 @@ class UpdateCatalogBulkTest extends TestCase
 
     /**
      * Generates Random Catalog Id
-     * @param array $value
-     * @param int $numberOfProducts
+     *
+     * @param  array $value
+     * @param  int   $numberOfProducts
      * @return array
      */
     private function getCatalogIds($value, $numberOfProducts)
@@ -249,8 +255,8 @@ class UpdateCatalogBulkTest extends TestCase
     }
 
     /**
-     * @param $value
-     * @param $numberOfProducts
+     * @param  $value
+     * @param  $numberOfProducts
      * @return array
      */
     private function getIdsForProductMock($value, $numberOfProducts)
@@ -264,6 +270,7 @@ class UpdateCatalogBulkTest extends TestCase
 
     /**
      * Returns Possible Product amounts
+     *
      * @return array
      */
     public function getProductCount()

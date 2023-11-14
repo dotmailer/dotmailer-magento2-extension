@@ -19,6 +19,8 @@ class IntegrationInsights implements SyncInterface
     private $helper;
 
     /**
+     * IntegrationInsights constructor.
+     *
      * @param IntegrationInsightData $insightData
      * @param Data $helper
      */
@@ -29,6 +31,8 @@ class IntegrationInsights implements SyncInterface
     }
 
     /**
+     * Sync.
+     *
      * @param \DateTime|null $from
      * @throws \Magento\Framework\Exception\LocalizedException
      * @throws \Magento\Framework\Exception\NoSuchEntityException

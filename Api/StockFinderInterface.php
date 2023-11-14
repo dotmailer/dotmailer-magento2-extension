@@ -5,6 +5,8 @@ namespace Dotdigitalgroup\Email\Api;
 interface StockFinderInterface
 {
     /**
+     * Get stock qty.
+     *
      * This function calculates the stock Quantity for each Product.
      *
      * @param \Magento\Catalog\Model\Product $product

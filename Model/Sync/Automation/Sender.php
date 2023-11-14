@@ -34,6 +34,13 @@ class Sender
      */
     private $programMessage;
 
+    /**
+     * Sender constructor.
+     *
+     * @param Data $helper
+     * @param AutomationResource $automationResource
+     * @param DateTime $dateTime
+     */
     public function __construct(
         Data $helper,
         AutomationResource $automationResource,
@@ -45,6 +52,8 @@ class Sender
     }
 
     /**
+     * Send automation enrolments.
+     *
      * @param string $type
      * @param array $contacts
      * @param int $websiteId
@@ -75,6 +84,8 @@ class Sender
     }
 
     /**
+     * Send subscribed contacts to automation.
+     *
      * @param array $contactsArray
      * @param int $websiteId
      * @param int $programId
@@ -109,6 +120,7 @@ class Sender
      *
      * @param array $contacts
      * @param int $websiteId
+     * @param int $programId
      *
      * @return mixed
      * @throws \Exception

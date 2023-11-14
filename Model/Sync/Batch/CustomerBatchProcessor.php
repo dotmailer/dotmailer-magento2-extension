@@ -22,11 +22,13 @@ class CustomerBatchProcessor extends AbstractBatchProcessor
     private $logger;
 
     /**
+     * CustomerBatchProcessor constructor.
+     *
      * @param File $file
-     * @param ContactResourceFactory $contactResourceFactory
-     * @param DriverInterface $driver
      * @param ImporterFactory $importerFactory
      * @param Logger $logger
+     * @param ContactResourceFactory $contactResourceFactory
+     * @param DriverInterface $driver
      */
     public function __construct(
         File $file,

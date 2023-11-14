@@ -29,6 +29,12 @@ class OauthValidator
      */
     private $encryptor;
 
+    /**
+     * @param Data $helper
+     * @param Auth $auth
+     * @param Config $config
+     * @param EncryptorInterface $encryptor
+     */
     public function __construct(
         Data $helper,
         Auth $auth,
@@ -42,7 +48,9 @@ class OauthValidator
     }
 
     /**
-     * @param $url
+     * Create authorised url.
+     *
+     * @param string $url
      * @param string $suppressFooter
      * @return string
      */

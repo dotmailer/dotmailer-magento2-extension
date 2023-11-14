@@ -6,6 +6,8 @@ class Form extends \Magento\Backend\Block\Widget\Form\Generic
 {
 
     /**
+     * Prepare form.
+     *
      * @return \Magento\Backend\Block\Widget\Form\Generic
      */
     public function _prepareForm()

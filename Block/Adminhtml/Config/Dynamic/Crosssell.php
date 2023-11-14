@@ -6,5 +6,5 @@ class Crosssell extends ReadonlyFormField
 {
     use OrderRecommendation;
 
-    const URL_SLUG = 'crosssell';
+    public const URL_SLUG = 'crosssell';
 }

@@ -11,6 +11,9 @@ class Date
      */
     private $localeDateFactory;
 
+    /**
+     * @param TimezoneInterfaceFactory $localeDateFactory
+     */
     public function __construct(
         TimezoneInterfaceFactory $localeDateFactory
     ) {
@@ -22,7 +25,7 @@ class Date
      * Used to prepare customer DOB and date-type customer preferences.
      * Returns ISO_8601 date string, because input formats can differ.
      *
-     * @param $storeId
+     * @param int $storeId
      * @param string $date
      * @return string
      */

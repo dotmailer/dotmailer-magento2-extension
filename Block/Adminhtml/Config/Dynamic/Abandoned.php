@@ -26,6 +26,8 @@ class Abandoned extends \Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Re
     }
 
     /**
+     * Get element HTML.
+     *
      * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
      *
      * @return string

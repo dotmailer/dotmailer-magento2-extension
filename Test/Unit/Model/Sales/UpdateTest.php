@@ -197,6 +197,7 @@ class UpdateTest extends TestCase
     }
     /**
      * Returns PayloadData
+     *
      * @return array
      */
     private function getData()

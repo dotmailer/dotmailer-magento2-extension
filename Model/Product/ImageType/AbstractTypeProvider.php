@@ -57,6 +57,8 @@ abstract class AbstractTypeProvider
     }
 
     /**
+     * Get image type.
+     *
      * @param string|int $websiteId
      * @return array
      */
@@ -70,6 +72,8 @@ abstract class AbstractTypeProvider
     }
 
     /**
+     * Set image type.
+     *
      * @param int $websiteId
      */
     private function setImageType($websiteId)
@@ -95,6 +99,8 @@ abstract class AbstractTypeProvider
     }
 
     /**
+     * Get default id.
+     *
      * @return string
      */
     private function getDefaultId()
@@ -103,6 +109,8 @@ abstract class AbstractTypeProvider
     }
 
     /**
+     * Get default role.
+     *
      * @return string
      */
     private function getDefaultRole()
@@ -110,5 +118,10 @@ abstract class AbstractTypeProvider
         return $this->defaultRole;
     }
 
+    /**
+     * Get the config path.
+     *
+     * @return mixed
+     */
     abstract protected function getConfigpath();
 }

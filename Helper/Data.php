@@ -173,12 +173,12 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * Save API credentials sent by microsite
+     * Save API credentials sent by microsite.
      *
      * @param string $apiUsername
      * @param string $apiPassword
      * @param string|null $apiEndpoint
-     * @param $website
+     * @param WebsiteInterface $website
      * @return $this
      */
     public function saveApiCredentials(string $apiUsername, string $apiPassword, string $apiEndpoint = null, $website)
@@ -209,7 +209,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * Enable Engagement Cloud integration
+     * Enable engagement cloud integration.
+     *
+     * @param WebsiteInterface $website
      *
      * @return $this
      */
@@ -249,6 +251,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
+     * Is store enabled.
+     *
      * @param int $storeId
      *
      * @return bool
@@ -334,7 +338,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @param string $path
      * @param string $contextScope
-     * @param null $contextScopeId
+     * @param string|int|null $contextScopeId
      *
      * @return int|float|string|boolean
      */
@@ -380,6 +384,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     /**
      * Get website selected in admin.
+     *
      * @return \Magento\Store\Api\Data\WebsiteInterface|null
      * @throws \Magento\Framework\Exception\LocalizedException
      */
@@ -394,7 +399,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * @param $websiteId
+     * Get website by ID.
+     *
+     * @param string|int $websiteId
      * @return \Magento\Store\Api\Data\WebsiteInterface
      * @throws \Magento\Framework\Exception\LocalizedException
      */
@@ -404,7 +411,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * Get website for selected scope in admin
+     * Get website for selected scope in admin.
      *
      * @return \Magento\Store\Api\Data\WebsiteInterface
      */
@@ -468,6 +475,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
+     * Delete config data.
+     *
      * @param string $path
      * @param string $scope
      * @param int $scopeId
@@ -496,6 +505,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     /**
      * Log data to the extension's log file.
+     *
      * INFO (200): Interesting events.
      *
      * @param string $data
@@ -510,6 +520,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     /**
      * Log data to the extension's log file.
+     *
      * DEBUG (100): Detailed debug information.
      *
      * @param string $message
@@ -524,6 +535,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     /**
      * Log data to the extension's log file.
+     *
      * ERROR (400): Runtime errors.
      *
      * @param string $message
@@ -547,6 +559,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
+     * Is page tracking enabled.
+     *
      * @param string|int $websiteId
      * @return bool
      */
@@ -560,6 +574,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
+     * Is ROI tracking enabled.
+     *
      * @param string|int $websiteId
      * @return bool
      */
@@ -573,6 +589,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
+     * Is WBT enabled.
+     *
      * @param string|int $websiteId
      * @return bool
      */
@@ -586,7 +604,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
+     * Get or create contact.
+     *
      * @deprecated Use client methods directly.
+     * @see Client::getContactByEmail()
      *
      * @param string $email
      * @param int $websiteId
@@ -785,6 +806,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
+     * Generate dynamic URL.
+     *
      * Generate the baseurl for the default store
      * dynamic content will be displayed.
      *
@@ -816,7 +839,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * get sales_flat_order table description.
+     * Get sales_flat_order table description.
      *
      * @return array
      */
@@ -1050,6 +1073,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
+     * Get order status.
+     *
      * @param int $website
      *
      * @return string
@@ -1132,7 +1157,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * Get date last cron run.
+     * Get date last cron ran.
      *
      * @param string $cronJob
      * @return boolean|string
@@ -1317,7 +1342,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * Is only subscribers for AC.
+     * Is only subscribers for abandoned cart.
      *
      * @param int $storeId
      *
@@ -1334,7 +1359,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * Is only subscribers for review.
+     * Is only subscribers for review sync.
      *
      * @param int $websiteId
      *
@@ -1368,9 +1393,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * Get scope config.
+     * Get scope config interface.
      *
      * @deprecated Load directly via dependency injection.
+     * @see ScopeConfigInterface
      *
      * @return ScopeConfigInterface
      */
@@ -1385,8 +1411,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @deprecated Do not use this helper method
      * @see \Dotdigitalgroup\Email\Model\ResourceModel\Contact\Collection::loadByCustomerEmail
      *
-     * @param $email
-     * @param $websiteId
+     * @param string $email
+     * @param string|int $websiteId
      *
      * @return \Dotdigitalgroup\Email\Model\Contact
      */
@@ -1399,9 +1425,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Save contact.
      *
-	 * @deprecated Use resource models directly.
-	 * @see \Dotdigitalgroup\Email\Model\ResourceModel\Contact
-	 *
+     * @deprecated Use resource models directly.
+     * @see \Dotdigitalgroup\Email\Model\ResourceModel\Contact
+     *
      * @param \Dotdigitalgroup\Email\Model\Contact $contact
      */
     public function saveContact($contact)
@@ -1410,7 +1436,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * Get profile id.
+     * Get WBT profile id.
      *
      * @param int $websiteId
      * @return bool|string
@@ -1434,7 +1460,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * Is connector enabled at any level.
      *
      * @return bool
-     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function isConnectorEnabledAtAnyLevel()
     {

@@ -53,7 +53,7 @@ class SmtpTransporter
     }
 
     /**
-     * Extract zend mail message.
+     * Extract Zend mail message.
      *
      * @param TransportInterface $subject
      * @return Message

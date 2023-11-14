@@ -7,13 +7,16 @@ use Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult;
 class Collection extends SearchResult
 {
     /**
+     * _initSelect.
+     *
      * @return $this|Collection|void
      */
     protected function _initSelect()
     {
         parent::_initSelect();
 
-        $this->addFieldToSelect([
+        $this->addFieldToSelect(
+            [
             'id',
             'import_id',
             'import_type',
@@ -25,7 +28,8 @@ class Collection extends SearchResult
             'website_id',
             'created_at',
             'updated_at'
-        ]);
+            ]
+        );
 
         return $this;
     }

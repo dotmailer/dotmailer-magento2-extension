@@ -19,6 +19,7 @@ class AbandonedCartTypeProvider implements TypeProviderInterface
 
     /**
      * AbandonedCartTypeProvider constructor.
+     *
      * @param Abandoned $resourceModel
      * @param CollectionFactory $collectionFactory
      */
@@ -30,11 +31,21 @@ class AbandonedCartTypeProvider implements TypeProviderInterface
         $this->collectionFactory = $collectionFactory;
     }
 
+    /**
+     * Get collection factory.
+     *
+     * @return CollectionFactory
+     */
     public function getCollectionFactory()
     {
         return $this->collectionFactory;
     }
 
+    /**
+     * Get resource model.
+     *
+     * @return Abandoned
+     */
     public function getResourceModel()
     {
         return $this->resourceModel;

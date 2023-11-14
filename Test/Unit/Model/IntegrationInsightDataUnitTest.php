@@ -15,10 +15,10 @@ use PHPUnit\Framework\TestCase;
 
 class IntegrationInsightDataUnitTest extends TestCase
 {
-    const PLATFORM = 'Magento';
-    const EDITION = 'Community';
-    const VERSION = '2.3';
-    const CONNECTOR_VERSION = '3.4.0';
+    private const PLATFORM = 'Magento';
+    private const EDITION = 'Community';
+    private const VERSION = '2.3';
+    private const CONNECTOR_VERSION = '3.4.0';
 
     /**
      * @var IntegrationInsightData
@@ -75,17 +75,21 @@ class IntegrationInsightDataUnitTest extends TestCase
             ->expects($this->once())
             ->method('getModuleVersion')
             ->with('Dotdigitalgroup_Email')
-            ->willReturn([
+            ->willReturn(
+                [
                 'setup_version' => self::CONNECTOR_VERSION,
-            ]);
+                ]
+            );
 
         $this->storeManagerInterfaceMock->expects($this->once())
             ->method('getStores')
-            ->willReturn([
+            ->willReturn(
+                [
                 $this->getTestStore(1, 'Default', 'https://www.chaz-kangaroo.com', true),
                 $this->getTestStore(2, 'Typos', 'https://www.chaz-kangaroo.com/cauals', true),
                 $this->getTestStore(3, 'Bye Bye Man', 'https://www.bye-bye-man.com', false),
-            ]);
+                ]
+            );
 
         $this->integrationInsightData = new IntegrationInsightData(
             $this->helperMock,
@@ -108,12 +112,16 @@ class IntegrationInsightDataUnitTest extends TestCase
         $this->helperMock
             ->expects($this->any())
             ->method('isEnabled')
-            ->will($this->returnCallback(function () use (&$enabledCheck) {
-                if ($enabledCheck++ === 1) {
-                    return false;
-                }
-                return true;
-            }));
+            ->will(
+                $this->returnCallback(
+                    function () use (&$enabledCheck) {
+                        if ($enabledCheck++ === 1) {
+                            return false;
+                        }
+                        return true;
+                    }
+                )
+            );
 
         $data = $this->integrationInsightData->getIntegrationInsightData();
 
@@ -148,20 +156,44 @@ class IntegrationInsightDataUnitTest extends TestCase
     }
 
     /**
-     * @param int $websiteId
-     * @param string $websiteName
-     * @param string $baseUrl
-     * @param bool $isCurrentlySecure
+     * @param  int    $websiteId
+     * @param  string $websiteName
+     * @param  string $baseUrl
+     * @param  bool   $isCurrentlySecure
      * @return object
      */
     private function getTestStore(int $websiteId, string $websiteName, string $baseUrl, bool $isCurrentlySecure)
     {
         return new class($websiteId, $websiteName, $baseUrl, $isCurrentlySecure) {
+
+            /**
+             * @var int $websiteId
+             */
             private $websiteId;
+
+            /**
+             * @var string $websiteName
+             */
             private $websiteName;
+
+            /**
+             * @var string $baseUrl
+             */
             private $baseUrl;
+
+            /**
+             * @var bool $isCurrentlySecure
+             */
             private $isCurrentlySecure;
 
+            /**
+             * Constructor.
+             *
+             * @param $websiteId
+             * @param $websiteName
+             * @param $baseUrl
+             * @param $isCurrentlySecure
+             */
             public function __construct($websiteId, $websiteName, $baseUrl, $isCurrentlySecure)
             {
                 $this->websiteId = $websiteId;
@@ -188,8 +220,17 @@ class IntegrationInsightDataUnitTest extends TestCase
             public function getWebsite()
             {
                 return new class($this->websiteName) {
+
+                    /**
+                     * @var string $websiteName
+                     */
                     private $websiteName;
 
+                    /**
+                     * Constructor.
+                     *
+                     * @param $websiteName
+                     */
                     public function __construct($websiteName)
                     {
                         $this->websiteName = $websiteName;

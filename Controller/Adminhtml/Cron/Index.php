@@ -40,7 +40,6 @@ class Index extends Action implements HttpGetActionInterface
      */
     public function execute()
     {
-
         //Call page factory to render layout and page content
         /** @var \Magento\Backend\Model\View\Result\Page $resultPage */
         $resultPage = $this->resultPageFactory->create();

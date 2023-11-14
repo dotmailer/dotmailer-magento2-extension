@@ -20,6 +20,8 @@ class CouponAttribute extends AbstractExtensibleModel implements CouponAttribute
     private $dateTimeFactory;
 
     /**
+     * CouponAttribute constructor.
+     *
      * @param DateTimeFactory $dateTimeFactory
      * @param \Magento\Framework\Model\Context $context
      * @param \Magento\Framework\Registry $registry
@@ -52,13 +54,16 @@ class CouponAttribute extends AbstractExtensibleModel implements CouponAttribute
         );
     }
 
+    /**
+     * @inheritdoc
+     */
     protected function _construct()
     {
         $this->_init(\Dotdigitalgroup\Email\Model\ResourceModel\CouponAttribute::class);
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function getCouponId()
     {
@@ -66,7 +71,7 @@ class CouponAttribute extends AbstractExtensibleModel implements CouponAttribute
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function setCouponId($coupon_id)
     {
@@ -74,7 +79,7 @@ class CouponAttribute extends AbstractExtensibleModel implements CouponAttribute
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function getEmail()
     {
@@ -82,7 +87,7 @@ class CouponAttribute extends AbstractExtensibleModel implements CouponAttribute
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function setEmail($email)
     {
@@ -90,7 +95,7 @@ class CouponAttribute extends AbstractExtensibleModel implements CouponAttribute
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function getExpiresAt()
     {
@@ -98,7 +103,7 @@ class CouponAttribute extends AbstractExtensibleModel implements CouponAttribute
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function setExpiresAt(string $expiresAt)
     {
@@ -106,6 +111,8 @@ class CouponAttribute extends AbstractExtensibleModel implements CouponAttribute
     }
 
     /**
+     * Get the expires at date.
+     *
      * @return DateTime|null
      */
     public function getExpiresAtDate()
@@ -119,6 +126,8 @@ class CouponAttribute extends AbstractExtensibleModel implements CouponAttribute
     }
 
     /**
+     * Set the expires at date.
+     *
      * @param CouponAttributeInterface $couponAttribute
      * @return CouponAttribute
      */
@@ -128,6 +137,8 @@ class CouponAttribute extends AbstractExtensibleModel implements CouponAttribute
     }
 
     /**
+     * Get the extension attributes.
+     *
      * @return \Magento\Framework\Api\ExtensionAttributesInterface
      */
     public function getExtensionAttributes()

@@ -10,6 +10,8 @@ class DateTime extends \DateTime
     private $dateTimeZoneFactory;
 
     /**
+     * DateTime constructor.
+     *
      * @param DateTimeZoneFactory $dateTimeZoneFactory
      * @param string $time
      * @param DateTimeZone|null $timezone
@@ -25,6 +27,8 @@ class DateTime extends \DateTime
     }
 
     /**
+     * Get UTC date.
+     *
      * @return DateTime
      */
     public function getUtcDate()

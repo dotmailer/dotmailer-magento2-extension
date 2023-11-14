@@ -42,7 +42,7 @@ class Tracking extends \Magento\Framework\View\Element\Template
     /**
      * Page tracking available.
      *
-     * Checks if Extension and Page Tracking tracking is enabled.
+     * Checks if extension and page tracking is enabled.
      *
      * @return bool
      */

@@ -510,7 +510,8 @@ class Newsletter implements HttpPostActionInterface
     }
 
     /**
-     * Process general subscription
+     * Process general subscription.
+     *
      * See Magento\Newsletter\Controller\Manage\Save
      */
     private function processGeneralSubscription()

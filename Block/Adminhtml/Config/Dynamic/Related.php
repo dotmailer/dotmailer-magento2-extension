@@ -6,5 +6,5 @@ class Related extends ReadonlyFormField
 {
     use OrderRecommendation;
 
-    const URL_SLUG = 'related';
+    public const URL_SLUG = 'related';
 }

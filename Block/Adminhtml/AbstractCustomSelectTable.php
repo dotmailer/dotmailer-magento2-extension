@@ -54,6 +54,8 @@ abstract class AbstractCustomSelectTable extends AbstractFieldArray
     }
 
     /**
+     * Render cell template.
+     *
      * @param string $columnName
      * @return mixed|string
      * @throws \Exception
@@ -75,6 +77,8 @@ abstract class AbstractCustomSelectTable extends AbstractFieldArray
     }
 
     /**
+     * Prepare array row.
+     *
      * @param DataObject $row
      * @throws \Magento\Framework\Exception\LocalizedException
      */
@@ -90,6 +94,8 @@ abstract class AbstractCustomSelectTable extends AbstractFieldArray
     }
 
     /**
+     * To HTML.
+     *
      * @return string
      * @throws \Exception
      */
@@ -143,6 +149,8 @@ EOT;
     }
 
     /**
+     * Get field renderer.
+     *
      * @return Select
      * @throws \Magento\Framework\Exception\LocalizedException
      */

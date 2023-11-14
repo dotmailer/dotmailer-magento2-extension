@@ -7,8 +7,8 @@ use Magento\Framework\Filesystem\Directory\ReadFactory;
 
 class Module
 {
-    const MODULE_NAME = 'Dotdigitalgroup_Email';
-    const MODULE_DESCRIPTION = 'Dotdigital for Magento 2';
+    public const MODULE_NAME = 'Dotdigitalgroup_Email';
+    public const MODULE_DESCRIPTION = 'Dotdigital for Magento 2';
 
     /**
      * @var ComponentRegistrarInterface
@@ -35,6 +35,8 @@ class Module
     }
 
     /**
+     * Fetch active modules.
+     *
      * @param array $modules
      * @return array
      */
@@ -51,7 +53,7 @@ class Module
     }
 
     /**
-     * Get module composer version
+     * Get module composer version.
      *
      * @param string $moduleName
      * @return \Magento\Framework\Phrase|string|void

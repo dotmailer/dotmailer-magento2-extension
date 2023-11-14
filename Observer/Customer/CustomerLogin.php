@@ -46,6 +46,7 @@ class CustomerLogin implements ObserverInterface
 
     /**
      * CustomerLogin constructor.
+     *
      * @param Logger $logger
      * @param StoreManagerInterface $storeManager
      * @param ContactFactory $contactFactory
@@ -70,6 +71,8 @@ class CustomerLogin implements ObserverInterface
     }
 
     /**
+     * Execute.
+     *
      * @param Observer $observer
      * @return $this
      * @throws \Magento\Framework\Exception\LocalizedException

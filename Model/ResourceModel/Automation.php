@@ -3,6 +3,7 @@
 namespace Dotdigitalgroup\Email\Model\ResourceModel;
 
 use Dotdigitalgroup\Email\Setup\SchemaInterface as Schema;
+use Magento\Framework\Exception\AlreadyExistsException;
 
 class Automation extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
@@ -66,6 +67,8 @@ class Automation extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
+     * Update.
+     *
      * @param array $ids
      * @param string $date
      * @param bool $enrolmentStatus
@@ -86,11 +89,14 @@ class Automation extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
+     * Set status and save automation.
+     *
      * @param \Dotdigitalgroup\Email\Model\Automation $automation
      * @param string $status
      * @param string $message
      *
      * @return void
+     * @throws AlreadyExistsException
      */
     public function setStatusAndSaveAutomation($automation, $status, $message = '')
     {

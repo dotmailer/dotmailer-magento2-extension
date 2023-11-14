@@ -94,6 +94,8 @@ class Bestsellers extends \Dotdigitalgroup\Email\Block\Recommended
     }
 
     /**
+     * Get text for url.
+     *
      * @param null|string|bool|int|\Magento\Store\Api\Data\StoreInterface $store
      *
      * @return string|null

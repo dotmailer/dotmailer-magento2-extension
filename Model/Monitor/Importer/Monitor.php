@@ -10,7 +10,7 @@ use Magento\Framework\App\Config\ScopeConfigInterface;
 
 class Monitor extends AbstractMonitor implements MonitorInterface
 {
-    const MONITOR_ERROR_FLAG_CODE = 'ddg_monitor_importer_errors';
+    public const MONITOR_ERROR_FLAG_CODE = 'ddg_monitor_importer_errors';
 
     /**
      * @var CollectionFactory
@@ -28,6 +28,8 @@ class Monitor extends AbstractMonitor implements MonitorInterface
     protected $typeName = 'importer';
 
     /**
+     * Monitor constructor.
+     *
      * @param FlagManager $flagManager
      * @param ScopeConfigInterface $scopeConfig
      * @param CollectionFactory $importerCollectionFactory
@@ -44,6 +46,8 @@ class Monitor extends AbstractMonitor implements MonitorInterface
     }
 
     /**
+     * Fetch errors for the given time window.
+     *
      * @param array $timeWindow
      * @return array
      * @throws \Exception
@@ -56,6 +60,8 @@ class Monitor extends AbstractMonitor implements MonitorInterface
     }
 
     /**
+     * Filter the errors by date range.
+     *
      * @param array $items
      * @return array
      */

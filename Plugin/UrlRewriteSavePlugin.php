@@ -19,6 +19,12 @@ class UrlRewriteSavePlugin
      */
     private $catalogResource;
 
+    /**
+     * UrlRewriteSavePlugin constructor.
+     *
+     * @param \Magento\Framework\App\RequestInterface $request
+     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalogResource
+     */
     public function __construct(
         \Magento\Framework\App\RequestInterface $request,
         \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalogResource
@@ -28,10 +34,12 @@ class UrlRewriteSavePlugin
     }
 
     /**
-     * @param \Magento\UrlRewrite\Controller\Adminhtml\Url\Rewrite\Save $subject
-     * @param $result
+     * After execute.
      *
-     * @return mixed
+     * @param \Magento\UrlRewrite\Controller\Adminhtml\Url\Rewrite\Save $subject
+     * @param void $result
+     *
+     * @return void
      */
     public function afterExecute(
         \Magento\UrlRewrite\Controller\Adminhtml\Url\Rewrite\Save $subject,

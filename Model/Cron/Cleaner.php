@@ -85,7 +85,10 @@ class Cleaner implements TaskRunInterface
     }
 
     /**
-     * @param $additionalTables
+     * Get tables for cleanup.
+     *
+     * @param array $additionalTables
+     *
      * @return array
      */
     public function getTablesForCleanUp(array $additionalTables = [])

@@ -12,6 +12,16 @@ class CatalogReset extends Value
      */
     private $catalogResource;
 
+    /**
+     * @param Catalog $catalogResource
+     * @param \Magento\Framework\Model\Context $context
+     * @param \Magento\Framework\Registry $registry
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface $config
+     * @param \Magento\Framework\App\Cache\TypeListInterface $cacheTypeList
+     * @param \Magento\Framework\Model\ResourceModel\AbstractResource|null $resource
+     * @param \Magento\Framework\Data\Collection\AbstractDb|null $resourceCollection
+     * @param array $data
+     */
     public function __construct(
         Catalog $catalogResource,
         \Magento\Framework\Model\Context $context,
@@ -26,6 +36,11 @@ class CatalogReset extends Value
         parent::__construct($context, $registry, $config, $cacheTypeList, $resource, $resourceCollection, $data);
     }
 
+    /**
+     * After save.
+     *
+     * @return CatalogReset
+     */
     public function afterSave()
     {
         if (!$this->isValueChanged()) {

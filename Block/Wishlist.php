@@ -90,6 +90,8 @@ class Wishlist extends Recommended
     }
 
     /**
+     * Get wishlist.
+     *
      * @return bool|\Magento\Framework\DataObject
      */
     public function _getWishlist()

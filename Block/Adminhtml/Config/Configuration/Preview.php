@@ -8,6 +8,9 @@ use Magento\Store\Model\Store;
 
 class Preview extends \Magento\Backend\Block\Template
 {
+    /**
+     * @var string
+     */
     protected $_template = 'Dotdigitalgroup_Email::system/preview.phtml';
 
     /**

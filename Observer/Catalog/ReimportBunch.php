@@ -9,12 +9,24 @@ class ReimportBunch implements \Magento\Framework\Event\ObserverInterface
      */
     private $bulkUpdater;
 
+    /**
+     * ReimportBunch constructor.
+     *
+     * @param \Dotdigitalgroup\Email\Model\Catalog\UpdateCatalogBulk $updater
+     */
     public function __construct(
         \Dotdigitalgroup\Email\Model\Catalog\UpdateCatalogBulk $updater
     ) {
         $this->bulkUpdater = $updater;
     }
 
+    /**
+     * Execute.
+     *
+     * @param \Magento\Framework\Event\Observer $observer
+     *
+     * @return void
+     */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
         $bunch = $observer->getBunch();

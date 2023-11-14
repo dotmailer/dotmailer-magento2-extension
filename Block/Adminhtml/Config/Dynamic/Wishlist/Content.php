@@ -26,6 +26,8 @@ class Content extends \Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Read
     }
 
     /**
+     * Get element HTML.
+     *
      * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
      *
      * @return string

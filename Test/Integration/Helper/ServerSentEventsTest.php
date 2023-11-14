@@ -51,4 +51,3 @@ class ServerSentEventsTest extends TestCase
         $this->assertEquals([], $sse->getEventHandlers());
     }
 }
-

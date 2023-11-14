@@ -26,6 +26,7 @@ class RemoveWishlistItem implements \Magento\Framework\Event\ObserverInterface
 
     /**
      * RemoveWishlistItem constructor.
+     *
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist\CollectionFactory $emailWishlistCollectionFactory
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Wishlist $emailWishlistResource
      * @param Logger $logger
@@ -42,6 +43,7 @@ class RemoveWishlistItem implements \Magento\Framework\Event\ObserverInterface
 
     /**
      * Delete wishlist item event.
+     *
      * @param \Magento\Framework\Event\Observer $observer
      */
     public function execute(\Magento\Framework\Event\Observer $observer)

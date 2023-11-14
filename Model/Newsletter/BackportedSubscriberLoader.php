@@ -76,6 +76,8 @@ class BackportedSubscriberLoader
     }
 
     /**
+     * Load by customer.
+     *
      * @param int $customerId
      * @param int $websiteId
      *

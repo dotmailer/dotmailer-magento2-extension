@@ -8,5 +8,5 @@ class Upsell extends ReadonlyFormField
 {
     use CartRecommendation;
 
-    const URL_SLUG = 'upsell';
+    public const URL_SLUG = 'upsell';
 }

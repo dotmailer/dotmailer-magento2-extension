@@ -74,8 +74,8 @@ class WebBehaviourTracking implements ProductRenderCollectorInterface
     /**
      * Collect.
      *
-     * @param ProductInterface $product
-     * @param ProductRenderInterface $productRender
+     * @param  ProductInterface       $product
+     * @param  ProductRenderInterface $productRender
      * @throws NoSuchEntityException
      */
     public function collect(ProductInterface $product, ProductRenderInterface $productRender)
@@ -112,7 +112,7 @@ class WebBehaviourTracking implements ProductRenderCollectorInterface
     /**
      * Get product image.
      *
-     * @param ProductInterface $product
+     * @param  ProductInterface $product
      * @return string|null
      */
     private function getProductImage(ProductInterface $product)
@@ -132,7 +132,7 @@ class WebBehaviourTracking implements ProductRenderCollectorInterface
     /**
      * Get product categories.
      *
-     * @param ProductInterface $product
+     * @param  ProductInterface $product
      * @return array|null
      */
     private function getProductCategories(ProductInterface $product)
@@ -162,7 +162,7 @@ class WebBehaviourTracking implements ProductRenderCollectorInterface
     /**
      * Get product brand.
      *
-     * @param ProductInterface $product
+     * @param  ProductInterface $product
      * @return string|null
      */
     private function getProductBrand(ProductInterface $product)

@@ -265,26 +265,26 @@ class CatalogTest extends TestCase
             ->willReturn($this->importerMock);
 
         $this->importerMock->expects($this->atLeastOnce())
-                ->method('registerQueue')
-        ->withConsecutive(
-            [
+            ->method('registerQueue')
+            ->withConsecutive(
+                [
                 'Catalog_Store_1',
                 $productsToImport['Catalog_Store_1']['products'],
                 Importer::MODE_BULK,
                 $productsToImport['Catalog_Store_1']['websiteId']
-            ],
-            [
+                ],
+                [
                 'Catalog_Store_2',
                 $productsToImport['Catalog_Store_2']['products'],
                 Importer::MODE_BULK,
                 $productsToImport['Catalog_Store_2']['websiteId']
-            ],
-            [
+                ],
+                [
                 'Catalog_Store_3',
                 $productsToImport['Catalog_Store_3']['products'],
                 Importer::MODE_BULK,
                 $productsToImport['Catalog_Store_3']['websiteId']
-            ],
-        );
+                ],
+            );
     }
 }

@@ -5,7 +5,7 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Rules\Edit\Tab;
 class Coupons extends \Magento\Framework\View\Element\Template implements \Magento\Backend\Block\Widget\Tab\TabInterface
 {
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function getTabLabel()
     {
@@ -13,7 +13,7 @@ class Coupons extends \Magento\Framework\View\Element\Template implements \Magen
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function getTabTitle()
     {
@@ -21,7 +21,7 @@ class Coupons extends \Magento\Framework\View\Element\Template implements \Magen
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function canShowTab()
     {
@@ -29,19 +29,10 @@ class Coupons extends \Magento\Framework\View\Element\Template implements \Magen
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function isHidden()
     {
         return false;
-    }
-
-    /**
-     * {@inheritdoc}
-     * @codeCoverageIgnore
-     */
-    public function setCanShow($canShow)
-    {
-        $this->_data['config']['canShow'] = $canShow;
     }
 }

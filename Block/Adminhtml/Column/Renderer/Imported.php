@@ -5,6 +5,8 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Column\Renderer;
 class Imported extends \Magento\Backend\Block\Widget\Grid\Column\Renderer\AbstractRenderer
 {
     /**
+     * Render.
+     *
      * @param \Magento\Framework\DataObject $row
      *
      * @return string

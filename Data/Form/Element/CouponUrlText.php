@@ -7,6 +7,8 @@ use Magento\Framework\Data\Form\Element\Textarea;
 class CouponUrlText extends Textarea
 {
     /**
+     * Get HTML attributes.
+     *
      * @return array|string[]
      */
     public function getHtmlAttributes()

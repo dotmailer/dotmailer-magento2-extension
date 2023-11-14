@@ -26,6 +26,8 @@ class Productpush extends \Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\
     }
 
     /**
+     * Get element HTML.
+     *
      * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
      *
      * @return string
