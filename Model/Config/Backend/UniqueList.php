@@ -7,6 +7,7 @@ use Magento\Framework\Exception\ValidatorException;
 
 class UniqueList extends Value
 {
+    public const DOTDIGITAL_LIST_CONFIG_PATH = 'sync_settings/addressbook';
 
     /**
      * Validate unique list selection.
@@ -17,16 +18,17 @@ class UniqueList extends Value
     public function beforeSave()
     {
         $selectedValues = [];
-        $comparisonValues = $this->getComparisonValues();
-        $fields = [
-            'customers',
-            'subscribers',
-            'guests',
-            'sms_subscribers'
-        ];
+        $inheritedValues = $this->_config->getValue(static::DOTDIGITAL_LIST_CONFIG_PATH);
+        $comparisonValues = $this->getComparisonValues($inheritedValues);
+        $fields = array_filter(array_keys($comparisonValues), function (string $key) use ($inheritedValues) {
+            return in_array($key, array_keys($inheritedValues));
+        });
 
         foreach ($fields as $field) {
-            $value = $comparisonValues[$field] ?? null;
+            if ($field === 'allow_non_subscribers') {
+                continue;
+            }
+            $value = (array_key_exists($field, $comparisonValues)) ? $comparisonValues[$field] : "0";
             if ($value == "0") {
                 continue;
             }
@@ -46,15 +48,15 @@ class UniqueList extends Value
     /**
      * Get comparison values.
      *
+     * @param array $inheritedValues
      * @return array
      */
-    private function getComparisonValues(): array
+    private function getComparisonValues(array $inheritedValues): array
     {
-        $inheritedValues = $this->_config->getValue("sync_settings/addressbook", 'default');
         $configData = $this->_data['fieldset_data'];
 
         foreach ($configData as $key => $value) {
-            if (empty($value)) {
+            if (empty($value) && array_key_exists($key, $inheritedValues)) {
                 $configData[$key] = $inheritedValues[$key];
             }
         }
