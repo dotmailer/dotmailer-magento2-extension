@@ -1,3 +1,8 @@
+# 4.23.4
+
+### Bug fixes
+- Saving list values in Sync Settings could throw an error if the SMS Subscribers value was left as '--Please Select--'. This has been fixed.
+
 # 4.23.3
 
 ### Bug fixes
