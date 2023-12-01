@@ -17,6 +17,7 @@ use Dotdigitalgroup\Email\Model\Validator\Schema\SchemaValidatorFactory;
 use Magento\Catalog\Model\Product as MagentoProduct;
 use Magento\Catalog\Model\Product\Attribute\Source\StatusFactory;
 use Magento\Catalog\Model\Product\VisibilityFactory;
+use Magento\Framework\Stdlib\DateTime\DateTime;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Tax\Api\TaxCalculationInterface;
 
@@ -136,6 +137,11 @@ class Product extends AbstractConnectorModel
     public $attribute_set = '';
 
     /**
+     * @var string
+     */
+    public $created_date = '';
+
+    /**
      * @var AttributeModel
      */
     public $attributes;
@@ -201,7 +207,13 @@ class Product extends AbstractConnectorModel
     private $schemaValidator;
 
     /**
+     * @var DateTime
+     */
+    private $dateTime;
+
+    /**
      * Product constructor.
+     *
      * @param StoreManagerInterface $storeManagerInterface
      * @param StatusFactory $statusFactory
      * @param VisibilityFactory $visibilityFactory
@@ -214,6 +226,7 @@ class Product extends AbstractConnectorModel
      * @param CatalogSync $imageType
      * @param TaxCalculationInterface $taxCalculation
      * @param SchemaValidatorFactory $schemaValidatorFactory
+     * @param DateTime $dateTime
      */
     public function __construct(
         StoreManagerInterface $storeManagerInterface,
@@ -227,7 +240,8 @@ class Product extends AbstractConnectorModel
         StockFinderInterface $stockFinderInterface,
         CatalogSync $imageType,
         TaxCalculationInterface $taxCalculation,
-        SchemaValidatorFactory $schemaValidatorFactory
+        SchemaValidatorFactory $schemaValidatorFactory,
+        DateTime $dateTime
     ) {
         $this->visibilityFactory = $visibilityFactory;
         $this->statusFactory = $statusFactory;
@@ -241,6 +255,7 @@ class Product extends AbstractConnectorModel
         $this->imageType = $imageType;
         $this->taxCalculation = $taxCalculation;
         $this->schemaValidator = $schemaValidatorFactory->create(['pattern'=>static::SCHEMA_RULES]);
+        $this->dateTime = $dateTime;
     }
 
     /**
@@ -258,6 +273,7 @@ class Product extends AbstractConnectorModel
         $this->id = $product->getId();
         $this->sku = $product->getSku();
         $this->name = $product->getName();
+        $this->created_date = $this->dateTime->date(\DateTimeInterface::ATOM, $product->getCreatedAt());
 
         $this->status = $this->statusFactory->create()
             ->getOptionText($product->getStatus());

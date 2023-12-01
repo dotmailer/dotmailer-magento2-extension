@@ -168,8 +168,14 @@ class ProductTest extends TestCase
      */
     private $taxCalculationInterfaceMock;
 
+    /**
+     * @var \Magento\Framework\Stdlib\DateTime\DateTime|MockObject
+     */
+    private $dateTimeMock;
+
     protected function setUp() :void
     {
+
         $this->setUpValidator([]);
         $this->storeManagerMock = $this->createMock(StoreManagerInterface::class);
         $this->statusFactoryMock = $this->createMock(StatusFactory::class);
@@ -187,13 +193,14 @@ class ProductTest extends TestCase
                 'getPriceInfo',
                 'getVisibility',
                 'getCategoryCollection',
-                'getWebsiteIds'
+                'getWebsiteIds',
+                'getCreatedAt'
                 ]
             )
             ->addMethods(
                 [
-                'getTaxClassId',
-                'getShortDescription'
+                    'getTaxClassId',
+                    'getShortDescription'
                 ]
             )
             ->getMock();
@@ -221,6 +228,7 @@ class ProductTest extends TestCase
             $this->createMock(\Magento\Eav\Model\ResourceModel\Entity\Attribute::class)
         );
         $this->taxCalculationInterfaceMock = $this->createMock(TaxCalculationInterface::class);
+        $this->dateTimeMock = $this->createMock(\Magento\Framework\Stdlib\DateTime\DateTime::class);
         $this->product = new Product(
             $this->storeManagerMock,
             $this->statusFactoryMock,
@@ -233,7 +241,8 @@ class ProductTest extends TestCase
             $this->stockFinderInterfaceMock,
             $this->imageTypeMock,
             $this->taxCalculationInterfaceMock,
-            $this->schemaValidatorFactory
+            $this->schemaValidatorFactory,
+            $this->dateTimeMock
         );
 
         $status = 1;
@@ -562,6 +571,29 @@ class ProductTest extends TestCase
 
         $this->assertEquals($price_incl_tax, $this->product->price_incl_tax);
         $this->assertEquals($specialPrice_incl_tax, $this->product->specialPrice_incl_tax);
+    }
+
+    public function testCreatedDateFormat()
+    {
+        $this->mageProductMock->expects($this->atLeastOnce())
+            ->method('getCreatedAt')
+            ->willReturn('2021-02-01 00:00:00');
+
+        $this->dateTimeMock->expects($this->any())
+            ->method('date')
+            ->with(\DateTimeInterface::ATOM, '2021-02-01 00:00:00')
+            ->willReturn('2021-02-01T00:00:00+00:00');
+
+        $this->product->setProduct($this->mageProductMock, 1);
+
+        $createdDate = $this->product->created_date;
+        $date = \DateTime::createFromFormat(\DateTimeInterface::ATOM, $createdDate);
+
+        if ($date->format(\DateTimeInterface::ATOM) !== $createdDate) {
+            $this->fail('createdDate is not a valid date');
+        }
+
+        $this->assertTrue(true, 'createdDate is correctly formatted');
     }
 
     private function getArrayPrices()
