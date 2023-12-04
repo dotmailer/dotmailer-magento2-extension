@@ -39,12 +39,11 @@ trait CustomAttributesTrait
     private function getMultiSelectValues(Attribute $attribute, $attributeCode)
     {
         $options = $this->getOptions($attribute);
-        $selectedOptions = explode(',', $this->model->getData($attributeCode));
-
-        if (!is_array($options)) {
+        if (!is_array($options) || !is_string($this->model->getData($attributeCode))) {
             return '';
         }
 
+        $selectedOptions = explode(',', $this->model->getData($attributeCode));
         $optionsToReturn = [];
         foreach ($options as $option) {
             if (in_array($option['value'], $selectedOptions)) {
