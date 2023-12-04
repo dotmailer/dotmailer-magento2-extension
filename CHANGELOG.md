@@ -1,3 +1,8 @@
+# 4.23.5
+
+### Bug fixes
+We fixed an issue with `explode()` when syncing multi-select custom attribute values.
+
 # 4.23.4
 
 ### Bug fixes
