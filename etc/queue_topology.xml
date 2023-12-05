@@ -5,5 +5,9 @@
                  topic="ddg.sync.integration"
                  destinationType="queue"
                  destination="ddg.sync.queue"/>
+        <binding id="dotdigitalUnsubscribeExchange"
+                 topic="ddg.newsletter.unsubscribe"
+                 destinationType="queue"
+                 destination="ddg.unsubscribe.queue"/>
     </exchange>
 </config>

@@ -2,10 +2,9 @@
 
 namespace Dotdigitalgroup\Email\Model\Queue\Sync;
 
-use Dotdigitalgroup\Email\Model\Queue\ConsumerInterface;
 use Dotdigitalgroup\Email\Model\Sync\Integration\IntegrationInsights;
 
-class IntegrationInsightsConsumer implements ConsumerInterface
+class IntegrationInsightsConsumer
 {
     /**
      * @var IntegrationInsights $integrationInsights

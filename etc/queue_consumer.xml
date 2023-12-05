@@ -4,4 +4,8 @@
               queue="ddg.sync.queue"
               handler="Dotdigitalgroup\Email\Model\Queue\Sync\IntegrationInsightsConsumer::process"
               connection="db" />
+    <consumer name="ddg.newsletter.unsubscribe"
+              queue="ddg.unsubscribe.queue"
+              handler="Dotdigitalgroup\Email\Model\Queue\Newsletter\UnsubscriberConsumer::process"
+              connection="db" />
 </config>

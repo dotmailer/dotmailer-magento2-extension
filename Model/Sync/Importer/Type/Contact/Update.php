@@ -6,6 +6,7 @@ use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Connector\ContactData;
 use Dotdigitalgroup\Email\Model\Importer as ModelImporter;
+use Dotdigitalgroup\Email\Model\Queue\Newsletter\UnsubscriberConsumer;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact;
 use Dotdigitalgroup\Email\Model\Sync\Importer\Type\AbstractItemSyncer;
 use Dotdigitalgroup\Email\Model\Sync\Importer\Type\SingleItemPostProcessorFactory;
@@ -223,6 +224,9 @@ class Update extends AbstractItemSyncer
 
     /**
      * Sync Subscriber_Update.
+     *
+     * @deprecated
+     * @see UnsubscriberConsumer::process()
      *
      * @param array $importData
      * @param string|int $websiteId

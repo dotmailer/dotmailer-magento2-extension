@@ -2,8 +2,14 @@
 
 namespace Dotdigitalgroup\Email\Observer\Customer;
 
-use Dotdigitalgroup\Email\Model\Contact;
+use Dotdigitalgroup\Email\Helper\Data;
+use Dotdigitalgroup\Email\Model\ContactFactory;
+use Dotdigitalgroup\Email\Model\ImporterFactory;
+use Dotdigitalgroup\Email\Model\Queue\Data\UnsubscriberDataFactory;
 use Dotdigitalgroup\Email\Model\Importer;
+use Dotdigitalgroup\Email\Model\ResourceModel\Contact;
+use Magento\Framework\MessageQueue\PublisherInterface;
+use Magento\Store\Model\StoreManagerInterface;
 
 /**
  * Removes the contact if the customer is deleted.
@@ -36,24 +42,40 @@ class RemoveContact implements \Magento\Framework\Event\ObserverInterface
     private $storeManager;
 
     /**
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contactResource
-     * @param \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
-     * @param \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
-     * @param \Dotdigitalgroup\Email\Helper\Data $data
-     * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
+     * @var UnsubscriberDataFactory
+     */
+    private $unsubscriberDataFactory;
+
+    /**
+     * @var PublisherInterface
+     */
+    private $publisher;
+
+    /**
+     * @param Contact $contactResource
+     * @param ImporterFactory $importerFactory
+     * @param ContactFactory $contactFactory
+     * @param Data $data
+     * @param StoreManagerInterface $storeManagerInterface
+     * @param PublisherInterface $publisher
+     * @param UnsubscriberDataFactory $unsubscriberDataFactory
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contactResource,
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
         \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
         \Dotdigitalgroup\Email\Helper\Data $data,
-        \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
+        \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
+        PublisherInterface $publisher,
+        UnsubscriberDataFactory $unsubscriberDataFactory
     ) {
         $this->contactFactory = $contactFactory;
         $this->importerFactory = $importerFactory;
         $this->helper = $data;
         $this->contactResource = $contactResource;
         $this->storeManager = $storeManagerInterface;
+        $this->publisher = $publisher;
+        $this->unsubscriberDataFactory = $unsubscriberDataFactory;
     }
 
     /**
@@ -109,12 +131,12 @@ class RemoveContact implements \Magento\Framework\Event\ObserverInterface
 
             $this->contactResource->save($contact);
 
-            $this->importerFactory->create()->registerQueue(
-                Importer::IMPORT_TYPE_SUBSCRIBER_UPDATE,
-                ['email' => $email, 'id' => $contact->getId()],
-                Importer::MODE_SUBSCRIBER_UNSUBSCRIBE,
-                $websiteId
-            );
+            $unsubscriber = $this->unsubscriberDataFactory->create();
+            $unsubscriber->setEmail($email);
+            $unsubscriber->setId($contact->getId());
+            $unsubscriber->setWebsiteId($websiteId);
+
+            $this->publisher->publish('ddg.newsletter.unsubscribe', $unsubscriber);
         } catch (\Exception $e) {
             $this->helper->debug('Error when unsubscribing a customer', [(string) $e]);
         }
