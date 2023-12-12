@@ -1,3 +1,8 @@
+# 4.23.6
+
+### Improvements
+- We added a `created_date` property to be synced with all products into catalog insight data.
+
 # 4.23.5
 
 ### Bug fixes
