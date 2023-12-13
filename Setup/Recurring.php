@@ -23,7 +23,7 @@ class Recurring implements InstallSchemaInterface
      * @param ExternalFKSetup $externalFKSetup
      */
     public function __construct(
-        ExternalFKSetup $externalFKSetup,
+        ExternalFKSetup $externalFKSetup
     ) {
         $this->externalFKSetup = $externalFKSetup;
     }
