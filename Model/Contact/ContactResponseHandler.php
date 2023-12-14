@@ -3,10 +3,11 @@
 namespace Dotdigitalgroup\Email\Model\Contact;
 
 use Dotdigitalgroup\Email\Model\Apiconnector\Client;
-use Dotdigitalgroup\Email\Model\Contact;
 use Dotdigitalgroup\Email\Model\ContactFactory;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact as ContactResource;
 use Dotdigitalgroup\Email\Model\StatusInterface;
+use Dotdigital\V3\Models\Contact as ContactModel;
+use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory as ContactCollectionFactory;
 use Magento\Framework\Exception\LocalizedException;
 
 class ContactResponseHandler
@@ -22,17 +23,33 @@ class ContactResponseHandler
     private $contactResource;
 
     /**
+     * @var ContactDeactivator
+     */
+    private $contactDeactivator;
+
+    /**
+     * @var ContactCollectionFactory
+     */
+    private $contactCollectionFactory;
+
+    /**
      * ContactResponseHandler constructor.
      *
      * @param ContactFactory $contactFactory
      * @param ContactResource $contactResource
+     * @param ContactDeactivator $contactDeactivator
+     * @param ContactCollectionFactory $contactCollectionFactory
      */
     public function __construct(
         ContactFactory $contactFactory,
-        ContactResource $contactResource
+        ContactResource $contactResource,
+        ContactDeactivator $contactDeactivator,
+        ContactCollectionFactory $contactCollectionFactory
     ) {
         $this->contactFactory = $contactFactory;
         $this->contactResource = $contactResource;
+        $this->contactDeactivator = $contactDeactivator;
+        $this->contactCollectionFactory = $contactCollectionFactory;
     }
 
     /**
@@ -95,7 +112,7 @@ class ContactResponseHandler
 
         if (isset($response->message)) {
             if ($response->message == Client::API_ERROR_CONTACT_SUPPRESSED) {
-                $this->deactivateContact($contact);
+                $this->contactDeactivator->deactivateContact($contact);
             }
             throw new LocalizedException(__($response->message));
         }
@@ -116,6 +133,23 @@ class ContactResponseHandler
         $this->contactResource->save($contact);
 
         return $response;
+    }
+
+    /**
+     * Process contact response.
+     *
+     * @param ContactModel $contactResponse
+     * @param int $websiteId
+     * @return void
+     * @throws \Magento\Framework\Exception\AlreadyExistsException
+     */
+    public function processV3ContactResponse(ContactModel $contactResponse, int $websiteId)
+    {
+        if ($contactResponse->getStatus() === 'suppressed') {
+            $contactEmail = $this->contactCollectionFactory->create()
+                ->loadByCustomerEmail($contactResponse->getIdentifiers()->getEmail(), $websiteId);
+            $this->contactDeactivator->deactivateContact($contactEmail);
+        }
     }
 
     /**
@@ -152,20 +186,5 @@ class ContactResponseHandler
         }
 
         return 0;
-    }
-
-    /**
-     * Deactivate contact i.e. mark as imported AND suppressed.
-     *
-     * @param Contact $contact
-     *
-     * @return void
-     * @throws \Magento\Framework\Exception\AlreadyExistsException
-     */
-    private function deactivateContact(Contact $contact): void
-    {
-        $contact->setEmailImported(1);
-        $contact->setSuppressed(1);
-        $this->contactResource->save($contact);
     }
 }

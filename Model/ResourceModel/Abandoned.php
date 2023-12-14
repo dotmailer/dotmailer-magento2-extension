@@ -2,6 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Model\ResourceModel;
 
+use Dotdigitalgroup\Email\Model\StatusInterface;
 use Dotdigitalgroup\Email\Setup\SchemaInterface as Schema;
 
 class Abandoned extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
@@ -73,6 +74,25 @@ class Abandoned extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         ];
 
         $where = ['quote_id IN(?)' => $ids];
+        $this->getConnection()->update(
+            $this->getTable(Schema::EMAIL_ABANDONED_CART_TABLE),
+            $bind,
+            $where
+        );
+    }
+
+    /**
+     * Update Email for pending abandoned carts.
+     *
+     * @param string $emailBefore
+     * @param string $newEmail
+     * @return void
+     */
+    public function updateEmailForPendingAbandonedCarts($emailBefore, $newEmail)
+    {
+        $bind = ['email' => $newEmail];
+        $where = ['email = ?' => $emailBefore, 'status = ?' => StatusInterface::PENDING_OPT_IN];
+
         $this->getConnection()->update(
             $this->getTable(Schema::EMAIL_ABANDONED_CART_TABLE),
             $bind,

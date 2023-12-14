@@ -5,6 +5,7 @@ namespace Dotdigitalgroup\Email\Observer\Newsletter;
 use Dotdigitalgroup\Email\Helper\Config;
 use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Model\AutomationFactory;
+use Dotdigitalgroup\Email\Model\Contact as ContactModel;
 use Dotdigitalgroup\Email\Model\ContactFactory;
 use Dotdigitalgroup\Email\Model\ImporterFactory;
 use Dotdigitalgroup\Email\Model\ResourceModel\Automation;
@@ -204,20 +205,24 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
                 if ($contactEmail->getSuppressed()) {
                     return $this;
                 }
-                $contactEmail->setIsSubscriber(0);
-                $this->contactResource->save($contactEmail);
 
                 if ($subscriberStatus == Subscriber::STATUS_UNCONFIRMED ||
                     $subscriberStatus == Subscriber::STATUS_NOT_ACTIVE) {
+                    $this->saveContactAsNotSubscribed($contactEmail);
                     return $this;
                 }
 
-                $unsubscriber = $this->unsubscriberDataFactory->create();
-                $unsubscriber->setId($contactEmail->getId());
-                $unsubscriber->setEmail($email);
-                $unsubscriber->setWebsiteId($websiteId);
+                //Check if previously subscribed
+                if ($contactEmail->getIsSubscriber()) {
+                    $unsubscriber = $this->unsubscriberDataFactory->create();
+                    $unsubscriber->setId($contactEmail->getId());
+                    $unsubscriber->setEmail($email);
+                    $unsubscriber->setWebsiteId($websiteId);
 
-                $this->publisher->publish('ddg.newsletter.unsubscribe', $unsubscriber);
+                    $this->publisher->publish('ddg.newsletter.unsubscribe', $unsubscriber);
+                }
+
+                $this->saveContactAsNotSubscribed($contactEmail);
             }
 
             // fix for a multiple hit of the observer. stop adding the duplicates on the automation
@@ -317,5 +322,18 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
             ->getSubscriberAutomationByEmail($email, $websiteId);
 
         return $matching->getSize() ? true : false;
+    }
+
+    /**
+     * Save contact as unsubscribed.
+     *
+     * @param ContactModel $contact
+     * @return void
+     * @throws \Magento\Framework\Exception\AlreadyExistsException
+     */
+    private function saveContactAsNotSubscribed(ContactModel $contact)
+    {
+        $contact->setIsSubscriber(0);
+        $this->contactResource->save($contact);
     }
 }

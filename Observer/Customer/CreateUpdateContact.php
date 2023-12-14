@@ -5,15 +5,15 @@ namespace Dotdigitalgroup\Email\Observer\Customer;
 use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Model\Contact;
 use Dotdigitalgroup\Email\Model\ContactFactory;
-use Dotdigitalgroup\Email\Model\Importer;
-use Dotdigitalgroup\Email\Model\ImporterFactory;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory;
 use Dotdigitalgroup\Email\Helper\Config;
+use Dotdigitalgroup\Email\Model\Queue\Data\EmailUpdateDataFactory;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Exception\AlreadyExistsException;
 use Magento\Framework\Registry;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Store\Api\StoreWebsiteRelationInterface;
+use Magento\Framework\MessageQueue\PublisherInterface;
 
 /**
  * Creates and updates the contact for customer. Monitor the email change for customer.
@@ -47,11 +47,6 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
     private $contactCollectionFactory;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\ImporterFactory
-     */
-    private $importerFactory;
-
-    /**
      * @var StoreManagerInterface
      */
     private $storeManager;
@@ -72,16 +67,27 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
     private $storeWebsiteRelation;
 
     /**
+     * @var EmailUpdateDataFactory
+     */
+    private $emailUpdateDataFactory;
+
+    /**
+     * @var PublisherInterface
+     */
+    private $publisher;
+
+    /**
      * @param ContactFactory $contactFactory
      * @param CollectionFactory $contactCollectionFactory
      * @param Registry $registry
      * @param Data $data
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contactResource
-     * @param ImporterFactory $importerFactory
      * @param StoreManagerInterface $storeManager
      * @param ScopeConfigInterface $scopeConfig
      * @param Config $config
      * @param StoreWebsiteRelationInterface $storeWebsiteRelation
+     * @param EmailUpdateDataFactory $emailUpdateDataFactory
+     * @param PublisherInterface $publisher
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
@@ -89,22 +95,24 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
         \Magento\Framework\Registry $registry,
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contactResource,
-        \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
         StoreManagerInterface $storeManager,
         ScopeConfigInterface $scopeConfig,
         Config $config,
-        StoreWebsiteRelationInterface $storeWebsiteRelation
+        StoreWebsiteRelationInterface $storeWebsiteRelation,
+        EmailUpdateDataFactory $emailUpdateDataFactory,
+        PublisherInterface $publisher
     ) {
         $this->contactFactory = $contactFactory;
         $this->contactCollectionFactory = $contactCollectionFactory;
         $this->contactResource = $contactResource;
         $this->helper = $data;
         $this->registry = $registry;
-        $this->importerFactory = $importerFactory;
         $this->storeManager = $storeManager;
         $this->scopeConfig = $scopeConfig;
         $this->config = $config;
         $this->storeWebsiteRelation = $storeWebsiteRelation;
+        $this->emailUpdateDataFactory = $emailUpdateDataFactory;
+        $this->publisher = $publisher;
     }
 
     /**
@@ -160,7 +168,7 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
             foreach ($matchingCustomers as $contactModel) {
                 $contactModel = $this->checkForEmailUpdate($contactModel, $email);
                 $contactModel = $this->checkForWebsiteUpdate($contactModel, $websiteId);
-
+                
                 $contactModel->setEmailImported(Contact::EMAIL_CONTACT_NOT_IMPORTED);
                 $this->contactResource->save($contactModel);
             }
@@ -228,20 +236,12 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
         if ($newEmail != $emailBefore) {
             $contactModel->setEmail($newEmail);
 
-            $data = [
-                'emailBefore' => $emailBefore,
-                'email' => $newEmail
-            ];
+            $emailUpdateData = $this->emailUpdateDataFactory->create();
+            $emailUpdateData->setEmailBefore($emailBefore);
+            $emailUpdateData->setEmail($newEmail);
+            $emailUpdateData->setWebsiteId((int) $contactModel->getWebsiteId());
 
-            $this->importerFactory->create()
-                ->registerQueue(
-                    Importer::IMPORT_TYPE_CONTACT_UPDATE,
-                    $data,
-                    Importer::MODE_CONTACT_EMAIL_UPDATE,
-                    $contactModel->getWebsiteId()
-                );
-
-            $this->removeAnyNonCustomerRowMatchingNewEmail($newEmail, $contactModel->getWebsiteId());
+            $this->publisher->publish('ddg.contact.email_update', $emailUpdateData);
         }
 
         return $contactModel;
@@ -279,29 +279,5 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
     {
         $storeIds = $this->storeWebsiteRelation->getStoreByWebsiteId($websiteId);
         return reset($storeIds);
-    }
-
-    /**
-     * Remove any non-customer matching the updated email.
-     *
-     * @param string $email
-     * @param string|int $websiteId
-     *
-     * @return void
-     * @throws \Exception
-     */
-    private function removeAnyNonCustomerRowMatchingNewEmail($email, $websiteId)
-    {
-        $orphaned = $this->contactCollectionFactory->create()
-            ->loadNonCustomerByEmailAndWebsiteId(
-                $email,
-                $websiteId
-            );
-
-        if ($orphaned->getSize()) {
-            /** @var Contact $row */
-            $row = $orphaned->getFirstItem();
-            $this->contactResource->delete($row);
-        }
     }
 }

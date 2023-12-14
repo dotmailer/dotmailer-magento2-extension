@@ -14,4 +14,11 @@
             method="process"
         />
     </topic>
+    <topic name="ddg.contact.email_update" request="Dotdigitalgroup\Email\Model\Queue\Data\EmailUpdateData">
+        <handler
+            name="ddg_contact_email_update"
+            type="Dotdigitalgroup\Email\Model\Queue\Customer\EmailUpdateConsumer"
+            method="process"
+        />
+    </topic>
 </config>

@@ -6,10 +6,12 @@ use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Connector\ContactData;
 use Dotdigitalgroup\Email\Model\Importer as ModelImporter;
+use Dotdigitalgroup\Email\Model\Queue\Customer\EmailUpdateConsumer;
 use Dotdigitalgroup\Email\Model\Queue\Newsletter\UnsubscriberConsumer;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact;
 use Dotdigitalgroup\Email\Model\Sync\Importer\Type\AbstractItemSyncer;
 use Dotdigitalgroup\Email\Model\Sync\Importer\Type\SingleItemPostProcessorFactory;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Serialize\SerializerInterface;
 use Magento\Newsletter\Model\Subscriber;
 
@@ -169,8 +171,12 @@ class Update extends AbstractItemSyncer
     /**
      * Sync Contact_Email_Update.
      *
+     * @deprecated
+     * @see EmailUpdateConsumer::process()
+     *
      * @param array $importData
      * @return \StdClass
+     * @throws LocalizedException
      */
     private function syncItemContactEmailUpdateMode($importData)
     {

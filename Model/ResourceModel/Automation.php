@@ -2,6 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Model\ResourceModel;
 
+use Dotdigitalgroup\Email\Model\StatusInterface;
 use Dotdigitalgroup\Email\Setup\SchemaInterface as Schema;
 use Magento\Framework\Exception\AlreadyExistsException;
 
@@ -81,6 +82,30 @@ class Automation extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         }
 
         $where = ['id IN(?)' => $ids];
+        $this->getConnection()->update(
+            $this->getTable(Schema::EMAIL_AUTOMATION_TABLE),
+            $bind,
+            $where
+        );
+    }
+
+    /**
+     * Update email for pending automations.
+     *
+     * @param string $emailBefore
+     * @param string $newEmail
+     * @return void
+     */
+    public function updateEmailForPendingAutomations($emailBefore, $newEmail)
+    {
+        $bind = ['email' => $newEmail];
+        $where = ['email = ?' => $emailBefore,
+            'enrolment_status in (?)' => [
+                    StatusInterface::PENDING,
+                    StatusInterface::PENDING_OPT_IN,
+                ]
+        ];
+
         $this->getConnection()->update(
             $this->getTable(Schema::EMAIL_AUTOMATION_TABLE),
             $bind,

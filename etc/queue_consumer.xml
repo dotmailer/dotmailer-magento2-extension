@@ -8,4 +8,8 @@
               queue="ddg.unsubscribe.queue"
               handler="Dotdigitalgroup\Email\Model\Queue\Newsletter\UnsubscriberConsumer::process"
               connection="db" />
+    <consumer name="ddg.contact.email_update"
+              queue="ddg.email_update.queue"
+              handler="Dotdigitalgroup\Email\Model\Queue\Customer\EmailUpdateConsumer::process"
+              connection="db" />
 </config>

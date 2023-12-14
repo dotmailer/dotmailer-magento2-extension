@@ -9,5 +9,8 @@
                  topic="ddg.newsletter.unsubscribe"
                  destinationType="queue"
                  destination="ddg.unsubscribe.queue"/>
+        <binding id="dotdigitalContactEmailUpdate"
+                 topic="ddg.contact.email_update"
+                 destination="ddg.email_update.queue"/>
     </exchange>
 </config>
