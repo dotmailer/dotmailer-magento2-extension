@@ -64,25 +64,24 @@ class ContactManager
      * @param Contact $contact
      * @param Subscriber $subscriber
      * @param array $automationDataFields
+     * @param string $automationType
      *
      * @return int
      * @throws LocalizedException
      * @throws PendingOptInException
      */
-    public function prepareDotdigitalContact(Contact $contact, Subscriber $subscriber, array $automationDataFields): int
-    {
+    public function prepareDotdigitalContact(
+        Contact $contact,
+        Subscriber $subscriber,
+        array $automationDataFields,
+        string $automationType
+    ): int {
         $addressBookId = '';
         $dataFields = [];
         $email = $contact->getEmail();
         $websiteId = $contact->getWebsiteId();
 
-        if (!$subscriber->isSubscribed() && $this->helper->isOnlySubscribersForContactSync($websiteId)) {
-            throw new LocalizedException(
-                __('Non-subscribed contacts cannot be enrolled.')
-            );
-        }
-
-        if ($this->canPushContactToCustomerAddressBook($contact)) {
+        if ($this->canPushContactToCustomerAddressBook($contact, $subscriber, $automationType)) {
             $addressBookId = $this->helper->getCustomerAddressBook($websiteId);
             $dataFields = $this->dataFieldCollector->mergeFields(
                 $automationDataFields,
@@ -91,7 +90,7 @@ class ContactManager
                     $websiteId
                 )
             );
-        } elseif ($this->canPushContactToGuestAddressBook($contact)) {
+        } elseif ($this->canPushContactToGuestAddressBook($contact, $subscriber, $automationType)) {
             $addressBookId = $this->helper->getGuestAddressBook($websiteId);
             $dataFields = $this->dataFieldCollector->mergeFields(
                 $automationDataFields,
@@ -128,16 +127,31 @@ class ContactManager
      * Check if we can push a customer to the customer address book.
      *
      * @param Contact $contact
+     * @param Subscriber $subscriber
+     * @param string $automationType
      *
      * @return bool
      */
-    private function canPushContactToCustomerAddressBook(Contact $contact): bool
-    {
+    private function canPushContactToCustomerAddressBook(
+        Contact $contact,
+        Subscriber $subscriber,
+        string $automationType
+    ): bool {
         if (!$contact->getCustomerId()) {
             return false;
         }
 
         if (!$this->helper->isCustomerSyncEnabled($contact->getWebsiteId())) {
+            return false;
+        }
+
+        if ($this->weAreEnrollingViaAbandonedCartNonSubscriberLoophole(
+            $contact->getWebsiteId(),
+            $contact->getStoreId(),
+            $subscriber->isSubscribed(),
+            $automationType
+        )
+        ) {
             return false;
         }
 
@@ -148,16 +162,31 @@ class ContactManager
      * Check if we can push a guest to the guest address book.
      *
      * @param Contact $contact
+     * @param Subscriber $subscriber
+     * @param string $automationType
      *
      * @return bool
      */
-    private function canPushContactToGuestAddressBook(Contact $contact): bool
-    {
+    private function canPushContactToGuestAddressBook(
+        Contact $contact,
+        Subscriber $subscriber,
+        string $automationType
+    ): bool {
         if (!$contact->getIsGuest()) {
             return false;
         }
 
         if (!$this->helper->isGuestSyncEnabled($contact->getWebsiteId())) {
+            return false;
+        }
+
+        if ($this->weAreEnrollingViaAbandonedCartNonSubscriberLoophole(
+            $contact->getWebsiteId(),
+            $contact->getStoreId(),
+            $subscriber->isSubscribed(),
+            $automationType
+        )
+        ) {
             return false;
         }
 
@@ -268,5 +297,34 @@ class ContactManager
     {
         $contact->setSubscriberImported(1);
         $this->contactResource->save($contact);
+    }
+
+    /**
+     * Determine if we are enrolling via the 'allow subscribers for AC' loophole.
+     *
+     * If the enrolment is 'abandoned_cart_automation'
+     * and we're not allowed to enrol non-subscribers as a general rule
+     * but we're allowing AC non-subscribers as a special case
+     * then OK
+     * but
+     * don't put them into any lists in Dotdigital.
+     *
+     * @param string|int $websiteId
+     * @param string|int $storeId
+     * @param bool $isSubscribed
+     * @param string $automationType
+     *
+     * @return bool
+     */
+    private function weAreEnrollingViaAbandonedCartNonSubscriberLoophole(
+        $websiteId,
+        $storeId,
+        bool $isSubscribed,
+        string $automationType
+    ): bool {
+        return $automationType === AutomationTypeHandler::AUTOMATION_TYPE_ABANDONED_CART_PROGRAM_ENROLMENT &&
+            !$isSubscribed &&
+            $this->helper->isOnlySubscribersForContactSync($websiteId) &&
+            !$this->helper->isOnlySubscribersForAC($storeId);
     }
 }

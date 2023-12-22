@@ -3,6 +3,7 @@
 namespace Dotdigitalgroup\Email\Model\Sync\Automation;
 
 use Dotdigitalgroup\Email\Exception\PendingOptInException;
+use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Automation;
 use Dotdigitalgroup\Email\Model\ContactFactory;
@@ -11,9 +12,16 @@ use Dotdigitalgroup\Email\Model\ResourceModel\Automation as AutomationResource;
 use Dotdigitalgroup\Email\Model\StatusInterface;
 use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\DataFieldCollector;
 use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\DataFieldTypeHandler;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Newsletter\Model\Subscriber;
 
 class AutomationProcessor
 {
+    /**
+     * @var Data
+     */
+    protected $helper;
+
     /**
      * @var Logger
      */
@@ -52,6 +60,7 @@ class AutomationProcessor
     /**
      * AutomationProcessor constructor.
      *
+     * @param Data $helper
      * @param Logger $logger
      * @param AutomationResource $automationResource
      * @param ContactFactory $contactFactory
@@ -61,6 +70,7 @@ class AutomationProcessor
      * @param BackportedSubscriberLoader $backportedSubscriberLoader
      */
     public function __construct(
+        Data $helper,
         Logger $logger,
         AutomationResource $automationResource,
         ContactFactory $contactFactory,
@@ -69,6 +79,7 @@ class AutomationProcessor
         DataFieldTypeHandler $dataFieldTypeHandler,
         BackportedSubscriberLoader $backportedSubscriberLoader
     ) {
+        $this->helper = $helper;
         $this->logger = $logger;
         $this->automationResource = $automationResource;
         $this->contactFactory = $contactFactory;
@@ -104,10 +115,13 @@ class AutomationProcessor
                     ->loadByCustomerEmail($email, $websiteId);
                 $automationSubscriber = $this->backportedSubscriberLoader->loadBySubscriberEmail($email, $websiteId);
 
+                $this->checkNonSubscriberCanBeEnrolled($automationSubscriber, $automation);
+
                 $contactId = $this->contactManager->prepareDotdigitalContact(
                     $automationContact,
                     $automationSubscriber,
-                    $automationDataFields
+                    $automationDataFields,
+                    $automation->getAutomationType()
                 );
 
                 $data[$websiteId][$storeId]['contacts'][$automation->getId()] = $contactId;
@@ -169,5 +183,27 @@ class AutomationProcessor
             $automation->getTypeId(),
             $automation->getStoreName()
         );
+    }
+
+    /**
+     * Check non-subscriber can be enrolled.
+     *
+     * For all automations apart from AC, this is governed by the switch in Sync Settings.
+     *
+     * @param Subscriber $subscriber
+     * @param Automation $automation
+     *
+     * @return void
+     * @throws LocalizedException
+     */
+    protected function checkNonSubscriberCanBeEnrolled(Subscriber $subscriber, Automation $automation)
+    {
+        if (!$subscriber->isSubscribed() &&
+            $this->helper->isOnlySubscribersForContactSync($automation->getWebsiteId())
+        ) {
+            throw new LocalizedException(
+                __('Non-subscribed contacts cannot be enrolled.')
+            );
+        }
     }
 }

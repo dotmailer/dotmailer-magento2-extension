@@ -27,15 +27,15 @@ trait AutomationProcessorTrait
 
     private function setupAutomationModel()
     {
-        $this->automationModelMock->expects($this->once())
+        $this->automationModelMock->expects($this->any())
             ->method('getEmail')
             ->willReturn('chaz@emailsim.io');
 
-        $this->automationModelMock->expects($this->once())
+        $this->automationModelMock->expects($this->any())
             ->method('getWebsiteId')
             ->willReturn('1');
 
-        $this->automationModelMock->expects($this->once())
+        $this->automationModelMock->expects($this->any())
             ->method('getStoreId')
             ->willReturn('1');
     }
@@ -53,11 +53,9 @@ trait AutomationProcessorTrait
 
     private function setupSubscriberModel()
     {
-        $subscriberModelMock = $this->createMock(Subscriber::class);
-
         $this->backportedSubscriberLoaderMock->expects($this->once())
             ->method('loadBySubscriberEmail')
-            ->willReturn($subscriberModelMock);
+            ->willReturn($this->subscriberModelMock);
     }
 
     private function getSubscribedContact()

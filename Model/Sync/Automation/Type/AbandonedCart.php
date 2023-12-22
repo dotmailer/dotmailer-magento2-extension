@@ -2,6 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Model\Sync\Automation\Type;
 
+use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Automation;
 use Dotdigitalgroup\Email\Model\ContactFactory;
@@ -14,6 +15,9 @@ use Dotdigitalgroup\Email\Model\Sync\Automation\ContactManager;
 use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\DataFieldCollector;
 use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\DataFieldTypeHandler;
 use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\Updater\AbandonedCartFactory as AbandonedCartUpdaterFactory;
+use Magento\Framework\Exception\AlreadyExistsException;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Newsletter\Model\Subscriber;
 use Magento\Quote\Model\QuoteFactory;
 
 class AbandonedCart extends AutomationProcessor
@@ -41,6 +45,7 @@ class AbandonedCart extends AutomationProcessor
     /**
      * AbandonedCart constructor.
      *
+     * @param Data $helper
      * @param Logger $logger
      * @param AutomationResource $automationResource
      * @param ContactFactory $contactFactory
@@ -53,6 +58,7 @@ class AbandonedCart extends AutomationProcessor
      * @param QuoteFactory $quoteFactory
      */
     public function __construct(
+        Data $helper,
         Logger $logger,
         AutomationResource $automationResource,
         ContactFactory $contactFactory,
@@ -69,6 +75,7 @@ class AbandonedCart extends AutomationProcessor
         $this->quoteFactory = $quoteFactory;
 
         parent::__construct(
+            $helper,
             $logger,
             $automationResource,
             $contactFactory,
@@ -83,7 +90,9 @@ class AbandonedCart extends AutomationProcessor
      * Check if automation should be processed.
      *
      * @param Automation $automation
+     *
      * @return bool
+     * @throws AlreadyExistsException
      */
     protected function shouldExitLoop(Automation $automation)
     {
@@ -122,6 +131,29 @@ class AbandonedCart extends AutomationProcessor
                 $this->getNominatedAbandonedCartItem($quoteItems)
             )
             ->getData();
+    }
+
+    /**
+     * Check non-subscriber can be enrolled.
+     *
+     * For AC enrolment, this is governed by the switch in Configuration > Abandoned Carts.
+     *
+     * @param Subscriber $subscriber
+     * @param Automation $automation
+     *
+     * @return void
+     * @throws LocalizedException
+     */
+    protected function checkNonSubscriberCanBeEnrolled(Subscriber $subscriber, Automation $automation)
+    {
+        if (!$subscriber->isSubscribed() &&
+            $this->helper->isOnlySubscribersForContactSync($automation->getWebsiteId()) &&
+            $this->helper->isOnlySubscribersForAC($automation->getStoreId())
+        ) {
+            throw new LocalizedException(
+                __('Non-subscribed contacts cannot be enrolled.')
+            );
+        }
     }
 
     /**
