@@ -9,6 +9,10 @@
                  topic="ddg.newsletter.unsubscribe"
                  destinationType="queue"
                  destination="ddg.unsubscribe.queue"/>
+        <binding id="dotdigitalResubscribeExchange"
+                 topic="ddg.newsletter.resubscribe"
+                 destinationType="queue"
+                 destination="ddg.resubscribe.queue"/>
         <binding id="dotdigitalContactEmailUpdate"
                  topic="ddg.contact.email_update"
                  destination="ddg.email_update.queue"/>

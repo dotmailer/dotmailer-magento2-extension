@@ -201,10 +201,14 @@ class Update extends AbstractItemSyncer
     /**
      * Sync Subscriber_Resubscribed.
      *
+     * @deprecated Use message queue topic ddg.newsletter.resubscribe instead
+     * @see \Dotdigitalgroup\Email\Model\Queue\Newsletter\ResubscribeConsumer::process()
+     *
      * @param array $importData
      * @param int $websiteId
      *
      * @return \StdClass
+     * @throws LocalizedException
      */
     private function syncItemSubscriberResubscribedMode($importData, $websiteId)
     {

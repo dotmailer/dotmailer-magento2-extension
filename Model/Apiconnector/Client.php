@@ -1098,6 +1098,9 @@ class Client extends Rest implements ClientInterface
     /**
      * Resubscribes a previously unsubscribed contact.
      *
+     * @deprecated please use `resubscribeContactByEmail(string $email)`.
+     * @see Client::resubscribeContactByEmail
+     *
      * @param array $apiContact
      *
      * @return object
@@ -1119,6 +1122,36 @@ class Client extends Rest implements ClientInterface
             $this->addClientLog('Error resubscribing contact')
                 ->addClientLog('Failed contact resubscription', [
                     'contact' => $apiContact,
+                ], Logger::DEBUG);
+        }
+
+        return $response;
+    }
+
+    /**
+     * Resubscribes a previously unsubscribed contact.
+     *
+     * @param string $email
+     *
+     * @return string|array|stdClass
+     *
+     * @throws Exception
+     */
+    public function resubscribeContactByEmail(string $email)
+    {
+        $url = $this->getApiEndpoint() . self::REST_CONTACTS_RESUBSCRIBE;
+        $data = [
+            'UnsubscribedContact' => ['email' => $email],
+        ];
+        $this->setUrl($url)
+            ->setVerb('POST')
+            ->buildPostBody($data);
+
+        $response = $this->execute();
+        if (isset($response->message)) {
+            $this->addClientLog('Error resubscribing contact')
+                ->addClientLog('Failed contact resubscription', [
+                    'contact' => $email,
                 ], Logger::DEBUG);
         }
 

@@ -14,6 +14,13 @@
             method="process"
         />
     </topic>
+    <topic name="ddg.newsletter.resubscribe" request="Dotdigitalgroup\Email\Model\Queue\Data\ResubscribeData">
+        <handler
+            name="ddg_newsletter_resubscribe"
+            type="Dotdigitalgroup\Email\Model\Queue\Newsletter\ResubscribeConsumer"
+            method="process"
+        />
+    </topic>
     <topic name="ddg.contact.email_update" request="Dotdigitalgroup\Email\Model\Queue\Data\EmailUpdateData">
         <handler
             name="ddg_contact_email_update"
