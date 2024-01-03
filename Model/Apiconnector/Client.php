@@ -1244,7 +1244,7 @@ class Client extends Rest implements ClientInterface
      *
      * @param array $data
      *
-     * @return null
+     * @return stdClass
      * @throws Exception
      */
     public function postProgramsEnrolments($data)

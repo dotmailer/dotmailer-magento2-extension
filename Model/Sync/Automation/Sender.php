@@ -6,6 +6,7 @@ use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Model\ResourceModel\Automation as AutomationResource;
 use Dotdigitalgroup\Email\Model\StatusInterface;
 use Magento\Framework\Stdlib\DateTime;
+use stdClass;
 
 class Sender
 {
@@ -94,24 +95,18 @@ class Sender
      */
     private function sendSubscribedContactsToAutomation($contactsArray, $websiteId, $programId)
     {
-        if (!empty($contactsArray) &&
-            $this->checkCampaignEnrolmentActive($programId, $websiteId)
-        ) {
+        if (!empty($contactsArray)) {
             $result = $this->sendContactsToAutomation(
                 array_values($contactsArray),
                 $websiteId,
                 $programId
             );
-            //check for error message
             if (isset($result->message)) {
-                $this->programStatus = StatusInterface::FAILED;
                 $this->programMessage = $result->message;
+                $this->programStatus = $this->programMessage == 'Error: ERROR_PROGRAM_NOT_ACTIVE' ?
+                    StatusInterface::DEACTIVATED :
+                    StatusInterface::FAILED;
             }
-            //program is not active
-        } elseif ($this->programMessage
-            == 'Error: ERROR_PROGRAM_NOT_ACTIVE '
-        ) {
-            $this->programStatus = 'Deactivated';
         }
     }
 
@@ -122,7 +117,7 @@ class Sender
      * @param int $websiteId
      * @param int $programId
      *
-     * @return mixed
+     * @return stdClass
      * @throws \Exception
      */
     private function sendContactsToAutomation($contacts, $websiteId, $programId)
@@ -133,37 +128,7 @@ class Sender
             'ProgramId' => $programId,
             'AddressBooks' => [],
         ];
-        //api add contact to automation enrolment
-        $result = $client->postProgramsEnrolments($data);
 
-        return $result;
-    }
-
-    /**
-     * Program check if is valid and active.
-     *
-     * @param int $programId
-     * @param int $websiteId
-     *
-     * @return bool
-     * @throws \Exception
-     */
-    private function checkCampaignEnrolmentActive($programId, $websiteId)
-    {
-        //program is not set
-        if (!$programId) {
-            return false;
-        }
-        $client = $this->helper->getWebsiteApiClient($websiteId);
-        $program = $client->getProgramById($programId);
-        //program status
-        if (isset($program->status)) {
-            $this->programStatus = $program->status;
-        }
-        if (isset($program->status) && $program->status == 'Active') {
-            return true;
-        }
-
-        return false;
+        return $client->postProgramsEnrolments($data);
     }
 }

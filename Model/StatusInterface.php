@@ -12,4 +12,5 @@ interface StatusInterface
     public const SUPPRESSED = 'Suppressed';
     public const CANCELLED = 'Cancelled';
     public const FAILED = 'Failed';
+    public const DEACTIVATED = 'Deactivated';
 }
