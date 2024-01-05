@@ -16,5 +16,6 @@
         <binding id="dotdigitalContactEmailUpdate"
                  topic="ddg.contact.email_update"
                  destination="ddg.email_update.queue"/>
+        <binding id="dotdigitalCartPhaseUpdateBinding" topic="ddg.sales.cart_phase_update" destination="ddg.cart_phase_update.queue"/>
     </exchange>
 </config>

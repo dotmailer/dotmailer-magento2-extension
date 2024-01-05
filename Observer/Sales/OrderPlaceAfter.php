@@ -2,12 +2,18 @@
 
 namespace Dotdigitalgroup\Email\Observer\Sales;
 
-use Dotdigitalgroup\Email\Model\Sales\CartInsight\Update as CartInsightUpdater;
+use Dotdigitalgroup\Email\Helper\Data;
+use Dotdigitalgroup\Email\Model\AutomationFactory;
+use Dotdigitalgroup\Email\Model\Queue\Data\CartPhaseUpdateDataFactory;
+use Dotdigitalgroup\Email\Model\ResourceModel\Automation;
 use Dotdigitalgroup\Email\Model\Sync\Automation\AutomationTypeHandler;
 use Dotdigitalgroup\Email\Model\StatusInterface;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory as ContactCollectionFactory;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact as ContactResource;
 use Dotdigitalgroup\Email\Model\ContactFactory;
+use Magento\Framework\MessageQueue\PublisherInterface;
+use Magento\Sales\Api\Data\OrderInterface;
+use Magento\Store\Model\StoreManagerInterface;
 
 /**
  * Send cart phase flag as CartInsight for some orders.
@@ -16,17 +22,22 @@ use Dotdigitalgroup\Email\Model\ContactFactory;
 class OrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
 {
     /**
-     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Automation
+     * @var Automation
      */
     private $automationResource;
 
     /**
-     * @var \Dotdigitalgroup\Email\Helper\Data
+     * @var Data
      */
     private $helper;
 
     /**
-     * @var \Magento\Store\Model\StoreManagerInterface
+     * @var CartPhaseUpdateDataFactory
+     */
+    private $cartPhaseUpdateDataFactory;
+
+    /**
+     * @var StoreManagerInterface
      */
     private $storeManager;
 
@@ -34,11 +45,6 @@ class OrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
      * @var \Dotdigitalgroup\Email\Model\AutomationFactory
      */
     private $automationFactory;
-
-    /**
-     * @var CartInsightUpdater
-     */
-    private $cartInsightUpdater;
 
     /**
      * @var ContactCollectionFactory
@@ -56,33 +62,41 @@ class OrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
     private $contactFactory;
 
     /**
-     * @param \Dotdigitalgroup\Email\Model\AutomationFactory $automationFactory
-     * @param \Dotdigitalgroup\Email\Helper\Data $data
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Automation $automationResource
-     * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
-     * @param CartInsightUpdater $cartInsightUpdater
+     * @var PublisherInterface
+     */
+    private $publisher;
+
+    /**
+     * @param AutomationFactory $automationFactory
+     * @param Data $data
+     * @param Automation $automationResource
+     * @param StoreManagerInterface $storeManagerInterface
      * @param ContactCollectionFactory $contactCollectionFactory
      * @param ContactResource $contactResource
      * @param ContactFactory $contactFactory
+     * @param CartPhaseUpdateDataFactory $cartPhaseUpdateDataFactory
+     * @param PublisherInterface $publisher
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\AutomationFactory $automationFactory,
-        \Dotdigitalgroup\Email\Helper\Data $data,
-        \Dotdigitalgroup\Email\Model\ResourceModel\Automation $automationResource,
-        \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
-        CartInsightUpdater $cartInsightUpdater,
+        AutomationFactory $automationFactory,
+        Data $data,
+        Automation $automationResource,
+        StoreManagerInterface $storeManagerInterface,
         ContactCollectionFactory $contactCollectionFactory,
         ContactResource $contactResource,
-        ContactFactory $contactFactory
+        ContactFactory $contactFactory,
+        CartPhaseUpdateDataFactory $cartPhaseUpdateDataFactory,
+        PublisherInterface $publisher
     ) {
         $this->automationFactory = $automationFactory;
         $this->automationResource = $automationResource;
-        $this->helper            = $data;
-        $this->storeManager      = $storeManagerInterface;
-        $this->cartInsightUpdater = $cartInsightUpdater;
+        $this->helper = $data;
+        $this->storeManager = $storeManagerInterface;
         $this->contactCollectionFactory = $contactCollectionFactory;
         $this->contactResource = $contactResource;
         $this->contactFactory = $contactFactory;
+        $this->cartPhaseUpdateDataFactory = $cartPhaseUpdateDataFactory;
+        $this->publisher = $publisher;
     }
 
     /**
@@ -104,7 +118,7 @@ class OrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
             return $this;
         }
 
-        $this->cartInsightUpdater->updateCartPhase($order, $store);
+        $this->queueCartPhaseUpdate($order);
 
         if ($order->getCustomerIsGuest()) {
             $this->createOrUpdateGuestContact($order, $websiteId);
@@ -147,7 +161,7 @@ class OrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
     /**
      * Add a new guest contact or update existing.
      *
-     * @param \Magento\Sales\Api\Data\OrderInterface $order
+     * @param OrderInterface $order
      * @param string|int $websiteId
      *
      * @return void
@@ -177,5 +191,20 @@ class OrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
         } catch (\Exception $e) {
             $this->helper->debug('Error when updating email_contact table', [(string) $e]);
         }
+    }
+
+    /**
+     * Queue cart phase update.
+     *
+     * @param OrderInterface $order
+     * @return void
+     */
+    private function queueCartPhaseUpdate(OrderInterface $order)
+    {
+        $cartPhaseUpdateData = $this->cartPhaseUpdateDataFactory->create();
+        $cartPhaseUpdateData->setQuoteId((int) $order->getQuoteId());
+        $cartPhaseUpdateData->setStoreId($order->getStoreId());
+
+        $this->publisher->publish('ddg.sales.cart_phase_update', $cartPhaseUpdateData);
     }
 }

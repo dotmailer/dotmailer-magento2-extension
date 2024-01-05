@@ -16,4 +16,8 @@
               queue="ddg.email_update.queue"
               handler="Dotdigitalgroup\Email\Model\Queue\Customer\EmailUpdateConsumer::process"
               connection="db" />
+    <consumer name="ddg.sales.cart_phase_update"
+              queue="ddg.cart_phase_update.queue"
+              handler="Dotdigitalgroup\Email\Model\Queue\Sales\CartPhaseUpdateConsumer::process"
+              connection="db" />
 </config>
