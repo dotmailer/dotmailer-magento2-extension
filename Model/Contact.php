@@ -105,7 +105,7 @@ class Contact extends \Magento\Framework\Model\AbstractModel
     /**
      * Load Contact by Email.
      *
-     * @deprecated Don't fetch and create in one method.
+     * @deprecated Don't fetch and create in one method. It can lead to unexpected results (like rows with store_id 0).
      * @see \Dotdigitalgroup\Email\Model\ResourceModel\Contact\Collection::loadByCustomerEmail
      *
      * @param string $email

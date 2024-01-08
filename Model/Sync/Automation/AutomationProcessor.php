@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dotdigitalgroup\Email\Model\Sync\Automation;
 
 use Dotdigitalgroup\Email\Exception\PendingOptInException;
 use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Automation;
-use Dotdigitalgroup\Email\Model\ContactFactory;
+use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory as ContactCollectionFactory;
 use Dotdigitalgroup\Email\Model\Newsletter\BackportedSubscriberLoader;
 use Dotdigitalgroup\Email\Model\ResourceModel\Automation as AutomationResource;
 use Dotdigitalgroup\Email\Model\StatusInterface;
@@ -33,9 +35,9 @@ class AutomationProcessor
     protected $automationResource;
 
     /**
-     * @var ContactFactory
+     * @var ContactCollectionFactory
      */
-    private $contactFactory;
+    private $contactCollectionFactory;
 
     /**
      * @var ContactManager
@@ -63,7 +65,7 @@ class AutomationProcessor
      * @param Data $helper
      * @param Logger $logger
      * @param AutomationResource $automationResource
-     * @param ContactFactory $contactFactory
+     * @param ContactCollectionFactory $contactCollectionFactory
      * @param ContactManager $contactManager
      * @param DataFieldCollector $dataFieldCollector
      * @param DataFieldTypeHandler $dataFieldTypeHandler
@@ -73,7 +75,7 @@ class AutomationProcessor
         Data $helper,
         Logger $logger,
         AutomationResource $automationResource,
-        ContactFactory $contactFactory,
+        ContactCollectionFactory $contactCollectionFactory,
         ContactManager $contactManager,
         DataFieldCollector $dataFieldCollector,
         DataFieldTypeHandler $dataFieldTypeHandler,
@@ -82,7 +84,7 @@ class AutomationProcessor
         $this->helper = $helper;
         $this->logger = $logger;
         $this->automationResource = $automationResource;
-        $this->contactFactory = $contactFactory;
+        $this->contactCollectionFactory = $contactCollectionFactory;
         $this->contactManager = $contactManager;
         $this->dataFieldCollector = $dataFieldCollector;
         $this->dataFieldTypeHandler = $dataFieldTypeHandler;
@@ -105,26 +107,13 @@ class AutomationProcessor
                 continue;
             }
 
-            $email = $automation->getEmail();
-            $websiteId = $automation->getWebsiteId();
+            $websiteId = (int) $automation->getWebsiteId();
             $storeId = $automation->getStoreId();
-            $automationDataFields = $this->retrieveAutomationDataFields($automation, $email, $websiteId);
 
             try {
-                $automationContact = $this->contactFactory->create()
-                    ->loadByCustomerEmail($email, $websiteId);
-                $automationSubscriber = $this->backportedSubscriberLoader->loadBySubscriberEmail($email, $websiteId);
-
-                $this->checkNonSubscriberCanBeEnrolled($automationSubscriber, $automation);
-
-                $contactId = $this->contactManager->prepareDotdigitalContact(
-                    $automationContact,
-                    $automationSubscriber,
-                    $automationDataFields,
-                    $automation->getAutomationType()
+                $data[$websiteId][$storeId]['contacts'][$automation->getId()] = $this->assembleDataForEnrolment(
+                    $automation
                 );
-
-                $data[$websiteId][$storeId]['contacts'][$automation->getId()] = $contactId;
             } catch (PendingOptInException $e) {
                 $this->automationResource->setStatusAndSaveAutomation(
                     $automation,
@@ -149,6 +138,42 @@ class AutomationProcessor
     }
 
     /**
+     * Assemble data for enrolment.
+     *
+     * @param Automation $automation
+     *
+     * @return int
+     * @throws PendingOptInException
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function assembleDataForEnrolment(Automation $automation)
+    {
+        $email = $automation->getEmail();
+        $websiteId = (int) $automation->getWebsiteId();
+
+        $automationContact = $this->contactCollectionFactory->create()
+            ->loadByCustomerEmail($email, $websiteId);
+
+        if (!$automationContact) {
+            throw new LocalizedException(
+                __('Could not find matching contact in email_contact.')
+            );
+        }
+
+        $automationSubscriber = $this->backportedSubscriberLoader->loadBySubscriberEmail($email, $websiteId);
+        $this->checkNonSubscriberCanBeEnrolled($automationSubscriber, $automation);
+
+        $automationDataFields = $this->retrieveAutomationDataFields($automation, $email, $websiteId);
+
+        return $this->contactManager->prepareDotdigitalContact(
+            $automationContact,
+            $automationSubscriber,
+            $automationDataFields,
+            $automation->getAutomationType()
+        );
+    }
+
+    /**
      * Check if automation should be processed.
      *
      * @param Automation $automation
@@ -164,7 +189,7 @@ class AutomationProcessor
      *
      * @param Automation $automation
      * @param string $email
-     * @param string|int $websiteId
+     * @param int $websiteId
      * @return array
      * @throws \Magento\Framework\Exception\LocalizedException
      */

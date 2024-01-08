@@ -56,6 +56,16 @@ class EmailUpdateConsumerTest extends TestCase
     private $emailUpdaterConsumer;
 
     /**
+     * @var ClientFactory|\PHPUnit\Framework\MockObject\MockObject
+     */
+    private $clientFactoryMock;
+
+    /**
+     * @var DotdigitalContactFactory|\PHPUnit\Framework\MockObject\MockObject
+     */
+    private $sdkContactFactoryMock;
+
+    /**
      * @var Client|Client&\PHPUnit\Framework\MockObject\MockObject|\PHPUnit\Framework\MockObject\MockObject
      */
     private $clientMock;
@@ -101,6 +111,11 @@ class EmailUpdateConsumerTest extends TestCase
     private $contactCollectionMock;
 
     /**
+     * @var ContactResponseHandler|\PHPUnit\Framework\MockObject\MockObject
+     */
+    private $contactResponseHandlerMock;
+
+    /**
      * @return void
      * @throws \PHPUnit\Framework\MockObject\Exception
      */
@@ -123,11 +138,8 @@ class EmailUpdateConsumerTest extends TestCase
         $this->automationMock = $this->createMock(Automation::class);
         $this->campaignMock = $this->createMock(Campaign::class);
         $this->abandonedMock = $this->createMock(Abandoned::class);
-        $this->sdkContactMock = $this->createMock(DotdigitalContact::class);
-        $this->clientMock = $this->getMockBuilder(Client::class)
-            ->disableOriginalConstructor()
-            ->setMethods(['create'])
-            ->getMock();
+        $sdkContactMock = $this->createMock(DotdigitalContact::class);
+        $this->clientMock = $this->createMock(Client::class);
 
         $this->abstractResourceMock = $this->getMockBuilder(AbstractResource::class)
             ->disableOriginalConstructor()
@@ -138,12 +150,12 @@ class EmailUpdateConsumerTest extends TestCase
 
         $this->sdkContactFactoryMock->expects($this->once())
             ->method('create')
-            ->willReturn($this->sdkContactMock);
+            ->willReturn($sdkContactMock);
 
-        $this->sdkContactMock->expects($this->once())
+        $sdkContactMock->expects($this->once())
             ->method('setMatchIdentifier');
 
-        $this->sdkContactMock->expects($this->once())
+        $sdkContactMock->expects($this->once())
             ->method('setIdentifiers');
 
         $this->responseMock = $this->getMockBuilder(DotdigitalContact::class)

@@ -5,6 +5,7 @@ namespace Dotdigitalgroup\Email\Test\Unit\Model\AbandonedCart\ProgramEnrolment;
 use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Model\AbandonedCart\ProgramEnrolment\Saver;
 use Dotdigitalgroup\Email\Model\AutomationFactory;
+use Dotdigitalgroup\Email\Model\Queue\Sync\Automation\AutomationPublisher;
 use Dotdigitalgroup\Email\Model\ResourceModel\Automation;
 use PHPUnit\Framework\TestCase;
 
@@ -14,6 +15,11 @@ class ProgramEnrolmentSaverTest extends TestCase
      * @var AutomationFactory|\PHPUnit_Framework_MockObject_MockObject
      */
     private $automationFactoryMock;
+
+    /**
+     * @var AutomationPublisher|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $automationPublisherMock;
 
     /**
      * @var Automation|\PHPUnit_Framework_MockObject_MockObject
@@ -32,18 +38,14 @@ class ProgramEnrolmentSaverTest extends TestCase
 
     protected function setUp() :void
     {
-        $this->automationFactoryMock = $this->getMockBuilder(AutomationFactory::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->automationResourceMock = $this->getMockBuilder(Automation::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->dataHelperMock = $this->getMockBuilder(Data::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $this->automationFactoryMock = $this->createMock(AutomationFactory::class);
+        $this->automationPublisherMock = $this->createMock(AutomationPublisher::class);
+        $this->automationResourceMock = $this->createMock(Automation::class);
+        $this->dataHelperMock = $this->createMock(Data::class);
 
         $this->model = new Saver(
             $this->automationFactoryMock,
+            $this->automationPublisherMock,
             $this->automationResourceMock,
             $this->dataHelperMock
         );
@@ -52,7 +54,8 @@ class ProgramEnrolmentSaverTest extends TestCase
     public function testAutomationWasSaved()
     {
         // Quote
-        $quoteModel = $this->getMockBuilder(\Magento\Sales\Model\Order::class)
+        $quoteModel = $this->getMockBuilder(\Magento\Quote\Model\Quote::class)
+            ->addMethods(['getCustomerEmail'])
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -65,7 +68,13 @@ class ProgramEnrolmentSaverTest extends TestCase
             ->getMock();
 
         $storeModel->expects($this->once())
+            ->method('getId');
+
+        $storeModel->expects($this->once())
             ->method('getWebsiteId');
+
+        $storeModel->expects($this->once())
+            ->method('getName');
 
         // Automation
         $automationModelMock = $this->createMock(\Dotdigitalgroup\Email\Model\Automation::class);

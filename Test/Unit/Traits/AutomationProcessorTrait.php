@@ -42,7 +42,7 @@ trait AutomationProcessorTrait
 
     private function setupContactModel()
     {
-        $this->contactFactoryMock->expects($this->once())
+        $this->contactCollectionFactoryMock->expects($this->once())
             ->method('create')
             ->willReturn($this->contactModelMock);
 

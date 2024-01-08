@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dotdigitalgroup\Email\Model\Sync\Automation;
 
 use Dotdigitalgroup\Email\Helper\Data;
@@ -26,16 +28,6 @@ class Sender
     private $dateTime;
 
     /**
-     * @var string
-     */
-    private $programStatus = 'Active';
-
-    /**
-     * @var string
-     */
-    private $programMessage;
-
-    /**
      * Sender constructor.
      *
      * @param Data $helper
@@ -57,56 +49,34 @@ class Sender
      *
      * @param string $type
      * @param array $contacts
-     * @param int $websiteId
+     * @param string|int $websiteId
      * @param string $programId
+     * @return void
      * @throws \Exception
      */
     public function sendAutomationEnrolments($type, $contacts, $websiteId, $programId)
     {
-        if ($contacts) {
-
-            // only for subscribed contacts
-            $this->sendSubscribedContactsToAutomation(
-                $contacts,
-                $websiteId,
-                $programId
+        if (!empty($contacts)) {
+            $result = $this->sendContactsToAutomation(
+                array_values($contacts),
+                (int) $websiteId,
+                (int) $programId
             );
+            if (isset($result->message)) {
+                $programMessage = $result->message;
+                $programStatus = $programMessage=='Error: ERROR_PROGRAM_NOT_ACTIVE' ?
+                    StatusInterface::DEACTIVATED:
+                    StatusInterface::FAILED;
+            }
 
-            // update rows with the new status, and log the error message if fails
             $this->automationResource
                 ->updateStatus(
                     array_keys($contacts),
-                    $this->programStatus,
-                    $this->programMessage,
+                    $programStatus ?? 'Active',
+                    $programMessage ?? '',
                     $this->dateTime->formatDate(true),
                     $type
                 );
-        }
-    }
-
-    /**
-     * Send subscribed contacts to automation.
-     *
-     * @param array $contactsArray
-     * @param int $websiteId
-     * @param int $programId
-     *
-     * @throws \Exception
-     */
-    private function sendSubscribedContactsToAutomation($contactsArray, $websiteId, $programId)
-    {
-        if (!empty($contactsArray)) {
-            $result = $this->sendContactsToAutomation(
-                array_values($contactsArray),
-                $websiteId,
-                $programId
-            );
-            if (isset($result->message)) {
-                $this->programMessage = $result->message;
-                $this->programStatus = $this->programMessage == 'Error: ERROR_PROGRAM_NOT_ACTIVE' ?
-                    StatusInterface::DEACTIVATED :
-                    StatusInterface::FAILED;
-            }
         }
     }
 
@@ -120,7 +90,7 @@ class Sender
      * @return stdClass
      * @throws \Exception
      */
-    private function sendContactsToAutomation($contacts, $websiteId, $programId)
+    private function sendContactsToAutomation($contacts, $websiteId, int $programId)
     {
         $client = $this->helper->getWebsiteApiClient($websiteId);
         $data = [

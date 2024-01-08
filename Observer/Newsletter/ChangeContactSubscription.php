@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dotdigitalgroup\Email\Observer\Newsletter;
 
 use Dotdigitalgroup\Email\Helper\Config;
@@ -8,6 +10,7 @@ use Dotdigitalgroup\Email\Model\AutomationFactory;
 use Dotdigitalgroup\Email\Model\Contact as ContactModel;
 use Dotdigitalgroup\Email\Model\ContactFactory;
 use Dotdigitalgroup\Email\Model\ImporterFactory;
+use Dotdigitalgroup\Email\Model\Queue\Sync\Automation\AutomationPublisher;
 use Dotdigitalgroup\Email\Model\ResourceModel\Automation;
 use Dotdigitalgroup\Email\Model\ResourceModel\Automation\CollectionFactory;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact;
@@ -80,6 +83,11 @@ class ChangeContactSubscription implements ObserverInterface
     private $importerFactory;
 
     /**
+     * @var AutomationPublisher
+     */
+    private $automationPublisher;
+
+    /**
      * @var DateTime
      */
     private $dateTime;
@@ -121,6 +129,7 @@ class ChangeContactSubscription implements ObserverInterface
      * @param Data $data
      * @param StoreManagerInterface $storeManagerInterface
      * @param ImporterFactory $importerFactory
+     * @param AutomationPublisher $automationPublisher
      * @param DateTime $dateTime
      * @param ScopeConfigInterface $scopeConfig
      * @param PublisherInterface $publisher
@@ -137,6 +146,7 @@ class ChangeContactSubscription implements ObserverInterface
         Data $data,
         StoreManagerInterface $storeManagerInterface,
         ImporterFactory $importerFactory,
+        AutomationPublisher $automationPublisher,
         DateTime $dateTime,
         ScopeConfigInterface $scopeConfig,
         PublisherInterface $publisher,
@@ -152,6 +162,7 @@ class ChangeContactSubscription implements ObserverInterface
         $this->storeManager = $storeManagerInterface;
         $this->registry = $registry;
         $this->importerFactory = $importerFactory;
+        $this->automationPublisher = $automationPublisher;
         $this->dateTime = $dateTime;
         $this->scopeConfig = $scopeConfig;
         $this->publisher = $publisher;
@@ -288,18 +299,16 @@ class ChangeContactSubscription implements ObserverInterface
         //save subscriber to the queue
         $automation = $this->automationFactory->create()
             ->setEmail($email)
-            ->setAutomationType(
-                AutomationTypeHandler::AUTOMATION_TYPE_NEW_SUBSCRIBER
-            )
-            ->setEnrolmentStatus(
-                StatusInterface::PENDING
-            )
+            ->setAutomationType(AutomationTypeHandler::AUTOMATION_TYPE_NEW_SUBSCRIBER)
+            ->setEnrolmentStatus(StatusInterface::PENDING)
             ->setTypeId($subscriber->getId())
             ->setWebsiteId($websiteId)
             ->setStoreId($storeId)
             ->setStoreName($this->storeManager->getStore($storeId)->getName())
             ->setProgramId($programId);
         $this->automationResource->save($automation);
+
+        $this->automationPublisher->publish($automation);
     }
 
     /**

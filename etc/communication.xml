@@ -7,6 +7,13 @@
             method="process"
         />
     </topic>
+    <topic name="ddg.sync.automation" request="Dotdigitalgroup\Email\Model\Queue\Data\AutomationData">
+        <handler
+            name="ddg_sync_automation"
+            type="Dotdigitalgroup\Email\Model\Queue\Sync\Automation\AutomationConsumer"
+            method="process"
+        />
+    </topic>
     <topic name="ddg.newsletter.unsubscribe" request="Dotdigitalgroup\Email\Model\Queue\Data\UnsubscriberData">
         <handler
             name="ddg_newsletter_unsubscribe"

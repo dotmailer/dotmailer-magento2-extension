@@ -1,16 +1,24 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dotdigitalgroup\Email\Observer\Sales;
 
 use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Model\AutomationFactory;
 use Dotdigitalgroup\Email\Model\Queue\Data\CartPhaseUpdateDataFactory;
+use Dotdigitalgroup\Email\Model\Queue\Sync\Automation\AutomationPublisher;
 use Dotdigitalgroup\Email\Model\ResourceModel\Automation;
 use Dotdigitalgroup\Email\Model\Sync\Automation\AutomationTypeHandler;
 use Dotdigitalgroup\Email\Model\StatusInterface;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory as ContactCollectionFactory;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact as ContactResource;
 use Dotdigitalgroup\Email\Model\ContactFactory;
+use Exception;
+use Magento\Framework\Event\Observer;
+use Magento\Framework\Event\ObserverInterface;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\MessageQueue\PublisherInterface;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Store\Model\StoreManagerInterface;
@@ -19,17 +27,17 @@ use Magento\Store\Model\StoreManagerInterface;
  * Send cart phase flag as CartInsight for some orders.
  * New order automation for customers and guests.
  */
-class OrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
+class OrderPlaceAfter implements ObserverInterface
 {
-    /**
-     * @var Automation
-     */
-    private $automationResource;
-
     /**
      * @var Data
      */
     private $helper;
+
+    /**
+     * @var AutomationFactory
+     */
+    private $automationFactory;
 
     /**
      * @var CartPhaseUpdateDataFactory
@@ -37,14 +45,14 @@ class OrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
     private $cartPhaseUpdateDataFactory;
 
     /**
-     * @var StoreManagerInterface
+     * @var AutomationPublisher
      */
-    private $storeManager;
+    private $automationPublisher;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\AutomationFactory
+     * @var Automation
      */
-    private $automationFactory;
+    private $automationResource;
 
     /**
      * @var ContactCollectionFactory
@@ -67,30 +75,38 @@ class OrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
     private $publisher;
 
     /**
-     * @param AutomationFactory $automationFactory
+     * @var StoreManagerInterface
+     */
+    private $storeManager;
+
+    /**
      * @param Data $data
+     * @param AutomationFactory $automationFactory
+     * @param CartPhaseUpdateDataFactory $cartPhaseUpdateDataFactory
+     * @param AutomationPublisher $automationPublisher
      * @param Automation $automationResource
-     * @param StoreManagerInterface $storeManagerInterface
      * @param ContactCollectionFactory $contactCollectionFactory
      * @param ContactResource $contactResource
      * @param ContactFactory $contactFactory
-     * @param CartPhaseUpdateDataFactory $cartPhaseUpdateDataFactory
      * @param PublisherInterface $publisher
+     * @param StoreManagerInterface $storeManagerInterface
      */
     public function __construct(
-        AutomationFactory $automationFactory,
         Data $data,
+        AutomationFactory $automationFactory,
+        CartPhaseUpdateDataFactory $cartPhaseUpdateDataFactory,
+        AutomationPublisher $automationPublisher,
         Automation $automationResource,
-        StoreManagerInterface $storeManagerInterface,
         ContactCollectionFactory $contactCollectionFactory,
         ContactResource $contactResource,
         ContactFactory $contactFactory,
-        CartPhaseUpdateDataFactory $cartPhaseUpdateDataFactory,
-        PublisherInterface $publisher
+        PublisherInterface $publisher,
+        StoreManagerInterface $storeManagerInterface
     ) {
         $this->automationFactory = $automationFactory;
         $this->automationResource = $automationResource;
         $this->helper = $data;
+        $this->automationPublisher = $automationPublisher;
         $this->storeManager = $storeManagerInterface;
         $this->contactCollectionFactory = $contactCollectionFactory;
         $this->contactResource = $contactResource;
@@ -102,13 +118,13 @@ class OrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
     /**
      * Execute method.
      *
-     * @param \Magento\Framework\Event\Observer $observer
+     * @param Observer $observer
      *
      * @return $this
-     * @throws \Magento\Framework\Exception\LocalizedException
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
      */
-    public function execute(\Magento\Framework\Event\Observer $observer)
+    public function execute(Observer $observer)
     {
         $order = $observer->getEvent()->getOrder();
         $store = $this->storeManager->getStore($order->getStoreId());
@@ -151,7 +167,9 @@ class OrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
                 ->setStoreName($store->getName())
                 ->setProgramId($programId);
             $this->automationResource->save($automation);
-        } catch (\Exception $e) {
+
+            $this->automationPublisher->publish($automation);
+        } catch (Exception $e) {
             $this->helper->debug((string)$e, []);
         }
 
@@ -188,7 +206,7 @@ class OrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
 
                 $this->contactResource->save($guestToInsert);
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->helper->debug('Error when updating email_contact table', [(string) $e]);
         }
     }

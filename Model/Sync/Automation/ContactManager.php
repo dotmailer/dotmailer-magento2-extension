@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dotdigitalgroup\Email\Model\Sync\Automation;
 
 use Dotdigitalgroup\Email\Exception\PendingOptInException;
@@ -79,7 +81,7 @@ class ContactManager
         $addressBookId = '';
         $dataFields = [];
         $email = $contact->getEmail();
-        $websiteId = $contact->getWebsiteId();
+        $websiteId = (int) $contact->getWebsiteId();
 
         if ($this->canPushContactToCustomerAddressBook($contact, $subscriber, $automationType)) {
             $addressBookId = $this->helper->getCustomerAddressBook($websiteId);
@@ -197,13 +199,13 @@ class ContactManager
      * Push contact to Dotdigital without specifying an address book.
      *
      * @param string $email
-     * @param string|int $websiteId
+     * @param int $websiteId
      * @param array $dataFields
      *
      * @return bool|\stdClass
      * @throws LocalizedException
      */
-    private function pushContactToAllContacts(string $email, $websiteId, array $dataFields)
+    private function pushContactToAllContacts(string $email, int $websiteId, array $dataFields)
     {
         $client = $this->helper->getWebsiteApiClient($websiteId);
         $response = $client->postContactWithConsentAndPreferences($email, $dataFields);
@@ -222,7 +224,7 @@ class ContactManager
      * @return bool|\stdClass
      * @throws LocalizedException
      */
-    private function pushContactToAddressBook(string $email, $websiteId, string $addressBookId, array $dataFields)
+    private function pushContactToAddressBook(string $email, int $websiteId, string $addressBookId, array $dataFields)
     {
         $client = $this->helper->getWebsiteApiClient($websiteId);
         $response = $client->addContactToAddressBook($email, $addressBookId, null, $dataFields);
@@ -240,7 +242,7 @@ class ContactManager
      */
     private function pushContactToSubscriberAddressBook(Contact $contact): void
     {
-        $websiteId = $contact->getWebsiteId();
+        $websiteId = (int) $contact->getWebsiteId();
         $subscriberSyncEnabled = $this->helper->isSubscriberSyncEnabled($websiteId);
         $subscriberAddressBookId = $this->helper->getSubscriberAddressBook($websiteId);
         if (!$subscriberSyncEnabled || !$subscriberAddressBookId) {

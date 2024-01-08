@@ -4,7 +4,6 @@ namespace Dotdigitalgroup\Email\Model\Sync\Automation;
 
 use Dotdigitalgroup\Email\Helper\Config;
 use Dotdigitalgroup\Email\Model\ResourceModel\Automation\CollectionFactory;
-use Dotdigitalgroup\Email\Model\Sync\Automation\AutomationProcessorFactory;
 use Dotdigitalgroup\Email\Model\Sync\Automation\Type\AbandonedCartFactory;
 
 class AutomationTypeHandler

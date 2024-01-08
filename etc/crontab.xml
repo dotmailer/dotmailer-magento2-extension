@@ -13,9 +13,6 @@
         <job name="ddg_automation_importer" instance="Dotdigitalgroup\Email\Model\Cron" method="emailImporter">
             <config_path>connector_developer_settings/cron_schedules/importer</config_path>
         </job>
-        <job name="ddg_automation_status" instance="Dotdigitalgroup\Email\Model\Cron" method="syncAutomation">
-            <schedule>*/16 * * * *</schedule>
-        </job>
         <job name="ddg_automation_reviews_and_wishlist" instance="Dotdigitalgroup\Email\Model\Cron" method="reviewsAndWishlist">
             <config_path>connector_developer_settings/cron_schedules/review_wishlist</config_path>
         </job>

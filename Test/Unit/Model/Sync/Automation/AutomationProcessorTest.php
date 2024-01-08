@@ -8,7 +8,7 @@ use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Automation;
 use Dotdigitalgroup\Email\Model\Contact;
 use Dotdigitalgroup\Email\Model\Contact\ContactResponseHandler;
-use Dotdigitalgroup\Email\Model\ContactFactory;
+use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory as ContactCollectionFactory;
 use Dotdigitalgroup\Email\Model\Newsletter\BackportedSubscriberLoader;
 use Dotdigitalgroup\Email\Model\ResourceModel\Automation as AutomationResource;
 use Dotdigitalgroup\Email\Model\StatusInterface;
@@ -46,9 +46,9 @@ class AutomationProcessorTest extends TestCase
     private $automationResourceMock;
 
     /**
-     * @var ContactFactory|\PHPUnit_Framework_MockObject_MockObject
+     * @var ContactCollectionFactory|\PHPUnit_Framework_MockObject_MockObject
      */
-    private $contactFactoryMock;
+    private $contactCollectionFactoryMock;
 
     /**
      * @var ContactManager|\PHPUnit_Framework_MockObject_MockObject
@@ -95,7 +95,7 @@ class AutomationProcessorTest extends TestCase
         $this->helperMock = $this->createMock(Data::class);
         $this->loggerMock = $this->createMock(Logger::class);
         $this->automationResourceMock = $this->createMock(AutomationResource::class);
-        $this->contactFactoryMock = $this->createMock(ContactFactory::class);
+        $this->contactCollectionFactoryMock = $this->createMock(ContactCollectionFactory::class);
         $this->contactManagerMock = $this->createMock(ContactManager::class);
         $this->dataFieldCollectorMock = $this->createMock(DataFieldCollector::class);
         $this->dataFieldTypeHandlerMock = $this->createMock(DataFieldTypeHandler::class);
@@ -115,7 +115,7 @@ class AutomationProcessorTest extends TestCase
             $this->helperMock,
             $this->loggerMock,
             $this->automationResourceMock,
-            $this->contactFactoryMock,
+            $this->contactCollectionFactoryMock,
             $this->contactManagerMock,
             $this->dataFieldCollectorMock,
             $this->dataFieldTypeHandlerMock,
@@ -146,18 +146,35 @@ class AutomationProcessorTest extends TestCase
         $this->automationProcessor->process($this->getAutomationCollectionMock());
     }
 
+    public function testAutomationFailsIfContactNotFound()
+    {
+        $this->setupAutomationModel();
+
+        $this->contactCollectionFactoryMock->expects($this->once())
+            ->method('create')
+            ->willReturn($this->contactModelMock);
+
+        $this->contactModelMock->expects($this->once())
+            ->method('loadByCustomerEmail')
+            ->willReturn(null);
+
+        $this->dataFieldTypeHandlerMock->expects($this->never())
+            ->method('retrieveDatafieldsByType');
+
+        $this->contactManagerMock->expects($this->never())
+            ->method('prepareDotdigitalContact');
+
+        $this->automationResourceMock->expects($this->once())
+            ->method('setStatusAndSaveAutomation');
+
+        $this->automationProcessor->process($this->getAutomationCollectionMock());
+    }
+
     public function testAutomationFailsIfContactIsNotSubscribed()
     {
         $this->setupAutomationModel();
         $this->setupContactModel();
         $this->setupSubscriberModel();
-
-        $this->automationModelMock->expects($this->once())
-            ->method('getAutomationType')
-            ->willReturn(AutomationTypeHandler::AUTOMATION_TYPE_NEW_CUSTOMER);
-
-        $this->dataFieldTypeHandlerMock->expects($this->once())
-            ->method('retrieveDatafieldsByType');
 
         $this->subscriberModelMock->expects($this->once())
             ->method('isSubscribed')
@@ -166,6 +183,9 @@ class AutomationProcessorTest extends TestCase
         $this->helperMock->expects($this->once())
             ->method('isOnlySubscribersForContactSync')
             ->willReturn(true);
+
+        $this->dataFieldTypeHandlerMock->expects($this->never())
+            ->method('retrieveDatafieldsByType');
 
         $this->contactManagerMock->expects($this->never())
             ->method('prepareDotdigitalContact');

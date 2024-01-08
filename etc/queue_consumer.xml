@@ -4,6 +4,10 @@
               queue="ddg.sync.queue"
               handler="Dotdigitalgroup\Email\Model\Queue\Sync\IntegrationInsightsConsumer::process"
               connection="db" />
+    <consumer name="ddg.sync.automation"
+              queue="ddg.sync.automation.queue"
+              handler="Dotdigitalgroup\Email\Model\Queue\Sync\Automation\AutomationConsumer::process"
+              connection="db" />
     <consumer name="ddg.newsletter.unsubscribe"
               queue="ddg.unsubscribe.queue"
               handler="Dotdigitalgroup\Email\Model\Queue\Newsletter\UnsubscriberConsumer::process"

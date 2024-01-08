@@ -7,9 +7,9 @@ use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Automation;
 use Dotdigitalgroup\Email\Model\Contact;
 use Dotdigitalgroup\Email\Model\Contact\ContactResponseHandler;
-use Dotdigitalgroup\Email\Model\ContactFactory;
 use Dotdigitalgroup\Email\Model\Newsletter\BackportedSubscriberLoader;
 use Dotdigitalgroup\Email\Model\ResourceModel\Automation as AutomationResource;
+use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory as ContactCollectionFactory;
 use Dotdigitalgroup\Email\Model\Sales\QuoteFactory as DotdigitalQuoteFactory;
 use Dotdigitalgroup\Email\Model\StatusInterface;
 use Dotdigitalgroup\Email\Model\Sync\Automation\AutomationTypeHandler;
@@ -58,9 +58,9 @@ class AbandonedCartTest extends TestCase
     private $automationResourceMock;
 
     /**
-     * @var ContactFactory|\PHPUnit_Framework_MockObject_MockObject
+     * @var ContactCollectionFactory|\PHPUnit_Framework_MockObject_MockObject
      */
-    private $contactFactoryMock;
+    private $contactCollectionFactoryMock;
 
     /**
      * @var ContactManager|\PHPUnit_Framework_MockObject_MockObject
@@ -123,7 +123,7 @@ class AbandonedCartTest extends TestCase
         $this->loggerMock = $this->createMock(Logger::class);
         $this->contactResponseHandlerMock = $this->createMock(ContactResponseHandler::class);
         $this->automationResourceMock = $this->createMock(AutomationResource::class);
-        $this->contactFactoryMock = $this->createMock(ContactFactory::class);
+        $this->contactCollectionFactoryMock = $this->createMock(ContactCollectionFactory::class);
         $this->contactManagerMock = $this->createMock(ContactManager::class);
         $this->dataFieldCollectorMock = $this->createMock(DataFieldCollector::class);
         $this->dataFieldTypeHandlerMock = $this->createMock(DataFieldTypeHandler::class);
@@ -147,7 +147,7 @@ class AbandonedCartTest extends TestCase
             $this->helperMock,
             $this->loggerMock,
             $this->automationResourceMock,
-            $this->contactFactoryMock,
+            $this->contactCollectionFactoryMock,
             $this->contactManagerMock,
             $this->dataFieldCollectorMock,
             $this->dataFieldTypeHandlerMock,
@@ -238,7 +238,22 @@ class AbandonedCartTest extends TestCase
         $this->setupAutomationModel();
         $this->setupContactModel();
         $this->setupSubscriberModel();
-        $this->setupACRelatedModels();
+
+        $quoteModelMock = $this->createMock(\Magento\Quote\Model\Quote::class);
+        $quoteItemModelMock = $this->createMock(\Magento\Quote\Model\Quote\Item::class);
+        $ddgQuoteModelMock = $this->createMock(\Dotdigitalgroup\Email\Model\Sales\Quote::class);
+
+        $this->quoteFactoryMock->expects($this->once())
+            ->method('create')
+            ->willReturn($quoteModelMock);
+
+        $quoteModelMock->expects($this->once())
+            ->method('loadByIdWithoutStore')
+            ->willReturn($quoteModelMock);
+
+        $quoteModelMock->expects($this->once())
+            ->method('getAllItems')
+            ->willReturn([$quoteItemModelMock]);
 
         $this->subscriberModelMock->expects($this->once())
             ->method('isSubscribed')
@@ -251,6 +266,9 @@ class AbandonedCartTest extends TestCase
         $this->helperMock->expects($this->once())
             ->method('isOnlySubscribersForAC')
             ->willReturn(true);
+
+        $this->dataFieldUpdaterMock->expects($this->never())
+            ->method('setDatafields');
 
         $this->contactManagerMock->expects($this->never())
             ->method('prepareDotdigitalContact');
