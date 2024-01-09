@@ -20,6 +20,8 @@ use Dotdigitalgroup\Email\Model\Sync\ImporterFactory;
 use Dotdigitalgroup\Email\Model\Sync\Integration\IntegrationInsightsFactory;
 use Dotdigitalgroup\Email\Model\Sync\OrderFactory;
 use Dotdigitalgroup\Email\Model\Sync\SubscriberFactory;
+use Dotdigitalgroup\Email\Model\Contact\PendingContactCheckerFactory;
+use Magento\Framework\Exception\NoSuchEntityException;
 
 class Cron
 {
@@ -125,6 +127,11 @@ class Cron
     private $consentFactory;
 
     /**
+     * @var PendingContactCheckerFactory
+     */
+    private $pendingContactCheckerFactory;
+
+    /**
      * @param CampaignFactory $campaignFactory
      * @param OrderFactory $syncOrderFactory
      * @param QuoteFactory $quoteFactory
@@ -143,6 +150,7 @@ class Cron
      * @param IntegrationInsightsFactory $integrationInsightsFactory
      * @param MonitorFactory $monitorFactory
      * @param JobChecker $jobChecker
+     * @param PendingContactCheckerFactory $pendingContactCheckerFactory
      */
     public function __construct(
         Sync\CampaignFactory $campaignFactory,
@@ -162,7 +170,8 @@ class Cron
         AbandonedCart\ProgramEnrolment\Enroller $abandonedCartProgramEnroller,
         IntegrationInsightsFactory $integrationInsightsFactory,
         MonitorFactory $monitorFactory,
-        JobChecker $jobChecker
+        JobChecker $jobChecker,
+        PendingContactCheckerFactory $pendingContactCheckerFactory
     ) {
         $this->campaignFactory   = $campaignFactory;
         $this->syncOrderFactory  = $syncOrderFactory;
@@ -182,6 +191,7 @@ class Cron
         $this->integrationInsights = $integrationInsightsFactory;
         $this->monitor = $monitorFactory;
         $this->jobChecker = $jobChecker;
+        $this->pendingContactCheckerFactory = $pendingContactCheckerFactory;
     }
 
     /**
@@ -445,5 +455,23 @@ class Cron
 
         $this->consentFactory->create()
             ->sync();
+    }
+
+    /**
+     * Check pending opt in contacts.
+     *
+     * @return void
+     * @throws NoSuchEntityException
+     */
+    public function checkPendingOptInContacts()
+    {
+        $jobCode = 'ddg_automation_pending_contact_checker';
+
+        if ($this->jobChecker->hasAlreadyBeenRun($jobCode)) {
+            return;
+        }
+
+        $this->pendingContactCheckerFactory->create()
+            ->run();
     }
 }

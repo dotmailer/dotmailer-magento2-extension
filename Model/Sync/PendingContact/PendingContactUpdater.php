@@ -7,7 +7,10 @@ use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Model\ResourceModel\Abandoned;
 use Dotdigitalgroup\Email\Model\ResourceModel\Automation;
 use Dotdigitalgroup\Email\Model\StatusInterface;
+use Dotdigitalgroup\Email\Model\Sync\PendingContact\Type\AutomationTypeProvider;
 use Dotdigitalgroup\Email\Model\Sync\PendingContact\Type\TypeProviderInterface;
+use Magento\Framework\Exception\LocalizedException;
+use Dotdigitalgroup\Email\Model\Queue\Sync\Automation\AutomationPublisher;
 use Magento\Framework\Stdlib\DateTime;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 use Magento\Store\Model\StoreManagerInterface;
@@ -55,6 +58,11 @@ class PendingContactUpdater
     private $idsToExpire = [];
 
     /**
+     * @var AutomationPublisher
+     */
+    private $publisher;
+
+    /**
      * Constructor.
      *
      * @param Data $helper
@@ -62,19 +70,22 @@ class PendingContactUpdater
      * @param TypeProviderInterface $typeProvider
      * @param DateTime $dateTime
      * @param StoreManagerInterface $storeManager
+     * @param AutomationPublisher $publisher
      */
     public function __construct(
         Data $helper,
         TimezoneInterface $timeZone,
         TypeProviderInterface $typeProvider,
         DateTime $dateTime,
-        StoreManagerInterface $storeManager
+        StoreManagerInterface $storeManager,
+        AutomationPublisher $publisher
     ) {
         $this->helper = $helper;
         $this->timeZone = $timeZone;
         $this->typeProvider = $typeProvider;
         $this->dateTime = $dateTime;
         $this->storeManager = $storeManager;
+        $this->publisher = $publisher;
     }
 
     /**
@@ -85,38 +96,18 @@ class PendingContactUpdater
      */
     public function update()
     {
-        $dateTimeFromDb = $this->getCollectionFactory()->create()
-            ->getLastPendingStatusCheckTime();
-        if (!$dateTimeFromDb) {
+        $pendingCollection = $this->getCollectionFactory()->create()
+            ->getCollectionByPendingStatus();
+
+        if ($pendingCollection->getSize() == 0) {
             return;
         }
 
-        if ($this->isItTimeToCheckPendingContact($dateTimeFromDb)) {
-            $this->checkStatusForPendingContacts(
-                $this->getCollectionFactory()->create()
-                    ->getCollectionByPendingStatus()
-            );
-            $this->updateRows(
-                $this->getResourceModel()
-            );
-        }
-    }
+        $this->checkStatusForPendingContacts($pendingCollection);
 
-    /**
-     * Check pending contact.
-     *
-     * Check if contact should have been updated based on time.
-     *
-     * @param string $dateTimeFromDb
-     * @return bool
-     */
-    private function isItTimeToCheckPendingContact($dateTimeFromDb)
-    {
-        $lastCheckTime = $this->timeZone->date($dateTimeFromDb);
-        $interval = new \DateInterval('PT30M');
-        $lastCheckTime->add($interval);
-        $now = $this->timeZone->date();
-        return ($now->format('Y-m-d H:i:s') > $lastCheckTime->format('Y-m-d H:i:s'));
+        $this->updateRows(
+            $this->getResourceModel()
+        );
     }
 
     /**
@@ -124,6 +115,7 @@ class PendingContactUpdater
      *
      * @param \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection $collection
      * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @throws LocalizedException
      */
     private function checkStatusForPendingContacts($collection)
     {
@@ -133,7 +125,9 @@ class PendingContactUpdater
             $websiteId = empty($item->getWebsiteId()) ?
                 $this->getWebsiteIdFromStoreId($item->getStoreId()) :
                 $item->getWebsiteId();
-            $contact = $this->helper->getOrCreateContact($item->getEmail(), $websiteId);
+            $client = $this->helper->getWebsiteApiClient((int) $websiteId);
+            /** @var \stdClass $contact */
+            $contact = $client->getContactByEmail($item->getEmail());
             if (!$contact ||
                 ($contact->status === StatusInterface::PENDING_OPT_IN &&
                     ($item->getCreatedAt() < $expiryDate))
@@ -141,6 +135,9 @@ class PendingContactUpdater
                 $this->idsToExpire[] = $item->getId();
             } elseif (isset($contact->id) && $contact->status !== StatusInterface::PENDING_OPT_IN) {
                 $this->idsToUpdateStatus[] = $item->getId();
+                if (is_a($this->typeProvider, AutomationTypeProvider::class)) {
+                    $this->publisher->publish($item);
+                }
             } else {
                 $this->idsToUpdateDate[] = $item->getId();
             }
@@ -151,6 +148,7 @@ class PendingContactUpdater
      * Get datetime for expiration.
      *
      * @return string
+     * @throws \Exception
      */
     private function getDateTimeForExpiration()
     {

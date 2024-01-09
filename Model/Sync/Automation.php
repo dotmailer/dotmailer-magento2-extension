@@ -9,7 +9,6 @@ use Dotdigitalgroup\Email\Model\Sync\Automation\AutomationProcessorFactory;
 use Dotdigitalgroup\Email\Model\Sync\Automation\AutomationTypeHandler;
 use Dotdigitalgroup\Email\Model\Sync\Automation\ProgramFinder;
 use Dotdigitalgroup\Email\Model\Sync\Automation\Sender;
-use Dotdigitalgroup\Email\Model\Sync\PendingContact\PendingContactUpdater;
 
 class Automation implements SyncInterface
 {
@@ -19,11 +18,6 @@ class Automation implements SyncInterface
      * @var CollectionFactory
      */
     private $automationCollectionFactory;
-
-    /**
-     * @var AutomationProcessorFactory
-     */
-    private $automationProcessorFactory;
 
     /**
      * @var AutomationTypeHandler
@@ -41,34 +35,23 @@ class Automation implements SyncInterface
     private $sender;
 
     /**
-     * @var PendingContactUpdater
-     */
-    private $pendingContactUpdater;
-
-    /**
      * Automation constructor.
      *
      * @param CollectionFactory $automationCollectionFactory
-     * @param AutomationProcessorFactory $automationProcessorFactory
      * @param AutomationTypeHandler $automationTypeHandler
      * @param ProgramFinder $programFinder
      * @param Sender $sender
-     * @param PendingContactUpdater $pendingContactUpdater
      */
     public function __construct(
         CollectionFactory $automationCollectionFactory,
-        AutomationProcessorFactory $automationProcessorFactory,
         AutomationTypeHandler $automationTypeHandler,
         ProgramFinder $programFinder,
-        Sender $sender,
-        PendingContactUpdater $pendingContactUpdater
+        Sender $sender
     ) {
         $this->automationCollectionFactory = $automationCollectionFactory;
-        $this->automationProcessorFactory = $automationProcessorFactory;
         $this->automationTypeHandler = $automationTypeHandler;
         $this->programFinder = $programFinder;
         $this->sender = $sender;
-        $this->pendingContactUpdater = $pendingContactUpdater;
     }
 
     /**
@@ -81,8 +64,6 @@ class Automation implements SyncInterface
      */
     public function sync(\DateTime $from = null)
     {
-        $this->pendingContactUpdater->update();
-
         foreach ($this->automationTypeHandler->getAutomationTypes() as $type => $properties) {
 
             $collection = $this->automationCollectionFactory->create()

@@ -13,7 +13,6 @@ use Dotdigitalgroup\Email\Model\ResourceModel\Abandoned\CollectionFactory as Aba
 use Dotdigitalgroup\Email\Model\ResourceModel\Campaign\CollectionFactory as CampaignCollectionFactory;
 use Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory;
 use Dotdigitalgroup\Email\Model\RulesFactory;
-use Dotdigitalgroup\Email\Model\Sync\PendingContact\PendingContactUpdater;
 use Dotdigitalgroup\Email\Model\StatusInterface;
 use Dotdigitalgroup\Email\Model\ResourceModel\Campaign;
 use Dotdigitalgroup\Email\Model\AbandonedCart\TimeLimit;
@@ -128,11 +127,6 @@ class Quote
     private $abandonedResource;
 
     /**
-     * @var PendingContactUpdater
-     */
-    private $pendingContactUpdater;
-
-    /**
      * @var \Dotdigitalgroup\Email\Model\AbandonedCart\CartInsight\Data
      */
     private $cartInsight;
@@ -179,7 +173,6 @@ class Quote
      * @param QuoteCollectionFactory $quoteCollectionFactory
      * @param CollectionFactory $collectionFactory
      * @param TimezoneInterface $timezone
-     * @param PendingContactUpdater $pendingContactUpdater
      * @param \Dotdigitalgroup\Email\Model\AbandonedCart\CartInsight\Data $cartInsight
      * @param TimeLimit $timeLimit
      * @param Logger $logger
@@ -200,7 +193,6 @@ class Quote
         QuoteCollectionFactory $quoteCollectionFactory,
         \Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory $collectionFactory,
         \Magento\Framework\Stdlib\DateTime\TimezoneInterface $timezone,
-        PendingContactUpdater $pendingContactUpdater,
         \Dotdigitalgroup\Email\Model\AbandonedCart\CartInsight\Data $cartInsight,
         TimeLimit $timeLimit,
         Logger $logger,
@@ -221,7 +213,6 @@ class Quote
         $this->quoteCollectionFactory = $quoteCollectionFactory;
         $this->campaignCollectionFactory = $campaignCollectionFactory;
         $this->abandonedCollectionFactory = $abandonedCollectionFactory;
-        $this->pendingContactUpdater = $pendingContactUpdater;
         $this->cartInsight = $cartInsight;
         $this->timeLimit = $timeLimit;
         $this->logger = $logger;
@@ -238,7 +229,6 @@ class Quote
     {
         $result = [];
         $stores = $this->storeManager->getStores();
-        $this->pendingContactUpdater->update();
 
         foreach ($stores as $store) {
             $storeId = $store->getId();
