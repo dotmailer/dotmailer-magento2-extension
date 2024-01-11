@@ -115,7 +115,7 @@ class Item
      */
     public function setPrice($product)
     {
-        $this->price = (float)number_format( (float) $product->getFinalPrice(), 2, '.', '');
+        $this->price = (float)number_format((float) $product->getFinalPrice(), 2, '.', '');
         $total = $this->price * $this->qty;
 
         $this->totalValueOfProduct = (float)number_format($total, 2, '.', '');
