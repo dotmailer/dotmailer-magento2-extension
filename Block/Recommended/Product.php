@@ -100,7 +100,7 @@ class Product extends \Dotdigitalgroup\Email\Block\Recommended
         $orderModel = $this->orderFactory->create();
         $this->orderResource->load($orderModel, $orderId);
         //number of product items to be displayed
-        $limit = $this->recommendedHelper
+        $limit = (float) $this->recommendedHelper
             ->getDisplayLimitByMode($mode);
 
         try {

@@ -296,7 +296,7 @@ class Order extends AbstractConnectorModel
         $orderTotal = abs(
             $orderData->getData('grand_total') - $orderData->getTotalRefunded()
         );
-        $this->orderTotal = (float) number_format($orderTotal, 2, '.', '');
+        $this->orderTotal = (float) number_format((float) $orderTotal, 2, '.', '');
         $this->orderStatus = $orderData->getStatus();
 
         if (!$this->schemaValidator->isValid($this->toArray())) {
