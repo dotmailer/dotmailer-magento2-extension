@@ -1327,7 +1327,7 @@
         </section>
         <section id="connector_consent" translate="label" sortOrder="195" showInStore="1" showInWebsite="1" showInDefault="1">
             <class>separator-top</class>
-            <label>Consent</label>
+            <label>Marketing Consent</label>
             <tab>ddg_automation</tab>
             <resource>Dotdigitalgroup_Email::config</resource>
             <group id="email" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
