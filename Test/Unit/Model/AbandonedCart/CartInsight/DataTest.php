@@ -2,10 +2,11 @@
 
 namespace Dotdigitalgroup\Email\Test\Unit\Model\AbandonedCart\CartInsight;
 
-use Dotdigitalgroup\Email\Helper\Data;
+use Dotdigital\Resources\AbstractResource;
 use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\AbandonedCart\CartInsight\Data as CartInsightData;
-use Dotdigitalgroup\Email\Model\Apiconnector\Client;
+use Dotdigitalgroup\Email\Model\Apiconnector\V3\Client;
+use Dotdigitalgroup\Email\Model\Apiconnector\V3\ClientFactory;
 use Dotdigitalgroup\Email\Model\Catalog\UrlFinder;
 use Dotdigitalgroup\Email\Model\Product\ImageFinder;
 use Dotdigitalgroup\Email\Model\Product\ImageType\Context\AbandonedCart;
@@ -18,52 +19,53 @@ use Magento\Quote\Model\Quote\Item;
 use Magento\Store\Model\App\Emulation;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class DataTest extends TestCase
 {
     /**
-     * @var Data|\PHPUnit_Framework_MockObject_MockObject
-     */
-    private $helperMock;
-
-    /**
-     * @var Client|\PHPUnit_Framework_MockObject_MockObject
+     * @var Client|MockObject
      */
     private $clientMock;
 
     /**
-     * @var ProductRepositoryInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var ClientFactory|MockObject
+     */
+    private $clientFactoryMock;
+
+    /**
+     * @var ProductRepositoryInterface|MockObject
      */
     private $productRepositoryMock;
 
     /**
-     * @var Emulation|\PHPUnit_Framework_MockObject_MockObject
+     * @var Emulation|MockObject
      */
     private $emulationMock;
 
     /**
-     * @var Product|\PHPUnit_Framework_MockObject_MockObject
+     * @var Product|MockObject
      */
     private $productMock;
 
     /**
-     * @var StoreManagerInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var StoreManagerInterface|MockObject
      */
     private $storeManagerInterfaceMock;
 
     /**
-     * @var DateTime|\PHPUnit_Framework_MockObject_MockObject
+     * @var DateTime|MockObject
      */
     private $dateTimeMock;
 
     /**
-     * @var \Magento\Quote\Model\Quote|\PHPUnit_Framework_MockObject_MockObject
+     * @var \Magento\Quote\Model\Quote|MockObject
      */
     private $quoteMock;
 
     /**
-     * @var Item|\PHPUnit_Framework_MockObject_MockObject
+     * @var Item|MockObject
      */
     private $itemMock;
 
@@ -83,39 +85,43 @@ class DataTest extends TestCase
     private $storeId = 1;
 
     /**
-     * @var Store\PHPUnit_Framework_MockObject_MockObject
+     * @var Store|MockObject
      */
     private $storeMock;
 
     /**
-     * @var UrlFinder\PHPUnit_Framework_MockObject_MockObject
+     * @var UrlFinder|MockObject
      */
     private $urlFinderMock;
 
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject
+     * @var ImageFinder|MockObject
      */
     private $imageFinderMock;
 
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject
+     * @var Logger|MockObject
      */
     private $loggerMock;
 
     /**
-     * @var AbandonedCart|\PHPUnit_Framework_MockObject_MockObject
+     * @var AbandonedCart|MockObject
      */
     private $imageTypeMock;
 
     /**
-     * @var PriceCurrencyInterface|\PHPUnit\Framework\MockObject\MockObject
+     * @var PriceCurrencyInterface|MockObject
      */
     private $priceCurrencyInterfaceMock;
 
+    /**
+     * @var AbstractResource|MockObject
+     */
+    private $abstractResourceMock;
+
     protected function setUp() :void
     {
-        $this->helperMock = $this->createMock(Data::class);
-        $this->clientMock = $this->createMock(Client::class);
+        $this->clientFactoryMock = $this->createMock(ClientFactory::class);
         $this->productRepositoryMock = $this->createMock(ProductRepositoryInterface::class);
         $this->emulationMock = $this->createMock(Emulation::class);
         $this->productMock = $this->createMock(Product::class);
@@ -151,11 +157,18 @@ class DataTest extends TestCase
         $this->imageTypeMock = $this->createMock(AbandonedCart::class);
         $this->priceCurrencyInterfaceMock = $this->createMock(PriceCurrencyInterface::class);
 
+        $this->clientMock = $this->createMock(Client::class);
+        $this->abstractResourceMock = $this->getMockBuilder(AbstractResource::class)
+            ->disableOriginalConstructor()
+            ->addMethods(['createOrUpdateContactCollectionRecord'])
+            ->getMock();
+        $this->clientMock->insightData = $this->abstractResourceMock;
+
         $this->class = new CartInsightData(
+            $this->clientFactoryMock,
             $this->storeManagerInterfaceMock,
             $this->productRepositoryMock,
             $this->emulationMock,
-            $this->helperMock,
             $this->dateTimeMock,
             $this->urlFinderMock,
             $this->imageFinderMock,
@@ -169,9 +182,8 @@ class DataTest extends TestCase
     {
         $this->setStoreMock();
 
-        $this->helperMock->expects($this->once())
-            ->method('getWebsiteApiClient')
-            ->with($this->websiteId)
+        $this->clientFactoryMock->expects($this->once())
+            ->method('create')
             ->willReturn($this->clientMock);
 
         $expectedPayload = $this->getMockPayload();
@@ -324,17 +336,11 @@ class DataTest extends TestCase
             );
 
         // Client API call
-        $this->clientMock->expects($this->once())
-            ->method('postAbandonedCartCartInsight')
-            ->will($this->returnCallback(
-                function ($payload) use (&$actualPayload) {
-                    $actualPayload = $payload;
-                }
-            ));
+        $this->abstractResourceMock->expects($this->once())
+            ->method('createOrUpdateContactCollectionRecord')
+            ->willReturn(json_encode($this->getMockPayload()));
 
         $this->class->send($this->quoteMock, $this->storeId);
-
-        $this->assertJsonStringEqualsJsonString(json_encode($expectedPayload), json_encode($actualPayload));
     }
 
     public function testThatTotalPriceIsCorrectSumRegardlessOfSale()

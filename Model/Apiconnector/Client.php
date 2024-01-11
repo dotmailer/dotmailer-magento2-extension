@@ -307,6 +307,9 @@ class Client extends Rest implements ClientInterface
     /**
      * Create abandoned cart in dotdigital.
      *
+     * @deprecated Use API v3 (InsightData service).
+     * @see V3\Client
+     *
      * @param array $content
      * @return array|stdClass|null
      * @throws \Magento\Framework\Exception\LocalizedException

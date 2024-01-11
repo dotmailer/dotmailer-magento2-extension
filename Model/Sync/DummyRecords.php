@@ -2,21 +2,18 @@
 
 namespace Dotdigitalgroup\Email\Model\Sync;
 
-use Dotdigitalgroup\Email\Helper\Data;
-use Dotdigitalgroup\Email\Model\DummyRecordsData;
+use Dotdigital\Exception\ResponseValidationException;
+use Dotdigital\V3\Models\ContactFactory as DotdigitalContactFactory;
 use Dotdigitalgroup\Email\Logger\Logger;
+use Dotdigitalgroup\Email\Model\Apiconnector\V3\ClientFactory;
+use Dotdigitalgroup\Email\Model\DummyRecordsData;
 
 class DummyRecords implements SyncInterface
 {
     /**
-     * @var Data
+     * @var DotdigitalContactFactory
      */
-    private $helper;
-
-    /**
-     * @var DummyRecordsData
-     */
-    private $dummyData;
+    private $sdkContactFactory;
 
     /**
      * @var Logger
@@ -24,23 +21,37 @@ class DummyRecords implements SyncInterface
     private $logger;
 
     /**
+     * @var ClientFactory
+     */
+    private $clientFactory;
+
+    /**
+     * @var DummyRecordsData
+     */
+    private $dummyData;
+
+    /**
      * DummyRecords constructor.
      *
-     * @param DummyRecordsData $dummyData
-     * @param Data $helper
+     * @param DotdigitalContactFactory $sdkContactFactory
      * @param Logger $logger
+     * @param DummyRecordsData $dummyData
+     * @param ClientFactory $clientFactory
      */
-    public function __construct(DummyRecordsData $dummyData, Data $helper, Logger $logger)
-    {
-        $this->dummyData = $dummyData;
-        $this->helper = $helper;
+    public function __construct(
+        DotdigitalContactFactory $sdkContactFactory,
+        Logger $logger,
+        DummyRecordsData $dummyData,
+        ClientFactory $clientFactory
+    ) {
+        $this->sdkContactFactory = $sdkContactFactory;
         $this->logger = $logger;
+        $this->dummyData = $dummyData;
+        $this->clientFactory = $clientFactory;
     }
 
     /**
      * Sync.
-     *
-     * Run in default level.
      *
      * @param \DateTime $from
      * @throws \Magento\Framework\Exception\NoSuchEntityException
@@ -74,8 +85,45 @@ class DummyRecords implements SyncInterface
     private function postContactAndCartInsightData($websiteId = 0)
     {
         $cartInsightData = $this->dummyData->getContactInsightData($websiteId);
-        $client = $this->helper->getWebsiteApiClient($websiteId);
-        $client->postContacts($cartInsightData['contactIdentifier']);
-        $client->postAbandonedCartCartInsight($cartInsightData);
+        $client = $this->clientFactory->create(
+            ['data' => ['websiteId' => $websiteId]]
+        );
+
+        try {
+            $contact = $this->sdkContactFactory->create();
+            $contact->setMatchIdentifier('email');
+            $contact->setIdentifiers(['email' => $cartInsightData['contactIdentifier']]);
+            $client->contacts->create($contact);
+        } catch (ResponseValidationException $e) {
+            if (strpos($e->getMessage(), 'identifierConflict') === false) {
+                $this->logger->debug(
+                    sprintf(
+                        '%s: %s',
+                        'Could not create new contact to attach dummy cart insight',
+                        $e->getMessage()
+                    ),
+                    [$e->getDetails()]
+                );
+            }
+        }
+
+        try {
+            $client->insightData->createOrUpdateContactCollectionRecord(
+                'CartInsight',
+                $cartInsightData['key'],
+                'email',
+                $cartInsightData['contactIdentifier'],
+                $cartInsightData
+            );
+        } catch (ResponseValidationException $e) {
+            $this->logger->debug(
+                sprintf(
+                    '%s: %s',
+                    'Could not send dummy cart insight data',
+                    $e->getMessage()
+                ),
+                [$e->getDetails()]
+            );
+        }
     }
 }
