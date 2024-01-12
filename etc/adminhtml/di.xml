@@ -96,6 +96,51 @@
             <argument name="resetType" xsi:type="string">subscriber</argument>
         </arguments>
     </virtualType>
+    <virtualType name="syncCustomerVirtualType" type="Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\ButtonSync">
+        <arguments>
+            <argument name="syncType" xsi:type="string">customer</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="syncSubscriberVirtualType" type="Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\ButtonSync">
+        <arguments>
+            <argument name="syncType" xsi:type="string">subscriber</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="syncGuestVirtualType" type="Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\ButtonSync">
+        <arguments>
+            <argument name="syncType" xsi:type="string">guest</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="syncOrderVirtualType" type="Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\ButtonSync">
+        <arguments>
+            <argument name="syncType" xsi:type="string">order</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="syncWishlistVirtualType" type="Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\ButtonSync">
+        <arguments>
+            <argument name="syncType" xsi:type="string">wishlist</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="syncReviewVirtualType" type="Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\ButtonSync">
+        <arguments>
+            <argument name="syncType" xsi:type="string">review</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="syncCatalogVirtualType" type="Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\ButtonSync">
+        <arguments>
+            <argument name="syncType" xsi:type="string">catalog</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="syncImporterVirtualType" type="Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\ButtonSync">
+        <arguments>
+            <argument name="syncType" xsi:type="string">importer</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="syncTemplateVirtualType" type="Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\ButtonSync">
+        <arguments>
+            <argument name="syncType" xsi:type="string">template</argument>
+        </arguments>
+    </virtualType>
     <type name="Magento\Catalog\Controller\Adminhtml\Product\Action\Attribute\Save">
         <plugin name="Ddg_UpdateProductAttribute_MassActionPlugin" type="Dotdigitalgroup\Email\Plugin\CatalogProductAttributeSavePlugin" sortOrder="1"/>
     </type>

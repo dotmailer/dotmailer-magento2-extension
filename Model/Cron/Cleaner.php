@@ -16,11 +16,6 @@ class Cleaner implements TaskRunInterface
     private $fileHelper;
 
     /**
-     * @var JobChecker
-     */
-    private $jobChecker;
-
-    /**
      * @var DateTimeFactory
      */
     private $dateTimeFactory;
@@ -44,18 +39,15 @@ class Cleaner implements TaskRunInterface
      * Cleaner constructor.
      *
      * @param File $fileHelper
-     * @param JobChecker $jobChecker
      * @param DateTimeFactory $dateTimeFactory
      * @param ResourceConnection $resourceConnection
      */
     public function __construct(
         File $fileHelper,
-        JobChecker $jobChecker,
         DateTimeFactory $dateTimeFactory,
         ResourceConnection $resourceConnection
     ) {
         $this->fileHelper = $fileHelper;
-        $this->jobChecker = $jobChecker;
         $this->dateTimeFactory = $dateTimeFactory;
         $this->resourceConnection = $resourceConnection;
     }
@@ -67,10 +59,6 @@ class Cleaner implements TaskRunInterface
      */
     public function run(): void
     {
-        if ($this->jobChecker->hasAlreadyBeenRun('ddg_automation_cleaner')) {
-            return;
-        }
-
         $tables = $this->getTablesForCleanUp();
 
         foreach ($tables as $table) {

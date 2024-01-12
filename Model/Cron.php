@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dotdigitalgroup\Email\Model;
 
 use Dotdigitalgroup\Email\Helper\Config;
@@ -21,6 +23,8 @@ use Dotdigitalgroup\Email\Model\Sync\Integration\IntegrationInsightsFactory;
 use Dotdigitalgroup\Email\Model\Sync\OrderFactory;
 use Dotdigitalgroup\Email\Model\Sync\SubscriberFactory;
 use Dotdigitalgroup\Email\Model\Contact\PendingContactCheckerFactory;
+use Magento\Framework\Exception\AlreadyExistsException;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 
 class Cron
@@ -198,14 +202,10 @@ class Cron
      * Run customer sync.
      *
      * @return array|void
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws LocalizedException
      */
     public function customerSync()
     {
-        if ($this->jobChecker->hasAlreadyBeenRun('ddg_automation_customer_sync')) {
-            return;
-        }
-
         return $this->customerFactory->create()->sync();
     }
 
@@ -213,13 +213,10 @@ class Cron
      * Run guest sync.
      *
      * @return array|void
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws LocalizedException
      */
     public function guestSync()
     {
-        if ($this->jobChecker->hasAlreadyBeenRun('ddg_automation_guest_sync')) {
-            return;
-        }
         return $this->guestFactory->create()->sync();
     }
 
@@ -227,13 +224,10 @@ class Cron
      * Run subscriber sync.
      *
      * @return array|void
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws LocalizedException
      */
     public function subscriberSync()
     {
-        if ($this->jobChecker->hasAlreadyBeenRun('ddg_automation_subscriber_sync')) {
-            return;
-        }
         return $this->subscriberFactory->create()
             ->sync();
     }
@@ -245,10 +239,6 @@ class Cron
      */
     public function catalogSync()
     {
-        if ($this->jobChecker->hasAlreadyBeenRun('ddg_automation_catalog_sync')) {
-            return;
-        }
-
         $this->catalogFactory->create()
             ->sync();
     }
@@ -257,14 +247,10 @@ class Cron
      * Importer cron.
      *
      * @return void
-     * @throws \Magento\Framework\Exception\AlreadyExistsException
+     * @throws AlreadyExistsException|LocalizedException
      */
     public function emailImporter()
     {
-        if ($this->jobChecker->hasAlreadyBeenRun('ddg_automation_importer')) {
-            return;
-        }
-
         $this->importerFactory->create()
             ->sync();
     }
@@ -274,10 +260,6 @@ class Cron
      */
     public function sendIntegrationInsights()
     {
-        if ($this->jobChecker->hasAlreadyBeenRun('ddg_automation_integration_insights')) {
-            return;
-        }
-
         $this->integrationInsights->create()
             ->sync();
     }
@@ -289,13 +271,7 @@ class Cron
      */
     public function reviewsAndWishlist()
     {
-        if ($this->jobChecker->hasAlreadyBeenRun('ddg_automation_reviews_and_wishlist')) {
-            return;
-        }
-
-        //sync reviews
         $this->reviewSync();
-        //sync wishlist
         $this->cronHelper->wishlistSync();
     }
 
@@ -313,13 +289,10 @@ class Cron
      * Abandoned cart cron.
      *
      * @return void
+     * @throws \Exception
      */
     public function abandonedCarts()
     {
-        if ($this->jobChecker->hasAlreadyBeenRun('ddg_automation_abandonedcarts')) {
-            return;
-        }
-
         $this->quoteFactory->create()->processAbandonedCarts();
         $this->abandonedCartProgramEnroller->process();
     }
@@ -328,14 +301,10 @@ class Cron
      * Automation cron.
      *
      * @return void
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws LocalizedException
      */
     public function syncAutomation()
     {
-        if ($this->jobChecker->hasAlreadyBeenRun('ddg_automation_status')) {
-            return;
-        }
-
         $this->automationFactory->create()->sync();
     }
 
@@ -343,14 +312,10 @@ class Cron
      * Send email campaigns.
      *
      * @return void
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws LocalizedException
      */
     public function sendCampaigns()
     {
-        if ($this->jobChecker->hasAlreadyBeenRun('ddg_automation_campaign')) {
-            return;
-        }
-
         $this->campaignFactory->create()->sendCampaigns();
     }
 
@@ -358,14 +323,10 @@ class Cron
      * Order sync cron.
      *
      * @return array|void
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws LocalizedException
      */
     public function orderSync()
     {
-        if ($this->jobChecker->hasAlreadyBeenRun('ddg_automation_order_sync')) {
-            return;
-        }
-
         return $this->syncOrderFactory->create()
             ->sync();
     }
@@ -377,10 +338,6 @@ class Cron
      */
     public function syncEmailTemplates()
     {
-        if ($this->jobChecker->hasAlreadyBeenRun('ddg_automation_email_templates')) {
-            return;
-        }
-
         $this->templateFactory->create()
             ->sync();
     }
@@ -392,10 +349,6 @@ class Cron
      */
     public function monitor()
     {
-        if ($this->jobChecker->hasAlreadyBeenRun('ddg_automation_monitor')) {
-            return;
-        }
-
         $this->monitor->create()
             ->run();
     }
@@ -404,14 +357,11 @@ class Cron
      * Unsubscribe suppressions from Dotdigital.
      *
      * @return void
+     * @throws LocalizedException
      */
     public function unsubscribe()
     {
         $jobCode = 'ddg_automation_unsubscribe';
-
-        if ($this->jobChecker->hasAlreadyBeenRun($jobCode)) {
-            return;
-        }
 
         $this->unsubscriberFactory
             ->create(
@@ -429,10 +379,6 @@ class Cron
     {
         $jobCode = 'ddg_automation_platform_modified_contacts';
 
-        if ($this->jobChecker->hasAlreadyBeenRun($jobCode)) {
-            return;
-        }
-
         $this->platformChangeManagerFactory
             ->create(
                 ['data' => ['fromTime' => $this->jobChecker->getLastJobFinishedAt($jobCode)]]
@@ -444,15 +390,10 @@ class Cron
      * Run contact consent sync.
      *
      * @return void
+     * @throws LocalizedException
      */
     public function consentSync(): void
     {
-        $jobCode = 'ddg_automation_consent_sync';
-
-        if ($this->jobChecker->hasAlreadyBeenRun($jobCode)) {
-            return;
-        }
-
         $this->consentFactory->create()
             ->sync();
     }
@@ -465,12 +406,6 @@ class Cron
      */
     public function checkPendingOptInContacts()
     {
-        $jobCode = 'ddg_automation_pending_contact_checker';
-
-        if ($this->jobChecker->hasAlreadyBeenRun($jobCode)) {
-            return;
-        }
-
         $this->pendingContactCheckerFactory->create()
             ->run();
     }

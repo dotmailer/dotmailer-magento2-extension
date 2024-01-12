@@ -66,6 +66,14 @@ class Dashboard extends \Magento\Backend\Block\Widget\Container
      */
     public function getImporterLink()
     {
-        return $this->getUrl('dotdigitalgroup_email/run/importersync');
+        $query = [
+            '_query' => [
+                'sync-type' => 'importer'
+            ]
+        ];
+        return $this->getUrl(
+            'dotdigitalgroup_email/run/sync',
+            $query
+        );
     }
 }

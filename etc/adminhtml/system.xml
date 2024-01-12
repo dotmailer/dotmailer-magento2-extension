@@ -1790,42 +1790,42 @@
                 </field>
                 <field id="customer_sync" translate="label" sortOrder="70" showInStore="0" showInWebsite="1" showInDefault="1">
                     <label>Customer Sync</label>
-                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Customersync</frontend_model>
+                    <frontend_model>syncCustomerVirtualType</frontend_model>
                 </field>
                 <field id="subscriber_sync" translate="label" sortOrder="80" showInStore="0" showInWebsite="1" showInDefault="1">
                     <label>Subscriber Sync</label>
-                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Subscribersync</frontend_model>
+                    <frontend_model>syncSubscriberVirtualType</frontend_model>
                 </field>
                 <field id="guest_sync" translate="label" sortOrder="90" showInStore="0" showInWebsite="1" showInDefault="1">
                     <label>Guest Sync</label>
-                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Guestsync</frontend_model>
+                    <frontend_model>syncGuestVirtualType</frontend_model>
                 </field>
                 <field id="order_sync" translate="label" sortOrder="100" showInStore="0" showInWebsite="1" showInDefault="1">
                     <label>Order Sync</label>
-                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Ordersync</frontend_model>
+                    <frontend_model>syncOrderVirtualType</frontend_model>
                 </field>
                 <field id="wishlist_sync" translate="label" sortOrder="110" showInStore="0" showInWebsite="1"
                        showInDefault="1">
                     <label>Wishlist Sync</label>
-                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Wishlistsync</frontend_model>
+                    <frontend_model>syncWishlistVirtualType</frontend_model>
                 </field>
                 <field id="review_sync" translate="label" sortOrder="120" showInStore="0" showInWebsite="1"
                        showInDefault="1">
                     <label>Review Sync</label>
-                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Reviewsync</frontend_model>
+                    <frontend_model>syncReviewVirtualType</frontend_model>
                 </field>
                 <field id="catalog_sync" translate="label" sortOrder="130" showInStore="0" showInWebsite="1"
                        showInDefault="1">
                     <label>Catalog Sync</label>
-                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Catalogsync</frontend_model>
+                    <frontend_model>syncCatalogVirtualType</frontend_model>
                 </field>
                 <field id="importer_sync" translate="label" sortOrder="135" showInDefault="1" showInStore="0" showInWebsite="1">
                     <label>Importer Sync</label>
-                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Importersync</frontend_model>
+                    <frontend_model>syncImporterVirtualType</frontend_model>
                 </field>
                 <field id="template_sync" translate="label" sortOrder="139" showInDefault="1" showInStore="0" showInWebsite="1">
                     <label>Template Sync</label>
-                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\Templatesync</frontend_model>
+                    <frontend_model>syncTemplateVirtualType</frontend_model>
                 </field>
                 <field id="reset_sync_title" translate="label" sortOrder="140" showInStore="0" showInWebsite="1"
                        showInDefault="1">
