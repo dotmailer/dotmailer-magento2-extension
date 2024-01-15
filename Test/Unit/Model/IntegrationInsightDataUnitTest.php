@@ -7,10 +7,9 @@ use Dotdigitalgroup\Email\Model\Sync\Integration\DotdigitalConfig;
 use Dotdigitalgroup\Email\Model\Sync\Integration\IntegrationInsightData;
 use Dotdigitalgroup\Email\Model\Connector\Module;
 use Magento\Framework\App\ProductMetadataInterface;
-use Magento\Framework\Module\ModuleListInterface;
-use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
-use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
+use Magento\Store\Model\Website;
 use PHPUnit\Framework\TestCase;
 
 class IntegrationInsightDataUnitTest extends TestCase
@@ -50,6 +49,11 @@ class IntegrationInsightDataUnitTest extends TestCase
      */
     private $moduleManagerMock;
 
+    /**
+     * @var Store|Store&\PHPUnit\Framework\MockObject\MockObject|\PHPUnit\Framework\MockObject\MockObject
+     */
+    private $storeMock;
+
     public function setUp() :void
     {
         $this->helperMock = $this->createMock(Data::class);
@@ -57,6 +61,8 @@ class IntegrationInsightDataUnitTest extends TestCase
         $this->dotdigitalConfigMock = $this->createMock(DotdigitalConfig::class);
         $this->storeManagerInterfaceMock = $this->createMock(StoreManagerInterface::class);
         $this->moduleManagerMock = $this->createMock(Module::class);
+        $this->storeMock = $this->createMock(Store::class);
+        $this->websiteMock = $this->createMock(Website::class);
 
         // set up metadata
         $this->productMetadataMock
@@ -85,11 +91,39 @@ class IntegrationInsightDataUnitTest extends TestCase
             ->method('getStores')
             ->willReturn(
                 [
-                $this->getTestStore(1, 'Default', 'https://www.chaz-kangaroo.com', true),
-                $this->getTestStore(2, 'Typos', 'https://www.chaz-kangaroo.com/cauals', true),
-                $this->getTestStore(3, 'Bye Bye Man', 'https://www.bye-bye-man.com', false),
+                    $this->storeMock,
+                    $this->storeMock,
+                    $this->storeMock
                 ]
             );
+        
+        $this->storeMock->expects($this->atLeastOnce())
+            ->method('getWebsiteId')
+            ->willReturnOnConsecutiveCalls(1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3);
+
+        $this->storeMock->expects($this->atLeastOnce())
+            ->method('getWebsite')
+            ->willReturn($this->websiteMock);
+
+        $this->websiteMock
+            ->method('getName')
+            ->willReturnOnConsecutiveCalls('Default', 'Typos', 'Bye Bye Man');
+
+        $this->websiteMock->expects($this->atLeastOnce())
+            ->method('getCode')
+            ->willReturnOnConsecutiveCalls('chaz', 'wingman', 'sprat');
+
+        $this->storeMock->expects($this->atLeastOnce())
+            ->method('getBaseUrl')
+            ->willReturnOnConsecutiveCalls(
+                'https://www.chaz-kangaroo.com',
+                'https://www.chaz-kangaroo.com/cauals',
+                'https://www.chaz-kangaroo.com'
+            );
+
+        $this->storeMock->expects($this->atLeastOnce())
+            ->method('isCurrentlySecure')
+            ->willReturnOnConsecutiveCalls(true, true, false);
 
         $this->integrationInsightData = new IntegrationInsightData(
             $this->helperMock,
@@ -127,8 +161,8 @@ class IntegrationInsightDataUnitTest extends TestCase
 
         // assert 2 records were returned, with separate integration IDs based on the API hash
         $this->assertCount(2, $data);
-        $this->assertEquals('www.chaz-kangaroo.com', reset($data)['recordId']);
-        $this->assertEquals('www.bye-bye-man.com', end($data)['recordId']);
+        $this->assertEquals('www.chaz-kangaroo.com?website_code=chaz', reset($data)['recordId']);
+        $this->assertEquals('www.chaz-kangaroo.com?website_code=wingman', end($data)['recordId']);
     }
 
     /**
@@ -153,95 +187,5 @@ class IntegrationInsightDataUnitTest extends TestCase
 
         $this->assertArrayHasKey('phpVersion', $toAssert);
         $this->assertArrayHasKey('configuration', $toAssert);
-    }
-
-    /**
-     * @param  int    $websiteId
-     * @param  string $websiteName
-     * @param  string $baseUrl
-     * @param  bool   $isCurrentlySecure
-     * @return object
-     */
-    private function getTestStore(int $websiteId, string $websiteName, string $baseUrl, bool $isCurrentlySecure)
-    {
-        return new class($websiteId, $websiteName, $baseUrl, $isCurrentlySecure) {
-
-            /**
-             * @var int $websiteId
-             */
-            private $websiteId;
-
-            /**
-             * @var string $websiteName
-             */
-            private $websiteName;
-
-            /**
-             * @var string $baseUrl
-             */
-            private $baseUrl;
-
-            /**
-             * @var bool $isCurrentlySecure
-             */
-            private $isCurrentlySecure;
-
-            /**
-             * Constructor.
-             *
-             * @param $websiteId
-             * @param $websiteName
-             * @param $baseUrl
-             * @param $isCurrentlySecure
-             */
-            public function __construct($websiteId, $websiteName, $baseUrl, $isCurrentlySecure)
-            {
-                $this->websiteId = $websiteId;
-                $this->websiteName = $websiteName;
-                $this->baseUrl = $baseUrl;
-                $this->isCurrentlySecure = $isCurrentlySecure;
-            }
-
-            public function getWebsiteId()
-            {
-                return $this->websiteId;
-            }
-
-            public function getBaseUrl()
-            {
-                return $this->baseUrl;
-            }
-
-            public function isCurrentlySecure()
-            {
-                return $this->isCurrentlySecure;
-            }
-
-            public function getWebsite()
-            {
-                return new class($this->websiteName) {
-
-                    /**
-                     * @var string $websiteName
-                     */
-                    private $websiteName;
-
-                    /**
-                     * Constructor.
-                     *
-                     * @param $websiteName
-                     */
-                    public function __construct($websiteName)
-                    {
-                        $this->websiteName = $websiteName;
-                    }
-
-                    public function getName()
-                    {
-                        return $this->websiteName;
-                    }
-                };
-            }
-        };
     }
 }
