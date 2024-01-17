@@ -97,8 +97,9 @@ class CustomerLogin implements ObserverInterface
             if ($existingContact) {
                 if (!$existingContact->getCustomerId()) {
                     $existingContact->setCustomerId($customerId);
-                    $this->contactResource->save($existingContact);
                 }
+                $existingContact->setEmailImported(Contact::EMAIL_CONTACT_NOT_IMPORTED);
+                $this->contactResource->save($existingContact);
             } else {
                 $newContact = $this->contactFactory->create()
                     ->setEmail($emailAddress)
