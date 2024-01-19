@@ -122,6 +122,9 @@ class ImporterQueueManager
     /**
      * Set importing priority for single imports.
      *
+     * @deprecated Single updates have been moved to message queues.
+     * @see \Dotdigitalgroup\Email\Model\Queue
+     *
      * @return array
      */
     public function getSingleQueue()
