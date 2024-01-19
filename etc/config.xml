@@ -293,7 +293,7 @@
                 <subscriber_sales_data_enabled>0</subscriber_sales_data_enabled>
                 <strip_pub_from_media_paths>0</strip_pub_from_media_paths>
                 <transactional_data_break></transactional_data_break>
-                <mega_batch_size_orders>5000</mega_batch_size_orders>
+                <mega_batch_size_orders>4000</mega_batch_size_orders>
                 <mega_batch_size_catalog>5000</mega_batch_size_catalog>
                 <mega_batch_size_contact>2000</mega_batch_size_contact>
             </import_settings>
