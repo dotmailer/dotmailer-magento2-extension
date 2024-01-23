@@ -25,6 +25,9 @@
         <add id="Dotdigitalgroup_Email::abandoned" title="Abandoned Carts" translate="title" module="Dotdigitalgroup_Email" sortOrder="240"
              action="dotdigitalgroup_email/abandoned" resource="Dotdigitalgroup_Email::abandoned"
              parent="Dotdigitalgroup_Email::marketing_automation_report"/>
+        <add id="Dotdigitalgroup_Email::queue" title="Message Queue" module="Dotdigitalgroup_Email" sortOrder="250" parent="Dotdigitalgroup_Email::marketing_automation_report"
+             action="dotdigitalgroup_email/queue"
+             resource="Dotdigitalgroup_Email::queue"/>
     </menu>
 </config>
 

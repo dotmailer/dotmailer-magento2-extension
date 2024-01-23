@@ -1,0 +1,79 @@
+<listing xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    <argument name="data" xsi:type="array">
+        <item name="js_config" xsi:type="array">
+            <item name="provider" xsi:type="string">dotdigitalgroup_queue_grid.queue_data_source</item>
+            <item name="deps" xsi:type="string">dotdigitalgroup_queue_grid.queue_data_source</item>
+        </item>
+        <item name="spinner" xsi:type="string">dotditalgroup_queue_columns</item>
+    </argument>
+    <dataSource name="queue_data_source_data_source" component="Magento_Ui/js/grid/provider">
+        <settings>
+            <storageConfig>
+                <param name="indexField" xsi:type="string">id</param>
+            </storageConfig>
+            <updateUrl path="mui/index/render"/>
+        </settings>
+        <aclResource>Dotdigitalgroup_Email::queue</aclResource>
+        <dataProvider class="Magento\Framework\View\Element\UiComponent\DataProvider\DataProvider" name="queue_data_source">
+            <settings>
+                <requestFieldName>id</requestFieldName>
+                <primaryFieldName>id</primaryFieldName>
+            </settings>
+        </dataProvider>
+    </dataSource>
+    <listingToolbar name="listing_top">
+        <bookmark name="bookmarks"/>
+        <columnsControls name="columns_controls"/>
+        <filters name="listing_filters"/>
+        <paging name="listing_paging"/>
+    </listingToolbar>
+    <columns name="dotditalgroup_queue_columns">
+        <selectionsColumn name="ids" sortOrder="0">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <!-- define which field will be used as ID -->
+                    <item name="indexField" xsi:type="string">id</item>
+                </item>
+            </argument>
+        </selectionsColumn>
+        <column name="message_id" sortOrder="10">
+            <settings>
+                <filter>text</filter>
+                <label translate="true">Message Id</label>
+            </settings>
+        </column>
+
+        <column name="topic_name" sortOrder="20">
+            <settings>
+                <filter>text</filter>
+                <label translate="true">Topic</label>
+            </settings>
+        </column>
+        <column name="status" component="Magento_Ui/js/grid/columns/select" sortOrder="30">
+            <settings>
+                <options class="Dotdigitalgroup\Email\Model\Adminhtml\Source\Queue\Status"/>
+                <filter>select</filter>
+                <dataType>select</dataType>
+                <label translate="true">Status</label>
+            </settings>
+        </column>
+        <column name="number_of_trials" sortOrder="40">
+            <settings>
+                <filter>text</filter>
+                <label translate="true">Number of trials</label>
+            </settings>
+        </column>
+        <actionsColumn name="actions" class="Dotdigitalgroup\Email\Ui\Component\Listing\Action" sortOrder="50">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="indexField" xsi:type="string">id</item>
+                    <item name="label" xsi:type="string" translate="true"></item>
+                    <item name="component" xsi:type="string">Dotdigitalgroup_Email/js/grid/columns/queue</item>
+                </item>
+            </argument>
+            <settings>
+                <sortable>false</sortable>
+            </settings>
+        </actionsColumn>
+    </columns>
+</listing>

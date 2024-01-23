@@ -49,6 +49,7 @@
     "magento/module-authorization": "^100.3|^100.4",
     "magento/module-tax": "^100.3|^100.4",
     "magento/framework-message-queue": "^100.3|^100.4",
+    "magento/mysql-mq": "^100.3|^100.4",
     "laminas/laminas-http": "^2.6",
     "laminas/laminas-uri": "^2.5",
     "dotdigital/dotdigital-php": "2.1.0",
