@@ -1,11 +1,29 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework-message-queue:etc/topology.xsd">
     <exchange name="magento-db" type="topic" connection="db">
-        <binding id="dotdigitalIntegrationInsightSyncBinding" topic="ddg.sync.integration" destination="ddg.sync.queue"/>
-        <binding id="dotdigitalAutomationBinding" topic="ddg.sync.automation" destination="ddg.sync.automation.queue"/>
-        <binding id="dotdigitalNewsletterUnsubscribeBinding" topic="ddg.newsletter.unsubscribe" destination="ddg.unsubscribe.queue"/>
-        <binding id="dotdigitalNewsletterResubscribeBinding" topic="ddg.newsletter.resubscribe" destination="ddg.resubscribe.queue"/>
-        <binding id="dotdigitalContactEmailUpdateBinding" topic="ddg.contact.email_update" destination="ddg.email_update.queue"/>
-        <binding id="dotdigitalCartPhaseUpdateBinding" topic="ddg.sales.cart_phase_update" destination="ddg.cart_phase_update.queue"/>
+        <binding id="dotdigitalIntegrationInsightSyncBinding"
+                 topic="ddg.sync.integration"
+                 destinationType="queue"
+                 destination="ddg.sync.queue"/>
+        <binding id="dotdigitalAutomationBinding"
+                 topic="ddg.sync.automation"
+                 destinationType="queue"
+                 destination="ddg.sync.automation.queue"/>
+        <binding id="dotdigitalNewsletterUnsubscribeBinding"
+                 topic="ddg.newsletter.unsubscribe"
+                 destinationType="queue"
+                 destination="ddg.unsubscribe.queue"/>
+        <binding id="dotdigitalNewsletterResubscribeBinding"
+                 topic="ddg.newsletter.resubscribe"
+                 destinationType="queue"
+                 destination="ddg.resubscribe.queue"/>
+        <binding id="dotdigitalContactEmailUpdateBinding"
+                 topic="ddg.contact.email_update"
+                 destinationType="queue"
+                 destination="ddg.email_update.queue"/>
+        <binding id="dotdigitalCartPhaseUpdateBinding"
+                 topic="ddg.sales.cart_phase_update"
+                 destinationType="queue"
+                 destination="ddg.cart_phase_update.queue"/>
     </exchange>
 </config>
