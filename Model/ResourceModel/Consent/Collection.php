@@ -88,7 +88,7 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
         $connection = $this->getResource()->getConnection();
         $select = $connection->select()
             ->from(
-                ['email_contact' => $connection->getTableName(SchemaInterface::EMAIL_CONTACT_TABLE)],
+                ['email_contact' => $this->getTable(SchemaInterface::EMAIL_CONTACT_TABLE)],
                 ['email_contact.website_id']
             )->joinLeft(
                 ['email_contact_consent' => $this->getMainTable()],
