@@ -54,6 +54,7 @@
     "laminas/laminas-uri": "^2.5",
     "dotdigital/dotdigital-php": "2.1.0",
     "php-http/curl-client": "~2.3.0",
+    "nyholm/psr7": "^1.8",
     "psr/log": "^1.0",
     "ext-json": "*",
     "ext-pcre": "*"
