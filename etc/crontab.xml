@@ -26,7 +26,7 @@
             <config_path>connector_developer_settings/cron_schedules/order</config_path>
         </job>
         <job name="ddg_automation_cleaner" instance="Dotdigitalgroup\Email\Model\Cron\Cleaner" method="run">
-            <schedule>0 0 1 * *</schedule>
+            <config_path>connector_developer_settings/cron_schedules/cleaner</config_path>
         </job>
         <job name="ddg_automation_catalog_sync" instance="Dotdigitalgroup\Email\Model\Cron" method="catalogSync">
             <config_path>connector_developer_settings/cron_schedules/catalog</config_path>
