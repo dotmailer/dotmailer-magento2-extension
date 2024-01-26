@@ -25,9 +25,9 @@ define([
         },
 
         /**
-         * @param {Object} idsStorage
+         *
          */
-        idsStorageHandler: function (idsStorage) {
+        idsStorageHandler: function () {
             this.productStorage = storage.createStorage(this.productStorageConfig);
             this.productStorage.data.subscribe(this.dataCollectionHandler.bind(this));
 
@@ -38,39 +38,64 @@ define([
          * @param {Array} data
          */
         dataCollectionHandler: function (data) {
-            let productData;
-            let productId;
+            let productData,
+                productId,
+                specialPriceBeforeTax,
+                specialPriceAfterTax,
+                regularPriceBeforeTax,
+                regularPriceAfterTax,
+                hasDiscountedPrice,
+                trackingData;
 
-            productId = parseInt(
-                $('[name=product]').val()
-            );
+            productId = parseInt($('[name=product]').val(), 10);
 
             productData = data[productId];
 
             if (productData != null) {
-                var specialPriceBeforeTax = productData.price_info.extension_attributes.tax_adjustments.final_price,
-                    specialPriceAfterTax = Math.round(productData.price_info.final_price * 100) / 100,
-                    regularPriceBeforeTax = productData.price_info.extension_attributes.tax_adjustments.regular_price,
-                    regularPriceAfterTax = Math.round(productData.price_info.regular_price * 100) / 100,
-                    hasDiscountedPrice = specialPriceBeforeTax < regularPriceBeforeTax,
-                    trackingData = {
-                        product_name: productData.name || '',
-                        product_url: productData.url || '',
-                        product_currency: productData.currency_code || '',
-                        product_status: parseInt(productData.is_salable) === 1 ? 'In stock' : 'Out of stock',
-                        product_price: regularPriceBeforeTax || 0,
-                        product_price_incl_tax: regularPriceAfterTax || 0,
-                        product_specialPrice: hasDiscountedPrice ? specialPriceBeforeTax : 0,
-                        product_specialPrice_incl_tax: hasDiscountedPrice ? specialPriceAfterTax : 0,
-                        product_sku: productData.extension_attributes.ddg_sku || '',
-                        product_brand: productData.extension_attributes.ddg_brand || '',
-                        product_categories: (productData.extension_attributes.ddg_categories || []).join(','),
-                        product_image_path: productData.extension_attributes.ddg_image || '',
-                        product_description: productData.extension_attributes.ddg_description || ''
+                specialPriceBeforeTax = productData.price_info.extension_attributes.tax_adjustments.final_price;
+                specialPriceAfterTax = Math.round(productData.price_info.final_price * 100) / 100;
+                regularPriceBeforeTax = this.getRegularPriceBeforeTax(productData);
+                regularPriceAfterTax = this.getRegularPriceAfterTax(productData);
+                hasDiscountedPrice = specialPriceBeforeTax < regularPriceBeforeTax;
+                trackingData = {
+                    product_name: productData.name || '',
+                    product_url: productData.url || '',
+                    product_currency: productData.currency_code || '',
+                    product_status: Boolean(productData.is_salable) ? 'In stock' : 'Out of stock',
+                    product_price: regularPriceBeforeTax || 0,
+                    product_price_incl_tax: regularPriceAfterTax || 0,
+                    product_specialPrice: hasDiscountedPrice ? specialPriceBeforeTax : 0,
+                    product_specialPrice_incl_tax: hasDiscountedPrice ? specialPriceAfterTax : 0,
+                    product_sku: productData.extension_attributes.ddg_sku || '',
+                    product_brand: productData.extension_attributes.ddg_brand || '',
+                    product_categories: (productData.extension_attributes.ddg_categories || []).join(','),
+                    product_image_path: productData.extension_attributes.ddg_image || '',
+                    product_description: productData.extension_attributes.ddg_description || '',
+                    product_type: productData.type || ''
                 };
 
                 this.wbtTrack(trackingData);
             }
+        },
+
+        /**
+         * @param {Array} productData
+         */
+        getRegularPriceBeforeTax: function (productData) {
+            return productData.type === 'grouped' ?
+                productData.price_info.extension_attributes.tax_adjustments.minimal_regular_price :
+                productData.price_info.extension_attributes.tax_adjustments.regular_price;
+        },
+
+        /**
+         * @param {Array} productData
+         */
+        getRegularPriceAfterTax: function (productData) {
+            let price = productData.type === 'grouped' ?
+                productData.price_info.minimal_regular_price :
+                productData.price_info.regular_price;
+
+            return Math.round(price * 100) / 100;
         },
 
         /**
@@ -86,8 +111,12 @@ define([
             window.dm_insight_id = id;
 
             (function (w, d, u, t, o, c) {
-                w['dmtrackingobjectname'] = o; w['dmtrackingdomain'] = subdomain + '.trackedweb.net'; c = d.createElement(t); c.async = 1; c.src = u; t = d.getElementsByTagName
-                (t)[0]; t.parentNode.insertBefore(c,t); w[o] = w[o] || function () {
+                w['dmtrackingobjectname'] = o;
+                w['dmtrackingdomain'] = subdomain + '.trackedweb.net';
+                c = d.createElement(t);
+                c.async = 1; c.src = u;
+                t = d.getElementsByTagName(t)[0];
+                t.parentNode.insertBefore(c,t); w[o] = w[o] || function () {
                     (w[o].q = w[o].q || []).push(arguments);
                 };
             })(window, document, scriptPath, 'script', 'dmPt');
