@@ -1,3 +1,12 @@
+# 4.23.7
+
+### Improvements
+- Default mega batch size for orders sync is now 4000.
+
+### Bug fixes
+- We repaired consent sync for installations with a database prefix.
+- We fixed zero price values for grouped products in web behavior tracking data.
+
 # 4.23.6
 
 ### Improvements
