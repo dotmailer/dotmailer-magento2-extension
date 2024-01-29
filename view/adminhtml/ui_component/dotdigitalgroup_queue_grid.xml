@@ -63,7 +63,13 @@
                 <label translate="true">Number of trials</label>
             </settings>
         </column>
-        <actionsColumn name="actions" class="Dotdigitalgroup\Email\Ui\Component\Listing\Action" sortOrder="50">
+        <column name="updated_at" class="Magento\Ui\Component\Listing\Columns\Date" component="Magento_Ui/js/grid/columns/date" sortOrder="50">
+            <settings>
+                <filter>dateRange</filter>
+                <label translate="true">Updated At</label>
+            </settings>
+        </column>
+        <actionsColumn name="actions" class="Dotdigitalgroup\Email\Ui\Component\Listing\Action" sortOrder="60">
             <argument name="data" xsi:type="array">
                 <item name="config" xsi:type="array">
                     <item name="indexField" xsi:type="string">id</item>

@@ -64,7 +64,7 @@ class Collection extends SearchResult
         $this->addFieldToSelect(['topic_name'])->getSelect()->join(
             ['queue_message_status' => $this->getTable('queue_message_status')],
             'main_table.id = queue_message_status.message_id',
-            ['status', 'number_of_trials', 'message_id']
+            ['status', 'number_of_trials', 'message_id', 'updated_at']
         );
     }
 
