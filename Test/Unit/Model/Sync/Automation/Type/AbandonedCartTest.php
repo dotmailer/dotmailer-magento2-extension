@@ -7,11 +7,12 @@ use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Automation;
 use Dotdigitalgroup\Email\Model\Contact;
 use Dotdigitalgroup\Email\Model\Contact\ContactResponseHandler;
-use Dotdigitalgroup\Email\Model\ContactFactory;
 use Dotdigitalgroup\Email\Model\Newsletter\BackportedSubscriberLoader;
 use Dotdigitalgroup\Email\Model\ResourceModel\Automation as AutomationResource;
+use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory as ContactCollectionFactory;
 use Dotdigitalgroup\Email\Model\Sales\QuoteFactory as DotdigitalQuoteFactory;
 use Dotdigitalgroup\Email\Model\StatusInterface;
+use Dotdigitalgroup\Email\Model\Sync\Automation\AutomationTypeHandler;
 use Dotdigitalgroup\Email\Model\Sync\Automation\ContactManager;
 use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\DataFieldCollector;
 use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\DataFieldTypeHandler;
@@ -19,6 +20,7 @@ use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\Updater\AbandonedCart 
 use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\Updater\AbandonedCartFactory as AbandonedCartUpdaterFactory;
 use Dotdigitalgroup\Email\Model\Sync\Automation\Type\AbandonedCart;
 use Dotdigitalgroup\Email\Test\Unit\Traits\AutomationProcessorTrait;
+use Magento\Newsletter\Model\Subscriber;
 use Magento\Quote\Model\QuoteFactory;
 use PHPUnit\Framework\TestCase;
 
@@ -56,9 +58,9 @@ class AbandonedCartTest extends TestCase
     private $automationResourceMock;
 
     /**
-     * @var ContactFactory|\PHPUnit_Framework_MockObject_MockObject
+     * @var ContactCollectionFactory|\PHPUnit_Framework_MockObject_MockObject
      */
-    private $contactFactoryMock;
+    private $contactCollectionFactoryMock;
 
     /**
      * @var ContactManager|\PHPUnit_Framework_MockObject_MockObject
@@ -110,13 +112,18 @@ class AbandonedCartTest extends TestCase
      */
     private $contactModelMock;
 
+    /**
+     * @var Subscriber|\PHPUnit\Framework\MockObject\MockObject
+     */
+    private $subscriberModelMock;
+
     protected function setUp() :void
     {
         $this->helperMock = $this->createMock(Data::class);
         $this->loggerMock = $this->createMock(Logger::class);
         $this->contactResponseHandlerMock = $this->createMock(ContactResponseHandler::class);
         $this->automationResourceMock = $this->createMock(AutomationResource::class);
-        $this->contactFactoryMock = $this->createMock(ContactFactory::class);
+        $this->contactCollectionFactoryMock = $this->createMock(ContactCollectionFactory::class);
         $this->contactManagerMock = $this->createMock(ContactManager::class);
         $this->dataFieldCollectorMock = $this->createMock(DataFieldCollector::class);
         $this->dataFieldTypeHandlerMock = $this->createMock(DataFieldTypeHandler::class);
@@ -134,11 +141,13 @@ class AbandonedCartTest extends TestCase
             ->addMethods(['getEmail', 'getWebsiteId', 'getStoreId', 'getAutomationType'])
             ->disableOriginalConstructor()
             ->getMock();
+        $this->subscriberModelMock = $this->createMock(Subscriber::class);
 
         $this->abandonedCart = new AbandonedCart(
+            $this->helperMock,
             $this->loggerMock,
             $this->automationResourceMock,
-            $this->contactFactoryMock,
+            $this->contactCollectionFactoryMock,
             $this->contactManagerMock,
             $this->dataFieldCollectorMock,
             $this->dataFieldTypeHandlerMock,
@@ -151,44 +160,14 @@ class AbandonedCartTest extends TestCase
 
     public function testThatWeCompleteProcessLoopIfQuoteHasItems()
     {
-        $quoteModelMock = $this->createMock(\Magento\Quote\Model\Quote::class);
-        $quoteItemModelMock = $this->createMock(\Magento\Quote\Model\Quote\Item::class);
-        $ddgQuoteModelMock = $this->createMock(\Dotdigitalgroup\Email\Model\Sales\Quote::class);
-
         $this->setupAutomationModel();
         $this->setupContactModel();
         $this->setupSubscriberModel();
+        $this->setupACRelatedModels();
 
-        $this->quoteFactoryMock->expects($this->once())
-            ->method('create')
-            ->willReturn($quoteModelMock);
-
-        $quoteModelMock->expects($this->once())
-            ->method('loadByIdWithoutStore')
-            ->willReturn($quoteModelMock);
-
-        $quoteModelMock->expects($this->once())
-            ->method('getAllItems')
-            ->willReturn([$quoteItemModelMock]);
-
-        $this->dataFieldUpdaterFactoryMock->expects($this->once())
-            ->method('create')
-            ->willReturn($this->dataFieldUpdaterMock);
-
-        $this->dataFieldUpdaterMock->expects($this->once())
-            ->method('setDatafields')
-            ->willReturn($this->dataFieldUpdaterMock);
-
-        $this->dataFieldUpdaterMock->expects($this->once())
-            ->method('getData')
-            ->willReturn([]);
-
-        $this->ddgQuoteFactoryMock->expects($this->once())
-            ->method('create')
-            ->willReturn($ddgQuoteModelMock);
-
-        $ddgQuoteModelMock->expects($this->once())
-            ->method('getMostExpensiveItem');
+        $this->automationModelMock->expects($this->once())
+            ->method('getAutomationType')
+            ->willReturn(AutomationTypeHandler::AUTOMATION_TYPE_ABANDONED_CART_PROGRAM_ENROLMENT);
 
         $this->automationResourceMock->expects($this->never())
             ->method('setStatusAndSaveAutomation');
@@ -220,5 +199,121 @@ class AbandonedCartTest extends TestCase
             );
 
         $this->abandonedCart->process($this->getAutomationCollectionMock());
+    }
+
+    public function testACEnrolmentSucceedsViaACLoophole()
+    {
+        $this->setupAutomationModel();
+        $this->setupContactModel();
+        $this->setupSubscriberModel();
+        $this->setupACRelatedModels();
+
+        $this->automationModelMock->expects($this->once())
+            ->method('getAutomationType')
+            ->willReturn(AutomationTypeHandler::AUTOMATION_TYPE_ABANDONED_CART_PROGRAM_ENROLMENT);
+
+        $this->subscriberModelMock->expects($this->once())
+            ->method('isSubscribed')
+            ->willReturn(false);
+
+        $this->helperMock->expects($this->once())
+            ->method('isOnlySubscribersForContactSync')
+            ->willReturn(true);
+
+        $this->helperMock->expects($this->once())
+            ->method('isOnlySubscribersForAC')
+            ->willReturn(false);
+
+        $this->contactManagerMock->expects($this->once())
+            ->method('prepareDotdigitalContact');
+
+        $this->automationResourceMock->expects($this->never())
+            ->method('setStatusAndSaveAutomation');
+
+        $this->abandonedCart->process($this->getAutomationCollectionMock());
+    }
+
+    public function testACEnrolmentFailsIfACLoopholeClosed()
+    {
+        $this->setupAutomationModel();
+        $this->setupContactModel();
+        $this->setupSubscriberModel();
+
+        $quoteModelMock = $this->createMock(\Magento\Quote\Model\Quote::class);
+        $quoteItemModelMock = $this->createMock(\Magento\Quote\Model\Quote\Item::class);
+        $ddgQuoteModelMock = $this->createMock(\Dotdigitalgroup\Email\Model\Sales\Quote::class);
+
+        $this->quoteFactoryMock->expects($this->once())
+            ->method('create')
+            ->willReturn($quoteModelMock);
+
+        $quoteModelMock->expects($this->once())
+            ->method('loadByIdWithoutStore')
+            ->willReturn($quoteModelMock);
+
+        $quoteModelMock->expects($this->once())
+            ->method('getAllItems')
+            ->willReturn([$quoteItemModelMock]);
+
+        $this->subscriberModelMock->expects($this->once())
+            ->method('isSubscribed')
+            ->willReturn(false);
+
+        $this->helperMock->expects($this->once())
+            ->method('isOnlySubscribersForContactSync')
+            ->willReturn(true);
+
+        $this->helperMock->expects($this->once())
+            ->method('isOnlySubscribersForAC')
+            ->willReturn(true);
+
+        $this->dataFieldUpdaterMock->expects($this->never())
+            ->method('setDatafields');
+
+        $this->contactManagerMock->expects($this->never())
+            ->method('prepareDotdigitalContact');
+
+        $this->automationResourceMock->expects($this->once())
+            ->method('setStatusAndSaveAutomation');
+
+        $this->abandonedCart->process($this->getAutomationCollectionMock());
+    }
+
+    private function setupACRelatedModels()
+    {
+        $quoteModelMock = $this->createMock(\Magento\Quote\Model\Quote::class);
+        $quoteItemModelMock = $this->createMock(\Magento\Quote\Model\Quote\Item::class);
+        $ddgQuoteModelMock = $this->createMock(\Dotdigitalgroup\Email\Model\Sales\Quote::class);
+
+        $this->quoteFactoryMock->expects($this->once())
+            ->method('create')
+            ->willReturn($quoteModelMock);
+
+        $quoteModelMock->expects($this->once())
+            ->method('loadByIdWithoutStore')
+            ->willReturn($quoteModelMock);
+
+        $quoteModelMock->expects($this->once())
+            ->method('getAllItems')
+            ->willReturn([$quoteItemModelMock]);
+
+        $this->dataFieldUpdaterFactoryMock->expects($this->once())
+            ->method('create')
+            ->willReturn($this->dataFieldUpdaterMock);
+
+        $this->dataFieldUpdaterMock->expects($this->once())
+            ->method('setDatafields')
+            ->willReturn($this->dataFieldUpdaterMock);
+
+        $this->dataFieldUpdaterMock->expects($this->once())
+            ->method('getData')
+            ->willReturn([]);
+
+        $this->ddgQuoteFactoryMock->expects($this->once())
+            ->method('create')
+            ->willReturn($ddgQuoteModelMock);
+
+        $ddgQuoteModelMock->expects($this->once())
+            ->method('getMostExpensiveItem');
     }
 }

@@ -53,6 +53,8 @@ class AccountCredentials implements ObserverInterface
     private $publisher;
 
     /**
+     * AccountCredentials constructor.
+     *
      * @param Data $data
      * @param Test $test
      * @param Context $context
@@ -80,7 +82,7 @@ class AccountCredentials implements ObserverInterface
     /**
      * Execute method.
      *
-     * Validate account credentials and publish integration insights queue
+     * Validate account credentials and publish integration insights queue.
      *
      * @param Observer $observer
      *
@@ -127,7 +129,7 @@ class AccountCredentials implements ObserverInterface
     }
 
     /**
-     * Validate account
+     * Validate account.
      *
      * @param string $apiUsername
      * @param string $apiPassword
@@ -148,6 +150,7 @@ class AccountCredentials implements ObserverInterface
 
     /**
      * Deletes api endpoint if default value is used.
+     *
      * @return void
      */
     private function deleteApiEndpoint()

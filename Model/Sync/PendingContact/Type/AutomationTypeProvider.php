@@ -19,6 +19,7 @@ class AutomationTypeProvider implements TypeProviderInterface
 
     /**
      * AutomationTypeProvider constructor.
+     *
      * @param Automation $resourceModel
      * @param CollectionFactory $collectionFactory
      */
@@ -30,11 +31,21 @@ class AutomationTypeProvider implements TypeProviderInterface
         $this->collectionFactory = $collectionFactory;
     }
 
+    /**
+     * Get collection factory.
+     *
+     * @return CollectionFactory
+     */
     public function getCollectionFactory()
     {
         return $this->collectionFactory;
     }
 
+    /**
+     * Get resource model.
+     *
+     * @return Automation
+     */
     public function getResourceModel()
     {
         return $this->resourceModel;

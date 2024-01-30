@@ -36,6 +36,8 @@ class AutoMapDataFieldsCommand extends Command
     }
 
     /**
+     * Execute.
+     *
      * @param InputInterface $input
      * @param OutputInterface $output
      * @return int

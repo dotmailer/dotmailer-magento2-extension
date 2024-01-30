@@ -75,7 +75,7 @@ class StoreLevelCatalogSyncerTest extends TestCase
 
     /**
      * @dataProvider getProducts
-     * @param $products
+     * @param        $products
      */
     public function testNumberOfProductsIfBothAreEnabled($products)
     {
@@ -125,7 +125,7 @@ class StoreLevelCatalogSyncerTest extends TestCase
 
     /**
      * @dataProvider getProducts
-     * @param $products
+     * @param        $products
      */
     public function testNumberOfProductsIfOnlyOneEnabled($products)
     {
@@ -191,7 +191,7 @@ class StoreLevelCatalogSyncerTest extends TestCase
 
     /**
      * @dataProvider getProducts
-     * @param $products
+     * @param        $products
      */
     public function testNumberOfProductsIfNoOneEnabled($products)
     {
@@ -237,7 +237,7 @@ class StoreLevelCatalogSyncerTest extends TestCase
 
     /**
      * @dataProvider getProducts
-     * @param $products
+     * @param        $products
      */
     public function testAppEmulationIsUsedIfSyncEnabled($products)
     {
@@ -290,6 +290,7 @@ class StoreLevelCatalogSyncerTest extends TestCase
 
     /**
      * Generates the disabled stores to be mocked
+     *
      * @return array
      */
     private function getMockedStoresDisabled()
@@ -312,6 +313,7 @@ class StoreLevelCatalogSyncerTest extends TestCase
 
     /**
      * Initializes the Enabled Mocked Stores
+     *
      * @return array
      */
     public function getStoreDetails()
@@ -325,6 +327,7 @@ class StoreLevelCatalogSyncerTest extends TestCase
 
     /**
      * Returns possible array product combinations
+     *
      * @return array
      */
     public function getProducts()

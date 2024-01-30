@@ -13,6 +13,7 @@ class Subscriber
 
     /**
      * Subscriber constructor.
+     *
      * @param Contact $contact
      */
     public function __construct(
@@ -22,6 +23,8 @@ class Subscriber
     }
 
     /**
+     * Reset subscribers.
+     *
      * @param string|null $from
      * @param string|null $to
      * @return int

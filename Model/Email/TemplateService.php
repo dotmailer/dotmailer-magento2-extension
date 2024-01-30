@@ -10,7 +10,9 @@ class TemplateService
     private $templateId;
 
     /**
-     * @param $templateId
+     * Set template id.
+     *
+     * @param string $templateId
      */
     public function setTemplateId($templateId)
     {
@@ -18,6 +20,8 @@ class TemplateService
     }
 
     /**
+     * Get template id.
+     *
      * @return string|null
      */
     public function getTemplateId()

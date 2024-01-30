@@ -59,7 +59,7 @@ class DefaultLevelCatalogSyncerTest extends TestCase
 
     /**
      * @dataProvider getProducts
-     * @param $products
+     * @param        $products
      */
     public function testIfUserAndCatalogSyncAreEnabledNumberOfProductsGreaterThanZero($products)
     {
@@ -81,7 +81,7 @@ class DefaultLevelCatalogSyncerTest extends TestCase
 
     /**
      * @dataProvider getProducts
-     * @param $products
+     * @param        $products
      */
     public function testIfUserIsDisabledThenSyncReturnsNull($products)
     {
@@ -102,7 +102,7 @@ class DefaultLevelCatalogSyncerTest extends TestCase
 
     /**
      * @dataProvider getProducts
-     * @param $products
+     * @param        $products
      */
     public function testIfCatalogSyncIsDisabledThenSyncReturnsNull($products)
     {
@@ -123,7 +123,7 @@ class DefaultLevelCatalogSyncerTest extends TestCase
 
     /**
      * @dataProvider getProducts
-     * @param $products
+     * @param        $products
      */
     public function testIfCatalogSyncAndUserAreDisabledThenSyncReturnsNull($products)
     {
@@ -143,7 +143,7 @@ class DefaultLevelCatalogSyncerTest extends TestCase
     }
 
     /**
-     * @param $products
+     * @param  $products
      * Mocking Products Array
      * @return null
      */
@@ -162,6 +162,7 @@ class DefaultLevelCatalogSyncerTest extends TestCase
 
     /**
      * Here we cover the case that some function will never going to be executed
+     *
      * @return null
      */
     private function neverExpectedMocks()
@@ -178,6 +179,7 @@ class DefaultLevelCatalogSyncerTest extends TestCase
 
     /**
      * Returns possible array product combinations
+     *
      * @return array
      */
     public function getProducts()

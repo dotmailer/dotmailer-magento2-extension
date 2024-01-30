@@ -4,6 +4,7 @@ namespace Dotdigitalgroup\Email\Model\Sync\Integration;
 
 use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Model\Connector\Module;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Framework\App\ProductMetadataInterface;
 use Magento\Framework\UrlInterface;
@@ -79,14 +80,9 @@ class IntegrationInsightData
                 continue;
             }
 
-            // @codingStandardsIgnoreStart
             $websiteData[$store->getWebsiteId()] = [
-                'recordId' => parse_url(
-                    $store->getBaseUrl(UrlInterface::URL_TYPE_LINK, $store->isCurrentlySecure()),
-                    PHP_URL_HOST
-                ),
+                'recordId' => $this->getBaseUrlWithWebsiteCode($store),
             ] + $this->getIntegrationMetaData() + ['configuration' => $this->getConfiguration($store->getWebsiteId())];
-            // @codingStandardsIgnoreEnd
         }
 
         return $websiteData;
@@ -123,5 +119,24 @@ class IntegrationInsightData
     private function getConfiguration($websiteId)
     {
         return $this->dotdigitalConfig->getConfig($websiteId);
+    }
+
+    /**
+     * Get Base url with website code.
+     *
+     * @param Store $store
+     * @return string
+     * @throws LocalizedException
+     */
+    private function getBaseUrlWithWebsiteCode(Store $store)
+    {
+        $websiteParam = http_build_query(['website_code' => str_replace(' ', '_', $store->getWebsite()->getCode())]);
+        // @codingStandardsIgnoreStart
+        $baseUrl = parse_url(
+            $store->getBaseUrl(UrlInterface::URL_TYPE_LINK, $store->isCurrentlySecure()),
+            PHP_URL_HOST
+        );
+        // @codingStandardsIgnoreEnd
+        return $baseUrl . '?' . $websiteParam;
     }
 }

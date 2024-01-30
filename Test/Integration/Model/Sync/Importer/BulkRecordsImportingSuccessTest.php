@@ -11,8 +11,8 @@ class BulkRecordsImportingSuccessTest extends \PHPUnit\Framework\TestCase
 {
     use MocksApiResponses;
 
-    const BASE_WEBSITE_CODE = 'base';
-    const DEFAULT = 'admin';
+    private const BASE_WEBSITE_CODE = 'base';
+    private const DEFAULT = 'admin';
 
     /**
      * @var \Magento\Framework\ObjectManagerInterface

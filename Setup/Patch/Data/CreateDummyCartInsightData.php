@@ -24,7 +24,10 @@ class CreateDummyCartInsightData implements DataPatchInterface
     private $dummyRecordsFactory;
 
     /**
+     * CreateDummyCartInsightData constructor.
+     *
      * @param ModuleDataSetupInterface $moduleDataSetup
+     * @param DummyRecordsFactory $dummyRecordsFactory
      */
     public function __construct(
         ModuleDataSetupInterface $moduleDataSetup,
@@ -35,7 +38,7 @@ class CreateDummyCartInsightData implements DataPatchInterface
     }
 
     /**
-     * Do Upgrade
+     * Do Upgrade.
      *
      * @return void
      */

@@ -11,6 +11,9 @@ class RuleValidator
      */
     private $ruleType;
 
+    /**
+     * @param Type $ruleType
+     */
     public function __construct(
         Type $ruleType
     ) {
@@ -18,6 +21,8 @@ class RuleValidator
     }
 
     /**
+     * Validate.
+     *
      * @param \Dotdigitalgroup\Email\Model\Rules $rule
      * @return RuleValidator
      * @throws \Magento\Framework\Exception\ValidatorException
@@ -57,6 +62,8 @@ class RuleValidator
     }
 
     /**
+     * Set front end validation.
+     *
      * @param string|bool $inputType
      * @param string $condition
      * @return string|bool
@@ -76,7 +83,9 @@ class RuleValidator
     }
 
     /**
-     * @param $email
+     * Validate email.
+     *
+     * @param string $email
      * @return mixed
      */
     private function validateEmail($email)
@@ -85,7 +94,9 @@ class RuleValidator
     }
 
     /**
-     * @param $number
+     * Validate number.
+     *
+     * @param mixed $number
      * @return bool
      */
     private function validateNumber($number)

@@ -15,7 +15,7 @@ use Magento\Framework\Mail\TransportInterface;
  */
 class TransportPlugin
 {
-    const EXCLUDED_ERRORS = [
+    private const EXCLUDED_ERRORS = [
         'Requested action not taken: mailbox unavailable'
     ];
 
@@ -46,6 +46,7 @@ class TransportPlugin
 
     /**
      * TransportPlugin constructor.
+     *
      * @param SmtpTransporter $smtpTransporter
      * @param \Dotdigitalgroup\Email\Helper\Transactional $helper
      * @param \Dotdigitalgroup\Email\Helper\Data $dataHelper
@@ -67,6 +68,8 @@ class TransportPlugin
     }
 
     /**
+     * Around send message.
+     *
      * @param TransportInterface $subject
      * @param \Closure $proceed
      * @throws \Exception
@@ -116,6 +119,8 @@ class TransportPlugin
     }
 
     /**
+     * Get addressee.
+     *
      * @param TransportInterface $subject
      *
      * @return bool|string

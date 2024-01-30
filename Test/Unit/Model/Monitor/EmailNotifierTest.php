@@ -242,9 +242,11 @@ class EmailNotifierTest extends TestCase
 
         $this->smtpMonitorMock->expects($this->once())
             ->method('filterErrorItems')
-            ->willReturn([
+            ->willReturn(
+                [
                 'error1', 'error2', 'error3'
-            ]);
+                ]
+            );
 
         $this->flagManagerMock->expects($this->once())
             ->method('getFlagData')
@@ -298,9 +300,11 @@ class EmailNotifierTest extends TestCase
 
         $this->cronMonitorMock->expects($this->once())
             ->method('filterErrorItems')
-            ->willReturn([
+            ->willReturn(
+                [
                 'error1', 'error2', 'error3'
-            ]);
+                ]
+            );
     }
 
     private function setUpUserRecipient()

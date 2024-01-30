@@ -4,12 +4,13 @@ namespace Dotdigitalgroup\Email\Model;
 
 interface StatusInterface
 {
-    const SUBSCRIBED = 'Subscribed';
-    const PENDING = 'pending';
-    const PENDING_OPT_IN = 'PendingOptIn';
-    const CONFIRMED = 'Confirmed';
-    const EXPIRED = 'Expired';
-    const SUPPRESSED = 'Suppressed';
-    const CANCELLED = 'Cancelled';
-    const FAILED = 'Failed';
+    public const SUBSCRIBED = 'Subscribed';
+    public const PENDING = 'pending';
+    public const PENDING_OPT_IN = 'PendingOptIn';
+    public const CONFIRMED = 'Confirmed';
+    public const EXPIRED = 'Expired';
+    public const SUPPRESSED = 'Suppressed';
+    public const CANCELLED = 'Cancelled';
+    public const FAILED = 'Failed';
+    public const DEACTIVATED = 'Deactivated';
 }

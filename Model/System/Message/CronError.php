@@ -10,7 +10,7 @@ use Magento\Framework\App\Config\ScopeConfigInterface;
 
 class CronError implements MessageInterface
 {
-    const MESSAGE_IDENTITY = 'ddg_cron_error_system_message';
+    private const MESSAGE_IDENTITY = 'ddg_cron_error_system_message';
 
     /**
      * @var UrlInterface
@@ -28,6 +28,8 @@ class CronError implements MessageInterface
     private $scopeConfig;
 
     /**
+     * CronError constructor.
+     *
      * @param UrlInterface $urlBuilder
      * @param StatusProvider $statusProvider
      * @param ScopeConfigInterface $scopeConfig
@@ -43,7 +45,7 @@ class CronError implements MessageInterface
     }
 
     /**
-     * Retrieve unique system message identity
+     * Retrieve unique system message identity.
      *
      * @return string
      */
@@ -53,7 +55,7 @@ class CronError implements MessageInterface
     }
 
     /**
-     * Check whether the system message should be shown
+     * Check whether the system message should be shown.
      *
      * @return bool
      */
@@ -67,7 +69,7 @@ class CronError implements MessageInterface
     }
 
     /**
-     * Retrieve system message text
+     * Retrieve system message text.
      *
      * @return string
      */
@@ -81,7 +83,8 @@ class CronError implements MessageInterface
     }
 
     /**
-     * Retrieve system message severity
+     * Retrieve system message severity.
+     *
      * Possible default system message types:
      * - MessageInterface::SEVERITY_CRITICAL
      * - MessageInterface::SEVERITY_MAJOR

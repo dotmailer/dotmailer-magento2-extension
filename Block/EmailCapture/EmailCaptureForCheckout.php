@@ -12,6 +12,8 @@ use Magento\Framework\View\Element\Template\Context;
 class EmailCaptureForCheckout extends EmailCapture
 {
     /**
+     * Is email capture enabled.
+     *
      * @return mixed
      * @throws \Magento\Framework\Exception\LocalizedException
      */

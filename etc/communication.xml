@@ -7,4 +7,39 @@
             method="process"
         />
     </topic>
+    <topic name="ddg.sync.automation" request="Dotdigitalgroup\Email\Model\Queue\Data\AutomationData">
+        <handler
+            name="ddg_sync_automation"
+            type="Dotdigitalgroup\Email\Model\Queue\Sync\Automation\AutomationConsumer"
+            method="process"
+        />
+    </topic>
+    <topic name="ddg.newsletter.unsubscribe" request="Dotdigitalgroup\Email\Model\Queue\Data\UnsubscriberData">
+        <handler
+            name="ddg_newsletter_unsubscribe"
+            type="Dotdigitalgroup\Email\Model\Queue\Newsletter\UnsubscriberConsumer"
+            method="process"
+        />
+    </topic>
+    <topic name="ddg.newsletter.resubscribe" request="Dotdigitalgroup\Email\Model\Queue\Data\ResubscribeData">
+        <handler
+            name="ddg_newsletter_resubscribe"
+            type="Dotdigitalgroup\Email\Model\Queue\Newsletter\ResubscribeConsumer"
+            method="process"
+        />
+    </topic>
+    <topic name="ddg.contact.email_update" request="Dotdigitalgroup\Email\Model\Queue\Data\EmailUpdateData">
+        <handler
+            name="ddg_contact_email_update"
+            type="Dotdigitalgroup\Email\Model\Queue\Customer\EmailUpdateConsumer"
+            method="process"
+        />
+    </topic>
+    <topic name="ddg.sales.cart_phase_update" request="Dotdigitalgroup\Email\Model\Queue\Data\CartPhaseUpdateData">
+        <handler
+            name="ddg_sales_cart_phase_update"
+            type="Dotdigitalgroup\Email\Model\Queue\Sales\CartPhaseUpdateConsumer"
+            method="process"
+        />
+    </topic>
 </config>

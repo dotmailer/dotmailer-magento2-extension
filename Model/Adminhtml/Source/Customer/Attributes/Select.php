@@ -10,8 +10,6 @@ class Select
     private $customerFactory;
 
     /**
-     * Escaper
-     *
      * @var \Magento\Framework\Escaper
      */
     private $escaper;
@@ -38,7 +36,7 @@ class Select
     public function toOptionArray()
     {
         $options = [];
-        
+
         //exclude attributes from mapping
         $excluded = [
             'created_at',

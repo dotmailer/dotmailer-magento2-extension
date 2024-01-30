@@ -36,6 +36,8 @@ class AdditionalTemplateMapping extends AbstractCustomSelectTable
     }
 
     /**
+     * Column layout.
+     *
      * @return array
      */
     protected function columnLayout(): array

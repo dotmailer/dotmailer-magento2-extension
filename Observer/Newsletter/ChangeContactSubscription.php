@@ -1,48 +1,69 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dotdigitalgroup\Email\Observer\Newsletter;
 
 use Dotdigitalgroup\Email\Helper\Config;
+use Dotdigitalgroup\Email\Helper\Data;
+use Dotdigitalgroup\Email\Model\AutomationFactory;
+use Dotdigitalgroup\Email\Model\Contact as ContactModel;
+use Dotdigitalgroup\Email\Model\ContactFactory;
+use Dotdigitalgroup\Email\Model\ImporterFactory;
+use Dotdigitalgroup\Email\Model\Queue\Sync\Automation\AutomationPublisher;
 use Dotdigitalgroup\Email\Model\ResourceModel\Automation;
+use Dotdigitalgroup\Email\Model\ResourceModel\Automation\CollectionFactory;
+use Dotdigitalgroup\Email\Model\ResourceModel\Contact;
 use Dotdigitalgroup\Email\Model\StatusInterface;
 use Dotdigitalgroup\Email\Model\Sync\Automation\AutomationTypeHandler;
+use Exception;
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\Event\Observer;
+use Magento\Framework\Event\ObserverInterface;
+use Magento\Framework\Exception\AlreadyExistsException;
+use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Framework\Registry;
+use Magento\Framework\Stdlib\DateTime;
 use Magento\Newsletter\Model\Subscriber;
 use Magento\Store\Model\ScopeInterface;
+use Magento\Framework\MessageQueue\PublisherInterface;
+use Magento\Store\Model\StoreManagerInterface;
+use Dotdigitalgroup\Email\Model\Queue\Data\UnsubscriberDataFactory;
+use Dotdigitalgroup\Email\Model\Queue\Data\ResubscribeDataFactory;
 
 /**
  * Contact newsletter subscription change.
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
-class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInterface
+class ChangeContactSubscription implements ObserverInterface
 {
     /**
-     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Contact
+     * @var Contact
      */
     private $contactResource;
 
     /**
-     * @var \Dotdigitalgroup\Email\Helper\Data
+     * @var Data
      */
     private $helper;
 
     /**
-     * @var \Magento\Framework\Registry
+     * @var Registry
      */
     private $registry;
 
     /**
-     * @var \Magento\Store\Model\StoreManagerInterface
+     * @var StoreManagerInterface
      */
     private $storeManager;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\ContactFactory
+     * @var ContactFactory
      */
     private $contactFactory;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\AutomationFactory
+     * @var AutomationFactory
      */
     private $automationFactory;
 
@@ -57,12 +78,17 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
     private $automationCollectionFactory;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\ImporterFactory
+     * @var ImporterFactory
      */
     private $importerFactory;
 
     /**
-     * @var \Magento\Framework\Stdlib\DateTime
+     * @var AutomationPublisher
+     */
+    private $automationPublisher;
+
+    /**
+     * @var DateTime
      */
     private $dateTime;
 
@@ -77,31 +103,55 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
     private $isSubscriberNew;
 
     /**
+     * @var PublisherInterface
+     */
+    private $publisher;
+
+    /**
+     * @var UnsubscriberDataFactory
+     */
+    private $unsubscriberDataFactory;
+
+    /**
+     * @var ResubscribeDataFactory
+     */
+    private $resubscribeDataFactory;
+
+    /**
      * ChangeContactSubscription constructor.
-     * @param \Dotdigitalgroup\Email\Model\AutomationFactory $automationFactory
+     *
+     * @param AutomationFactory $automationFactory
      * @param Automation $automationResource
-     * @param Automation\CollectionFactory $automationCollectionFactory
-     * @param \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contactResource
-     * @param \Magento\Framework\Registry $registry
-     * @param \Dotdigitalgroup\Email\Helper\Data $data
-     * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
-     * @param \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
-     * @param \Magento\Framework\Stdlib\DateTime $dateTime
+     * @param CollectionFactory $automationCollectionFactory
+     * @param ContactFactory $contactFactory
+     * @param Contact $contactResource
+     * @param Registry $registry
+     * @param Data $data
+     * @param StoreManagerInterface $storeManagerInterface
+     * @param ImporterFactory $importerFactory
+     * @param AutomationPublisher $automationPublisher
+     * @param DateTime $dateTime
      * @param ScopeConfigInterface $scopeConfig
+     * @param PublisherInterface $publisher
+     * @param UnsubscriberDataFactory $unsubscribeDataFactory
+     * @param ResubscribeDataFactory $resubscribeDataFactory
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\AutomationFactory $automationFactory,
+        AutomationFactory $automationFactory,
         Automation $automationResource,
         Automation\CollectionFactory $automationCollectionFactory,
-        \Dotdigitalgroup\Email\Model\ContactFactory $contactFactory,
-        \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contactResource,
-        \Magento\Framework\Registry $registry,
-        \Dotdigitalgroup\Email\Helper\Data $data,
-        \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
-        \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
-        \Magento\Framework\Stdlib\DateTime $dateTime,
-        ScopeConfigInterface $scopeConfig
+        ContactFactory $contactFactory,
+        Contact $contactResource,
+        Registry $registry,
+        Data $data,
+        StoreManagerInterface $storeManagerInterface,
+        ImporterFactory $importerFactory,
+        AutomationPublisher $automationPublisher,
+        DateTime $dateTime,
+        ScopeConfigInterface $scopeConfig,
+        PublisherInterface $publisher,
+        UnsubscriberDataFactory $unsubscribeDataFactory,
+        ResubscribeDataFactory $resubscribeDataFactory
     ) {
         $this->contactResource = $contactResource;
         $this->automationFactory = $automationFactory;
@@ -112,18 +162,23 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
         $this->storeManager = $storeManagerInterface;
         $this->registry = $registry;
         $this->importerFactory = $importerFactory;
+        $this->automationPublisher = $automationPublisher;
         $this->dateTime = $dateTime;
         $this->scopeConfig = $scopeConfig;
+        $this->publisher = $publisher;
+        $this->unsubscriberDataFactory = $unsubscribeDataFactory;
+        $this->resubscribeDataFactory = $resubscribeDataFactory;
     }
 
     /**
      * Change contact subscription status.
      *
-     * @param \Magento\Framework\Event\Observer $observer
+     * @param Observer $observer
      *
      * @return $this
+     * @throws NoSuchEntityException
      */
-    public function execute(\Magento\Framework\Event\Observer $observer)
+    public function execute(Observer $observer)
     {
         $subscriber = $observer->getEvent()->getSubscriber();
         $this->isSubscriberNew = $subscriber->isObjectNew();
@@ -153,48 +208,41 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
 
             // only for subscribers
             if ($subscriberStatus == Subscriber::STATUS_SUBSCRIBED) {
-                //Set contact as subscribed
                 $contactEmail->setSubscriberImported(0)
                     ->setIsSubscriber(1);
 
-                //Subscriber subscribed when it is suppressed in table then re-subscribe
                 if ($contactEmail->getSuppressed()) {
-                    $this->importerFactory->create()->registerQueue(
-                        \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_SUBSCRIBER_RESUBSCRIBED,
-                        ['email' => $email],
-                        \Dotdigitalgroup\Email\Model\Importer::MODE_SUBSCRIBER_RESUBSCRIBED,
-                        $websiteId
-                    );
-                    //Set to subscriber imported and reset the subscriber as suppressed
-                    $contactEmail->setSubscriberImported(1)
-                        ->setSuppressed(null);
+                    $resubscribeData = $this->resubscribeDataFactory->create();
+                    $resubscribeData->setEmail($email);
+                    $resubscribeData->setWebsiteId($websiteId);
+                    $this->publisher->publish('ddg.newsletter.resubscribe', $resubscribeData);
+                    $contactEmail->setSubscriberImported(1)->setSuppressed(null);
                 }
-                //save contact
-                $this->contactResource->save($contactEmail);
 
+                $this->contactResource->save($contactEmail);
             //not subscribed
             } else {
-                //skip if contact is suppressed
                 if ($contactEmail->getSuppressed()) {
                     return $this;
                 }
-                $contactEmail->setIsSubscriber(0);
-                //save contact
-                $this->contactResource->save($contactEmail);
 
-                //need to confirm enabled, to keep before the subscription data for contentinsight.
                 if ($subscriberStatus == Subscriber::STATUS_UNCONFIRMED ||
                     $subscriberStatus == Subscriber::STATUS_NOT_ACTIVE) {
+                    $this->saveContactAsNotSubscribed($contactEmail);
                     return $this;
                 }
 
-                //Add subscriber update to importer queue
-                $this->importerFactory->create()->registerQueue(
-                    \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_SUBSCRIBER_UPDATE,
-                    ['email' => $email, 'id' => $contactEmail->getId()],
-                    \Dotdigitalgroup\Email\Model\Importer::MODE_SUBSCRIBER_UNSUBSCRIBE,
-                    $websiteId
-                );
+                //Check if previously subscribed
+                if ($contactEmail->getIsSubscriber()) {
+                    $unsubscriber = $this->unsubscriberDataFactory->create();
+                    $unsubscriber->setId($contactEmail->getId());
+                    $unsubscriber->setEmail($email);
+                    $unsubscriber->setWebsiteId($websiteId);
+
+                    $this->publisher->publish('ddg.newsletter.unsubscribe', $unsubscriber);
+                }
+
+                $this->saveContactAsNotSubscribed($contactEmail);
             }
 
             // fix for a multiple hit of the observer. stop adding the duplicates on the automation
@@ -206,7 +254,7 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
             $this->registry->register($email . '_subscriber_save', $email);
             //add subscriber to automation
             $this->addSubscriberToAutomation($email, $subscriber, $websiteId, $storeId);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->helper->debug((string)$e, []);
         }
 
@@ -217,9 +265,11 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
      * Register subscriber to automation.
      *
      * @param string $email
-     * @param \Magento\Newsletter\Model\Subscriber $subscriber
+     * @param Subscriber $subscriber
      * @param string|int $websiteId
      * @param string|int $storeId
+     * @throws AlreadyExistsException
+     * @throws NoSuchEntityException
      */
     private function addSubscriberToAutomation($email, $subscriber, $websiteId, $storeId)
     {
@@ -249,24 +299,22 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
         //save subscriber to the queue
         $automation = $this->automationFactory->create()
             ->setEmail($email)
-            ->setAutomationType(
-                AutomationTypeHandler::AUTOMATION_TYPE_NEW_SUBSCRIBER
-            )
-            ->setEnrolmentStatus(
-                StatusInterface::PENDING
-            )
+            ->setAutomationType(AutomationTypeHandler::AUTOMATION_TYPE_NEW_SUBSCRIBER)
+            ->setEnrolmentStatus(StatusInterface::PENDING)
             ->setTypeId($subscriber->getId())
             ->setWebsiteId($websiteId)
             ->setStoreId($storeId)
             ->setStoreName($this->storeManager->getStore($storeId)->getName())
             ->setProgramId($programId);
         $this->automationResource->save($automation);
+
+        $this->automationPublisher->publish($automation);
     }
 
     /**
      * Returns true if current and previous statuses indicate a subscriber is confirming their subscription.
      *
-     * @param \Magento\Newsletter\Model\Subscriber $subscriber
+     * @param Subscriber $subscriber
      *
      * @return bool
      */
@@ -294,5 +342,18 @@ class ChangeContactSubscription implements \Magento\Framework\Event\ObserverInte
             ->getSubscriberAutomationByEmail($email, $websiteId);
 
         return $matching->getSize() ? true : false;
+    }
+
+    /**
+     * Save contact as unsubscribed.
+     *
+     * @param ContactModel $contact
+     * @return void
+     * @throws \Magento\Framework\Exception\AlreadyExistsException
+     */
+    private function saveContactAsNotSubscribed(ContactModel $contact)
+    {
+        $contact->setIsSubscriber(0);
+        $this->contactResource->save($contact);
     }
 }

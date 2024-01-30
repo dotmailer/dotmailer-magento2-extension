@@ -101,7 +101,8 @@ class SubscriberTest extends TestCase
 
         $this->abstractExporterMock = $this->createMock(AbstractExporter::class);
         $this->websiteInterfaceMock = $this->getMockBuilder(WebsiteInterface::class)
-            ->onlyMethods([
+            ->onlyMethods(
+                [
                 'getId',
                 'setId',
                 'getCode',
@@ -112,7 +113,8 @@ class SubscriberTest extends TestCase
                 'setDefaultGroupId',
                 'getExtensionAttributes',
                 'setExtensionAttributes'
-            ])
+                ]
+            )
             ->addMethods(['getStoreIds'])
             ->disableOriginalConstructor()
             ->getMock();
@@ -514,10 +516,12 @@ class SubscriberTest extends TestCase
     {
         $this->orderHistoryCheckerMock->expects($this->exactly(2))
             ->method('checkInSales')
-            ->willReturn([
+            ->willReturn(
+                [
                 'chaz2@emailsim.io',
                 'chaz6@emailsim.io'
-            ]);
+                ]
+            );
     }
 
     /**

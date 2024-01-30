@@ -8,7 +8,7 @@ use Magento\Framework\Stdlib\StringUtils;
 
 class DataField
 {
-    const NAME_LENGTH_LIMIT = 20;
+    private const NAME_LENGTH_LIMIT = 20;
 
     /**
      * @var Data
@@ -74,7 +74,9 @@ class DataField
     }
 
     /**
-     * @param $datafieldName
+     * Has valid length.
+     *
+     * @param string $datafieldName
      * @return bool
      */
     public function hasValidLength($datafieldName)

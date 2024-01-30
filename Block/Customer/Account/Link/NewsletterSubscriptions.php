@@ -8,7 +8,7 @@ use Magento\Framework\View\Element\Html\Link\Current;
 use Magento\Framework\View\Element\Template\Context;
 
 /**
- * @api 
+ * @api
  */
 class NewsletterSubscriptions extends Current
 {

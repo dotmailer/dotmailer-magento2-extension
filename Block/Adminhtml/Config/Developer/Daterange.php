@@ -5,6 +5,8 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer;
 class Daterange extends \Magento\Config\Block\System\Config\Form\Field
 {
     /**
+     * Get element HTML.
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
      * @return string
@@ -17,7 +19,7 @@ class Daterange extends \Magento\Config\Block\System\Config\Form\Field
             $dateElements .=
                 "<div class = 'ddg-config-daterange-wrapper'>" .
                 "<p>" . ucfirst($range) . ":</p>
-                    <input id='" . $range . "' name='" . $range . "'data-ui-id='' 
+                    <input id='" . $range . "' name='" . $range . "'data-ui-id=''
                         value='' class='ddg-datepicker input-text admin__control-text' type='text' />
                 </div>";
         }
@@ -25,7 +27,8 @@ class Daterange extends \Magento\Config\Block\System\Config\Form\Field
     }
 
     /**
-     * Removes use Default Checkbox
+     * Removes use Default Checkbox.
+     *
      * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
      * @return string
      */

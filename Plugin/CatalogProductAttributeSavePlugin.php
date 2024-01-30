@@ -2,6 +2,11 @@
 
 namespace Dotdigitalgroup\Email\Plugin;
 
+use Dotdigitalgroup\Email\Model\ResourceModel\Catalog;
+use Magento\Catalog\Controller\Adminhtml\Product\Action\Attribute\Save;
+use Magento\Catalog\Helper\Product\Edit\Action\Attribute;
+use Magento\Framework\Controller\Result\Redirect;
+
 /**
  * Class CatalogProductAttributeSavePlugin - reset product in email_catalog when update attribute mass action is used.
  *
@@ -10,31 +15,39 @@ namespace Dotdigitalgroup\Email\Plugin;
 class CatalogProductAttributeSavePlugin
 {
     /**
-     * @var \Magento\Catalog\Helper\Product\Edit\Action\Attribute
+     * @var Attribute
      */
     private $attributeHelper;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Catalog
+     * @var Catalog
      */
     private $catalogResource;
 
+    /**
+     * CatalogProductAttributeSavePlugin constructor.
+     *
+     * @param Attribute $attributeHelper
+     * @param Catalog $catalogResource
+     */
     public function __construct(
-        \Magento\Catalog\Helper\Product\Edit\Action\Attribute $attributeHelper,
-        \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalogResource
+        Attribute $attributeHelper,
+        Catalog $catalogResource
     ) {
         $this->attributeHelper = $attributeHelper;
         $this->catalogResource = $catalogResource;
     }
 
     /**
-     * @param \Magento\Catalog\Controller\Adminhtml\Product\Action\Attribute\Save $subject
-     * @param $result
+     * After execute.
      *
-     * @return mixed
+     * @param Save $subject
+     * @param Redirect $result
+     *
+     * @return Redirect
      */
     public function afterExecute(
-        \Magento\Catalog\Controller\Adminhtml\Product\Action\Attribute\Save $subject,
+        Save $subject,
         $result
     ) {
         $productIds = $this->attributeHelper->getProductIds();

@@ -2,7 +2,6 @@
 
 namespace Dotdigitalgroup\Email\Setup;
 
-use Dotdigitalgroup\Email\Logger\Logger;
 use Magento\Framework\Setup\ExternalFKSetup;
 use Magento\Framework\Setup\InstallSchemaInterface;
 use Magento\Framework\Setup\ModuleContextInterface;
@@ -19,24 +18,19 @@ class Recurring implements InstallSchemaInterface
     private $externalFKSetup;
 
     /**
-     * @var Logger
-     */
-    private $logger;
-
-    /**
      * Recurring constructor.
+     *
      * @param ExternalFKSetup $externalFKSetup
-     * @param Logger $logger
      */
     public function __construct(
-        ExternalFKSetup $externalFKSetup,
-        Logger $logger
+        ExternalFKSetup $externalFKSetup
     ) {
         $this->externalFKSetup = $externalFKSetup;
-        $this->logger = $logger;
     }
 
     /**
+     * Install.
+     *
      * @param SchemaSetupInterface $setup
      * @param ModuleContextInterface $context
      */

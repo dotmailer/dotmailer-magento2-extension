@@ -143,6 +143,7 @@ class ParentFinderTest extends TestCase
 
     /**
      * Builds all the mutual assertions for all cases
+     *
      * @throws \Magento\Framework\Exception\LocalizedException
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */

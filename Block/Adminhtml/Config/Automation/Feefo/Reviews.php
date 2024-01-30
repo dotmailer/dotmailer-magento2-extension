@@ -25,6 +25,8 @@ class Reviews extends \Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\Read
     }
 
     /**
+     * Get HTML.
+     *
      * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
      *
      * @return string

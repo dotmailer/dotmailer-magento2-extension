@@ -77,7 +77,7 @@ class Review implements SyncInterface
      * @param \Magento\Framework\Stdlib\DateTime\DateTime $coreDate
      * @param \Dotdigitalgroup\Email\Model\Customer\ReviewFactory $connectorFactory
      * @param \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
-     * @param \Dotdigitalgroup\Email\Helper\Data $data
+     * @param \Dotdigitalgroup\Email\Helper\Data $helper
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\ReviewFactory $reviewResourceFactory
      * @param ScopeConfigInterface $scopeConfig
      * @param OrderFactory $orderFactory
@@ -87,7 +87,7 @@ class Review implements SyncInterface
         \Magento\Framework\Stdlib\DateTime\DateTime $coreDate,
         \Dotdigitalgroup\Email\Model\Customer\ReviewFactory $connectorFactory,
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
-        \Dotdigitalgroup\Email\Helper\Data $data,
+        \Dotdigitalgroup\Email\Helper\Data $helper,
         \Dotdigitalgroup\Email\Model\ResourceModel\ReviewFactory $reviewResourceFactory,
         ScopeConfigInterface $scopeConfig,
         OrderFactory $orderFactory
@@ -96,7 +96,7 @@ class Review implements SyncInterface
         $this->reviewCollection = $reviewCollection;
         $this->connectorReviewFactory = $connectorFactory;
         $this->importerFactory = $importerFactory;
-        $this->helper = $data;
+        $this->helper = $helper;
         $this->reviewResourceFactory = $reviewResourceFactory;
         $this->scopeConfig = $scopeConfig;
         $this->orderFactory = $orderFactory;

@@ -5,6 +5,7 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Dashboard;
 use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Model\Apiconnector\Test;
 use Dotdigitalgroup\Email\Model\Connector\Module;
+use Dotdigitalgroup\Email\Model\FailedAuth as FailedAuthModel;
 use Dotdigitalgroup\Email\Model\ResourceModel\FailedAuth\CollectionFactory;
 use Dotdigitalgroup\Email\Model\FailedAuth;
 use IntlDateFormatter;
@@ -39,7 +40,7 @@ class Information extends Template
     private $productMetadata;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\ResourceModel\FailedAuth\CollectionFactory
+     * @var CollectionFactory
      */
     private $failedAuthCollectionFactory;
 
@@ -202,7 +203,7 @@ class Information extends Template
         /** @var FailedAuth $failedAuth */
         $failedAuth = $collection->getFirstItem();
 
-        //check if the failed auth is set for the store
+        /** @var FailedAuthModel $failedAuth */
         if ($failedAuth->getId()) {
             return ($failedAuth->isLocked()) ? __('Locked') : __('Not locked');
         } else {

@@ -200,7 +200,7 @@ class Review extends Recommended
     }
 
     /**
-     * Get review item url.
+     * Get review item URL.
      *
      * If 'Link to product page' is 'Yes', fetch the URL.
      * If that fails, or if set to 'No', fall back to the review list URL.
@@ -250,7 +250,7 @@ class Review extends Recommended
     }
 
     /**
-     * Get store id from order.
+     * Get store ID from order.
      *
      * @return int
      */

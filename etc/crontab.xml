@@ -13,9 +13,6 @@
         <job name="ddg_automation_importer" instance="Dotdigitalgroup\Email\Model\Cron" method="emailImporter">
             <config_path>connector_developer_settings/cron_schedules/importer</config_path>
         </job>
-        <job name="ddg_automation_status" instance="Dotdigitalgroup\Email\Model\Cron" method="syncAutomation">
-            <schedule>*/16 * * * *</schedule>
-        </job>
         <job name="ddg_automation_reviews_and_wishlist" instance="Dotdigitalgroup\Email\Model\Cron" method="reviewsAndWishlist">
             <config_path>connector_developer_settings/cron_schedules/review_wishlist</config_path>
         </job>
@@ -29,7 +26,7 @@
             <config_path>connector_developer_settings/cron_schedules/order</config_path>
         </job>
         <job name="ddg_automation_cleaner" instance="Dotdigitalgroup\Email\Model\Cron\Cleaner" method="run">
-            <schedule>0 0 1 * *</schedule>
+            <config_path>connector_developer_settings/cron_schedules/cleaner</config_path>
         </job>
         <job name="ddg_automation_catalog_sync" instance="Dotdigitalgroup\Email\Model\Cron" method="catalogSync">
             <config_path>connector_developer_settings/cron_schedules/catalog</config_path>
@@ -42,6 +39,9 @@
         </job>
         <job name="ddg_automation_consent_sync" instance="Dotdigitalgroup\Email\Model\Cron" method="consentSync">
             <config_path>connector_developer_settings/cron_schedules/consent</config_path>
+        </job>
+        <job name="ddg_automation_pending_contact_checker" instance="Dotdigitalgroup\Email\Model\Cron" method="checkPendingOptInContacts">
+            <schedule>*/30 * * * *</schedule>
         </job>
     </group>
     <group id="ddg_automation_ac">

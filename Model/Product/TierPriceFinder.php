@@ -7,8 +7,7 @@ use Dotdigitalgroup\Email\Api\TierPriceFinderInterface;
 class TierPriceFinder implements TierPriceFinderInterface
 {
     /**
-     * @param \Magento\Catalog\Model\Product $product
-     * @return array
+     * @inheritDoc
      */
     public function getTierPrices($product)
     {

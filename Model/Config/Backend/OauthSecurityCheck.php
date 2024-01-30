@@ -2,10 +2,15 @@
 
 namespace Dotdigitalgroup\Email\Model\Config\Backend;
 
+use Magento\Framework\Exception\LocalizedException;
+
 class OauthSecurityCheck extends \Magento\Framework\App\Config\Value
 {
     /**
+     * Before save.
+     *
      * @return void
+     * @throws LocalizedException
      */
     public function beforeSave()
     {

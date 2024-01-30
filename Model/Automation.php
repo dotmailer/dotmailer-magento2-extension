@@ -1,14 +1,26 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dotdigitalgroup\Email\Model;
 
 use Dotdigitalgroup\Email\Helper\Config;
+use Dotdigitalgroup\Email\Helper\Data;
+use Dotdigitalgroup\Email\Model\Queue\Sync\Automation\AutomationPublisher;
 use Dotdigitalgroup\Email\Model\Sync\Automation\AutomationTypeHandler;
-use Dotdigitalgroup\Email\Model\StatusInterface;
+use Exception;
+use Magento\Customer\Model\Customer;
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\Data\Collection\AbstractDb;
+use Magento\Framework\Model\AbstractModel;
+use Magento\Framework\Model\Context;
+use Magento\Framework\Model\ResourceModel\AbstractResource;
+use Magento\Framework\Registry;
+use Magento\Framework\Stdlib\DateTime;
 use Magento\Store\Model\ScopeInterface;
+use Magento\Store\Model\StoreManagerInterface;
 
-class Automation extends \Magento\Framework\Model\AbstractModel
+class Automation extends AbstractModel
 {
     /**
      * @var ResourceModel\Automation
@@ -16,17 +28,17 @@ class Automation extends \Magento\Framework\Model\AbstractModel
     private $automationResource;
 
     /**
-     * @var \Magento\Framework\Stdlib\DateTime
+     * @var DateTime
      */
     private $dateTime;
 
     /**
-     * @var \Dotdigitalgroup\Email\Helper\Data
+     * @var Data
      */
     private $helper;
 
     /**
-     * @var \Magento\Store\Model\StoreManagerInterface
+     * @var StoreManagerInterface
      */
     private $storeManager;
 
@@ -36,34 +48,43 @@ class Automation extends \Magento\Framework\Model\AbstractModel
     private $scopeConfig;
 
     /**
+     * @var AutomationPublisher
+     */
+    private $publisher;
+
+    /**
      * Automation constructor.
-     * @param \Magento\Framework\Model\Context $context
-     * @param \Magento\Framework\Registry $registry
-     * @param \Magento\Framework\Stdlib\DateTime $dateTime
-     * @param \Dotdigitalgroup\Email\Helper\Data $helper
+     *
+     * @param Context $context
+     * @param Registry $registry
+     * @param DateTime $dateTime
+     * @param Data $helper
      * @param ResourceModel\Automation $automationResource
-     * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
+     * @param StoreManagerInterface $storeManagerInterface
      * @param ScopeConfigInterface $scopeConfig
-     * @param \Magento\Framework\Model\ResourceModel\AbstractResource|null $resource
-     * @param \Magento\Framework\Data\Collection\AbstractDb|null $resourceCollection
+     * @param AutomationPublisher $publisher
+     * @param AbstractResource|null $resource
+     * @param AbstractDb|null $resourceCollection
      * @param array $data
      */
     public function __construct(
-        \Magento\Framework\Model\Context $context,
-        \Magento\Framework\Registry $registry,
-        \Magento\Framework\Stdlib\DateTime $dateTime,
-        \Dotdigitalgroup\Email\Helper\Data $helper,
-        \Dotdigitalgroup\Email\Model\ResourceModel\Automation $automationResource,
-        \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
+        Context $context,
+        Registry $registry,
+        DateTime $dateTime,
+        Data $helper,
+        ResourceModel\Automation $automationResource,
+        StoreManagerInterface $storeManagerInterface,
         ScopeConfigInterface $scopeConfig,
-        \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
-        \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
+        AutomationPublisher $publisher,
+        AbstractResource $resource = null,
+        AbstractDb $resourceCollection = null,
         array $data = []
     ) {
-        $this->dateTime     = $dateTime;
+        $this->dateTime = $dateTime;
         $this->automationResource = $automationResource;
-        $this->helper       = $helper;
+        $this->helper = $helper;
         $this->scopeConfig = $scopeConfig;
+        $this->publisher = $publisher;
         $this->storeManager = $storeManagerInterface;
         parent::__construct(
             $context,
@@ -82,7 +103,7 @@ class Automation extends \Magento\Framework\Model\AbstractModel
     public function _construct()
     {
         parent::_construct();
-        $this->_init(\Dotdigitalgroup\Email\Model\ResourceModel\Automation::class);
+        $this->_init(ResourceModel\Automation::class);
     }
 
     /**
@@ -104,7 +125,7 @@ class Automation extends \Magento\Framework\Model\AbstractModel
     /**
      * New customer automation
      *
-     * @param \Magento\Customer\Model\Customer $customer
+     * @param Customer $customer
      */
     public function newCustomerAutomation($customer)
     {
@@ -140,8 +161,10 @@ class Automation extends \Magento\Framework\Model\AbstractModel
                     ->setProgramId($programId);
 
                 $this->automationResource->save($this);
+
+                $this->publisher->publish($this);
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->helper->debug((string)$e, []);
         }
     }

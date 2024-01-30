@@ -21,6 +21,7 @@ class ReimportProduct implements \Magento\Framework\Event\ObserverInterface
 
     /**
      * ReimportProduct constructor.
+     *
      * @param  \Dotdigitalgroup\Email\Model\Catalog\UpdateCatalog $updater
      * @param CatalogService $catalogService
      */
@@ -33,6 +34,8 @@ class ReimportProduct implements \Magento\Framework\Event\ObserverInterface
     }
 
     /**
+     * Execute.
+     *
      * @param \Magento\Framework\Event\Observer $observer
      */
     public function execute(\Magento\Framework\Event\Observer $observer)

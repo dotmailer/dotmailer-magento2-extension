@@ -5,8 +5,7 @@ namespace Dotdigitalgroup\Email\Model\Config\Source\Datamapping;
 class Datafieldtype implements \Magento\Framework\Option\ArrayInterface
 {
     /**
-     * Datafield model type.
-     * Data mapping.
+     * Datafield model type data mapping.
      *
      * @return array
      */

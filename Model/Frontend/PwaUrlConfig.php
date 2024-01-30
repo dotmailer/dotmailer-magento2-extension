@@ -20,6 +20,7 @@ class PwaUrlConfig
 
     /**
      * PwaUrlConfig constructor.
+     *
      * @param ScopeConfigInterface $scopeConfig
      */
     public function __construct(
@@ -29,6 +30,8 @@ class PwaUrlConfig
     }
 
     /**
+     * Set the pwa url for the given website ID.
+     *
      * @param string|int $websiteId
      */
     private function setPwaUrl($websiteId)
@@ -41,6 +44,8 @@ class PwaUrlConfig
     }
 
     /**
+     * Get the pwa url for the given website ID.
+     *
      * @param string|int $websiteId
      * @return string
      */

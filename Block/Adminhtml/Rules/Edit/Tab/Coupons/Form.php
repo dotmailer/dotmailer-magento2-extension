@@ -181,6 +181,8 @@ EOT;
     }
 
     /**
+     * Get option.
+     *
      * @param bool $defaultYes
      * @return array
      */

@@ -299,7 +299,7 @@ class Product extends AbstractConnectorModel
         );
 
         $this->stock = (float) number_format(
-            $this->stockFinderInterface->getStockQty(
+            (float) $this->stockFinderInterface->getStockQty(
                 $product,
                 (int) $this->storeManager->getStore($storeId)->getWebsiteId()
             ),
@@ -461,14 +461,14 @@ class Product extends AbstractConnectorModel
     private function formatPriceValues($price, $specialPrice)
     {
         $this->price = (float) number_format(
-            $price ?? 0,
+            (float) $price,
             2,
             '.',
             ''
         );
 
         $this->specialPrice = (float) number_format(
-            $specialPrice ?? 0,
+            (float) $specialPrice,
             2,
             '.',
             ''

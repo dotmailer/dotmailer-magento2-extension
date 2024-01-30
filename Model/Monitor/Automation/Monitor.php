@@ -11,7 +11,7 @@ use Magento\Framework\FlagManager;
 
 class Monitor extends AbstractMonitor implements MonitorInterface
 {
-    const MONITOR_ERROR_FLAG_CODE = 'ddg_monitor_automation_errors';
+    public const MONITOR_ERROR_FLAG_CODE = 'ddg_monitor_automation_errors';
 
     /**
      * @var CollectionFactory
@@ -29,6 +29,8 @@ class Monitor extends AbstractMonitor implements MonitorInterface
     protected $typeName = 'automation';
 
     /**
+     * Monitor constructor.
+     *
      * @param FlagManager $flagManager
      * @param ScopeConfigInterface $scopeConfig
      * @param CollectionFactory $automationCollectionFactory
@@ -45,6 +47,8 @@ class Monitor extends AbstractMonitor implements MonitorInterface
     }
 
     /**
+     * Fetch errors for the given time window.
+     *
      * @param array $timeWindow
      * @return array
      * @throws Exception
@@ -66,6 +70,8 @@ class Monitor extends AbstractMonitor implements MonitorInterface
     }
 
     /**
+     * Filter error items.
+     *
      * @param array $items
      * @return array
      */

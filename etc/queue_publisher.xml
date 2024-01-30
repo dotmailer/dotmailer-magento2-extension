@@ -3,4 +3,19 @@
     <publisher topic="ddg.sync.integration">
         <connection name="db" exchange="magento-db" />
     </publisher>
+    <publisher topic="ddg.sync.automation">
+        <connection name="db" exchange="magento-db" />
+    </publisher>
+    <publisher topic="ddg.newsletter.unsubscribe">
+        <connection name="db" exchange="magento-db" />
+    </publisher>
+    <publisher topic="ddg.newsletter.resubscribe">
+        <connection name="db" exchange="magento-db" />
+    </publisher>
+    <publisher topic="ddg.contact.email_update">
+        <connection name="db" exchange="magento-db" />
+    </publisher>
+    <publisher topic="ddg.sales.cart_phase_update">
+        <connection name="db" exchange="magento-db" />
+    </publisher>
 </config>

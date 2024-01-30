@@ -12,6 +12,7 @@ class Resetter
 
     /**
      * Resetter constructor.
+     *
      * @param array $resetModels
      */
     public function __construct(array $resetModels = [])
@@ -20,6 +21,8 @@ class Resetter
     }
 
     /**
+     * Reset data for the given reset type.
+     *
      * @param null|string $from
      * @param null|string $to
      * @param string $resetType
@@ -39,6 +42,9 @@ class Resetter
     }
 
     /**
+     * Set reset models.
+     *
+     * @param array $resetModels
      * @return void
      */
     public function setResetModels($resetModels)

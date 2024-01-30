@@ -160,7 +160,7 @@ class OrderItemProcessor extends DataObject
             'parent_name' => $this->getParentName(),
             'sku' => $this->getSku(),
             'qty' => (int) number_format(
-                $this->productItem->getQtyOrdered(),
+                (float) $this->productItem->getQtyOrdered(),
                 2
             ),
             'price' => (float) number_format(

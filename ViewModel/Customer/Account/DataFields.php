@@ -111,8 +111,7 @@ class DataFields implements ArgumentInterface
                 if (isset($processedConnectorDataFields[$dataFieldFromConfig])) {
                     $value = '';
                     if (isset($processedContactDataFields[$processedConnectorDataFields[$dataFieldFromConfig]->name])) {
-                        if ($processedConnectorDataFields[$dataFieldFromConfig]->type
-                            == 'Date'
+                        if ($processedConnectorDataFields[$dataFieldFromConfig]->type == 'Date'
                         ) {
                             $value = $processedContactDataFields[
                             $processedConnectorDataFields[$dataFieldFromConfig]->name

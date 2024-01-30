@@ -2,11 +2,6 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml;
 
-/**
- * Log viewer block
- *
- * @api
- */
 class LogViewer extends \Magento\Backend\Block\Widget\Container
 {
 
@@ -21,7 +16,6 @@ class LogViewer extends \Magento\Backend\Block\Widget\Container
     public $file;
 
     /**
-     * /**
      * Logviewer constructor.
      *
      * @param \Magento\Backend\Block\Widget\Context $context
@@ -38,6 +32,8 @@ class LogViewer extends \Magento\Backend\Block\Widget\Container
     }
 
     /**
+     * Constructor.
+     *
      * @return void
      */
     public function _construct()
@@ -58,6 +54,8 @@ class LogViewer extends \Magento\Backend\Block\Widget\Container
     }
 
     /**
+     * Ajax url.
+     *
      * @return string
      */
     public function getAjaxUrl()

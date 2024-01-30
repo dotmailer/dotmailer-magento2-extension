@@ -6,6 +6,9 @@ use Magento\Framework\App\Config\Value;
 
 class TextValueTrimmer extends Value
 {
+    /**
+     * Before save.
+     */
     public function beforeSave()
     {
         $value = $this->getValue();

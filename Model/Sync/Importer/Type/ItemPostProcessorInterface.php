@@ -2,16 +2,20 @@
 
 namespace Dotdigitalgroup\Email\Model\Sync\Importer\Type;
 
+use Dotdigitalgroup\Email\Model\Importer as ImporterModel;
+
 interface ItemPostProcessorInterface
 {
     /**
      * Legendary error message
      */
-    const ERROR_UNKNOWN = 'Error unknown';
+    public const ERROR_UNKNOWN = 'Error unknown';
 
     /**
-     * @param $item
-     * @param $result
+     * Handle item after sync.
+     *
+     * @param ImporterModel $item
+     * @param mixed $result
      * @return mixed
      */
     public function handleItemAfterSync($item, $result);

@@ -451,6 +451,10 @@ class Config extends AbstractHelper
         'connector_developer_settings/cron_schedules/catalog';
     public const XML_PATH_CRON_SCHEDULE_CONSENT =
         'connector_developer_settings/cron_schedules/consent';
+    public const XML_PATH_CRON_SCHEDULE_CLEANER =
+        'connector_developer_settings/cron_schedules/cleaner';
+    public const XML_PATH_CRON_SCHEDULE_TABLE_CLEANER_INTERVAL =
+        'connector_developer_settings/cron_schedules/table_cleaner_interval';
 
     /**
      * API and portal endpoints
@@ -577,7 +581,7 @@ class Config extends AbstractHelper
     }
 
     /**
-     * Region-aware EC portal URL
+     * Region-aware EC portal url.
      *
      * @param int $website
      * @return string
@@ -686,6 +690,6 @@ class Config extends AbstractHelper
             Share::XML_PATH_CUSTOMER_ACCOUNT_SHARE
         );
 
-       return $config == Share::SHARE_GLOBAL;
+        return $config == Share::SHARE_GLOBAL;
     }
 }

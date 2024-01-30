@@ -8,5 +8,5 @@ class Related extends ReadonlyFormField
 {
     use CartRecommendation;
 
-    const URL_SLUG = 'related';
+    public const URL_SLUG = 'related';
 }

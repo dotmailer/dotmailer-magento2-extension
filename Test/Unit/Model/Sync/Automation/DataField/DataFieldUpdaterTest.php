@@ -150,8 +150,8 @@ class DataFieldUpdaterTest extends TestCase
     }
 
     /**
-     * @param $storeName
-     * @param $websiteName
+     * @param  $storeName
+     * @param  $websiteName
      * @return array[]
      */
     private function getExpectedData($storeName, $websiteName)

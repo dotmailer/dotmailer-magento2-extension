@@ -85,7 +85,8 @@ class GuestExporterTest extends TestCase
      */
     private function getGuestsForSync()
     {
-        for ($i = 0; $i < rand(1, 20); $i++) {
+        $randomQuantity = rand(1, 20);
+        for ($i = 0; $i < $randomQuantity; $i++) {
             $this->guests += [$this->contactMock];
         }
 

@@ -10,7 +10,7 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     protected $_idFieldName = 'user_id';
 
     /**
-     * Initialize resource collection
+     * Initialize resource collection.
      */
     public function _construct()
     {
@@ -18,6 +18,8 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     }
 
     /**
+     * Fetch users by role.
+     *
      * Return admin_user rows matching the supplied ids from authorization_role.
      * Note this JOIN is baked into Magento core from 2.3, we include it here for 2.2. support.
      *

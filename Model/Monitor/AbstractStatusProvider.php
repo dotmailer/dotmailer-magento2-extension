@@ -29,6 +29,7 @@ abstract class AbstractStatusProvider
 
     /**
      * AbstractStatusProvider constructor.
+     *
      * @param FlagManager $flagManager
      * @param Logger $logger
      */
@@ -41,6 +42,8 @@ abstract class AbstractStatusProvider
     }
 
     /**
+     * Get the flag code for the monitor error flag.
+     *
      * @return bool
      */
     public function hasErrors()
@@ -55,6 +58,8 @@ abstract class AbstractStatusProvider
     }
 
     /**
+     * Get the error summary from the flag.
+     *
      * @param array $items
      * @return string
      */
@@ -65,6 +70,8 @@ abstract class AbstractStatusProvider
     }
 
     /**
+     * Get the error items from the flag.
+     *
      * @return array
      */
     private function getErrorItemsFromFlag()

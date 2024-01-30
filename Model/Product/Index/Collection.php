@@ -4,8 +4,9 @@ namespace Dotdigitalgroup\Email\Model\Product\Index;
 
 class Collection extends \Magento\Reports\Model\ResourceModel\Product\Index\Collection\AbstractCollection
 {
-
     /**
+     * Get table name.
+     *
      * @return string
      */
     protected function _getTableName()

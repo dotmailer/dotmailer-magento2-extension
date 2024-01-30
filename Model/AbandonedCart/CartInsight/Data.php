@@ -2,13 +2,21 @@
 
 namespace Dotdigitalgroup\Email\Model\AbandonedCart\CartInsight;
 
+use Dotdigital\Exception\ResponseValidationException;
 use Dotdigitalgroup\Email\Logger\Logger;
+use Dotdigitalgroup\Email\Model\Apiconnector\V3\ClientFactory;
+use Dotdigitalgroup\Email\Model\Catalog\UrlFinder;
+use Dotdigitalgroup\Email\Model\Product\ImageFinder;
 use Dotdigitalgroup\Email\Model\Product\ImageType\Context\AbandonedCart;
 use Magento\Catalog\Api\Data\ProductInterface;
+use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Framework\App\Area;
 use Magento\Framework\Pricing\PriceCurrencyInterface;
+use Magento\Framework\Stdlib\DateTime\DateTime;
+use Magento\Quote\Model\Quote;
 use Magento\Quote\Model\Quote\Item;
 use Magento\Store\Model\App\Emulation;
+use Magento\Store\Model\StoreManagerInterface;
 
 class Data
 {
@@ -16,6 +24,11 @@ class Data
      * Basket prefix for accessing stored quotes
      */
     private const CONNECTOR_BASKET_PATH = 'connector/email/getbasket';
+
+    /**
+     * @var ClientFactory
+     */
+    private $clientFactory;
 
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
@@ -26,11 +39,6 @@ class Data
      * @var \Magento\Catalog\Api\ProductRepositoryInterface
      */
     private $productRepository;
-
-    /**
-     * @var \Dotdigitalgroup\Email\Helper\Data
-     */
-    private $helper;
 
     /**
      * @var \Magento\Framework\Stdlib\DateTime\DateTime
@@ -69,22 +77,23 @@ class Data
 
     /**
      * Data constructor.
-     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
-     * @param \Magento\Catalog\Api\ProductRepositoryInterface $productRepository
+     *
+     * @param ClientFactory $clientFactory
+     * @param StoreManagerInterface $storeManager
+     * @param ProductRepositoryInterface $productRepository
      * @param Emulation $appEmulation
-     * @param \Dotdigitalgroup\Email\Helper\Data $helper
-     * @param \Magento\Framework\Stdlib\DateTime\DateTime $dateTime
-     * @param \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder
-     * @param \Dotdigitalgroup\Email\Model\Product\ImageFinder $imageFinder
+     * @param DateTime $dateTime
+     * @param UrlFinder $urlFinder
+     * @param ImageFinder $imageFinder
      * @param Logger $logger
      * @param AbandonedCart $imageType
      * @param PriceCurrencyInterface $priceCurrencyInterface
      */
     public function __construct(
+        ClientFactory $clientFactory,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Magento\Catalog\Api\ProductRepositoryInterface $productRepository,
         Emulation $appEmulation,
-        \Dotdigitalgroup\Email\Helper\Data $helper,
         \Magento\Framework\Stdlib\DateTime\DateTime $dateTime,
         \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder,
         \Dotdigitalgroup\Email\Model\Product\ImageFinder $imageFinder,
@@ -92,10 +101,10 @@ class Data
         AbandonedCart $imageType,
         PriceCurrencyInterface $priceCurrencyInterface
     ) {
+        $this->clientFactory = $clientFactory;
         $this->storeManager = $storeManager;
         $this->productRepository = $productRepository;
         $this->appEmulation = $appEmulation;
-        $this->helper = $helper;
         $this->dateTime = $dateTime;
         $this->urlFinder = $urlFinder;
         $this->imageFinder = $imageFinder;
@@ -107,7 +116,7 @@ class Data
     /**
      * Send cart insight data via API client.
      *
-     * @param \Magento\Quote\Model\Quote $quote
+     * @param Quote $quote
      * @param int $storeId
      *
      * @return void
@@ -116,7 +125,9 @@ class Data
     public function send($quote, $storeId)
     {
         $store = $this->storeManager->getStore($storeId);
-        $client = $this->helper->getWebsiteApiClient($store->getWebsiteId());
+        $client = $this->clientFactory->create(
+            ['data' => ['websiteId' => $store->getWebsiteId()]]
+        );
 
         $this->appEmulation->startEnvironmentEmulation(
             $storeId,
@@ -136,15 +147,34 @@ class Data
 
         $this->appEmulation->stopEnvironmentEmulation();
 
-        if (!empty($payload)) {
-            $client->postAbandonedCartCartInsight($payload);
+        if (empty($payload)) {
+            return;
+        }
+
+        try {
+            $client->insightData->createOrUpdateContactCollectionRecord(
+                'CartInsight',
+                (string) $quote->getId(),
+                'email',
+                $quote->getCustomerEmail(),
+                $payload
+            );
+        } catch (ResponseValidationException $e) {
+            $this->logger->debug(
+                sprintf(
+                    '%s: %s',
+                    'Error sending cart insight data',
+                    $e->getMessage()
+                ),
+                [$e->getDetails()]
+            );
         }
     }
 
     /**
      * Get payload data for API push.
      *
-     * @param \Magento\Quote\Model\Quote $quote
+     * @param Quote $quote
      * @param \Magento\Store\Api\Data\StoreInterface $store
      *
      * @return array

@@ -74,6 +74,9 @@ class ExporterTest extends TestCase
      */
     private $exporter;
 
+    /**
+     * @var int[]
+     */
     private $customerIds = [1, 2, 3, 4, 5];
 
     protected function setUp() :void

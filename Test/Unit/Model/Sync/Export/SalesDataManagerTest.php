@@ -92,13 +92,23 @@ class SalesDataManagerTest extends TestCase
         $results = $this->getSalesDataResults();
 
         $this->websiteInterfaceMock->expects($this->atLeastOnce())->method('getStoreIds')->willReturn([1, 2]);
-        $this->datafieldMock->expects($this->any())->method('getSalesDatafields')->willReturn($this->getSalesDataFields());
+        $this->datafieldMock->expects($this->any())
+            ->method('getSalesDatafields')
+            ->willReturn($this->getSalesDataFields());
 
         $salesOrderCollectionMock = $this->createMock(SalesOrderCollection::class);
-        $this->salesOrderCollectionFactoryMock->expects($this->any())->method('create')->willReturn($salesOrderCollectionMock);
-        $salesOrderCollectionMock->expects($this->any())->method('addFieldToSelect')->willReturn($salesOrderCollectionMock);
-        $salesOrderCollectionMock->expects($this->any())->method('addExpressionFieldToSelect')->willReturn($salesOrderCollectionMock);
-        $salesOrderCollectionMock->expects($this->any())->method('addFieldToFilter')->willReturn($salesOrderCollectionMock);
+        $this->salesOrderCollectionFactoryMock->expects($this->any())
+            ->method('create')
+            ->willReturn($salesOrderCollectionMock);
+        $salesOrderCollectionMock->expects($this->any())
+            ->method('addFieldToSelect')
+            ->willReturn($salesOrderCollectionMock);
+        $salesOrderCollectionMock->expects($this->any())
+            ->method('addExpressionFieldToSelect')
+            ->willReturn($salesOrderCollectionMock);
+        $salesOrderCollectionMock->expects($this->any())
+            ->method('addFieldToFilter')
+            ->willReturn($salesOrderCollectionMock);
 
         $selectMock = $this->createMock(\Magento\Framework\DB\Select::class);
         $salesOrderCollectionMock->expects($this->any())->method('getSelect')->willReturn($selectMock);
@@ -131,7 +141,9 @@ class SalesDataManagerTest extends TestCase
 
         $quoteCollectionMock = $this->createMock(\Magento\Quote\Model\ResourceModel\Quote\Collection::class);
         $this->quoteCollectionFactoryMock->expects($this->any())->method('create')->willReturn($quoteCollectionMock);
-        $quoteCollectionMock->expects($this->any())->method('addExpressionFieldToSelect')->willReturn($quoteCollectionMock);
+        $quoteCollectionMock->expects($this->any())
+            ->method('addExpressionFieldToSelect')
+            ->willReturn($quoteCollectionMock);
         $quoteCollectionMock->expects($this->any())->method('addFieldToFilter')->willReturn($quoteCollectionMock);
         $quoteCollectionMock->expects($this->any())->method('getSelect')->willReturn($selectMock);
 
@@ -174,11 +186,17 @@ class SalesDataManagerTest extends TestCase
         $customerIds = [1, 2, 3, 4, 5];
         $columns = $this->getColumnsWithNoSalesDataFields();
 
-        $this->datafieldMock->expects($this->any())->method('getSalesDatafields')->willReturn($this->getSalesDataFields());
+        $this->datafieldMock->expects($this->any())
+            ->method('getSalesDatafields')
+            ->willReturn($this->getSalesDataFields());
 
         $this->salesOrderCollectionFactoryMock->expects($this->never())->method('create');
 
-        $salesDataArray = $this->salesDataManager->setContactSalesData($customerIds, $this->websiteInterfaceMock, $columns);
+        $salesDataArray = $this->salesDataManager->setContactSalesData(
+            $customerIds,
+            $this->websiteInterfaceMock,
+            $columns
+        );
 
         $this->assertEmpty($salesDataArray);
     }

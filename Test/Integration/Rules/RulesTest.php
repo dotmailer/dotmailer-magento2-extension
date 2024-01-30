@@ -8,12 +8,10 @@ if (!class_exists('\Magento\Catalog\Api\Data\ProductExtensionInterfaceFactory'))
 
 use Magento\Framework\Serialize\SerializerInterface;
 use Dotdigitalgroup\Email\Model\ResourceModel\Rules as RulesResource;
-use Dotdigitalgroup\Email\Model\Rules;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ResourceModel\Product as ProductResource;
 use Magento\Customer\Api\AddressRepositoryInterface;
 use Magento\Customer\Api\CustomerRepositoryInterface;
-use Magento\Quote\Api\Data\CartInterface;
 use Magento\Quote\Model\Quote;
 use Magento\Quote\Model\ResourceModel\Quote as QuoteResource;
 use Magento\Quote\Model\ResourceModel\Quote\Collection as QuoteCollection;
@@ -29,8 +27,8 @@ use Magento\TestFramework\ObjectManager;
  */
 class RulesTest extends \PHPUnit\Framework\TestCase
 {
-    const RULE_OPERATOR_AND = 1;
-    const RULE_OPERATOR_OR = 2;
+    private const RULE_OPERATOR_AND = 1;
+    private const RULE_OPERATOR_OR = 2;
 
     /**
      * @var QuoteCollection

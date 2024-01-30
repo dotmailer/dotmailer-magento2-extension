@@ -59,7 +59,7 @@ class UrlFinderTest extends TestCase
     private $imageBuilderMock;
 
     /**
-     * @var
+     * @var ScopeConfigInterface|\PHPUnit\Framework\MockObject\MockObject
      */
     private $scopeConfigInterfaceMock;
 
@@ -181,7 +181,7 @@ class UrlFinderTest extends TestCase
 
         $this->urlFinder->fetchFor($this->productMock);
     }
-
+    
     public function testGetPathRemovesPubSubStringIfEnabledInConfig()
     {
         $path = 'https://magento2.dev/pub/media/chaz-kangaroo.jpg';

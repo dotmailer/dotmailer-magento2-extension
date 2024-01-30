@@ -79,4 +79,3 @@ class CronFromTimeSetterTest extends TestCase
         $this->model->setFromTime();
     }
 }
-

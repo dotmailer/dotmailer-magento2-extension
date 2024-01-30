@@ -232,7 +232,8 @@ class DataFieldCollectorTest extends TestCase
             $this->getExportedCustomerDataFields()
         );
 
-        $this->assertEquals([
+        $this->assertEquals(
+            [
             [
                 'Key' => 'STORE_NAME',
                 'Value' => 'Chaz store',
@@ -253,7 +254,9 @@ class DataFieldCollectorTest extends TestCase
                 'Key' => 'SUBSCRIBER_STATUS',
                 'Value' => 'Subscribed',
             ]
-        ], $merged);
+            ],
+            $merged
+        );
     }
 
     private function getDummyExportData()

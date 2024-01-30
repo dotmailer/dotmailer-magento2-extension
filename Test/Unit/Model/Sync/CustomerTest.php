@@ -73,7 +73,8 @@ class CustomerTest extends TestCase
      */
     private $contactCollectionMock;
 
-    protected function setUp(): void {
+    protected function setUp(): void
+    {
         $this->helperMock = $this->createMock(Data::class);
         $this->loggerMock = $this->createMock(Logger::class);
         $this->contactCollectionMock = $this->createMock(ContactCollection::class);
@@ -85,7 +86,8 @@ class CustomerTest extends TestCase
 
         $this->abstractExporterMock = $this->createMock(AbstractExporter::class);
         $this->websiteInterfaceMock = $this->getMockBuilder(WebsiteInterface::class)
-            ->onlyMethods([
+            ->onlyMethods(
+                [
                 'getId',
                 'setId',
                 'getCode',
@@ -96,7 +98,8 @@ class CustomerTest extends TestCase
                 'setDefaultGroupId',
                 'getExtensionAttributes',
                 'setExtensionAttributes'
-            ])
+                ]
+            )
             ->addMethods(['getStoreIds'])
             ->disableOriginalConstructor()
             ->getMock();
@@ -459,10 +462,12 @@ class CustomerTest extends TestCase
     {
         $this->storeManagerMock->expects($this->once())
             ->method('getWebsites')
-            ->willReturn([
+            ->willReturn(
+                [
                 $this->websiteInterfaceMock,
                 $this->websiteInterfaceMock
-            ]);
+                ]
+            );
 
         $this->helperMock->expects($this->exactly(2))
             ->method('isEnabled')

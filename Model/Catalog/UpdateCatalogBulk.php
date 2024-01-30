@@ -2,27 +2,31 @@
 
 namespace Dotdigitalgroup\Email\Model\Catalog;
 
+use Dotdigitalgroup\Email\Model\Product\ParentFinder;
+use Dotdigitalgroup\Email\Model\ResourceModel\Catalog;
+use Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory;
 use Magento\Catalog\Model\ResourceModel\Product;
+use Magento\Framework\Stdlib\DateTime;
 
 class UpdateCatalogBulk
 {
     /**
-     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Catalog
+     * @var Catalog
      */
     private $catalogResource;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory
+     * @var CollectionFactory
      */
     private $catalogFactory;
 
     /**
-     * @var \Magento\Framework\Stdlib\DateTime
+     * @var DateTime
      */
     private $dateTime;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\Product\ParentFinder
+     * @var ParentFinder
      */
     private $parentFinder;
 
@@ -31,11 +35,20 @@ class UpdateCatalogBulk
      */
     private $productResource;
 
+    /**
+     * UpdateCatalogBulk constructor.
+     *
+     * @param Catalog $catalogResource
+     * @param CollectionFactory $catalogFactory
+     * @param DateTime $dateTime
+     * @param ParentFinder $parentFinder
+     * @param Product $productResource
+     */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\ResourceModel\Catalog $catalogResource,
-        \Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory $catalogFactory,
-        \Magento\Framework\Stdlib\DateTime $dateTime,
-        \Dotdigitalgroup\Email\Model\Product\ParentFinder $parentFinder,
+        Catalog $catalogResource,
+        CollectionFactory $catalogFactory,
+        DateTime $dateTime,
+        ParentFinder $parentFinder,
         Product $productResource
     ) {
         $this->catalogResource = $catalogResource;
@@ -46,7 +59,9 @@ class UpdateCatalogBulk
     }
 
     /**
-     * @param $bunch
+     * Process bunch of products.
+     *
+     * @param array $bunch
      */
     public function execute($bunch)
     {
@@ -59,8 +74,9 @@ class UpdateCatalogBulk
     }
 
     /**
-     * Adds products to email_catalog or
-     * marks existing products (and their parents) as unprocessed.
+     * Process bunch of products.
+     *
+     * Adds products to email_catalog or marks existing products (and their parents) as unprocessed.
      *
      * @param array $bunch
      */
@@ -96,7 +112,8 @@ class UpdateCatalogBulk
 
     /**
      * Returns all product Id's that belongs to Catalog Collection
-     * @param $productIds
+     *
+     * @param array $productIds
      * @return array
      */
     private function getExistingProductIds($productIds)

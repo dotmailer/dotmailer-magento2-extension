@@ -4,4 +4,24 @@
               queue="ddg.sync.queue"
               handler="Dotdigitalgroup\Email\Model\Queue\Sync\IntegrationInsightsConsumer::process"
               connection="db" />
+    <consumer name="ddg.sync.automation"
+              queue="ddg.sync.automation.queue"
+              handler="Dotdigitalgroup\Email\Model\Queue\Sync\Automation\AutomationConsumer::process"
+              connection="db" />
+    <consumer name="ddg.newsletter.unsubscribe"
+              queue="ddg.unsubscribe.queue"
+              handler="Dotdigitalgroup\Email\Model\Queue\Newsletter\UnsubscriberConsumer::process"
+              connection="db" />
+    <consumer name="ddg.newsletter.resubscribe"
+              queue="ddg.resubscribe.queue"
+              handler="Dotdigitalgroup\Email\Model\Queue\Newsletter\ResubscribeConsumer::process"
+              connection="db" />
+    <consumer name="ddg.contact.email_update"
+              queue="ddg.email_update.queue"
+              handler="Dotdigitalgroup\Email\Model\Queue\Customer\EmailUpdateConsumer::process"
+              connection="db" />
+    <consumer name="ddg.sales.cart_phase_update"
+              queue="ddg.cart_phase_update.queue"
+              handler="Dotdigitalgroup\Email\Model\Queue\Sales\CartPhaseUpdateConsumer::process"
+              connection="db" />
 </config>

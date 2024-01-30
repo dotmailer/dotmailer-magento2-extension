@@ -108,6 +108,8 @@ class TaskRunnerCommand extends Command
     }
 
     /**
+     * Ask for task.
+     *
      * @param InputInterface $input
      * @param OutputInterface $output
      * @return string

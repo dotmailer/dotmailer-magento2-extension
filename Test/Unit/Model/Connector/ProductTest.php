@@ -1,4 +1,6 @@
-<?php /** @noinspection PhpCSFixerValidationInspection */
+<?php /**
+       * @noinspection PhpCSFixerValidationInspection
+       */
 
 namespace Dotdigitalgroup\Email\Test\Unit\Model\Connector;
 
@@ -180,7 +182,8 @@ class ProductTest extends TestCase
         $this->visibilityFactoryMock = $this->createMock(VisibilityFactory::class);
         $this->mageProductMock = $this->getMockBuilder(MageProduct::class)
             ->disableOriginalConstructor()
-            ->onlyMethods([
+            ->onlyMethods(
+                [
                 'getTypeInstance',
                 'getSku',
                 'getStatus',

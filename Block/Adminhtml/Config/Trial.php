@@ -5,6 +5,8 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Config;
 class Trial extends \Magento\Config\Block\System\Config\Form\Fieldset
 {
     /**
+     * Render.
+     *
      * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
      *
      * @return string

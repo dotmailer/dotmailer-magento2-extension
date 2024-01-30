@@ -45,17 +45,13 @@ class SenderTest extends TestCase
         );
     }
 
-    public function testContactsAreEnrolledIfProgramIsActive()
+    public function testContactsAreEnrolled()
     {
         $clientMock = $this->createMock(Client::class);
 
-        $this->helperMock->expects($this->exactly(2))
+        $this->helperMock->expects($this->once())
             ->method('getWebsiteApiClient')
             ->willReturn($clientMock);
-
-        $clientMock->expects($this->once())
-            ->method('getProgramById')
-            ->willReturn($this->getActiveProgram());
 
         $clientMock->expects($this->once())
             ->method('postProgramsEnrolments');
@@ -84,14 +80,22 @@ class SenderTest extends TestCase
             ->willReturn($clientMock);
 
         $clientMock->expects($this->once())
-            ->method('getProgramById')
-            ->willReturn($this->getDeactivatedProgram());
-
-        $clientMock->expects($this->never())
-            ->method('postProgramsEnrolments');
+            ->method('postProgramsEnrolments')
+            ->willReturn($this->getProgramDeactivatedResponse());
 
         $this->automationResourceMock->expects($this->once())
-            ->method('updateStatus');
+            ->method('updateStatus')
+            ->with(
+                [
+                    0 => 0,
+                    1 => 1,
+                    2 => 2,
+                ],
+                StatusInterface::DEACTIVATED,
+                'Error: ERROR_PROGRAM_NOT_ACTIVE',
+                null,
+                'subscriber_automation'
+            );
 
         $this->sender->sendAutomationEnrolments(
             'subscriber_automation',
@@ -109,13 +113,9 @@ class SenderTest extends TestCase
     {
         $clientMock = $this->createMock(Client::class);
 
-        $this->helperMock->expects($this->exactly(2))
+        $this->helperMock->expects($this->exactly(1))
             ->method('getWebsiteApiClient')
             ->willReturn($clientMock);
-
-        $clientMock->expects($this->once())
-            ->method('getProgramById')
-            ->willReturn($this->getActiveProgram());
 
         $clientMock->expects($this->once())
             ->method('postProgramsEnrolments')
@@ -143,24 +143,13 @@ class SenderTest extends TestCase
         );
     }
 
-    private function getActiveProgram()
+    private function getProgramDeactivatedResponse()
     {
-        $program = [
-            'id' => 1,
-            'status' => 'Active'
+        $result = [
+            'message' => 'Error: ERROR_PROGRAM_NOT_ACTIVE'
         ];
 
-        return (object) $program;
-    }
-
-    private function getDeactivatedProgram()
-    {
-        $program = [
-            'id' => 1,
-            'status' => 'Deactivated'
-        ];
-
-        return (object) $program;
+        return (object) $result;
     }
 
     private function getFailedResponse()

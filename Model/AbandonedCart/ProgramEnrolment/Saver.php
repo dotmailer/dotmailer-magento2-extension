@@ -1,41 +1,57 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dotdigitalgroup\Email\Model\AbandonedCart\ProgramEnrolment;
 
-use Dotdigitalgroup\Email\Model\Sync\Automation\AutomationTypeHandler;
+use Dotdigitalgroup\Email\Helper\Data;
+use Dotdigitalgroup\Email\Model\AutomationFactory;
+use Dotdigitalgroup\Email\Model\Queue\Sync\Automation\AutomationPublisher;
+use Dotdigitalgroup\Email\Model\ResourceModel\Automation;
 use Dotdigitalgroup\Email\Model\StatusInterface;
+use Dotdigitalgroup\Email\Model\Sync\Automation\AutomationTypeHandler;
+use Exception;
 use Magento\Quote\Model\Quote;
+use Magento\Store\Api\Data\StoreInterface;
 
 class Saver
 {
     /**
-     * @var \Dotdigitalgroup\Email\Helper\Data
+     * @var Data
      */
     private $helper;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\AutomationFactory
+     * @var AutomationFactory
      */
     private $automationFactory;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Automation
+     * @var AutomationPublisher
+     */
+    private $publisher;
+
+    /**
+     * @var Automation
      */
     private $automationResource;
 
     /**
      * Saver constructor.
      *
-     * @param \Dotdigitalgroup\Email\Model\AutomationFactory $automationFactory
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Automation $automationResource
-     * @param \Dotdigitalgroup\Email\Helper\Data $data
+     * @param AutomationFactory $automationFactory
+     * @param AutomationPublisher $publisher
+     * @param Automation $automationResource
+     * @param Data $data
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\AutomationFactory $automationFactory,
-        \Dotdigitalgroup\Email\Model\ResourceModel\Automation $automationResource,
-        \Dotdigitalgroup\Email\Helper\Data $data
+        AutomationFactory $automationFactory,
+        AutomationPublisher $publisher,
+        Automation $automationResource,
+        Data $data
     ) {
         $this->automationFactory = $automationFactory;
+        $this->publisher = $publisher;
         $this->automationResource = $automationResource;
         $this->helper = $data;
     }
@@ -44,11 +60,11 @@ class Saver
      * Process abandoned carts for automation program enrolment
      *
      * @param Quote $quote
-     * @param \Magento\Store\Api\Data\StoreInterface $store
+     * @param StoreInterface $store
      * @param int $programId
      *
      * @return void
-     * @throws \Exception
+     * @throws Exception
      */
     public function save($quote, $store, $programId)
     {
@@ -63,7 +79,9 @@ class Saver
                 ->setStoreName($store->getName())
                 ->setProgramId($programId);
             $this->automationResource->save($automation);
-        } catch (\Exception $e) {
+
+            $this->publisher->publish($automation);
+        } catch (Exception $e) {
             $this->helper->debug((string)$e, []);
         }
     }

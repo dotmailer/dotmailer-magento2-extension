@@ -13,11 +13,11 @@ use Dotdigitalgroup\Email\Model\ResourceModel\Contact as ContactResource;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact\Collection as ContactCollection;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory;
 use Dotdigitalgroup\Email\Model\StatusInterface;
+use Dotdigitalgroup\Email\Model\Sync\Automation\AutomationTypeHandler;
 use Dotdigitalgroup\Email\Model\Sync\Automation\ContactManager;
 use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\DataFieldCollector;
 use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\DataFieldTypeHandler;
 use Dotdigitalgroup\Email\Test\Unit\Traits\AutomationProcessorTrait;
-use Magento\Framework\Exception\LocalizedException;
 use Magento\Newsletter\Model\Subscriber;
 use Magento\Newsletter\Model\SubscriberFactory;
 use PHPUnit\Framework\TestCase;
@@ -165,7 +165,8 @@ class ContactManagerTest extends TestCase
         $returnedId = $this->contactManager->prepareDotdigitalContact(
             $this->contactModelMock,
             $this->subscriberModelMock,
-            $this->getDefaultDataFields()
+            $this->getDefaultDataFields(),
+            AutomationTypeHandler::AUTOMATION_TYPE_NEW_CUSTOMER
         );
 
         $this->assertEquals($contactId, $returnedId);
@@ -188,6 +189,10 @@ class ContactManagerTest extends TestCase
         $this->helperMock->expects($this->once())
             ->method('isCustomerSyncEnabled')
             ->willReturn(true);
+
+        $this->subscriberModelMock->expects($this->any())
+            ->method('isSubscribed')
+            ->willReturn(false);
 
         $this->helperMock->expects($this->once())
             ->method('getCustomerAddressBook')
@@ -213,7 +218,8 @@ class ContactManagerTest extends TestCase
         $this->contactManager->prepareDotdigitalContact(
             $this->contactModelMock,
             $this->subscriberModelMock,
-            $this->getDefaultDataFields()
+            $this->getDefaultDataFields(),
+            AutomationTypeHandler::AUTOMATION_TYPE_NEW_CUSTOMER
         );
     }
 
@@ -239,6 +245,10 @@ class ContactManagerTest extends TestCase
             ->method('isGuestSyncEnabled')
             ->willReturn(true);
 
+        $this->subscriberModelMock->expects($this->any())
+            ->method('isSubscribed')
+            ->willReturn(false);
+
         $this->helperMock->expects($this->once())
             ->method('getGuestAddressBook')
             ->willReturn('9541');
@@ -257,7 +267,8 @@ class ContactManagerTest extends TestCase
         $this->contactManager->prepareDotdigitalContact(
             $this->contactModelMock,
             $this->subscriberModelMock,
-            $this->getDefaultDataFields()
+            $this->getDefaultDataFields(),
+            AutomationTypeHandler::AUTOMATION_TYPE_NEW_GUEST_ORDER
         );
     }
 
@@ -275,7 +286,7 @@ class ContactManagerTest extends TestCase
             ->method('getWebsiteId')
             ->willReturn('1');
 
-        $this->subscriberModelMock->expects($this->exactly(2))
+        $this->subscriberModelMock->expects($this->once())
             ->method('isSubscribed')
             ->willReturn(true);
 
@@ -314,7 +325,8 @@ class ContactManagerTest extends TestCase
         $this->contactManager->prepareDotdigitalContact(
             $this->contactModelMock,
             $this->subscriberModelMock,
-            $this->getDefaultDataFields()
+            $this->getDefaultDataFields(),
+            AutomationTypeHandler::AUTOMATION_TYPE_NEW_SUBSCRIBER
         );
     }
 
@@ -336,6 +348,10 @@ class ContactManagerTest extends TestCase
             ->method('isCustomerSyncEnabled')
             ->willReturn(true);
 
+        $this->subscriberModelMock->expects($this->any())
+            ->method('isSubscribed')
+            ->willReturn(false);
+
         $this->helperMock->expects($this->once())
             ->method('getCustomerAddressBook')
             ->willReturn('9856');
@@ -354,7 +370,8 @@ class ContactManagerTest extends TestCase
         $this->contactManager->prepareDotdigitalContact(
             $this->contactModelMock,
             $this->subscriberModelMock,
-            $this->getDefaultDataFields()
+            $this->getDefaultDataFields(),
+            AutomationTypeHandler::AUTOMATION_TYPE_NEW_CUSTOMER
         );
     }
 
@@ -371,6 +388,10 @@ class ContactManagerTest extends TestCase
         $this->contactModelMock->expects($this->once())
             ->method('getCustomerId')
             ->willReturn('10');
+
+        $this->subscriberModelMock->expects($this->any())
+            ->method('isSubscribed')
+            ->willReturn(false);
 
         $this->helperMock->expects($this->once())
             ->method('isCustomerSyncEnabled')
@@ -400,13 +421,30 @@ class ContactManagerTest extends TestCase
         $this->contactManager->prepareDotdigitalContact(
             $this->contactModelMock,
             $this->subscriberModelMock,
-            $this->getDefaultDataFields()
+            $this->getDefaultDataFields(),
+            AutomationTypeHandler::AUTOMATION_TYPE_NEW_CUSTOMER
         );
     }
 
-    public function testExceptionThrownIfSubscriberNotSubscribedAndIsOnlySubscribersForSync()
+    public function testContactNotPushedToListsIfEnrollingViaAcLoophole()
     {
-        $this->subscriberModelMock->expects($this->once())
+        $this->contactModelMock->expects($this->once())
+            ->method('getEmail')
+            ->willReturn('chaz@emailsim.io');
+
+        $this->contactModelMock->expects($this->atLeastOnce())
+            ->method('getWebsiteId')
+            ->willReturn('1');
+
+        $this->contactModelMock->expects($this->once())
+            ->method('getCustomerId')
+            ->willReturn('10');
+
+        $this->helperMock->expects($this->once())
+            ->method('isCustomerSyncEnabled')
+            ->willReturn(true);
+
+        $this->subscriberModelMock->expects($this->any())
             ->method('isSubscribed')
             ->willReturn(false);
 
@@ -414,12 +452,31 @@ class ContactManagerTest extends TestCase
             ->method('isOnlySubscribersForContactSync')
             ->willReturn(true);
 
-        $this->expectException(LocalizedException::class);
+        $this->helperMock->expects($this->once())
+            ->method('isOnlySubscribersForAC')
+            ->willReturn(false);
+
+        $this->helperMock->expects($this->once())
+            ->method('getWebsiteApiClient')
+            ->willReturn($this->clientMock);
+
+        $this->clientMock->expects($this->never())
+            ->method('addContactToAddressBook');
+
+        $this->clientMock->expects($this->once())
+            ->method('postContactWithConsentAndPreferences');
+
+        $this->contactModelMock->expects($this->never())
+            ->method('setEmailImported');
+
+        $this->contactResourceMock->expects($this->never())
+            ->method('save');
 
         $this->contactManager->prepareDotdigitalContact(
             $this->contactModelMock,
             $this->subscriberModelMock,
-            $this->getDefaultDataFields()
+            $this->getDefaultDataFields(),
+            AutomationTypeHandler::AUTOMATION_TYPE_ABANDONED_CART_PROGRAM_ENROLMENT
         );
     }
 
@@ -449,7 +506,8 @@ class ContactManagerTest extends TestCase
         $this->contactManager->prepareDotdigitalContact(
             $this->contactModelMock,
             $this->subscriberModelMock,
-            $this->getDefaultDataFields()
+            $this->getDefaultDataFields(),
+            AutomationTypeHandler::AUTOMATION_TYPE_NEW_SUBSCRIBER
         );
     }
 

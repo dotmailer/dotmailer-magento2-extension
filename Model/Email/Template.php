@@ -6,77 +6,73 @@ use Dotdigitalgroup\Email\Model\Sync\SyncInterface;
 
 class Template extends \Magento\Framework\DataObject implements SyncInterface
 {
-    /**
-     * HTML template type.
-     */
-    const TEMPLATE_TYPE = 1;
-
-    const XML_PATH_WISHLIST_EMAIL_EMAIL_TEMPLATE = 'wishlist/email/email_template';
-    const XML_PATH_DDG_TEMPLATE_NEW_ACCOUNT =
+    public const XML_PATH_WISHLIST_EMAIL_EMAIL_TEMPLATE = 'wishlist/email/email_template';
+    public const XML_PATH_DDG_TEMPLATE_NEW_ACCOUNT =
         'dotmailer_email_templates/email_templates/customer_create_account_email_template';
-    const XML_PATH_DDG_TEMPLATE_NEW_ACCOUNT_CONFIRMATION_KEY =
+    public const XML_PATH_DDG_TEMPLATE_NEW_ACCOUNT_CONFIRMATION_KEY =
         'dotmailer_email_templates/email_templates/customer_create_account_email_confirmation_template';
-    const XML_PATH_DDG_TEMPLATE_NEW_ACCOUNT_CONFIRMATION =
+    public const XML_PATH_DDG_TEMPLATE_NEW_ACCOUNT_CONFIRMATION =
         'dotmailer_email_templates/email_templates/customer_create_account_email_confirmed_template';
-    const XML_PATH_DDG_TEMPLATE_FORGOT_PASSWORD =
+    public const XML_PATH_DDG_TEMPLATE_FORGOT_PASSWORD =
         'dotmailer_email_templates/email_templates/customer_password_forgot_email_template';
-    const XML_PATH_DDG_TEMPLATE_REMIND_PASSWORD =
+    public const XML_PATH_DDG_TEMPLATE_REMIND_PASSWORD =
         'dotmailer_email_templates/email_templates/customer_password_remind_email_template';
-    const XML_PATH_DDG_TEMPLATE_RESET_PASSWORD =
+    public const XML_PATH_DDG_TEMPLATE_RESET_PASSWORD =
         'dotmailer_email_templates/email_templates/customer_password_reset_password_template';
-    const XML_PATH_DDG_TEMPLATE_WISHLIST_PRODUCT_SHARE =
+    public const XML_PATH_DDG_TEMPLATE_WISHLIST_PRODUCT_SHARE =
         'dotmailer_email_templates/email_templates/wishlist_email_email_template';
-    const XML_PATH_DDG_TEMPLATE_FORGOT_ADMIN_PASSWORD =
+    public const XML_PATH_DDG_TEMPLATE_FORGOT_ADMIN_PASSWORD =
         'dotmailer_email_templates/email_templates/admin_emails_forgot_email_template';
-    const XML_PATH_DDG_TEMPLATE_SUBSCRIPTION_SUCCESS =
+    public const XML_PATH_DDG_TEMPLATE_SUBSCRIPTION_SUCCESS =
         'dotmailer_email_templates/email_templates/newsletter_subscription_success_email_template';
-    const XML_PATH_DDG_TEMPLATE_SUBSCRIPTION_CONFIRMATION =
+    public const XML_PATH_DDG_TEMPLATE_SUBSCRIPTION_CONFIRMATION =
         'dotmailer_email_templates/email_templates/newsletter_subscription_confirm_email_template';
-    const XML_PATH_DGG_TEMPLATE_NEW_ORDER_CONFIRMATION =
+    public const XML_PATH_DGG_TEMPLATE_NEW_ORDER_CONFIRMATION =
         'dotmailer_email_templates/email_templates/sales_email_order_template';
-    const XML_PATH_DDG_TEMPLATE_NEW_ORDER_CONFIRMATION_GUEST =
+    public const XML_PATH_DDG_TEMPLATE_NEW_ORDER_CONFIRMATION_GUEST =
         'dotmailer_email_templates/email_templates/sales_email_order_guest_template';
-    const XML_PATH_DDG_TEMPLATE_ORDER_UPDATE =
+    public const XML_PATH_DDG_TEMPLATE_ORDER_UPDATE =
         'dotmailer_email_templates/email_templates/sales_email_order_comment_template';
-    const XML_PATH_DDG_TEMPLATE_ORDER_UPDATE_GUEST =
+    public const XML_PATH_DDG_TEMPLATE_ORDER_UPDATE_GUEST =
         'dotmailer_email_templates/email_templates/sales_email_order_comment_guest_template';
-    const XML_PATH_DDG_TEMPLATE_NEW_SHIPMENT =
+    public const XML_PATH_DDG_TEMPLATE_NEW_SHIPMENT =
         'dotmailer_email_templates/email_templates/sales_email_shipment_template';
-    const XML_PATH_DDG_TEMPLATE_NEW_SHIPMENT_GUEST =
+    public const XML_PATH_DDG_TEMPLATE_NEW_SHIPMENT_GUEST =
         'dotmailer_email_templates/email_templates/sales_email_shipment_guest_template';
-    const XML_PATH_DDG_TEMPLATE_INVOICE_UPDATE =
+    public const XML_PATH_DDG_TEMPLATE_INVOICE_UPDATE =
         'dotmailer_email_templates/email_templates/sales_email_invoice_comment_template';
-    const XML_PATH_DDG_TEMPLATE_UNSUBSCRIBE_SUCCESS =
+    public const XML_PATH_DDG_TEMPLATE_UNSUBSCRIBE_SUCCESS =
         'dotmailer_email_templates/email_templates/newsletter_subscription_un_email_template';
-    const XML_PATH_DDG_TEMPLATE_INVOICE_UPDATE_GUEST =
+    public const XML_PATH_DDG_TEMPLATE_INVOICE_UPDATE_GUEST =
         'dotmailer_email_templates/email_templates/sales_email_invoice_comment_guest_template';
-    const XML_PATH_DDG_TEMPLATE_NEW_INVOICE =
+    public const XML_PATH_DDG_TEMPLATE_NEW_INVOICE =
         'dotmailer_email_templates/email_templates/sales_email_invoice_template';
-    const XML_PATH_DDG_TEMPLATE_NEW_INVOICE_GUEST =
+    public const XML_PATH_DDG_TEMPLATE_NEW_INVOICE_GUEST =
         'dotmailer_email_templates/email_templates/sales_email_invoice_guest_template';
-    const XML_PATH_DDG_TEMPLATE_NEW_CREDIT_MEMO =
+    public const XML_PATH_DDG_TEMPLATE_NEW_CREDIT_MEMO =
         'dotmailer_email_templates/email_templates/sales_email_creditmemo_template';
-    const XML_PATH_DDG_TEMPLATE_NEW_CREDIT_MEMO_GUEST =
+    public const XML_PATH_DDG_TEMPLATE_NEW_CREDIT_MEMO_GUEST =
         'dotmailer_email_templates/email_templates/sales_email_creditmemo_guest_template';
-    const XML_PATH_DDG_TEMPLATE_CREDIT_MEMO_UPDATE =
+    public const XML_PATH_DDG_TEMPLATE_CREDIT_MEMO_UPDATE =
         'dotmailer_email_templates/email_templates/sales_email_creditmemo_comment_template';
-    const XML_PATH_DDG_TEMPLATE_SHIPMENT_UPDATE =
+    public const XML_PATH_DDG_TEMPLATE_SHIPMENT_UPDATE =
         'dotmailer_email_templates/email_templates/sales_email_shipment_comment_template';
-    const XML_PATH_DDG_TEMPLATE_SHIPMENT_UPDATE_GUEST =
+    public const XML_PATH_DDG_TEMPLATE_SHIPMENT_UPDATE_GUEST =
         'dotmailer_email_templates/email_templates/sales_email_shipment_comment_guest_template';
-    const XML_PATH_DDG_TEMPLATE_CONTACT_FORM =
+    public const XML_PATH_DDG_TEMPLATE_CONTACT_FORM =
         'dotmailer_email_templates/email_templates/contact_email_email_template';
-    const XML_PATH_DDG_TEMPLATE_CREDIT_MEMO_UPDATE_GUEST =
+    public const XML_PATH_DDG_TEMPLATE_CREDIT_MEMO_UPDATE_GUEST =
         'dotmailer_email_templates/email_templates/sales_email_creditmemo_comment_guest_template';
-    const XML_PATH_DDG_TEMPLATE_SEND_PRODUCT_TO_FRIEND =
+    public const XML_PATH_DDG_TEMPLATE_SEND_PRODUCT_TO_FRIEND =
         'dotmailer_email_templates/email_templates/sendfriend_email_template';
-    const XML_PATH_DDG_TEMPLATE_PRODUCT_STOCK_ALERT =
+    public const XML_PATH_DDG_TEMPLATE_PRODUCT_STOCK_ALERT =
         'dotmailer_email_templates/email_templates/product_stock_alert_template';
-    const XML_PATH_DDG_TEMPLATE_PRODUCT_PRICE_ALERT =
+    public const XML_PATH_DDG_TEMPLATE_PRODUCT_PRICE_ALERT =
         'dotmailer_email_templates/email_templates/product_price_alert_template';
 
     /**
      * Mapping from template code = config path for templates.
+     *
      * @var array
      */
     public $templateConfigMapping = [
@@ -260,6 +256,8 @@ class Template extends \Magento\Framework\DataObject implements SyncInterface
     /**
      * Template sync.
      *
+     * @param \DateTime|null $from
+     *
      * @return array
      */
     public function sync(\DateTime $from = null)
@@ -298,6 +296,8 @@ class Template extends \Magento\Framework\DataObject implements SyncInterface
     }
 
     /**
+     * Get config value.
+     *
      * @param string $config
      * @param int $storeId
      * @return string|boolean
@@ -312,6 +312,8 @@ class Template extends \Magento\Framework\DataObject implements SyncInterface
     }
 
     /**
+     * Sync email template.
+     *
      * @param int $campaignId
      * @param int $emailTemplateId
      * @param \Magento\Store\Api\Data\StoreInterface $store
@@ -336,6 +338,8 @@ class Template extends \Magento\Framework\DataObject implements SyncInterface
     }
 
     /**
+     * Save template with config path.
+     *
      * @param string $templateConfigPath
      * @param int $campaignId
      * @param string $scope
@@ -369,6 +373,8 @@ class Template extends \Magento\Framework\DataObject implements SyncInterface
     }
 
     /**
+     * Save template.
+     *
      * @param \Magento\Email\Model\Template $template
      * @param Object $dmCampaign
      * @param int $campaignId
@@ -408,7 +414,9 @@ class Template extends \Magento\Framework\DataObject implements SyncInterface
     }
 
     /**
-     * @param $templateId
+     * Load template.
+     *
+     * @param string $templateId
      *
      * @return \Magento\Email\Model\Template
      */

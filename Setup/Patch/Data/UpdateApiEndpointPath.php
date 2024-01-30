@@ -16,6 +16,8 @@ class UpdateApiEndpointPath implements DataPatchInterface
     private $moduleDataSetup;
 
     /**
+     * UpdateApiEndpointPath constructor.
+     *
      * @param ModuleDataSetupInterface $moduleDataSetup
      */
     public function __construct(ModuleDataSetupInterface $moduleDataSetup)
@@ -24,7 +26,7 @@ class UpdateApiEndpointPath implements DataPatchInterface
     }
 
     /**
-     * Do Upgrade
+     * Do Upgrade.
      *
      * @return void
      */
@@ -78,6 +80,8 @@ class UpdateApiEndpointPath implements DataPatchInterface
     }
 
     /**
+     * Check if core_config has a newer row for API endpoint.
+     *
      * @param string $scopeId
      *
      * @return bool

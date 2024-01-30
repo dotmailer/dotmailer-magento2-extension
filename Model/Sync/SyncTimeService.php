@@ -8,7 +8,7 @@ use DateTimeZone;
 
 class SyncTimeService
 {
-    /*
+    /**
      * @var DateTime
      */
     private $syncFromTime;
@@ -16,7 +16,7 @@ class SyncTimeService
     /**
      * Override the time window for abandoned carts sync.
      *
-     * e.g. set this to retrieve dropped carts since x time.
+     * E.g. set this to retrieve dropped carts since x time.
      *
      * @param DateTime|null $from
      */
@@ -54,6 +54,8 @@ class SyncTimeService
     }
 
     /**
+     * Get the current time in UTC.
+     *
      * @return DateTime
      * @throws \Exception
      */

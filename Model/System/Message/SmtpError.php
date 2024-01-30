@@ -10,7 +10,7 @@ use Magento\Framework\App\Config\ScopeConfigInterface;
 
 class SmtpError implements MessageInterface
 {
-    const MESSAGE_IDENTITY = 'ddg_smtp_error_system_message';
+    private const MESSAGE_IDENTITY = 'ddg_smtp_error_system_message';
 
     /**
      * @var UrlInterface
@@ -28,6 +28,8 @@ class SmtpError implements MessageInterface
     private $scopeConfig;
 
     /**
+     * SmtpError constructor.
+     *
      * @param UrlInterface $urlBuilder
      * @param StatusProvider $statusProvider
      * @param ScopeConfigInterface $scopeConfig
@@ -43,7 +45,7 @@ class SmtpError implements MessageInterface
     }
 
     /**
-     * Retrieve unique system message identity
+     * Retrieve unique system message identity.
      *
      * @return string
      */
@@ -53,7 +55,7 @@ class SmtpError implements MessageInterface
     }
 
     /**
-     * Check whether the system message should be shown
+     * Check whether the system message should be shown.
      *
      * @return bool
      */
@@ -67,7 +69,7 @@ class SmtpError implements MessageInterface
     }
 
     /**
-     * Retrieve system message text
+     * Retrieve system message text.
      *
      * @return string
      */
@@ -76,23 +78,26 @@ class SmtpError implements MessageInterface
         return $this->filterSmtpErrors(explode(PHP_EOL, $this->statusProvider->getErrorSummary()));
     }
 
-    /**
-     * Retrieve system message severity
-     * Possible default system message types:
-     * - MessageInterface::SEVERITY_CRITICAL
-     * - MessageInterface::SEVERITY_MAJOR
-     * - MessageInterface::SEVERITY_MINOR
-     * - MessageInterface::SEVERITY_NOTICE
-     *
-     * @return int
-     */
+   /**
+    * Retrieve system message severity.
+    *
+    * Possible default system message types:
+    * - MessageInterface::SEVERITY_CRITICAL
+    * - MessageInterface::SEVERITY_MAJOR
+    * - MessageInterface::SEVERITY_MINOR
+    * - MessageInterface::SEVERITY_NOTICE
+    *
+    * @return int
+    */
     public function getSeverity()
     {
         return self::SEVERITY_MAJOR;
     }
 
     /**
-     * @param $errors
+     * Filter SMTP errors.
+     *
+     * @param mixed $errors
      * @return \Magento\Framework\Phrase
      */
     private function filterSmtpErrors($errors)

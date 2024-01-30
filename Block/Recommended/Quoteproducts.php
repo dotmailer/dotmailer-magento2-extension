@@ -102,7 +102,7 @@ class Quoteproducts extends \Dotdigitalgroup\Email\Block\Recommended
         $mode = $this->getRequest()->getActionName();
         $quoteItems = $this->getQuoteAllItemsFor($quoteId);
         //number of product items to be displayed
-        $limit = $this->recommendedHelper->getDisplayLimitByMode($mode);
+        $limit = (float) $this->recommendedHelper->getDisplayLimitByMode($mode);
         $numItems = count($quoteItems);
 
         //no product found to display

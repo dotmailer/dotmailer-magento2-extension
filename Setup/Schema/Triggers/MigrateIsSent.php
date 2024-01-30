@@ -16,7 +16,7 @@ class MigrateIsSent implements DDLTriggerInterface
      * Trigger name - used to check if this trigger is applicable.
      * For reusable triggers we should use a regex pattern see MigrateDataFrom.
      */
-    const TRIGGER_NAME = 'migrateIsSent';
+    private const TRIGGER_NAME = 'migrateIsSent';
 
     /**
      * @var ResourceConnection
@@ -24,7 +24,7 @@ class MigrateIsSent implements DDLTriggerInterface
     private $resourceConnection;
 
     /**
-     * Constructor.
+     * MigrateIsSent constructor.
      *
      * @param ResourceConnection $resourceConnection
      */

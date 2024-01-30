@@ -3,13 +3,13 @@
 namespace Dotdigitalgroup\Email\Test\Unit\Model\Sync\Subscriber;
 
 use Dotdigitalgroup\Email\Logger\Logger;
+use Dotdigitalgroup\Email\Model\Connector\ContactData\Subscriber;
 use Dotdigitalgroup\Email\Model\Connector\ContactData\SubscriberFactory as ConnectorSubscriberFactory;
 use Dotdigitalgroup\Email\Model\Connector\Datafield;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact\Collection as ContactCollection;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory as ContactCollectionFactory;
 use Dotdigitalgroup\Email\Model\Sync\Export\CsvHandler;
 use Dotdigitalgroup\Email\Model\Sync\Export\SalesDataManager;
-use Dotdigitalgroup\Email\Model\Sync\Subscriber\SubscriberExporter;
 use Dotdigitalgroup\Email\Model\Sync\Subscriber\SubscriberExporterFactory;
 use Dotdigitalgroup\Email\Model\Sync\Subscriber\SubscriberWithSalesExporter;
 use Magento\Framework\App\Config\ScopeConfigInterface;
@@ -144,7 +144,7 @@ class SubscriberWithSalesExporterTest extends TestCase
             ->willReturn($this->getSubscriberSalesData());
 
         /* Set data on the model */
-        $connectorSubscriberMock = $this->createMock(\Dotdigitalgroup\Email\Model\Connector\ContactData\Subscriber::class);
+        $connectorSubscriberMock = $this->createMock(Subscriber::class);
         $this->connectorSubscriberFactoryMock->expects($this->exactly(5))
             ->method('create')
             ->willReturn($connectorSubscriberMock);

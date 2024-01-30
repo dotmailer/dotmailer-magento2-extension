@@ -161,7 +161,7 @@ class StockFinderTest extends TestCase
     }
 
     /**
-     * @param int $numberOfChildren
+     * @param  int $numberOfChildren
      * @return array
      */
     private function getSimpleProducts(int $numberOfChildren): array

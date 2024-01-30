@@ -5,6 +5,8 @@ namespace Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic;
 class ReadonlyFormField extends \Magento\Config\Block\System\Config\Form\Field
 {
     /**
+     * Get element HTML.
+     *
      * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
      *
      * @return string

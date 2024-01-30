@@ -43,8 +43,8 @@ class AbandonedCart implements SyncInterface
         $this->syncTimeService = $syncTimeService;
     }
 
-    /*
-     * @inheritdoc
+    /**
+     * @inheritDoc
      */
     public function sync(\DateTime $from = null)
     {

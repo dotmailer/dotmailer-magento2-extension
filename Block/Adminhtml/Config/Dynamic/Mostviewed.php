@@ -26,6 +26,8 @@ class Mostviewed extends \Dotdigitalgroup\Email\Block\Adminhtml\Config\Dynamic\R
     }
 
     /**
+     * Get element HTML.
+     *
      * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
      *
      * @return string

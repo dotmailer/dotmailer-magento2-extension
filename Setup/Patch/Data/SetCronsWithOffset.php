@@ -37,6 +37,8 @@ class SetCronsWithOffset implements DataPatchInterface
     private $config;
 
     /**
+     * SetCronsWithOffset constructor.
+     *
      * @param ModuleDataSetupInterface $moduleDataSetup
      * @param CronOffsetter $cronOffsetter
      * @param ConfigResource $configResource
@@ -55,7 +57,7 @@ class SetCronsWithOffset implements DataPatchInterface
     }
 
     /**
-     * Do Upgrade
+     * Do Upgrade.
      *
      * @return void
      */
@@ -101,7 +103,9 @@ class SetCronsWithOffset implements DataPatchInterface
     }
 
     /**
-     * @param $cronConfigurations
+     * Update crons with offset.
+     *
+     * @param array $cronConfigurations
      */
     private function updateCronsWithOffset($cronConfigurations)
     {
@@ -133,6 +137,8 @@ class SetCronsWithOffset implements DataPatchInterface
     }
 
     /**
+     * Initialize crons with offset.
+     *
      * @return void
      */
     private function initializeCronsWithOffset()

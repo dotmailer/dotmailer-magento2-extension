@@ -123,6 +123,8 @@ class ImporterSyncsCommand extends Command
     }
 
     /**
+     * Ask for sync.
+     *
      * @param InputInterface $input
      * @param OutputInterface $output
      * @return string

@@ -6,7 +6,7 @@ use Dotdigitalgroup\Email\Model\Monitor\AbstractStatusProvider;
 
 class StatusProvider extends AbstractStatusProvider
 {
-    const CAMPAIGN_STATUS_PROVIDER_EXCEPTION_MESSAGE =
+    public const CAMPAIGN_STATUS_PROVIDER_EXCEPTION_MESSAGE =
         'Error when reading from flag table - could not identify campaign error job code';
 
     /**

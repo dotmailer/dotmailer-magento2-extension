@@ -23,6 +23,7 @@
                         <resource id="Dotdigitalgroup_Email::automation_enrollment" title="Dotdigital Automation Enrolment" translate="title" sortOrder="120"/>
                         <resource id="Dotdigitalgroup_Email::logviewer" title="Dotdigital Log Viewer" translate="title" sortOrder="130"/>
                         <resource id="Dotdigitalgroup_Email::abandoned" title="Dotdigital Abandoned Carts" translate="title" sortOrder="140"/>
+                        <resource id="Dotdigitalgroup_Email::queue" title="Message Queue" translate="title" sortOrder="150"/>
                     </resource>
                 </resource>
                 <resource id="Magento_Backend::stores">

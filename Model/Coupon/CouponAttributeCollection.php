@@ -14,6 +14,9 @@ use Psr\Log\LoggerInterface;
 
 class CouponAttributeCollection extends AbstractCollection
 {
+    /**
+     * Constructor.
+     */
     public function _construct()
     {
         $this->_init(
@@ -23,6 +26,8 @@ class CouponAttributeCollection extends AbstractCollection
     }
 
     /**
+     * Get active coupons for email.
+     *
      * @param int $ruleId
      * @param string $email
      * @return CouponAttributeCollection

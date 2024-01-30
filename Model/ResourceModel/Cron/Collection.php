@@ -33,6 +33,8 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     }
 
     /**
+     * Fetch cron tasks with errors.
+     *
      * Search the cron_schedule table for jobs with error status,
      * with a scheduled_at time inside the specified time window.
      *

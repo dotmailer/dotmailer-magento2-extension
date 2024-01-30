@@ -1,18 +1,35 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dotdigitalgroup\Email\Observer\Sales;
 
+use Dotdigitalgroup\Email\Helper\Config;
+use Dotdigitalgroup\Email\Helper\Data;
+use Dotdigitalgroup\Email\Model\AutomationFactory;
+use Dotdigitalgroup\Email\Model\Contact;
+use Dotdigitalgroup\Email\Model\OrderFactory;
+use Dotdigitalgroup\Email\Model\Queue\Sync\Automation\AutomationPublisher;
 use Dotdigitalgroup\Email\Model\ResourceModel\Automation;
+use Dotdigitalgroup\Email\Model\ResourceModel\Automation\CollectionFactory;
 use Dotdigitalgroup\Email\Model\StatusInterface;
 use Dotdigitalgroup\Email\Model\Sync\Automation\AutomationTypeHandler;
+use Exception;
+use InvalidArgumentException;
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\Event\Observer;
+use Magento\Framework\Event\ObserverInterface;
+use Magento\Framework\Registry;
+use Magento\Framework\Serialize\SerializerInterface;
+use Magento\Sales\Model\Order;
+use Magento\Store\Model\App\EmulationFactory;
+use Magento\Store\Model\ScopeInterface;
+use Magento\Store\Model\StoreManagerInterface;
 
 /**
  * Trigger Order automation based on order state.
- *
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
- * @SuppressWarnings(PHPMD.ExcessiveParameterList)
  */
-class OrderSaveAfter implements \Magento\Framework\Event\ObserverInterface
+class OrderSaveAfter implements ObserverInterface
 {
     /**
      * @var Automation
@@ -25,32 +42,32 @@ class OrderSaveAfter implements \Magento\Framework\Event\ObserverInterface
     private $orderResource;
 
     /**
-     * @var \Magento\Framework\Registry
+     * @var Registry
      */
     private $registry;
 
     /**
-     * @var \Magento\Framework\App\Config\ScopeConfigInterface
+     * @var ScopeConfigInterface
      */
     private $scopeConfig;
 
     /**
-     * @var \Magento\Store\Model\StoreManagerInterface
+     * @var StoreManagerInterface
      */
     private $storeManager;
 
     /**
-     * @var \Magento\Store\Model\App\EmulationFactory
+     * @var EmulationFactory
      */
     private $emulationFactory;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\OrderFactory
+     * @var OrderFactory
      */
     private $emailOrderFactory;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\AutomationFactory
+     * @var AutomationFactory
      */
     private $automationFactory;
 
@@ -60,12 +77,12 @@ class OrderSaveAfter implements \Magento\Framework\Event\ObserverInterface
     private $orderCollectionFactory;
 
     /**
-     * @var \Dotdigitalgroup\Email\Helper\Data
+     * @var Data
      */
     private $helper;
 
     /**
-     * @var \Magento\Framework\Serialize\SerializerInterface
+     * @var SerializerInterface
      */
     private $serializer;
 
@@ -80,68 +97,76 @@ class OrderSaveAfter implements \Magento\Framework\Event\ObserverInterface
     private $contactCollectionFactory;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Automation\CollectionFactory
+     * @var CollectionFactory
      */
     private $emailAutomationFactory;
 
     /**
+     * @var AutomationPublisher
+     */
+    private $publisher;
+
+    /**
      * SaveStatusSmsAutomation constructor.
      *
-     * @param \Dotdigitalgroup\Email\Model\AutomationFactory $automationFactory
+     * @param AutomationFactory $automationFactory
      * @param Automation $automationResource
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Order $orderResource
-     * @param \Dotdigitalgroup\Email\Model\OrderFactory $emailOrderFactory
-     * @param \Magento\Framework\Registry $registry
-     * @param \Magento\Framework\Serialize\SerializerInterface $serializer
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
-     * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
-     * @param \Magento\Store\Model\App\EmulationFactory $emulationFactory
+     * @param OrderFactory $emailOrderFactory
+     * @param Registry $registry
+     * @param SerializerInterface $serializer
+     * @param ScopeConfigInterface $scopeConfig
+     * @param StoreManagerInterface $storeManagerInterface
+     * @param EmulationFactory $emulationFactory
      * @param \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollectionFactory
-     * @param \Dotdigitalgroup\Email\Helper\Data $data
+     * @param Data $data
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contactResource
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory $contactCollectionFactory
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Automation\CollectionFactory $emailAutomationFactory
+     * @param CollectionFactory $emailAutomationFactory
+     * @param AutomationPublisher $publisher
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\AutomationFactory $automationFactory,
-        \Dotdigitalgroup\Email\Model\ResourceModel\Automation $automationResource,
+        AutomationFactory $automationFactory,
+        Automation $automationResource,
         \Dotdigitalgroup\Email\Model\ResourceModel\Order $orderResource,
-        \Dotdigitalgroup\Email\Model\OrderFactory $emailOrderFactory,
-        \Magento\Framework\Registry $registry,
-        \Magento\Framework\Serialize\SerializerInterface $serializer,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-        \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
-        \Magento\Store\Model\App\EmulationFactory $emulationFactory,
+        OrderFactory $emailOrderFactory,
+        Registry $registry,
+        SerializerInterface $serializer,
+        ScopeConfigInterface $scopeConfig,
+        StoreManagerInterface $storeManagerInterface,
+        EmulationFactory $emulationFactory,
         \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollectionFactory,
-        \Dotdigitalgroup\Email\Helper\Data $data,
+        Data $data,
         \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contactResource,
         \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory $contactCollectionFactory,
-        \Dotdigitalgroup\Email\Model\ResourceModel\Automation\CollectionFactory $emailAutomationFactory
+        CollectionFactory $emailAutomationFactory,
+        AutomationPublisher $publisher
     ) {
         $this->serializer = $serializer;
         $this->orderResource = $orderResource;
         $this->automationResource = $automationResource;
-        $this->automationFactory      = $automationFactory;
-        $this->emailOrderFactory      = $emailOrderFactory;
-        $this->scopeConfig            = $scopeConfig;
-        $this->storeManager           = $storeManagerInterface;
-        $this->registry               = $registry;
-        $this->emulationFactory       = $emulationFactory;
+        $this->automationFactory = $automationFactory;
+        $this->emailOrderFactory = $emailOrderFactory;
+        $this->scopeConfig = $scopeConfig;
+        $this->storeManager = $storeManagerInterface;
+        $this->registry = $registry;
+        $this->emulationFactory = $emulationFactory;
         $this->orderCollectionFactory = $orderCollectionFactory;
-        $this->helper                 = $data;
+        $this->helper = $data;
         $this->contactResource = $contactResource;
         $this->contactCollectionFactory = $contactCollectionFactory;
         $this->emailAutomationFactory = $emailAutomationFactory;
+        $this->publisher = $publisher;
     }
 
     /**
      * Save/reset the order as transactional data.
      *
-     * @param \Magento\Framework\Event\Observer $observer
+     * @param Observer $observer
      *
      * @return $this
      */
-    public function execute(\Magento\Framework\Event\Observer $observer)
+    public function execute(Observer $observer)
     {
         $order = $observer->getEvent()->getOrder();
         $status         = $order->getStatus();
@@ -221,15 +246,15 @@ class OrderSaveAfter implements \Magento\Framework\Event\ObserverInterface
     /**
      * Reset contact based on type and status
      *
-     * @param \Dotdigitalgroup\Email\Model\Contact $contact
+     * @param Contact $contact
      */
     private function resetContact($contact)
     {
         if ($contact->getCustomerId() && $contact->getEmailImported()) {
-            $contact->setEmailImported(\Dotdigitalgroup\Email\Model\Contact::EMAIL_CONTACT_NOT_IMPORTED);
+            $contact->setEmailImported(Contact::EMAIL_CONTACT_NOT_IMPORTED);
             $this->contactResource->save($contact);
         } elseif (! $contact->getCustomerId() && $contact->getIsSubscriber() && $contact->getSubscriberImported()) {
-            $contact->setSubscriberImported(\Dotdigitalgroup\Email\Model\Contact::EMAIL_CONTACT_NOT_IMPORTED);
+            $contact->setSubscriberImported(Contact::EMAIL_CONTACT_NOT_IMPORTED);
             $this->contactResource->save($contact);
         }
     }
@@ -263,8 +288,10 @@ class OrderSaveAfter implements \Magento\Framework\Event\ObserverInterface
                         ->setStoreName($data['store_name'])
                         ->setProgramId($data['programId']);
                     $this->automationResource->save($automation);
+
+                    $this->publisher->publish($automation);
                 }
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $this->helper->debug((string)$e, []);
             }
         } else {
@@ -275,7 +302,7 @@ class OrderSaveAfter implements \Magento\Framework\Event\ObserverInterface
     /**
      * Enrol into automation if order status matches selected statuses.
      *
-     * @param \Magento\Sales\Model\Order $order
+     * @param Order $order
      * @param string $status
      * @param string $customerEmail
      * @param int $websiteId
@@ -287,8 +314,8 @@ class OrderSaveAfter implements \Magento\Framework\Event\ObserverInterface
     private function statusCheckAutomationEnrolment($order, $status, $customerEmail, $websiteId, $storeId, $storeName)
     {
         $orderStatusAutomations = $this->scopeConfig->getValue(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_AUTOMATION_STUDIO_ORDER_STATUS,
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+            Config::XML_PATH_CONNECTOR_AUTOMATION_STUDIO_ORDER_STATUS,
+            ScopeInterface::SCOPE_STORE,
             $storeId
         );
 
@@ -313,7 +340,7 @@ class OrderSaveAfter implements \Magento\Framework\Event\ObserverInterface
                     );
                 }
             }
-        } catch (\InvalidArgumentException $e) {
+        } catch (InvalidArgumentException $e) {
             return;
         }
     }

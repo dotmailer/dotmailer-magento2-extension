@@ -172,4 +172,25 @@ class Campaign extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
                 ["id in (?)" => $ids]
             );
     }
+
+    /**
+     * Update email for pending campaigns.
+     *
+     * @param string $emailBefore
+     * @param string $newEmail
+     * @return void
+     * @throws LocalizedException
+     */
+    public function updateEmailForPendingCampaigns($emailBefore, $newEmail)
+    {
+        $bind = ['email' => $newEmail];
+        $where = ['email = ?' => $emailBefore, 'send_status = ?' => \Dotdigitalgroup\Email\Model\Campaign::PENDING ];
+
+        $this->getConnection()
+            ->update(
+                $this->getMainTable(),
+                $bind,
+                $where
+            );
+    }
 }

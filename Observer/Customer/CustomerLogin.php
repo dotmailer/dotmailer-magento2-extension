@@ -46,6 +46,7 @@ class CustomerLogin implements ObserverInterface
 
     /**
      * CustomerLogin constructor.
+     *
      * @param Logger $logger
      * @param StoreManagerInterface $storeManager
      * @param ContactFactory $contactFactory
@@ -70,6 +71,8 @@ class CustomerLogin implements ObserverInterface
     }
 
     /**
+     * Execute.
+     *
      * @param Observer $observer
      * @return $this
      * @throws \Magento\Framework\Exception\LocalizedException
@@ -94,8 +97,9 @@ class CustomerLogin implements ObserverInterface
             if ($existingContact) {
                 if (!$existingContact->getCustomerId()) {
                     $existingContact->setCustomerId($customerId);
-                    $this->contactResource->save($existingContact);
                 }
+                $existingContact->setEmailImported(Contact::EMAIL_CONTACT_NOT_IMPORTED);
+                $this->contactResource->save($existingContact);
             } else {
                 $newContact = $this->contactFactory->create()
                     ->setEmail($emailAddress)

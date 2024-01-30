@@ -91,7 +91,8 @@ class OrderTest extends TestCase
         $this->orderCollectionMock = $this->createMock(OrderCollection::class);
         $this->orderResourceMock = $this->createMock(OrderResource::class);
         $this->websiteInterfaceMock = $this->getMockBuilder(WebsiteInterface::class)
-            ->onlyMethods([
+            ->onlyMethods(
+                [
                 'getId',
                 'setId',
                 'getCode',
@@ -102,7 +103,8 @@ class OrderTest extends TestCase
                 'setDefaultGroupId',
                 'getExtensionAttributes',
                 'setExtensionAttributes'
-            ])
+                ]
+            )
             ->addMethods(['getStoreIds'])
             ->disableOriginalConstructor()
             ->getMock();

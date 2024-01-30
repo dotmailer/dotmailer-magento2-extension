@@ -22,8 +22,11 @@ class CouponTest extends AbstractController
     use RedeemsCoupons;
     use LoadsSaleRule;
 
-    const ROUTE_COUPON_BASE_PATH = 'connector/email/coupon/';
+    private const ROUTE_COUPON_BASE_PATH = 'connector/email/coupon/';
 
+    /**
+     * @var \Dotdigitalgroup\Email\Helper\Data
+     */
     private $helper;
 
     /**

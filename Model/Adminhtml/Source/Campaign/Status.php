@@ -6,6 +6,8 @@ class Status implements \Magento\Framework\Data\OptionSourceInterface
 {
 
     /**
+     * To option array.
+     *
      * @return array
      */
     public function toOptionArray()

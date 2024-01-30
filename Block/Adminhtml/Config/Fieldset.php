@@ -7,6 +7,8 @@ use Dotdigitalgroup\Email\Block\Adminhtml\Config\Configuration\Preview;
 class Fieldset extends \Magento\Config\Block\System\Config\Form\Fieldset
 {
     /**
+     * Render.
+     *
      * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
      *
      * @return string

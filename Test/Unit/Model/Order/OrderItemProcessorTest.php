@@ -355,9 +355,11 @@ class OrderItemProcessorTest extends TestCase
 
         $this->collectionMock->expects($this->atLeastOnce())
             ->method('getIterator')
-            ->willReturn(new \ArrayIterator(
-                [$this->collectionMock, $this->collectionMock]
-            ));
+            ->willReturn(
+                new \ArrayIterator(
+                    [$this->collectionMock, $this->collectionMock]
+                )
+            );
 
         $this->attributeFactoryMock->expects($this->atLeastOnce())
             ->method('create')
@@ -416,9 +418,11 @@ class OrderItemProcessorTest extends TestCase
 
         $this->collectionMock->expects($this->atLeastOnce())
             ->method('getIterator')
-            ->willReturn(new \ArrayIterator(
-                [$this->collectionMock, $this->collectionMock]
-            ));
+            ->willReturn(
+                new \ArrayIterator(
+                    [$this->collectionMock, $this->collectionMock]
+                )
+            );
 
         $this->collectionMock->expects($this->atLeastOnce())
             ->method('getName')

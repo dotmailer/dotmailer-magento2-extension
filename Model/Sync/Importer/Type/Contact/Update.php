@@ -6,9 +6,12 @@ use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Connector\ContactData;
 use Dotdigitalgroup\Email\Model\Importer as ModelImporter;
+use Dotdigitalgroup\Email\Model\Queue\Customer\EmailUpdateConsumer;
+use Dotdigitalgroup\Email\Model\Queue\Newsletter\UnsubscriberConsumer;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact;
 use Dotdigitalgroup\Email\Model\Sync\Importer\Type\AbstractItemSyncer;
 use Dotdigitalgroup\Email\Model\Sync\Importer\Type\SingleItemPostProcessorFactory;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Serialize\SerializerInterface;
 use Magento\Newsletter\Model\Subscriber;
 
@@ -168,8 +171,12 @@ class Update extends AbstractItemSyncer
     /**
      * Sync Contact_Email_Update.
      *
+     * @deprecated
+     * @see EmailUpdateConsumer::process()
+     *
      * @param array $importData
      * @return \StdClass
+     * @throws LocalizedException
      */
     private function syncItemContactEmailUpdateMode($importData)
     {
@@ -194,10 +201,14 @@ class Update extends AbstractItemSyncer
     /**
      * Sync Subscriber_Resubscribed.
      *
+     * @deprecated Use message queue topic ddg.newsletter.resubscribe instead
+     * @see \Dotdigitalgroup\Email\Model\Queue\Newsletter\ResubscribeConsumer::process()
+     *
      * @param array $importData
      * @param int $websiteId
      *
      * @return \StdClass
+     * @throws LocalizedException
      */
     private function syncItemSubscriberResubscribedMode($importData, $websiteId)
     {
@@ -223,6 +234,9 @@ class Update extends AbstractItemSyncer
 
     /**
      * Sync Subscriber_Update.
+     *
+     * @deprecated
+     * @see UnsubscriberConsumer::process()
      *
      * @param array $importData
      * @param string|int $websiteId

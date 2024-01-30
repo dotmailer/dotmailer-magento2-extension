@@ -7,8 +7,8 @@ namespace Dotdigitalgroup\Email\Model\Sync\Catalog;
  */
 class CatalogSyncFactory
 {
-    const SYNC_CATALOG_DEFAULT_LEVEL = 1;
-    const SYNC_CATALOG_STORE_LEVEL = 2;
+    public const SYNC_CATALOG_DEFAULT_LEVEL = 1;
+    public const SYNC_CATALOG_STORE_LEVEL = 2;
 
     /**
      * @var \Magento\Framework\App\Config\ScopeConfigInterface

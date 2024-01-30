@@ -10,7 +10,7 @@ class CatalogService
     private $isCatalogUpdated = false;
 
     /**
-     *
+     * Set catalog updated flag.
      */
     public function setIsCatalogUpdated()
     {
@@ -18,6 +18,8 @@ class CatalogService
     }
 
     /**
+     * Get catalog updated flag.
+     *
      * @return bool
      */
     public function isCatalogUpdated()

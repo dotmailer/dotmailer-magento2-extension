@@ -94,10 +94,12 @@ class DataFieldTypeHandlerTest extends TestCase
 
         $this->orderUpdaterMock->expects($this->exactly(4))
             ->method('getData')
-            ->willReturn([
+            ->willReturn(
+                [
                 ...$this->getDefaultDataFields(),
                 ...$this->getOrderDataFields()
-            ]);
+                ]
+            );
 
         $this->defaultUpdaterMock->expects($this->never())
             ->method('setDefaultDataFields');
