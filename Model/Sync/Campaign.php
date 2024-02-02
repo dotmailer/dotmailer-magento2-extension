@@ -1,6 +1,24 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dotdigitalgroup\Email\Model\Sync;
+
+use Dotdigital\Exception\ResponseValidationException;
+use Dotdigitalgroup\Email\Helper\Config;
+use Dotdigitalgroup\Email\Model\Apiconnector\Client;
+use Dotdigitalgroup\Email\Model\Campaign as CampaignModel;
+use Dotdigitalgroup\Email\Helper\Data;
+use Dotdigitalgroup\Email\Logger\Logger;
+use Dotdigitalgroup\Email\Model\Apiconnector\V3\Contact\Patcher;
+use Dotdigitalgroup\Email\Model\Apiconnector\V3\StatusInterface as V3StatusInterface;
+use Dotdigitalgroup\Email\Model\ResourceModel\Campaign\Collection;
+use Dotdigitalgroup\Email\Model\ResourceModel\Campaign\CollectionFactory;
+use Magento\Framework\Exception\AlreadyExistsException;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Sales\Model\OrderFactory;
+use Magento\Store\Api\Data\WebsiteInterface;
+use Magento\Store\Model\StoreManagerInterface;
 
 /**
  * Send email campaigns.
@@ -11,29 +29,34 @@ class Campaign implements SyncInterface
     public const SEND_EMAIL_CONTACT_LIMIT = 10;
 
     /**
-     * @var \Dotdigitalgroup\Email\Helper\Data
+     * @var Data
      */
     private $helper;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Campaign\CollectionFactory
+     * @var Logger
+     */
+    private $logger;
+
+    /**
+     * @var Patcher
+     */
+    private $patcher;
+
+    /**
+     * @var CollectionFactory
      */
     private $campaignCollection;
 
     /**
-     * @var \Magento\Store\Model\StoreManagerInterface
+     * @var StoreManagerInterface
      */
     private $storeManager;
 
     /**
-     * @var \Magento\Sales\Model\OrderFactory
+     * @var OrderFactory
      */
     private $salesOrderFactory;
-
-    /**
-     * @var \Magento\Store\Model\WebsiteFactory
-     */
-    private $websiteFactory;
 
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Campaign
@@ -43,27 +66,38 @@ class Campaign implements SyncInterface
     /**
      * Campaign constructor.
      *
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Campaign\CollectionFactory $campaignFactory
-     * @param \Dotdigitalgroup\Email\Helper\Data $data
-     * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
-     * @param \Magento\Sales\Model\OrderFactory $salesOrderFactory
-     * @param \Magento\Store\Model\WebsiteFactory $websiteFactory
+     * @param CollectionFactory $campaignFactory
+     * @param Data $data
+     * @param Logger $logger
+     * @param Patcher $patcher
+     * @param StoreManagerInterface $storeManagerInterface
+     * @param OrderFactory $salesOrderFactory
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Campaign $campaignResourceModel
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\ResourceModel\Campaign\CollectionFactory $campaignFactory,
-        \Dotdigitalgroup\Email\Helper\Data $data,
-        \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
-        \Magento\Sales\Model\OrderFactory $salesOrderFactory,
-        \Magento\Store\Model\WebsiteFactory $websiteFactory,
+        CollectionFactory $campaignFactory,
+        Data $data,
+        Logger $logger,
+        Patcher $patcher,
+        StoreManagerInterface $storeManagerInterface,
+        OrderFactory $salesOrderFactory,
         \Dotdigitalgroup\Email\Model\ResourceModel\Campaign $campaignResourceModel
     ) {
         $this->campaignResourceModel = $campaignResourceModel;
-        $this->websiteFactory        = $websiteFactory;
-        $this->helper                = $data;
-        $this->campaignCollection    = $campaignFactory;
-        $this->storeManager          = $storeManagerInterface;
-        $this->salesOrderFactory     = $salesOrderFactory;
+        $this->helper = $data;
+        $this->logger = $logger;
+        $this->patcher = $patcher;
+        $this->campaignCollection = $campaignFactory;
+        $this->storeManager = $storeManagerInterface;
+        $this->salesOrderFactory = $salesOrderFactory;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function sync(\DateTime $from = null)
+    {
+        $this->sendCampaigns();
     }
 
     /**
@@ -73,7 +107,7 @@ class Campaign implements SyncInterface
      *
      * @return void
      */
-    public function sendCampaigns()
+    private function sendCampaigns()
     {
         foreach ($this->storeManager->getWebsites(true) as $website) {
             /** @var \Magento\Store\Model\Website $website */
@@ -90,14 +124,6 @@ class Campaign implements SyncInterface
     }
 
     /**
-     * @inheritdoc
-     */
-    public function sync(\DateTime $from = null)
-    {
-        $this->sendCampaigns();
-    }
-
-    /**
      * Check send status.
      *
      * Expires old campaigns and updates 'processing' ones.
@@ -106,20 +132,21 @@ class Campaign implements SyncInterface
      * @param array $storeIds
      *
      * @return void
+     * @throws LocalizedException
      */
     public function _checkSendStatus($websiteId, $storeIds)
     {
         $this->expireExpiredCampaigns($storeIds);
         $campaigns = $this->_getEmailCampaigns(
             $storeIds,
-            \Dotdigitalgroup\Email\Model\Campaign::PROCESSING,
+            CampaignModel::PROCESSING,
             true
         );
         foreach ($campaigns as $campaign) {
             $client = $this->helper->getWebsiteApiClient($websiteId);
             $response = $client->getSendStatus($campaign->getSendId());
             if (isset($response->message) || $response->status == 'Cancelled') {
-                $message = isset($response->message) ? $response->message : $response->status;
+                $message = $response->message ?? $response->status;
                 $this->campaignResourceModel->setMessageWithSendId($campaign->getSendId(), $message);
             } elseif ($response->status == 'Sent') {
                 $this->campaignResourceModel->setSent(
@@ -134,6 +161,8 @@ class Campaign implements SyncInterface
      * Expire campaigns.
      *
      * @param array $storeIds
+     *
+     * @throws LocalizedException
      */
     private function expireExpiredCampaigns($storeIds)
     {
@@ -149,10 +178,11 @@ class Campaign implements SyncInterface
     /**
      * Get campaigns to send.
      *
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Campaign\Collection $emailsToSend
-     * @param \Magento\Store\Api\Data\WebsiteInterface $website
+     * @param Collection $emailsToSend
+     * @param WebsiteInterface $website
      *
      * @return array
+     * @throws AlreadyExistsException|\Http\Client\Exception
      */
     private function getCampaignsToSend($emailsToSend, $website)
     {
@@ -160,7 +190,7 @@ class Campaign implements SyncInterface
         foreach ($emailsToSend as $campaign) {
             $email = $campaign->getEmail();
             $campaignId = $campaign->getCampaignId();
-            $websiteId = $website->getId();
+            $websiteId = (int) $website->getId();
             $client = false;
             if ($this->helper->isEnabled($websiteId)) {
                 $client = $this->helper->getWebsiteApiClient($websiteId);
@@ -168,33 +198,51 @@ class Campaign implements SyncInterface
             //Only if valid client is returned
             if ($client && $this->isCampaignValid($campaign)) {
                 $campaignsToSend[$campaignId]['client'] = $client;
-                $contact = $this->helper->getOrCreateContact(
-                    $campaign->getEmail(),
-                    $websiteId
-                );
-                if ($contact && isset($contact->id)) {
-                    //update data fields
-                    if ($campaign->getEventName() == 'Order Review') {
-                        $this->updateDataFieldsForOrderReviewCampaigns($campaign, $websiteId, $client, $email);
-                    } elseif ($campaign->getEventName() ==
-                        \Dotdigitalgroup\Email\Model\Campaign::CAMPAIGN_EVENT_LOST_BASKET
-                    ) {
-                        $campaignCollection = $this->campaignCollection->create();
-                        // If AC campaigns found with status processing for given email then skip for current cron run
-                        if ($campaignCollection->getNumberOfAcCampaignsWithStatusProcessingExistForContact($email)) {
-                            continue;
-                        }
-                        $this->helper->updateLastQuoteId($campaign->getQuoteId(), $email, $websiteId);
-                    }
+                try {
+                    $contact = $this->patcher->getOrCreateContactByEmail(
+                        $campaign->getEmail(),
+                        $websiteId,
+                        (int) $campaign->getStoreId()
+                    );
+                } catch (ResponseValidationException $e) {
+                    $this->logger->error(
+                        sprintf(
+                            '%s: %s',
+                            'Error getting contact in campaign sync',
+                            $e->getMessage()
+                        ),
+                        [$e->getDetails()]
+                    );
+                    continue;
+                } catch (\Exception $e) {
+                    $campaign->setSendStatus(CampaignModel::FAILED)
+                        ->setMessage('Could not create contact.');
+                    $this->campaignResourceModel->saveItem($campaign);
+                    $this->logger->error((string) $e);
+                    continue;
+                }
 
-                    $campaignsToSend[$campaignId]['contacts'][] = $contact->id;
-                    $campaignsToSend[$campaignId]['ids'][] = $campaign->getId();
-                } else {
-                    //update the failed to send email message error message
-                    $campaign->setSendStatus(\Dotdigitalgroup\Email\Model\Campaign::FAILED)
+                if ($contact->getChannelProperties()->getEmail()->getStatus() === V3StatusInterface::SUPPRESSED) {
+                    $campaign->setSendStatus(CampaignModel::FAILED)
                         ->setMessage('Send not permitted. Contact is suppressed.');
                     $this->campaignResourceModel->saveItem($campaign);
+                    continue;
                 }
+
+                //update data fields
+                if ($campaign->getEventName() == CampaignModel::CAMPAIGN_EVENT_ORDER_REVIEW) {
+                    $this->updateDataFieldsForOrderReviewCampaigns($campaign, $websiteId, $client, $email);
+                } elseif ($campaign->getEventName() == CampaignModel::CAMPAIGN_EVENT_LOST_BASKET) {
+                    $campaignCollection = $this->campaignCollection->create();
+                    // If AC campaigns found with status processing for given email then skip for current cron run
+                    if ($campaignCollection->getNumberOfAcCampaignsWithStatusProcessingExistForContact($email)) {
+                        continue;
+                    }
+                    $this->helper->updateLastQuoteId($campaign->getQuoteId(), $email, $websiteId);
+                }
+
+                $campaignsToSend[$campaignId]['contacts'][] = $contact->getContactId();
+                $campaignsToSend[$campaignId]['ids'][] = $campaign->getId();
             }
         }
 
@@ -204,20 +252,21 @@ class Campaign implements SyncInterface
     /**
      * Check if campaign item is valid
      *
-     * @param \Dotdigitalgroup\Email\Model\Campaign $campaign
+     * @param CampaignModel $campaign
      *
      * @return bool
+     * @throws AlreadyExistsException
      */
     private function isCampaignValid($campaign)
     {
         if (! $campaign->getCampaignId()) {
             $campaign->setMessage('Missing campaign id: ' . $campaign->getCampaignId())
-                ->setSendStatus(\Dotdigitalgroup\Email\Model\Campaign::FAILED);
+                ->setSendStatus(CampaignModel::FAILED);
             $this->campaignResourceModel->saveItem($campaign);
             return false;
         } elseif (! $campaign->getEmail()) {
             $campaign->setMessage('Missing email')
-                ->setSendStatus(\Dotdigitalgroup\Email\Model\Campaign::FAILED);
+                ->setSendStatus(CampaignModel::FAILED);
             $this->campaignResourceModel->saveItem($campaign);
             return false;
         }
@@ -230,13 +279,14 @@ class Campaign implements SyncInterface
      * @param array $campaignsToSend
      *
      * @return void
+     * @throws LocalizedException
      */
     private function sendCampaignsViaEngagementCloud($campaignsToSend)
     {
         foreach ($campaignsToSend as $campaignId => $data) {
             if (isset($data['contacts']) && isset($data['client'])) {
                 $contacts = $data['contacts'];
-                /** @var \Dotdigitalgroup\Email\Model\Apiconnector\Client $client */
+                /** @var Client $client */
                 $client = $data['client'];
                 $response = $client->postCampaignsSend(
                     $campaignId,
@@ -273,12 +323,13 @@ class Campaign implements SyncInterface
     /**
      * Update data fields.
      *
-     * @param \Dotdigitalgroup\Email\Model\Campaign $campaign
+     * @param CampaignModel $campaign
      * @param int $websiteId
-     * @param \Dotdigitalgroup\Email\Model\Apiconnector\Client $client
+     * @param Client $client
      * @param string $email
      *
      * @return void
+     * @throws \Exception
      */
     private function updateDataFieldsForOrderReviewCampaigns($campaign, $websiteId, $client, $email)
     {
@@ -287,7 +338,7 @@ class Campaign implements SyncInterface
         );
 
         if ($lastOrderId = $this->helper->getWebsiteConfig(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CUSTOMER_LAST_ORDER_ID,
+            Config::XML_PATH_CONNECTOR_CUSTOMER_LAST_ORDER_ID,
             $websiteId
         )
         ) {
@@ -297,8 +348,7 @@ class Campaign implements SyncInterface
             ];
         }
         if ($orderIncrementId = $this->helper->getWebsiteConfig(
-            \Dotdigitalgroup\Email\Helper\Config::
-            XML_PATH_CONNECTOR_CUSTOMER_LAST_ORDER_INCREMENT_ID,
+            Config::XML_PATH_CONNECTOR_CUSTOMER_LAST_ORDER_INCREMENT_ID,
             $websiteId
         )
         ) {

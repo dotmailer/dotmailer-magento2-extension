@@ -269,6 +269,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Get all stores.
      *
+     * @deprecated Use StoreManagerInterface directly via dependency injection.
+     * @see StoreManagerInterface
+     *
      * @param bool|false $default
      *
      * @return \Magento\Store\Api\Data\StoreInterface[]
@@ -606,8 +609,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Get or create contact.
      *
-     * @deprecated Use client methods directly.
-     * @see Client::getContactByEmail()
+     * @deprecated Use V3 alternative.
+     * @see \Dotdigitalgroup\Email\Model\Apiconnector\V3\Contact\Patcher::getOrCreateContactByEmail()
      *
      * @param string $email
      * @param int $websiteId
@@ -789,6 +792,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     /**
      * Get website config.
+     *
+     * @deprecated Inject ScopeConfigInterface directly.
+     * @see \Magento\Framework\App\Config\ScopeConfigInterface
      *
      * @param string $path
      * @param int $websiteId

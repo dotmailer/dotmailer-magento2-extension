@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dotdigitalgroup\Email\Model;
 
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory as ContactCollectionFactory;
@@ -105,8 +107,8 @@ class Contact extends \Magento\Framework\Model\AbstractModel
     /**
      * Load Contact by Email.
      *
-     * @deprecated Don't fetch and create in one method. It can lead to unexpected results (like rows with store_id 0).
-     * @see \Dotdigitalgroup\Email\Model\ResourceModel\Contact\Collection::loadByCustomerEmail
+     * @deprecated If creating a new contact, store_id must be set.
+     * @see loadByEmailOrCreateWithScope
      *
      * @param string $email
      * @param int $websiteId
@@ -125,6 +127,31 @@ class Contact extends \Magento\Framework\Model\AbstractModel
             return $this->setEmail($email)
                 ->setWebsiteId($websiteId);
         }
+    }
+
+    /**
+     * Load contact by email, or create new if not found.
+     *
+     * @param string $email
+     * @param int $websiteId
+     * @param int $storeId
+     *
+     * @return $this
+     */
+    public function loadByEmailOrCreateWithScope(string $email, int $websiteId, int $storeId)
+    {
+        $contact = $this->contactCollectionFactory->create()
+            ->loadByCustomerEmail($email, $websiteId);
+
+        if ($contact) {
+            return $contact;
+        }
+
+        $contact = $this->setEmail($email)
+            ->setWebsiteId($websiteId)
+            ->setStoreId($storeId);
+
+        return $contact;
     }
 
     /**

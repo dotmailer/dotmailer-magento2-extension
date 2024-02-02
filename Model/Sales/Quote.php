@@ -1,26 +1,33 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dotdigitalgroup\Email\Model\Sales;
 
+use Dotdigital\Exception\ResponseValidationException;
 use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Abandoned as AbandonedModel;
 use Dotdigitalgroup\Email\Model\AbandonedCart\Interval;
 use Dotdigitalgroup\Email\Model\AbandonedFactory;
+use Dotdigitalgroup\Email\Model\Apiconnector\V3\Contact\Patcher;
+use Dotdigitalgroup\Email\Model\Apiconnector\V3\StatusInterface as V3StatusInterface;
 use Dotdigitalgroup\Email\Model\CampaignFactory;
 use Dotdigitalgroup\Email\Model\ResourceModel\Abandoned;
 use Dotdigitalgroup\Email\Model\ResourceModel\Abandoned\CollectionFactory as AbandonedCollectionFactory;
 use Dotdigitalgroup\Email\Model\ResourceModel\Campaign\CollectionFactory as CampaignCollectionFactory;
 use Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory;
+use Dotdigitalgroup\Email\Model\Rules;
 use Dotdigitalgroup\Email\Model\RulesFactory;
 use Dotdigitalgroup\Email\Model\StatusInterface;
 use Dotdigitalgroup\Email\Model\ResourceModel\Campaign;
 use Dotdigitalgroup\Email\Model\AbandonedCart\TimeLimit;
 use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\Updater\AbandonedCartFactory as AbandonedCartUpdaterFactory;
 use Magento\Framework\App\Config\ScopeConfigInterface;
-use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Quote\Model\ResourceModel\Quote\Collection as QuoteCollection;
 use Magento\Quote\Model\ResourceModel\Quote\CollectionFactory as QuoteCollectionFactory;
+use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
 
 /**
@@ -67,6 +74,11 @@ class Quote
     private $abandonedFactory;
 
     /**
+     * @var Patcher
+     */
+    private $patcher;
+
+    /**
      * @var AbandonedCollectionFactory
      */
     private $abandonedCollectionFactory;
@@ -82,7 +94,7 @@ class Quote
     private $campaignResource;
 
     /**
-     * @var \Dotdigitalgroup\Email\Helper\Data
+     * @var Data
      */
     private $helper;
 
@@ -97,12 +109,12 @@ class Quote
     private $scopeConfig;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory
+     * @var CollectionFactory
      */
     private $orderCollection;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\CampaignFactory
+     * @var CampaignFactory
      */
     private $campaignFactory;
 
@@ -112,17 +124,12 @@ class Quote
     private $campaignCollectionFactory;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\RulesFactory
+     * @var RulesFactory
      */
     private $rulesFactory;
 
     /**
-     * @var \Magento\Framework\Stdlib\DateTime\TimezoneInterface
-     */
-    private $timeZone;
-
-    /**
-     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Abandoned
+     * @var Abandoned
      */
     private $abandonedResource;
 
@@ -163,6 +170,7 @@ class Quote
      *
      * @param Interval $interval
      * @param AbandonedFactory $abandonedFactory
+     * @param Patcher $patcher
      * @param AbandonedCollectionFactory $abandonedCollectionFactory
      * @param RulesFactory $rulesFactory
      * @param Campaign $campaignResource
@@ -172,7 +180,6 @@ class Quote
      * @param Data $data
      * @param QuoteCollectionFactory $quoteCollectionFactory
      * @param CollectionFactory $collectionFactory
-     * @param TimezoneInterface $timezone
      * @param \Dotdigitalgroup\Email\Model\AbandonedCart\CartInsight\Data $cartInsight
      * @param TimeLimit $timeLimit
      * @param Logger $logger
@@ -183,16 +190,16 @@ class Quote
     public function __construct(
         Interval $interval,
         AbandonedFactory $abandonedFactory,
+        Patcher $patcher,
         AbandonedCollectionFactory $abandonedCollectionFactory,
-        \Dotdigitalgroup\Email\Model\RulesFactory $rulesFactory,
+        RulesFactory $rulesFactory,
         Campaign $campaignResource,
-        \Dotdigitalgroup\Email\Model\CampaignFactory $campaignFactory,
+        CampaignFactory $campaignFactory,
         CampaignCollectionFactory $campaignCollectionFactory,
-        \Dotdigitalgroup\Email\Model\ResourceModel\Abandoned $abandonedResource,
-        \Dotdigitalgroup\Email\Helper\Data $data,
+        Abandoned $abandonedResource,
+        Data $data,
         QuoteCollectionFactory $quoteCollectionFactory,
-        \Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory $collectionFactory,
-        \Magento\Framework\Stdlib\DateTime\TimezoneInterface $timezone,
+        CollectionFactory $collectionFactory,
         \Dotdigitalgroup\Email\Model\AbandonedCart\CartInsight\Data $cartInsight,
         TimeLimit $timeLimit,
         Logger $logger,
@@ -201,11 +208,11 @@ class Quote
         ScopeConfigInterface $scopeConfig
     ) {
         $this->interval = $interval;
-        $this->timeZone = $timezone;
         $this->rulesFactory = $rulesFactory;
         $this->campaignFactory = $campaignFactory;
         $this->helper = $data;
         $this->abandonedFactory = $abandonedFactory;
+        $this->patcher = $patcher;
         $this->campaignResource = $campaignResource;
         $this->orderCollection = $collectionFactory;
         $this->abandonedResource = $abandonedResource;
@@ -343,7 +350,7 @@ class Quote
     {
         return $this->scopeConfig->isSetFlag(
             constant('self::XML_PATH_LOSTBASKET_CUSTOMER_ENABLED_' . $num),
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+            ScopeInterface::SCOPE_STORE,
             $storeId
         );
     }
@@ -369,7 +376,7 @@ class Quote
 
         $salesCollection = $ruleModel->process(
             $salesCollection,
-            \Dotdigitalgroup\Email\Model\Rules::ABANDONED,
+            Rules::ABANDONED,
             $websiteId
         );
 
@@ -388,7 +395,7 @@ class Quote
     {
         return $this->scopeConfig->getValue(
             constant('self::XML_PATH_LOSTBASKET_CUSTOMER_CAMPAIGN_' . $num),
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+            ScopeInterface::SCOPE_STORE,
             $storeId
         );
     }
@@ -434,7 +441,7 @@ class Quote
     {
         return $this->scopeConfig->isSetFlag(
             constant('self::XML_PATH_LOSTBASKET_GUEST_ENABLED_' . $num),
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+            ScopeInterface::SCOPE_STORE,
             $storeId
         );
     }
@@ -451,7 +458,7 @@ class Quote
     {
         return $this->scopeConfig->getValue(
             constant('self::XML_PATH_LOSTBASKET_GUEST_CAMPAIGN_' . $num),
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+            ScopeInterface::SCOPE_STORE,
             $storeId
         );
     }
@@ -549,14 +556,31 @@ class Quote
         $itemIds = $this->getQuoteItemIds($items);
         $abandonedModel = $this->abandonedFactory->create()
             ->loadByQuoteId($quoteId);
-        $contact = $this->helper->getOrCreateContact($email, $websiteId);
-        if (!$contact) {
+
+        try {
+            $contact = $this->patcher->getOrCreateContactByEmail(
+                $email,
+                (int) $websiteId,
+                (int) $storeId
+            );
+        } catch (ResponseValidationException $e) {
+            $this->logger->error(
+                sprintf(
+                    '%s: %s',
+                    'Error creating contact in abandoned cart sync',
+                    $e->getMessage()
+                ),
+                [$e->getDetails()]
+            );
+            return false;
+        } catch (\Exception $e) {
+            $this->logger->error((string) $e);
             return false;
         }
 
         $this->cartInsight->send($quote, $storeId);
 
-        if ($contact->status === StatusInterface::PENDING_OPT_IN) {
+        if ($contact->getChannelProperties()->getEmail()->getStatus() === V3StatusInterface::PENDING_OPT_IN) {
             $this->createAbandonedCart($abandonedModel, $quote, $itemIds, StatusInterface::PENDING_OPT_IN);
             return false;
         }
@@ -714,7 +738,9 @@ class Quote
      * Process Abandoned Cart 1 for guests.
      *
      * @param int $storeId
+     *
      * @return int
+     * @throws NoSuchEntityException
      */
     private function processGuestFirstAbandonedCart($storeId)
     {
@@ -953,7 +979,7 @@ class Quote
         $ruleModel       = $this->rulesFactory->create();
         $quoteCollection = $ruleModel->process(
             $quoteCollection,
-            \Dotdigitalgroup\Email\Model\Rules::ABANDONED,
+            Rules::ABANDONED,
             $this->storeManager->getStore($storeId)->getWebsiteId()
         );
 

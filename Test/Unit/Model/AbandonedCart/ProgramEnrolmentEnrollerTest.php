@@ -1,9 +1,8 @@
 <?php
 
-namespace Dotdigitalgroup\Email\Test\Unit\Model\AbandonedCart\ProgramEnrolment;
+namespace Dotdigitalgroup\Email\Test\Unit\Model\AbandonedCart;
 
 use Dotdigitalgroup\Email\Helper\Config;
-use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\AbandonedCart\CartInsight\Data as CartInsight;
 use Dotdigitalgroup\Email\Model\AbandonedCart\ProgramEnrolment\Enroller;
@@ -11,32 +10,33 @@ use Dotdigitalgroup\Email\Model\AbandonedCart\Interval;
 use Dotdigitalgroup\Email\Model\AbandonedCart\ProgramEnrolment\Rules;
 use Dotdigitalgroup\Email\Model\AbandonedCart\ProgramEnrolment\Saver;
 use Dotdigitalgroup\Email\Model\AbandonedCart\TimeLimit;
+use Dotdigitalgroup\Email\Model\Apiconnector\V3\Contact\Patcher;
 use Dotdigitalgroup\Email\Model\ResourceModel\Automation\CollectionFactory as AutomationCollectionFactory;
 use Dotdigitalgroup\Email\Model\ResourceModel\Order\Collection;
 use Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory;
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Quote\Model\Quote;
+use Magento\Store\Model\ScopeInterface;
+use Magento\Store\Model\StoreManagerInterface;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class ProgramEnrolmentEnrollerTest extends TestCase
 {
     /**
-     * @var CollectionFactory|\PHPUnit_Framework_MockObject_MockObject
+     * @var CollectionFactory|MockObject
      */
     private $orderCollectionFactoryMock;
 
     /**
-     * @var Collection|\PHPUnit_Framework_MockObject_MockObject
+     * @var Collection|MockObject
      */
     private $orderCollectionMock;
 
     /**
-     * @var Data|\PHPUnit_Framework_MockObject_MockObject
+     * @var ScopeConfigInterface|MockObject
      */
-    private $dataHelperMock;
-
-    /**
-     * @var \Magento\Framework\App\Config\ScopeConfigInterface|\PHPUnit_Framework_MockObject_MockObject
-     */
-    private $scopeConfigModelMock;
+    private $scopeConfigMock;
 
     /**
      * @var Interval
@@ -64,29 +64,34 @@ class ProgramEnrolmentEnrollerTest extends TestCase
     private $cartInsight;
 
     /**
-     * @var ObjectManager
-     */
-    private $objectManager;
-
-    /**
-     * @var \PHPUnit\Framework\MockObject\MockObject
+     * @var MockObject
      */
     private $automationCollectionFactoryMock;
 
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject
+     * @var MockObject
      */
     private $timeLimitMock;
 
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject
+     * @var MockObject
      */
     private $quoteMock;
 
     /**
-     * @var Logger|\PHPUnit\Framework\MockObject\MockObject
+     * @var Logger|MockObject
      */
     private $loggerMock;
+
+    /**
+     * @var Patcher|MockObject
+     */
+    private $patcherMock;
+
+    /**
+     * @var StoreManagerInterface|MockObject
+     */
+    private $storeManagerMock;
 
     protected function setUp() :void
     {
@@ -95,17 +100,17 @@ class ProgramEnrolmentEnrollerTest extends TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->dataHelperMock = $this->getMockBuilder(Data::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $this->scopeConfigModelMock = $this->createMock(\Magento\Framework\App\Config\ScopeConfigInterface::class);
+        $this->scopeConfigMock = $this->createMock(ScopeConfigInterface::class);
         $this->interval = $this->createMock(Interval::class);
         $this->saver = $this->createMock(Saver::class);
         $this->rules = $this->createMock(Rules::class);
         $this->cartInsight = $this->createMock(CartInsight::class);
-
-        $this->quoteMock = $this->createMock(\Magento\Quote\Model\Quote::class);
+        $this->patcherMock = $this->createMock(Patcher::class);
+        $this->quoteMock = $this->getMockBuilder(Quote::class)
+            ->onlyMethods(['hasItems'])
+            ->addMethods(['getCustomerEmail'])
+            ->disableOriginalConstructor()
+            ->getMock();
         $this->orderCollectionMock = $this->createMock(Collection::class);
         $this->orderCollectionMock->expects($this->any())
             ->method('getIterator')
@@ -118,18 +123,21 @@ class ProgramEnrolmentEnrollerTest extends TestCase
 
         $this->timeLimitMock = $this->createMock(TimeLimit::class);
         $this->loggerMock = $this->createMock(Logger::class);
+        $this->storeManagerMock = $this->createMock(StoreManagerInterface::class);
         $this->prepare();
 
         $this->model = new Enroller(
             $this->loggerMock,
             $this->orderCollectionFactoryMock,
-            $this->dataHelperMock,
             $this->interval,
+            $this->patcherMock,
             $this->saver,
             $this->rules,
             $this->cartInsight,
             $this->automationCollectionFactoryMock,
-            $this->timeLimitMock
+            $this->timeLimitMock,
+            $this->scopeConfigMock,
+            $this->storeManagerMock
         );
     }
 
@@ -233,26 +241,21 @@ class ProgramEnrolmentEnrollerTest extends TestCase
             $this->createMock(\Magento\Store\Model\Store::class)
         ];
 
-        $this->dataHelperMock->expects($this->once())
+        $this->storeManagerMock->expects($this->once())
             ->method('getStores')
             ->willReturn($storesArray);
 
         $storesArray[0]->method('getId')
             ->willReturn($storeId);
 
-        // Scope config
-        $this->dataHelperMock
-            ->method('getScopeConfig')
-            ->willReturn($this->scopeConfigModelMock);
-
-        $this->scopeConfigModelMock->expects($this->atLeastOnce())
+        $this->scopeConfigMock->expects($this->atLeastOnce())
             ->method('getValue')
             ->withConsecutive(
-                [\Dotdigitalgroup\Email\Helper\Config::XML_PATH_LOSTBASKET_ENROL_TO_PROGRAM_ID,
-                \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+                [Config::XML_PATH_LOSTBASKET_ENROL_TO_PROGRAM_ID,
+                ScopeInterface::SCOPE_STORE,
                 $storeId],
                 [Config::XML_PATH_CONNECTOR_SYNC_LIMIT,
-                    \Magento\Store\Model\ScopeInterface::SCOPE_STORE]
+                    ScopeInterface::SCOPE_STORE]
             )
             ->willReturnOnConsecutiveCalls(
                 $programId,
@@ -289,9 +292,10 @@ class ProgramEnrolmentEnrollerTest extends TestCase
             ->method('setCurPage')
             ->willReturn($this->orderCollectionMock);
 
-        $this->dataHelperMock->expects($this->atLeastOnce())
-            ->method('getOrCreateContact')
-            ->willReturn(true);
+        $this->quoteMock->method('getCustomerEmail')->willReturn('chaz@emailsim.io');
+
+        $this->patcherMock->expects($this->atLeastOnce())
+            ->method('getOrCreateContactByEmail');
 
         $this->cartInsight->expects($this->atLeastOnce())
             ->method('send');

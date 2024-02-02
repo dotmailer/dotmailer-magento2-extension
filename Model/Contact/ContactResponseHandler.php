@@ -3,11 +3,13 @@
 namespace Dotdigitalgroup\Email\Model\Contact;
 
 use Dotdigitalgroup\Email\Model\Apiconnector\Client;
+use Dotdigitalgroup\Email\Model\Apiconnector\V3\StatusInterface as V3StatusInterface;
 use Dotdigitalgroup\Email\Model\ContactFactory;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact as ContactResource;
 use Dotdigitalgroup\Email\Model\StatusInterface;
 use Dotdigital\V3\Models\Contact as ContactModel;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory as ContactCollectionFactory;
+use Magento\Framework\Exception\AlreadyExistsException;
 use Magento\Framework\Exception\LocalizedException;
 
 class ContactResponseHandler
@@ -140,16 +142,28 @@ class ContactResponseHandler
      *
      * @param ContactModel $contactResponse
      * @param int $websiteId
-     * @return void
-     * @throws \Magento\Framework\Exception\AlreadyExistsException
+     * @param int $storeId
+     *
+     * @return ContactModel
+     * @throws AlreadyExistsException
      */
-    public function processV3ContactResponse(ContactModel $contactResponse, int $websiteId)
+    public function processV3ContactResponse(ContactModel $contactResponse, int $websiteId, int $storeId = 0)
     {
-        if ($contactResponse->getStatus() === 'suppressed') {
-            $contactEmail = $this->contactCollectionFactory->create()
-                ->loadByCustomerEmail($contactResponse->getIdentifiers()->getEmail(), $websiteId);
-            $this->contactDeactivator->deactivateContact($contactEmail);
+        $contact = $this->contactFactory->create()
+            ->loadByEmailOrCreateWithScope(
+                $contactResponse->getIdentifiers()->getEmail(),
+                $websiteId,
+                $storeId
+            );
+
+        if ($contactResponse->getChannelProperties()->getEmail()->getStatus() === V3StatusInterface::SUPPRESSED) {
+            $this->contactDeactivator->deactivateContact($contact);
         }
+
+        $contact->setContactId($contactResponse->getContactId());
+        $this->contactResource->save($contact);
+
+        return $contactResponse;
     }
 
     /**
