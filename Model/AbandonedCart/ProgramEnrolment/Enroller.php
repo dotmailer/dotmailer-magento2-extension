@@ -1,12 +1,23 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dotdigitalgroup\Email\Model\AbandonedCart\ProgramEnrolment;
 
+use Dotdigital\Exception\ResponseValidationException;
+use Dotdigitalgroup\Email\Helper\Config;
 use Dotdigitalgroup\Email\Logger\Logger;
+use Dotdigitalgroup\Email\Model\AbandonedCart\CartInsight\Data as CartInsightData;
 use Dotdigitalgroup\Email\Model\AbandonedCart\Interval;
 use Dotdigitalgroup\Email\Model\AbandonedCart\TimeLimit;
+use Dotdigitalgroup\Email\Model\Apiconnector\V3\Contact\Patcher;
 use Dotdigitalgroup\Email\Model\ResourceModel\Automation\CollectionFactory as AutomationCollectionFactory;
+use Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory;
+use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Quote\Model\Quote;
+use Magento\Store\Api\Data\StoreInterface;
+use Magento\Store\Model\ScopeInterface;
+use Magento\Store\Model\StoreManagerInterface;
 
 class Enroller
 {
@@ -16,19 +27,19 @@ class Enroller
     private $logger;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory
+     * @var CollectionFactory
      */
     private $orderCollection;
-
-    /**
-     * @var \Dotdigitalgroup\Email\Helper\Data
-     */
-    private $helper;
 
     /**
      * @var Interval
      */
     private $interval;
+
+    /**
+     * @var Patcher
+     */
+    private $patcher;
 
     /**
      * @var Saver
@@ -41,7 +52,7 @@ class Enroller
     private $rules;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\AbandonedCart\CartInsight\Data
+     * @var CartInsightData
      */
     private $cartInsight;
 
@@ -56,36 +67,52 @@ class Enroller
     private $timeLimit;
 
     /**
+     * @var ScopeConfigInterface
+     */
+    private $scopeConfig;
+
+    /**
+     * @var StoreManagerInterface
+     */
+    private $storeManager;
+
+    /**
      * @param Logger $logger
-     * @param \Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory $collectionFactory
-     * @param \Dotdigitalgroup\Email\Helper\Data $data
+     * @param CollectionFactory $collectionFactory
      * @param Interval $interval
+     * @param Patcher $patcher
      * @param Saver $saver
      * @param Rules $rules
-     * @param \Dotdigitalgroup\Email\Model\AbandonedCart\CartInsight\Data $cartInsight
+     * @param CartInsightData $cartInsight
      * @param AutomationCollectionFactory $automationFactory
      * @param TimeLimit $timeLimit
+     * @param ScopeConfigInterface $scopeConfig
+     * @param StoreManagerInterface $storeManager
      */
     public function __construct(
         Logger $logger,
-        \Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory $collectionFactory,
-        \Dotdigitalgroup\Email\Helper\Data $data,
+        CollectionFactory $collectionFactory,
         Interval $interval,
+        Patcher $patcher,
         Saver $saver,
         Rules $rules,
-        \Dotdigitalgroup\Email\Model\AbandonedCart\CartInsight\Data $cartInsight,
+        CartInsightData $cartInsight,
         AutomationCollectionFactory $automationFactory,
-        TimeLimit $timeLimit
+        TimeLimit $timeLimit,
+        ScopeConfigInterface $scopeConfig,
+        StoreManagerInterface $storeManager
     ) {
         $this->logger = $logger;
         $this->orderCollection = $collectionFactory;
-        $this->helper = $data;
         $this->interval = $interval;
+        $this->patcher = $patcher;
         $this->saver = $saver;
         $this->rules = $rules;
         $this->cartInsight = $cartInsight;
         $this->automationFactory = $automationFactory;
         $this->timeLimit = $timeLimit;
+        $this->scopeConfig = $scopeConfig;
+        $this->storeManager = $storeManager;
     }
 
     /**
@@ -96,7 +123,7 @@ class Enroller
      */
     public function process()
     {
-        foreach ($this->helper->getStores() as $store) {
+        foreach ($this->storeManager->getStores() as $store) {
             $this->processAbandonedCartsProgramEnrolmentAutomation($store);
         }
     }
@@ -104,7 +131,7 @@ class Enroller
     /**
      * Process abandoned carts for automation program enrolment
      *
-     * @param \Magento\Store\Api\Data\StoreInterface $store
+     * @param StoreInterface $store
      *
      * @return void
      * @throws \Exception
@@ -112,9 +139,9 @@ class Enroller
     private function processAbandonedCartsProgramEnrolmentAutomation($store)
     {
         $storeId = $store->getId();
-        $programId = $this->helper->getScopeConfig()->getValue(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_LOSTBASKET_ENROL_TO_PROGRAM_ID,
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+        $programId = $this->scopeConfig->getValue(
+            Config::XML_PATH_LOSTBASKET_ENROL_TO_PROGRAM_ID,
+            ScopeInterface::SCOPE_STORE,
             $storeId
         );
 
@@ -139,11 +166,27 @@ class Enroller
                     );
                 }
 
-                // Confirm that a contact has been created on EC
-                $contact = $this->helper->getOrCreateContact($quote->getCustomerEmail(), $store->getWebsiteId());
-                if (!$contact) {
+                try {
+                    $this->patcher->getOrCreateContactByEmail(
+                        $quote->getCustomerEmail(),
+                        (int) $store->getWebsiteId(),
+                        (int) $storeId
+                    );
+                } catch (ResponseValidationException $e) {
+                    $this->logger->error(
+                        sprintf(
+                            '%s: %s',
+                            'Error creating contact in abandoned cart enroller',
+                            $e->getMessage()
+                        ),
+                        [$e->getDetails()]
+                    );
+                    continue;
+                } catch (\Exception $e) {
+                    $this->logger->error((string) $e);
                     continue;
                 }
+
                 $this->cartInsight->send($quote, $storeId);
             }
         }
@@ -159,9 +202,9 @@ class Enroller
      */
     private function getStoreQuotesForGuestsAndCustomers($storeId, $updated)
     {
-        $batchSize = $this->helper->getScopeConfig()->getValue(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_LIMIT,
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        $batchSize = $this->scopeConfig->getValue(
+            Config::XML_PATH_CONNECTOR_SYNC_LIMIT,
+            ScopeInterface::SCOPE_STORE
         );
 
         $initialCollection = $this->orderCollection
@@ -189,7 +232,7 @@ class Enroller
      * Save the automation.
      *
      * @param Quote $quote
-     * @param \Magento\Store\Api\Data\StoreInterface $store
+     * @param StoreInterface $store
      * @param int $programId
      * @throws \Exception
      */
@@ -207,7 +250,9 @@ class Enroller
      *
      * @param Quote $quote
      * @param string $storeId
+     *
      * @return bool
+     * @throws \Exception
      */
     private function isAutomationFoundInsideTimeLimit($quote, $storeId)
     {

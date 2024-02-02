@@ -316,7 +316,7 @@ class Cron
      */
     public function sendCampaigns()
     {
-        $this->campaignFactory->create()->sendCampaigns();
+        $this->campaignFactory->create()->sync();
     }
 
     /**
