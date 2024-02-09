@@ -5,7 +5,7 @@ namespace Dotdigitalgroup\Email\Test\Integration\Helper;
 use Dotdigitalgroup\Email\Helper\ServerSentEvents;
 use Dotdigitalgroup\Email\Logger\Logger;
 use PHPUnit\Framework\TestCase;
-use Zend\Http\Request;
+use Laminas\Http\Request;
 
 class ServerSentEventsTest extends TestCase
 {

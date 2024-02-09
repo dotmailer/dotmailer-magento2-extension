@@ -1,6 +1,6 @@
 <?php
 
-namespace Dotdigitalgroup\Email\Test\Unit\Model\Catalog\UrlFinder;
+namespace Dotdigitalgroup\Email\Test\Unit\Model\Catalog;
 
 use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Frontend\PwaUrlConfig;
@@ -13,7 +13,7 @@ use Magento\Catalog\Model\Product;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Store\Model\Website;
-use Zend\Uri\Http;
+use Laminas\Uri\Http;
 use PHPUnit\Framework\TestCase;
 
 class UrlFinderTest extends TestCase
@@ -181,7 +181,7 @@ class UrlFinderTest extends TestCase
 
         $this->urlFinder->fetchFor($this->productMock);
     }
-    
+
     public function testGetPathRemovesPubSubStringIfEnabledInConfig()
     {
         $path = 'https://magento2.dev/pub/media/chaz-kangaroo.jpg';
