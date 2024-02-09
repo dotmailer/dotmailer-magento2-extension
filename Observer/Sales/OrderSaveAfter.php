@@ -340,7 +340,8 @@ class OrderSaveAfter implements ObserverInterface
                     );
                 }
             }
-        } catch (InvalidArgumentException $e) {
+        } catch (Exception $e) {
+            $this->helper->debug((string)$e, []);
             return;
         }
     }
