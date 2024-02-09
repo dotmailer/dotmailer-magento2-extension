@@ -1,3 +1,29 @@
+# 4.24.0
+
+### What's new
+- Automation enrolments are now handled using Magento message queues.
+- Customer email address updates now use message queues.
+- Newsletter unsubscribes and resubscribes now use message queues.
+- 'ORDER_COMPLETE' cart phase updates now use message queues.
+- We added a new UI report to view message queue activity.
+- There is now a separate cron job for checking and updating PendingOptIn contacts.
+- Non-subscribers can once again be enrolled in abandoned cart programs even if 'Allow non-subscribed contacts to be imported' is set to 'No'.
+  
+### Improvements
+- The cleaner cron now has a configs for frequency and data lifetime.
+- We removed an extra check to determine if a program is active, prior to automation enrolment.
+- We fixed all remaining coding standards errors.
+- We updated a label in the consent section.
+- Cart insight sends now use a V3 API endpoint, provided by our SDK.
+- We removed some redundant job checking code that was running at start of every cron job.
+- Customer rows are now reset for sync at login.
+- We've ensured only floats are passed to `number_format()`.
+
+### Bug fixes
+- Website code is now appended as a query string to the base URL in integration insight data records.
+- We added a specific additional composer dependency to allow our SDK to work in Magento 2.3.7.
+- Contacts could be created in some cases with store_id 0 - this has been fixed.
+
 # 4.23.7
 
 ### Improvements
