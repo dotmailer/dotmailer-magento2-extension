@@ -18,6 +18,7 @@
 - We removed some redundant job checking code that was running at start of every cron job.
 - Customer rows are now reset for sync at login.
 - We've ensured only floats are passed to `number_format()`.
+- We replaced Zend classes with their Laminas equivalents in two unit tests.
 
 ### Bug fixes
 - Website code is now appended as a query string to the base URL in integration insight data records.
