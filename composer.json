@@ -2,7 +2,7 @@
   "name": "dotdigital/dotdigital-magento2-extension",
   "description": "Dotdigital for Magento 2",
   "type": "magento2-module",
-  "version": "4.24.0",
+  "version": "4.24.1",
   "license": "MIT",
   "repositories": [
     {
@@ -49,7 +49,7 @@
     "magento/module-authorization": "^100.3|^100.4",
     "magento/module-tax": "^100.3|^100.4",
     "magento/framework-message-queue": "^100.3|^100.4",
-    "magento/mysql-mq": "^100.3|^100.4",
+    "magento/module-mysql-mq": "^100.3|^100.4",
     "laminas/laminas-http": "^2.6",
     "laminas/laminas-uri": "^2.5",
     "dotdigital/dotdigital-php": "^2.4",

@@ -1,3 +1,8 @@
+# 4.24.1
+
+### Bug fixes
+- We fixed the `magento/module-mysql-mq` package name in composer.json.
+
 # 4.24.0
 
 ### What's new
