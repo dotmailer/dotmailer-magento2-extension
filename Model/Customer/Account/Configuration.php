@@ -31,16 +31,11 @@ class Configuration
      */
     public function shouldRedirectToConnectorCustomerIndex($websiteId)
     {
-        $enabled = $this->scopeConfig->isSetFlag(
+        return $this->scopeConfig->isSetFlag(
             Config::XML_PATH_CONNECTOR_API_ENABLED,
             ScopeInterface::SCOPE_WEBSITE,
             $websiteId
         );
-        $dataFields = $this->canShowDataFields($websiteId);
-        $addressBooks = $this->canShowAddressBooks($websiteId);
-        $preferences = $this->canShowPreferences($websiteId);
-
-        return $enabled && ($dataFields || $addressBooks || $preferences);
     }
 
     /**

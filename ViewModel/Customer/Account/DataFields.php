@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dotdigitalgroup\Email\ViewModel\Customer\Account;
 
 use Dotdigitalgroup\Email\Model\Customer\Account\Configuration;
@@ -94,6 +96,7 @@ class DataFields implements ArgumentInterface
      * @param array $processedContactDataFields
      *
      * @return array
+     * @throws LocalizedException
      */
     private function getProcessedDataFieldsToShow(
         $processedConnectorDataFields,
@@ -111,17 +114,11 @@ class DataFields implements ArgumentInterface
                 if (isset($processedConnectorDataFields[$dataFieldFromConfig])) {
                     $value = '';
                     if (isset($processedContactDataFields[$processedConnectorDataFields[$dataFieldFromConfig]->name])) {
-                        if ($processedConnectorDataFields[$dataFieldFromConfig]->type == 'Date'
-                        ) {
-                            $value = $processedContactDataFields[
+                        $value = $processedContactDataFields[
                             $processedConnectorDataFields[$dataFieldFromConfig]->name
-                            ];
-                            $value = $this->localeDate->convertConfigTimeToUtc($value, 'm/d/Y');
-                        } else {
-                            $value
-                                = $processedContactDataFields[
-                            $processedConnectorDataFields[$dataFieldFromConfig]->name
-                            ];
+                        ];
+                        if ($processedConnectorDataFields[$dataFieldFromConfig]->type == 'Date') {
+                            $value = $this->localeDate->convertConfigTimeToUtc($value, 'Y-m-d');
                         }
                     }
 

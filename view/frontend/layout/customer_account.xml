@@ -2,11 +2,12 @@
     <body>
         <referenceBlock name="customer_account_navigation">
             <block
-                class="Dotdigitalgroup\Email\Block\Customer\Account\Link\NewsletterSubscriptions"
+                class="Magento\Customer\Block\Account\SortLinkInterface" ifconfig="connector_api_credentials/api/enabled"
                 name="customer-account-navigation-dd-email-subscriptions">
                 <arguments>
                     <argument name="path" xsi:type="string">connector/customer/index</argument>
-                    <argument name="label" xsi:type="string">Newsletter Subscriptions</argument>
+                    <argument name="label" translate="true" xsi:type="string">Newsletter Subscriptions</argument>
+                    <argument name="sortOrder" xsi:type="number">40</argument>
                 </arguments>
             </block>
         </referenceBlock>
