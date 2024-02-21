@@ -3,6 +3,7 @@
 namespace Dotdigitalgroup\Email\Model\Connector;
 
 use Dotdigitalgroup\Email\Model\Product\AttributeFactory;
+use Magento\Framework\Stdlib\DateTime\DateTime;
 
 /**
  * Transactional data for catalog products to sync.
@@ -87,7 +88,12 @@ class Product
     public $helper;
 
     /**
-     * @var \Magento\Store\Model\StoreManagerInterface
+     * @var string
+     */
+    public $created_date = '';
+
+    /**
+     * @var StoreManagerInterface
      */
     private $storeManager;
 
@@ -132,6 +138,7 @@ class Product
      * @param \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder
      * @param \Magento\CatalogInventory\Api\StockStateInterface $stockStateInterface
      * @param AttributeFactory $attributeHandler
+     * @param DateTime $dateTime
      */
     public function __construct(
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
@@ -140,7 +147,8 @@ class Product
         \Magento\Catalog\Model\Product\VisibilityFactory $visibilityFactory,
         \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder,
         \Magento\CatalogInventory\Api\StockStateInterface $stockStateInterface,
-        AttributeFactory $attributeHandler
+        AttributeFactory $attributeHandler,
+        DateTime $dateTime
     ) {
         $this->visibilityFactory  = $visibilityFactory;
         $this->statusFactory      = $statusFactory;
@@ -149,6 +157,7 @@ class Product
         $this->urlFinder          = $urlFinder;
         $this->stockStateInterface = $stockStateInterface;
         $this->attributeHandler = $attributeHandler;
+        $this->dateTime = $dateTime;
     }
 
     /**
@@ -164,6 +173,7 @@ class Product
         $this->id = $product->getId();
         $this->sku = $product->getSku();
         $this->name = $product->getName();
+        $this->created_date = $this->dateTime->date(\DateTimeInterface::ATOM, $product->getCreatedAt());
 
         $this->status = $this->statusFactory->create()
             ->getOptionText($product->getStatus());
@@ -219,7 +229,8 @@ class Product
             $this->statusFactory,
             $this->helper,
             $this->storeManager,
-            $this->attributeHandler
+            $this->attributeHandler,
+            $this->dateTime
         );
 
         return $this;
