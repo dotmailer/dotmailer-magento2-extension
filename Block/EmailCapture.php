@@ -1,22 +1,23 @@
 <?php
 
-namespace Dotdigitalgroup\Email\Block\EmailCapture;
+namespace Dotdigitalgroup\Email\Block;
 
+use Dotdigitalgroup\Email\Helper\Config;
+use Magento\Framework\View\Element\Template;
+use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\Store;
 
 /**
  * Email Capture block
  *
  * @api
- * @deprecated 4.25.0
- * @see \Dotdigitalgroup\Email\Block\EmailCapture
  */
-class EmailCapture extends \Magento\Framework\View\Element\Template
+class EmailCapture extends Template
 {
     /**
      * Get email capture url.
      *
-     * @return mixed
+     * @return string
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function getEmailCaptureUrl()
@@ -38,8 +39,8 @@ class EmailCapture extends \Magento\Framework\View\Element\Template
     public function isWebBehaviourTrackingEnabled()
     {
         $wbt = $this->_scopeConfig->getValue(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_TRACKING_PROFILE_ID,
-            \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
+            Config::XML_PATH_CONNECTOR_TRACKING_PROFILE_ID,
+            ScopeInterface::SCOPE_WEBSITE,
             $this->_storeManager->getWebsite()->getId()
         );
 
@@ -49,14 +50,14 @@ class EmailCapture extends \Magento\Framework\View\Element\Template
     /**
      * Is email capture enabled (applies to checkout only).
      *
-     * @return mixed
+     * @return bool
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function isEasyEmailCaptureEnabled()
     {
-        return $this->_scopeConfig->getValue(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_EMAIL_CAPTURE,
-            \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
+        return $this->_scopeConfig->isSetFlag(
+            Config::XML_PATH_CONNECTOR_EMAIL_CAPTURE,
+            ScopeInterface::SCOPE_WEBSITE,
             $this->_storeManager->getWebsite()->getId()
         );
     }

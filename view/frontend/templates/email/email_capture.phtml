@@ -1,0 +1,25 @@
+<?php
+
+declare(strict_types=1);
+
+use Dotdigitalgroup\Email\Block\EmailCapture;
+
+/** @var EmailCapture $block */
+
+if ($block->isEasyEmailCaptureEnabled() || $block->isWebBehaviourTrackingEnabled()):
+    $emailCaptureType = $block->getData('email_capture_type');
+    $emailCaptureUrl = $emailCaptureType === 'checkout' ?
+        $block->getEmailCaptureUrl() :
+        '';
+    ?>
+    <script type="text/x-magento-init">
+        {
+            "*": {
+                "Dotdigitalgroup_Email/js/emailCapture":{
+                    "type": "<?= $block->escapeJs($emailCaptureType); ?>",
+                    "url": "<?= $block->escapeUrl($emailCaptureUrl); ?>"
+            }
+        }
+    }
+    </script>
+<?php endif; ?>
