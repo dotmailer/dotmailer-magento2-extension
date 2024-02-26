@@ -1,10 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dotdigitalgroup\Email\Model\Config\Source\Automation;
 
 use Dotdigitalgroup\Email\Helper\Data;
-use Magento\Framework\App\RequestInterface;
-use Magento\Store\Model\StoreManagerInterface;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Framework\Registry;
 
 class Program implements \Magento\Framework\Data\OptionSourceInterface
 {
@@ -14,57 +17,73 @@ class Program implements \Magento\Framework\Data\OptionSourceInterface
     private $helper;
 
     /**
-     * @var RequestInterface
+     * @var Registry
      */
-    private $request;
-
-    /**
-     * @var StoreManagerInterface
-     */
-    private $storeManager;
+    private $registry;
 
     /**
      * Program constructor.
      *
-     * @param RequestInterface $requestInterface
      * @param Data $data
-     * @param StoreManagerInterface $storeManager
+     * @param Registry $registry
      */
     public function __construct(
-        RequestInterface $requestInterface,
         Data $data,
-        StoreManagerInterface $storeManager
+        Registry $registry
     ) {
         $this->helper = $data;
-        $this->request = $requestInterface;
-        $this->storeManager = $storeManager;
+        $this->registry = $registry;
     }
 
     /**
      * Get options.
      *
      * @return array
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
      */
     public function toOptionArray()
     {
         $fields = [];
-        $fields[] = ['value' => '0', 'label' => __('-- Disabled --')];
-        $websiteName = $this->request->getParam('website', false);
-        $websiteId = ($websiteName)
-            ? $this->storeManager->getWebsite($websiteName)->getId() : 0;
-        //api client is enabled
-        $apiEnabled = $this->helper->isEnabled($websiteId);
-        if ($apiEnabled) {
-            $client = $this->helper->getWebsiteApiClient($websiteId);
-            if ($programs = $client->getPrograms()) {
-                foreach ($programs as $one) {
-                    $id = $one->id ?? null;
-                    $status = $one->status ?? null;
-                    $name = $one->name ?? null;
-                    if (($id) && $status == 'Active') {
+        $fields[] = ['value' => '0', 'label' => '-- Disabled --'];
+        $website = $this->helper->getWebsiteForSelectedScopeInAdmin();
+        $websiteId = (int) $website->getId();
+
+        if ($this->helper->isEnabled($websiteId)) {
+            $savedPrograms = $this->registry->registry('programs');
+
+            //get saved datafields from registry
+            if (is_array($savedPrograms)) {
+                $programs = $savedPrograms;
+            } else {
+                //grab the datafields request and save to registry
+                $programs = [];
+                do {
+                    $client = $this->helper->getWebsiteApiClient($websiteId);
+                    $programResponse = $client->getPrograms(count($programs));
+
+                    if (is_object($programResponse)) {
+                        $programs = $programResponse;
+                        break;
+                    }
+
+                    $programs = array_merge($programs, $programResponse);
+                } while (count($programResponse) === 1000);
+                $this->registry->unregister('programs');
+                $this->registry->register('programs', $programs);
+            }
+
+            //set the api error message for the first option
+            if (isset($programs->message)) {
+                //message
+                $fields[] = ['value' => 0, 'label' => $programs->message];
+            } elseif (!empty($programs)) {
+                //loop for all programs option
+                foreach ($programs as $program) {
+                    if (isset($program->id) && isset($program->name) && isset($program->status)) {
                         $fields[] = [
-                            'value' => $id,
-                            'label' => $name,
+                            'value' => $program->id,
+                            'label' => $program->name . $this->getProgramStatus($program->status),
                         ];
                     }
                 }
@@ -72,5 +91,23 @@ class Program implements \Magento\Framework\Data\OptionSourceInterface
         }
 
         return $fields;
+    }
+
+    /**
+     * Get program status.
+     *
+     * @param string $programStatus
+     * @return \Magento\Framework\Phrase|string
+     */
+    private function getProgramStatus($programStatus)
+    {
+        switch ($programStatus) {
+            case 'Deactivated':
+                return __(' (Deactivated)');
+            case 'Draft':
+                return __(' (Draft)');
+            default:
+                return '';
+        }
     }
 }
