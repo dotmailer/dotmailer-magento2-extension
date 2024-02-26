@@ -186,25 +186,25 @@ class DataTest extends TestCase
             ->method('create')
             ->willReturn($this->clientMock);
 
+        $key = "12345";
+        $contactIdentifier = "test@emailsim.io";
         $expectedPayload = $this->getMockPayload();
 
         $this->quoteMock->expects($this->atLeastOnce())
             ->method('getId')
-            ->willReturn($expectedPayload['key']);
+            ->willReturn($key);
 
         $this->quoteMock->expects($this->atLeastOnce())
             ->method('__call')
             ->withConsecutive(
                 [$this->equalTo('getQuoteCurrencyCode')],
-                [$this->equalTo('getCustomerEmail')],
                 [$this->equalTo('getSubtotal')],
                 [$this->equalTo('getGrandTotal')]
             )
             ->willReturnOnConsecutiveCalls(
-                $expectedPayload['json']['currency'],
-                $expectedPayload['contactIdentifier'],
-                $expectedPayload['json']['subTotal'],
-                $expectedPayload['json']['grandTotal']
+                $expectedPayload['currency'],
+                $expectedPayload['subTotal'],
+                $expectedPayload['grandTotal']
             );
 
         $this->storeMock->expects($this->atLeastOnce())
@@ -215,9 +215,9 @@ class DataTest extends TestCase
             ->method('getUrl')
             ->with(
                 'connector/email/getbasket',
-                ['quote_id' => $expectedPayload['key']]
+                ['quote_id' => $key]
             )
-            ->willReturn($expectedPayload['json']['cartUrl']);
+            ->willReturn($expectedPayload['cartUrl']);
 
         // Dates
         $createdAt = "2018-03-31 18:53:28";
@@ -238,8 +238,8 @@ class DataTest extends TestCase
                 [\DateTime::ATOM, $updatedAt]
             )
             ->willReturnOnConsecutiveCalls(
-                $expectedPayload['json']['createdDate'],
-                $expectedPayload['json']['modifiedDate']
+                $expectedPayload['createdDate'],
+                $expectedPayload['modifiedDate']
             );
 
         $addressMock = $this->createMock(Quote\Address::class);
@@ -254,8 +254,8 @@ class DataTest extends TestCase
                 [$this->equalTo('getShippingAmount')]
             )
             ->willReturnOnConsecutiveCalls(
-                $expectedPayload['json']['taxAmount'],
-                $expectedPayload['json']['shipping']
+                $expectedPayload['taxAmount'],
+                $expectedPayload['shipping']
             );
 
         // Line items loop
@@ -273,19 +273,19 @@ class DataTest extends TestCase
 
         $itemsArray[0]->expects($this->once())
             ->method('getDiscountAmount')
-            ->willReturn($expectedPayload['json']['discountAmount']);
+            ->willReturn($expectedPayload['discountAmount']);
 
         $this->productMock->expects($this->atLeastOnce())
             ->method('getPrice')
-            ->willReturn($productPrice = $expectedPayload['json']['lineItems'][0]['unitPrice']);
+            ->willReturn($productPrice = $expectedPayload['lineItems'][0]['unitPrice']);
 
         $this->urlFinderMock->expects($this->once())
             ->method('fetchFor')
-            ->willReturn($expectedPayload['json']['lineItems'][0]['productUrl']);
+            ->willReturn($expectedPayload['lineItems'][0]['productUrl']);
 
         $this->imageFinderMock->expects($this->once())
             ->method('getCartImageUrl')
-            ->willReturn($expectedPayload['json']['lineItems'][0]['imageUrl']);
+            ->willReturn($expectedPayload['lineItems'][0]['imageUrl']);
 
         $this->productRepositoryMock->expects($this->atLeastOnce())
             ->method('get')
@@ -297,38 +297,38 @@ class DataTest extends TestCase
 
         $itemsArray[0]->expects($this->atLeastOnce())
             ->method('getSku')
-            ->willReturn($expectedPayload['json']['lineItems'][0]['sku']);
+            ->willReturn($expectedPayload['lineItems'][0]['sku']);
 
         $itemsArray[0]->expects($this->exactly(2))
             ->method('getName')
-            ->willReturn($expectedPayload['json']['lineItems'][0]['name']);
+            ->willReturn($expectedPayload['lineItems'][0]['name']);
 
         $itemsArray[0]->expects($this->once())
             ->method('getBasePrice')
-            ->willReturn($itemBasePrice = $expectedPayload['json']['lineItems'][0]['salePrice']);
+            ->willReturn($itemBasePrice = $expectedPayload['lineItems'][0]['salePrice']);
 
         $itemsArray[0]->expects($this->once())
             ->method('getPriceInclTax')
-            ->willReturn($expectedPayload['json']['lineItems'][0]['salePrice_incl_tax']);
+            ->willReturn($expectedPayload['lineItems'][0]['salePrice_incl_tax']);
 
         $itemsArray[0]->expects($this->once())
             ->method('getRowTotal')
-            ->willReturn($expectedPayload['json']['lineItems'][0]['totalPrice']);
+            ->willReturn($expectedPayload['lineItems'][0]['totalPrice']);
 
         $itemsArray[0]->expects($this->once())
             ->method('getRowTotalInclTax')
-            ->willReturn($expectedPayload['json']['lineItems'][0]['totalPrice_incl_tax']);
+            ->willReturn($expectedPayload['lineItems'][0]['totalPrice_incl_tax']);
 
         $itemsArray[0]->expects($this->once())
             ->method('getQty')
-            ->willReturn($expectedPayload['json']['lineItems'][0]['quantity']);
+            ->willReturn($expectedPayload['lineItems'][0]['quantity']);
 
         $this->priceCurrencyInterfaceMock
             ->expects($this->atLeast(2))
             ->method('convertAndRound')
             ->withConsecutive(
-                [$productPrice, $this->storeId, $expectedPayload['json']['currency']],
-                [$itemBasePrice, $this->storeId, $expectedPayload['json']['currency']]
+                [$productPrice, $this->storeId, $expectedPayload['currency']],
+                [$itemBasePrice, $this->storeId, $expectedPayload['currency']]
             )
             ->willReturnOnConsecutiveCalls(
                 $productPrice,
@@ -346,9 +346,9 @@ class DataTest extends TestCase
     public function testThatTotalPriceIsCorrectSumRegardlessOfSale()
     {
         $expectedPayload = $this->getMockPayload();
-        $salePrice = $expectedPayload['json']['lineItems'][0]['salePrice'];
-        $quantity = $expectedPayload['json']['lineItems'][0]['quantity'];
-        $totalPrice = $expectedPayload['json']['lineItems'][0]['totalPrice'];
+        $salePrice = $expectedPayload['lineItems'][0]['salePrice'];
+        $quantity = $expectedPayload['lineItems'][0]['quantity'];
+        $totalPrice = $expectedPayload['lineItems'][0]['totalPrice'];
 
         /*
          * totalPrice is always salePrice * quantity,
@@ -376,36 +376,32 @@ class DataTest extends TestCase
     private function getMockPayload()
     {
         return [
-            "key" => "12345",
-            "contactIdentifier" => "test@emailsim.io",
-            "json" => [
-                "cartId" => "12345",
-                "cartUrl" => "https://magentostore.com/cart/12345",
-                "createdDate" => "2018-03-31T18:53:28+00:00",
-                "modifiedDate" => "2018-03-31T19:53:28+00:00",
-                "currency" => "GBP",
-                "subTotal" => 98.4,
-                "discountAmount" => 8.4,
-                "taxAmount" => 12.34,
-                "shipping" => 11.43,
-                "grandTotal" => 90,
-                "lineItems" => [
-                    [
-                        "sku" => "PRODUCT-SKU",
-                        "imageUrl" => "https://magentostore.com/catalog/product/image.jpg",
-                        "productUrl" => "https://magentostore.com/product/PRODUCT-SKU",
-                        "name" => "Test Product",
-                        "unitPrice" => 49.2,
-                        "unitPrice_incl_tax" => 59.04,
-                        "quantity" => "2",
-                        "salePrice" => 46.15,
-                        "salePrice_incl_tax" => 50.25,
-                        "totalPrice" => 92.3,
-                        "totalPrice_incl_tax" => 110.76
-                    ]
-                ],
-                "cartPhase" => "ORDER_PENDING"
-            ]
+            "cartId" => "12345",
+            "cartUrl" => "https://magentostore.com/cart/12345",
+            "createdDate" => "2018-03-31T18:53:28+00:00",
+            "modifiedDate" => "2018-03-31T19:53:28+00:00",
+            "currency" => "GBP",
+            "subTotal" => 98.4,
+            "discountAmount" => 8.4,
+            "taxAmount" => 12.34,
+            "shipping" => 11.43,
+            "grandTotal" => 90,
+            "lineItems" => [
+                [
+                    "sku" => "PRODUCT-SKU",
+                    "imageUrl" => "https://magentostore.com/catalog/product/image.jpg",
+                    "productUrl" => "https://magentostore.com/product/PRODUCT-SKU",
+                    "name" => "Test Product",
+                    "unitPrice" => 49.2,
+                    "unitPrice_incl_tax" => 59.04,
+                    "quantity" => "2",
+                    "salePrice" => 46.15,
+                    "salePrice_incl_tax" => 50.25,
+                    "totalPrice" => 92.3,
+                    "totalPrice_incl_tax" => 110.76
+                ]
+            ],
+            "cartPhase" => "ORDER_PENDING"
         ];
     }
 }
