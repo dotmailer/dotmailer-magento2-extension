@@ -92,7 +92,7 @@ class CartPhaseUpdateConsumer
             $store = $this->storeManager->getStore($messageData->getStoreId());
 
             $data = $this->cartInsightData->getPayload($quote, $store);
-            $data['json']['cartPhase'] = 'ORDER_COMPLETE';
+            $data['cartPhase'] = 'ORDER_COMPLETE';
 
             $client = $this->clientFactory->create(
                 ['data' => ['websiteId' => $store->getWebsiteId()]]

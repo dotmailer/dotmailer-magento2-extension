@@ -97,7 +97,7 @@ class DummyRecordsData
     {
         /** @var Store $store */
         $store = $this->getStore($websiteId);
-        return $this->getStaticData($store, $websiteId);
+        return $this->getStaticData($store);
     }
 
     /**
@@ -121,28 +121,23 @@ class DummyRecordsData
      * Get static data.
      *
      * @param Store $store
-     * @param int $websiteId
      * @return array
      */
-    private function getStaticData($store, $websiteId)
+    private function getStaticData($store)
     {
         $data = [
-            'key' => '1',
-            'contactIdentifier' => $this->getEmailFromAccountInfo($websiteId),
-            'json' => [
-                'cartId' => '1',
-                'cartUrl' => $store->getBaseUrl(
-                    UrlInterface::URL_TYPE_WEB,
-                    $store->isCurrentlySecure()
-                ).'connector/email/getbasket/quote_id/1/',
-                'createdDate' => date(\DateTime::ATOM, time()),
-                'modifiedDate' => date(\DateTime::ATOM, time()),
-                'currency' => 'USD',
-                'subTotal' => round(52, 2),
-                'taxAmount' => (float) 0,
-                'shipping' => (float) 0,
-                'grandTotal' => round(52, 2)
-            ]
+            'cartId' => '1',
+            'cartUrl' => $store->getBaseUrl(
+                UrlInterface::URL_TYPE_WEB,
+                $store->isCurrentlySecure()
+            ).'connector/email/getbasket/quote_id/1/',
+            'createdDate' => date(\DateTime::ATOM, time()),
+            'modifiedDate' => date(\DateTime::ATOM, time()),
+            'currency' => 'USD',
+            'subTotal' => round(52, 2),
+            'taxAmount' => (float) 0,
+            'shipping' => (float) 0,
+            'grandTotal' => round(52, 2)
         ];
 
         $lineItems[] = [
@@ -159,9 +154,9 @@ class DummyRecordsData
             'totalPrice' => round(52, 2)
         ];
 
-        $data['json']['discountAmount'] = 0;
-        $data['json']['lineItems'] = $lineItems;
-        $data['json']['cartPhase'] = 'ORDER_PENDING';
+        $data['discountAmount'] = 0;
+        $data['lineItems'] = $lineItems;
+        $data['cartPhase'] = 'ORDER_PENDING';
 
         return $data;
     }
@@ -185,7 +180,7 @@ class DummyRecordsData
      * @return string
      * @throws \Exception
      */
-    private function getEmailFromAccountInfo($websiteId)
+    public function getEmailFromAccountInfo($websiteId)
     {
         $accountInfo = $this->helper->getWebsiteApiClient($websiteId)->getAccountInfo();
         return $this->account->getAccountOwnerEmail($accountInfo);

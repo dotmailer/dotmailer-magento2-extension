@@ -176,19 +176,15 @@ class ImporterTest extends TestCase
      */
     private function getData()
     {
-        return $data = [
-            'key' => 1,
-            'contactIdentifier' => 'testContactIdentifier',
-            'json' => [
-                'cartId' => 1,
-                'cartUrl' => 'http://sampleurl.io/cartid/12',
-                'createdDate' => 'sampleDate',
-                'modifiedDate' => 'sampleDate',
-                'currency' => 'GBP',
-                'subTotal' => '120.00',
-                'taxAmount' => '20.00',
-                'grandTotal' => '140.00'
-            ]
+        return [
+            'cartId' => 1,
+            'cartUrl' => 'http://sampleurl.io/cartid/12',
+            'createdDate' => 'sampleDate',
+            'modifiedDate' => 'sampleDate',
+            'currency' => 'GBP',
+            'subTotal' => '120.00',
+            'taxAmount' => '20.00',
+            'grandTotal' => '140.00'
         ];
     }
 }

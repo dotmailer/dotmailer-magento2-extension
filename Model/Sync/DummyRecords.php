@@ -84,6 +84,7 @@ class DummyRecords implements SyncInterface
      */
     private function postContactAndCartInsightData($websiteId = 0)
     {
+        $identifier = $this->dummyData->getEmailFromAccountInfo($websiteId);
         $cartInsightData = $this->dummyData->getContactInsightData($websiteId);
         $client = $this->clientFactory->create(
             ['data' => ['websiteId' => $websiteId]]
@@ -92,7 +93,7 @@ class DummyRecords implements SyncInterface
         try {
             $contact = $this->sdkContactFactory->create();
             $contact->setMatchIdentifier('email');
-            $contact->setIdentifiers(['email' => $cartInsightData['contactIdentifier']]);
+            $contact->setIdentifiers(['email' => $identifier]);
             $client->contacts->create($contact);
         } catch (ResponseValidationException $e) {
             if (strpos($e->getMessage(), 'identifierConflict') === false) {
@@ -110,9 +111,9 @@ class DummyRecords implements SyncInterface
         try {
             $client->insightData->createOrUpdateContactCollectionRecord(
                 'CartInsight',
-                $cartInsightData['key'],
+                '1',
                 'email',
-                $cartInsightData['contactIdentifier'],
+                $this->dummyData->getEmailFromAccountInfo($websiteId),
                 $cartInsightData
             );
         } catch (ResponseValidationException $e) {

@@ -186,19 +186,15 @@ class Data
         $quoteCurrency = $quote->getQuoteCurrencyCode();
 
         $data = [
-            'key' => $quote->getId(),
-            'contactIdentifier' => $quote->getCustomerEmail(),
-            'json' => [
-                'cartId' => $quote->getId(),
-                'cartUrl' => $this->getBasketUrl($quote->getId(), $store),
-                'createdDate' => $this->dateTime->date(\DateTime::ATOM, $quote->getCreatedAt()),
-                'modifiedDate' => $this->dateTime->date(\DateTime::ATOM, $quote->getUpdatedAt()),
-                'currency' => $quoteCurrency,
-                'subTotal' => round($quote->getSubtotal() ?: 0, 2),
-                'taxAmount' => round($quote->getShippingAddress()->getTaxAmount() ?: 0, 2),
-                'shipping' => round($quote->getShippingAddress()->getShippingAmount() ?: 0, 2),
-                'grandTotal' => round($quote->getGrandTotal() ?: 0, 2)
-            ]
+            'cartId' => $quote->getId(),
+            'cartUrl' => $this->getBasketUrl($quote->getId(), $store),
+            'createdDate' => $this->dateTime->date(\DateTime::ATOM, $quote->getCreatedAt()),
+            'modifiedDate' => $this->dateTime->date(\DateTime::ATOM, $quote->getUpdatedAt()),
+            'currency' => $quoteCurrency,
+            'subTotal' => round($quote->getSubtotal() ?: 0, 2),
+            'taxAmount' => round($quote->getShippingAddress()->getTaxAmount() ?: 0, 2),
+            'shipping' => round($quote->getShippingAddress()->getShippingAmount() ?: 0, 2),
+            'grandTotal' => round($quote->getGrandTotal() ?: 0, 2)
         ];
 
         $discountTotal = 0;
@@ -225,9 +221,9 @@ class Data
             ];
         }
 
-        $data['json']['discountAmount'] = (float) $discountTotal;
-        $data['json']['lineItems'] = $lineItems;
-        $data['json']['cartPhase'] = 'ORDER_PENDING';
+        $data['discountAmount'] = (float) $discountTotal;
+        $data['lineItems'] = $lineItems;
+        $data['cartPhase'] = 'ORDER_PENDING';
 
         return $data;
     }
