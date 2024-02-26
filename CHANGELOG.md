@@ -1,3 +1,13 @@
+# 4.24.2
+
+### Improvements
+- We added logging to the method that enrols order status automations when orders are saved.
+
+### Bug fixes
+- We repaired a problem with our `ProcessPendingAutomations` data patch.
+- Redundant keys have been removed from the updated V3 cart insight data send.
+- We fixed the program list displayed for order status enrolment at store view level.
+
 # 4.24.1
 
 ### Bug fixes
