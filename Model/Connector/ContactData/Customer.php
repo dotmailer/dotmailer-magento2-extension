@@ -2,12 +2,24 @@
 
 namespace Dotdigitalgroup\Email\Model\Connector\ContactData;
 
+use Dotdigitalgroup\Email\Helper\Config;
 use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Connector\ContactData;
 use Dotdigitalgroup\Email\Model\Customer\DataField\Date;
+use Dotdigitalgroup\Email\Model\Newsletter\BackportedSubscriberLoader;
+use Magento\Catalog\Api\Data\CategoryInterfaceFactory;
+use Magento\Catalog\Api\Data\ProductInterfaceFactory;
+use Magento\Catalog\Model\ResourceModel\Category;
+use Magento\Catalog\Model\ResourceModel\Product;
+use Magento\Customer\Model\GroupFactory;
+use Magento\Customer\Model\ResourceModel\Group;
 use Magento\Framework\Model\AbstractModel;
+use Magento\Newsletter\Model\SubscriberFactory;
+use Magento\Review\Model\ResourceModel\Review\CollectionFactory;
 use Magento\Review\Model\Review;
-use Magento\Store\Model\App\Emulation;
+use Magento\Sales\Model\OrderFactory;
+use Magento\Sales\Model\ResourceModel\Order;
+use Magento\Store\Model\StoreManagerInterface;
 
 /**
  * Manages the Customer data as datafields for contact.
@@ -25,7 +37,7 @@ class Customer extends ContactData
     public $model;
 
     /**
-     * @var \Magento\Review\Model\ResourceModel\Review\CollectionFactory
+     * @var CollectionFactory
      */
     private $reviewCollectionFactory;
 
@@ -40,22 +52,22 @@ class Customer extends ContactData
     public $logger;
 
     /**
-     * @var \Magento\Customer\Model\GroupFactory
+     * @var GroupFactory
      */
     public $groupFactory;
 
     /**
-     * @var \Magento\Newsletter\Model\SubscriberFactory
+     * @var SubscriberFactory
      */
     public $subscriberFactory;
 
     /**
-     * @var \Magento\Catalog\Api\Data\CategoryInterfaceFactory
+     * @var CategoryInterfaceFactory
      */
     public $categoryFactory;
 
     /**
-     * @var \Magento\Catalog\Api\Data\ProductInterfaceFactory
+     * @var ProductInterfaceFactory
      */
     public $productFactory;
 
@@ -65,14 +77,14 @@ class Customer extends ContactData
     public $contactFactory;
 
     /**
-     * @var \Magento\Customer\Model\ResourceModel\Group
+     * @var Group
      */
     private $groupResource;
 
     /**
-     * @var Emulation
+     * @var BackportedSubscriberLoader
      */
-    private $appEmulation;
+    private $backportedSubscriberLoader;
 
     /**
      * @var array
@@ -82,46 +94,46 @@ class Customer extends ContactData
     /**
      * Customer constructor.
      *
-     * @param \Magento\Catalog\Model\ResourceModel\Product $productResource
-     * @param \Magento\Catalog\Model\ResourceModel\Category $categoryResource
-     * @param \Magento\Customer\Model\ResourceModel\Group $groupResource
-     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
-     * @param \Magento\Review\Model\ResourceModel\Review\CollectionFactory $reviewCollectionFactory
-     * @param \Magento\Customer\Model\GroupFactory $groupFactory
-     * @param \Magento\Newsletter\Model\SubscriberFactory $subscriberFactory
-     * @param \Magento\Catalog\Api\Data\CategoryInterfaceFactory $categoryFactory
-     * @param \Magento\Catalog\Api\Data\ProductInterfaceFactory $productFactory
-     * @param \Magento\Sales\Model\OrderFactory $orderFactory
-     * @param \Magento\Sales\Model\ResourceModel\Order $resourceOrder
-     * @param \Dotdigitalgroup\Email\Helper\Config $configHelper
+     * @param Product $productResource
+     * @param Category $categoryResource
+     * @param Group $groupResource
+     * @param StoreManagerInterface $storeManager
+     * @param CollectionFactory $reviewCollectionFactory
+     * @param GroupFactory $groupFactory
+     * @param SubscriberFactory $subscriberFactory
+     * @param CategoryInterfaceFactory $categoryFactory
+     * @param ProductInterfaceFactory $productFactory
+     * @param OrderFactory $orderFactory
+     * @param Order $resourceOrder
+     * @param Config $configHelper
      * @param Logger $logger
      * @param \Magento\Eav\Model\Config $eavConfig
      * @param Date $dateField
-     * @param Emulation $appEmulation
+     * @param BackportedSubscriberLoader $backportedSubscriberLoader
      */
     public function __construct(
-        \Magento\Catalog\Model\ResourceModel\Product $productResource,
-        \Magento\Catalog\Model\ResourceModel\Category $categoryResource,
-        \Magento\Customer\Model\ResourceModel\Group $groupResource,
-        \Magento\Store\Model\StoreManagerInterface $storeManager,
-        \Magento\Review\Model\ResourceModel\Review\CollectionFactory $reviewCollectionFactory,
-        \Magento\Customer\Model\GroupFactory $groupFactory,
-        \Magento\Newsletter\Model\SubscriberFactory $subscriberFactory,
-        \Magento\Catalog\Api\Data\CategoryInterfaceFactory $categoryFactory,
-        \Magento\Catalog\Api\Data\ProductInterfaceFactory $productFactory,
-        \Magento\Sales\Model\OrderFactory $orderFactory,
-        \Magento\Sales\Model\ResourceModel\Order $resourceOrder,
-        \Dotdigitalgroup\Email\Helper\Config $configHelper,
+        Product $productResource,
+        Category $categoryResource,
+        Group $groupResource,
+        StoreManagerInterface $storeManager,
+        CollectionFactory $reviewCollectionFactory,
+        GroupFactory $groupFactory,
+        SubscriberFactory $subscriberFactory,
+        CategoryInterfaceFactory $categoryFactory,
+        ProductInterfaceFactory $productFactory,
+        OrderFactory $orderFactory,
+        Order $resourceOrder,
+        Config $configHelper,
         Logger $logger,
         \Magento\Eav\Model\Config $eavConfig,
         Date $dateField,
-        Emulation $appEmulation
+        BackportedSubscriberLoader $backportedSubscriberLoader
     ) {
         $this->reviewCollectionFactory = $reviewCollectionFactory;
-        $this->groupFactory      = $groupFactory;
+        $this->groupFactory = $groupFactory;
         $this->subscriberFactory = $subscriberFactory;
-        $this->groupResource     = $groupResource;
-        $this->appEmulation = $appEmulation;
+        $this->groupResource = $groupResource;
+        $this->backportedSubscriberLoader = $backportedSubscriberLoader;
         $this->dateField = $dateField;
 
         parent::__construct(
@@ -498,12 +510,10 @@ class Customer extends ContactData
      */
     public function getSubscriberStatus()
     {
-        $this->appEmulation->startEnvironmentEmulation($this->model->getStoreId());
-
-        $subscriberModel = $this->subscriberFactory->create()
-            ->loadByCustomerId($this->model->getId());
-
-        $this->appEmulation->stopEnvironmentEmulation();
+        $subscriberModel = $this->backportedSubscriberLoader->loadByCustomer(
+            $this->model->getId(),
+            $this->model->getWebsiteId()
+        );
 
         if ($subscriberModel->getCustomerId()) {
             try {
