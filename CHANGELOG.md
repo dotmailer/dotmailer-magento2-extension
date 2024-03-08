@@ -1,3 +1,12 @@
+# 4.25.0
+
+### What's new
+- Information about each store's current theme will now be sent with Integration Insight data.
+
+### Improvements
+- Blocks and templates for email capture have been consolidated and simplified.
+- The quote will be updated at guest checkout if the email address is changed after initial input.
+
 # 4.24.2
 
 ### Improvements
