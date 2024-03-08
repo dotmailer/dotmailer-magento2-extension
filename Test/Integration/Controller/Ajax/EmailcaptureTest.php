@@ -80,14 +80,25 @@ class EmailcaptureTest extends AbstractController
         $this->dispatch('/connector/ajax/emailcapture');
     }
 
-    public function testQuoteAlreadyHasEmail()
+    public function testQuoteAlreadyHasEmailButIsDifferent()
+    {
+        $this->setUpForAvailableQuote('wingman@cauals.com');
+
+        $this->quoteMock->expects($this->once())
+            ->method('setCustomerEmail');
+
+        $this->getRequest()->setParams(['email' => 'chaz@kangaroo.com'])->setMethod(HttpRequest::METHOD_POST);
+        $this->dispatch('/connector/ajax/emailcapture');
+    }
+
+    public function testQuoteAlreadyHasSameEmail()
     {
         $this->setUpForAvailableQuote('wingman@cauals.com');
 
         $this->quoteMock->expects($this->never())
             ->method('setCustomerEmail');
 
-        $this->getRequest()->setParams(['email' => 'chaz@kangaroo.com'])->setMethod(HttpRequest::METHOD_POST);
+        $this->getRequest()->setParams(['email' => 'wingman@cauals.com'])->setMethod(HttpRequest::METHOD_POST);
         $this->dispatch('/connector/ajax/emailcapture');
     }
 
