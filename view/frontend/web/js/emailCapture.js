@@ -1,8 +1,6 @@
 define(['jquery', 'domReady!'], function ($) {
     'use strict';
 
-    var previousEmail;
-
     /**
      * Email validation
      * @param {String} sEmail
@@ -26,7 +24,7 @@ define(['jquery', 'domReady!'], function ($) {
         $(document).on('blur', selectors.join(', '), function () {
             var email = $(this).val();
 
-            if (!email || email === previousEmail || !validateEmail(email)) {
+            if (!email || !validateEmail(email)) {
                 return;
             }
 
@@ -34,7 +32,7 @@ define(['jquery', 'domReady!'], function ($) {
                 window.dmPt('identify', email);
             }
 
-            if (type === 'checkout') {
+            if (type === 'checkout' && url.length > 0) {
                 $.post(url, {
                     email: email
                 });

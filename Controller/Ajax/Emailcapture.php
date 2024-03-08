@@ -82,7 +82,7 @@ class Emailcapture implements HttpPostActionInterface
 
             $responseCode = '200';
 
-            if ($quote->hasItems() && !$quote->getCustomerEmail()) {
+            if ($quote->hasItems() && $quote->getCustomerEmail() !== $email) {
                 try {
                     $quote->setCustomerEmail($email);
                     $this->quoteResource->save($quote);

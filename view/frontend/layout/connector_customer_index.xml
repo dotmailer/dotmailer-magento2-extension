@@ -3,9 +3,6 @@
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <update handle="customer_account"/>
-    <head>
-        <script src="Dotdigitalgroup_Email::js/newsletterPreferences.js"/>
-    </head>
     <body>
         <referenceBlock name="page.main.title">
             <action method="setPageTitle">

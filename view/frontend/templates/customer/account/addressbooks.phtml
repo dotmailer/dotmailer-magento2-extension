@@ -17,22 +17,20 @@ if (!empty($additionalBooks)): ?>
         <legend class="legend">
             <span><?= $block->escapeHtml(__('Lists')) ?></span>
         </legend>
-        <ul class="form-list" style="padding-left: 0">
-            <?php foreach ($additionalBooks as $books): ?>
-                <li class="control" style="display: block; margin: 5px 0 5px 10px">
-                    <input type="checkbox" name="additional_subscriptions[]"
-                           id="<?= $block->escapeHtml($books["name"]); ?>"
-                           value="<?= $block->escapeHtml($books["value"]) ?>"
-                           title="<?= $block->escapeHtml($books["name"]) ?>"
-                        <?php if ($books["subscribed"]): ?>
-                            checked="checked"
-                        <?php endif; ?> class="checkbox"
-                    />
-                    <label for="<?= $block->escapeHtml($books["name"]); ?>">
-                        <?= $block->escapeHtml($books["name"]) ?>
-                    </label>
-                </li>
-            <?php endforeach; ?>
-        </ul>
+        <?php foreach ($additionalBooks as $books): ?>
+            <div class="control field choice" >
+                <input type="checkbox" name="additional_subscriptions[]"
+                       id="<?= $block->escapeHtml($books["name"]); ?>"
+                       value="<?= $block->escapeHtml($books["value"]) ?>"
+                       title="<?= $block->escapeHtml($books["name"]) ?>"
+                    <?php if ($books["subscribed"]): ?>
+                        checked="checked"
+                    <?php endif; ?> class="checkbox"
+                />
+                <label for="<?= $block->escapeHtml($books["name"]); ?>">
+                    <?= $block->escapeHtml($books["name"]) ?>
+                </label>
+            </div>
+        <?php endforeach; ?>
     </fieldset>
 <?php endif; ?>

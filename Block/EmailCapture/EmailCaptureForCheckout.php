@@ -5,9 +5,11 @@ namespace Dotdigitalgroup\Email\Block\EmailCapture;
 use Magento\Framework\View\Element\Template\Context;
 
 /**
- * Coupon block
+ * Email Capture (Checkout) block
  *
  * @api
+ * @deprecated 4.25.0
+ * @see \Dotdigitalgroup\Email\Block\EmailCapture
  */
 class EmailCaptureForCheckout extends EmailCapture
 {
