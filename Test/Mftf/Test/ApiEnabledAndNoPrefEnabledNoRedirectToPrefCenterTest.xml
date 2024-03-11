@@ -2,12 +2,12 @@
 
 <tests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
-    <test name="ApiEnabledAndNoPrefEnabledNoRedirectToPrefCenterTest">
+    <test name="ApiEnabledAndNoPrefEnabledRedirectToPrefCenterTest">
         <annotations>
             <features value="Dotdigital module"/>
-            <stories value="If API enabled and none of the preferences enabled, plugin shouldn't redirect to preference page."/>
-            <title value="You should not be able to see dotmailer preferences page if api is enabled but none of the preferences are enabled."/>
-            <description value="You should not be able to see dotmailer preferences page if api is enabled but none of the preferences are enabled."/>
+            <stories value="If API enabled and none of the preferences enabled, plugin should redirect to preference page."/>
+            <title value="Test redirect to preference centre if API is enabled."/>
+            <description value="You should be redirected to the Dotdigital preferences page if the API connection is enabled."/>
             <severity value="AVERAGE"/>
             <group value="dotmailer"/>
         </annotations>
@@ -29,6 +29,6 @@
         <actionGroup ref="SetAllPreferencesTypeToShowNo" stepKey="setAllPreferencesTypeToShowNo"/>
         <amOnPage url="newsletter/manage/" stepKey="amOnCustomerNewsletterManagePage"/>
         <waitForPageLoad stepKey="waitForPageLoad"/>
-        <dontSeeInCurrentUrl url="connector" stepKey="dotmailerPreferencesPage"/>
+        <seeInCurrentUrl url="connector" stepKey="dotmailerPreferencesPage"/>
     </test>
 </tests>
