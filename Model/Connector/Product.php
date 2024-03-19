@@ -173,7 +173,7 @@ class Product
         $this->id = $product->getId();
         $this->sku = $product->getSku();
         $this->name = $product->getName();
-        $this->created_date = $this->dateTime->date(\DateTimeInterface::ATOM, $product->getCreatedAt());
+        $this->created_date = $this->dateTime->date(\DateTime::ATOM, $product->getCreatedAt());
 
         $this->status = $this->statusFactory->create()
             ->getOptionText($product->getStatus());
