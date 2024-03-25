@@ -15,6 +15,21 @@ You are welcome to contribute to Engagement Cloud for Magento! You can either:
 - Fix a bug: please clone and use our [Develop branch](https://github.com/dotmailer/dotmailer-magento2-extension/tree/develop) to submit your Pull Request
 - Request a feature on our [roadmap](https://roadmap.dotdigital.com)
 
+## 4.2.2 
+
+###### Bug fixes
+- Use DateTime constant for PHP 7.0 compatibility.
+
+## 4.2.1
+
+###### Backport
+- Add a new 'Created Date' property to be synced with catalog sync.
+
+## 4.2.0-p1
+
+###### Bug fixes
+- We've resolved a compilation error affecting older versions of Magento, specifically 2.1.8. Merchants would see '[Reflection Exception] Class does not exist'. Apparently by simply adjusting the position of the abstract method inside the AbstractCustomSelectTable class, ClassReader can interpret the file, and the error goes away.
+
 ## 4.2.0
 
 ###### Bug fixes
