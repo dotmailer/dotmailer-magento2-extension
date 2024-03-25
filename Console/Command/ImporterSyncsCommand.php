@@ -8,6 +8,7 @@ use Magento\Framework\App\Area;
 use Magento\Framework\App\State;
 use Magento\Framework\Exception\LocalizedException;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -137,6 +138,7 @@ class ImporterSyncsCommand extends Command
             array_column($this->syncProvider->getAvailableSyncs(), 'title')
         );
         $syncQuestion->setErrorMessage(__('Please select a sync')->getText());
+        /** @var QuestionHelper $helper */
         return $helper->ask($input, $output, $syncQuestion);
     }
 }
