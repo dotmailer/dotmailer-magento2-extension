@@ -114,7 +114,7 @@ class Campaign implements SyncInterface
             $storeIds = $website->getStoreIds();
 
             //check send status for processing
-            $this->_checkSendStatus($website->getId(), $storeIds);
+            $this->_checkSendStatus((int) $website->getId(), $storeIds);
             //start send process
 
             $emailsToSend = $this->_getEmailCampaigns($storeIds);
@@ -134,7 +134,7 @@ class Campaign implements SyncInterface
      * @return void
      * @throws LocalizedException
      */
-    public function _checkSendStatus($websiteId, $storeIds)
+    public function _checkSendStatus(int $websiteId, $storeIds)
     {
         $this->expireExpiredCampaigns($storeIds);
         $campaigns = $this->_getEmailCampaigns(
