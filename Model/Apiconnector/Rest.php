@@ -293,9 +293,8 @@ class Rest
 
         if (!$response) {
             $response = new stdClass();
-            if ($curlError = $this->getCurlError()) {
-                $response->message = $curlError;
-            }
+            $curlError = $this->getCurlError();
+            $response->message = $curlError ?: 'No response in REST client';
         }
 
         $this->responseMessage = $response->message ?? null;
@@ -640,7 +639,7 @@ class Rest
     /**
      * Get error
      *
-     * @return mixed
+     * @return string|false
      */
     public function getCurlError()
     {

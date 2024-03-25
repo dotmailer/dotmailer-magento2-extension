@@ -66,7 +66,7 @@ class Test
      * @param string $apiUsername
      * @param string $apiPassword
      *
-     * @return bool|mixed
+     * @return bool
      * @throws \Exception
      */
     public function validate(string $apiUsername, string $apiPassword)
@@ -88,7 +88,6 @@ class Test
                 ->getAccountInfo($website->getId());
 
             if (isset($accountInfo->message)) {
-                $this->helper->error('VALIDATION ERROR :  ' . $accountInfo->message);
                 return false;
             }
             $scope = $website->getId() > 0 ? ScopeInterface::SCOPE_WEBSITES : ScopeConfigInterface::SCOPE_TYPE_DEFAULT;
@@ -111,7 +110,7 @@ class Test
             }
 
             $this->config->reinit();
-            return $accountInfo;
+            return true;
         }
 
         return false;
