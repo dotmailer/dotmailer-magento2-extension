@@ -8,6 +8,8 @@ use Magento\Framework\View\Element\Template;
  * @var $escaper Escaper
  * @var $productNotification ProductNotificationView
  */
+// phpcs:disable Magento2.Legacy.EscapeMethodsOnBlockClass
+
 $productNotification = $block->getProductNotification();
 ?>
 <?php if ($productNotification->canDisplay()): ?>
@@ -31,4 +33,6 @@ $productNotification = $block->getProductNotification();
             }
         }
     </script>
-<?php endif; ?>
+<?php endif;
+// phpcs:enable
+?>

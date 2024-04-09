@@ -1,25 +1,24 @@
 <?php
-// @codingStandardsIgnoreFile
-
 /* @var $block \Magento\Backend\Block\Store\Switcher */
+// phpcs:disable Magento2.Legacy.EscapeMethodsOnBlockClass
 ?>
 <?php if ($websites = $block->getWebsites()): ?>
 
     <div class="store-switcher store-view">
-        <span class="store-switcher-label"><?php echo $block->escapeHtml(__('Websites View:')) ?></span>
+        <span class="store-switcher-label"><?= $block->escapeHtml(__('Websites View:')) ?></span>
         <div class="actions dropdown closable">
             <input type="hidden" name="store_switcher" id="store_switcher"
-                   data-role="store-view-id" data-param="<?php echo $block->escapeHtml($block->getStoreVarName()) ?>"
-                   value="<?php echo $block->escapeHtml($block->getStoreId()) ?>"
-                   onchange="switchScope(this);"<?php echo $block->escapeHtml($block->getUiId()) ?> />
+                   data-role="store-view-id" data-param="<?= $block->escapeHtml($block->getStoreVarName()) ?>"
+                   value="<?= $block->escapeHtml($block->getStoreId()) ?>"
+                   onchange="switchScope(this);"<?= $block->escapeHtml($block->getUiId()) ?> />
             <input type="hidden" name="store_group_switcher" id="store_group_switcher"
-                   data-role="store-group-id" data-param="<?php echo $block->escapeHtml($block->getStoreGroupVarName()) ?>"
-                   value="<?php echo $block->escapeHtml($block->getStoreGroupId()) ?>"
-                   onchange="switchScope(this);"<?php echo $block->escapeHtml($block->getUiId()) ?> />
+                   data-role="store-group-id" data-param="<?= $block->escapeHtml($block->getStoreGroupVarName()) ?>"
+                   value="<?= $block->escapeHtml($block->getStoreGroupId()) ?>"
+                   onchange="switchScope(this);"<?= $block->escapeHtml($block->getUiId()) ?> />
             <input type="hidden" name="website_switcher" id="website_switcher"
-                   data-role="website-id" data-param="<?php echo $block->escapeHtml($block->getWebsiteVarName()) ?>"
-                   value="<?php echo $block->escapeHtml($block->getWebsiteId()) ?>"
-                   onchange="switchScope(this);"<?php echo $block->escapeHtml($block->getUiId()) ?> />
+                   data-role="website-id" data-param="<?= $block->escapeHtml($block->getWebsiteVarName()) ?>"
+                   value="<?= $block->escapeHtml($block->getWebsiteId()) ?>"
+                   onchange="switchScope(this);"<?= $block->escapeHtml($block->getUiId()) ?> />
             <button
                 type="button"
                 class="admin__action-dropdown"
@@ -27,24 +26,20 @@
                 data-toggle="dropdown"
                 aria-haspopup="true"
                 id="store-change-button">
-                <?php echo $block->escapeHtml($block->getCurrentSelectionName()) ?>
+                <?= $block->escapeHtml($block->getCurrentSelectionName()) ?>
             </button>
             <ul class="dropdown-menu" data-role="stores-list">
                 <?php if ($block->hasDefaultOption()): ?>
-                    <li class="store-switcher-all <?php if ( ! ($block->getDefaultSelectionName() != $block->getCurrentSelectionName())) {
-                        echo "disabled";
-                    } ?> <?php if ( ! $block->hasScopeSelected()) {
-                        ?> current<?php
-                    } ?>">
+                    <li class="store-switcher-all <?php if (! ($block->getDefaultSelectionName() != $block->getCurrentSelectionName())) { echo "disabled"; } ?> <?php if (! $block->hasScopeSelected()) { ?> current<?php } // phpcs:ignore Generic.Files.LineLength.TooLong ?>">
                         <?php if ($block->getDefaultSelectionName() != $block->getCurrentSelectionName()) {
                             ?>
                             <a data-role="store-view-id" data-value="" href="#">
-                                <?php echo $block->escapeHtml($block->getDefaultSelectionName()) ?>
+                                <?= $block->escapeHtml($block->getDefaultSelectionName()) ?>
                             </a>
                             <?php
                         } else {
                             ?>
-                            <span><?php echo $block->escapeHtml($block->getDefaultSelectionName()) ?></span>
+                            <span><?= $block->escapeHtml($block->getDefaultSelectionName()) ?></span>
                             <?php
                         } ?>
                     </li>
@@ -56,67 +51,55 @@
                         <?php foreach ($block->getStores($group) as $store): ?>
                             <?php if ($showWebsite == false): ?>
                                 <?php $showWebsite = true; ?>
-                                <li class="store-switcher-website <?php if ( ! ($block->isWebsiteSwitchEnabled() && ! $block->isWebsiteSelected($website))) {
-                                    echo "disabled";
-                                } ?> <?php if ($block->isWebsiteSelected($website)) {
-                                    ?> current<?php
-                                } ?>">
-                                    <?php if ($block->isWebsiteSwitchEnabled() && ! $block->isWebsiteSelected($website)) {
-                                        ?>
-                                        <a data-role="website-id" data-value="<?php echo $block->escapeHtml($website->getId()) ?>" href="#">
-                                            <?php echo $block->escapeHtml($website->getName()) ?>
+                                <li class="store-switcher-website <?php if (! ($block->isWebsiteSwitchEnabled() && ! $block->isWebsiteSelected($website))) { echo "disabled"; } ?> <?php if ($block->isWebsiteSelected($website)) { ?> current<?php } // phpcs:ignore Generic.Files.LineLength.TooLong ?>">
+                                    <?php if ($block->isWebsiteSwitchEnabled() && ! $block->isWebsiteSelected($website)) { // phpcs:ignore Generic.Files.LineLength.TooLong ?>
+                                        <a data-role="website-id"
+                                           data-value="<?= $block->escapeHtml($website->getId()) ?>" href="#">
+                                            <?= $block->escapeHtml($website->getName()) ?>
                                         </a>
                                         <?php
                                     } else {
                                         ?>
-                                        <span><?php echo $block->escapeHtml($website->getName()) ?></span>
+                                        <span><?= $block->escapeHtml($website->getName()) ?></span>
                                         <?php
                                     } ?>
                                 </li>
                             <?php endif; ?>
                             <?php if ($showGroup == false): ?>
                                 <?php $showGroup = true; ?>
-                                <li class="store-switcher-store <?php if ( ! ($block->isStoreGroupSwitchEnabled() && ! $block->isStoreGroupSelected($group))) {
-                                    echo "disabled";
-                                } ?> <?php if ($block->isStoreGroupSelected($group)) {
-                                    ?> current<?php
-                                } ?>">
-                                    <?php if ($block->isStoreGroupSwitchEnabled() && ! $block->isStoreGroupSelected($group)) {
-                                        ?>
-                                        <a data-role="store-group-id" data-value="<?php echo $block->escapeHtml($group->getId()) ?>" href="#">
-                                            <?php echo $block->escapeHtml($group->getName()) ?>
+                                <li class="store-switcher-store <?php if (! ($block->isStoreGroupSwitchEnabled() && ! $block->isStoreGroupSelected($group))) { echo "disabled"; } ?> <?php if ($block->isStoreGroupSelected($group)) { ?> current<?php } // phpcs:ignore Generic.Files.LineLength.TooLong ?>">
+                                    <?php if ($block->isStoreGroupSwitchEnabled() && ! $block->isStoreGroupSelected($group)) { // phpcs:ignore Generic.Files.LineLength.TooLong ?>
+                                        <a data-role="store-group-id"
+                                           data-value="<?= $block->escapeHtml($group->getId()) ?>" href="#">
+                                            <?= $block->escapeHtml($group->getName()) ?>
                                         </a>
                                         <?php
                                     } else {
                                         ?>
-                                        <span><?php echo $block->escapeHtml($group->getName()) ?></span>
+                                        <span><?= $block->escapeHtml($group->getName()) ?></span>
                                         <?php
                                     } ?>
                                 </li>
                             <?php endif; ?>
-                            <li class="store-switcher-store-view <?php if ( ! ($block->isStoreSwitchEnabled() && ! $block->isStoreSelected($store))) {
-                                echo "disabled";
-                            } ?> <?php if ($block->isStoreSelected($store)) {
-                                ?> current<?php
-                            } ?>">
-                                <?php if ($block->isStoreSwitchEnabled() && ! $block->isStoreSelected($store)) {
-                                    ?>
-                                    <a data-role="store-view-id" data-value="<?php echo $block->escapeHtml($store->getId()) ?>" href="#">
-                                        <?php echo $block->escapeHtml($store->getName()) ?>
+                            <li class="store-switcher-store-view <?php if (! ($block->isStoreSwitchEnabled() && ! $block->isStoreSelected($store))) { echo "disabled"; } ?> <?php if ($block->isStoreSelected($store)) { ?> current<?php } // phpcs:ignore Generic.Files.LineLength.TooLong ?>">
+                                <?php if ($block->isStoreSwitchEnabled() && ! $block->isStoreSelected($store)) { ?>
+                                    <a data-role="store-view-id"
+                                       data-value="<?= $block->escapeHtml($store->getId()) ?>" href="#">
+                                        <?= $block->escapeHtml($store->getName()) ?>
                                     </a>
                                     <?php
                                 } else {
                                     ?>
-                                    <span><?php echo $block->escapeHtml($store->getName()) ?></span>
+                                    <span><?= $block->escapeHtml($store->getName()) ?></span>
                                     <?php
                                 } ?>
                             </li>
                         <?php endforeach; ?>
                     <?php endforeach; ?>
                 <?php endforeach; ?>
-                <?php if ($block->getShowManageStoresLink() && $block->getAuthorization()->isAllowed('Magento_Backend::store')): ?>
+                <?php if ($block->getShowManageStoresLink() && $block->getAuthorization()->isAllowed('Magento_Backend::store')): // phpcs:ignore Generic.Files.LineLength.TooLong ?>
                     <li class="dropdown-toolbar">
-                        <a href="<?php echo $block->escapeUrl($block->getUrl('*/system_store')) ?>"><?php echo $block->escapeHtml(__('Stores Configuration')) ?></a>
+                        <a href="<?= $block->escapeUrl($block->getUrl('*/system_store')) ?>"><?= $block->escapeHtml(__('Stores Configuration')) // phpcs:ignore Generic.Files.LineLength.TooLong ?></a>
                     </li>
                 <?php endif; ?>
             </ul>
@@ -128,13 +111,15 @@
         {
             "*": {
                 "Dotdigitalgroup_Email/js/switcher":{
-                    "getUseConfirm":"<?php echo (int)$block->getUseConfirm(); ?>",
-                    "getContent":"<?php echo $block->escapeHtml(__('Please confirm scope switching. All data that hasn\'t been saved will be lost.')) ?>",
-                    "objVal":"<?php echo $block->escapeHtml($block->getStoreId()) ?>",
-                    "isUsingIframe":"<?php echo $block->escapeHtml($block->isUsingIframe()); ?>",
-                    "getSwitchUrl":"<?php echo $block->escapeUrl($block->getSwitchUrl()) ?>"
+                    "getUseConfirm":"<?= (int)$block->getUseConfirm(); ?>",
+                    "getContent":"<?= $block->escapeHtml(__('Please confirm scope switching. All data that hasn\'t been saved will be lost.')) // phpcs:ignore Generic.Files.LineLength.TooLong ?>",
+                    "objVal":"<?= $block->escapeHtml($block->getStoreId()) ?>",
+                    "isUsingIframe":"<?= $block->escapeHtml($block->isUsingIframe()); ?>",
+                    "getSwitchUrl":"<?= $block->escapeUrl($block->getSwitchUrl()) ?>"
                 }
             }
         }
     </script>
-<?php endif; ?>
+<?php endif;
+// phpcs:enable
+?>

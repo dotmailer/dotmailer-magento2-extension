@@ -4,8 +4,8 @@
  * @var $escaper \Magento\Framework\Escaper
  * @var $view \Dotdigitalgroup\Email\ViewModel\Customer\Account\Newsletter
  */
+// phpcs:disable Magento2.Legacy.EscapeMethodsOnBlockClass
 
-// @codingStandardsIgnoreFile
 $view = $block->getData('config');
 ?>
 
@@ -27,3 +27,4 @@ $view = $block->getData('config');
     <?php /* Extensions placeholder */ ?>
     <?= $block->getChildHtml('customer.form.newsletter.extra') ?>
 </fieldset>
+<?php // phpcs:enable ?>

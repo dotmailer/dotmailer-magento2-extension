@@ -1,5 +1,6 @@
 <?php
 /** @var \Dotdigitalgroup\Email\Block\Feefo $block */
+// phpcs:disable Magento2.Legacy.EscapeMethodsOnBlockClass
 ?>
 <?php $reviews = $block->getProductsReview(); ?>
 <?php if ($reviews): ?>
@@ -28,9 +29,7 @@
                             <tr>
                                 <td width="150">
                                     <a href="<?= $block->escapeUrl($review['url']); ?>">
-                                        <?php //@codingStandardsIgnoreStart ?>
-                                        <?= $name; ?>
-                                        <?php //@codingStandardsIgnoreEnd ?>
+                                        <?= $block->escapeHtml($name); ?>
                                     </a>
                                 </td>
                                 <td width="100"><?= $block->escapeHtml($review['last_updated_date']); ?></td>
@@ -65,4 +64,6 @@
         </table>
     </body>
 </html>
-<?php endif; ?>
+<?php endif;
+// phpcs:enable
+?>

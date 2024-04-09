@@ -1,4 +1,7 @@
-<?php /** @var \Dotdigitalgroup\Email\Block\Adminhtml\Dashboard $block */?>
+<?php
+/** @var \Dotdigitalgroup\Email\Block\Adminhtml\Dashboard $block */
+// phpcs:disable Magento2.Legacy.EscapeMethodsOnBlockClass
+?>
 <div class="content-header">
     <?= $block->getChildHtml('adminhtml.system.config.switcher');?>
 </div>
@@ -32,3 +35,4 @@
         }
     }
 </script>
+<?php // phpcs:enable ?>

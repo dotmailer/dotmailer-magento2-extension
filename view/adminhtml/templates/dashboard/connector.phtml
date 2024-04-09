@@ -1,4 +1,7 @@
-<?php /** @var \Dotdigitalgroup\Email\Block\Adminhtml\Dashboard\Information $block */?>
+<?php
+/** @var \Dotdigitalgroup\Email\Block\Adminhtml\Dashboard\Information $block */
+// phpcs:disable Magento2.Legacy.EscapeMethodsOnBlockClass
+?>
 <table>
     <tr>
         <th>
@@ -49,5 +52,4 @@
         <td><?= $block->escapeHtml($block->getLastFailedAuth()) ?></td>
     </tr>
 </table>
-
-
+<?php // phpcs:enable ?>

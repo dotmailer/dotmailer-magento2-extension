@@ -1,5 +1,6 @@
 <?php
 /** @var $block Dotdigitalgroup\Email\Block\Adminhtml\Email\Items */
+// phpcs:disable Magento2.Legacy.EscapeMethodsOnBlockClass
 ?>
 <?php if ($block->hasItems()) { ?>
     <p><strong>SMTP errors</strong></p>
@@ -26,4 +27,6 @@
         </tbody>
     </table>
 
-<?php } ?>
+<?php }
+// phpcs:enable
+?>

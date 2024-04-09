@@ -1,6 +1,10 @@
-<?php /** @var \Dotdigitalgroup\Email\Block\Adminhtml\Config\Report\Order $block */?>
+<?php
+/** @var \Dotdigitalgroup\Email\Block\Adminhtml\Config\Report\Order $block */
+// phpcs:disable Magento2.Legacy.EscapeMethodsOnBlockClass
+?>
 <div>
     <a href="<?= $block->escapeHtml($block->getLink()); ?>">
         <?= $block->escapeHtml(__('Click here for status')); ?>
     </a>
 </div>
+<?php // phpcs:enable ?>

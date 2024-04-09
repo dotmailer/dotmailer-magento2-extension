@@ -1,5 +1,6 @@
 <?php
 /** @var $block Dotdigitalgroup\Email\Block\Adminhtml\Email\Items */
+// phpcs:disable Magento2.Legacy.EscapeMethodsOnBlockClass
 ?>
 <?php if ($block->hasItems()) { ?>
     <p><strong>Automation errors</strong></p>
@@ -47,4 +48,6 @@
             )
         ); ?>
     </p>
-<?php } ?>
+<?php }
+// phpcs:enable
+?>
