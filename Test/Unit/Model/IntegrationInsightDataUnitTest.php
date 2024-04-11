@@ -1,6 +1,6 @@
 <?php
 
-namespace Dotdigitalgroup\Email\Model;
+namespace Dotdigitalgroup\Email\Test\Unit\Model;
 
 use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Model\Sync\Integration\DotdigitalConfig;
@@ -10,6 +10,7 @@ use Magento\Framework\App\ProductMetadataInterface;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Store\Model\Website;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class IntegrationInsightDataUnitTest extends TestCase
@@ -35,24 +36,29 @@ class IntegrationInsightDataUnitTest extends TestCase
     private $productMetadataMock;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\Sync\Integration\DotdigitalConfig|\PHPUnit\Framework\MockObject\MockObject
+     * @var \Dotdigitalgroup\Email\Model\Sync\Integration\DotdigitalConfig|MockObject
      */
     private $dotdigitalConfigMock;
 
     /**
-     * @var StoreManagerInterface|mixed|\PHPUnit\Framework\MockObject\MockObject
+     * @var StoreManagerInterface|mixed|MockObject
      */
     private $storeManagerInterfaceMock;
 
     /**
-     * @var Module|Module&\PHPUnit\Framework\MockObject\MockObject|\PHPUnit\Framework\MockObject\MockObject
+     * @var Module|Module&MockObject|MockObject
      */
     private $moduleManagerMock;
 
     /**
-     * @var Store|Store&\PHPUnit\Framework\MockObject\MockObject|\PHPUnit\Framework\MockObject\MockObject
+     * @var Store|Store&MockObject|MockObject
      */
     private $storeMock;
+
+    /**
+     * @var Website|MockObject
+     */
+    private $websiteMock;
 
     public function setUp() :void
     {
@@ -96,7 +102,7 @@ class IntegrationInsightDataUnitTest extends TestCase
                     $this->storeMock
                 ]
             );
-        
+
         $this->storeMock->expects($this->atLeastOnce())
             ->method('getWebsiteId')
             ->willReturnOnConsecutiveCalls(1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3);
