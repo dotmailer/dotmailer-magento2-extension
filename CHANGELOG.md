@@ -1,3 +1,15 @@
+# 4.25.2
+
+### Improvements
+- We added a 'Retry Count' column to the Importer Status report.
+- We added specific ignore annotations to suppress some code sniffer warnings (required for 2.3.7 support).
+- We added a missing class property to a failing unit test.
+
+### Bug fixes
+- We fixed page tracking at checkout in Magento 2.4.7.
+- We fixed CartInsight collections not being created at account connection.
+- Our requirement for `psr/log` has been updated.
+
 # 4.25.1
 
 ### Bug fixes
