@@ -22,6 +22,7 @@ class Collection extends SearchResult
             'import_type',
             'import_mode',
             'import_status',
+            'retry_count',
             'message',
             'import_started',
             'import_finished',

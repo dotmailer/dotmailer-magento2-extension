@@ -1,5 +1,6 @@
 <?php
 /** @var $block Dotdigitalgroup\Email\Block\Adminhtml\Email\Items */
+// phpcs:disable Magento2.Legacy.EscapeMethodsOnBlockClass
 ?>
 <?php if ($block->hasItems()) { ?>
 <p><strong>Cron errors</strong></p>
@@ -28,4 +29,6 @@
 </table>
 
 <p><?= $block->escapeHtml(__('Please go to the Cron Tasks report to review.')); ?></p>
-<?php } ?>
+<?php }
+// phpcs:enable
+?>

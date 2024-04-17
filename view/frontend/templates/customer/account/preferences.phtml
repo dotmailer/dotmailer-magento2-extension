@@ -5,8 +5,8 @@
  * @var $container \Dotdigitalgroup\Email\ViewModel\Customer\AccountSubscriptions
  * @var $view \Dotdigitalgroup\Email\ViewModel\Customer\Account\Preferences
  */
+// phpcs:disable Magento2.Legacy.EscapeMethodsOnBlockClass
 
-// @codingStandardsIgnoreFile
 $view = $block->getData('config');
 ?>
 
@@ -48,3 +48,4 @@ $view = $block->getData('config');
         <?php endif; ?>
     <?php endforeach; ?>
 </fieldset>
+<?php // phpcs:enable ?>

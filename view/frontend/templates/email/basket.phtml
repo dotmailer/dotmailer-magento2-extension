@@ -1,5 +1,6 @@
 <?php
 /** @var \Dotdigitalgroup\Email\Block\Basket $block */
+// phpcs:disable Magento2.Legacy.EscapeMethodsOnBlockClass
 ?>
 <?php $items = $block->getBasketItems(); ?>
 <?php if ($items): ?>
@@ -192,10 +193,8 @@
         <?php foreach ($items as $item): ?>
             <tr>
                 <td class="product-image">
-                    <?php //@codingStandardsIgnoreStart ?>
-                    <img src="<?= $block->getProductImageUrl($item['product_details']) ?>"
-                         alt="<?= $item['product']->getName() ?>">
-                    <?php //@codingStandardsIgnoreEnd ?>
+                    <img src="<?= $block->escapeUrl($block->getProductImageUrl($item['product_details'])) ?>"
+                         alt="<?= $block->escapeHtml($item['product']->getName()) ?>">
                 </td>
                 <td class="product-name">
                     <a class="product-url" href="<?= $block->escapeHtml($item['productUrl']); ?>">
@@ -215,9 +214,7 @@
             <td class="hidemob"></td>
             <td class="hidemob"></td>
             <td class="other-text other-text-padding">
-                <?php //@codingStandardsIgnoreStart ?>
-                <?= $block->getGrandTotalWithCurrency() ?>
-                <?php //@codingStandardsIgnoreEnd ?>
+                <?= $block->escapeHtml($block->getGrandTotalWithCurrency()) ?>
             </td>
         </tr>
     </table>
@@ -234,3 +231,4 @@
         </p>
     <?php endif; ?>
 <?php endif; ?>
+<?php // phpcs:enable ?>

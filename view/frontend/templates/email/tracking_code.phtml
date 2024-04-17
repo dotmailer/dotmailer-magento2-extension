@@ -1,12 +1,13 @@
 <?php
 /** @var \Dotdigitalgroup\Email\Block\Tracking $block */
+// phpcs:disable Magento2.Legacy.EscapeMethodsOnBlockClass
 ?>
 
 <?php if ($block->isPageTrackingAvailable()): ?>
     <script>
         require.config({
             paths: {
-                'dmpt':  "<?= $block->escapeUrl($block->getPageTrackingUrl()) ?>"
+                'dmpt':  '<?= $block->escapeUrl($block->getPageTrackingUrl()) ?>'
             }
         });
     </script>
@@ -17,4 +18,6 @@
             }
         }
     </script>
-<?php endif; ?>
+<?php endif;
+// phpcs:enable
+?>

@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Dotdigitalgroup\Email\Block\EmailCapture;
 
 /** @var EmailCapture $block */
+// phpcs:disable Magento2.Legacy.EscapeMethodsOnBlockClass
 
 if ($block->isEasyEmailCaptureEnabled() || $block->isWebBehaviourTrackingEnabled()):
     $emailCaptureType = $block->getData('email_capture_type');
@@ -22,4 +23,6 @@ if ($block->isEasyEmailCaptureEnabled() || $block->isWebBehaviourTrackingEnabled
         }
     }
     </script>
-<?php endif; ?>
+<?php endif;
+// phpcs:enable
+?>

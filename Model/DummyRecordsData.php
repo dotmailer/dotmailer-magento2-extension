@@ -5,7 +5,6 @@ namespace Dotdigitalgroup\Email\Model;
 use Dotdigitalgroup\Email\Helper\Data;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
-use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Apiconnector\Account;
 use Magento\Framework\UrlInterface;
 use Dotdigitalgroup\Email\Model\Connector\AccountHandler;
@@ -30,11 +29,6 @@ class DummyRecordsData
     public $email = [];
 
     /**
-     * @var Logger
-     */
-    private $logger;
-
-    /**
      * @var Account
      */
     private $account;
@@ -49,20 +43,17 @@ class DummyRecordsData
      *
      * @param Data $helper
      * @param StoreManagerInterface $storeManager
-     * @param Logger $logger
      * @param Account $account
      * @param AccountHandler $accountHandler
      */
     public function __construct(
         Data $helper,
         StoreManagerInterface $storeManager,
-        Logger $logger,
         Account $account,
         AccountHandler $accountHandler
     ) {
         $this->helper = $helper;
         $this->storeManager = $storeManager;
-        $this->logger = $logger;
         $this->account = $account;
         $this->accountHandler = $accountHandler;
     }
@@ -97,7 +88,20 @@ class DummyRecordsData
     {
         /** @var Store $store */
         $store = $this->getStore($websiteId);
-        return $this->getStaticData($store);
+        return $this->getStaticData($store, $websiteId);
+    }
+
+    /**
+     * Get account email.
+     *
+     * @param string|int $websiteId
+     * @return string
+     * @throws \Exception
+     */
+    public function getEmailFromAccountInfo($websiteId)
+    {
+        $accountInfo = $this->helper->getWebsiteApiClient($websiteId)->getAccountInfo();
+        return $this->account->getAccountOwnerEmail($accountInfo);
     }
 
     /**
@@ -121,23 +125,33 @@ class DummyRecordsData
      * Get static data.
      *
      * @param Store $store
+     * @param int $websiteId
+     *
      * @return array
+     * @throws \Exception
      */
-    private function getStaticData($store)
+    private function getStaticData($store, $websiteId)
     {
         $data = [
-            'cartId' => '1',
-            'cartUrl' => $store->getBaseUrl(
-                UrlInterface::URL_TYPE_WEB,
-                $store->isCurrentlySecure()
-            ).'connector/email/getbasket/quote_id/1/',
-            'createdDate' => date(\DateTime::ATOM, time()),
-            'modifiedDate' => date(\DateTime::ATOM, time()),
-            'currency' => 'USD',
-            'subTotal' => round(52, 2),
-            'taxAmount' => (float) 0,
-            'shipping' => (float) 0,
-            'grandTotal' => round(52, 2)
+            'key' => '1',
+            'contactIdentity' => [
+                'identifier' => 'email',
+                'value' => $this->getEmailFromAccountInfo($websiteId)
+            ],
+            'json' => [
+                'cartId' => '1',
+                'cartUrl' => $store->getBaseUrl(
+                    UrlInterface::URL_TYPE_WEB,
+                    $store->isCurrentlySecure()
+                ).'connector/email/getbasket/quote_id/1/',
+                'createdDate' => date(\DateTime::ATOM, time()),
+                'modifiedDate' => date(\DateTime::ATOM, time()),
+                'currency' => 'USD',
+                'subTotal' => round(52, 2),
+                'taxAmount' => (float) 0,
+                'shipping' => (float) 0,
+                'grandTotal' => round(52, 2)
+            ]
         ];
 
         $lineItems[] = [
@@ -154,9 +168,9 @@ class DummyRecordsData
             'totalPrice' => round(52, 2)
         ];
 
-        $data['discountAmount'] = 0;
-        $data['lineItems'] = $lineItems;
-        $data['cartPhase'] = 'ORDER_PENDING';
+        $data['json']['discountAmount'] = 0;
+        $data['json']['lineItems'] = $lineItems;
+        $data['json']['cartPhase'] = 'ORDER_PENDING';
 
         return $data;
     }
@@ -171,18 +185,5 @@ class DummyRecordsData
         return 'https://raw.githubusercontent.com/'
             .'magento/magento2-sample-data/'
             .'2.3/pub/media/catalog/product/m/h/mh01-black_main.jpg';
-    }
-
-    /**
-     * Get account email.
-     *
-     * @param string|int $websiteId
-     * @return string
-     * @throws \Exception
-     */
-    public function getEmailFromAccountInfo($websiteId)
-    {
-        $accountInfo = $this->helper->getWebsiteApiClient($websiteId)->getAccountInfo();
-        return $this->account->getAccountOwnerEmail($accountInfo);
     }
 }

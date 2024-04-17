@@ -3,6 +3,7 @@
  * @var \Dotdigitalgroup\Email\Block\Recommended\Mostviewed $block
  * @var \Magento\Framework\Escaper $escaper
  */
+// phpcs:disable Magento2.Legacy.EscapeMethodsOnBlockClass
 ?>
 <?php
     $i = 0;
@@ -86,22 +87,11 @@
         <?php endif;?>
 
         <td style="vertical-align: text-top; padding-right: 2px;">
-            <a href="<?= $block->escapeHtml($productUrl); ?>" title="<?= $block->escapeHtml(
-                $block->stripTags(
-                    $block->getImageLabel(
-                        $_product,
-                        'small_image'
-                    ),
-                    null,
-                    true
-                )
-                     ); // @codingStandardsIgnoreLine ?>" class="product-image">
+            <a href="<?= $block->escapeHtml($productUrl); ?>" title="<?= $block->escapeHtml($block->stripTags($block->getImageLabel($_product, 'small_image'), null, true)); // phpcs:ignore Generic.Files.LineLength.TooLong ?>" class="product-image">
                 <img src="<?= /* @noEscape */ $block->getProductImageUrl($_product, 'product_small_image') ?>"
                      alt="<?= $block->escapeHtml($_product->getName()) ?>">
             </a>
-            <div class="product-name" align="center"><b><?= $block->escapeHtml(
-                mb_substr($_product->getName(), 0, 40)
-                    ); // @codingStandardsIgnoreLine ?></b></div>
+            <div class="product-name" align="center"><b><?= $block->escapeHtml(mb_substr($_product->getName(), 0, 40)); // phpcs:ignore Generic.Files.LineLength.TooLong ?></b></div>
             <div class="product-price" align="center">
                 <?php $productPriceHtml = $block->getLayout()->getBlock('ddg.product.price.render.default')
                     ->render('final_price', $_product, []) ?>
@@ -125,5 +115,7 @@
     <?php if ($i > 0): ?>
         </table>
     <?php endif; ?>
-<?php endif; ?>
+<?php endif;
+// phpcs:enable
+?>
 

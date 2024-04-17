@@ -2,6 +2,7 @@
 /**
  * @var \Dotdigitalgroup\Email\Block\Coupon $block
  */
+// phpcs:disable Magento2.Legacy.EscapeMethodsOnBlockClass
 ?>
 <?php $coupon = $block->generateCoupon(); ?>
 <?php if ($coupon): ?>
@@ -22,4 +23,5 @@
         <?= $block->escapeHtml($coupon); ?>
     </div>
 <?php endif;
-
+// phpcs:enable
+?>

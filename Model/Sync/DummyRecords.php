@@ -4,6 +4,7 @@ namespace Dotdigitalgroup\Email\Model\Sync;
 
 use Dotdigital\Exception\ResponseValidationException;
 use Dotdigital\V3\Models\ContactFactory as DotdigitalContactFactory;
+use Dotdigital\V3\Models\InsightData;
 use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Apiconnector\V3\ClientFactory;
 use Dotdigitalgroup\Email\Model\DummyRecordsData;
@@ -85,7 +86,6 @@ class DummyRecords implements SyncInterface
     private function postContactAndCartInsightData($websiteId = 0)
     {
         $identifier = $this->dummyData->getEmailFromAccountInfo($websiteId);
-        $cartInsightData = $this->dummyData->getContactInsightData($websiteId);
         $client = $this->clientFactory->create(
             ['data' => ['websiteId' => $websiteId]]
         );
@@ -109,13 +109,15 @@ class DummyRecords implements SyncInterface
         }
 
         try {
-            $client->insightData->createOrUpdateContactCollectionRecord(
-                'CartInsight',
-                '1',
-                'email',
-                $this->dummyData->getEmailFromAccountInfo($websiteId),
-                $cartInsightData
-            );
+            $cartInsightData = new InsightData([
+                'collectionName' => 'CartInsight',
+                'collectionScope' => 'contact',
+                'collectionType' => 'cartInsight'
+            ]);
+            $cartInsightData->setRecords([
+                $this->dummyData->getContactInsightData($websiteId)
+            ]);
+            $client->insightData->import($cartInsightData);
         } catch (ResponseValidationException $e) {
             $this->logger->debug(
                 sprintf(

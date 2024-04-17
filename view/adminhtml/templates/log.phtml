@@ -1,4 +1,7 @@
-<?php /** @var \Dotdigitalgroup\Email\Block\Adminhtml\Logviewer $block */?>
+<?php
+/** @var \Dotdigitalgroup\Email\Block\Adminhtml\Logviewer $block */
+// phpcs:disable Magento2.Legacy.EscapeMethodsOnBlockClass
+?>
 <div class="switcher">
     <label style="font-weight: bold; padding-right: 10px;" for="connector-log-selector">
         <?= $block->escapeHtml(__('Select Log File:')); ?>
@@ -37,3 +40,4 @@
         }
     }
 </script>
+<?php // phpcs:enable ?>

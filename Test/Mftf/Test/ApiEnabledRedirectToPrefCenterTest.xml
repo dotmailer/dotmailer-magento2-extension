@@ -2,12 +2,12 @@
 
 <tests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
-    <test name="ApiEnabledAndAtleastOnePrefEnabledAndConsentProvidedRedirectToPrefCenterTest">
+    <test name="ApiEnabledRedirectToPrefCenterTest">
         <annotations>
             <features value="Dotdigital module"/>
-            <stories value="If API enabled and one of the preferences enabled, plugin should redirect to dotmailer preference page and general subscription text should display the content text"/>
-            <title value="You should be able to see dotmailer preferences page with consent text if api is enabled, consent provided and one of the preferences are enabled."/>
-            <description value="You should be able to see dotmailer preferences page with consent text if api is enabled, consent provided and one of the preferences are enabled."/>
+            <stories value="If API enabled and none of the preferences enabled, plugin should redirect to preference page."/>
+            <title value="Test redirect to preference centre if API is enabled."/>
+            <description value="You should be redirected to the Dotdigital preferences page if the API connection is enabled."/>
             <severity value="AVERAGE"/>
             <group value="dotmailer"/>
         </annotations>
@@ -23,15 +23,12 @@
         </before>
         <after>
             <actionGroup ref="ResetDotmailerAccountData" stepKey="resetAccountData"/>
-            <actionGroup ref="ResetCustomerConsentText" stepKey="resetCustomerConsentText"/>
             <deleteData createDataKey="createSimpleUsCustomer" stepKey="deleteCustomer"/>
             <actionGroup ref="AdminLogoutActionGroup" stepKey="logoutAsAdmin"/>
         </after>
-        <actionGroup ref="SetOnePreferenceTypeToShowYes" stepKey="setOnePreferenceTypeToShowYes"/>
-        <actionGroup ref="SetCustomerConsentText" stepKey="setCustomerConsentText"/>
+        <actionGroup ref="SetAllPreferencesTypeToShowNo" stepKey="setAllPreferencesTypeToShowNo"/>
         <amOnPage url="newsletter/manage/" stepKey="amOnCustomerNewsletterManagePage"/>
         <waitForPageLoad stepKey="waitForPageLoad"/>
         <seeInCurrentUrl url="connector" stepKey="dotmailerPreferencesPage"/>
-        <see selector="{{StorefrontDotmailerPreferenceSection.subscriptionLabel}}" userInput="Test consent text" stepKey="seeConsentText"/>
     </test>
 </tests>

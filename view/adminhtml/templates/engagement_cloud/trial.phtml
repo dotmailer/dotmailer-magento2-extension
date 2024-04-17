@@ -1,16 +1,18 @@
-<?php /** @var \Dotdigitalgroup\Email\Block\Adminhtml\EngagementCloudTrialInterface $block */
-// @codingStandardsIgnoreFile
+<?php
+/** @var \Dotdigitalgroup\Email\Block\Adminhtml\EngagementCloudTrialInterface $block */
+// phpcs:disable Magento2.Legacy.EscapeMethodsOnBlockClass
 ?>
 <script type="text/x-magento-init">
     {
         "*": {
             "Dotdigitalgroup_Email/js/engagementCloudEmbed": {
-                "iframeSrc": "<?= $block->getAction() ?>"
+                "iframeSrc": "<?= $block->escapeHtml($block->getAction()) ?>"
             },
             "Dotdigitalgroup_Email/js/engagementCloudTrial": {
-                "callback": "<?= $block->getLocalCallbackUrl() ?>",
-                "micrositeUrl": "<?= $block->getTrialSignupHostAndScheme() ?>"
+                "callback": "<?= $block->escapeHtml($block->getLocalCallbackUrl()) ?>",
+                "micrositeUrl": "<?= $block->escapeHtml($block->getTrialSignupHostAndScheme()) ?>"
             }
         }
     }
 </script>
+<?php // phpcs:enable ?>

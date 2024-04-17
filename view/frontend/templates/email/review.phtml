@@ -1,5 +1,6 @@
 <?php
 /** @var \Dotdigitalgroup\Email\Block\Review $block */
+// phpcs:disable Magento2.Legacy.EscapeMethodsOnBlockClass
 ?>
 <?php
 $i = 0;
@@ -87,17 +88,16 @@ $mode = $block->getMode();
         <?php endif;?>
 
         <td style="vertical-align: text-top; padding-right: 2px;">
-            <?php //@codingStandardsIgnoreStart ?>
-            <img src="<?= $block->getProductImageUrl($item, 'category_page_grid') ?>" alt="<?= $item->getName() ?>">
+            <img src="<?= $block->escapeUrl($block->getProductImageUrl($item, 'category_page_grid')) ?>"
+                 alt="<?= $block->escapeHtml($item->getName()) ?>">
             <div class="product-name" align="center"><b>
-                    <?= mb_substr($block->escapeHtml($item->getName()), 0, 40); ?></b></div>
+                    <?= $block->escapeHtml(mb_substr($item->getName(), 0, 40)) ?></b></div>
             <div align="center">
                 <?php $url = $block->getReviewItemUrl($item->getId()) . $block->getReviewReminderAnchor(); ?>
                 <a class="product-url" href="<?= $block->escapeUrl($url); ?>">
                     <?= $block->escapeHtml(__('Leave a review')); ?>
                 </a>
             </div>
-            <?php //@codingStandardsIgnoreEnd ?>
         </td>
 
         <?php if ($i++ % 4 == 3 && $mode == 'grid'): ?>
@@ -108,4 +108,5 @@ $mode = $block->getMode();
         </table>
     <?php endif;?>
 <?php endif;
-
+// phpcs:enable
+?>
