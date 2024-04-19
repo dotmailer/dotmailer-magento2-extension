@@ -2,6 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Setup\Install\Type;
 
+use Dotdigitalgroup\Email\Console\Command\ImportDataCommand;
 use Dotdigitalgroup\Email\Setup\SchemaInterface as Schema;
 
 class UpdateEmailContactTableCustomerSales extends AbstractBulkUpdater implements BulkUpdateTypeInterface
@@ -88,7 +89,9 @@ class UpdateEmailContactTableCustomerSales extends AbstractBulkUpdater implement
      */
     public function isEnabled(): bool
     {
-        return $this->config->isAccountSharingGlobal();
+        global $argv;
+        $status = (isset($argv) && is_array($argv) && in_array(ImportDataCommand::CLI_COMMAND, $argv));
+        return $this->config->isAccountSharingGlobal() && $status;
     }
 
     /**

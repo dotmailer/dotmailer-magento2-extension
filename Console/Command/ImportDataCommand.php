@@ -12,6 +12,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class ImportDataCommand extends Command
 {
+    public const CLI_COMMAND = 'dotdigital:migrate';
     /**
      * @var DataMigrationHelper
      */
@@ -33,7 +34,7 @@ class ImportDataCommand extends Command
      */
     protected function configure()
     {
-        $this->setName('dotdigital:migrate')
+        $this->setName(self::CLI_COMMAND)
             ->setDescription('Migrate data into email_ tables to sync with Dotdigital')
             ->addOption(
                 'table',

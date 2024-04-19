@@ -2,6 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Setup\Install\Type;
 
+use Dotdigitalgroup\Email\Console\Command\ImportDataCommand;
 use Dotdigitalgroup\Email\Helper\Config;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\ResourceConnection;
@@ -98,6 +99,7 @@ abstract class AbstractDataMigration
      */
     public function isEnabled(): bool
     {
-        return true;
+        global $argv;
+        return (isset($argv) && is_array($argv) && in_array(ImportDataCommand::CLI_COMMAND, $argv));
     }
 }

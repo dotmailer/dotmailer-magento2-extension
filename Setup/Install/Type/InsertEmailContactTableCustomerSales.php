@@ -2,6 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Setup\Install\Type;
 
+use Dotdigitalgroup\Email\Console\Command\ImportDataCommand;
 use Dotdigitalgroup\Email\Setup\SchemaInterface as Schema;
 use Magento\Framework\DB\Select;
 
@@ -114,6 +115,8 @@ class InsertEmailContactTableCustomerSales extends AbstractBatchInserter impleme
      */
     public function isEnabled(): bool
     {
-        return $this->config->isAccountSharingGlobal();
+        global $argv;
+        $status = (isset($argv) && is_array($argv) && in_array(ImportDataCommand::CLI_COMMAND, $argv));
+        return $this->config->isAccountSharingGlobal() && $status;
     }
 }
