@@ -1,3 +1,8 @@
+# 4.25.3
+
+### Improvements
+- The 'Save' button text in the account options is now translatable. [External contribution](https://github.com/dotmailer/dotmailer-magento2-extension/pull/630)
+
 # 4.25.2
 
 ### Improvements
