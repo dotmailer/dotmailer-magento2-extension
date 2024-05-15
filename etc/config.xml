@@ -67,7 +67,7 @@
                 <first_order_automation>0</first_order_automation>
             </visitor_automation>
             <order_status_automation>
-                <status_to_automation></status_to_automation>
+                <program></program>
             </order_status_automation>
             <review_settings>
                 <enabled>0</enabled>

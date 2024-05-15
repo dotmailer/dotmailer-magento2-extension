@@ -319,6 +319,10 @@ class OrderSaveAfter implements ObserverInterface
             $storeId
         );
 
+        if (null === $orderStatusAutomations) {
+            return;
+        }
+
         try {
             $configStatusAutomationMap = $this->serializer->unserialize($orderStatusAutomations);
             if (!is_array($configStatusAutomationMap)) {
