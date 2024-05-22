@@ -1,3 +1,9 @@
+# 4.25.4
+
+### Bug fixes
+- We fixed an `unserialize()` exception in our OrderSaveAfter observer.
+- We fixed a problem with incorrect keys when merging batches for order sync.
+
 # 4.25.3
 
 ### Improvements
