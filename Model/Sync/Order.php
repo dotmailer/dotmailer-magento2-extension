@@ -174,9 +174,7 @@ class Order extends DataObject implements SyncInterface
     {
         foreach ($batch as $websiteId => $orders) {
             if (array_key_exists($websiteId, $megaBatch)) {
-                foreach ($orders as $order) {
-                    $megaBatch[$websiteId][] = $order;
-                }
+                $megaBatch[$websiteId] += $orders;
             } else {
                 $megaBatch += [$websiteId => $orders];
             }
