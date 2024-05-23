@@ -13,13 +13,19 @@ class CronOffsetter
     public function getCronPatternWithOffset($cronValue)
     {
         if ($cronValue === 'disabled') {
-            return '* * 30 2 *'; //Disabled crons will run every 30th of February
-        } elseif ($cronValue !== '00') {
-            $valueWithOffset = rand(1, (int) $cronValue - 1) . '-59' . '/' . $cronValue;
-            return sprintf('%s * * * *', $valueWithOffset);
-        } else {
-            return sprintf('%s * * * *', rand(0, 59));
+            return '* * 30 2 *'; //Disabled cron will run every 30th of February
         }
+
+        if ($cronValue === '1') {
+            return sprintf('*/%s * * * *', $cronValue);
+        }
+
+        if ($cronValue !== '00') {
+            $valueWithOffset = rand(1, (int)$cronValue - 1) . '-59' . '/' . $cronValue;
+            return sprintf('%s * * * *', $valueWithOffset);
+        }
+
+        return sprintf('%s * * * *', rand(0, 59));
     }
 
     /**
