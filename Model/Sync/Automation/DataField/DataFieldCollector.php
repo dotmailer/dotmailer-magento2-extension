@@ -3,6 +3,7 @@
 namespace Dotdigitalgroup\Email\Model\Sync\Automation\DataField;
 
 use Dotdigitalgroup\Email\Helper\Config;
+use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Contact;
 use Dotdigitalgroup\Email\Model\Sync\AbstractExporter;
 use Dotdigitalgroup\Email\Model\Sync\Customer\Exporter as CustomerExporter;
@@ -19,6 +20,11 @@ use Magento\Store\Model\StoreManagerInterface;
 
 class DataFieldCollector
 {
+    /**
+     * @var Logger
+     */
+    private $logger;
+
     /**
      * @var CustomerExporterFactory
      */
@@ -55,6 +61,7 @@ class DataFieldCollector
     private $storeManager;
 
     /**
+     * @param Logger $logger
      * @param CustomerExporterFactory $customerExporterFactory
      * @param GuestExporterFactory $guestExporterFactory
      * @param OrderHistoryChecker $orderHistoryChecker
@@ -64,6 +71,7 @@ class DataFieldCollector
      * @param StoreManagerInterface $storeManager
      */
     public function __construct(
+        Logger $logger,
         CustomerExporterFactory $customerExporterFactory,
         GuestExporterFactory $guestExporterFactory,
         OrderHistoryChecker $orderHistoryChecker,
@@ -72,6 +80,7 @@ class DataFieldCollector
         ScopeConfigInterface $scopeConfig,
         StoreManagerInterface $storeManager
     ) {
+        $this->logger = $logger;
         $this->customerExporterFactory = $customerExporterFactory;
         $this->guestExporterFactory = $guestExporterFactory;
         $this->orderHistoryChecker = $orderHistoryChecker;
@@ -130,6 +139,14 @@ class DataFieldCollector
         $keyedExport = $exporter->export([$contact], $website);
 
         if (!isset($keyedExport[$contact->getId()])) {
+            return [];
+        }
+
+        $keys = $exporter->getCsvColumns();
+        $values = $keyedExport[$contact->getId()];
+
+        if (count($keys) !== count($values)) {
+            $this->logger->error('Mismatch between keys and values in guest data field collection');
             return [];
         }
 
