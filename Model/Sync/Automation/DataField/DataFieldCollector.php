@@ -151,8 +151,8 @@ class DataFieldCollector
         }
 
         return array_combine(
-            $exporter->getCsvColumns(),
-            $keyedExport[$contact->getId()]
+            $keys,
+            $values
         );
     }
 
