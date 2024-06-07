@@ -29,6 +29,7 @@ use Magento\Tax\Api\TaxCalculationInterface;
 class Product extends AbstractConnectorModel
 {
     public const TYPE_VARIANT = 'Variant';
+    private const DEFAULT_PRODUCT_CREATED_DATE = '1970-01-01 01:00:00';
 
     /**
      * Dotdigital catalog required schema
@@ -38,7 +39,8 @@ class Product extends AbstractConnectorModel
         'price' => ':isFloat',
         'sku' => ':isString',
         'url' => ':url',
-        'imagePath' => ':url'
+        'imagePath' => ':url',
+        'created_date' => ':dateFormatAtom'
     ];
 
     /**
@@ -273,7 +275,10 @@ class Product extends AbstractConnectorModel
         $this->id = $product->getId();
         $this->sku = $product->getSku();
         $this->name = $product->getName();
-        $this->created_date = $this->dateTime->date(\DateTimeInterface::ATOM, $product->getCreatedAt());
+        $this->created_date = $this->dateTime->date(
+            \DateTimeInterface::ATOM,
+            $product->getCreatedAt() ?: self::DEFAULT_PRODUCT_CREATED_DATE
+        );
 
         $this->status = $this->statusFactory->create()
             ->getOptionText($product->getStatus());
