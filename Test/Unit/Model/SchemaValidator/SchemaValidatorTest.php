@@ -2,7 +2,9 @@
 
 namespace Dotdigitalgroup\Email\Test\Unit\Model\SchemaValidator;
 
+use Dotdigitalgroup\Email\Model\Validator\Schema\Rule\DateFormatAtomRule;
 use Dotdigitalgroup\Email\Model\Validator\Schema\Rule\DateFormatRule;
+use Dotdigitalgroup\Email\Model\Validator\Schema\Rule\DateFormatAtomRuleFactory;
 use Dotdigitalgroup\Email\Model\Validator\Schema\Rule\DateFormatRuleFactory;
 use Dotdigitalgroup\Email\Model\Validator\Schema\Rule\IsFloatRule;
 use Dotdigitalgroup\Email\Model\Validator\Schema\Rule\IsFloatRuleFactory;
@@ -146,6 +148,10 @@ class SchemaValidatorTest extends TestCase
      */
     private function getRuleFactory($rule)
     {
+        $dateFormatAtomRuleFactory = $this->createMock(DateFormatAtomRuleFactory::class);
+        $dateFormatAtomRuleFactory
+            ->method('create')
+            ->willReturn(new DateFormatAtomRule());
         $dateFormatRuleFactory = $this->createMock(DateFormatRuleFactory::class);
         $dateFormatRuleFactory
             ->method('create')
@@ -172,6 +178,7 @@ class SchemaValidatorTest extends TestCase
             ->willReturn(new UrlRule($this->urlValidatorMock));
 
         return new SchemaValidatorRule(
+            $dateFormatAtomRuleFactory,
             $dateFormatRuleFactory,
             $isFloatRuleFactory,
             $isIntRuleFactory,

@@ -2,8 +2,8 @@
 
 namespace Dotdigitalgroup\Email\Model\Validator\Schema;
 
-use Dotdigitalgroup\Email\Model\Validator\Schema\Exception\PatternInvalidException;
 use Dotdigitalgroup\Email\Model\Validator\Schema\Exception\RuleNotDefinedException;
+use Dotdigitalgroup\Email\Model\Validator\Schema\Rule\DateFormatAtomRuleFactory;
 use Dotdigitalgroup\Email\Model\Validator\Schema\Rule\DateFormatRuleFactory;
 use Dotdigitalgroup\Email\Model\Validator\Schema\Rule\IsFloatRuleFactory;
 use Dotdigitalgroup\Email\Model\Validator\Schema\Rule\IsIntRuleFactory;
@@ -14,7 +14,6 @@ use Dotdigitalgroup\Email\Model\Validator\Schema\Rule\ValidatorRuleInterface;
 
 class SchemaValidatorRule implements SchemaValidatorRuleInterface
 {
-
     /**
      * @var mixed|string
      */
@@ -24,6 +23,11 @@ class SchemaValidatorRule implements SchemaValidatorRuleInterface
      * @var ValidatorRuleInterface
      */
     private $rule;
+
+    /**
+     * @var DateFormatAtomRuleFactory
+     */
+    private $dateFormatAtomRuleFactory;
 
     /**
      * @var DateFormatRuleFactory
@@ -58,6 +62,7 @@ class SchemaValidatorRule implements SchemaValidatorRuleInterface
     /**
      * Construct SchemaValidatorRule
      *
+     * @param DateFormatAtomRuleFactory $dateFormatAtomRuleFactory
      * @param DateFormatRuleFactory $dateFormatRuleFactory
      * @param IsFloatRuleFactory $isFloatRuleFactory
      * @param IsIntRuleFactory $isIntRuleFactory
@@ -65,9 +70,11 @@ class SchemaValidatorRule implements SchemaValidatorRuleInterface
      * @param RequiredRuleFactory $requiredRuleFactory
      * @param UrlRuleFactory $urlRuleFactory
      * @param string $pattern
+     *
      * @throws RuleNotDefinedException
      */
     public function __construct(
+        DateFormatAtomRuleFactory $dateFormatAtomRuleFactory,
         DateFormatRuleFactory $dateFormatRuleFactory,
         IsFloatRuleFactory $isFloatRuleFactory,
         IsIntRuleFactory $isIntRuleFactory,
@@ -76,6 +83,7 @@ class SchemaValidatorRule implements SchemaValidatorRuleInterface
         UrlRuleFactory $urlRuleFactory,
         string $pattern
     ) {
+        $this->dateFormatAtomRuleFactory = $dateFormatAtomRuleFactory;
         $this->dateFormatRuleFactory = $dateFormatRuleFactory;
         $this->isFloatRuleFactory = $isFloatRuleFactory;
         $this->isIntRuleFactory = $isIntRuleFactory;
