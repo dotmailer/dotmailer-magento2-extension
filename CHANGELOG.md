@@ -1,3 +1,8 @@
+# 4.25.5
+
+### Bug fixes
+- Catalog imports were failing because of empty product `created_at` dates. We’ve added a fallback date to fix this.
+
 # 4.25.4
 
 ### Bug fixes
