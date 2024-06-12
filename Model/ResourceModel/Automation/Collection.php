@@ -67,7 +67,7 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
             'automation_type',
             $type
         );
-        //limit because of the each contact request to get the id
+
         $collection->getSelect()->limit($limit);
 
         return $collection;

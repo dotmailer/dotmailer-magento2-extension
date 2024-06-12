@@ -45,6 +45,11 @@ class AutomationProcessor
     private $contactManager;
 
     /**
+     * @var OrderManager
+     */
+    private $orderManager;
+
+    /**
      * @var DataFieldCollector
      */
     private $dataFieldCollector;
@@ -67,6 +72,7 @@ class AutomationProcessor
      * @param AutomationResource $automationResource
      * @param ContactCollectionFactory $contactCollectionFactory
      * @param ContactManager $contactManager
+     * @param OrderManager $orderManager
      * @param DataFieldCollector $dataFieldCollector
      * @param DataFieldTypeHandler $dataFieldTypeHandler
      * @param BackportedSubscriberLoader $backportedSubscriberLoader
@@ -77,6 +83,7 @@ class AutomationProcessor
         AutomationResource $automationResource,
         ContactCollectionFactory $contactCollectionFactory,
         ContactManager $contactManager,
+        OrderManager $orderManager,
         DataFieldCollector $dataFieldCollector,
         DataFieldTypeHandler $dataFieldTypeHandler,
         BackportedSubscriberLoader $backportedSubscriberLoader
@@ -86,6 +93,7 @@ class AutomationProcessor
         $this->automationResource = $automationResource;
         $this->contactCollectionFactory = $contactCollectionFactory;
         $this->contactManager = $contactManager;
+        $this->orderManager = $orderManager;
         $this->dataFieldCollector = $dataFieldCollector;
         $this->dataFieldTypeHandler = $dataFieldTypeHandler;
         $this->backportedSubscriberLoader = $backportedSubscriberLoader;
@@ -165,12 +173,16 @@ class AutomationProcessor
 
         $automationDataFields = $this->retrieveAutomationDataFields($automation, $email, $websiteId);
 
-        return $this->contactManager->prepareDotdigitalContact(
+        $contactId = $this->contactManager->prepareDotdigitalContact(
             $automationContact,
             $automationSubscriber,
             $automationDataFields,
             $automation->getAutomationType()
         );
+
+        $this->orderManager->maybeSendOrderInsightData($automation);
+
+        return $contactId;
     }
 
     /**
