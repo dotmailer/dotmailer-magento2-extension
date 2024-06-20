@@ -58,6 +58,16 @@ class InsertEmailContactTableCustomerSales extends AbstractBatchInserter impleme
                     ->where('email = sales_order.customer_email')
                     ->where('website_id = store.website_id')
             )->where(
+                'NOT EXISTS (?)',
+                $this->resourceConnection
+                    ->getConnection()
+                    ->select()
+                    ->from(
+                        $this->resourceConnection->getTableName(Schema::EMAIL_CONTACT_TABLE)
+                    )
+                    ->where('customer_id = sales_order.customer_id')
+                    ->where('website_id = store.website_id')
+            )->where(
                 $this->resourceConnection
                     ->getConnection()
                     ->prepareSqlCondition('sales_order.customer_id', [
