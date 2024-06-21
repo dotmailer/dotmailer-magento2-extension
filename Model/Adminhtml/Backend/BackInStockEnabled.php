@@ -78,38 +78,33 @@ class BackInStockEnabled extends Value
     {
         $websiteId = $this->helper->getWebsiteForSelectedScopeInAdmin()->getId();
         if ($this->isValueChanged() && $this->helper->isEnabled($websiteId)) {
-            if ($this->getValue() && !$this->getStoredAccountId()) {
-                $client = $this->helper->getWebsiteApiClient(
-                    $websiteId
-                );
-
-                $accountId = $this->account->getAccountId(
-                    $client->getAccountInfo($websiteId)
-                );
-
-                $this->configWriter->save(
-                    Config::PATH_FOR_ACCOUNT_ID,
-                    $accountId,
-                    $this->getScope(),
-                    $this->getScopeId()
-                );
-            }
+            $this->configWriter->save(
+                Config::PATH_FOR_ACCOUNT_ID,
+                $this->fetchAccountId($websiteId),
+                $this->getScope(),
+                $this->getScopeId()
+            );
         }
 
         return parent::afterSave();
     }
 
     /**
-     * Get account id.
+     * Fetch account id.
      *
-     * @return string|null
+     * @param int $websiteId
+     *
+     * @return string
+     * @throws \Exception
      */
-    private function getStoredAccountId(): ?string
+    private function fetchAccountId(int $websiteId)
     {
-        return $this->scopeConfig->getValue(
-            Config::PATH_FOR_ACCOUNT_ID,
-            $this->getScope(),
-            $this->getScopeId()
+        $client = $this->helper->getWebsiteApiClient(
+            $websiteId
+        );
+
+        return $this->account->getAccountId(
+            $client->getAccountInfo($websiteId)
         );
     }
 }

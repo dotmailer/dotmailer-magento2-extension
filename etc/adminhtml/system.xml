@@ -45,6 +45,9 @@
                 <field id="endpoint_subdomain" translate="label" sortOrder="4" showInDefault="0" showInStore="0" showInWebsite="0">
                     <label>API Endpoint Subdomain</label>
                 </field>
+                <field id="account_id" translate="label" sortOrder="4" showInDefault="0" showInStore="0" showInWebsite="0">
+                    <label>API account ID</label>
+                </field>
                 <field id="integration_setup" translate="comment label" type="button" sortOrder="4" showInStore="0"
                        showInWebsite="1" showInDefault="1">
                     <label></label>
