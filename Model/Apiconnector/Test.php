@@ -87,7 +87,7 @@ class Test
                 ->setApiPassword($apiPassword)
                 ->getAccountInfo($website->getId());
 
-            if (isset($accountInfo->message)) {
+            if (!$accountInfo || isset($accountInfo->message)) {
                 return false;
             }
             $scope = $website->getId() > 0 ? ScopeInterface::SCOPE_WEBSITES : ScopeConfigInterface::SCOPE_TYPE_DEFAULT;
