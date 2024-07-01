@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace Dotdigitalgroup\Email\Model\Queue\Data;
 
+/**
+ * @deprecated Use SubscriptionData as the model for all subscription state queue messages.
+ * @see SubscriptionData
+ */
 class ResubscribeData
 {
     /**

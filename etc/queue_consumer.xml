@@ -8,10 +8,12 @@
               queue="ddg.sync.automation.queue"
               handler="Dotdigitalgroup\Email\Model\Queue\Sync\Automation\AutomationConsumer::process"
               connection="db" />
+    <!-- @deprecated subscription state is handled in a single queue -->
     <consumer name="ddg.newsletter.unsubscribe"
               queue="ddg.unsubscribe.queue"
               handler="Dotdigitalgroup\Email\Model\Queue\Newsletter\UnsubscriberConsumer::process"
               connection="db" />
+    <!-- @deprecated subscription state is handled in a single queue -->
     <consumer name="ddg.newsletter.resubscribe"
               queue="ddg.resubscribe.queue"
               handler="Dotdigitalgroup\Email\Model\Queue\Newsletter\ResubscribeConsumer::process"
@@ -23,5 +25,9 @@
     <consumer name="ddg.sales.cart_phase_update"
               queue="ddg.cart_phase_update.queue"
               handler="Dotdigitalgroup\Email\Model\Queue\Sales\CartPhaseUpdateConsumer::process"
+              connection="db" />
+    <consumer name="ddg.newsletter.subscription"
+              queue="ddg.subscription.queue"
+              handler="Dotdigitalgroup\Email\Model\Queue\Newsletter\SubscriptionConsumer::process"
               connection="db" />
 </config>

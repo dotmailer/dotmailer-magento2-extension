@@ -28,8 +28,7 @@ use Magento\Newsletter\Model\Subscriber;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Framework\MessageQueue\PublisherInterface;
 use Magento\Store\Model\StoreManagerInterface;
-use Dotdigitalgroup\Email\Model\Queue\Data\UnsubscriberDataFactory;
-use Dotdigitalgroup\Email\Model\Queue\Data\ResubscribeDataFactory;
+use Dotdigitalgroup\Email\Model\Queue\Data\SubscriptionDataFactory;
 
 /**
  * Contact newsletter subscription change.
@@ -108,14 +107,9 @@ class ChangeContactSubscription implements ObserverInterface
     private $publisher;
 
     /**
-     * @var UnsubscriberDataFactory
+     * @var SubscriptionDataFactory
      */
-    private $unsubscriberDataFactory;
-
-    /**
-     * @var ResubscribeDataFactory
-     */
-    private $resubscribeDataFactory;
+    private $subscriptionDataFactory;
 
     /**
      * ChangeContactSubscription constructor.
@@ -133,8 +127,7 @@ class ChangeContactSubscription implements ObserverInterface
      * @param DateTime $dateTime
      * @param ScopeConfigInterface $scopeConfig
      * @param PublisherInterface $publisher
-     * @param UnsubscriberDataFactory $unsubscribeDataFactory
-     * @param ResubscribeDataFactory $resubscribeDataFactory
+     * @param SubscriptionDataFactory $subscriptionDataFactory
      */
     public function __construct(
         AutomationFactory $automationFactory,
@@ -150,8 +143,7 @@ class ChangeContactSubscription implements ObserverInterface
         DateTime $dateTime,
         ScopeConfigInterface $scopeConfig,
         PublisherInterface $publisher,
-        UnsubscriberDataFactory $unsubscribeDataFactory,
-        ResubscribeDataFactory $resubscribeDataFactory
+        SubscriptionDataFactory $subscriptionDataFactory,
     ) {
         $this->contactResource = $contactResource;
         $this->automationFactory = $automationFactory;
@@ -166,8 +158,7 @@ class ChangeContactSubscription implements ObserverInterface
         $this->dateTime = $dateTime;
         $this->scopeConfig = $scopeConfig;
         $this->publisher = $publisher;
-        $this->unsubscriberDataFactory = $unsubscribeDataFactory;
-        $this->resubscribeDataFactory = $resubscribeDataFactory;
+        $this->subscriptionDataFactory = $subscriptionDataFactory;
     }
 
     /**
@@ -208,18 +199,30 @@ class ChangeContactSubscription implements ObserverInterface
 
             // only for subscribers
             if ($subscriberStatus == Subscriber::STATUS_SUBSCRIBED) {
-                $contactEmail->setSubscriberImported(0)
+                $contactEmail->setSubscriberImported(1)
                     ->setIsSubscriber(1);
 
                 if ($contactEmail->getSuppressed()) {
-                    $resubscribeData = $this->resubscribeDataFactory->create();
+                    $contactEmail->setSuppressed(null);
+                    $this->contactResource->save($contactEmail);
+
+                    $resubscribeData = $this->subscriptionDataFactory->create();
+                    $resubscribeData->setId($contactEmail->getId());
                     $resubscribeData->setEmail($email);
                     $resubscribeData->setWebsiteId($websiteId);
-                    $this->publisher->publish('ddg.newsletter.resubscribe', $resubscribeData);
-                    $contactEmail->setSubscriberImported(1)->setSuppressed(null);
-                }
+                    $resubscribeData->setType('resubscribe');
+                    $this->publisher->publish('ddg.newsletter.subscription', $resubscribeData);
+                } else {
+                    // save first in order to have a row id for the queue publish
+                    $this->contactResource->save($contactEmail);
 
-                $this->contactResource->save($contactEmail);
+                    $subscribeData = $this->subscriptionDataFactory->create();
+                    $subscribeData->setId($contactEmail->getId());
+                    $subscribeData->setEmail($email);
+                    $subscribeData->setWebsiteId($websiteId);
+                    $subscribeData->setType('subscribe');
+                    $this->publisher->publish('ddg.newsletter.subscription', $subscribeData);
+                }
             //not subscribed
             } else {
                 if ($contactEmail->getSuppressed()) {
@@ -234,12 +237,13 @@ class ChangeContactSubscription implements ObserverInterface
 
                 //Check if previously subscribed
                 if ($contactEmail->getIsSubscriber()) {
-                    $unsubscriber = $this->unsubscriberDataFactory->create();
+                    $unsubscriber = $this->subscriptionDataFactory->create();
                     $unsubscriber->setId($contactEmail->getId());
                     $unsubscriber->setEmail($email);
                     $unsubscriber->setWebsiteId($websiteId);
+                    $unsubscriber->setType('unsubscribe');
 
-                    $this->publisher->publish('ddg.newsletter.unsubscribe', $unsubscriber);
+                    $this->publisher->publish('ddg.newsletter.subscription', $unsubscriber);
                 }
 
                 $this->saveContactAsNotSubscribed($contactEmail);

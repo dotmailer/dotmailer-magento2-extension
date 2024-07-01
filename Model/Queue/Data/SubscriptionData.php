@@ -4,11 +4,7 @@ declare(strict_types=1);
 
 namespace Dotdigitalgroup\Email\Model\Queue\Data;
 
-/**
- * @deprecated Use SubscriptionData as the model for all subscription state queue messages.
- * @see SubscriptionData
- */
-class UnsubscriberData
+class SubscriptionData
 {
     /**
      * @var string|int
@@ -24,6 +20,11 @@ class UnsubscriberData
      * @var int
      */
     private $websiteId;
+
+    /**
+     * @var string
+     */
+    private $type;
 
     /**
      * Set id.
@@ -64,6 +65,18 @@ class UnsubscriberData
     }
 
     /**
+     * Set type.
+     *
+     * @param string $type
+     *
+     * @return void
+     */
+    public function setType(string $type)
+    {
+        $this->type = $type;
+    }
+
+    /**
      * Get id.
      *
      * @return string
@@ -93,5 +106,15 @@ class UnsubscriberData
     public function getWebsiteId(): int
     {
         return (int) $this->websiteId;
+    }
+
+    /**
+     * Get type.
+     *
+     * @return string
+     */
+    public function getType(): string
+    {
+        return $this->type;
     }
 }

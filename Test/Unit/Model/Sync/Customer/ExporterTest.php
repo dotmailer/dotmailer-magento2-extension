@@ -5,6 +5,7 @@ namespace Dotdigitalgroup\Email\Test\Unit\Model\Sync\Customer;
 use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Connector\ContactData\CustomerFactory as ConnectorCustomerFactory;
 use Dotdigitalgroup\Email\Model\Connector\Datafield;
+use Dotdigitalgroup\Email\Model\Customer\CustomerDataFieldProvider;
 use Dotdigitalgroup\Email\Model\Customer\CustomerDataFieldProviderFactory;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory as ContactCollectionFactory;
 use Dotdigitalgroup\Email\Model\Sync\Customer\CustomerDataManager;
@@ -186,6 +187,29 @@ class ExporterTest extends TestCase
          * setData($column, $value) doesn't do anything in the context of a unit test.
          */
         $this->assertEquals(count($data), count($this->customerIds));
+    }
+
+    /**
+     * @return void
+     * @throws \PHPUnit\Framework\MockObject\Exception
+     */
+    public function testCustomerExportColumnsDoNotContainSubscriberStatus()
+    {
+        $customerDataFieldProviderMock = $this->createMock(CustomerDataFieldProvider::class);
+        $this->customerDataFieldProviderFactoryMock->expects($this->once())
+            ->method('create')
+            ->willReturn($customerDataFieldProviderMock);
+
+        $customerDataFieldProviderMock->expects($this->once())
+            ->method('addIgnoredField')
+            ->with('subscriber_status')
+            ->willReturnSelf();
+
+        $customerDataFieldProviderMock->expects($this->once())
+            ->method('getCustomerDataFields')
+            ->willReturn([]);
+
+        $this->exporter->setCsvColumns($this->websiteInterfaceMock);
     }
 
     /**

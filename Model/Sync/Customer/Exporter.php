@@ -170,6 +170,7 @@ class Exporter extends AbstractExporter
     {
         $customerDataFields = $this->customerDataFieldProviderFactory
             ->create(['data' => ['website' => $website]])
+            ->addIgnoredField('subscriber_status')
             ->getCustomerDataFields();
 
         $customAttributes = $this->getCustomAttributes($website->getId());

@@ -11,6 +11,7 @@ use Dotdigitalgroup\Email\Model\Contact\ContactResponseHandler;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact as ContactResource;
 use Dotdigitalgroup\Email\Model\StatusInterface;
 use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\DataFieldCollector;
+use Dotdigitalgroup\Email\Model\Sync\Subscriber\SingleSubscriberSyncer;
 use Magento\Framework\Exception\AlreadyExistsException;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Newsletter\Model\Subscriber;
@@ -38,23 +39,31 @@ class ContactManager
     private $dataFieldCollector;
 
     /**
+     * @var SingleSubscriberSyncer
+     */
+    private $singleSubscriberSyncer;
+
+    /**
      * ContactManager constructor.
      *
      * @param Data $helper
      * @param ContactResponseHandler $contactResponseHandler
      * @param ContactResource $contactResource
      * @param DataFieldCollector $dataFieldCollector
+     * @param SingleSubscriberSyncer $singleSubscriberSyncer
      */
     public function __construct(
         Data $helper,
         ContactResponseHandler $contactResponseHandler,
         ContactResource $contactResource,
-        DataFieldCollector $dataFieldCollector
+        DataFieldCollector $dataFieldCollector,
+        SingleSubscriberSyncer $singleSubscriberSyncer
     ) {
         $this->helper = $helper;
         $this->contactResponseHandler = $contactResponseHandler;
         $this->contactResource = $contactResource;
         $this->dataFieldCollector = $dataFieldCollector;
+        $this->singleSubscriberSyncer = $singleSubscriberSyncer;
     }
 
     /**
@@ -119,7 +128,10 @@ class ContactManager
         }
 
         if ($subscriber->isSubscribed()) {
-            $this->pushContactToSubscriberAddressBook($contact);
+            $subscriberResponse = $this->singleSubscriberSyncer->pushContactToSubscriberAddressBook($contact);
+            if ($subscriberResponse && !isset($subscriberResponse->message)) {
+                $this->markProcessedSubscriberAsImported($contact);
+            }
         }
 
         return $contactId;
@@ -230,47 +242,6 @@ class ContactManager
         $response = $client->addContactToAddressBook($email, $addressBookId, null, $dataFields);
 
         return $this->contactResponseHandler->processContactResponse($response, $email, $websiteId);
-    }
-
-    /**
-     * Add subscribers to subscriber address book
-     *
-     * @param Contact $contact
-     *
-     * @return void
-     * @throws LocalizedException
-     */
-    private function pushContactToSubscriberAddressBook(Contact $contact): void
-    {
-        $websiteId = (int) $contact->getWebsiteId();
-        $subscriberSyncEnabled = $this->helper->isSubscriberSyncEnabled($websiteId);
-        $subscriberAddressBookId = $this->helper->getSubscriberAddressBook($websiteId);
-        if (!$subscriberSyncEnabled || !$subscriberAddressBookId) {
-            return;
-        }
-
-        $client = $this->helper->getWebsiteApiClient($websiteId);
-        $subscriberDataFields = $this->dataFieldCollector->mergeFields(
-            [],
-            $this->dataFieldCollector->collectForSubscriber(
-                $contact,
-                $websiteId
-            )
-        );
-
-        // optInType will be set in $subscriberDataFields if it is 'Double'
-        $postAddressBookResponse = $client->addContactToAddressBook(
-            $contact->getEmail(),
-            $subscriberAddressBookId,
-            null,
-            $subscriberDataFields
-        );
-
-        if (isset($postAddressBookResponse->message)) {
-            return;
-        }
-
-        $this->markProcessedSubscriberAsImported($contact);
     }
 
     /**

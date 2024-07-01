@@ -10,6 +10,10 @@ use Dotdigitalgroup\Email\Model\Queue\Data\ResubscribeData;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact as ContactResource;
 use Magento\Newsletter\Model\Subscriber;
 
+/**
+ * @deprecated Subscriptions now use a single consumer.
+ * @see SubscriptionConsumer
+ */
 class ResubscribeConsumer
 {
     /**

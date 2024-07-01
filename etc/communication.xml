@@ -14,6 +14,14 @@
             method="process"
         />
     </topic>
+    <topic name="ddg.newsletter.subscription" request="Dotdigitalgroup\Email\Model\Queue\Data\SubscriptionData">
+        <handler
+            name="ddg_newsletter_subscription"
+            type="Dotdigitalgroup\Email\Model\Queue\Newsletter\SubscriptionConsumer"
+            method="process"
+        />
+    </topic>
+    <!-- @deprecated subscription state is handled in a single queue -->
     <topic name="ddg.newsletter.unsubscribe" request="Dotdigitalgroup\Email\Model\Queue\Data\UnsubscriberData">
         <handler
             name="ddg_newsletter_unsubscribe"
@@ -21,6 +29,7 @@
             method="process"
         />
     </topic>
+    <!-- @deprecated subscription state is handled in a single queue -->
     <topic name="ddg.newsletter.resubscribe" request="Dotdigitalgroup\Email\Model\Queue\Data\ResubscribeData">
         <handler
             name="ddg_newsletter_resubscribe"
