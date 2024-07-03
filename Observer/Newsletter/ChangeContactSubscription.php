@@ -143,7 +143,7 @@ class ChangeContactSubscription implements ObserverInterface
         DateTime $dateTime,
         ScopeConfigInterface $scopeConfig,
         PublisherInterface $publisher,
-        SubscriptionDataFactory $subscriptionDataFactory,
+        SubscriptionDataFactory $subscriptionDataFactory
     ) {
         $this->contactResource = $contactResource;
         $this->automationFactory = $automationFactory;
