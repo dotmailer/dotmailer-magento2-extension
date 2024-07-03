@@ -9,6 +9,10 @@
                  topic="ddg.sync.automation"
                  destinationType="queue"
                  destination="ddg.sync.automation.queue"/>
+        <binding id="dotdigitalNewsletterSubscribeBinding"
+                 topic="ddg.newsletter.subscription"
+                 destinationType="queue"
+                 destination="ddg.subscription.queue"/>
         <binding id="dotdigitalNewsletterUnsubscribeBinding"
                  topic="ddg.newsletter.unsubscribe"
                  destinationType="queue"

@@ -179,3 +179,18 @@ div.dotmailer-error{background:url(images/i_msg-error.png) no-repeat;padding:10p
 .ddg-disconnected:before {
     background-image: url('images/account-fail.svg');
 }
+
+.config-nav-block.admin__page-nav._collapsed.dd-config-tab > .admin__page-nav-title > strong {
+    padding: 0px 0px 0px 10px;
+}
+
+.config-nav-block.admin__page-nav._collapsed.dd-config-tab > .admin__page-nav-title:before {
+    content: "";
+    float: left;
+    background: url(images/dotdigital-logo.png) no-repeat;
+    background-size: contain;
+    width: 27px;
+    height: 27px;
+    display: inline-block;
+    transform: translate(0px, -5px);
+}

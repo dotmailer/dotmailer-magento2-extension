@@ -1,3 +1,16 @@
+# 4.26.0
+
+### Improvements
+- Cron cadence can now be set to every 1, 5, or 10 minutes (in addition to previous options) for all bulk syncs.
+- We reverted a change to the REST client class that was filling up our logs with "No response in REST client".
+- We updated a migration type to prevent duplicate customer rows being created when inserting historical orders.
+- Order insight data will now be pre-sent for all order-related automations.
+- We added a Dotdigital logo our admin menu item.
+
+### Bug fixes
+- The _SUBSCRIBER_STATUS_ data field in Dotdigital was observed not matching the status in Magento. All newsletter subscription changes are now handled via queue after initial sync.
+- We fixed an issue with saving the associated account ID when configuring product notifications in different scopes.
+
 # 4.25.5
 
 ### Bug fixes

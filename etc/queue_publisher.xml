@@ -6,6 +6,9 @@
     <publisher topic="ddg.sync.automation">
         <connection name="db" exchange="magento-db" />
     </publisher>
+    <publisher topic="ddg.newsletter.subscription">
+        <connection name="db" exchange="magento-db" />
+    </publisher>
     <publisher topic="ddg.newsletter.unsubscribe">
         <connection name="db" exchange="magento-db" />
     </publisher>

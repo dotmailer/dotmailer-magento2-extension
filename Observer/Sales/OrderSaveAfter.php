@@ -9,6 +9,7 @@ use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Model\AutomationFactory;
 use Dotdigitalgroup\Email\Model\Contact;
 use Dotdigitalgroup\Email\Model\OrderFactory;
+use Dotdigitalgroup\Email\Model\Queue\Data\SubscriptionDataFactory;
 use Dotdigitalgroup\Email\Model\Queue\Sync\Automation\AutomationPublisher;
 use Dotdigitalgroup\Email\Model\ResourceModel\Automation;
 use Dotdigitalgroup\Email\Model\ResourceModel\Automation\CollectionFactory;
@@ -19,6 +20,8 @@ use InvalidArgumentException;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
+use Magento\Framework\Exception\AlreadyExistsException;
+use Magento\Framework\MessageQueue\PublisherInterface;
 use Magento\Framework\Registry;
 use Magento\Framework\Serialize\SerializerInterface;
 use Magento\Sales\Model\Order;
@@ -102,13 +105,21 @@ class OrderSaveAfter implements ObserverInterface
     private $emailAutomationFactory;
 
     /**
+     * @var SubscriptionDataFactory
+     */
+    private $subscriptionDataFactory;
+
+    /**
      * @var AutomationPublisher
+     */
+    private $automationPublisher;
+
+    /**
+     * @var PublisherInterface
      */
     private $publisher;
 
     /**
-     * SaveStatusSmsAutomation constructor.
-     *
      * @param AutomationFactory $automationFactory
      * @param Automation $automationResource
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Order $orderResource
@@ -123,7 +134,9 @@ class OrderSaveAfter implements ObserverInterface
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contactResource
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory $contactCollectionFactory
      * @param CollectionFactory $emailAutomationFactory
-     * @param AutomationPublisher $publisher
+     * @param SubscriptionDataFactory $subscriptionDataFactory
+     * @param AutomationPublisher $automationPublisher
+     * @param PublisherInterface $publisher
      */
     public function __construct(
         AutomationFactory $automationFactory,
@@ -140,7 +153,9 @@ class OrderSaveAfter implements ObserverInterface
         \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contactResource,
         \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory $contactCollectionFactory,
         CollectionFactory $emailAutomationFactory,
-        AutomationPublisher $publisher
+        SubscriptionDataFactory $subscriptionDataFactory,
+        AutomationPublisher $automationPublisher,
+        PublisherInterface $publisher
     ) {
         $this->serializer = $serializer;
         $this->orderResource = $orderResource;
@@ -156,6 +171,8 @@ class OrderSaveAfter implements ObserverInterface
         $this->contactResource = $contactResource;
         $this->contactCollectionFactory = $contactCollectionFactory;
         $this->emailAutomationFactory = $emailAutomationFactory;
+        $this->subscriptionDataFactory = $subscriptionDataFactory;
+        $this->automationPublisher = $automationPublisher;
         $this->publisher = $publisher;
     }
 
@@ -247,15 +264,24 @@ class OrderSaveAfter implements ObserverInterface
      * Reset contact based on type and status
      *
      * @param Contact $contact
+     *
+     * @throws AlreadyExistsException
      */
     private function resetContact($contact)
     {
         if ($contact->getCustomerId() && $contact->getEmailImported()) {
             $contact->setEmailImported(Contact::EMAIL_CONTACT_NOT_IMPORTED);
             $this->contactResource->save($contact);
-        } elseif (! $contact->getCustomerId() && $contact->getIsSubscriber() && $contact->getSubscriberImported()) {
-            $contact->setSubscriberImported(Contact::EMAIL_CONTACT_NOT_IMPORTED);
+        } elseif (! $contact->getCustomerId() && $contact->getIsSubscriber()) {
+            // the queue will do the sync so mark as imported now
+            $contact->setSubscriberImported(Contact::EMAIL_CONTACT_IMPORTED);
             $this->contactResource->save($contact);
+
+            $subscriptionData = $this->subscriptionDataFactory->create();
+            $subscriptionData->setId($contact->getId());
+            $subscriptionData->setEmail($contact->getEmail());
+            $subscriptionData->setWebsiteId($contact->getWebsiteId());
+            $this->publisher->publish('ddg.newsletter.subscribe', $subscriptionData);
         }
     }
 
@@ -289,7 +315,7 @@ class OrderSaveAfter implements ObserverInterface
                         ->setProgramId($data['programId']);
                     $this->automationResource->save($automation);
 
-                    $this->publisher->publish($automation);
+                    $this->automationPublisher->publish($automation);
                 }
             } catch (Exception $e) {
                 $this->helper->debug((string)$e, []);

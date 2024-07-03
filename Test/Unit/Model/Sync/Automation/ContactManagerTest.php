@@ -17,6 +17,7 @@ use Dotdigitalgroup\Email\Model\Sync\Automation\AutomationTypeHandler;
 use Dotdigitalgroup\Email\Model\Sync\Automation\ContactManager;
 use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\DataFieldCollector;
 use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\DataFieldTypeHandler;
+use Dotdigitalgroup\Email\Model\Sync\Subscriber\SingleSubscriberSyncer;
 use Dotdigitalgroup\Email\Test\Unit\Traits\AutomationProcessorTrait;
 use Magento\Newsletter\Model\Subscriber;
 use Magento\Newsletter\Model\SubscriberFactory;
@@ -77,6 +78,11 @@ class ContactManagerTest extends TestCase
     private $dataFieldTypeHandlerMock;
 
     /**
+     * @var SingleSubscriberSyncer
+     */
+    private $singleSubscriberSyncerMock;
+
+    /**
      * @var SubscriberFactory|\PHPUnit_Framework_MockObject_MockObject
      */
     private $subscriberFactoryMock;
@@ -112,6 +118,7 @@ class ContactManagerTest extends TestCase
         $this->contactManagerMock = $this->createMock(ContactManager::class);
         $this->dataFieldCollectorMock = $this->createMock(DataFieldCollector::class);
         $this->dataFieldTypeHandlerMock = $this->createMock(DataFieldTypeHandler::class);
+        $this->singleSubscriberSyncerMock = $this->createMock(SingleSubscriberSyncer::class);
         $this->subscriberFactoryMock = $this->createMock(SubscriberFactory::class);
         $this->subscriberModelMock = $this->createMock(Subscriber::class);
         $this->contactModelMock = $this->getMockBuilder(Contact::class)
@@ -135,7 +142,8 @@ class ContactManagerTest extends TestCase
             $this->helperMock,
             $this->contactResponseHandlerMock,
             $this->contactResourceMock,
-            $this->dataFieldCollectorMock
+            $this->dataFieldCollectorMock,
+            $this->singleSubscriberSyncerMock
         );
     }
 
@@ -291,30 +299,16 @@ class ContactManagerTest extends TestCase
             ->willReturn(true);
 
         $this->helperMock->expects($this->once())
-            ->method('isSubscriberSyncEnabled')
-            ->willReturn(true);
-
-        $this->helperMock->expects($this->once())
-            ->method('getSubscriberAddressBook')
-            ->willReturn('3886');
-
-        $this->dataFieldCollectorMock->expects($this->once())
-            ->method('collectForSubscriber')
-            ->willReturn($this->getDummySubscriberDataFields());
-
-        $this->dataFieldCollectorMock->expects($this->once())
-            ->method('mergeFields')
-            ->willReturn($this->getDummySubscriberDataFields());
-
-        $this->helperMock->expects($this->exactly(2))
             ->method('getWebsiteApiClient')
             ->willReturn($this->clientMock);
 
         $this->clientMock->expects($this->once())
             ->method('postContactWithConsentAndPreferences');
 
-        $this->clientMock->expects($this->once())
-            ->method('addContactToAddressBook');
+        $this->singleSubscriberSyncerMock->expects($this->once())
+            ->method('pushContactToSubscriberAddressBook')
+            ->with($this->contactModelMock)
+            ->willReturn(new \stdClass());
 
         $this->contactModelMock->expects($this->once())
             ->method('setSubscriberImported');
@@ -539,28 +533,6 @@ class ContactManagerTest extends TestCase
             [
                 'Key' => 'SUBSCRIBER_STATUS',
                 'Value' => 'Subscribed',
-            ]
-        ];
-    }
-
-    private function getDummySubscriberDataFields()
-    {
-        return [
-            [
-                'Key' => 'FIRST_NAME',
-                'Value' => 'Chaz',
-            ],
-            [
-                'Key' => 'LAST_NAME',
-                'Value' => 'Kangaroo',
-            ],
-            [
-                'Key' => 'SUBSCRIBER_STATUS',
-                'Value' => 'Subscribed',
-            ],
-            [
-                'Key' => 'CONSENTTEXT',
-                'Value' => 'You have consented!',
             ]
         ];
     }

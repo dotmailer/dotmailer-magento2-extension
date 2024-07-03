@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
     <system>
-        <tab id="ddg_automation" translate="label" sortOrder="500">
+        <tab id="ddg_automation" translate="label" sortOrder="500" class="dd-config-tab">
             <label>DOTDIGITAL</label>
         </tab>
         <section id="connector_api_credentials" translate="label" sortOrder="130" showInDefault="1" showInWebsite="1"
@@ -44,6 +44,9 @@
                 </field>
                 <field id="endpoint_subdomain" translate="label" sortOrder="4" showInDefault="0" showInStore="0" showInWebsite="0">
                     <label>API Endpoint Subdomain</label>
+                </field>
+                <field id="account_id" translate="label" sortOrder="4" showInDefault="0" showInStore="0" showInWebsite="0">
+                    <label>API account ID</label>
                 </field>
                 <field id="integration_setup" translate="comment label" type="button" sortOrder="4" showInStore="0"
                        showInWebsite="1" showInDefault="1">

@@ -134,7 +134,7 @@ class Exporter
                 } catch (SchemaValidationException $exception) {
                     $this->logger->debug(
                         sprintf(
-                            "Order id %s was not exported, but will be marked as processed",
+                            "Order id %s was not exported, but will be marked as processed in the context of a sync",
                             $order->getId()
                         ),
                         [$exception, $exception->errors()]
@@ -142,7 +142,7 @@ class Exporter
                 } catch (Exception $exception) {
                     $this->logger->debug(
                         sprintf(
-                            "Order id %s was not exported, but will be marked as processed",
+                            "Order id %s was not exported, but will be marked as processed in the context of a sync",
                             $order->getId()
                         ),
                         [$exception]

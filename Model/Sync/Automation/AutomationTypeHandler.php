@@ -96,4 +96,16 @@ class AutomationTypeHandler
     {
         return $this->automationTypeToConfigMap[$type];
     }
+
+    /**
+     * Check if automation type is order type.
+     *
+     * @param string $type
+     *
+     * @return bool
+     */
+    public function isOrderTypeAutomation(string $type)
+    {
+        return strpos($type, 'order') !== false;
+    }
 }

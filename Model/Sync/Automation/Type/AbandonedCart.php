@@ -12,6 +12,7 @@ use Dotdigitalgroup\Email\Model\Sales\QuoteFactory as DotdigitalQuoteFactory;
 use Dotdigitalgroup\Email\Model\StatusInterface;
 use Dotdigitalgroup\Email\Model\Sync\Automation\AutomationProcessor;
 use Dotdigitalgroup\Email\Model\Sync\Automation\ContactManager;
+use Dotdigitalgroup\Email\Model\Sync\Automation\OrderManager;
 use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\DataFieldCollector;
 use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\DataFieldTypeHandler;
 use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\Updater\AbandonedCartFactory as AbandonedCartUpdaterFactory;
@@ -50,6 +51,7 @@ class AbandonedCart extends AutomationProcessor
      * @param AutomationResource $automationResource
      * @param ContactCollectionFactory $contactCollectionFactory
      * @param ContactManager $contactManager
+     * @param OrderManager $orderManager
      * @param DataFieldCollector $dataFieldCollector
      * @param DataFieldTypeHandler $dataFieldTypeHandler
      * @param BackportedSubscriberLoader $backportedSubscriberLoader
@@ -63,6 +65,7 @@ class AbandonedCart extends AutomationProcessor
         AutomationResource $automationResource,
         ContactCollectionFactory $contactCollectionFactory,
         ContactManager $contactManager,
+        OrderManager $orderManager,
         DataFieldCollector $dataFieldCollector,
         DataFieldTypeHandler $dataFieldTypeHandler,
         BackportedSubscriberLoader $backportedSubscriberLoader,
@@ -80,6 +83,7 @@ class AbandonedCart extends AutomationProcessor
             $automationResource,
             $contactCollectionFactory,
             $contactManager,
+            $orderManager,
             $dataFieldCollector,
             $dataFieldTypeHandler,
             $backportedSubscriberLoader

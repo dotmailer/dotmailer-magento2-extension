@@ -15,6 +15,7 @@ use Dotdigitalgroup\Email\Model\StatusInterface;
 use Dotdigitalgroup\Email\Model\Sync\Automation\AutomationProcessor;
 use Dotdigitalgroup\Email\Model\Sync\Automation\AutomationTypeHandler;
 use Dotdigitalgroup\Email\Model\Sync\Automation\ContactManager;
+use Dotdigitalgroup\Email\Model\Sync\Automation\OrderManager;
 use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\DataFieldCollector;
 use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\DataFieldTypeHandler;
 use Dotdigitalgroup\Email\Test\Unit\Traits\AutomationProcessorTrait;
@@ -54,6 +55,11 @@ class AutomationProcessorTest extends TestCase
      * @var ContactManager|\PHPUnit_Framework_MockObject_MockObject
      */
     private $contactManagerMock;
+
+    /**
+     * @var OrderManager|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $orderManagerMock;
 
     /**
      * @var DataFieldCollector|\PHPUnit_Framework_MockObject_MockObject
@@ -97,6 +103,7 @@ class AutomationProcessorTest extends TestCase
         $this->automationResourceMock = $this->createMock(AutomationResource::class);
         $this->contactCollectionFactoryMock = $this->createMock(ContactCollectionFactory::class);
         $this->contactManagerMock = $this->createMock(ContactManager::class);
+        $this->orderManagerMock = $this->createMock(OrderManager::class);
         $this->dataFieldCollectorMock = $this->createMock(DataFieldCollector::class);
         $this->dataFieldTypeHandlerMock = $this->createMock(DataFieldTypeHandler::class);
         $this->backportedSubscriberLoaderMock = $this->createMock(BackportedSubscriberLoader::class);
@@ -117,6 +124,7 @@ class AutomationProcessorTest extends TestCase
             $this->automationResourceMock,
             $this->contactCollectionFactoryMock,
             $this->contactManagerMock,
+            $this->orderManagerMock,
             $this->dataFieldCollectorMock,
             $this->dataFieldTypeHandlerMock,
             $this->backportedSubscriberLoaderMock
