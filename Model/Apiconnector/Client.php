@@ -743,10 +743,8 @@ class Client extends Rest implements ClientInterface
     public function postCampaignsSend($campaignId, $contacts)
     {
         $data = [
-            'username' => $this->getApiUsername(),
-            'password' => $this->getApiPassword(),
             'campaignId' => $campaignId,
-            'ContactIds' => $contacts,
+            'contactIDs' => $contacts,
         ];
         $this->setUrl($this->getApiEndpoint() . self::REST_CAMPAIGN_SEND)
             ->setVerb('POST')
@@ -754,8 +752,6 @@ class Client extends Rest implements ClientInterface
 
         $response = $this->execute();
         if (isset($response->message)) {
-            unset($data['password']);
-
             $this->addClientLog('Error sending campaign', [
                 'campaign_id' => $campaignId,
             ])
