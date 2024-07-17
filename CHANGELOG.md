@@ -1,3 +1,9 @@
+# 4.26.1
+
+### Improvements
+- All price figures in catalog insight data will now be rounded to 2 decimal places.
+- We removed API username and password keys from the request body of an API method.
+
 # 4.26.0
 
 ### Improvements

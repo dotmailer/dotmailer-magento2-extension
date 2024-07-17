@@ -431,7 +431,8 @@ class Product extends AbstractConnectorModel
             $price = $product->getPrice();
             $specialPrice = $product->getSpecialPrice();
         }
-        $this->formatPriceValues($price, $specialPrice);
+        $this->price = $this->formatPriceValue($price);
+        $this->specialPrice = $this->formatPriceValue($specialPrice);
     }
 
     /**
@@ -451,29 +452,25 @@ class Product extends AbstractConnectorModel
             null,
             $storeId
         );
-        $this->price_incl_tax = $this->price + ($this->price * ($rate / 100));
-        $this->specialPrice_incl_tax = $this->specialPrice + ($this->specialPrice * ($rate / 100));
+        $this->price_incl_tax = $this->formatPriceValue(
+            $this->price + ($this->price * ($rate / 100))
+        );
+        $this->specialPrice_incl_tax = $this->formatPriceValue(
+            $this->specialPrice + ($this->specialPrice * ($rate / 100))
+        );
     }
 
     /**
-     * Formats the price values.
+     * Formats a price value.
      *
      * @param float|null $price
-     * @param float|null $specialPrice
      *
-     * @return void
+     * @return float
      */
-    private function formatPriceValues($price, $specialPrice)
+    private function formatPriceValue($price): float
     {
-        $this->price = (float) number_format(
+        return (float) number_format(
             (float) $price,
-            2,
-            '.',
-            ''
-        );
-
-        $this->specialPrice = (float) number_format(
-            (float) $specialPrice,
             2,
             '.',
             ''
