@@ -29,12 +29,26 @@ class V3ImporterReportHandler
      */
     public function process(SdkImport $response)
     {
-        $this->logger->debug(
-            sprintf(
-                'Import id %s summary: %s',
-                $response->getImportId(),
-                json_encode($response->getSummary())
-            )
-        );
+        if ($response->getSummary()) {
+            $this->logger->info(
+                sprintf(
+                    'Import id %s finished, summary: %s',
+                    $response->getImportId(),
+                    json_encode($response->getSummary())
+                )
+            );
+        }
+
+        if ($response->getFailures()) {
+            foreach ($response->getFailures() as $failure) {
+                $this->logger->debug(
+                    sprintf(
+                        'Import id %s failure: %s',
+                        $response->getImportId(),
+                        json_encode($failure)
+                    )
+                );
+            }
+        }
     }
 }

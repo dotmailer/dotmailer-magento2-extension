@@ -161,7 +161,18 @@ class ContactData
     {
         $this->model = $model;
         $this->columns = $columns;
+        $this->contactData = [];
         return $this;
+    }
+
+    /**
+     * Get contact data.
+     *
+     * @return array
+     */
+    public function getContactData()
+    {
+        return $this->contactData;
     }
 
     /**

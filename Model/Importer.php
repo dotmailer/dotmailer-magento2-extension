@@ -1,10 +1,23 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dotdigitalgroup\Email\Model;
 
+use Dotdigitalgroup\Email\Helper\Data;
+use Dotdigitalgroup\Email\Model\ResourceModel\Importer\CollectionFactory;
+use InvalidArgumentException;
+use Magento\Framework\Data\Collection\AbstractDb;
+use Magento\Framework\Exception\AlreadyExistsException;
+use Magento\Framework\Exception\CouldNotSaveException;
+use Magento\Framework\Model\AbstractModel;
+use Magento\Framework\Model\Context;
+use Magento\Framework\Model\ResourceModel\AbstractResource;
+use Magento\Framework\Registry;
 use Magento\Framework\Serialize\SerializerInterface;
+use Magento\Framework\Stdlib\DateTime;
 
-class Importer extends \Magento\Framework\Model\AbstractModel
+class Importer extends AbstractModel
 {
     public const NOT_IMPORTED = 0;
     public const IMPORTING = 1;
@@ -66,23 +79,23 @@ class Importer extends \Magento\Framework\Model\AbstractModel
     private $serializer;
 
     /**
-     * @var \Dotdigitalgroup\Email\Helper\Data
+     * @var Data
      */
     private $helper;
 
     /**
      * Importer constructor.
      *
-     * @param \Magento\Framework\Model\Context $context
-     * @param \Magento\Framework\Registry $registry
+     * @param Context $context
+     * @param Registry $registry
      * @param ResourceModel\Importer $importerResource
-     * @param ResourceModel\Importer\CollectionFactory $importerCollection
-     * @param \Magento\Framework\Stdlib\DateTime $dateTime
+     * @param CollectionFactory $importerCollection
+     * @param DateTime $dateTime
      * @param SerializerInterface $serializer
-     * @param \Dotdigitalgroup\Email\Helper\Data $helper
+     * @param Data $helper
      * @param array $data
-     * @param \Magento\Framework\Model\ResourceModel\AbstractResource|null $resource
-     * @param \Magento\Framework\Data\Collection\AbstractDb|null $resourceCollection
+     * @param AbstractResource|null $resource
+     * @param AbstractDb|null $resourceCollection
      */
     public function __construct(
         \Magento\Framework\Model\Context $context,
@@ -91,7 +104,7 @@ class Importer extends \Magento\Framework\Model\AbstractModel
         ResourceModel\Importer\CollectionFactory $importerCollection,
         \Magento\Framework\Stdlib\DateTime $dateTime,
         SerializerInterface $serializer,
-        \Dotdigitalgroup\Email\Helper\Data $helper,
+        Data $helper,
         array $data = [],
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null
@@ -144,6 +157,9 @@ class Importer extends \Magento\Framework\Model\AbstractModel
      * @param string $message
      *
      * @return bool
+     *
+     * @deprecated See newer method
+     * @see addToImporterQueue
      */
     public function registerQueue(
         $importType,
@@ -198,6 +214,56 @@ class Importer extends \Magento\Framework\Model\AbstractModel
     }
 
     /**
+     * Register import in queue.
+     *
+     * @param string $importType
+     * @param array $importData
+     * @param string $importMode
+     * @param int $websiteId
+     * @param int $retryCount
+     * @param int $importStatus
+     * @param string $importId
+     * @param string $message
+     * @param string $importStarted
+     *
+     * @return void
+     * @throws AlreadyExistsException
+     */
+    public function addToImporterQueue(
+        string $importType,
+        array $importData,
+        string $importMode,
+        int $websiteId,
+        int $retryCount = 0,
+        int $importStatus = 0,
+        string $importId = '',
+        string $message = '',
+        string $importStarted = ''
+    ): void {
+        if ($retryCount === 3) {
+            return;
+        }
+
+        if (empty($importData)) {
+            return;
+        }
+
+        $serializedData = $this->serializer->serialize($importData);
+
+        $this->setImportType($importType)
+            ->setImportStatus($importStatus)
+            ->setImportId($importId)
+            ->setImportData($serializedData)
+            ->setWebsiteId($websiteId)
+            ->setImportMode($importMode)
+            ->setMessage($message)
+            ->setRetryCount($retryCount)
+            ->setImportStarted($importStarted);
+
+        $this->importerResource->save($this);
+    }
+
+    /**
      * Saves item.
      *
      * @deprecated Use the resource model directly in classes.
@@ -236,12 +302,19 @@ class Importer extends \Magento\Framework\Model\AbstractModel
      * @param string $importMode
      * @param int $limit
      * @param array $websiteIds
+     * @param bool $useFile
      *
      * @return \Dotdigitalgroup\Email\Model\ResourceModel\Importer\Collection
      */
-    public function _getQueue($importType, $importMode, $limit, $websiteIds)
+    public function _getQueue($importType, $importMode, $limit, $websiteIds, $useFile = false)
     {
         return $this->importerCollection->create()
-            ->getQueueByTypeAndMode($importType, $importMode, $limit, $websiteIds);
+            ->getQueueByTypeAndMode(
+                $importType,
+                $importMode,
+                $limit,
+                $websiteIds,
+                $useFile
+            );
     }
 }

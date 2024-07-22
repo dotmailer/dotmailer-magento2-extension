@@ -4,53 +4,61 @@ namespace Dotdigitalgroup\Email\Test\Unit\Model\Sync\Importer;
 
 use Dotdigitalgroup\Email\Model\Sync\Importer\ImporterQueueManager;
 use Dotdigitalgroup\Email\Model\Sync\Importer\Type\Contact\BulkFactory as ContactBulkFactory;
+use Dotdigitalgroup\Email\Model\Sync\Importer\Type\Contact\BulkJsonFactory as ContactBulkJsonFactory;
 use Dotdigitalgroup\Email\Model\Sync\Importer\Type\Contact\DeleteFactory as ContactDeleteFactory;
 use Dotdigitalgroup\Email\Model\Sync\Importer\Type\Contact\UpdateFactory as ContactUpdateFactory;
 use Dotdigitalgroup\Email\Model\Sync\Importer\Type\TransactionalData\BulkFactory;
 use Dotdigitalgroup\Email\Model\Sync\Importer\Type\TransactionalData\DeleteFactory;
 use Dotdigitalgroup\Email\Model\Sync\Importer\Type\TransactionalData\UpdateFactory;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class ImporterQueueManagerTest extends TestCase
 {
     /**
-     * @var ImporterQueueManager
+     * @var ImporterQueueManager|MockObject
      */
     private $importerQueueManager;
 
     /**
-     * @var ContactBulkFactory
+     * @var ContactBulkFactory|MockObject
      */
     private $contactBulkFactoryMock;
 
     /**
-     * @var ContactUpdateFactory
+     * @var ContactBulkJsonFactory|MockObject
+     */
+    private $contactBulkJsonFactoryMock;
+
+    /**
+     * @var ContactUpdateFactory|MockObject
      */
     private $contactUpdateFactoryMock;
 
     /**
-     * @var ContactDeleteFactory
+     * @var ContactDeleteFactory|MockObject
      */
     private $contactDeleteFactoryMock;
 
     /**
-     * @var BulkFactory
+     * @var BulkFactory|MockObject
      */
     private $bulkFactoryMock;
 
     /**
-     * @var UpdateFactory
+     * @var UpdateFactory|MockObject
      */
     private $updateFactoryMock;
 
     /**
-     * @var DeleteFactory
+     * @var DeleteFactory|MockObject
      */
     private $deleteFactoryMock;
 
     protected function setUp() :void
     {
         $this->contactBulkFactoryMock = $this->createMock(ContactBulkFactory::class);
+        $this->contactBulkJsonFactoryMock = $this->createMock(ContactBulkJsonFactory::class);
         $this->contactUpdateFactoryMock = $this->createMock(ContactUpdateFactory::class);
         $this->contactDeleteFactoryMock = $this->createMock(ContactDeleteFactory::class);
         $this->bulkFactoryMock = $this->createMock(BulkFactory::class);
@@ -59,6 +67,7 @@ class ImporterQueueManagerTest extends TestCase
 
         $this->importerQueueManager = new ImporterQueueManager(
             $this->contactBulkFactoryMock,
+            $this->contactBulkJsonFactoryMock,
             $this->contactUpdateFactoryMock,
             $this->contactDeleteFactoryMock,
             $this->bulkFactoryMock,

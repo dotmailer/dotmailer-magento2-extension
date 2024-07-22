@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dotdigitalgroup\Email\Model\Sync\Importer\Type;
 
 use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Apiconnector\Client;
+use Dotdigitalgroup\Email\Model\Importer as ImporterModel;
 use Dotdigitalgroup\Email\Model\ResourceModel\Importer\Collection;
-use Dotdigitalgroup\Email\Model\Sync\Importer\Type\ItemPostProcessorInterfaceFactory;
 use Magento\Framework\DataObject;
 
 abstract class AbstractItemSyncer extends DataObject
@@ -53,10 +55,10 @@ abstract class AbstractItemSyncer extends DataObject
         foreach ($collection as $item) {
             try {
                 $result = $this->process($item);
-            } catch (\InvalidArgumentException $e) {
-                $this->logger->debug(
+            } catch (\InvalidArgumentException|\Exception $e) {
+                $this->logger->error(
                     sprintf(
-                        'Error processing %s import data for ID: %d',
+                        'Error processing %s import data for id %s',
                         $item->getImportType(),
                         $item->getImportId()
                     ),
@@ -72,7 +74,7 @@ abstract class AbstractItemSyncer extends DataObject
     /**
      * Process sync.
      *
-     * @param mixed $item
+     * @param ImporterModel $item
      * @return mixed
      */
     abstract protected function process($item);

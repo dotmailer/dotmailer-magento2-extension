@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dotdigitalgroup\Email\Model\Sync\Customer;
 
+use Dotdigital\V3\Models\Contact as SdkContact;
 use Dotdigitalgroup\Email\Helper\Config;
 use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Connector\ContactData\CustomerFactory as ConnectorCustomerFactory;
@@ -9,7 +12,9 @@ use Dotdigitalgroup\Email\Model\Customer\CustomerDataFieldProviderFactory;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory as ContactCollectionFactory;
 use Dotdigitalgroup\Email\Model\Sync\AbstractExporter;
 use Dotdigitalgroup\Email\Model\Sync\Export\CsvHandler;
+use Dotdigitalgroup\Email\Model\Sync\Export\ExporterInterface;
 use Dotdigitalgroup\Email\Model\Sync\Export\SalesDataManager;
+use Dotdigitalgroup\Email\Model\Sync\Export\SdkContactBuilder;
 use Magento\Customer\Model\ResourceModel\Customer\Collection as CustomerCollection;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Exception\LocalizedException;
@@ -17,7 +22,7 @@ use Magento\Framework\Serialize\SerializerInterface;
 use Magento\Store\Api\Data\WebsiteInterface;
 use Magento\Store\Model\ScopeInterface;
 
-class Exporter extends AbstractExporter
+class Exporter extends AbstractExporter implements ExporterInterface
 {
     /**
      * @var Logger
@@ -45,6 +50,11 @@ class Exporter extends AbstractExporter
     private $customerDataManager;
 
     /**
+     * @var SdkContactBuilder
+     */
+    private $sdkContactBuilder;
+
+    /**
      * @var SalesDataManager
      */
     private $salesDataManager;
@@ -60,6 +70,11 @@ class Exporter extends AbstractExporter
     private $serializer;
 
     /**
+     * @var array $fieldMap
+     */
+    private $fieldMap = [];
+
+    /**
      * Exporter constructor.
      *
      * @param Logger $logger
@@ -68,6 +83,7 @@ class Exporter extends AbstractExporter
      * @param ContactCollectionFactory $contactCollectionFactory
      * @param CustomerDataManager $customerDataManager
      * @param CsvHandler $csvHandler
+     * @param SdkContactBuilder $sdkContactBuilder
      * @param SalesDataManager $salesDataManager
      * @param ScopeConfigInterface $scopeConfig
      * @param SerializerInterface $serializer
@@ -79,6 +95,7 @@ class Exporter extends AbstractExporter
         ContactCollectionFactory $contactCollectionFactory,
         CustomerDataManager $customerDataManager,
         CsvHandler $csvHandler,
+        SdkContactBuilder $sdkContactBuilder,
         SalesDataManager $salesDataManager,
         ScopeConfigInterface $scopeConfig,
         SerializerInterface $serializer
@@ -88,6 +105,7 @@ class Exporter extends AbstractExporter
         $this->customerDataFieldProviderFactory = $customerDataFieldProviderFactory;
         $this->contactCollectionFactory = $contactCollectionFactory;
         $this->customerDataManager = $customerDataManager;
+        $this->sdkContactBuilder = $sdkContactBuilder;
         $this->salesDataManager = $salesDataManager;
         $this->scopeConfig = $scopeConfig;
         $this->serializer = $serializer;
@@ -99,22 +117,23 @@ class Exporter extends AbstractExporter
      *
      * @param array $customerIds
      * @param WebsiteInterface $website
+     * @param int $listId
      *
-     * @return array
+     * @return array<SdkContact>
      * @throws LocalizedException
      */
-    public function export(array $customerIds, WebsiteInterface $website)
+    public function export(array $customerIds, WebsiteInterface $website, int $listId): array
     {
         $exportedData = [];
         $customerCollection = $this->customerDataManager->buildCustomerCollection($customerIds);
 
         $customerScopeData = $this->customerDataManager->setCustomerScopeData($customerIds, $website->getId());
-        $customerLoginData = $this->customerDataManager->fetchLastLoggedInDates($customerIds, $this->columns);
+        $customerLoginData = $this->customerDataManager->fetchLastLoggedInDates($customerIds, $this->fieldMap);
 
         $customerSalesData = $this->salesDataManager->setContactSalesData(
             $this->getEmailsFromCollection($customerCollection),
             $website,
-            $this->columns
+            $this->fieldMap
         );
 
         foreach ($customerCollection as $customer) {
@@ -140,9 +159,14 @@ class Exporter extends AbstractExporter
                     );
                 }
 
-                $exportedData[$customer->getEmailContactId()] = $this->connectorCustomerFactory->create()
-                    ->init($customer, $this->columns)
-                    ->toCSVArray();
+                $connectorCustomer = $this->connectorCustomerFactory->create()
+                    ->init($customer, $this->fieldMap);
+
+                $exportedData[$customer->getEmailContactId()] = $this->sdkContactBuilder->createSdkContact(
+                    $connectorCustomer,
+                    $this->fieldMap,
+                    $listId
+                );
 
                 //clear collection and free memory
                 $customer->clearInstance();
@@ -165,6 +189,9 @@ class Exporter extends AbstractExporter
      * Set fields to be exported.
      *
      * @param WebsiteInterface $website
+     *
+     * @deprecated We no longer send data using csv files.
+     * @see Exporter::setFieldMapping
      */
     public function setCsvColumns(WebsiteInterface $website)
     {
@@ -181,6 +208,38 @@ class Exporter extends AbstractExporter
 
         $columns = AbstractExporter::EMAIL_FIELDS + $customerDataFields;
         $this->columns = $attributeColumns ? $columns + $attributeColumns : $columns;
+    }
+
+    /**
+     * Set fields to be exported.
+     *
+     * @param WebsiteInterface $website
+     */
+    public function setFieldMapping(WebsiteInterface $website): void
+    {
+        $customerDataFields = $this->customerDataFieldProviderFactory
+            ->create(['data' => ['website' => $website]])
+            ->addIgnoredField('subscriber_status')
+            ->getCustomerDataFields();
+
+        $customAttributes = $this->getCustomAttributes($website->getId());
+        $attributeColumns = array_combine(
+            array_column($customAttributes, 'attribute'),
+            array_column($customAttributes, 'datafield')
+        );
+
+        $columns = AbstractExporter::EMAIL_FIELDS + $customerDataFields;
+        $this->fieldMap = $attributeColumns ? $columns + $attributeColumns : $columns;
+    }
+
+    /**
+     * Get field mapping.
+     *
+     * @return array
+     */
+    public function getFieldMapping(): array
+    {
+        return $this->fieldMap;
     }
 
     /**

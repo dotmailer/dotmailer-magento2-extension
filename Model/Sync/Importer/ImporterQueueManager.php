@@ -5,6 +5,7 @@ namespace Dotdigitalgroup\Email\Model\Sync\Importer;
 use Dotdigitalgroup\Email\Model\Importer as ImporterModel;
 use Dotdigitalgroup\Email\Model\Sync\Importer;
 use Dotdigitalgroup\Email\Model\Sync\Importer\Type\Contact\BulkFactory as ContactBulkFactory;
+use Dotdigitalgroup\Email\Model\Sync\Importer\Type\Contact\BulkJsonFactory as ContactBulkJsonFactory;
 use Dotdigitalgroup\Email\Model\Sync\Importer\Type\Contact\DeleteFactory as ContactDeleteFactory;
 use Dotdigitalgroup\Email\Model\Sync\Importer\Type\Contact\UpdateFactory as ContactUpdateFactory;
 use Dotdigitalgroup\Email\Model\Sync\Importer\Type\TransactionalData\BulkFactory;
@@ -17,6 +18,11 @@ class ImporterQueueManager
      * @var ContactBulkFactory
      */
     private $contactBulkFactory;
+
+    /**
+     * @var ContactBulkJsonFactory
+     */
+    private $contactBulkJsonFactory;
 
     /**
      * @var ContactUpdateFactory
@@ -45,7 +51,9 @@ class ImporterQueueManager
 
     /**
      * ImporterQueueManager constructor.
+     *
      * @param ContactBulkFactory $contactBulkFactory
+     * @param ContactBulkJsonFactory $contactBulkJsonFactory
      * @param ContactUpdateFactory $contactUpdateFactory
      * @param ContactDeleteFactory $contactDeleteFactory
      * @param BulkFactory $bulkFactory
@@ -54,6 +62,7 @@ class ImporterQueueManager
      */
     public function __construct(
         ContactBulkFactory $contactBulkFactory,
+        ContactBulkJsonFactory $contactBulkJsonFactory,
         ContactUpdateFactory $contactUpdateFactory,
         ContactDeleteFactory $contactDeleteFactory,
         BulkFactory $bulkFactory,
@@ -61,6 +70,7 @@ class ImporterQueueManager
         DeleteFactory $deleteFactory
     ) {
         $this->contactBulkFactory = $contactBulkFactory;
+        $this->contactBulkJsonFactory = $contactBulkJsonFactory;
         $this->contactUpdateFactory = $contactUpdateFactory;
         $this->contactDeleteFactory = $contactDeleteFactory;
         $this->bulkFactory = $bulkFactory;
@@ -77,26 +87,37 @@ class ImporterQueueManager
     public function getBulkQueue(array $additionalImportTypes = [])
     {
         $defaultBulk = [
-            'model' => '',
+            'model' => $this->bulkFactory,
             'mode' => ImporterModel::MODE_BULK,
             'type' => '',
             'limit' => Importer::TOTAL_IMPORT_SYNC_LIMIT
         ];
 
         //Contact Bulk
-        $contact = $defaultBulk;
-        $contact['model'] = $this->contactBulkFactory;
-        $contact['type'] = [
+        $contactDeprecated = $defaultBulk;
+        $contactDeprecated['model'] = $this->contactBulkFactory;
+        $contactDeprecated['type'] = [
             ImporterModel::IMPORT_TYPE_CONTACT,
             ImporterModel::IMPORT_TYPE_CUSTOMER,
             ImporterModel::IMPORT_TYPE_GUEST,
             ImporterModel::IMPORT_TYPE_SUBSCRIBERS,
         ];
-        $contact['limit'] = Importer::CONTACT_IMPORT_SYNC_LIMIT;
+        $contactDeprecated['limit'] = Importer::CONTACT_IMPORT_SYNC_LIMIT;
+        $contactDeprecated['useFile'] = true;
+
+        //Contact JSON Bulk
+        $contactJson = $defaultBulk;
+        $contactJson['model'] = $this->contactBulkJsonFactory;
+        $contactJson['type'] = [
+            ImporterModel::MODE_CONSENT,
+            ImporterModel::IMPORT_TYPE_CUSTOMER,
+            ImporterModel::IMPORT_TYPE_GUEST,
+            ImporterModel::IMPORT_TYPE_SUBSCRIBERS,
+        ];
+        $contactJson['limit'] = Importer::CONTACT_IMPORT_SYNC_LIMIT;
 
         //Bulk Order
         $order = $defaultBulk;
-        $order['model'] = $this->bulkFactory;
         $order['type'] = ImporterModel::IMPORT_TYPE_ORDERS;
 
         //Bulk Other TD
@@ -113,7 +134,8 @@ class ImporterQueueManager
         }
 
         return [
-            $contact,
+            $contactDeprecated,
+            $contactJson,
             $order,
             $other
         ];

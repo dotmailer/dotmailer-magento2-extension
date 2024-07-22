@@ -1,22 +1,30 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dotdigitalgroup\Email\Model\Sync;
 
 use Dotdigitalgroup\Email\Helper\Config;
 use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Logger\Logger;
+use Dotdigitalgroup\Email\Model\Importer;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact\Collection as ContactCollection;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory as ContactCollectionFactory;
-use Dotdigitalgroup\Email\Model\Sync\Batch\SubscriberBatchProcessor;
+use Dotdigitalgroup\Email\Model\Sync\Batch\MegaBatchProcessor;
+use Dotdigitalgroup\Email\Model\Sync\Batch\MergeManager;
+use Dotdigitalgroup\Email\Model\Sync\Export\ExporterInterface;
 use Dotdigitalgroup\Email\Model\Sync\Subscriber\OrderHistoryChecker;
 use Dotdigitalgroup\Email\Model\Sync\Subscriber\SubscriberExporterFactory;
 use Dotdigitalgroup\Email\Model\Sync\Subscriber\SubscriberWithSalesExporterFactory;
+use Http\Client\Exception;
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\DataObject;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Store\Api\Data\WebsiteInterface;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
 
-class Subscriber extends AbstractContactSyncer implements SyncInterface
+class Subscriber extends DataObject implements SyncInterface
 {
     private const COHORT_SUBSCRIBERS = 'subscribers';
     private const COHORT_SUBSCRIBERS_WITH_SALES = 'subscribers_with_sales';
@@ -37,9 +45,14 @@ class Subscriber extends AbstractContactSyncer implements SyncInterface
     private $contactCollectionFactory;
 
     /**
-     * @var SubscriberBatchProcessor
+     * @var MegaBatchProcessor
      */
     private $batchProcessor;
+
+    /**
+     * @var MergeManager
+     */
+    private $mergeManager;
 
     /**
      * @var OrderHistoryChecker
@@ -117,7 +130,8 @@ class Subscriber extends AbstractContactSyncer implements SyncInterface
      * @param Data $helper
      * @param Logger $logger
      * @param ContactCollectionFactory $contactCollectionFactory
-     * @param SubscriberBatchProcessor $batchProcessor
+     * @param MegaBatchProcessor $batchProcessor
+     * @param MergeManager $mergeManager
      * @param OrderHistoryChecker $orderHistoryChecker
      * @param SubscriberExporterFactory $subscriberExporterFactory
      * @param SubscriberWithSalesExporterFactory $subscriberWithSalesExporterFactory
@@ -129,7 +143,8 @@ class Subscriber extends AbstractContactSyncer implements SyncInterface
         Data $helper,
         Logger $logger,
         ContactCollectionFactory $contactCollectionFactory,
-        SubscriberBatchProcessor $batchProcessor,
+        MegaBatchProcessor $batchProcessor,
+        MergeManager $mergeManager,
         OrderHistoryChecker $orderHistoryChecker,
         SubscriberExporterFactory $subscriberExporterFactory,
         SubscriberWithSalesExporterFactory $subscriberWithSalesExporterFactory,
@@ -141,6 +156,7 @@ class Subscriber extends AbstractContactSyncer implements SyncInterface
         $this->logger = $logger;
         $this->contactCollectionFactory = $contactCollectionFactory;
         $this->batchProcessor = $batchProcessor;
+        $this->mergeManager = $mergeManager;
         $this->orderHistoryChecker = $orderHistoryChecker;
         $this->subscriberExporterFactory = $subscriberExporterFactory;
         $this->subscriberWithSalesExporterFactory = $subscriberWithSalesExporterFactory;
@@ -178,7 +194,8 @@ class Subscriber extends AbstractContactSyncer implements SyncInterface
                 try {
                     $this->loopByWebsite(
                         $website,
-                        $breakValue
+                        $breakValue,
+                        (int) $subscriberAddressBook
                     );
                 } catch (\Exception $e) {
                     $this->logger->error(
@@ -211,12 +228,12 @@ class Subscriber extends AbstractContactSyncer implements SyncInterface
      *
      * @param WebsiteInterface $website
      * @param int $breakValue
+     * @param int $listId
      *
      * @return void
-     * @throws \Magento\Framework\Exception\FileSystemException
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws LocalizedException
      */
-    private function loopByWebsite(WebsiteInterface $website, int $breakValue)
+    private function loopByWebsite(WebsiteInterface $website, int $breakValue, int $listId)
     {
         $this->subscribersMegaBatch = [];
         $this->subscribersWithSalesMegaBatch = [];
@@ -226,9 +243,9 @@ class Subscriber extends AbstractContactSyncer implements SyncInterface
         $this->subscribersWithSalesMegaBatchCount = 0;
         $this->cohorts = [];
 
-        /** @var AbstractExporter $subscriberExporter */
+        /** @var ExporterInterface $subscriberExporter */
         $subscriberExporter = $this->subscriberExporterFactory->create();
-        /** @var AbstractExporter $subscriberWithSalesExporter */
+        /** @var ExporterInterface $subscriberWithSalesExporter */
         $subscriberWithSalesExporter = $this->subscriberWithSalesExporterFactory->create();
 
         $offset = 0;
@@ -265,18 +282,12 @@ class Subscriber extends AbstractContactSyncer implements SyncInterface
                         $subscriberWithSalesExporter :
                         $subscriberExporter;
 
-                    $filename = $cohort['filename'] ?? $exporter->getCsvFileName(
-                        $website->getCode(),
-                        $cohortName
-                    );
-                    $this->cohorts[$cohortName]['filename'] = $filename;
-
                     $processed = $this->exportAndBatch(
                         $cohortName,
                         $cohort['contacts'],
                         $exporter,
                         $website,
-                        $filename
+                        $listId
                     );
 
                     $offset -= $processed;
@@ -297,8 +308,8 @@ class Subscriber extends AbstractContactSyncer implements SyncInterface
             $megaBatch = $this->getPrettyCohortName($cohortName).'MegaBatch';
             $this->batchProcessor->process(
                 $this->$megaBatch,
-                $website->getId(),
-                $cohort['filename'] ?? ''
+                (int) $website->getId(),
+                Importer::IMPORT_TYPE_SUBSCRIBERS
             );
         }
     }
@@ -308,21 +319,28 @@ class Subscriber extends AbstractContactSyncer implements SyncInterface
      *
      * @param string $cohortName
      * @param array $subscribers
-     * @param AbstractExporter $exporter
+     * @param ExporterInterface $exporter
      * @param WebsiteInterface $website
-     * @param string $filename
+     * @param int $listId
      *
      * @return int
+     * @throws LocalizedException
+     * @throws Exception
      */
-    private function exportAndBatch(string $cohortName, array $subscribers, $exporter, $website, string $filename)
-    {
+    private function exportAndBatch(
+        string $cohortName,
+        array $subscribers,
+        ExporterInterface $exporter,
+        $website,
+        int $listId
+    ) {
         $processed = 0;
 
-        if (empty($exporter->getCsvColumns())) {
-            $exporter->setCsvColumns($website);
+        if (empty($exporter->getFieldMapping())) {
+            $exporter->setFieldMapping($website);
         }
 
-        $batch = $exporter->export($subscribers, $website);
+        $batch = $exporter->export($subscribers, $website, $listId);
         $batchCount = count($batch);
         if ($batchCount === 0) {
             return 0;
@@ -334,22 +352,29 @@ class Subscriber extends AbstractContactSyncer implements SyncInterface
         $loopStart = $prettyCohortName.'LoopStart';
 
         if ($this->$loopStart) {
-            $exporter->initialiseCsvFile($website, $exporter->getCsvColumns(), $cohortName, $filename);
+            $this->logger->info(
+                sprintf(
+                    '----------- %s sync ----------- : Website %d',
+                    $prettyCohortName,
+                    $website->getId()
+                )
+            );
             $this->$loopStart = false;
         }
 
-        $this->$megaBatch = $this->mergeBatch($batch, $this->$megaBatch);
-
+        $this->$megaBatch = $this->mergeManager->mergeBatch($batch, $this->$megaBatch);
         $this->$megaBatchCount += $batchCount;
         $this->totalSubscribersSyncedCount += $batchCount;
 
         if ($this->$megaBatchCount >= $this->megaBatchSize) {
-            $this->batchProcessor->process($this->$megaBatch, $website->getId(), $filename);
+            $this->batchProcessor->process(
+                $this->$megaBatch,
+                (int) $website->getId(),
+                Importer::IMPORT_TYPE_SUBSCRIBERS
+            );
             $processed = $this->$megaBatchCount;
             $this->$megaBatch = [];
             $this->$megaBatchCount = 0;
-            $this->$loopStart = true;
-            unset($this->cohorts[$cohortName]['filename']);
         }
 
         return $processed;
@@ -422,5 +447,15 @@ class Subscriber extends AbstractContactSyncer implements SyncInterface
             $i++;
         }
         return $output;
+    }
+
+    /**
+     * Determines whether the sync was triggered from Configuration > Dotdigital > Developer > Sync Settings.
+     *
+     * @return bool
+     */
+    private function isRunFromDeveloperButton()
+    {
+        return (bool)$this->_getData('web');
     }
 }

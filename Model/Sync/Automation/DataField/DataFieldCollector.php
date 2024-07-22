@@ -2,11 +2,13 @@
 
 namespace Dotdigitalgroup\Email\Model\Sync\Automation\DataField;
 
+use Dotdigital\V3\Models\Contact\DataField;
 use Dotdigitalgroup\Email\Helper\Config;
 use Dotdigitalgroup\Email\Model\Contact;
 use Dotdigitalgroup\Email\Model\Sync\AbstractExporter;
 use Dotdigitalgroup\Email\Model\Sync\Customer\Exporter as CustomerExporter;
 use Dotdigitalgroup\Email\Model\Sync\Customer\ExporterFactory as CustomerExporterFactory;
+use Dotdigitalgroup\Email\Model\Sync\Export\ExporterInterface;
 use Dotdigitalgroup\Email\Model\Sync\Guest\GuestExporter;
 use Dotdigitalgroup\Email\Model\Sync\Guest\GuestExporterFactory as GuestExporterFactory;
 use Dotdigitalgroup\Email\Model\Sync\Subscriber\OrderHistoryChecker;
@@ -86,28 +88,23 @@ class DataFieldCollector
      *
      * @param Contact $contact
      * @param string|int $websiteId
+     * @param int $listId
      *
      * @return array
      * @throws LocalizedException
      */
-    public function collectForCustomer(Contact $contact, $websiteId): array
+    public function collectForCustomer(Contact $contact, $websiteId, int $listId): array
     {
         $website = $this->storeManager->getWebsite($websiteId);
 
-        /** @var CustomerExporter $exporter */
         $exporter = $this->customerExporterFactory->create();
-        $exporter->setCsvColumns($website);
+        $exporter->setFieldMapping($website);
 
-        $keyedExport = $exporter->export([$contact->getCustomerId()], $website);
+        $keyedExport = $exporter->export([$contact->getCustomerId()], $website, $listId);
 
-        if (!isset($keyedExport[$contact->getId()])) {
-            return [];
-        }
-
-        return array_combine(
-            $exporter->getCsvColumns(),
-            $keyedExport[$contact->getId()]
-        );
+        return isset($keyedExport[$contact->getId()]) ?
+            $keyedExport[$contact->getId()]->getDataFields()->all() :
+            [];
     }
 
     /**
@@ -115,28 +112,24 @@ class DataFieldCollector
      *
      * @param Contact $contact
      * @param string|int $websiteId
+     * @param int $listId
      *
      * @return array
      * @throws LocalizedException
      */
-    public function collectForGuest(Contact $contact, $websiteId): array
+    public function collectForGuest(Contact $contact, $websiteId, int $listId): array
     {
         $website = $this->storeManager->getWebsite($websiteId);
 
         /** @var GuestExporter $exporter */
         $exporter = $this->guestExporterFactory->create();
-        $exporter->setCsvColumns($website);
+        $exporter->setFieldMapping($website);
 
-        $keyedExport = $exporter->export([$contact], $website);
+        $keyedExport = $exporter->export([$contact], $website, $listId);
 
-        if (!isset($keyedExport[$contact->getId()])) {
-            return [];
-        }
-
-        return array_combine(
-            $exporter->getCsvColumns(),
-            $keyedExport[$contact->getId()]
-        );
+        return isset($keyedExport[$contact->getId()]) ?
+            $keyedExport[$contact->getId()]->getDataFields()->all() :
+            [];
     }
 
     /**
@@ -144,11 +137,12 @@ class DataFieldCollector
      *
      * @param Contact $contact
      * @param string|int $websiteId
+     * @param int $listId
      *
      * @return array
      * @throws LocalizedException
      */
-    public function collectForSubscriber(Contact $contact, $websiteId): array
+    public function collectForSubscriber(Contact $contact, $websiteId, int $listId): array
     {
         $isSubscriberSalesDataEnabled = (int) $this->scopeConfig->getValue(
             Config::XML_PATH_CONNECTOR_ENABLE_SUBSCRIBER_SALES_DATA,
@@ -168,18 +162,13 @@ class DataFieldCollector
             $exporter = $this->subscriberExporterFactory->create();
         }
 
-        /** @var AbstractExporter $exporter */
-        $exporter->setCsvColumns($website);
-        $keyedExport = $exporter->export($subscribers, $website);
+        /** @var ExporterInterface $exporter */
+        $exporter->setFieldMapping($website);
+        $keyedExport = $exporter->export($subscribers, $website, $listId);
 
-        if (!isset($keyedExport[$contact->getId()])) {
-            return [];
-        }
-
-        return array_combine(
-            $exporter->getCsvColumns(),
-            $keyedExport[$contact->getId()]
-        );
+        return isset($keyedExport[$contact->getId()]) ?
+            $keyedExport[$contact->getId()]->getDataFields()->all() :
+            [];
     }
 
     /**
@@ -190,7 +179,7 @@ class DataFieldCollector
      * Note that original keys are not overwritten with new values.
      *
      * @param array $originalDataFields
-     * @param array $newDataFields
+     * @param array<DataField> $newDataFields
      *
      * @return array
      */
@@ -205,13 +194,13 @@ class DataFieldCollector
             ]
         );
 
-        foreach ($newDataFields as $key => $newDataField) {
-            if (in_array($key, $originalKeys)) {
+        foreach ($newDataFields as $newDataField) {
+            if (in_array($newDataField->getKey(), $originalKeys)) {
                 continue;
             }
             $combinedDataFields[] = [
-                'Key' => $key,
-                'Value' => $newDataField
+                'Key' => $newDataField->getKey(),
+                'Value' => $newDataField->getValue()
             ];
         }
         return $combinedDataFields;

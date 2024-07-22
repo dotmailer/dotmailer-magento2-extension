@@ -13,6 +13,10 @@ use Dotdigitalgroup\Email\Model\ResourceModel\Consent;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Serialize\SerializerInterface;
 
+/**
+ * @deprecated We consolidated the batch processors into one class. This class will be removed in a future release.
+ * @see \Dotdigitalgroup\Email\Model\Sync\Batch\MegaBatchProcessor
+ */
 class ConsentBatchProcessor
 {
     /**

@@ -10,6 +10,7 @@ use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory as Conta
 use Dotdigitalgroup\Email\Model\ResourceModel\Importer\Collection;
 use Dotdigitalgroup\Email\Model\ResourceModel\Importer\CollectionFactory;
 use Dotdigitalgroup\Email\Model\Sync\Customer;
+use Dotdigitalgroup\Email\Model\Sync\Customer\Exporter;
 use Dotdigitalgroup\Email\Setup\Install\Type\InsertEmailContactTableCustomers;
 use Dotdigitalgroup\Email\Test\Integration\MocksApiResponses;
 use Magento\Framework\App\ObjectManager;
@@ -67,6 +68,11 @@ class CustomerSyncTest extends \PHPUnit\Framework\TestCase
     private $contactCollectionFactory;
 
     /**
+     * @var Exporter
+     */
+    private $exporter;
+
+    /**
      * @var ObjectManager
      */
     private $objectManager;
@@ -77,6 +83,7 @@ class CustomerSyncTest extends \PHPUnit\Framework\TestCase
         $this->importerCollectionFactory = $this->objectManager->create(CollectionFactory::class);
         $this->contactCollectionFactory = $this->objectManager->create(ContactCollectionFactory::class);
         $this->customerDataFieldProviderFactory = $this->objectManager->create(CustomerDataFieldProviderFactory::class);
+        $this->exporter = $this->objectManager->create(Exporter::class);
 
         $this->cleanTables();
 
@@ -98,18 +105,9 @@ class CustomerSyncTest extends \PHPUnit\Framework\TestCase
     public function testContactExportBulkImportQueued()
     {
         $this->customerSync->sync();
-        $contactsQueue = $this->getContactImporterQueue();
-        $website = $this->helper->getWebsiteById(1);
+        $contactsQueue = $this->getContactImports();
 
         $this->assertEquals(1, $contactsQueue['totalRecords']);
-        $this->assertStringContainsString(
-            sprintf(
-                '%s_customers_%s',
-                $website->getCode(),
-                (new \DateTime('now', new \DateTimeZone('UTC')))->format('d_m_Y')
-            ),
-            end($contactsQueue['items'])['import_file']
-        );
         $this->assertEquals(
             Importer::IMPORT_TYPE_CUSTOMER,
             end($contactsQueue['items'])['import_type'],
@@ -125,25 +123,8 @@ class CustomerSyncTest extends \PHPUnit\Framework\TestCase
     /**
      * @magentoDataFixture Magento/Customer/_files/five_repository_customers.php
      */
-    public function testContactExportCsvFileExists()
+    public function testContactExportJsonContainsContacts()
     {
-        // To ensure the import filename changes between tests
-        sleep(1);
-
-        $this->customerSync->sync();
-        $contactsQueue = $this->getContactImporterQueue();
-
-        $this->assertFileExists($this->fileHelper->getFilePath(end($contactsQueue['items'])['import_file']));
-    }
-
-    /**
-     * @magentoDataFixture Magento/Customer/_files/five_repository_customers.php
-     */
-    public function testContactExportCsvContainsContacts()
-    {
-        // To ensure the import filename changes between tests
-        sleep(1);
-
         // get the contacts we expect to be exported
         $websiteId = 1;
         $contactsToExport = $this->contactCollectionFactory->create()
@@ -155,34 +136,31 @@ class CustomerSyncTest extends \PHPUnit\Framework\TestCase
             )->toArray();
 
         $this->customerSync->sync();
-        $contactsQueue = $this->getContactImporterQueue();
-        $csv = $this->getCsvContent(end($contactsQueue['items'])['import_file']);
+        $contactsQueue = $this->getContactImports();
+        $json = end($contactsQueue['items'])['import_data'];
 
         foreach ($contactsToExport['items'] as $contact) {
-            $this->assertTrue(
-                in_array($contact['email'], array_column($csv, 'Email'))
-            );
+            $this->assertStringContainsString($contact['email'], $json);
         }
     }
 
     /**
      * @magentoDataFixture Magento/Customer/_files/five_repository_customers.php
      */
-    public function testCsvExportContainsExpectedColumns()
+    public function testExportContainsExpectedColumns()
     {
-        // To ensure the import filename changes between tests
-        sleep(1);
-
         $this->customerSync->sync();
-        $contactsQueue = $this->getContactImporterQueue();
-        $dataFields = $this->getMappedDataFields();
-        $csv = $this->getCsvContent(end($contactsQueue['items'])['import_file']);
+        $contactsQueue = $this->getContactImports();
 
-        foreach ($dataFields as $field) {
-            $this->assertContains(
-                $field,
-                array_keys(reset($csv))
-            );
+        $this->exporter->setFieldMapping($this->helper->getWebsiteById(1));
+        $mappedDataFields = $this->exporter->getFieldMapping();
+
+        $json = json_decode(end($contactsQueue['items'])['import_data']);
+
+        foreach ($json as $exportedCustomer) {
+            foreach ($exportedCustomer->dataFields as $key => $field) {
+                $this->assertContains($key, $mappedDataFields);
+            }
         }
     }
 
@@ -191,9 +169,6 @@ class CustomerSyncTest extends \PHPUnit\Framework\TestCase
      */
     public function testCsvContainsCustomAttributeColumns()
     {
-        // To ensure the import filename changes between tests
-        sleep(1);
-
         /** @var Json $serializer */
         $serializer = $this->objectManager->create(Json::class);
         $this->setApiConfigFlags([
@@ -207,66 +182,34 @@ class CustomerSyncTest extends \PHPUnit\Framework\TestCase
         ]);
 
         $this->customerSync->sync();
-        $contactsQueue = $this->getContactImporterQueue();
-        $csv = $this->getCsvContent(end($contactsQueue['items'])['import_file']);
+        $contactsQueue = $this->getContactImports();
+        $json = $serializer->unserialize(end($contactsQueue['items'])['import_data']);
 
-        $this->assertContains('DOWNWARD_TREND', array_keys(reset($csv)));
-        $this->assertContains('CHATTY_CONSOLE', array_keys(reset($csv)));
+        $values = array_values($json);
+        $exportedCustomer = $values[0];
+
+        $dataFieldKeys = array_keys($exportedCustomer['dataFields']);
+        $this->assertContains('DOWNWARD_TREND', $dataFieldKeys);
+        $this->assertContains('CHATTY_CONSOLE', $dataFieldKeys);
     }
 
     /**
-     * Load the generated CSV
+     * Get contact imports.
      *
-     * @param string $fileName
-     * @return array
-     * @throws \Magento\Framework\Exception\FileSystemException
-     */
-    private function getCsvContent(string $fileName)
-    {
-        $resource = $this->fileSystem->fileOpen(
-            $this->fileHelper->getFilePath($fileName),
-            'r'
-        );
-
-        $csvRow = 0;
-        $rowHeaders = [];
-        $csv = [];
-        while ($result = $this->fileSystem->fileGetCsv($resource)) {
-            if ($csvRow++ === 0) {
-                $rowHeaders = $result;
-                continue;
-            }
-            $csv[] = array_combine($rowHeaders, $result);
-        }
-        $this->fileSystem->fileClose($resource);
-
-        return $csv;
-    }
-
-    /**
+     * Because sync now pushes data to Dotdigital, this send fails in the context of the test.
+     * However, failed imports are still added to the table. Hence we check the failed items.
+     *
      * @return array
      */
-    private function getContactImporterQueue()
+    private function getContactImports()
     {
         /** @var Collection $importerCollection */
         $importerCollection = $this->importerCollectionFactory->create();
-        return $importerCollection->getQueueByTypeAndMode(
-            Importer::IMPORT_TYPE_CUSTOMER,
-            Importer::MODE_BULK,
-            1,
-            [1]
-        )->toArray();
-    }
+        $importerCollection->addFieldToSelect(['import_type', 'import_data', 'import_mode'])
+            ->addFieldToFilter('import_status', 3)
+            ->addFieldToFilter('website_id', ['in' => [1]]);
 
-    /**
-     * @return array
-     * @throws \Magento\Framework\Exception\LocalizedException
-     */
-    private function getMappedDataFields()
-    {
-        return $this->customerDataFieldProviderFactory
-            ->create(['data' => ['website' => $this->helper->getWebsiteById(1)]])
-            ->getCustomerDataFields();
+        return $importerCollection->toArray();
     }
 
     /**

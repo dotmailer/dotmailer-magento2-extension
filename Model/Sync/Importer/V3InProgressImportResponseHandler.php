@@ -2,6 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Model\Sync\Importer;
 
+use Dotdigital\Exception\ResponseValidationException;
 use Dotdigitalgroup\Email\Model\Sync\Importer\ReportHandler\V3ImporterReportHandler;
 use Dotdigital\V3\Models\Contact\Import as SdkImport;
 use Dotdigitalgroup\Email\Logger\Logger;
@@ -53,11 +54,24 @@ class V3InProgressImportResponseHandler extends AbstractInProgressImportResponse
         $method = $group['method'];
         $resource = $group['resource'];
 
-        return $this->getClient($item->getWebsiteId())
-            ->$resource
-            ->$method(
-                $item->getImportId()
+        try {
+            return $this->getClient($item->getWebsiteId())
+                ->$resource
+                ->$method(
+                    $item->getImportId()
+                );
+        } catch (ResponseValidationException $e) {
+            $this->logger->error(
+                sprintf(
+                    'Checking import id %s: %s - %s',
+                    $item->getImportId(),
+                    $e->getCode(),
+                    $e->getMessage()
+                ),
+                [$e->getDetails()]
             );
+            throw new \Exception($e->getMessage());
+        }
     }
 
     /**

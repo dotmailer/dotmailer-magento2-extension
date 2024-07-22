@@ -37,10 +37,11 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
      *
      * @param array $websiteIds
      * @param array $types
+     * @param bool $useFile
      *
      * @return $this|boolean
      */
-    public function getItemsWithImportingStatus($websiteIds, array $types)
+    public function getItemsWithImportingStatus($websiteIds, array $types, bool $useFile = false)
     {
         $collection = $this->addFieldToFilter(
             'import_status',
@@ -62,6 +63,10 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
 
         $this->addFieldToFilter('import_type', $importTypeFilter);
 
+        if ($useFile) {
+            $this->addFieldToFilter('import_file', ['neq' => '']);
+        }
+
         if ($collection->getSize()) {
             return $collection;
         }
@@ -76,10 +81,11 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
      * @param string|array $importMode
      * @param int $limit
      * @param array $websiteIds
+     * @param bool $useFile
      *
      * @return $this
      */
-    public function getQueueByTypeAndMode($importType, $importMode, $limit, $websiteIds)
+    public function getQueueByTypeAndMode($importType, $importMode, $limit, $websiteIds, $useFile = false)
     {
         if (is_array($importType)) {
             $condition = [];
@@ -105,6 +111,10 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
             );
 
         $this->addFieldToFilter('website_id', ['in' => $websiteIds]);
+
+        if ($useFile) {
+            $this->addFieldToFilter('import_file', ['neq' => '']);
+        }
 
         $this->setPageSize($limit)
             ->setCurPage(1);

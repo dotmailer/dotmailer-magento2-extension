@@ -1,20 +1,27 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dotdigitalgroup\Email\Model\Sync;
 
 use Dotdigitalgroup\Email\Helper\Config;
 use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Logger\Logger;
+use Dotdigitalgroup\Email\Model\Importer;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory as ContactCollectionFactory;
-use Dotdigitalgroup\Email\Model\Sync\AbstractContactSyncer;
-use Dotdigitalgroup\Email\Model\Sync\Batch\CustomerBatchProcessor;
+use Dotdigitalgroup\Email\Model\Sync\Batch\MegaBatchProcessor;
+use Dotdigitalgroup\Email\Model\Sync\Batch\MergeManager;
 use Dotdigitalgroup\Email\Model\Sync\Customer\ExporterFactory;
+use Dotdigitalgroup\Email\Model\Sync\Export\ExporterInterface;
+use Http\Client\Exception;
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\DataObject;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Store\Api\Data\WebsiteInterface;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
 
-class Customer extends AbstractContactSyncer implements SyncInterface
+class Customer extends DataObject implements SyncInterface
 {
     /**
      * @var Data
@@ -32,9 +39,14 @@ class Customer extends AbstractContactSyncer implements SyncInterface
     private $contactCollectionFactory;
 
     /**
-     * @var CustomerBatchProcessor
+     * @var MegaBatchProcessor
      */
     private $batchProcessor;
+
+    /**
+     * @var MergeManager
+     */
+    private $mergeManager;
 
     /**
      * @var ExporterFactory
@@ -62,7 +74,8 @@ class Customer extends AbstractContactSyncer implements SyncInterface
      * @param Data $helper
      * @param Logger $logger
      * @param ContactCollectionFactory $contactCollectionFactory
-     * @param CustomerBatchProcessor $batchProcessor
+     * @param MegaBatchProcessor $batchProcessor
+     * @param MergeManager $mergeManager
      * @param ExporterFactory $exporterFactory
      * @param ScopeConfigInterface $scopeConfig
      * @param StoreManagerInterface $storeManager
@@ -72,7 +85,8 @@ class Customer extends AbstractContactSyncer implements SyncInterface
         Data $helper,
         Logger $logger,
         ContactCollectionFactory $contactCollectionFactory,
-        CustomerBatchProcessor $batchProcessor,
+        MegaBatchProcessor $batchProcessor,
+        MergeManager $mergeManager,
         ExporterFactory $exporterFactory,
         ScopeConfigInterface $scopeConfig,
         StoreManagerInterface $storeManager,
@@ -82,6 +96,7 @@ class Customer extends AbstractContactSyncer implements SyncInterface
         $this->logger = $logger;
         $this->contactCollectionFactory = $contactCollectionFactory;
         $this->batchProcessor = $batchProcessor;
+        $this->mergeManager = $mergeManager;
         $this->exporterFactory = $exporterFactory;
         $this->scopeConfig = $scopeConfig;
         $this->storeManager = $storeManager;
@@ -118,7 +133,8 @@ class Customer extends AbstractContactSyncer implements SyncInterface
                     $this->loopByWebsite(
                         $website,
                         $megaBatchSize,
-                        $breakValue
+                        $breakValue,
+                        (int) $customerAddressBook
                     );
                 } catch (\Exception $e) {
                     $this->logger->error(
@@ -152,27 +168,27 @@ class Customer extends AbstractContactSyncer implements SyncInterface
      * @param WebsiteInterface $website
      * @param int $megaBatchSize
      * @param int $breakValue
+     * @param int $listId
      *
      * @return void
-     * @throws \Magento\Framework\Exception\FileSystemException
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws Exception
+     * @throws LocalizedException
      */
-    private function loopByWebsite(WebsiteInterface $website, int $megaBatchSize, int $breakValue)
+    private function loopByWebsite(WebsiteInterface $website, int $megaBatchSize, int $breakValue, int $listId)
     {
         $megaBatch = [];
         $megaBatchCount = 0;
         $offset = 0;
         $loopStart = true;
-        $filename = '';
         $limit = (int) $this->scopeConfig->getValue(
             Config::XML_PATH_CONNECTOR_SYNC_LIMIT,
             ScopeInterface::SCOPE_WEBSITE,
             $website->getId()
         );
 
-        /** @var AbstractExporter $exporter */
+        /** @var ExporterInterface $exporter */
         $exporter = $this->exporterFactory->create();
-        $exporter->setCsvColumns($website);
+        $exporter->setFieldMapping($website);
 
         do {
             $customerIds = $this->getCustomerIdsToSync($website->getId(), $limit, $offset);
@@ -181,18 +197,25 @@ class Customer extends AbstractContactSyncer implements SyncInterface
                 break;
             }
 
-            $batch = $exporter->export($customerIds, $website);
+            if ($loopStart) {
+                $this->logger->info(
+                    sprintf(
+                        '----------- %s sync ----------- : Website %d',
+                        Importer::IMPORT_TYPE_CUSTOMER,
+                        $website->getId()
+                    )
+                );
+                $loopStart = false;
+            }
+
+            $batch = $exporter->export($customerIds, $website, $listId);
             $batchCount = count($batch);
             if ($batchCount === 0) {
                 break;
             }
 
-            if ($loopStart) {
-                $filename = $exporter->initialiseCsvFile($website, $exporter->getCsvColumns(), 'Customers');
-                $loopStart = false;
-            }
+            $megaBatch = $this->mergeManager->mergeBatch($batch, $megaBatch);
 
-            $megaBatch = $this->mergeBatch($batch, $megaBatch);
             $megaBatchCount += $batchCount;
             $this->totalCustomersSyncedCount += $batchCount;
 
@@ -200,15 +223,22 @@ class Customer extends AbstractContactSyncer implements SyncInterface
             $offset += $customerIdCount;
 
             if ($megaBatchCount >= $megaBatchSize) {
-                $this->batchProcessor->process($megaBatch, $website->getId(), $filename);
+                $this->batchProcessor->process(
+                    $megaBatch,
+                    (int) $website->getId(),
+                    Importer::IMPORT_TYPE_CUSTOMER
+                );
                 $megaBatch = [];
                 $megaBatchCount = 0;
                 $offset = 0;
-                $loopStart = true;
             }
         } while (!$breakValue || $this->totalCustomersSyncedCount < $breakValue);
 
-        $this->batchProcessor->process($megaBatch, $website->getId(), $filename);
+        $this->batchProcessor->process(
+            $megaBatch,
+            (int) $website->getId(),
+            Importer::IMPORT_TYPE_CUSTOMER
+        );
     }
 
     /**
@@ -229,5 +259,15 @@ class Customer extends AbstractContactSyncer implements SyncInterface
                 $pageSize,
                 $offset
             )->getColumnValues('customer_id');
+    }
+
+    /**
+     * Determines whether the sync was triggered from Configuration > Dotdigital > Developer > Sync Settings.
+     *
+     * @return bool
+     */
+    private function isRunFromDeveloperButton()
+    {
+        return (bool)$this->_getData('web');
     }
 }

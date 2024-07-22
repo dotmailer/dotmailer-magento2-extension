@@ -55,7 +55,8 @@ class SingleSubscriberSyncer
             [],
             $this->dataFieldCollector->collectForSubscriber(
                 $contact,
-                $websiteId
+                $websiteId,
+                (int) $subscriberAddressBookId
             )
         );
 

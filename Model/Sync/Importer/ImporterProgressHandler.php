@@ -70,7 +70,8 @@ class ImporterProgressHandler
                 $items = $this->importerCollectionFactory->create()
                     ->getItemsWithImportingStatus(
                         $websiteIds,
-                        $group[ self::PROGRESS_GROUP_TYPES ]
+                        $group[ self::PROGRESS_GROUP_TYPES ],
+                        $group['useFile'] ?? false
                     );
 
                 if (!$items) {
@@ -106,7 +107,10 @@ class ImporterProgressHandler
 
         $transactionalV3Bulk = [
             self::PROGRESS_GROUP_TYPES => [
-                ImporterModel::MODE_CONSENT
+                ImporterModel::MODE_CONSENT,
+                ImporterModel::IMPORT_TYPE_CUSTOMER,
+                ImporterModel::IMPORT_TYPE_GUEST,
+                ImporterModel::IMPORT_TYPE_SUBSCRIBERS,
             ],
             self::PROGRESS_GROUP_MODEL => $this->v3HandlerFactory,
             self::PROGRESS_GROUP_RESOURCE => 'contacts',
@@ -121,7 +125,8 @@ class ImporterProgressHandler
                 ImporterModel::IMPORT_TYPE_SUBSCRIBERS,
             ],
             self::PROGRESS_GROUP_MODEL => $this->v2HandlerFactory,
-            self::PROGRESS_GROUP_METHOD => 'getContactsImportByImportId'
+            self::PROGRESS_GROUP_METHOD => 'getContactsImportByImportId',
+            'useFile' => true
         ];
 
         return [
