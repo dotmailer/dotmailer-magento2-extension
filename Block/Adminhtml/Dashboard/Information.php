@@ -158,6 +158,9 @@ class Information extends Template
      * Get the last successful execution for import.
      *
      * @return string
+     *
+     * @deprecated Use the DashboardInformationView view model instead.
+     * @see \Dotdigitalgroup\Email\ViewModel\Adminhtml\DashboardInformationView
      */
     public function getCronLastExecution()
     {

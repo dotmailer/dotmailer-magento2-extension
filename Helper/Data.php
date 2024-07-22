@@ -1167,6 +1167,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @param string $cronJob
      * @return boolean|string
+     *
+     * @deprecated
+     * @see \Dotdigitalgroup\Email\ViewModel\Adminhtml\DashboardInformationView
      */
     public function getDateLastCronRun($cronJob)
     {

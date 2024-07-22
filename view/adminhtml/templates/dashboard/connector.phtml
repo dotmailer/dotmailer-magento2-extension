@@ -1,6 +1,16 @@
 <?php
-/** @var \Dotdigitalgroup\Email\Block\Adminhtml\Dashboard\Information $block */
-// phpcs:disable Magento2.Legacy.EscapeMethodsOnBlockClass
+
+use Dotdigitalgroup\Email\Block\Adminhtml\Dashboard\Information;
+use Dotdigitalgroup\Email\ViewModel\Adminhtml\DashboardInformationView;
+use Magento\Framework\Escaper;
+
+/**
+ * @var $block Information
+ * @var $dashboardInformation DashboardInformationView
+ */
+ // phpcs:disable Magento2.Legacy.EscapeMethodsOnBlockClass
+
+$dashboardInformation = $block->getDashboardInformation();
 ?>
 <table>
     <tr>
@@ -14,10 +24,28 @@
     <tr>
         <th>
             <strong class="message-system-short-label">
-                <?= $block->escapeHtml(__('Cron last execution')) ?>:
+                <?= $block->escapeHtml(__('Importer cron last execution')) ?>:
             </strong>
         </th>
-        <td><?= /* @noEscape */ $block->getCronLastExecution(); ?></td>
+        <td><?= /* @noEscape */ $dashboardInformation->getCronLastExecution('ddg_automation_importer'); ?></td>
+    </tr>
+    <tr>
+        <th>
+            <strong class="message-system-short-label">
+                <?= $block->escapeHtml(__('Consumers runner last execution')) ?>:
+            </strong>
+        </th>
+        <td data-id="consumers-runner-status">
+            <?= /* @noEscape */ $dashboardInformation->getCronLastExecution('consumers_runner'); ?>
+        </td>
+    </tr>
+    <tr>
+        <th>
+            <strong class="message-system-short-label">
+                <?= $block->escapeHtml(__('Queue connection')) ?>:
+            </strong>
+        </th>
+        <td data-id="queue-connection-status"><?= /* @noEscape */ $dashboardInformation->getQueueConnection(); ?></td>
     </tr>
     <tr>
         <th>

@@ -11,6 +11,7 @@ use Dotdigitalgroup\Email\Model\Monitor\Campaign\Monitor as CampaignMonitor;
 use Dotdigitalgroup\Email\Model\Monitor\Cron\Monitor as CronMonitor;
 use Dotdigitalgroup\Email\Model\Monitor\EmailNotifier;
 use Dotdigitalgroup\Email\Model\Monitor\Importer\Monitor as ImporterMonitor;
+use Dotdigitalgroup\Email\Model\Monitor\Queue\Monitor as QueueMonitor;
 use Dotdigitalgroup\Email\Model\Monitor\Smtp\Monitor as SmtpMonitor;
 use Dotdigitalgroup\Email\Model\ResourceModel\User\Collection as UserCollection;
 use Dotdigitalgroup\Email\Model\ResourceModel\User\CollectionFactory as UserCollectionFactory;
@@ -18,80 +19,86 @@ use Magento\Authorization\Model\ResourceModel\Role;
 use Magento\Backend\Helper\Data as BackendData;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\FlagManager;
-use Magento\Framework\Mail\MessageInterface;
+use Magento\Framework\Mail\EmailMessageInterface;
 use Magento\Framework\Mail\Template\TransportBuilder;
 use Magento\Framework\UrlInterface;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class EmailNotifierTest extends TestCase
 {
     /**
-     * @var UrlInterface|\PHPUnit\Framework\MockObject\MockObject
+     * @var UrlInterface|MockObject
      */
     private $urlInterfaceMock;
 
     /**
-     * @var ScopeConfigInterface|\PHPUnit\Framework\MockObject\MockObject
+     * @var ScopeConfigInterface|MockObject
      */
     private $scopeConfigInterfaceMock;
 
     /**
-     * @var Role|\PHPUnit\Framework\MockObject\MockObject
+     * @var Role|MockObject
      */
     private $roleMock;
 
     /**
-     * @var TransportBuilder|\PHPUnit\Framework\MockObject\MockObject
+     * @var TransportBuilder|MockObject
      */
     private $transportBuilderMock;
 
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject
+     * @var MockObject
      */
     private $userCollectionFactoryMock;
 
     /**
-     * @var Logger|\PHPUnit\Framework\MockObject\MockObject
+     * @var Logger|MockObject
      */
     private $loggerMock;
 
     /**
-     * @var Logger|\PHPUnit\Framework\MockObject\MockObject
+     * @var Logger|MockObject
      */
     private $cronMonitorMock;
 
     /**
-     * @var ImporterMonitor|\PHPUnit\Framework\MockObject\MockObject
+     * @var ImporterMonitor|MockObject
      */
-    private $importerMonitorLog;
+    private $importerMonitorMock;
 
     /**
-     * @var FlagManager|\PHPUnit\Framework\MockObject\MockObject
+     * @var QueueMonitor|MockObject
+     */
+    private $queueMonitorMock;
+
+    /**
+     * @var FlagManager|MockObject
      */
     private $flagManagerMock;
 
     /**
-     * @var BackendData|\PHPUnit\Framework\MockObject\MockObject
+     * @var BackendData|MockObject
      */
     private $backendDataMock;
 
     /**
-     * @var CampaignMonitor|\PHPUnit\Framework\MockObject\MockObject
+     * @var CampaignMonitor|MockObject
      */
     private $campaignMonitorMock;
 
     /**
-     * @var AutomationMonitor|\PHPUnit\Framework\MockObject\MockObject
+     * @var AutomationMonitor|MockObject
      */
     private $automationMonitorMock;
 
     /**
-     * @var SmtpMonitor|\PHPUnit\Framework\MockObject\MockObject
+     * @var SmtpMonitor|MockObject
      */
     private $smtpMonitorMock;
 
     /**
-     * @var Data|\PHPUnit\Framework\MockObject\MockObject
+     * @var Data|MockObject
      */
     private $dataMock;
 
@@ -101,17 +108,17 @@ class EmailNotifierTest extends TestCase
     private $emailNotifier;
 
     /**
-     * @var UserCollection|\PHPUnit\Framework\MockObject\MockObject
+     * @var UserCollection|MockObject
      */
     private $userCollectionMock;
 
     /**
-     * @var Client|\PHPUnit\Framework\MockObject\MockObject
+     * @var Client|MockObject
      */
     private $clientMock;
 
     /**
-     * @var MessageInterface|\PHPUnit\Framework\MockObject\MockObject
+     * @var EmailMessageInterface|MockObject
      */
     private $messageInterfaceMock;
 
@@ -122,7 +129,8 @@ class EmailNotifierTest extends TestCase
         $this->roleMock = $this->createMock(Role::class);
         $this->loggerMock = $this->createMock(Logger::class);
         $this->cronMonitorMock = $this->createMock(CronMonitor::class);
-        $this->importerMonitorLog = $this->createMock(ImporterMonitor::class);
+        $this->importerMonitorMock = $this->createMock(ImporterMonitor::class);
+        $this->queueMonitorMock = $this->createMock(QueueMonitor::class);
         $this->flagManagerMock = $this->createMock(FlagManager::class);
         $this->backendDataMock = $this->createMock(BackendData::class);
         $this->campaignMonitorMock = $this->createMock(CampaignMonitor::class);
@@ -131,32 +139,30 @@ class EmailNotifierTest extends TestCase
         $this->dataMock = $this->createMock(Data::class);
         $this->clientMock = $this->createMock(Client::class);
 
-        $this->messageInterfaceMock = $this->getMockBuilder(MessageInterface::class)
-            ->disableOriginalConstructor()
-            ->setMethods(array_merge(get_class_methods(MessageInterface::class), ['getBodyText','getMessage']))
-            ->getMock();
+        $this->messageInterfaceMock = $this->createMock(EmailMessageInterface::class);
 
-        $this->userCollectionFactoryMock = $this->getMockBuilder(UserCollectionFactory::class)
-            ->disableOriginalConstructor()
-            ->setMethods(['create','fetchUsersByRole'])
-            ->getMock();
+        $this->userCollectionFactoryMock = $this->createMock(UserCollectionFactory::class);
 
         $this->userCollectionMock = $this->getMockBuilder(UserCollection::class)
             ->disableOriginalConstructor()
-            ->setMethods(['getEmail','getFirstName','getLastName'])
+            ->onlyMethods(['fetchUsersByRole'])
             ->getMock();
 
         $this->transportBuilderMock = $this->getMockBuilder(TransportBuilder::class)
             ->disableOriginalConstructor()
-            ->setMethods(
+            ->onlyMethods(
                 [
-                    'sendMessage',
                     'setTemplateIdentifier',
                     'setTemplateOptions',
                     'setTemplateVars',
                     'setFrom',
                     'addTo',
                     'getTransport',
+                ]
+            )
+            ->addMethods(
+                [
+                    'sendMessage',
                     'getMessage',
                 ]
             )
@@ -170,11 +176,12 @@ class EmailNotifierTest extends TestCase
             $this->userCollectionFactoryMock,
             $this->loggerMock,
             $this->cronMonitorMock,
-            $this->importerMonitorLog,
+            $this->importerMonitorMock,
             $this->flagManagerMock,
             $this->backendDataMock,
             $this->campaignMonitorMock,
             $this->automationMonitorMock,
+            $this->queueMonitorMock,
             $this->smtpMonitorMock,
             $this->dataMock
         );
@@ -309,32 +316,31 @@ class EmailNotifierTest extends TestCase
 
     private function setUpUserRecipient()
     {
+        $userMock = $this->getMockBuilder(\Magento\User\Model\ResourceModel\User::class)
+            ->disableOriginalConstructor()
+            ->addMethods(['getEmail', 'getFirstName', 'getLastName'])
+            ->getMock();
+
         $this->scopeConfigInterfaceMock->expects($this->atLeast(4))
-            ->method('getValue')
-            ->withConsecutive(
-                [Config::XML_PATH_CONNECTOR_SYSTEM_ALERTS_USER_ROLES],
-                [Config::XML_PATH_CONNECTOR_SYSTEM_ALERTS_EMAIL_NOTIFICATION_TEMPLATE],
-                ['trans_email/ident_general/name'],
-                ['trans_email/ident_general/email']
-            );
+            ->method('getValue');
 
         $this->userCollectionFactoryMock->expects($this->once())
             ->method('create')
-            ->willReturn($this->userCollectionFactoryMock);
+            ->willReturn($this->userCollectionMock);
 
-        $this->userCollectionFactoryMock->expects($this->once())
+        $this->userCollectionMock->expects($this->once())
             ->method('fetchUsersByRole')
-            ->willReturn([$this->userCollectionMock]);
+            ->willReturn([$userMock]);
 
-        $this->userCollectionMock->expects($this->atLeastOnce())
+        $userMock->expects($this->atLeastOnce())
             ->method('getEmail')
             ->willReturn('chaz@emailsim.io');
 
-        $this->userCollectionMock->expects($this->once())
+        $userMock->expects($this->once())
             ->method('getFirstName')
             ->willReturn('chaz');
 
-        $this->userCollectionMock->expects($this->once())
+        $userMock->expects($this->once())
             ->method('getLastName')
             ->willReturn('chaz');
     }

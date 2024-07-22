@@ -76,7 +76,7 @@ class ImporterError implements MessageInterface
     public function getText()
     {
         $errorSummary = $this->statusProvider->getErrorSummary();
-        $message = __('One or more of your dotdigital importer tasks have errors: %1. ', $errorSummary) . ' ';
+        $message = __('One or more of your Dotdigital importer tasks have errors: %1. ', $errorSummary) . ' ';
         $url = $this->urlBuilder->getUrl('dotdigitalgroup_email/importer/index');
         $message .= __('Please go to the <a href="%1">Import Report</a> to review.', $url);
         return $message;

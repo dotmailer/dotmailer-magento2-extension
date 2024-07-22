@@ -107,12 +107,12 @@ class SmtpError implements MessageInterface
                 $transactionalEmailsUrl = $this->urlBuilder->getUrl(
                     'adminhtml/system_config/edit/section/transactional_emails'
                 );
-                return  __('Recent dotdigital SMTP mail sends have failed due to an authentication issue.
+                return  __('Recent Dotdigital SMTP mail sends have failed due to an authentication issue.
                     Please <a href="%1">verify your SMTP credentials</a>.', $transactionalEmailsUrl);
             }
         }
         $logsUrl = $this->urlBuilder->getUrl('dotdigitalgroup_email/logviewer/index');
-        return __('One or more recent dotdigital SMTP mail sends have failed. Please
+        return __('One or more recent Dotdigital SMTP mail sends have failed. Please
                      <a href="%1">check your logs</a> for more detail.', $logsUrl);
     }
 }

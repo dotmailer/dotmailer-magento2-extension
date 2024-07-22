@@ -76,7 +76,7 @@ class CronError implements MessageInterface
     public function getText()
     {
         $errorSummary = $this->statusProvider->getErrorSummary();
-        $message = __('One or more of your dotdigital cron tasks have errors: %1. ', $errorSummary) . ' ';
+        $message = __('One or more of your Dotdigital cron tasks have errors: %1. ', $errorSummary) . ' ';
         $url = $this->urlBuilder->getUrl('dotdigitalgroup_email/cron/index');
         $message .= __('Please go to <a href="%1">Cron Tasks</a> to review.', $url);
         return $message;

@@ -4,13 +4,13 @@ namespace Dotdigitalgroup\Email\Model\System\Message;
 
 use Magento\Framework\Notification\MessageInterface;
 use Magento\Framework\UrlInterface;
-use Dotdigitalgroup\Email\Model\Monitor\Automation\StatusProvider;
+use Dotdigitalgroup\Email\Model\Monitor\Queue\StatusProvider;
 use Dotdigitalgroup\Email\Helper\Config;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 
-class AutomationError implements MessageInterface
+class QueueError implements MessageInterface
 {
-    private const MESSAGE_IDENTITY = 'ddg_automation_error_system_message';
+    private const MESSAGE_IDENTITY = 'ddg_queue_error_system_message';
 
     /**
      * @var UrlInterface
@@ -28,7 +28,7 @@ class AutomationError implements MessageInterface
     private $scopeConfig;
 
     /**
-     * AutomationError constructor.
+     * CronError constructor.
      *
      * @param UrlInterface $urlBuilder
      * @param StatusProvider $statusProvider
@@ -75,18 +75,26 @@ class AutomationError implements MessageInterface
      */
     public function getText()
     {
+        $message = '';
         $errorSummary = $this->statusProvider->getErrorSummary();
-        $message = __(
-            'One or more of your Dotdigital automation enrolment tasks have errors: %1. ',
-            $errorSummary
-        ) . ' ';
-        $url = $this->urlBuilder->getUrl('dotdigitalgroup_email/automation/index');
-        $message .= __('Please go to the <a href="%1">Automation Report</a> to review.', $url);
+        $url = $this->urlBuilder->getUrl('dotdigitalgroup_email/queue/index');
+
+        $message .= '<strong>';
+        $message .= __('Dotdigital Message Queue');
+        $message .= '</strong>';
+        $message .= '<p>' . __($errorSummary) . '</p>';
+        $message .= '<p>' . __('Please visit <a href="%1">Message Queue</a> to review.', $url) . '</p>';
+
+        if (strpos($errorSummary, 'pending') !== false) {
+            $message .= '<p>' . __(' Messages pending for longer than 1 hour may indicate a problem with the consumers_runner cron, or with cron_consumers_runner in system configuration.') . '</p>'; // phpcs:ignore Generic.Files.LineLength.TooLong
+        }
+
         return $message;
     }
 
     /**
-     * Retrieve system message severity
+     * Retrieve system message severity.
+     *
      * Possible default system message types:
      * - MessageInterface::SEVERITY_CRITICAL
      * - MessageInterface::SEVERITY_MAJOR

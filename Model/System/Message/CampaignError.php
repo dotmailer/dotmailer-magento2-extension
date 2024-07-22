@@ -76,7 +76,7 @@ class CampaignError implements MessageInterface
     public function getText()
     {
         $errorSummary = $this->statusProvider->getErrorSummary();
-        $message = __('One or more of your dotdigital campaign tasks have errors: %1. ', $errorSummary) . ' ';
+        $message = __('One or more of your Dotdigital campaign tasks have errors: %1. ', $errorSummary) . ' ';
         $url = $this->urlBuilder->getUrl('dotdigitalgroup_email/campaign/index');
         $message .= __('Please go to the <a href="%1">Campaign Report</a> to review.', $url);
         return $message;
