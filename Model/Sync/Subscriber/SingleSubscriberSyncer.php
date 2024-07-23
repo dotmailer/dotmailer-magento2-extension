@@ -46,6 +46,8 @@ class SingleSubscriberSyncer
         $websiteId = (int) $contact->getWebsiteId();
         $subscriberSyncEnabled = $this->helper->isSubscriberSyncEnabled($websiteId);
         $subscriberAddressBookId = $this->helper->getSubscriberAddressBook($websiteId);
+        $optInType = null;
+
         if (!$subscriberSyncEnabled || !$subscriberAddressBookId) {
             return null;
         }
@@ -59,11 +61,19 @@ class SingleSubscriberSyncer
             )
         );
 
-        // optInType will be set in $subscriberDataFields if it is 'Double'
+        // optInType is not a data field - this will be refactored in a future release
+        foreach ($subscriberDataFields as $i => $field) {
+            if ($field['Key'] === 'OptInType') {
+                $optInType = $field['Value'];
+                unset($subscriberDataFields[$i]);
+                break;
+            }
+        }
+
         return $client->addContactToAddressBook(
             $contact->getEmail(),
             $subscriberAddressBookId,
-            null,
+            $optInType,
             $subscriberDataFields
         );
     }
