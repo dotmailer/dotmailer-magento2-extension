@@ -1,3 +1,10 @@
+# 4.26.2
+
+### Bug fixes
+- We fixed the newsletter subscribe queue name in the OrderSaveAfter observer.
+- OptInType is now correctly sent as a subscription property, not as a data field.
+- The trial signup microsite was not loading correctly into its iframe, this has been fixed.
+
 # 4.26.1
 
 ### Improvements
