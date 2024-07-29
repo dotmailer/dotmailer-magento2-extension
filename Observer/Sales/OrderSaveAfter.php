@@ -281,6 +281,7 @@ class OrderSaveAfter implements ObserverInterface
             $subscriptionData->setId($contact->getId());
             $subscriptionData->setEmail($contact->getEmail());
             $subscriptionData->setWebsiteId($contact->getWebsiteId());
+            $subscriptionData->setType('subscribe');
             $this->publisher->publish('ddg.newsletter.subscription', $subscriptionData);
         }
     }
