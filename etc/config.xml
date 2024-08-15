@@ -33,26 +33,30 @@
             </dynamic_addressbook>
         </sync_settings>
         <abandoned_carts>
+            <program>
+                <id></id>
+                <send_after>15</send_after>
+            </program>
             <customers>
                 <enabled_1>0</enabled_1>
-                <send_after_1></send_after_1>
+                <send_after_1>15</send_after_1>
                 <campaign_1></campaign_1>
                 <enabled_2>0</enabled_2>
-                <send_after_2></send_after_2>
+                <send_after_2>1</send_after_2>
                 <campaign_2></campaign_2>
                 <enabled_3>0</enabled_3>
-                <send_after_3></send_after_3>
+                <send_after_3>1</send_after_3>
                 <campaign_3></campaign_3>
             </customers>
             <guests>
                 <enabled_1>0</enabled_1>
-                <send_after_1></send_after_1>
+                <send_after_1>15</send_after_1>
                 <campaign_1></campaign_1>
                 <enabled_2>0</enabled_2>
-                <send_after_2></send_after_2>
+                <send_after_2>1</send_after_2>
                 <campaign_2></campaign_2>
                 <enabled_3>0</enabled_3>
-                <send_after_3></send_after_3>
+                <send_after_3>1</send_after_3>
                 <campaign_3></campaign_3>
             </guests>
         </abandoned_carts>
@@ -172,7 +176,7 @@
             </transactional_data>
             <abandoned_carts>
                 <email_capture>0</email_capture>
-                <limits></limits>
+                <cart_limit>0</cart_limit>
                 <email_capture_newsletter>0</email_capture_newsletter>
                 <link_enabled>0</link_enabled>
                 <link_text></link_text>
