@@ -106,6 +106,7 @@ class Interval
      * @param int $num
      *
      * @return DateInterval
+     * @throws \Exception
      */
     public function getIntervalForCustomerEmailSeries($storeId, $num): DateInterval
     {
@@ -123,6 +124,7 @@ class Interval
      * @param int $num
      *
      * @return DateInterval
+     * @throws \Exception
      */
     public function getIntervalForGuestEmailSeries($storeId, $num): DateInterval
     {
@@ -164,6 +166,7 @@ class Interval
      * @param int $storeId
      *
      * @return DateInterval
+     * @throws \Exception
      */
     private function getIntervalForProgramEnrolment($storeId): DateInterval
     {
