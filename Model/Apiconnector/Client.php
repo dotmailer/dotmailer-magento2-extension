@@ -274,6 +274,9 @@ class Client extends Rest implements ClientInterface
      *
      * @return object
      * @throws LocalizedException
+     *
+     * @deprecated Use API V3.
+     * @see \Dotdigital\V3\Resources\Contacts::patchByIdentifier
      */
     public function addContactToAddressBook(
         string $email,

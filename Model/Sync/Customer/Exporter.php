@@ -228,8 +228,7 @@ class Exporter extends AbstractExporter implements ExporterInterface
             array_column($customAttributes, 'datafield')
         );
 
-        $columns = AbstractExporter::EMAIL_FIELDS + $customerDataFields;
-        $this->fieldMap = $attributeColumns ? $columns + $attributeColumns : $columns;
+        $this->fieldMap = $attributeColumns ? $customerDataFields + $attributeColumns : $customerDataFields;
     }
 
     /**

@@ -116,7 +116,7 @@ class GuestExporter extends AbstractExporter implements ExporterInterface
             'website_name' => $website->getConfig(Config::XML_PATH_CONNECTOR_CUSTOMER_WEBSITE_NAME)
         ];
 
-        $this->fieldMap = AbstractExporter::EMAIL_FIELDS + array_filter($guestColumns);
+        $this->fieldMap = array_filter($guestColumns);
     }
 
     /**

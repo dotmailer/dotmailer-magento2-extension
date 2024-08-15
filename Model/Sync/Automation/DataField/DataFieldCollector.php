@@ -186,13 +186,7 @@ class DataFieldCollector
     public function mergeFields(array $originalDataFields, array $newDataFields): array
     {
         $combinedDataFields = $originalDataFields;
-        $originalKeys = array_merge(
-            array_column($originalDataFields, 'Key'),
-            [
-                'Email',
-                'EmailType'
-            ]
-        );
+        $originalKeys = array_column($originalDataFields, 'Key');
 
         foreach ($newDataFields as $newDataField) {
             if (in_array($newDataField->getKey(), $originalKeys)) {

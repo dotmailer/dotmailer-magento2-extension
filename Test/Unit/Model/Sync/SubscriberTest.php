@@ -124,19 +124,19 @@ class SubscriberTest extends TestCase
         $this->websiteInterfaceMock = $this->getMockBuilder(WebsiteInterface::class)
             ->onlyMethods(
                 [
-                'getId',
-                'setId',
-                'getCode',
-                'setCode',
-                'getName',
-                'setName',
-                'getDefaultGroupId',
-                'setDefaultGroupId',
-                'getExtensionAttributes',
-                'setExtensionAttributes'
+                    'getId',
+                    'setId',
+                    'getCode',
+                    'setCode',
+                    'getName',
+                    'setName',
+                    'getDefaultGroupId',
+                    'setDefaultGroupId',
+                    'getExtensionAttributes',
+                    'setExtensionAttributes'
                 ]
             )
-            ->addMethods(['getStoreIds'])
+            ->addMethods(['getStoreIds', 'getConfig'])
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -614,8 +614,6 @@ class SubscriberTest extends TestCase
         for ($i = 1; $i <= $count; $i++) {
             $batch[] = [
                 $i => [
-                    'chaz' . $i . '@emailsim.io',
-                    'Html',
                     'Chaz store',
                     'Chaz store view',
                     'Chaz website',
@@ -625,21 +623,5 @@ class SubscriberTest extends TestCase
         }
 
         return $batch;
-    }
-
-    /**
-     * @return string
-     */
-    private function getSubscribersFilename()
-    {
-        return 'base_subscribers_25_05_2022_102840_c639d113.csv';
-    }
-
-    /**
-     * @return string
-     */
-    private function getSubscribersWithSalesFilename()
-    {
-        return 'base_subscribers_with_sales_25_05_2022_101744_f8f34b20.csv';
     }
 }

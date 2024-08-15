@@ -8,6 +8,7 @@ use Dotdigital\V3\Models\Contact as SdkContact;
 use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Connector\ContactData\SubscriberFactory as ConnectorSubscriberFactory;
 use Dotdigitalgroup\Email\Model\Connector\Datafield;
+use Dotdigitalgroup\Email\Model\Newsletter\OptInTypeFinder;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory as ContactCollectionFactory;
 use Dotdigitalgroup\Email\Model\Sync\AbstractExporter;
 use Dotdigitalgroup\Email\Model\Sync\Export\CsvHandler;
@@ -16,6 +17,7 @@ use Dotdigitalgroup\Email\Model\Sync\Export\SalesDataManager;
 use Dotdigitalgroup\Email\Model\Sync\Export\SdkContactBuilder;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Exception\LocalizedException;
+use Magento\Newsletter\Model\Subscriber;
 use Magento\Store\Api\Data\WebsiteInterface;
 use Magento\Store\Model\ScopeInterface;
 
@@ -35,6 +37,11 @@ class SubscriberWithSalesExporter extends AbstractExporter implements ExporterIn
      * @var ConnectorSubscriberFactory
      */
     private $connectorSubscriberFactory;
+
+    /**
+     * @var OptInTypeFinder
+     */
+    private $optInTypeFinder;
 
     /**
      * @var ContactCollectionFactory
@@ -70,6 +77,7 @@ class SubscriberWithSalesExporter extends AbstractExporter implements ExporterIn
      * @param Logger $logger
      * @param Datafield $datafield
      * @param ConnectorSubscriberFactory $connectorSubscriberFactory
+     * @param OptInTypeFinder $optInTypeFinder
      * @param ContactCollectionFactory $contactCollectionFactory
      * @param SalesDataManager $salesDataManager
      * @param SdkContactBuilder $sdkContactBuilder
@@ -81,6 +89,7 @@ class SubscriberWithSalesExporter extends AbstractExporter implements ExporterIn
         Logger $logger,
         Datafield $datafield,
         ConnectorSubscriberFactory $connectorSubscriberFactory,
+        OptInTypeFinder $optInTypeFinder,
         ContactCollectionFactory $contactCollectionFactory,
         SalesDataManager $salesDataManager,
         SdkContactBuilder $sdkContactBuilder,
@@ -91,6 +100,7 @@ class SubscriberWithSalesExporter extends AbstractExporter implements ExporterIn
         $this->logger = $logger;
         $this->datafield = $datafield;
         $this->connectorSubscriberFactory = $connectorSubscriberFactory;
+        $this->optInTypeFinder = $optInTypeFinder;
         $this->contactCollectionFactory = $contactCollectionFactory;
         $this->salesDataManager = $salesDataManager;
         $this->sdkContactBuilder = $sdkContactBuilder;
@@ -139,7 +149,8 @@ class SubscriberWithSalesExporter extends AbstractExporter implements ExporterIn
                 $exportedData[$subscriber->getId()] = $this->sdkContactBuilder->createSdkContact(
                     $connectorSubscriber,
                     $this->fieldMap,
-                    $listId
+                    $listId,
+                    $this->optInTypeFinder->getOptInType($subscriber->getStoreId())
                 );
 
                 $subscriber->clearInstance();

@@ -304,8 +304,6 @@ class DataFieldCollectorTest extends TestCase
     private function getExportedCustomerDataFields()
     {
         return [
-            new DataField('Email', 'chaz@emailsim.io'),
-            new DataField('EmailType', 'Html'),
             new DataField('FIRST_NAME', 'Chaz'),
             new DataField('LAST_NAME', 'Kangaroo'),
             new DataField('SUBSCRIBER_STATUS', 'Subscribed'),

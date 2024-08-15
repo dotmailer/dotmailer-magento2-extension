@@ -8,6 +8,7 @@ use Dotdigital\V3\Models\Contact as SdkContact;
 use Dotdigitalgroup\Email\Helper\Config;
 use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Connector\ContactData\SubscriberFactory as ConnectorSubscriberFactory;
+use Dotdigitalgroup\Email\Model\Newsletter\OptInTypeFinder;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory as ContactCollectionFactory;
 use Dotdigitalgroup\Email\Model\Sync\AbstractExporter;
 use Dotdigitalgroup\Email\Model\Sync\Export\CsvHandler;
@@ -28,6 +29,11 @@ class SubscriberExporter extends AbstractExporter implements ExporterInterface
     private $connectorSubscriberFactory;
 
     /**
+     * @var OptInTypeFinder
+     */
+    private $optInTypeFinder;
+
+    /**
      * @var ContactCollectionFactory
      */
     private $contactCollectionFactory;
@@ -45,6 +51,7 @@ class SubscriberExporter extends AbstractExporter implements ExporterInterface
     /**
      * @param Logger $logger
      * @param ConnectorSubscriberFactory $connectorSubscriberFactory
+     * @param OptInTypeFinder $optInTypeFinder
      * @param ContactCollectionFactory $contactCollectionFactory
      * @param CsvHandler $csvHandler
      * @param SdkContactBuilder $sdkContactBuilder
@@ -52,12 +59,14 @@ class SubscriberExporter extends AbstractExporter implements ExporterInterface
     public function __construct(
         Logger $logger,
         ConnectorSubscriberFactory $connectorSubscriberFactory,
+        OptInTypeFinder $optInTypeFinder,
         ContactCollectionFactory $contactCollectionFactory,
         CsvHandler $csvHandler,
         SdkContactBuilder $sdkContactBuilder
     ) {
         $this->logger = $logger;
         $this->connectorSubscriberFactory = $connectorSubscriberFactory;
+        $this->optInTypeFinder = $optInTypeFinder;
         $this->contactCollectionFactory = $contactCollectionFactory;
         $this->sdkContactBuilder = $sdkContactBuilder;
         parent::__construct($csvHandler);
@@ -93,7 +102,8 @@ class SubscriberExporter extends AbstractExporter implements ExporterInterface
                 $exportedData[$subscriber->getId()] = $this->sdkContactBuilder->createSdkContact(
                     $connectorSubscriber,
                     $this->fieldMap,
-                    $listId
+                    $listId,
+                    $this->optInTypeFinder->getOptInType($subscriber->getStoreId())
                 );
 
                 $subscriber->clearInstance();
@@ -163,11 +173,7 @@ class SubscriberExporter extends AbstractExporter implements ExporterInterface
             'subscriber_status' => $website->getConfig(Config::XML_PATH_CONNECTOR_CUSTOMER_SUBSCRIBER_STATUS)
         ];
 
-        $this->fieldMap = AbstractExporter::EMAIL_FIELDS + array_filter($subscriberDataFields);
-
-        if ($this->isOptInTypeDouble($website)) {
-            $this->fieldMap += ['opt_in_type' => 'OptInType'];
-        }
+        $this->fieldMap = array_filter($subscriberDataFields);
     }
 
     /**
@@ -186,6 +192,9 @@ class SubscriberExporter extends AbstractExporter implements ExporterInterface
      * @param WebsiteInterface $website
      *
      * @return boolean
+     *
+     * @deprecated OptInType is not a data field.
+     * @see \Dotdigitalgroup\Email\Model\Sync\Subscriber::loopByWebsite()
      */
     private function isOptInTypeDouble($website)
     {

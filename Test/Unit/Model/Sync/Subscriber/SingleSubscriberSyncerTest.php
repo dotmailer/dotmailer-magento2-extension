@@ -7,6 +7,7 @@ namespace Dotdigitalgroup\Email\Test\Unit\Model\Sync\Subscriber;
 use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Model\Apiconnector\Client;
 use Dotdigitalgroup\Email\Model\Contact;
+use Dotdigitalgroup\Email\Model\Newsletter\OptInTypeFinder;
 use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\DataFieldCollector;
 use Dotdigitalgroup\Email\Model\Sync\Subscriber\SingleSubscriberSyncer;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -15,7 +16,7 @@ use PHPUnit\Framework\TestCase;
 class SingleSubscriberSyncerTest extends TestCase
 {
     /**
-     * @var Data|MockObject $helperMock
+     * @var Data|MockObject
      */
     private $helperMock;
 
@@ -25,14 +26,24 @@ class SingleSubscriberSyncerTest extends TestCase
     private $dataFieldCollectorMock;
 
     /**
-     * @var Contact|MockObject $contactModelMock
+     * @var Contact|MockObject
      */
     private $contactModelMock;
 
     /**
-     * @var Client|MockObject $clientMock
+     * @var OptInTypeFinder|MockObject
+     */
+    private $optInTypeFinderMock;
+
+    /**
+     * @var Client|MockObject
      */
     private $clientMock;
+
+    /**
+     * @var SingleSubscriberSyncer
+     */
+    private $singleSubscriberSyncer;
 
     protected function setUp()
     : void
@@ -51,7 +62,14 @@ class SingleSubscriberSyncerTest extends TestCase
             ])
             ->disableOriginalConstructor()
             ->getMock();
+        $this->optInTypeFinderMock = $this->createMock(OptInTypeFinder::class);
         $this->clientMock = $this->createMock(Client::class);
+
+        $this->singleSubscriberSyncer = new SingleSubscriberSyncer(
+            $this->helperMock,
+            $this->dataFieldCollectorMock,
+            $this->optInTypeFinderMock
+        );
     }
 
     public function testPushContactToSubscriberAddressBook()
@@ -60,6 +78,7 @@ class SingleSubscriberSyncerTest extends TestCase
         $websiteId = 1;
         $subscriberAddressBookId = '123';
         $email = 'chaz@emailsim.io';
+        $optInType = 'double';
 
         $this->contactModelMock->method('getWebsiteId')->willReturn($websiteId);
         $this->contactModelMock->method('getEmail')->willReturn($email);
@@ -72,22 +91,21 @@ class SingleSubscriberSyncerTest extends TestCase
         $this->dataFieldCollectorMock->method('mergeFields')
             ->willReturn($this->getDummySubscriberDataFields());
 
+        $this->optInTypeFinderMock->expects($this->once())
+            ->method('getOptInType')
+            ->willReturn($optInType);
+
         $this->clientMock->expects($this->once())
             ->method('addContactToAddressBook')
             ->with(
                 $this->contactModelMock->getEmail(),
                 $subscriberAddressBookId,
-                null,
+                $optInType,
                 $this->getDummySubscriberDataFields()
             )
             ->willReturn((object) ['message' => 'success']);
 
-        $singleSubscriberSyncer = new SingleSubscriberSyncer(
-            $this->helperMock,
-            $this->dataFieldCollectorMock
-        );
-
-        $result = $singleSubscriberSyncer->pushContactToSubscriberAddressBook($this->contactModelMock);
+        $result = $this->singleSubscriberSyncer->pushContactToSubscriberAddressBook($this->contactModelMock);
 
         $this->assertIsObject($result);
         $this->assertEquals('success', $result->message);
@@ -101,12 +119,7 @@ class SingleSubscriberSyncerTest extends TestCase
         $this->contactModelMock->method('getWebsiteId')->willReturn($websiteId);
         $this->helperMock->method('isSubscriberSyncEnabled')->willReturn(false);
 
-        $singleSubscriberSyncer = new SingleSubscriberSyncer(
-            $this->helperMock,
-            $this->dataFieldCollectorMock
-        );
-
-        $result = $singleSubscriberSyncer->pushContactToSubscriberAddressBook($this->contactModelMock);
+        $result = $this->singleSubscriberSyncer->pushContactToSubscriberAddressBook($this->contactModelMock);
 
         $this->assertNull($result);
     }

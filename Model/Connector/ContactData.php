@@ -194,10 +194,6 @@ class ContactData
                         : null;
                     break;
 
-                case 'email_type':
-                    $value = 'Html';
-                    break;
-
                 default:
                     $method = 'get' . str_replace(' ', '', ucwords(str_replace('_', ' ', $key)));
                     $value = method_exists($this, $method)

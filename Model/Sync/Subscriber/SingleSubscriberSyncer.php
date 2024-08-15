@@ -6,6 +6,7 @@ namespace Dotdigitalgroup\Email\Model\Sync\Subscriber;
 
 use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Model\Contact;
+use Dotdigitalgroup\Email\Model\Newsletter\OptInTypeFinder;
 use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\DataFieldCollector;
 use Magento\Framework\Exception\LocalizedException;
 
@@ -22,15 +23,23 @@ class SingleSubscriberSyncer
     private $dataFieldCollector;
 
     /**
+     * @var OptInTypeFinder
+     */
+    private $optInTypeFinder;
+
+    /**
      * @param Data $helper
      * @param DataFieldCollector $dataFieldCollector
+     * @param OptInTypeFinder $optInTypeFinder
      */
     public function __construct(
         Data $helper,
-        DataFieldCollector $dataFieldCollector
+        DataFieldCollector $dataFieldCollector,
+        OptInTypeFinder $optInTypeFinder
     ) {
         $this->helper = $helper;
         $this->dataFieldCollector = $dataFieldCollector;
+        $this->optInTypeFinder = $optInTypeFinder;
     }
 
     /**
@@ -60,11 +69,10 @@ class SingleSubscriberSyncer
             )
         );
 
-        // optInType will be set in $subscriberDataFields if it is 'Double'
         return $client->addContactToAddressBook(
             $contact->getEmail(),
             $subscriberAddressBookId,
-            null,
+            $this->optInTypeFinder->getOptInType($contact->getStoreId()),
             $subscriberDataFields
         );
     }

@@ -7,6 +7,7 @@ use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Connector\ContactData\Subscriber;
 use Dotdigitalgroup\Email\Model\Connector\ContactData\SubscriberFactory as ConnectorSubscriberFactory;
 use Dotdigitalgroup\Email\Model\Connector\Datafield;
+use Dotdigitalgroup\Email\Model\Newsletter\OptInTypeFinder;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact\Collection as ContactCollection;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory as ContactCollectionFactory;
 use Dotdigitalgroup\Email\Model\Sync\Export\CsvHandler;
@@ -30,6 +31,11 @@ class SubscriberWithSalesExporterTest extends TestCase
      * @var Datafield|\PHPUnit\Framework\MockObject\MockObject
      */
     private $datafieldMock;
+
+    /**
+     * @var OptInTypeFinder|MockObject
+     */
+    private $optInTypeFinderMock;
 
     /**
      * @var ConnectorSubscriberFactory|\PHPUnit\Framework\MockObject\MockObject
@@ -81,6 +87,7 @@ class SubscriberWithSalesExporterTest extends TestCase
         $this->loggerMock = $this->createMock(Logger::class);
         $this->datafieldMock = $this->createMock(Datafield::class);
         $this->connectorSubscriberFactoryMock = $this->createMock(ConnectorSubscriberFactory::class);
+        $this->optInTypeFinderMock = $this->createMock(OptInTypeFinder::class);
         $this->contactCollectionFactoryMock = $this->createMock(ContactCollectionFactory::class);
         $this->salesDataManagerMock = $this->createMock(SalesDataManager::class);
         $this->subscriberExporterFactoryMock = $this->createMock(SubscriberExporterFactory::class);
@@ -109,6 +116,7 @@ class SubscriberWithSalesExporterTest extends TestCase
             $this->loggerMock,
             $this->datafieldMock,
             $this->connectorSubscriberFactoryMock,
+            $this->optInTypeFinderMock,
             $this->contactCollectionFactoryMock,
             $this->salesDataManagerMock,
             $this->sdkContactBuilderMock,
@@ -171,6 +179,10 @@ class SubscriberWithSalesExporterTest extends TestCase
         $this->sdkContactBuilderMock->expects($this->exactly(5))
             ->method('createSdkContact')
             ->willReturn($sdkContactMock);
+
+        $this->optInTypeFinderMock->expects($this->exactly(5))
+            ->method('getOptInType')
+            ->willReturn('double');
 
         $data = $this->exporter->export(
             $this->getSubscribers(),
