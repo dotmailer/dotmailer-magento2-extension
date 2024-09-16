@@ -708,7 +708,15 @@ class ContactData
 
             default:
                 //Text, Dates, Multilines, Boolean
-                return $this->model->getData($attributeCode);
+                $value = $this->model->getData($attributeCode);
+                if (!$value) {
+                    $defaultValue = $attribute->getDefaultValue();
+                    if ((string)$defaultValue != '') {
+                        return $defaultValue;
+                    }
+                }
+
+                return $value;
         }
     }
 
