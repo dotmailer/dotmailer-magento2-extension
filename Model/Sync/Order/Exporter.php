@@ -1,24 +1,28 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dotdigitalgroup\Email\Model\Sync\Order;
 
+use Dotdigitalgroup\Email\Api\Model\Sync\Export\InsightDataExporterInterface;
 use Dotdigitalgroup\Email\Helper\Config;
 use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Connector\Order;
 use Dotdigitalgroup\Email\Model\Connector\OrderFactory as ConnectorOrderFactory;
 use Dotdigitalgroup\Email\Model\ResourceModel\Order\Collection as OrderCollection;
 use Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory as OrderCollectionFactory;
+use Dotdigitalgroup\Email\Model\Sync\Export\SdkOrderRecordCollectionBuilderFactory;
 use Dotdigitalgroup\Email\Model\Validator\Schema\Exception\SchemaValidationException;
 use Exception;
 use Magento\Framework\App\Config\ScopeConfigInterface;
-use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Sales\Model\ResourceModel\Order\Collection as SalesOrderCollection;
 use Magento\Sales\Model\ResourceModel\Order\CollectionFactory as SalesOrderCollectionFactory;
+use Magento\Store\Api\Data\WebsiteInterface;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
 
-class Exporter
+class Exporter implements InsightDataExporterInterface
 {
     /**
      * @var StoreManagerInterface
@@ -56,12 +60,18 @@ class Exporter
     private $salesOrderCollectionFactory;
 
     /**
+     * @var SdkOrderRecordCollectionBuilderFactory
+     */
+    private $sdkOrderRecordCollectionBuilderFactory;
+
+    /**
      * @param StoreManagerInterface $storeManager
      * @param ScopeConfigInterface $scopeConfig
      * @param ConnectorOrderFactory $connectorOrderFactory
      * @param OrderCollectionFactory $orderCollectionFactory
      * @param Logger $logger
      * @param SalesOrderCollectionFactory $salesOrderCollectionFactory
+     * @param SdkOrderRecordCollectionBuilderFactory $sdkOrderRecordCollectionBuilderFactory
      */
     public function __construct(
         StoreManagerInterface $storeManager,
@@ -69,7 +79,8 @@ class Exporter
         ConnectorOrderFactory $connectorOrderFactory,
         OrderCollectionFactory $orderCollectionFactory,
         Logger $logger,
-        SalesOrderCollectionFactory $salesOrderCollectionFactory
+        SalesOrderCollectionFactory $salesOrderCollectionFactory,
+        SdkOrderRecordCollectionBuilderFactory $sdkOrderRecordCollectionBuilderFactory
     ) {
         $this->storeManager = $storeManager;
         $this->scopeConfig = $scopeConfig;
@@ -77,21 +88,21 @@ class Exporter
         $this->orderCollectionFactory = $orderCollectionFactory;
         $this->logger = $logger;
         $this->salesOrderCollectionFactory = $salesOrderCollectionFactory;
+        $this->sdkOrderRecordCollectionBuilderFactory = $sdkOrderRecordCollectionBuilderFactory;
     }
 
     /**
      * Export orders.
      *
-     * @param array $orderIds
-     * @return array|array[]|mixed
-     * @throws LocalizedException
+     * @param array $data
+     * @return array|array[]
      * @throws NoSuchEntityException
      */
-    public function exportOrders(array $orderIds)
+    public function export(array $data): array
     {
         $orderCollection = $this->orderCollectionFactory
             ->create()
-            ->getOrdersFromIds($orderIds);
+            ->getOrdersFromIds($data);
 
         if (!$orderCollection->getSize()) {
             return [];
@@ -101,16 +112,29 @@ class Exporter
         $salesOrderCollection = $this->loadSalesOrderCollection(
             $filteredCollection->getColumnValues('order_id')
         );
-        return $this->mapOrderData($salesOrderCollection);
+
+        return $this->sdkOrderRecordCollectionBuilderFactory->create()
+            ->setBuildableData($salesOrderCollection)
+            ->build()
+            ->all();
     }
 
     /**
      * Map order data.
      *
-     * @param SalesOrderCollection $salesOrderCollection
+     * This method maps the order data from the given sales order collection.
+     * It iterates through each order in the collection, processes it, and
+     * organizes the data into an array structure.
      *
-     * @return array|array[]
-     * @throws NoSuchEntityException
+     * @param SalesOrderCollection $salesOrderCollection The collection of sales orders to be mapped.
+     *
+     * @return array|array[] Returns an array of mapped order data.
+     * @throws NoSuchEntityException If an entity does not exist.
+     * @todo Remove this method in the future and update order automation.
+     *
+     * @deprecated This method is deprecated because the SdkOrderRecordCollectionBuilderFactory
+     * provides a more efficient and flexible way to build order records.
+     * @see SdkOrderRecordCollectionBuilderFactory
      */
     public function mapOrderData($salesOrderCollection): array
     {
@@ -159,6 +183,7 @@ class Exporter
      * @param OrderCollection $collection
      *
      * @return OrderCollection
+     * @throws NoSuchEntityException
      */
     private function filterOrderCollectionByStatus(OrderCollection $collection)
     {

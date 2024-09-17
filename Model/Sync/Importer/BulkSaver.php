@@ -8,7 +8,6 @@ use Dotdigitalgroup\Email\Model\Importer;
 use Dotdigitalgroup\Email\Model\ImporterFactory;
 use InvalidArgumentException;
 use Magento\Framework\Exception\AlreadyExistsException;
-use Magento\Framework\Exception\CouldNotSaveException;
 
 class BulkSaver
 {
@@ -36,23 +35,24 @@ class BulkSaver
      * @param string $importId
      * @param string $importType
      * @param string $importStarted
+     * @param string $mode
      *
      * @return void
      * @throws AlreadyExistsException
-     * @throws CouldNotSaveException
      */
     public function addInProgressBatchToImportTable(
         array $batch,
         int $websiteId,
         string $importId,
         string $importType,
-        string $importStarted
+        string $importStarted,
+        string $mode
     ) {
         $this->importerFactory->create()
             ->addToImporterQueue(
                 $importType,
                 $batch,
-                Importer::MODE_BULK,
+                $mode,
                 $websiteId,
                 0,
                 Importer::IMPORTING,
@@ -63,23 +63,29 @@ class BulkSaver
     }
 
     /**
-     * Add batch to importer as 'Importing'.
+     * Add batch to importer as 'Failed'.
      *
      * @param array $batch
      * @param int $websiteId
      * @param string $message
      * @param string $importType
+     * @param string $mode
      *
      * @return void
-     * @throws CouldNotSaveException|AlreadyExistsException|InvalidArgumentException
+     * @throws AlreadyExistsException
      */
-    public function addFailedBatchToImportTable(array $batch, int $websiteId, string $message, string $importType)
-    {
+    public function addFailedBatchToImportTable(
+        array $batch,
+        int $websiteId,
+        string $message,
+        string $importType,
+        string $mode
+    ) {
         $this->importerFactory->create()
             ->addToImporterQueue(
                 $importType,
                 $batch,
-                Importer::MODE_BULK,
+                $mode,
                 $websiteId,
                 0,
                 Importer::FAILED,

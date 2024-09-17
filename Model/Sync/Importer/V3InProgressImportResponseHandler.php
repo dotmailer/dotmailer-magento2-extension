@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dotdigitalgroup\Email\Model\Sync\Importer;
 
 use Dotdigital\Exception\ResponseValidationException;
 use Dotdigitalgroup\Email\Model\Sync\Importer\ReportHandler\V3ImporterReportHandler;
-use Dotdigital\V3\Models\Contact\Import as SdkImport;
+use Dotdigital\V3\Models\Import\ImportInterface as V3ImportInterface;
 use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Apiconnector\V3\ClientFactory;
 use Dotdigitalgroup\Email\Model\Importer as ImporterModel;
@@ -45,12 +47,12 @@ class V3InProgressImportResponseHandler extends AbstractInProgressImportResponse
      * @param ImporterModel $item
      * @param array $group
      *
-     * @return SdkImport
+     * @return V3ImportInterface
      */
     protected function checkItemImportStatus(
         ImporterModel $item,
         array $group
-    ) :SdkImport {
+    ) :V3ImportInterface {
         $method = $group['method'];
         $resource = $group['resource'];
 
@@ -77,7 +79,7 @@ class V3InProgressImportResponseHandler extends AbstractInProgressImportResponse
     /**
      * Process Response.
      *
-     * @param SdkImport $response
+     * @param V3ImportInterface $response
      * @param ImporterModel $item
      *
      * @return int

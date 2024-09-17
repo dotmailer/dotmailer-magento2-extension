@@ -19,7 +19,7 @@
             <updateUrl path="mui/index/render"/>
         </settings>
         <aclResource>Dotdigitalgroup_Email::importer</aclResource>
-        <dataProvider class="Magento\Framework\View\Element\UiComponent\DataProvider\DataProvider" name="importer_report_grid_data_source">
+        <dataProvider class="Dotdigitalgroup\Email\Ui\DataProvider\Importer\ImporterReportDataProvider" name="importer_report_grid_data_source">
             <settings>
                 <requestFieldName>id</requestFieldName>
                 <primaryFieldName>id</primaryFieldName>

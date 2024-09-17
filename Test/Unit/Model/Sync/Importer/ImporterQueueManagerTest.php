@@ -2,83 +2,145 @@
 
 namespace Dotdigitalgroup\Email\Test\Unit\Model\Sync\Importer;
 
+use Dotdigitalgroup\Email\Model\Importer as ImporterModel;
+use Dotdigitalgroup\Email\Model\Sync\Importer\BulkImportBuilder;
 use Dotdigitalgroup\Email\Model\Sync\Importer\ImporterQueueManager;
 use Dotdigitalgroup\Email\Model\Sync\Importer\Type\Contact\BulkFactory as ContactBulkFactory;
 use Dotdigitalgroup\Email\Model\Sync\Importer\Type\Contact\BulkJsonFactory as ContactBulkJsonFactory;
 use Dotdigitalgroup\Email\Model\Sync\Importer\Type\Contact\DeleteFactory as ContactDeleteFactory;
 use Dotdigitalgroup\Email\Model\Sync\Importer\Type\Contact\UpdateFactory as ContactUpdateFactory;
+use Dotdigitalgroup\Email\Model\Sync\Importer\Type\TransactionalData\BulkJsonFactory as TransactionalBulkJsonFactory;
 use Dotdigitalgroup\Email\Model\Sync\Importer\Type\TransactionalData\BulkFactory;
 use Dotdigitalgroup\Email\Model\Sync\Importer\Type\TransactionalData\DeleteFactory;
 use Dotdigitalgroup\Email\Model\Sync\Importer\Type\TransactionalData\UpdateFactory;
-use PHPUnit\Framework\MockObject\MockObject;
+use Dotdigitalgroup\Email\Model\Sync\Importer\BulkImportBuilderFactory;
+use Dotdigitalgroup\Email\Model\Sync\Importer;
 use PHPUnit\Framework\TestCase;
 
 class ImporterQueueManagerTest extends TestCase
 {
     /**
-     * @var ImporterQueueManager|MockObject
+     * @var ImporterQueueManager
      */
     private $importerQueueManager;
 
     /**
-     * @var ContactBulkFactory|MockObject
+     * @var ContactBulkFactory|\PHPUnit\Framework\MockObject\MockObject
      */
-    private $contactBulkFactoryMock;
+    private $contactBulkFactory;
 
     /**
-     * @var ContactBulkJsonFactory|MockObject
+     * @var ContactBulkJsonFactory|\PHPUnit\Framework\MockObject\MockObject
      */
-    private $contactBulkJsonFactoryMock;
+    private $contactBulkJsonFactory;
 
     /**
-     * @var ContactUpdateFactory|MockObject
+     * @var ContactUpdateFactory|\PHPUnit\Framework\MockObject\MockObject
      */
-    private $contactUpdateFactoryMock;
+    private $contactUpdateFactory;
 
     /**
-     * @var ContactDeleteFactory|MockObject
+     * @var ContactDeleteFactory|\PHPUnit\Framework\MockObject\MockObject
      */
-    private $contactDeleteFactoryMock;
+    private $contactDeleteFactory;
 
     /**
-     * @var BulkFactory|MockObject
+     * @var TransactionalBulkJsonFactory|\PHPUnit\Framework\MockObject\MockObject
      */
-    private $bulkFactoryMock;
+    private $transactionalBulkJsonFactory;
 
     /**
-     * @var UpdateFactory|MockObject
+     * @var BulkFactory|\PHPUnit\Framework\MockObject\MockObject
      */
-    private $updateFactoryMock;
+    private $bulkFactory;
 
     /**
-     * @var DeleteFactory|MockObject
+     * @var UpdateFactory|\PHPUnit\Framework\MockObject\MockObject
      */
-    private $deleteFactoryMock;
+    private $updateFactory;
 
-    protected function setUp() :void
+    /**
+     * @var DeleteFactory|\PHPUnit\Framework\MockObject\MockObject
+     */
+    private $deleteFactory;
+
+    /**
+     * @var BulkImportBuilderFactory|\PHPUnit\Framework\MockObject\MockObject
+     */
+    private $bulkImportBuilderFactory;
+
+    /**
+     * @var BulkImportBuilder|\PHPUnit\Framework\MockObject\MockObject
+     */
+    private $bulkImportBuilder;
+
+    protected function setUp(): void
     {
-        $this->contactBulkFactoryMock = $this->createMock(ContactBulkFactory::class);
-        $this->contactBulkJsonFactoryMock = $this->createMock(ContactBulkJsonFactory::class);
-        $this->contactUpdateFactoryMock = $this->createMock(ContactUpdateFactory::class);
-        $this->contactDeleteFactoryMock = $this->createMock(ContactDeleteFactory::class);
-        $this->bulkFactoryMock = $this->createMock(BulkFactory::class);
-        $this->updateFactoryMock = $this->createMock(UpdateFactory::class);
-        $this->deleteFactoryMock = $this->createMock(DeleteFactory::class);
+        $this->contactBulkFactory = $this->createMock(ContactBulkFactory::class);
+        $this->contactBulkJsonFactory = $this->createMock(ContactBulkJsonFactory::class);
+        $this->contactUpdateFactory = $this->createMock(ContactUpdateFactory::class);
+        $this->contactDeleteFactory = $this->createMock(ContactDeleteFactory::class);
+        $this->transactionalBulkJsonFactory = $this->createMock(TransactionalBulkJsonFactory::class);
+        $this->bulkFactory = $this->createMock(BulkFactory::class);
+        $this->updateFactory = $this->createMock(UpdateFactory::class);
+        $this->deleteFactory = $this->createMock(DeleteFactory::class);
+        $this->bulkImportBuilderFactory = $this->createMock(BulkImportBuilderFactory::class);
+        $this->bulkImportBuilder = $this->createMock(BulkImportBuilder::class);
+
+        $this->bulkImportBuilderFactory->method('create')->willReturn(new BulkImportBuilder());
+        $this->bulkImportBuilder->method('setModel')->willReturnSelf();
 
         $this->importerQueueManager = new ImporterQueueManager(
-            $this->contactBulkFactoryMock,
-            $this->contactBulkJsonFactoryMock,
-            $this->contactUpdateFactoryMock,
-            $this->contactDeleteFactoryMock,
-            $this->bulkFactoryMock,
-            $this->updateFactoryMock,
-            $this->deleteFactoryMock
+            $this->contactBulkFactory,
+            $this->contactBulkJsonFactory,
+            $this->contactUpdateFactory,
+            $this->contactDeleteFactory,
+            $this->transactionalBulkJsonFactory,
+            $this->bulkFactory,
+            $this->updateFactory,
+            $this->deleteFactory,
+            $this->bulkImportBuilderFactory
         );
     }
 
-    public function testThatContactBulkHasTopPriority()
+    public function testGetBulkQueue()
     {
-        $bulkPriority = $this->importerQueueManager->getBulkQueue();
-        $this->assertEquals($this->contactBulkFactoryMock, $bulkPriority[0]['model']);
+        $additionalImportTypes = ['CustomType1', 'CustomType2'];
+        $result = $this->importerQueueManager->getBulkQueue($additionalImportTypes);
+
+        $this->assertIsArray($result);
+        $this->assertCount(4, $result);
+    }
+
+    public function testGetSingleQueue()
+    {
+        $result = $this->importerQueueManager->getSingleQueue();
+
+        $this->assertIsArray($result);
+        $this->assertCount(7, $result);
+    }
+
+    public function testBulkQueueItemsHaveExpectedStructure()
+    {
+        $bulkQueue = $this->importerQueueManager->getBulkQueue();
+        $expectedKeys = [
+            'model',
+            'mode',
+            'type',
+            'limit',
+            'useFile',
+        ];
+
+        foreach ($bulkQueue as $index => $queueItem) {
+            $missingKeys = array_diff_key(array_flip($expectedKeys), $queueItem);
+            $this->assertEmpty(
+                $missingKeys,
+                sprintf(
+                    'The item at index %d in the bulkQueue array is missing the following keys: %s',
+                    $index,
+                    implode(', ', array_keys($missingKeys))
+                )
+            );
+        }
     }
 }

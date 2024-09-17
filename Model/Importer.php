@@ -26,6 +26,7 @@ class Importer extends AbstractModel
 
     //import mode
     public const MODE_BULK = 'Bulk';
+    public const MODE_BULK_JSON = 'Bulk_JSON';
     public const MODE_SINGLE = 'Single';
     public const MODE_SINGLE_DELETE = 'Single_Delete';
     public const MODE_CONTACT_DELETE = 'Contact_Delete';

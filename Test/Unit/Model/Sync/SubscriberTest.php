@@ -2,6 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Test\Unit\Model\Sync;
 
+use ArrayIterator;
 use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact\Collection as ContactCollection;
@@ -10,6 +11,7 @@ use Dotdigitalgroup\Email\Model\Subscriber as SubscriberModel;
 use Dotdigitalgroup\Email\Model\Sync\Batch\MegaBatchProcessor;
 use Dotdigitalgroup\Email\Model\Sync\Batch\MergeManager;
 use Dotdigitalgroup\Email\Model\Sync\AbstractExporter;
+use Dotdigitalgroup\Email\Model\Sync\Export\ExporterInterface;
 use Dotdigitalgroup\Email\Model\Sync\Subscriber;
 use Dotdigitalgroup\Email\Model\Sync\Subscriber\OrderHistoryChecker;
 use Dotdigitalgroup\Email\Model\Sync\Subscriber\SubscriberExporter;
@@ -17,6 +19,7 @@ use Dotdigitalgroup\Email\Model\Sync\Subscriber\SubscriberExporterFactory;
 use Dotdigitalgroup\Email\Model\Sync\Subscriber\SubscriberWithSalesExporter;
 use Dotdigitalgroup\Email\Model\Sync\Subscriber\SubscriberWithSalesExporterFactory;
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Store\Api\Data\WebsiteInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -118,8 +121,8 @@ class SubscriberTest extends TestCase
         $this->scopeConfigMock = $this->createMock(ScopeConfigInterface::class);
         $this->storeManagerMock = $this->createMock(StoreManagerInterface::class);
 
-        $this->subscriberExporterMock = $this->createMock(SubscriberExporter::class);
-        $this->subscriberWithSalesExporterMock = $this->createMock(SubscriberWithSalesExporter::class);
+        $this->subscriberExporterMock = $this->createMock(ExporterInterface::class);
+        $this->subscriberWithSalesExporterMock = $this->createMock(ExporterInterface::class);
 
         $this->websiteInterfaceMock = $this->getMockBuilder(WebsiteInterface::class)
             ->onlyMethods(
@@ -156,7 +159,7 @@ class SubscriberTest extends TestCase
 
     /**
      * @return void
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws LocalizedException
      */
     public function testNoExportingOrBatchingIfSyncIsNotConfigured()
     {
@@ -183,7 +186,7 @@ class SubscriberTest extends TestCase
 
     /**
      * @return void
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws LocalizedException
      */
     public function testNoExportingIfNoSubscribersNeedSyncing()
     {
@@ -214,7 +217,7 @@ class SubscriberTest extends TestCase
 
     /**
      * @return void
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws LocalizedException
      */
     public function testExportingStopsIfBreakValueIsExceeded()
     {
@@ -250,7 +253,7 @@ class SubscriberTest extends TestCase
 
         $this->contactCollectionMock->expects($this->any())
             ->method('getIterator')
-            ->willReturn(new \ArrayIterator($subscriberStubs));
+            ->willReturn(new ArrayIterator($subscriberStubs));
 
         $this->subscriberExporterMock->expects($this->once())
             ->method('getFieldMapping')
@@ -274,7 +277,7 @@ class SubscriberTest extends TestCase
 
     /**
      * @return void
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws LocalizedException
      */
     public function testBatchIsProcessedOnceMegaBatchSizeIsExceeded()
     {
@@ -314,7 +317,7 @@ class SubscriberTest extends TestCase
 
         $this->contactCollectionMock->expects($this->once())
             ->method('getIterator')
-            ->willReturn(new \ArrayIterator($subscriberStubs));
+            ->willReturn(new ArrayIterator($subscriberStubs));
 
         $this->subscriberExporterMock->expects($this->once())
             ->method('getFieldMapping')
@@ -338,7 +341,7 @@ class SubscriberTest extends TestCase
 
     /**
      * @return void
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws LocalizedException
      */
     public function testFileNotInitialisedIfNothingToBatch()
     {
@@ -378,7 +381,7 @@ class SubscriberTest extends TestCase
 
         $this->contactCollectionMock->expects($this->once())
             ->method('getIterator')
-            ->willReturn(new \ArrayIterator($subscriberStubs));
+            ->willReturn(new ArrayIterator($subscriberStubs));
 
         $this->subscriberExporterMock->expects($this->once())
             ->method('getFieldMapping')
@@ -399,7 +402,7 @@ class SubscriberTest extends TestCase
 
     /**
      * @return void
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws LocalizedException
      */
     public function testTwoCohortsAreProcessedWhenSubscribersExportedWithSalesData()
     {
@@ -441,8 +444,8 @@ class SubscriberTest extends TestCase
         $this->contactCollectionMock->expects($this->exactly(2))
             ->method('getIterator')
             ->willReturnOnConsecutiveCalls(
-                new \ArrayIterator($this->createCustomerAndGuestSubscriberStubs($limit)),
-                new \ArrayIterator($this->createCustomerAndGuestSubscriberStubs($limit, $limit + 1))
+                new ArrayIterator($this->createCustomerAndGuestSubscriberStubs($limit)),
+                new ArrayIterator($this->createCustomerAndGuestSubscriberStubs($limit, $limit + 1))
             );
 
         $this->loggerMock->expects($this->exactly(3))

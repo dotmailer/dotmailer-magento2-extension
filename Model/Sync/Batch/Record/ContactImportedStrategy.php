@@ -4,17 +4,30 @@ declare(strict_types=1);
 
 namespace Dotdigitalgroup\Email\Model\Sync\Batch\Record;
 
+use Dotdigitalgroup\Email\Api\Model\Sync\Batch\Record\RecordImportedStrategyInterface;
 use Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory as ContactResourceFactory;
-use Magento\Framework\Exception\LocalizedException;
 
+/**
+ * Class ContactImportedStrategy
+ *
+ * This class implements the RecordImportedStrategyInterface and provides methods to set record IDs
+ * and process the imported contacts.
+ */
 class ContactImportedStrategy implements RecordImportedStrategyInterface
 {
+    /**
+     * @var array
+     */
+    private $records = [];
+
     /**
      * @var ContactResourceFactory
      */
     private $contactResourceFactory;
 
     /**
+     * ContactImportedStrategy constructor.
+     *
      * @param ContactResourceFactory $contactResourceFactory
      */
     public function __construct(
@@ -24,18 +37,27 @@ class ContactImportedStrategy implements RecordImportedStrategyInterface
     }
 
     /**
-     * Mark as imported.
+     * Set the records for the batch.
      *
-     * @param array $ids
+     * @param array $records
+     * @return ContactImportedStrategy
+     */
+    public function setRecords(array $records): ContactImportedStrategy
+    {
+        $this->records = $records;
+        return $this;
+    }
+
+    /**
+     * Process the imported contacts.
      *
      * @return void
-     * @throws LocalizedException
      */
-    public function markAsImported(array $ids): void
+    public function process(): void
     {
         $this->contactResourceFactory->create()
             ->setContactsImportedByIds(
-                $ids
+                array_keys($this->records)
             );
     }
 }

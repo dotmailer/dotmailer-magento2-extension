@@ -226,7 +226,8 @@ class Customer extends DataObject implements SyncInterface
                 $this->batchProcessor->process(
                     $megaBatch,
                     (int) $website->getId(),
-                    Importer::IMPORT_TYPE_CUSTOMER
+                    Importer::IMPORT_TYPE_CUSTOMER,
+                    Importer::MODE_BULK
                 );
                 $megaBatch = [];
                 $megaBatchCount = 0;
@@ -237,7 +238,8 @@ class Customer extends DataObject implements SyncInterface
         $this->batchProcessor->process(
             $megaBatch,
             (int) $website->getId(),
-            Importer::IMPORT_TYPE_CUSTOMER
+            Importer::IMPORT_TYPE_CUSTOMER,
+            Importer::MODE_BULK
         );
     }
 

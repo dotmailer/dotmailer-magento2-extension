@@ -5,18 +5,17 @@ declare(strict_types=1);
 namespace Dotdigitalgroup\Email\Model\Sync\Guest;
 
 use Dotdigital\V3\Models\Contact as SdkContact;
+use Dotdigitalgroup\Email\Api\Model\Sync\Export\ContactExporterInterface;
 use Dotdigitalgroup\Email\Helper\Config;
 use Dotdigitalgroup\Email\Model\Contact;
 use Dotdigitalgroup\Email\Model\Connector\ContactDataFactory;
 use Dotdigitalgroup\Email\Model\Sync\AbstractExporter;
 use Dotdigitalgroup\Email\Model\Sync\Export\CsvHandler;
-use Dotdigitalgroup\Email\Model\Sync\Export\ExporterInterface;
 use Dotdigitalgroup\Email\Model\Sync\Export\SdkContactBuilder;
 use Magento\Framework\DataObject;
-use Magento\Framework\Exception\LocalizedException;
 use Magento\Store\Api\Data\WebsiteInterface;
 
-class GuestExporter extends AbstractExporter implements ExporterInterface
+class GuestExporter extends AbstractExporter implements ContactExporterInterface
 {
     /**
      * @var ContactDataFactory
@@ -58,7 +57,7 @@ class GuestExporter extends AbstractExporter implements ExporterInterface
      * @param int $listId
      *
      * @return array<SdkContact>
-     * @throws LocalizedException|\Exception
+     * @throws \Exception
      */
     public function export(array $guests, WebsiteInterface $website, int $listId): array
     {

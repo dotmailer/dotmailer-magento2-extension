@@ -99,8 +99,9 @@
     <preference for="Dotdigitalgroup\Email\Model\Validator\Schema\SchemaValidatorRuleSetInterface" type="Dotdigitalgroup\Email\Model\Validator\Schema\SchemaValidatorRuleSet" />
     <preference for="Dotdigitalgroup\Email\Model\Validator\Schema\SchemaValidatorRuleInterface" type="Dotdigitalgroup\Email\Model\Validator\Schema\SchemaValidatorRule" />
     <preference for="Dotdigitalgroup\Email\Api\Product\CurrentProductInterface" type="Dotdigitalgroup\Email\Model\Product\CurrentProduct" />
-    <preference for="Dotdigitalgroup\Email\Model\Sync\Batch\Record\RecordImportedStrategyInterface" type="Dotdigitalgroup\Email\Model\Sync\Batch\Record\ContactImportedStrategy"/>
-    <preference for="Dotdigitalgroup\Email\Model\Sync\Batch\Sender\SendDataStrategyInterface" type="Dotdigitalgroup\Email\Model\Sync\Batch\Sender\SendContactDataStrategy"/>
+    <preference for="Dotdigitalgroup\Email\Api\Model\Sync\Batch\Record\RecordImportedStrategyInterface" type="Dotdigitalgroup\Email\Model\Sync\Batch\Record\ContactImportedStrategy"/>
+    <preference for="Dotdigitalgroup\Email\Api\Model\Sync\Batch\Sender\SenderStrategyInterface" type="Dotdigitalgroup\Email\Model\Sync\Batch\Sender\ContactSenderStrategy"/>
+    <preference for="Dotdigitalgroup\Email\Api\Model\Sync\Batch\BatchMergerInterface" type="Dotdigitalgroup\Email\Model\Sync\Batch\MergeManager"/>
     <type name="Dotdigitalgroup\Email\Logger\Handler\ConnectorLogHandler">
         <arguments>
             <argument name="filesystem" xsi:type="object">Magento\Framework\Filesystem\Driver\File</argument>

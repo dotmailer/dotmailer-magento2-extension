@@ -5,13 +5,12 @@ declare(strict_types=1);
 namespace Dotdigitalgroup\Email\Model\Sync\Batch;
 
 use Dotdigital\Exception\ResponseValidationException;
+
+use Dotdigitalgroup\Email\Api\Model\Sync\Batch\BatchProcessorInterface;
 use Dotdigitalgroup\Email\Logger\Logger;
-use Dotdigitalgroup\Email\Model\Importer;
-use Dotdigitalgroup\Email\Model\Sync\Batch\Record\ContactImportedStrategy;
-use Dotdigitalgroup\Email\Model\Sync\Batch\Record\RecordImportedStateHandler;
-use Dotdigitalgroup\Email\Model\Sync\Batch\Record\SubscriberImportedStrategy;
-use Dotdigitalgroup\Email\Model\Sync\Batch\Sender\SendDataStrategyHandler;
-use Dotdigitalgroup\Email\Model\Sync\Batch\Sender\SendContactDataStrategy;
+use Dotdigitalgroup\Email\Model\Importer as ImporterModel;
+use Dotdigitalgroup\Email\Model\Sync\Batch\Record\RecordImportedStrategyFactory;
+use Dotdigitalgroup\Email\Model\Sync\Batch\Sender\SenderStrategyFactory;
 use Dotdigitalgroup\Email\Model\Sync\Importer\BulkSaver;
 use Http\Client\Exception;
 use InvalidArgumentException;
@@ -27,29 +26,14 @@ class MegaBatchProcessor implements BatchProcessorInterface
     private $logger;
 
     /**
-     * @var ContactImportedStrategy
+     * @var RecordImportedStrategyFactory
      */
-    private $contactImportedStrategy;
+    private $recordImportedStrategyFactory;
 
     /**
-     * @var RecordImportedStateHandler
+     * @var SenderStrategyFactory
      */
-    private $recordImportedStateHandler;
-
-    /**
-     * @var SubscriberImportedStrategy
-     */
-    private $subscriberImportedStrategy;
-
-    /**
-     * @var SendDataStrategyHandler
-     */
-    private $sendDataStrategyHandler;
-
-    /**
-     * @var SendDataStrategyHandler
-     */
-    private $sendContactDataStrategy;
+    private $senderStrategyFactory;
 
     /**
      * @var BulkSaver
@@ -65,30 +49,21 @@ class MegaBatchProcessor implements BatchProcessorInterface
      * MegaBatchProcessor constructor.
      *
      * @param Logger $logger
-     * @param ContactImportedStrategy $contactImportedStrategy
-     * @param RecordImportedStateHandler $recordImportedStateHandler
-     * @param SubscriberImportedStrategy $subscriberImportedStrategy
-     * @param SendDataStrategyHandler $sendDataStrategyHandler
-     * @param SendContactDataStrategy $sendContactDataStrategy
+     * @param RecordImportedStrategyFactory $recordImportedStrategyFactory
+     * @param SenderStrategyFactory $senderStrategyFactory
      * @param BulkSaver $importBulkSaver
      * @param DateTime $dateTime
      */
     public function __construct(
         Logger $logger,
-        ContactImportedStrategy $contactImportedStrategy,
-        RecordImportedStateHandler $recordImportedStateHandler,
-        SubscriberImportedStrategy $subscriberImportedStrategy,
-        SendDataStrategyHandler $sendDataStrategyHandler,
-        SendContactDataStrategy $sendContactDataStrategy,
+        RecordImportedStrategyFactory $recordImportedStrategyFactory,
+        SenderStrategyFactory $senderStrategyFactory,
         BulkSaver $importBulkSaver,
         DateTime $dateTime
     ) {
         $this->logger = $logger;
-        $this->contactImportedStrategy = $contactImportedStrategy;
-        $this->recordImportedStateHandler = $recordImportedStateHandler;
-        $this->subscriberImportedStrategy = $subscriberImportedStrategy;
-        $this->sendDataStrategyHandler = $sendDataStrategyHandler;
-        $this->sendContactDataStrategy = $sendContactDataStrategy;
+        $this->recordImportedStrategyFactory = $recordImportedStrategyFactory;
+        $this->senderStrategyFactory = $senderStrategyFactory;
         $this->importBulkSaver = $importBulkSaver;
         $this->dateTime = $dateTime;
     }
@@ -99,25 +74,29 @@ class MegaBatchProcessor implements BatchProcessorInterface
      * @param array $batch
      * @param int $websiteId
      * @param string $importType
-     *
-     * @throws LocalizedException|Exception
+     * @param string $bulkImportMode
+     * @throws AlreadyExistsException
      */
-    public function process(array $batch, int $websiteId, string $importType)
-    {
+    public function process(
+        array $batch,
+        int $websiteId,
+        string $importType,
+        string $bulkImportMode = ImporterModel::MODE_BULK_JSON
+    ) {
         if (empty($batch)) {
             return;
         }
 
         try {
-            $importId = $this->pushBatch($batch, $websiteId, $importType);
-
+            $importId = $this->sendBatch($batch, $websiteId, $importType);
             if ($importId) {
                 $this->importBulkSaver->addInProgressBatchToImportTable(
                     $batch,
                     $websiteId,
                     $importId,
                     $importType,
-                    $this->dateTime->formatDate(true)
+                    $this->dateTime->formatDate(true),
+                    $bulkImportMode
                 );
             }
 
@@ -136,7 +115,8 @@ class MegaBatchProcessor implements BatchProcessorInterface
                 $batch,
                 $websiteId,
                 $e->getMessage(),
-                $importType
+                $importType,
+                $bulkImportMode
             );
         } catch (AlreadyExistsException | InvalidArgumentException $e) {
             $this->logger->error(
@@ -148,49 +128,49 @@ class MegaBatchProcessor implements BatchProcessorInterface
                 )
             );
         } finally {
-            $batchEntityIdentifiers = array_keys($batch);
-            $this->markAsImported($batchEntityIdentifiers, $importType);
+            $this->markAsImported($batch, $importType);
         }
     }
 
     /**
-     * Send batch to Dotdigital.
+     * Sends a batch of data for processing based on the import type.
+     *
+     * This method is responsible for sending a batch of data to the appropriate sender strategy,
+     * determined by the import type. It utilizes the SenderStrategyFactory to create an instance
+     * of the sender strategy, sets the batch and website ID on the strategy, and then calls the
+     * process method on the strategy to handle the data. The process method is expected to return
+     * a string that represents the import ID, which is then returned by this method.
      *
      * @param array $batch
      * @param int $websiteId
      * @param string $importType
      *
-     * @return string
-     * @throws ResponseValidationException
+     * @return string The import ID returned by the sender strategy's process method.
      */
-    private function pushBatch(array $batch, int $websiteId, string $importType): string
+    private function sendBatch(array $batch, int $websiteId, string $importType): string
     {
-        if ($importType === Importer::IMPORT_TYPE_CUSTOMER ||
-            $importType === Importer::IMPORT_TYPE_GUEST ||
-            $importType === Importer::IMPORT_TYPE_SUBSCRIBERS
-        ) {
-            $this->sendDataStrategyHandler->setStrategy($this->sendContactDataStrategy);
-        }
-
-        return $this->sendDataStrategyHandler->executeStrategy($batch, $websiteId);
+        return $this->senderStrategyFactory->create($importType)
+            ->setBatch($batch)
+            ->setWebsiteId($websiteId)
+            ->process();
     }
 
     /**
-     * Mark contacts as imported.
+     * Marks a batch of records as imported based on the import type.
      *
-     * @param array $ids
-     * @param string $importType
+     * This method utilizes the RecordImportedStrategyFactory to create a strategy instance
+     * specific to the provided import type. It then sets the record IDs that have been imported
+     * and processes them according to the strategy's implementation. This could involve updating
+     * database records, sending notifications, or other post-import actions.
      *
-     * @return void
+     * @param array $batch
+     * @param string $importType The type of import (e.g., customer, guest, subscribers)
      */
-    private function markAsImported($ids, $importType)
+    private function markAsImported(array $batch, string $importType): void
     {
-        if ($importType === Importer::IMPORT_TYPE_CUSTOMER || $importType === Importer::IMPORT_TYPE_GUEST) {
-            $this->recordImportedStateHandler->setStrategy($this->contactImportedStrategy);
-        } elseif ($importType === Importer::IMPORT_TYPE_SUBSCRIBERS) {
-            $this->recordImportedStateHandler->setStrategy($this->subscriberImportedStrategy);
-        }
-
-        $this->recordImportedStateHandler->executeStrategy($ids);
+        $this->recordImportedStrategyFactory
+            ->create($importType)
+            ->setRecords($batch)
+            ->process();
     }
 }

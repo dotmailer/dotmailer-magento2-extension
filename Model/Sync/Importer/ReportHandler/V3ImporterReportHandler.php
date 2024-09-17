@@ -1,8 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dotdigitalgroup\Email\Model\Sync\Importer\ReportHandler;
 
-use Dotdigital\V3\Models\Contact\Import as SdkImport;
+use Dotdigital\V3\Models\Import\ImportInterface as V3ImportInterface;
 use Dotdigitalgroup\Email\Logger\Logger;
 
 class V3ImporterReportHandler
@@ -24,10 +26,10 @@ class V3ImporterReportHandler
     /**
      * Process.
      *
-     * @param SdkImport $response
+     * @param V3ImportInterface $response
      * @return void
      */
-    public function process(SdkImport $response)
+    public function process(V3ImportInterface $response)
     {
         if ($response->getSummary()) {
             $this->logger->info(

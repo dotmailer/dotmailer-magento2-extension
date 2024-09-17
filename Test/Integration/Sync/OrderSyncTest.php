@@ -1,12 +1,11 @@
 <?php
 
-namespace Dotdigitalgroup\Email\Controller\Customer;
+namespace Dotdigitalgroup\Email\Test\Integration\Sync;
 
 if (!class_exists('\Magento\Catalog\Api\Data\ProductExtensionInterfaceFactory')) {
     require __DIR__ . '/../_files/product_extension_interface_hacktory.php';
 }
 
-use Dotdigitalgroup\Email\Model\Contact;
 use Dotdigitalgroup\Email\Model\Sync\Order;
 use Dotdigitalgroup\Email\Test\Integration\MocksApiResponses;
 use Magento\Quote\Model\ResourceModel\Quote\Collection;
@@ -190,7 +189,7 @@ class OrderSyncTest extends \Magento\TestFramework\TestCase\AbstractController
         );
 
         // Reset addresses
-        /** @var Order\Address $billingAddress */
+        /** @var OrderAddress $billingAddress */
         $billingAddress = $objectManager->create(OrderAddress::class, [
             'data' => [
                 'region' => 'CA',

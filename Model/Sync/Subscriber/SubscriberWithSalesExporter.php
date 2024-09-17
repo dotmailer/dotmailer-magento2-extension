@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Dotdigitalgroup\Email\Model\Sync\Subscriber;
 
 use Dotdigital\V3\Models\Contact as SdkContact;
+use Dotdigitalgroup\Email\Api\Model\Sync\Export\ContactExporterInterface;
 use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Connector\ContactData\SubscriberFactory as ConnectorSubscriberFactory;
 use Dotdigitalgroup\Email\Model\Connector\Datafield;
@@ -12,7 +13,6 @@ use Dotdigitalgroup\Email\Model\Newsletter\OptInTypeFinder;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory as ContactCollectionFactory;
 use Dotdigitalgroup\Email\Model\Sync\AbstractExporter;
 use Dotdigitalgroup\Email\Model\Sync\Export\CsvHandler;
-use Dotdigitalgroup\Email\Model\Sync\Export\ExporterInterface;
 use Dotdigitalgroup\Email\Model\Sync\Export\SalesDataManager;
 use Dotdigitalgroup\Email\Model\Sync\Export\SdkContactBuilder;
 use Magento\Framework\App\Config\ScopeConfigInterface;
@@ -21,7 +21,7 @@ use Magento\Newsletter\Model\Subscriber;
 use Magento\Store\Api\Data\WebsiteInterface;
 use Magento\Store\Model\ScopeInterface;
 
-class SubscriberWithSalesExporter extends AbstractExporter implements ExporterInterface
+class SubscriberWithSalesExporter extends AbstractExporter implements ContactExporterInterface
 {
     /**
      * @var Logger

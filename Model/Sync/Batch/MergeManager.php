@@ -4,17 +4,12 @@ declare(strict_types=1);
 
 namespace Dotdigitalgroup\Email\Model\Sync\Batch;
 
-class MergeManager
+use Dotdigitalgroup\Email\Api\Model\Sync\Batch\BatchMergerInterface;
+
+class MergeManager implements BatchMergerInterface
 {
     /**
-     * Creates the mega batch.
-     *
-     * For any type of contact sync, batches will only ever be for one website.
-     *
-     * @param array $batch
-     * @param array $megaBatch
-     *
-     * @return array
+     * @inheritDoc
      */
     public function mergeBatch(array $batch, array $megaBatch)
     {

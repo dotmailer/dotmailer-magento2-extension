@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dotdigitalgroup\Email\Model\Sync\Importer;
 
 use Dotdigitalgroup\Email\Model\Importer as ImporterModel;
@@ -13,12 +15,15 @@ class ImporterProgressHandler
     public const PROGRESS_GROUP_METHOD = 'method';
     public const PROGRESS_GROUP_RESOURCE = 'resource';
     public const PROGRESS_GROUP_TYPES = 'types';
+    public const PROGRESS_GROUP_MODE = 'import_mode';
 
     public const VERSION_2 = 'v2';
     public const VERSION_3 = 'v3';
 
     public const TRANSACTIONAL = 'Transactional';
     public const CONTACT = 'Contact';
+
+    public const INSIGHTDATA = 'InsightData';
 
     /**
      * @var CollectionFactory
@@ -70,8 +75,9 @@ class ImporterProgressHandler
                 $items = $this->importerCollectionFactory->create()
                     ->getItemsWithImportingStatus(
                         $websiteIds,
-                        $group[ self::PROGRESS_GROUP_TYPES ],
-                        $group['useFile'] ?? false
+                        $group[self::PROGRESS_GROUP_TYPES],
+                        $group['useFile'] ?? false,
+                        $group[self::PROGRESS_GROUP_MODE]
                     );
 
                 if (!$items) {
@@ -95,6 +101,7 @@ class ImporterProgressHandler
     public function getInProgressGroups()
     {
         $transactionalBulk = [
+            self::PROGRESS_GROUP_MODE => ImporterModel::MODE_BULK,
             self::PROGRESS_GROUP_MODEL => $this->v2HandlerFactory,
             self::PROGRESS_GROUP_METHOD => 'getContactsTransactionalDataImportByImportId',
             self::PROGRESS_GROUP_TYPES => [
@@ -106,11 +113,12 @@ class ImporterProgressHandler
         ];
 
         $transactionalV3Bulk = [
+            self::PROGRESS_GROUP_MODE => ImporterModel::MODE_BULK,
             self::PROGRESS_GROUP_TYPES => [
                 ImporterModel::MODE_CONSENT,
                 ImporterModel::IMPORT_TYPE_CUSTOMER,
                 ImporterModel::IMPORT_TYPE_GUEST,
-                ImporterModel::IMPORT_TYPE_SUBSCRIBERS,
+                ImporterModel::IMPORT_TYPE_SUBSCRIBERS
             ],
             self::PROGRESS_GROUP_MODEL => $this->v3HandlerFactory,
             self::PROGRESS_GROUP_RESOURCE => 'contacts',
@@ -118,6 +126,7 @@ class ImporterProgressHandler
         ];
 
         $contactsBulk = [
+            self::PROGRESS_GROUP_MODE => ImporterModel::MODE_BULK,
             self::PROGRESS_GROUP_TYPES => [
                 ImporterModel::IMPORT_TYPE_CONTACT,
                 ImporterModel::IMPORT_TYPE_CUSTOMER,
@@ -129,13 +138,24 @@ class ImporterProgressHandler
             'useFile' => true
         ];
 
+        $insightDataV3Bulk = [
+            self::PROGRESS_GROUP_MODE => ImporterModel::MODE_BULK_JSON,
+            self::PROGRESS_GROUP_RESOURCE => 'insightData',
+            self::PROGRESS_GROUP_TYPES => [
+                ImporterModel::IMPORT_TYPE_ORDERS,
+            ],
+            self::PROGRESS_GROUP_MODEL => $this->v3HandlerFactory,
+            self::PROGRESS_GROUP_METHOD => 'getImportById'
+        ];
+
         return [
             self::VERSION_2 => [
                 self::TRANSACTIONAL => $transactionalBulk,
-                self::CONTACT => $contactsBulk
+                self::CONTACT => $contactsBulk,
             ],
             self::VERSION_3 => [
                 self::CONTACT => $transactionalV3Bulk,
+                self::INSIGHTDATA => $insightDataV3Bulk
             ]
         ];
     }

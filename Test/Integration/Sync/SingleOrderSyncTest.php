@@ -66,7 +66,7 @@ class SingleOrderSyncTest extends \PHPUnit\Framework\TestCase
      * @magentoConfigFixture default_store sync_settings/sync/order_enabled 1
      * @magentoConfigFixture default_store connector_api_credentials/api/enabled 1
      *
-     * @return null
+     * @return void
      */
     public function testSingleOrderIsTypeOrderAndModeBulk()
     {
@@ -75,7 +75,7 @@ class SingleOrderSyncTest extends \PHPUnit\Framework\TestCase
 
         $item = $this->importerCollection
             ->addFieldToFilter('import_type', \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_ORDERS)
-            ->addFieldToFilter('import_mode', \Dotdigitalgroup\Email\Model\Importer::MODE_BULK)
+            ->addFieldToFilter('import_mode', \Dotdigitalgroup\Email\Model\Importer::MODE_BULK_JSON)
             ->getLastItem();
 
         $this->assertEquals(
@@ -84,7 +84,7 @@ class SingleOrderSyncTest extends \PHPUnit\Framework\TestCase
             'Item is not type of order'
         );
         $this->assertEquals(
-            \Dotdigitalgroup\Email\Model\Importer::MODE_BULK,
+            \Dotdigitalgroup\Email\Model\Importer::MODE_BULK_JSON,
             $item->getImportMode(),
             'Item is not single mode'
         );
