@@ -117,7 +117,7 @@ class Consent implements SyncInterface
                             'Error in consent sync for website id: %d',
                             $websiteId
                         ),
-                        [(string)$e]
+                        ['message' => $e->getMessage()]
                     );
                 }
             }
