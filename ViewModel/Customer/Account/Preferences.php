@@ -39,22 +39,25 @@ class Preferences implements ArgumentInterface
      */
     public function getPreferencesToShow()
     {
+        $preferences = [];
         $processedPreferences = [];
         $contactFromTable = $this->containerViewModel->getContactFromTable();
 
-        if ($contactFromTable && $contactFromTable->getContactId()) {
+        if (!$contactFromTable) {
+            $preferences = $this->containerViewModel->getApiClient()->getPreferences();
+        } elseif ($contactFromTable->getContactId()) {
+            $preferences = $this->containerViewModel->getApiClient()->getPreferencesForContact(
+                $contactFromTable->getContactId()
+            );
+        } else {
             $contact = $this->containerViewModel->getConnectorContact();
             if (isset($contact->id)) {
                 $preferences = $this->containerViewModel->getApiClient()->getPreferencesForContact($contact->id);
-                if (is_array($preferences)) {
-                    $processedPreferences = $this->processPreferences($preferences, $processedPreferences);
-                }
             }
-        } else {
-            $preferences = $this->containerViewModel->getApiClient()->getPreferences();
-            if (is_array($preferences)) {
-                $processedPreferences = $this->processPreferences($preferences, $processedPreferences);
-            }
+        }
+
+        if (!empty($preferences)) {
+            $processedPreferences = $this->processPreferences($preferences, $processedPreferences);
         }
         $this->customerSession->setDmContactPreferences($processedPreferences);
         return $processedPreferences;
