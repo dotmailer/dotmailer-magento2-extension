@@ -350,24 +350,28 @@ class Newsletter implements HttpPostActionInterface
         foreach ($paramDataFields as $key => $value) {
             /*
              * Allow boolean "0" to pass (e.g. "No" for "Yes/No" select)
-             * as well as any other truthy $value
+             * Empty Dates will not be adjusted.
              */
-            if (isset($processedFields[$key]) && ($value || $value === "0")) {
+            if (isset($processedFields[$key])) {
                 if ($processedFields[$key] == 'Numeric') {
-                    $paramDataFields[$key] = (int)$value;
+                    $paramDataFields[$key] = (int) $value;
                 }
                 if ($processedFields[$key] == 'String') {
-                    $paramDataFields[$key] = (string)$value;
+                    $paramDataFields[$key] = (string) $value;
                 }
                 if ($processedFields[$key] == 'Date') {
-                    $paramDataFields[$key] = $this->dateField
-                        ->getScopeAdjustedDate(
-                            $this->storeManager->getStore()->getId(),
-                            $value
-                        );
+                    if (!$value) {
+                        $paramDataFields[$key] = '';
+                    } else {
+                        $paramDataFields[$key] = $this->dateField
+                            ->getScopeAdjustedDate(
+                                $this->storeManager->getStore()->getId(),
+                                $value
+                            );
+                    }
                 }
                 if ($processedFields[$key] == 'Boolean') {
-                    $paramDataFields[$key] = (bool)$value;
+                    $paramDataFields[$key] = (bool) $value;
                 }
                 $data[] = [
                     'Key' => $key,
@@ -389,14 +393,12 @@ class Newsletter implements HttpPostActionInterface
      */
     private function processContactPreferences(Client $client, $contactId): bool
     {
-        $paramPreferences = $this->request->getParam('preferences', []);
         $preferencesFromSession = $this->customerSession->getDmContactPreferences();
-
-        if (empty($paramPreferences) || empty($preferencesFromSession)) {
+        if (empty($preferencesFromSession)) {
             return true;
         }
 
-        $preferences = $this->processParamPreferences($paramPreferences);
+        $preferences = $this->processParamPreferences($this->request->getParam('preferences', []));
         $this->augmentPreferencesFromSession($preferencesFromSession, $preferences);
 
         foreach ($preferences as $id => $preference) {
