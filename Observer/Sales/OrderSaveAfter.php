@@ -14,6 +14,7 @@ use Dotdigitalgroup\Email\Model\Queue\Sync\Automation\AutomationPublisher;
 use Dotdigitalgroup\Email\Model\ResourceModel\Automation;
 use Dotdigitalgroup\Email\Model\ResourceModel\Automation\CollectionFactory;
 use Dotdigitalgroup\Email\Model\StatusInterface;
+use Dotdigitalgroup\Email\Model\Subscriber as DotdigitalSubscriber;
 use Dotdigitalgroup\Email\Model\Sync\Automation\AutomationTypeHandler;
 use Exception;
 use InvalidArgumentException;
@@ -282,7 +283,7 @@ class OrderSaveAfter implements ObserverInterface
             $subscriptionData->setEmail($contact->getEmail());
             $subscriptionData->setWebsiteId($contact->getWebsiteId());
             $subscriptionData->setType('subscribe');
-            $this->publisher->publish('ddg.newsletter.subscription', $subscriptionData);
+            $this->publisher->publish(DotdigitalSubscriber::TOPIC_NEWSLETTER_SUBSCRIPTION, $subscriptionData);
         }
     }
 

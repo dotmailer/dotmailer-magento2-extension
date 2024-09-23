@@ -4,6 +4,7 @@ namespace Dotdigitalgroup\Email\Observer\Adminhtml;
 
 use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Model\Apiconnector\Test;
+use Dotdigitalgroup\Email\Model\Sync\Integration\IntegrationInsights;
 use Magento\Backend\App\Action\Context;
 use Magento\Config\Model\ResourceModel\Config;
 use Magento\Framework\Event\Observer;
@@ -109,7 +110,7 @@ class AccountCredentials implements ObserverInterface
             $isValidAccount = $this->isValidAccount($apiUsername, $apiPassword);
             if ($isValidAccount) {
                 $this->helper->log('----PUBLISHING INTEGRATION INSIGHTS---');
-                $this->publisher->publish('ddg.sync.integration', '');
+                $this->publisher->publish(IntegrationInsights::TOPIC_SYNC_INTEGRATION, '');
 
                 $websiteId = $this->context->getRequest()->getParam('website');
 

@@ -10,6 +10,8 @@ use Magento\Framework\MessageQueue\PublisherInterface;
 
 class AutomationPublisher
 {
+    public const TOPIC_SYNC_AUTOMATION = 'ddg.sync.automation';
+
     /**
      * @var AutomationDataFactory
      */
@@ -45,6 +47,6 @@ class AutomationPublisher
         $message->setId((int) $automation->getId());
         $message->setType($automation->getAutomationType());
 
-        $this->publisher->publish('ddg.sync.automation', $message);
+        $this->publisher->publish(self::TOPIC_SYNC_AUTOMATION, $message);
     }
 }

@@ -5,6 +5,7 @@ namespace Dotdigitalgroup\Email\Controller\Email;
 use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Model\Integration\IntegrationSetup;
 use Dotdigitalgroup\Email\Model\Integration\IntegrationSetupFactory;
+use Dotdigitalgroup\Email\Model\Sync\Integration\IntegrationInsights;
 use Magento\Framework\App\Action\HttpPostActionInterface;
 use Magento\Framework\App\Config\ReinitableConfigInterface;
 use Magento\Framework\App\Action\Context;
@@ -118,7 +119,7 @@ class Accountcallback implements HttpPostActionInterface
         ]);
 
         $this->helper->log('----PUBLISHING INTEGRATION INSIGHTS---');
-        $this->publisher->publish('ddg.sync.integration', '');
+        $this->publisher->publish(IntegrationInsights::TOPIC_SYNC_INTEGRATION, '');
 
         return $this->resultFactory->create(ResultFactory::TYPE_RAW)
             ->setHttpResponseCode(201);

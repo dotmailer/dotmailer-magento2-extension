@@ -76,7 +76,7 @@ class AutomationPublisherTest extends TestCase
 
         $this->publisherMock->expects($this->once())
             ->method('publish')
-            ->with('ddg.sync.automation', $messageMock);
+            ->with(AutomationPublisher::TOPIC_SYNC_AUTOMATION, $messageMock);
 
         $this->automationPublisher->publish($automationMock);
     }

@@ -8,6 +8,8 @@ use Dotdigitalgroup\Email\Model\Sync\SyncInterface;
 
 class IntegrationInsights implements SyncInterface
 {
+    public const TOPIC_SYNC_INTEGRATION = 'ddg.sync.integration';
+
     /**
      * @var IntegrationInsightData
      */

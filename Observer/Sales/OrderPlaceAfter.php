@@ -29,6 +29,8 @@ use Magento\Store\Model\StoreManagerInterface;
  */
 class OrderPlaceAfter implements ObserverInterface
 {
+    private const TOPIC_SALES_CART_PHASE_UPDATE = 'ddg.sales.cart_phase_update';
+
     /**
      * @var Data
      */
@@ -223,6 +225,6 @@ class OrderPlaceAfter implements ObserverInterface
         $cartPhaseUpdateData->setQuoteId((int) $order->getQuoteId());
         $cartPhaseUpdateData->setStoreId($order->getStoreId());
 
-        $this->publisher->publish('ddg.sales.cart_phase_update', $cartPhaseUpdateData);
+        $this->publisher->publish(self::TOPIC_SALES_CART_PHASE_UPDATE, $cartPhaseUpdateData);
     }
 }

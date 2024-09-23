@@ -8,6 +8,7 @@ use Dotdigitalgroup\Email\Model\ImporterFactory;
 use Dotdigitalgroup\Email\Model\Queue\Data\SubscriptionDataFactory;
 use Dotdigitalgroup\Email\Model\Importer;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact;
+use Dotdigitalgroup\Email\Model\Subscriber as DotdigitalSubscriber;
 use Magento\Framework\MessageQueue\PublisherInterface;
 use Magento\Store\Model\StoreManagerInterface;
 
@@ -137,7 +138,7 @@ class RemoveContact implements \Magento\Framework\Event\ObserverInterface
             $unsubscriber->setWebsiteId($websiteId);
             $unsubscriber->setType('unsubscribe');
 
-            $this->publisher->publish('ddg.newsletter.subscription', $unsubscriber);
+            $this->publisher->publish(DotdigitalSubscriber::TOPIC_NEWSLETTER_SUBSCRIPTION, $unsubscriber);
         } catch (\Exception $e) {
             $this->helper->debug('Error when unsubscribing a customer', [(string) $e]);
         }

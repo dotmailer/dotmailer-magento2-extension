@@ -21,6 +21,8 @@ use Magento\Framework\MessageQueue\PublisherInterface;
  */
 class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
 {
+    private const TOPIC_CONTACT_EMAIL_UPDATE = 'ddg.contact.email_update';
+
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Contact
      */
@@ -241,7 +243,7 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
             $emailUpdateData->setEmail($newEmail);
             $emailUpdateData->setWebsiteId((int) $contactModel->getWebsiteId());
 
-            $this->publisher->publish('ddg.contact.email_update', $emailUpdateData);
+            $this->publisher->publish(self::TOPIC_CONTACT_EMAIL_UPDATE, $emailUpdateData);
         }
 
         return $contactModel;
