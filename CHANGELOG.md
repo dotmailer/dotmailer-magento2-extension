@@ -1,3 +1,12 @@
+# 4.26.3
+
+### Bug fixes
+- We fixed upstream preferences not displaying in the customer account.
+- Preferences and data fields could not be cleared in the customer account, this has been fixed.
+- Add default configs where values are passed to DateInterval.
+- We fixed a variable name error in the Getbasket controller.
+- The IP stored for consent capture will now be the original client IP only.
+
 # 4.26.2
 
 ### Bug fixes
