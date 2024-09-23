@@ -348,6 +348,6 @@ class Getbasket implements HttpGetActionInterface
         );
 
         return $this->redirectFactory->create()
-            ->setPath($$pwaUrl . $cartRoute);
+            ->setPath($pwaUrl . $cartRoute);
     }
 }
