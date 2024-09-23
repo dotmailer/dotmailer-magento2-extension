@@ -217,7 +217,12 @@ class ConsentManager
      */
     private function getClientIp()
     {
-        return $this->http->getClientIp();
+        $clientIp = $this->http->getClientIp();
+        if (strpos($clientIp, ',') !== false) {
+            $ipList = explode(',', $clientIp);
+            $clientIp = trim(reset($ipList));
+        }
+        return $clientIp;
     }
 
     /**
