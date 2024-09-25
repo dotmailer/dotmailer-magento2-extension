@@ -2,6 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Model\Queue\Newsletter;
 
+use Dotdigital\Exception\ResponseValidationException;
 use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Apiconnector\Client;
@@ -114,6 +115,14 @@ class SubscriptionConsumer
         try {
             $this->singleSubscriberSyncer->pushContactToSubscriberAddressBook($contact);
             $this->logger->info('Newsletter subscribe success', ['email' => $subscribeData->getEmail()]);
+        } catch (ResponseValidationException $e) {
+            $this->logger->error(
+                sprintf(
+                    'Newsletter subscribe error: %s',
+                    $e->getMessage()
+                ),
+                [$e->getDetails()]
+            );
         } catch (\Exception $e) {
             $this->logger->error(
                 'Newsletter subscribe error',

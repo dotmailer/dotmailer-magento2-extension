@@ -131,7 +131,7 @@ class ContactManager
 
         if ($subscriber->isSubscribed()) {
             $subscriberResponse = $this->singleSubscriberSyncer->pushContactToSubscriberAddressBook($contact);
-            if ($subscriberResponse && !isset($subscriberResponse->message)) {
+            if ($subscriberResponse) {
                 $this->markProcessedSubscriberAsImported($contact);
             }
         }

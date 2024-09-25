@@ -308,7 +308,7 @@ class ContactManagerTest extends TestCase
         $this->singleSubscriberSyncerMock->expects($this->once())
             ->method('pushContactToSubscriberAddressBook')
             ->with($this->contactModelMock)
-            ->willReturn(new \stdClass());
+            ->willReturn(new \Dotdigital\V3\Models\Contact());
 
         $this->contactModelMock->expects($this->once())
             ->method('setSubscriberImported');

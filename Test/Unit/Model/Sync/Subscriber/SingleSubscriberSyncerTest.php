@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Dotdigitalgroup\Email\Test\Unit\Model\Sync\Subscriber;
 
+use Dotdigital\V3\Models\Contact as SdkContact;
+use Dotdigital\V3\Resources\Contacts;
 use Dotdigitalgroup\Email\Helper\Data;
-use Dotdigitalgroup\Email\Model\Apiconnector\Client;
+use Dotdigitalgroup\Email\Model\Apiconnector\V3\Client;
+use Dotdigitalgroup\Email\Model\Apiconnector\V3\ClientFactory;
 use Dotdigitalgroup\Email\Model\Contact;
-use Dotdigitalgroup\Email\Model\Newsletter\OptInTypeFinder;
 use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\DataFieldCollector;
 use Dotdigitalgroup\Email\Model\Sync\Subscriber\SingleSubscriberSyncer;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -31,19 +33,24 @@ class SingleSubscriberSyncerTest extends TestCase
     private $contactModelMock;
 
     /**
-     * @var OptInTypeFinder|MockObject
+     * @var ClientFactory|MockObject
      */
-    private $optInTypeFinderMock;
-
-    /**
-     * @var Client|MockObject
-     */
-    private $clientMock;
+    private $clientFactoryMock;
 
     /**
      * @var SingleSubscriberSyncer
      */
     private $singleSubscriberSyncer;
+
+    /**
+     * @var Client|MockObject
+     */
+    private $v3ClientMock;
+
+    /**
+     * @var Contacts|MockObject
+     */
+    private $contactsResourceMock;
 
     protected function setUp()
     : void
@@ -62,13 +69,19 @@ class SingleSubscriberSyncerTest extends TestCase
             ])
             ->disableOriginalConstructor()
             ->getMock();
-        $this->optInTypeFinderMock = $this->createMock(OptInTypeFinder::class);
-        $this->clientMock = $this->createMock(Client::class);
+        $this->clientFactoryMock = $this->createMock(ClientFactory::class);
+
+        $this->v3ClientMock = $this->createMock(Client::class);
+        $this->clientFactoryMock->expects($this->any())
+            ->method('create')
+            ->willReturn($this->v3ClientMock);
+        $this->contactsResourceMock = $this->createMock(Contacts::class);
+        $this->v3ClientMock->contacts = $this->contactsResourceMock;
 
         $this->singleSubscriberSyncer = new SingleSubscriberSyncer(
             $this->helperMock,
-            $this->dataFieldCollectorMock,
-            $this->optInTypeFinderMock
+            $this->clientFactoryMock,
+            $this->dataFieldCollectorMock
         );
     }
 
@@ -78,37 +91,25 @@ class SingleSubscriberSyncerTest extends TestCase
         $websiteId = 1;
         $subscriberAddressBookId = '123';
         $email = 'chaz@emailsim.io';
-        $optInType = 'double';
+        $sdkSubscriber = $this->getDummySdkSubscriber();
 
         $this->contactModelMock->method('getWebsiteId')->willReturn($websiteId);
         $this->contactModelMock->method('getEmail')->willReturn($email);
         $this->helperMock->method('isSubscriberSyncEnabled')->willReturn(true);
         $this->helperMock->method('getSubscriberAddressBook')->willReturn($subscriberAddressBookId);
-        $this->helperMock->method('getWebsiteApiClient')->willReturn($this->clientMock);
 
         $this->dataFieldCollectorMock->method('collectForSubscriber')
-            ->willReturn($this->getDummySubscriberDataFields());
-        $this->dataFieldCollectorMock->method('mergeFields')
-            ->willReturn($this->getDummySubscriberDataFields());
+            ->willReturn($sdkSubscriber);
 
-        $this->optInTypeFinderMock->expects($this->once())
-            ->method('getOptInType')
-            ->willReturn($optInType);
-
-        $this->clientMock->expects($this->once())
-            ->method('addContactToAddressBook')
+        $this->contactsResourceMock->expects($this->once())
+            ->method('patchByIdentifier')
             ->with(
                 $this->contactModelMock->getEmail(),
-                $subscriberAddressBookId,
-                $optInType,
-                $this->getDummySubscriberDataFields()
+                $sdkSubscriber
             )
-            ->willReturn((object) ['message' => 'success']);
+            ->willReturn($sdkSubscriber);
 
-        $result = $this->singleSubscriberSyncer->pushContactToSubscriberAddressBook($this->contactModelMock);
-
-        $this->assertIsObject($result);
-        $this->assertEquals('success', $result->message);
+        $this->singleSubscriberSyncer->pushContactToSubscriberAddressBook($this->contactModelMock);
     }
 
     public function testPushContactToSubscriberAddressBookReturnsNullWhenDisabled()
@@ -124,25 +125,37 @@ class SingleSubscriberSyncerTest extends TestCase
         $this->assertNull($result);
     }
 
-    private function getDummySubscriberDataFields()
+    private function getDummySdkSubscriber()
     {
-        return [
-            [
-                'Key' => 'FIRST_NAME',
-                'Value' => 'Chaz',
+        return new SdkContact([
+            'identifiers' => [
+                'email' => 'chaz@emailsim.io',
             ],
-            [
-                'Key' => 'LAST_NAME',
-                'Value' => 'Kangaroo',
+            'channelProperties' => [
+                'email' => [
+                    'optInType' => 'double',
+                    'emailType' => 'html',
+                ]
             ],
-            [
-                'Key' => 'SUBSCRIBER_STATUS',
-                'Value' => 'Subscribed',
-            ],
-            [
-                'Key' => 'CONSENTTEXT',
-                'Value' => 'You have consented!',
+            'lists' => [123],
+            'datafields' => [
+                [
+                    'Key' => 'FIRST_NAME',
+                    'Value' => 'Chaz',
+                ],
+                [
+                    'Key' => 'LAST_NAME',
+                    'Value' => 'Kangaroo',
+                ],
+                [
+                    'Key' => 'SUBSCRIBER_STATUS',
+                    'Value' => 'Subscribed',
+                ],
+                [
+                    'Key' => 'CONSENTTEXT',
+                    'Value' => 'You have consented!',
+                ]
             ]
-        ];
+        ]);
     }
 }

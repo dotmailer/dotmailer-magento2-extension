@@ -2,6 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Model\Sync\Automation\DataField;
 
+use Dotdigital\V3\Models\Contact as SdkContact;
 use Dotdigital\V3\Models\Contact\DataField;
 use Dotdigitalgroup\Email\Helper\Config;
 use Dotdigitalgroup\Email\Model\Contact;
@@ -139,10 +140,10 @@ class DataFieldCollector
      * @param string|int $websiteId
      * @param int $listId
      *
-     * @return array
+     * @return SdkContact|null
      * @throws LocalizedException
      */
-    public function collectForSubscriber(Contact $contact, $websiteId, int $listId): array
+    public function collectForSubscriber(Contact $contact, $websiteId, int $listId): ?SdkContact
     {
         $isSubscriberSalesDataEnabled = (int) $this->scopeConfig->getValue(
             Config::XML_PATH_CONNECTOR_ENABLE_SUBSCRIBER_SALES_DATA,
@@ -166,9 +167,7 @@ class DataFieldCollector
         $exporter->setFieldMapping($website);
         $keyedExport = $exporter->export($subscribers, $website, $listId);
 
-        return isset($keyedExport[$contact->getId()]) ?
-            $keyedExport[$contact->getId()]->getDataFields()->all() :
-            [];
+        return $keyedExport[$contact->getId()] ?? null;
     }
 
     /**

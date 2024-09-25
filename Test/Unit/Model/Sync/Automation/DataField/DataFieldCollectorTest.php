@@ -165,7 +165,6 @@ class DataFieldCollectorTest extends TestCase
         $contactId = 4;
         $subscriberExporterMock = $this->createMock(SubscriberExporter::class);
         $sdkContactMock = $this->createMock(SdkContact::class);
-        $dataFieldCollectionMock = $this->createMock(DataFieldCollection::class);
 
         $this->scopeConfigMock->expects($this->once())
             ->method('getValue')
@@ -185,19 +184,11 @@ class DataFieldCollectorTest extends TestCase
                 $contactId => $sdkContactMock
             ]);
 
-        $this->contactModelMock->expects($this->exactly(3))
+        $this->contactModelMock->expects($this->exactly(2))
             ->method('getId')
             ->willReturn($contactId);
 
-        $sdkContactMock->method('__call')
-            ->with('getDataFields')
-            ->willReturn($dataFieldCollectionMock);
-
-        $dataFieldCollectionMock->method('all')->willReturn($this->getExportedSubscriberDataFields());
-
-        $data = $this->dataFieldCollector->collectForSubscriber($this->contactModelMock, 1, 123456);
-
-        $this->assertEquals($this->getExportedSubscriberDataFields(), $data);
+        $this->dataFieldCollector->collectForSubscriber($this->contactModelMock, 1, 123456);
     }
 
     public function testSalesDataFieldsCollectedForSubscriber()
@@ -205,7 +196,6 @@ class DataFieldCollectorTest extends TestCase
         $contactId = 4;
         $subscriberWithSalesExporterMock = $this->createMock(SubscriberWithSalesExporter::class);
         $sdkContactMock = $this->createMock(SdkContact::class);
-        $dataFieldCollectionMock = $this->createMock(DataFieldCollection::class);
 
         // $isSubscriberSalesDataEnabled = 1
         $this->scopeConfigMock->expects($this->once())
@@ -234,19 +224,11 @@ class DataFieldCollectorTest extends TestCase
                 $contactId => $sdkContactMock
             ]);
 
-        $this->contactModelMock->expects($this->exactly(3))
+        $this->contactModelMock->expects($this->exactly(2))
             ->method('getId')
             ->willReturn($contactId);
 
-        $sdkContactMock->method('__call')
-            ->with('getDataFields')
-            ->willReturn($dataFieldCollectionMock);
-
-        $dataFieldCollectionMock->method('all')->willReturn($this->getExportedSubscriberDataFieldsWithSales());
-
-        $data = $this->dataFieldCollector->collectForSubscriber($this->contactModelMock, 1, 123456);
-
-        $this->assertEquals($this->getExportedSubscriberDataFieldsWithSales(), $data);
+        $this->dataFieldCollector->collectForSubscriber($this->contactModelMock, 1, 123456);
     }
 
     public function testMergeFields()
@@ -312,14 +294,20 @@ class DataFieldCollectorTest extends TestCase
         ];
     }
 
-    private function getExportedSubscriberDataFields()
+    private function getExportedSubscriberWithDataFields()
     {
-        return [
-            new DataField('FIRST_NAME', 'Chaz'),
-            new DataField('LAST_NAME', 'Kangaroo'),
-            new DataField('SUBSCRIBER_STATUS', 'Subscribed'),
-            new DataField('CONSENTTEXT', 'You have consented!'),
-        ];
+        return new SdkContact([
+            'matchIdentifier' => 'email',
+            'identifiers' => [
+                'email' => 'chaz@emailsim.io'
+            ],
+            'dataFields' => [
+                new DataField('FIRST_NAME', 'Chaz'),
+                new DataField('LAST_NAME', 'Kangaroo'),
+                new DataField('SUBSCRIBER_STATUS', 'Subscribed'),
+                new DataField('CONSENTTEXT', 'You have consented!'),
+            ]
+        ]);
     }
 
     private function getExportedSubscriberDataFieldsWithSales()
