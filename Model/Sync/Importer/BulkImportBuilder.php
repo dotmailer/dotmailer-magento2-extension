@@ -18,8 +18,7 @@ class BulkImportBuilder
         'model' => null,
         'mode' => ImporterModel::MODE_BULK,
         'type' => [],
-        'limit' => Importer::TOTAL_IMPORT_SYNC_LIMIT,
-        'useFile' => false
+        'limit' => Importer::TOTAL_IMPORT_SYNC_LIMIT
     ];
 
     /**
@@ -67,18 +66,6 @@ class BulkImportBuilder
     public function setLimit(int $limit):BulkImportBuilder
     {
         $this->config['limit'] = $limit;
-        return $this;
-    }
-
-    /**
-     * Set the useFile flag for the import configuration.
-     *
-     * @param bool $useFile The useFile flag to be set.
-     * @return $this
-     */
-    public function setUseFile(bool $useFile):BulkImportBuilder
-    {
-        $this->config['useFile'] = $useFile;
         return $this;
     }
 

@@ -5,17 +5,22 @@ namespace Dotdigitalgroup\Email\Test\Unit\Model\Sync\Importer;
 use Dotdigitalgroup\Email\Model\Importer as ImporterModel;
 use Dotdigitalgroup\Email\Model\Sync\Importer;
 use Dotdigitalgroup\Email\Model\Sync\Importer\BulkImportBuilder;
+use Dotdigitalgroup\Email\Model\Sync\Importer\Type\Contact\BulkJson;
+use Dotdigitalgroup\Email\Model\Sync\Importer\Type\Contact\BulkJsonFactory;
 use PHPUnit\Framework\TestCase;
 
 class BulkImportBuilderTest extends TestCase
 {
     public function testBulkImportBuilder()
     {
-        $model = 'testModel';
+        $bulkJsonFactoryMock = $this->createMock(BulkJsonFactory::class);
+        $bulkJsonMock = $this->createMock(BulkJson::class);
+        $bulkJsonFactoryMock->method('create')->willReturn($bulkJsonMock);
+
+        $model = $bulkJsonMock;
         $mode = ImporterModel::MODE_BULK;
         $type = ['testType'];
         $limit = Importer::TOTAL_IMPORT_SYNC_LIMIT;
-        $useFile = false;
 
         $builder = new BulkImportBuilder();
         $config = $builder
@@ -23,14 +28,12 @@ class BulkImportBuilderTest extends TestCase
             ->setMode($mode)
             ->setType($type)
             ->setLimit($limit)
-            ->setUseFile($useFile)
             ->build();
 
         $this->assertSame($model, $config['model']);
         $this->assertSame($mode, $config['mode']);
         $this->assertSame($type, $config['type']);
         $this->assertSame($limit, $config['limit']);
-        $this->assertSame($useFile, $config['useFile']);
     }
 
     public function testBulkImportBuilderThrowsExceptionForMissingModel()

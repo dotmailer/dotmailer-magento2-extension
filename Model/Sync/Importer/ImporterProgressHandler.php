@@ -76,7 +76,6 @@ class ImporterProgressHandler
                     ->getItemsWithImportingStatus(
                         $websiteIds,
                         $group[self::PROGRESS_GROUP_TYPES],
-                        $group['useFile'] ?? false,
                         $group[self::PROGRESS_GROUP_MODE]
                     );
 
@@ -112,10 +111,10 @@ class ImporterProgressHandler
             ]
         ];
 
-        $transactionalV3Bulk = [
-            self::PROGRESS_GROUP_MODE => ImporterModel::MODE_BULK,
+        $contactsV3Bulk = [
+            self::PROGRESS_GROUP_MODE => ImporterModel::MODE_BULK_JSON,
             self::PROGRESS_GROUP_TYPES => [
-                ImporterModel::MODE_CONSENT,
+                ImporterModel::IMPORT_TYPE_CONSENT,
                 ImporterModel::IMPORT_TYPE_CUSTOMER,
                 ImporterModel::IMPORT_TYPE_GUEST,
                 ImporterModel::IMPORT_TYPE_SUBSCRIBERS
@@ -129,13 +128,13 @@ class ImporterProgressHandler
             self::PROGRESS_GROUP_MODE => ImporterModel::MODE_BULK,
             self::PROGRESS_GROUP_TYPES => [
                 ImporterModel::IMPORT_TYPE_CONTACT,
+                ImporterModel::IMPORT_TYPE_CONSENT,
                 ImporterModel::IMPORT_TYPE_CUSTOMER,
                 ImporterModel::IMPORT_TYPE_GUEST,
                 ImporterModel::IMPORT_TYPE_SUBSCRIBERS,
             ],
             self::PROGRESS_GROUP_MODEL => $this->v2HandlerFactory,
-            self::PROGRESS_GROUP_METHOD => 'getContactsImportByImportId',
-            'useFile' => true
+            self::PROGRESS_GROUP_METHOD => 'getContactsImportByImportId'
         ];
 
         $insightDataV3Bulk = [
@@ -154,7 +153,7 @@ class ImporterProgressHandler
                 self::CONTACT => $contactsBulk,
             ],
             self::VERSION_3 => [
-                self::CONTACT => $transactionalV3Bulk,
+                self::CONTACT => $contactsV3Bulk,
                 self::INSIGHTDATA => $insightDataV3Bulk
             ]
         ];

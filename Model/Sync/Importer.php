@@ -123,8 +123,7 @@ class Importer implements SyncInterface
                         $sync['type'],
                         $sync['mode'],
                         $sync['limit'] - $itemsCount,
-                        $websiteIds,
-                        $sync['useFile'] ?? false
+                        $websiteIds
                     );
                 if ($collection->getSize()) {
                     $itemsCount += count($collection);

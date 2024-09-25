@@ -109,13 +109,13 @@ class ImporterQueueManager
     }
 
     /**
-     * Build classic import configurations.
+     * Build import configurations.
      *
-     * This method creates an array of classic import configurations, including
-     * deprecated contact imports and transactional imports.
+     * BULK_JSON batches are sent during sync - but their importer rows may be reset, so this queue
+     * may need to pick them up.
      *
      * @param array $additionalImportTypes Additional import types to be included in the
-     * transactionalDeprecated type.
+     * transactionalDeprecated type (provided via plugins).
      *
      * @return array An array of classic import configurations.
      */
@@ -126,23 +126,25 @@ class ImporterQueueManager
             ->setModel($this->contactBulkFactory)
             ->setType([
                 ImporterModel::IMPORT_TYPE_CONTACT,
+                ImporterModel::IMPORT_TYPE_CONSENT,
                 ImporterModel::IMPORT_TYPE_CUSTOMER,
                 ImporterModel::IMPORT_TYPE_GUEST,
                 ImporterModel::IMPORT_TYPE_SUBSCRIBERS,
             ])
             ->setLimit(Importer::CONTACT_IMPORT_SYNC_LIMIT)
-            ->setUseFile(true);
+            ->setMode(ImporterModel::MODE_BULK);
 
         $contactJson =$this->bulkImportBuilderFactory
             ->create()
             ->setModel($this->contactBulkJsonFactory)
             ->setType([
-                ImporterModel::MODE_CONSENT,
+                ImporterModel::IMPORT_TYPE_CONSENT,
                 ImporterModel::IMPORT_TYPE_CUSTOMER,
                 ImporterModel::IMPORT_TYPE_GUEST,
                 ImporterModel::IMPORT_TYPE_SUBSCRIBERS,
             ])
-            ->setLimit(Importer::CONTACT_IMPORT_SYNC_LIMIT);
+            ->setLimit(Importer::CONTACT_IMPORT_SYNC_LIMIT)
+            ->setMode(ImporterModel::MODE_BULK_JSON);
 
         $transactionalDeprecated = $this->bulkImportBuilderFactory
             ->create()

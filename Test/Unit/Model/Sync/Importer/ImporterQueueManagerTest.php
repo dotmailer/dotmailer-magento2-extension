@@ -127,8 +127,7 @@ class ImporterQueueManagerTest extends TestCase
             'model',
             'mode',
             'type',
-            'limit',
-            'useFile',
+            'limit'
         ];
 
         foreach ($bulkQueue as $index => $queueItem) {

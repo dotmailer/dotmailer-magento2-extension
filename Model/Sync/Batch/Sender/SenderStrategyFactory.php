@@ -24,6 +24,7 @@ class SenderStrategyFactory implements BatchStrategyFactoryInterface
         Importer::IMPORT_TYPE_CUSTOMER => ContactSenderStrategy::class,
         Importer::IMPORT_TYPE_GUEST => ContactSenderStrategy::class,
         Importer::IMPORT_TYPE_SUBSCRIBERS => ContactSenderStrategy::class,
+        Importer::IMPORT_TYPE_CONSENT => ContactSenderStrategy::class,
         Importer::IMPORT_TYPE_ORDERS => OrderSenderStrategy::class,
     ];
 

@@ -3,7 +3,6 @@
 namespace Dotdigitalgroup\Email\Test\Integration\Sync;
 
 use Dotdigitalgroup\Email\Helper\Config;
-use Dotdigitalgroup\Email\Helper\File;
 use Dotdigitalgroup\Email\Model\Customer\CustomerDataFieldProviderFactory;
 use Dotdigitalgroup\Email\Model\Importer;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory as ContactCollectionFactory;
@@ -14,7 +13,6 @@ use Dotdigitalgroup\Email\Model\Sync\Customer\Exporter;
 use Dotdigitalgroup\Email\Setup\Install\Type\InsertEmailContactTableCustomers;
 use Dotdigitalgroup\Email\Test\Integration\MocksApiResponses;
 use Magento\Framework\App\ObjectManager;
-use Magento\Framework\Filesystem\DriverInterface;
 use Magento\Framework\Serialize\Serializer\Json;
 use Magento\Store\Model\ScopeInterface;
 
@@ -46,16 +44,6 @@ class CustomerSyncTest extends \PHPUnit\Framework\TestCase
      * @var Importer
      */
     private $importer;
-
-    /**
-     * @var File
-     */
-    private $fileHelper;
-
-    /**
-     * @var DriverInterface
-     */
-    private $fileSystem;
 
     /**
      * @var CollectionFactory
@@ -95,8 +83,6 @@ class CustomerSyncTest extends \PHPUnit\Framework\TestCase
 
         $this->customerSync = $this->objectManager->create(Customer::class);
         $this->importer = $this->objectManager->create(Importer::class);
-        $this->fileHelper = $this->objectManager->create(File::class);
-        $this->fileSystem = $this->objectManager->create(DriverInterface::class);
     }
 
     /**
@@ -114,9 +100,9 @@ class CustomerSyncTest extends \PHPUnit\Framework\TestCase
             'Item is not of type contact'
         );
         $this->assertEquals(
-            Importer::MODE_BULK,
+            Importer::MODE_BULK_JSON,
             end($contactsQueue['items'])['import_mode'],
-            'Item is not in bulk mode'
+            'Item is not in expected mode'
         );
     }
 

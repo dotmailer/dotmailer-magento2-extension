@@ -33,7 +33,6 @@ class Importer extends AbstractModel
     public const MODE_SUBSCRIBER_UNSUBSCRIBE = 'Subscriber_Unsubscribe';
     public const MODE_CONTACT_EMAIL_UPDATE = 'Contact_Email_Update';
     public const MODE_SUBSCRIBER_RESUBSCRIBED = 'Subscriber_Resubscribed';
-    public const MODE_CONSENT = 'Consent';
 
     //import type
     public const IMPORT_TYPE_GUEST = 'Guest';
@@ -46,6 +45,7 @@ class Importer extends AbstractModel
     public const IMPORT_TYPE_SUBSCRIBER_UPDATE = 'Subscriber';
     public const IMPORT_TYPE_SUBSCRIBER_RESUBSCRIBED = 'Subscriber';
     public const IMPORT_TYPE_CART_INSIGHT_CART_PHASE = 'CartInsight';
+    public const IMPORT_TYPE_CONSENT = 'Consent';
 
     /**
      * @deprecated
@@ -303,19 +303,17 @@ class Importer extends AbstractModel
      * @param string $importMode
      * @param int $limit
      * @param array $websiteIds
-     * @param bool $useFile
      *
      * @return \Dotdigitalgroup\Email\Model\ResourceModel\Importer\Collection
      */
-    public function _getQueue($importType, $importMode, $limit, $websiteIds, $useFile = false)
+    public function _getQueue($importType, $importMode, $limit, $websiteIds)
     {
         return $this->importerCollection->create()
             ->getQueueByTypeAndMode(
                 $importType,
                 $importMode,
                 $limit,
-                $websiteIds,
-                $useFile
+                $websiteIds
             );
     }
 }

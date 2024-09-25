@@ -164,9 +164,9 @@ class ConsentBatchProcessor
     {
         $this->importerFactory->create()
             ->registerQueue(
-                Importer::MODE_CONSENT,
+                Importer::IMPORT_TYPE_CONSENT,
                 $batch,
-                Importer::MODE_BULK,
+                Importer::MODE_BULK_JSON,
                 $websiteId,
                 false,
                 0,
@@ -190,9 +190,9 @@ class ConsentBatchProcessor
     ) {
         $this->importerFactory->create()
             ->registerQueue(
-                Importer::MODE_CONSENT,
+                Importer::IMPORT_TYPE_CONSENT,
                 $batch,
-                Importer::MODE_BULK,
+                Importer::MODE_BULK_JSON,
                 $websiteId,
                 false,
                 0,
