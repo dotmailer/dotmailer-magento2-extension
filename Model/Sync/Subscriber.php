@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Dotdigitalgroup\Email\Model\Sync;
 
+use Dotdigitalgroup\Email\Api\Model\Sync\Export\ContactExporterInterface;
 use Dotdigitalgroup\Email\Helper\Config;
 use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Logger\Logger;
@@ -321,7 +322,7 @@ class Subscriber extends DataObject implements SyncInterface
      *
      * @param string $cohortName
      * @param array $subscribers
-     * @param ExporterInterface $exporter
+     * @param ContactExporterInterface $exporter
      * @param WebsiteInterface $website
      * @param int $listId
      *
@@ -331,7 +332,7 @@ class Subscriber extends DataObject implements SyncInterface
     private function exportAndBatch(
         string $cohortName,
         array $subscribers,
-        ExporterInterface $exporter,
+        ContactExporterInterface $exporter,
         $website,
         int $listId
     ) {

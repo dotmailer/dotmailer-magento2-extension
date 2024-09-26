@@ -11,7 +11,7 @@ use Dotdigitalgroup\Email\Model\Subscriber as SubscriberModel;
 use Dotdigitalgroup\Email\Model\Sync\Batch\MegaBatchProcessor;
 use Dotdigitalgroup\Email\Model\Sync\Batch\MegaBatchProcessorFactory;
 use Dotdigitalgroup\Email\Model\Sync\Batch\MergeManager;
-use Dotdigitalgroup\Email\Model\Sync\Export\ExporterInterface;
+use Dotdigitalgroup\Email\Api\Model\Sync\Export\ContactExporterInterface;
 use Dotdigitalgroup\Email\Model\Sync\Subscriber;
 use Dotdigitalgroup\Email\Model\Sync\Subscriber\OrderHistoryChecker;
 use Dotdigitalgroup\Email\Model\Sync\Subscriber\SubscriberExporter;
@@ -116,8 +116,8 @@ class SubscriberTest extends TestCase
         $this->scopeConfigMock = $this->createMock(ScopeConfigInterface::class);
         $this->storeManagerMock = $this->createMock(StoreManagerInterface::class);
 
-        $this->subscriberExporterMock = $this->createMock(ExporterInterface::class);
-        $this->subscriberWithSalesExporterMock = $this->createMock(ExporterInterface::class);
+        $this->subscriberExporterMock = $this->createMock(ContactExporterInterface::class);
+        $this->subscriberWithSalesExporterMock = $this->createMock(ContactExporterInterface::class);
 
         $this->websiteInterfaceMock = $this->getMockBuilder(WebsiteInterface::class)
             ->onlyMethods(
@@ -552,8 +552,8 @@ class SubscriberTest extends TestCase
             ->method('checkInSales')
             ->willReturn(
                 [
-                'chaz2@emailsim.io',
-                'chaz6@emailsim.io'
+                    'chaz2@emailsim.io',
+                    'chaz6@emailsim.io'
                 ]
             );
     }
