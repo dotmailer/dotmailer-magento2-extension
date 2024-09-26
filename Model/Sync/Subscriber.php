@@ -11,6 +11,7 @@ use Dotdigitalgroup\Email\Model\Importer;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact\Collection as ContactCollection;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory as ContactCollectionFactory;
 use Dotdigitalgroup\Email\Model\Sync\Batch\MegaBatchProcessor;
+use Dotdigitalgroup\Email\Model\Sync\Batch\MegaBatchProcessorFactory;
 use Dotdigitalgroup\Email\Model\Sync\Batch\MergeManager;
 use Dotdigitalgroup\Email\Model\Sync\Export\ExporterInterface;
 use Dotdigitalgroup\Email\Model\Sync\Subscriber\OrderHistoryChecker;
@@ -45,9 +46,9 @@ class Subscriber extends DataObject implements SyncInterface
     private $contactCollectionFactory;
 
     /**
-     * @var MegaBatchProcessor
+     * @var MegaBatchProcessorFactory
      */
-    private $batchProcessor;
+    private $megaBatchProcessorFactory;
 
     /**
      * @var MergeManager
@@ -130,7 +131,7 @@ class Subscriber extends DataObject implements SyncInterface
      * @param Data $helper
      * @param Logger $logger
      * @param ContactCollectionFactory $contactCollectionFactory
-     * @param MegaBatchProcessor $batchProcessor
+     * @param MegaBatchProcessorFactory $megaBatchProcessorFactory
      * @param MergeManager $mergeManager
      * @param OrderHistoryChecker $orderHistoryChecker
      * @param SubscriberExporterFactory $subscriberExporterFactory
@@ -143,7 +144,7 @@ class Subscriber extends DataObject implements SyncInterface
         Data $helper,
         Logger $logger,
         ContactCollectionFactory $contactCollectionFactory,
-        MegaBatchProcessor $batchProcessor,
+        MegaBatchProcessorFactory $megaBatchProcessorFactory,
         MergeManager $mergeManager,
         OrderHistoryChecker $orderHistoryChecker,
         SubscriberExporterFactory $subscriberExporterFactory,
@@ -155,7 +156,7 @@ class Subscriber extends DataObject implements SyncInterface
         $this->helper = $helper;
         $this->logger = $logger;
         $this->contactCollectionFactory = $contactCollectionFactory;
-        $this->batchProcessor = $batchProcessor;
+        $this->megaBatchProcessorFactory = $megaBatchProcessorFactory;
         $this->mergeManager = $mergeManager;
         $this->orderHistoryChecker = $orderHistoryChecker;
         $this->subscriberExporterFactory = $subscriberExporterFactory;
@@ -306,11 +307,12 @@ class Subscriber extends DataObject implements SyncInterface
 
         foreach ($this->cohorts as $cohortName => $cohort) {
             $megaBatch = $this->getPrettyCohortName($cohortName).'MegaBatch';
-            $this->batchProcessor->process(
-                $this->$megaBatch,
-                (int) $website->getId(),
-                Importer::IMPORT_TYPE_SUBSCRIBERS
-            );
+            $this->megaBatchProcessorFactory->create()
+                ->process(
+                    $this->$megaBatch,
+                    (int) $website->getId(),
+                    Importer::IMPORT_TYPE_SUBSCRIBERS
+                );
         }
     }
 
@@ -325,7 +327,6 @@ class Subscriber extends DataObject implements SyncInterface
      *
      * @return int
      * @throws LocalizedException
-     * @throws Exception
      */
     private function exportAndBatch(
         string $cohortName,
@@ -367,11 +368,12 @@ class Subscriber extends DataObject implements SyncInterface
         $this->totalSubscribersSyncedCount += $batchCount;
 
         if ($this->$megaBatchCount >= $this->megaBatchSize) {
-            $this->batchProcessor->process(
-                $this->$megaBatch,
-                (int) $website->getId(),
-                Importer::IMPORT_TYPE_SUBSCRIBERS
-            );
+            $this->megaBatchProcessorFactory->create()
+                ->process(
+                    $this->$megaBatch,
+                    (int) $website->getId(),
+                    Importer::IMPORT_TYPE_SUBSCRIBERS
+                );
             $processed = $this->$megaBatchCount;
             $this->$megaBatch = [];
             $this->$megaBatchCount = 0;

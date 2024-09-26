@@ -4,15 +4,14 @@ namespace Dotdigitalgroup\Email\Test\Unit\Model\Sync;
 
 use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Logger\Logger;
-use Dotdigitalgroup\Email\Model\Connector\Datafield;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact\Collection as ContactCollection;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory as ContactCollectionFactory;
 use Dotdigitalgroup\Email\Model\Sync\Batch\MegaBatchProcessor;
+use Dotdigitalgroup\Email\Model\Sync\Batch\MegaBatchProcessorFactory;
 use Dotdigitalgroup\Email\Model\Sync\Batch\MergeManager;
 use Dotdigitalgroup\Email\Model\Sync\Customer;
 use Dotdigitalgroup\Email\Model\Sync\Customer\Exporter;
 use Dotdigitalgroup\Email\Model\Sync\Customer\ExporterFactory;
-use Dotdigitalgroup\Email\Model\Sync\Export\ExporterInterface;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Store\Api\Data\WebsiteInterface;
 use Magento\Store\Model\StoreManagerInterface;
@@ -36,19 +35,14 @@ class CustomerTest extends TestCase
     private $contactCollectionFactoryMock;
 
     /**
-     * @var MegaBatchProcessor|\PHPUnit\Framework\MockObject\MockObject
+     * @var MegaBatchProcessorFactory|\PHPUnit\Framework\MockObject\MockObject
      */
-    private $batchProcessorMock;
+    private $batchProcessorFactoryMock;
 
     /**
      * @var MergeManager|\PHPUnit\Framework\MockObject\MockObject
      */
     private $mergeManagerMock;
-
-    /**
-     * @var ExporterInterface|\PHPUnit\Framework\MockObject\MockObject
-     */
-    private $exporterInterfaceMock;
 
     /**
      * @var Exporter|\PHPUnit\Framework\MockObject\MockObject
@@ -91,7 +85,7 @@ class CustomerTest extends TestCase
         $this->loggerMock = $this->createMock(Logger::class);
         $this->contactCollectionMock = $this->createMock(ContactCollection::class);
         $this->contactCollectionFactoryMock = $this->createMock(ContactCollectionFactory::class);
-        $this->batchProcessorMock = $this->createMock(MegaBatchProcessor::class);
+        $this->batchProcessorFactoryMock = $this->createMock(MegaBatchProcessorFactory::class);
         $this->mergeManagerMock = $this->createMock(MergeManager::class);
         $this->exporterFactoryMock = $this->createMock(ExporterFactory::class);
         $this->scopeConfigMock = $this->createMock(ScopeConfigInterface::class);
@@ -125,7 +119,7 @@ class CustomerTest extends TestCase
             $this->helperMock,
             $this->loggerMock,
             $this->contactCollectionFactoryMock,
-            $this->batchProcessorMock,
+            $this->batchProcessorFactoryMock,
             $this->mergeManagerMock,
             $this->exporterFactoryMock,
             $this->scopeConfigMock,
@@ -152,8 +146,8 @@ class CustomerTest extends TestCase
         $this->exporterFactoryMock->expects($this->never())
             ->method('create');
 
-        $this->batchProcessorMock->expects($this->never())
-            ->method('process');
+        $this->batchProcessorFactoryMock->expects($this->never())
+            ->method('create');
 
         $this->customer->sync();
     }
@@ -181,6 +175,11 @@ class CustomerTest extends TestCase
 
         $this->exporterMock->expects($this->never())
             ->method('export');
+
+        $batchProcessorMock = $this->createMock(MegaBatchProcessor::class);
+        $this->batchProcessorFactoryMock->expects($this->once())
+            ->method('create')
+            ->willReturn($batchProcessorMock);
 
         $this->customer->sync();
     }
@@ -222,6 +221,11 @@ class CustomerTest extends TestCase
         $this->mergeManagerMock->expects($this->once())
             ->method('mergeBatch')
             ->willReturn($this->getCustomersBatch());
+
+        $batchProcessorMock = $this->createMock(MegaBatchProcessor::class);
+        $this->batchProcessorFactoryMock->expects($this->once())
+            ->method('create')
+            ->willReturn($batchProcessorMock);
 
         $data = $this->customer->sync();
 
@@ -277,7 +281,12 @@ class CustomerTest extends TestCase
                 $this->getMergedMegaBatch()
             );
 
-        $this->batchProcessorMock->expects($this->exactly(2))
+        $batchProcessorMock = $this->createMock(MegaBatchProcessor::class);
+        $this->batchProcessorFactoryMock->expects($this->any())
+            ->method('create')
+            ->willReturn($batchProcessorMock);
+
+        $batchProcessorMock->expects($this->exactly(2))
             ->method('process');
 
         $data = $this->customer->sync();
@@ -312,6 +321,11 @@ class CustomerTest extends TestCase
 
         $this->mergeManagerMock->expects($this->never())
             ->method('mergeBatch');
+
+        $batchProcessorMock = $this->createMock(MegaBatchProcessor::class);
+        $this->batchProcessorFactoryMock->expects($this->once())
+            ->method('create')
+            ->willReturn($batchProcessorMock);
 
         $this->customer->sync();
     }
@@ -377,7 +391,12 @@ class CustomerTest extends TestCase
                 $this->getMergedMegaBatch()
             );
 
-        $this->batchProcessorMock->expects($this->exactly(2))
+        $batchProcessorMock = $this->createMock(MegaBatchProcessor::class);
+        $this->batchProcessorFactoryMock->expects($this->any())
+            ->method('create')
+            ->willReturn($batchProcessorMock);
+
+        $batchProcessorMock->expects($this->exactly(2))
             ->method('process');
 
         $data = $this->customer->sync();
@@ -431,6 +450,11 @@ class CustomerTest extends TestCase
         $this->mergeManagerMock->expects($this->once())
             ->method('mergeBatch')
             ->willReturn($this->getCustomersBatch());
+
+        $batchProcessorMock = $this->createMock(MegaBatchProcessor::class);
+        $this->batchProcessorFactoryMock->expects($this->once())
+            ->method('create')
+            ->willReturn($batchProcessorMock);
 
         $data = $this->customer->sync();
 

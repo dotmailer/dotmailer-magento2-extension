@@ -9,7 +9,7 @@ use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Importer;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory as ContactCollectionFactory;
-use Dotdigitalgroup\Email\Model\Sync\Batch\MegaBatchProcessor;
+use Dotdigitalgroup\Email\Model\Sync\Batch\MegaBatchProcessorFactory;
 use Dotdigitalgroup\Email\Model\Sync\Batch\MergeManager;
 use Dotdigitalgroup\Email\Model\Sync\Guest\GuestExporterFactory;
 use Http\Client\Exception;
@@ -53,9 +53,9 @@ class Guest extends DataObject implements SyncInterface
     private $logger;
 
     /**
-     * @var MegaBatchProcessor
+     * @var MegaBatchProcessorFactory
      */
-    private $batchProcessor;
+    private $megaBatchProcessorFactory;
 
     /**
      * @var MergeManager
@@ -75,7 +75,7 @@ class Guest extends DataObject implements SyncInterface
      * @param ScopeConfigInterface $scopeConfig
      * @param StoreManagerInterface $storeManager
      * @param Logger $logger
-     * @param MegaBatchProcessor $batchProcessor
+     * @param MegaBatchProcessorFactory $megaBatchProcessorFactory
      * @param MergeManager $mergeManager
      * @param GuestExporterFactory $guestExporterFactory
      * @param array $data
@@ -86,7 +86,7 @@ class Guest extends DataObject implements SyncInterface
         ScopeConfigInterface $scopeConfig,
         StoreManagerInterface $storeManager,
         Logger $logger,
-        MegaBatchProcessor $batchProcessor,
+        MegaBatchProcessorFactory $megaBatchProcessorFactory,
         MergeManager $mergeManager,
         GuestExporterFactory $guestExporterFactory,
         array $data = []
@@ -96,7 +96,7 @@ class Guest extends DataObject implements SyncInterface
         $this->scopeConfig = $scopeConfig;
         $this->storeManager = $storeManager;
         $this->logger = $logger;
-        $this->batchProcessor = $batchProcessor;
+        $this->megaBatchProcessorFactory = $megaBatchProcessorFactory;
         $this->mergeManager = $mergeManager;
         $this->guestExporterFactory = $guestExporterFactory;
         parent::__construct($data);
@@ -213,21 +213,23 @@ class Guest extends DataObject implements SyncInterface
             $this->totalGuestsSyncedCount += $batchCount;
 
             if (count($megaBatch) >= $megaBatchSize) {
-                $this->batchProcessor->process(
-                    $megaBatch,
-                    (int) $website->getId(),
-                    Importer::IMPORT_TYPE_GUEST
-                );
+                $this->megaBatchProcessorFactory->create()
+                    ->process(
+                        $megaBatch,
+                        (int) $website->getId(),
+                        Importer::IMPORT_TYPE_GUEST
+                    );
                 $megaBatch = [];
                 $offset = 0;
             }
         } while (!$breakValue || $this->totalGuestsSyncedCount < $breakValue);
 
-        $this->batchProcessor->process(
-            $megaBatch,
-            (int) $website->getId(),
-            Importer::IMPORT_TYPE_GUEST
-        );
+        $this->megaBatchProcessorFactory->create()
+            ->process(
+                $megaBatch,
+                (int) $website->getId(),
+                Importer::IMPORT_TYPE_GUEST
+            );
     }
 
     /**

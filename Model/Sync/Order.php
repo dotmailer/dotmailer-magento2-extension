@@ -172,7 +172,6 @@ class Order extends DataObject implements SyncInterface
         $loopStart = true;
         $storeIds = $website->getStoreIds();
 
-        $processor = $this->megaBatchProcessorFactory->create(['bulkImportMode' => Importer::MODE_BULK_JSON]);
         $exporter = $this->exporterFactory->create();
 
         do {
@@ -209,13 +208,23 @@ class Order extends DataObject implements SyncInterface
             );
 
             if ($megaBatchCount >= $megaBatchSize) {
-                $processor->process($megaBatch, (int)$website->getId(), Importer::IMPORT_TYPE_ORDERS);
+                $this->megaBatchProcessorFactory->create()
+                    ->process(
+                        $megaBatch,
+                        (int) $website->getId(),
+                        Importer::IMPORT_TYPE_ORDERS
+                    );
                 $megaBatch = [];
                 $megaBatchCount = 0;
             }
         } while (!$breakValue || $this->totalOrdersSyncedCount < $breakValue);
 
-        $processor->process($megaBatch, (int)$website->getId(), Importer::IMPORT_TYPE_ORDERS);
+        $this->megaBatchProcessorFactory->create()
+            ->process(
+                $megaBatch,
+                (int) $website->getId(),
+                Importer::IMPORT_TYPE_ORDERS
+            );
     }
 
     /**
