@@ -4,17 +4,10 @@
 ?>
 
 <?php if ($block->isPageTrackingAvailable()): ?>
-    <script>
-        require.config({
-            paths: {
-                'dmpt':  '<?= $block->escapeUrl($block->getPageTrackingUrl()) ?>'
-            }
-        });
-    </script>
     <script type="text/x-magento-init">
         {
             "*": {
-                "dmpt": {}
+                "Dotdigitalgroup_Email/js/trackingCode": "<?= $block->escapeUrl($block->getPageTrackingUrl()) ?>"
             }
         }
     </script>
