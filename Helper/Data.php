@@ -256,6 +256,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param int $storeId
      *
      * @return bool
+     *
+     * @deprecated This is not as thorough as isEnabled() and should not be used.
+     * @see isEnabled()
      */
     public function isStoreEnabled($storeId)
     {

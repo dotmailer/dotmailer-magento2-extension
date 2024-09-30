@@ -6,6 +6,7 @@ if (!class_exists('\Magento\Catalog\Api\Data\ProductExtensionInterfaceFactory'))
     require __DIR__ . '/../_files/product_extension_interface_hacktory.php';
 }
 
+use Dotdigitalgroup\Email\Helper\Config;
 use Dotdigitalgroup\Email\Model\Sync\Order;
 use Dotdigitalgroup\Email\Test\Integration\MocksApiResponses;
 use Magento\Quote\Model\ResourceModel\Quote\Collection;
@@ -87,7 +88,13 @@ class OrderSyncTest extends \Magento\TestFramework\TestCase\AbstractController
     {
         parent::setUp();
 
-        $this->setApiConfigFlags();
+        $this->setApiConfigFlags([
+            Config::XML_PATH_CONNECTOR_SYNC_ORDER_ENABLED => 1,
+            Config::XML_PATH_CONNECTOR_SYNC_ORDER_STATUS => implode(',', [
+                \Magento\Sales\Model\Order::STATE_PROCESSING,
+                \Magento\Sales\Model\Order::STATE_COMPLETE,
+            ])
+        ]);
         $this->instantiateDataHelper();
 
         $this->orderSync = ObjectManager::getInstance()->create(Order::class);

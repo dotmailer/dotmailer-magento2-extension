@@ -208,26 +208,18 @@ class OrderSaveAfter implements ObserverInterface
             ->setProcessed(0)
             ->setOrderStatus($status);
 
-        $isEnabled = $this->helper->isStoreEnabled($storeId);
-
-        //api not enabled, stop emulation and exit
-        if (! $isEnabled) {
-            $appEmulation->stopEnvironmentEmulation();
-            return $this;
-        }
-
         // set back the current store
         $appEmulation->stopEnvironmentEmulation();
         $this->orderResource->save($emailOrder);
 
+        if (!$this->helper->isEnabled($websiteId)) {
+            return $this;
+        }
+
         $this->statusCheckAutomationEnrolment($order, $status, $customerEmail, $websiteId, $storeId, $storeName);
 
         //Reset contact if found
-        $contactCollection = $this->contactCollectionFactory->create();
-        $contact = $contactCollection->loadByCustomerEmail($customerEmail, $websiteId);
-        if ($contact) {
-            $this->resetContact($contact);
-        }
+        $this->resetContactByEmailAndWebsiteId($customerEmail, $websiteId);
 
         //If customer's first order
         if ($order->getCustomerId()) {
@@ -264,12 +256,20 @@ class OrderSaveAfter implements ObserverInterface
     /**
      * Reset contact based on type and status
      *
-     * @param Contact $contact
+     * @param string $email
+     * @param int $websiteId
      *
      * @throws AlreadyExistsException
      */
-    private function resetContact($contact)
+    private function resetContactByEmailAndWebsiteId($email, $websiteId)
     {
+        $contact = $this->contactCollectionFactory->create()
+            ->loadByCustomerEmail($email, $websiteId);
+
+        if (!$contact) {
+            return;
+        }
+
         if ($contact->getCustomerId() && $contact->getEmailImported()) {
             $contact->setEmailImported(Contact::EMAIL_CONTACT_NOT_IMPORTED);
             $this->contactResource->save($contact);

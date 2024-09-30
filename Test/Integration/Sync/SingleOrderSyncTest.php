@@ -2,6 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Model\Sync;
 
+use Dotdigitalgroup\Email\Helper\Config;
 use Dotdigitalgroup\Email\Test\Integration\MocksApiResponses;
 
 if (!class_exists('\Magento\Catalog\Api\Data\ProductExtensionInterfaceFactory')) {
@@ -39,7 +40,13 @@ class SingleOrderSyncTest extends \PHPUnit\Framework\TestCase
     {
         $this->objectManager = \Magento\TestFramework\Helper\Bootstrap::getObjectManager();
 
-        $this->setApiConfigFlags();
+        $this->setApiConfigFlags([
+            Config::XML_PATH_CONNECTOR_SYNC_ORDER_ENABLED => 1,
+            Config::XML_PATH_CONNECTOR_SYNC_ORDER_STATUS => implode(',', [
+                \Magento\Sales\Model\Order::STATE_PROCESSING,
+                \Magento\Sales\Model\Order::STATE_COMPLETE,
+            ])
+        ]);
         $this->instantiateDataHelper();
 
         $this->importerCollection = $this->objectManager->create(
