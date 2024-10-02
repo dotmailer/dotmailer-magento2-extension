@@ -433,7 +433,7 @@ class IntegrationSetup
                 } else {
                     //Need to fetch address book id to map. Address-book already exist.
                     $response = $this->listFetcher->fetchAllLists($client);
-                    if (isset($response['message'])) {
+                    if (isset($response->message)) {
                         continue;
                     }
                     foreach ($response as $book) {

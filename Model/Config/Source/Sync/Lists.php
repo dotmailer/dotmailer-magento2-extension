@@ -52,6 +52,13 @@ class Lists implements \Magento\Framework\Option\ArrayInterface
             );
             $lists = $this->listFetcher->fetchAllLists($client);
 
+            if (isset($lists->message)) {
+                $fields[] = [
+                    'value' => 0,
+                    'label' => $lists->message
+                ];
+            }
+
             foreach ($lists as $list) {
                 if (isset($list->id) && isset($list->name)) {
                     $fields[] = [
