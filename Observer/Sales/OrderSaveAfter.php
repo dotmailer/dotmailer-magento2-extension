@@ -23,7 +23,6 @@ use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Exception\AlreadyExistsException;
 use Magento\Framework\MessageQueue\PublisherInterface;
-use Magento\Framework\Registry;
 use Magento\Framework\Serialize\SerializerInterface;
 use Magento\Sales\Model\Order;
 use Magento\Store\Model\App\EmulationFactory;
@@ -44,11 +43,6 @@ class OrderSaveAfter implements ObserverInterface
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Order
      */
     private $orderResource;
-
-    /**
-     * @var Registry
-     */
-    private $registry;
 
     /**
      * @var ScopeConfigInterface
@@ -125,7 +119,6 @@ class OrderSaveAfter implements ObserverInterface
      * @param Automation $automationResource
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Order $orderResource
      * @param OrderFactory $emailOrderFactory
-     * @param Registry $registry
      * @param SerializerInterface $serializer
      * @param ScopeConfigInterface $scopeConfig
      * @param StoreManagerInterface $storeManagerInterface
@@ -144,7 +137,6 @@ class OrderSaveAfter implements ObserverInterface
         Automation $automationResource,
         \Dotdigitalgroup\Email\Model\ResourceModel\Order $orderResource,
         OrderFactory $emailOrderFactory,
-        Registry $registry,
         SerializerInterface $serializer,
         ScopeConfigInterface $scopeConfig,
         StoreManagerInterface $storeManagerInterface,
@@ -165,7 +157,6 @@ class OrderSaveAfter implements ObserverInterface
         $this->emailOrderFactory = $emailOrderFactory;
         $this->scopeConfig = $scopeConfig;
         $this->storeManager = $storeManagerInterface;
-        $this->registry = $registry;
         $this->emulationFactory = $emulationFactory;
         $this->orderCollectionFactory = $orderCollectionFactory;
         $this->helper = $data;
@@ -247,8 +238,6 @@ class OrderSaveAfter implements ObserverInterface
                 }
             }
         }
-        //admin oder when editing the first one is canceled
-        $this->registry->unregister('sales_order_status_before');
 
         return $this;
     }

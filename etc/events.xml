@@ -18,9 +18,6 @@
     <event name="sales_order_place_after">
         <observer name="ddg_sales_order_place_after" instance="Dotdigitalgroup\Email\Observer\Sales\OrderPlaceAfter"/>
     </event>
-    <event name="sales_order_save_before">
-        <observer name="ddg_sales_order_save_before" instance="Dotdigitalgroup\Email\Observer\Sales\OrderSaveBefore"/>
-    </event>
     <event name="sales_order_save_after">
         <observer name="ddg_sales_order_save_after" instance="Dotdigitalgroup\Email\Observer\Sales\OrderSaveAfter"/>
     </event>
@@ -28,7 +25,7 @@
         <observer name="ddg_sales_order_creditmemo_save_after" instance="Dotdigitalgroup\Email\Observer\Sales\OrderCreditmemoSaveAfter" />
     </event>
     <event name="order_cancel_after">
-        <observer name="ddg_order_cancel_after" instance="Dotdigitalgroup\Email\Observer\Order\CancelAfter"/>
+        <observer name="ddg_order_cancel_after" instance="Dotdigitalgroup\Email\Observer\Sales\OrderCancelAfter"/>
     </event>
     <event name="catalog_product_save_after">
         <observer name="ddg_catalog_product_save_after" instance="Dotdigitalgroup\Email\Observer\Catalog\ReimportProduct"/>
