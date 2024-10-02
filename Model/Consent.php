@@ -4,15 +4,12 @@ namespace Dotdigitalgroup\Email\Model;
 
 use Dotdigitalgroup\Email\Helper\Config;
 use Dotdigitalgroup\Email\Model\Consent\ConsentManager;
-use Dotdigitalgroup\Email\Model\ResourceModel\Consent as ConsentResource;
-use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory;
-use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Data\Collection\AbstractDb;
+use Magento\Framework\Intl\DateTimeFactory;
 use Magento\Framework\Model\AbstractModel;
 use Magento\Framework\Model\Context;
 use Magento\Framework\Model\ResourceModel\AbstractResource;
 use Magento\Framework\Registry;
-use Magento\Framework\Stdlib\DateTime\DateTime;
 use Magento\Framework\Stdlib\StringUtils;
 
 class Consent extends AbstractModel
@@ -23,6 +20,11 @@ class Consent extends AbstractModel
      * @var Config
      */
     private $configHelper;
+
+    /**
+     * @var DateTimeFactory
+     */
+    private $dateTimeFactory;
 
     /**
      * @var StringUtils
@@ -54,6 +56,7 @@ class Consent extends AbstractModel
      * @param Registry $registry
      * @param Config $config
      * @param StringUtils $stringUtils
+     * @param DateTimeFactory $dateTimeFactory
      * @param AbstractResource|null $resource
      * @param AbstractDb|null $resourceCollection
      * @param array $data
@@ -63,13 +66,31 @@ class Consent extends AbstractModel
         Registry $registry,
         Config $config,
         StringUtils $stringUtils,
+        DateTimeFactory $dateTimeFactory,
         AbstractResource $resource = null,
         AbstractDb $resourceCollection = null,
         array $data = []
     ) {
         $this->configHelper = $config;
+        $this->dateTimeFactory = $dateTimeFactory;
         $this->stringUtils = $stringUtils;
         parent::__construct($context, $registry, $resource, $resourceCollection, $data);
+    }
+
+    /**
+     * Get consent datetime.
+     *
+     * Overloads the magic method to return a date string prepared for the V3 API schema
+     * - i.e. ISO 8601, UTC timestamp.
+     *
+     * @return string
+     */
+    public function getConsentDateTime()
+    {
+        return $this->dateTimeFactory->create(
+            $this->getData('consent_datetime'),
+            new \DateTimeZone('UTC')
+        )->format(\DateTimeInterface::ATOM);
     }
 
     /**
