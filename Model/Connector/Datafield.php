@@ -237,12 +237,14 @@ class Datafield
             'type' => 'string',
             'visibility' => 'private',
             'context' => 'sales',
+            'automap' => false
         ],
         'most_pur_brand' => [
             'name' => 'MOST_PUR_BRAND',
             'type' => 'string',
             'visibility' => 'private',
             'context' => 'sales',
+            'automap' => false
         ],
         'most_freq_pur_day' => [
             'name' => 'MOST_FREQ_PUR_DAY',
@@ -273,12 +275,14 @@ class Datafield
             'type' => 'string',
             'visibility' => 'private',
             'context' => 'sales',
+            'automap' => false
         ],
         'last_brand_pur' => [
             'name' => 'LAST_BRAND_PUR',
             'type' => 'string',
             'visibility' => 'private',
             'context' => 'sales',
+            'automap' => false
         ],
         'abandoned_prod_name' => [
             'name' => 'ABANDONED_PROD_NAME',

@@ -66,14 +66,16 @@
         <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.salesLastOrderDate}}" userInput="LAST_ORDER_DATE" stepKey="seeSalesLastOrderDateIsSet"/>
         <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.salesLastIncrementId}}" userInput="LAST_INCREMENT_ID" stepKey="seeSalesLastIncrementIdIsSet"/>
         <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.salesTotalRefund}}" userInput="TOTAL_REFUND" stepKey="seeSalesTotalRefundIsSet"/>
-        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.salesMostPurCategory}}" userInput="MOST_PUR_CATEGORY" stepKey="seeSalesMostPurCategoryIsSet"/>
-        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.salesMostPurBrand}}" userInput="MOST_PUR_BRAND" stepKey="seeSalesMostPurBrandIsSet"/>
         <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.salesMostFrequentDayOfPurchase}}" userInput="MOST_FREQ_PUR_DAY" stepKey="seeSalesMostFrequentDayOfPurchaseIsSet"/>
         <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.salesMostFrequentMonthOfPurchase}}" userInput="MOST_FREQ_PUR_MON" stepKey="seeSalesMostFrequentMonthOfPurchaseIsSet"/>
         <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.salesFirstCategoryPur}}" userInput="FIRST_CATEGORY_PUR" stepKey="seeSalesFirstCategoryPurIsSet"/>
         <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.salesLastCategoryPur}}" userInput="LAST_CATEGORY_PUR" stepKey="seeSalesLastCategoryPurIsSet"/>
-        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.salesFirstBrandPur}}" userInput="FIRST_BRAND_PUR" stepKey="seeSalesFirstBrandPurIsSet"/>
-        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.salesLastBrandPur}}" userInput="LAST_BRAND_PUR" stepKey="seeSalesLastBrandPurIsSet"/>
+
+        <!-- These fields are not mapped by default -->
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.salesMostPurCategory}}" userInput="-- Please select --" stepKey="seeSalesMostPurCategoryIsNotSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.salesMostPurBrand}}" userInput="-- Please select --" stepKey="seeSalesMostPurBrandIsNotSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.salesFirstBrandPur}}" userInput="-- Please select --" stepKey="seeSalesFirstBrandPurIsNotSet"/>
+        <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.salesLastBrandPur}}" userInput="-- Please select --" stepKey="seeSalesLastBrandPurIsNotSet"/>
 
         <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.systemWebsiteName}}" userInput="WEBSITE_NAME" stepKey="setSystemWebsiteName"/>
         <seeOptionIsSelected selector="{{AdminDotdigitalDataMappingSection.systemStoreName}}" userInput="STORE_NAME" stepKey="setSystemStoreName"/>

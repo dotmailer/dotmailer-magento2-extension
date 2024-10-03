@@ -5,6 +5,7 @@ namespace Dotdigitalgroup\Email\Model\Integration;
 use Dotdigitalgroup\Email\Helper\Config;
 use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Model\Connector\Datafield;
+use Dotdigitalgroup\Email\Model\Connector\DataFieldAutoMapperFactory;
 use Dotdigitalgroup\Email\Model\Integration\Data\Orders;
 use Dotdigitalgroup\Email\Model\Integration\Data\Products;
 use Dotdigitalgroup\Email\Model\ResourceModel\Cron\CollectionFactory as CronCollectionFactory;
@@ -74,6 +75,11 @@ class IntegrationSetup
      * @var Datafield
      */
     private $dataField;
+
+    /**
+     * @var DataFieldAutoMapperFactory
+     */
+    private $dataFieldAutoMapperFactory;
 
     /**
      * @var Random
@@ -151,6 +157,7 @@ class IntegrationSetup
      * @param Data $helper
      * @param Random $randomMath
      * @param Datafield $dataField
+     * @param DataFieldAutoMapperFactory $dataFieldAutoMapperFactory
      * @param CronCollectionFactory $cronCollectionFactory
      * @param OrderCollectionFactory $orderCollectionFactory
      * @param ScopeConfigInterface $scopeConfig
@@ -169,6 +176,7 @@ class IntegrationSetup
         Data $helper,
         Random $randomMath,
         Datafield $dataField,
+        DataFieldAutoMapperFactory $dataFieldAutoMapperFactory,
         CronCollectionFactory $cronCollectionFactory,
         OrderCollectionFactory $orderCollectionFactory,
         ScopeConfigInterface $scopeConfig,
@@ -186,6 +194,7 @@ class IntegrationSetup
         $this->helper = $helper;
         $this->randomMath = $randomMath;
         $this->dataField = $dataField;
+        $this->dataFieldAutoMapperFactory = $dataFieldAutoMapperFactory;
         $this->cronCollectionFactory = $cronCollectionFactory;
         $this->orderCollectionFactory = $orderCollectionFactory;
         $this->scopeConfig = $scopeConfig;
@@ -211,27 +220,10 @@ class IntegrationSetup
      */
     public function setupDataFields($websiteId = 0): bool
     {
-        $apiModel = $this->helper->getWebsiteApiClient($websiteId);
-        $dotdigitalDataFields  = array_column((array) $apiModel->getDataFields(), 'name');
-        foreach ($this->dataField->getContactDatafields() as $key => $dataField) {
-            $response = $apiModel->postDataFields($dataField);
-            //if request to create fails, make sure it exists in dotdigital
-            if (!empty($response->message) && (!in_array($dataField['name'], $dotdigitalDataFields))
-            ) {
-                continue;
-            }
-            //map the successfully created data field
-            $this->saveConfigData(
-                'connector_data_mapping/customer_data/' . $key,
-                strtoupper($dataField['name']),
-                $this->getScope($websiteId),
-                $websiteId
-            );
-            $mappedDataFields[] = $key;
-            $this->helper->log('setupDataFields successfully connected : ' . $dataField['name']);
-        }
+        $dataFieldAutoMapper = $this->dataFieldAutoMapperFactory->create()
+            ->run($websiteId);
 
-        return !empty($mappedDataFields);
+        return empty($dataFieldAutoMapper->getMappingErrors());
     }
 
     /**
