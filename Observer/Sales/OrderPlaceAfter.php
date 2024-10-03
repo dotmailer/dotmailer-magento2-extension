@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Dotdigitalgroup\Email\Observer\Sales;
 
 use Dotdigitalgroup\Email\Helper\Data;
+use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\AutomationFactory;
 use Dotdigitalgroup\Email\Model\Queue\Data\CartPhaseUpdateDataFactory;
 use Dotdigitalgroup\Email\Model\Queue\Sync\Automation\AutomationPublisher;
@@ -35,6 +36,11 @@ class OrderPlaceAfter implements ObserverInterface
      * @var Data
      */
     private $helper;
+
+    /**
+     * @var Logger
+     */
+    private $logger;
 
     /**
      * @var AutomationFactory
@@ -83,6 +89,7 @@ class OrderPlaceAfter implements ObserverInterface
 
     /**
      * @param Data $data
+     * @param Logger $logger
      * @param AutomationFactory $automationFactory
      * @param CartPhaseUpdateDataFactory $cartPhaseUpdateDataFactory
      * @param AutomationPublisher $automationPublisher
@@ -95,6 +102,7 @@ class OrderPlaceAfter implements ObserverInterface
      */
     public function __construct(
         Data $data,
+        Logger $logger,
         AutomationFactory $automationFactory,
         CartPhaseUpdateDataFactory $cartPhaseUpdateDataFactory,
         AutomationPublisher $automationPublisher,
@@ -108,6 +116,7 @@ class OrderPlaceAfter implements ObserverInterface
         $this->automationFactory = $automationFactory;
         $this->automationResource = $automationResource;
         $this->helper = $data;
+        $this->logger = $logger;
         $this->automationPublisher = $automationPublisher;
         $this->storeManager = $storeManagerInterface;
         $this->contactCollectionFactory = $contactCollectionFactory;
@@ -123,42 +132,40 @@ class OrderPlaceAfter implements ObserverInterface
      * @param Observer $observer
      *
      * @return $this
-     * @throws LocalizedException
-     * @throws NoSuchEntityException
      */
     public function execute(Observer $observer)
     {
-        $order = $observer->getEvent()->getOrder();
-        $store = $this->storeManager->getStore($order->getStoreId());
-        $websiteId = $store->getWebsiteId();
-
-        if (!$this->helper->isEnabled($websiteId)) {
-            return $this;
-        }
-
-        $this->queueCartPhaseUpdate($order);
-
-        if ($order->getCustomerIsGuest()) {
-            $this->createOrUpdateGuestContact($order, $websiteId);
-
-            $programType = 'XML_PATH_CONNECTOR_AUTOMATION_STUDIO_GUEST_ORDER';
-            $automationType = AutomationTypeHandler::AUTOMATION_TYPE_NEW_GUEST_ORDER;
-        } else {
-            $programType = 'XML_PATH_CONNECTOR_AUTOMATION_STUDIO_ORDER';
-            $automationType = AutomationTypeHandler::AUTOMATION_TYPE_NEW_ORDER;
-        }
-
-        $programId = $this->helper->getAutomationIdByType(
-            $programType,
-            $order->getStoreId()
-        );
-
-        //the program is not mapped
-        if (!$programId) {
-            return $this;
-        }
-
         try {
+            $order = $observer->getEvent()->getOrder();
+            $store = $this->storeManager->getStore($order->getStoreId());
+            $websiteId = $store->getWebsiteId();
+
+            if (!$this->helper->isEnabled($websiteId)) {
+                return $this;
+            }
+
+            $this->queueCartPhaseUpdate($order);
+
+            if ($order->getCustomerIsGuest()) {
+                $this->createOrUpdateGuestContact($order, $websiteId);
+
+                $programType = 'XML_PATH_CONNECTOR_AUTOMATION_STUDIO_GUEST_ORDER';
+                $automationType = AutomationTypeHandler::AUTOMATION_TYPE_NEW_GUEST_ORDER;
+            } else {
+                $programType = 'XML_PATH_CONNECTOR_AUTOMATION_STUDIO_ORDER';
+                $automationType = AutomationTypeHandler::AUTOMATION_TYPE_NEW_ORDER;
+            }
+
+            $programId = $this->helper->getAutomationIdByType(
+                $programType,
+                $order->getStoreId()
+            );
+
+            //the program is not mapped
+            if (!$programId) {
+                return $this;
+            }
+
             $automation = $this->automationFactory->create()
                 ->setEmail($order->getCustomerEmail())
                 ->setAutomationType($automationType)
@@ -172,7 +179,7 @@ class OrderPlaceAfter implements ObserverInterface
 
             $this->automationPublisher->publish($automation);
         } catch (Exception $e) {
-            $this->helper->debug((string)$e, []);
+            $this->logger->error('Error in OrderPlaceAfter observer', [(string)$e]);
         }
 
         return $this;

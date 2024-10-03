@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Dotdigitalgroup\Email\Model\AbandonedCart\ProgramEnrolment;
 
-use Dotdigitalgroup\Email\Helper\Data;
+use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\AutomationFactory;
 use Dotdigitalgroup\Email\Model\Queue\Sync\Automation\AutomationPublisher;
 use Dotdigitalgroup\Email\Model\ResourceModel\Automation;
@@ -17,9 +17,9 @@ use Magento\Store\Api\Data\StoreInterface;
 class Saver
 {
     /**
-     * @var Data
+     * @var Logger
      */
-    private $helper;
+    private $logger;
 
     /**
      * @var AutomationFactory
@@ -39,21 +39,21 @@ class Saver
     /**
      * Saver constructor.
      *
+     * @param Logger $logger
      * @param AutomationFactory $automationFactory
      * @param AutomationPublisher $publisher
      * @param Automation $automationResource
-     * @param Data $data
      */
     public function __construct(
+        Logger $logger,
         AutomationFactory $automationFactory,
         AutomationPublisher $publisher,
-        Automation $automationResource,
-        Data $data
+        Automation $automationResource
     ) {
+        $this->logger = $logger;
         $this->automationFactory = $automationFactory;
         $this->publisher = $publisher;
         $this->automationResource = $automationResource;
-        $this->helper = $data;
     }
 
     /**
@@ -64,7 +64,6 @@ class Saver
      * @param int $programId
      *
      * @return void
-     * @throws Exception
      */
     public function save($quote, $store, $programId)
     {
@@ -82,7 +81,7 @@ class Saver
 
             $this->publisher->publish($automation);
         } catch (Exception $e) {
-            $this->helper->debug((string)$e, []);
+            $this->logger->error('Error in automation saver', [(string) $e]);
         }
     }
 }

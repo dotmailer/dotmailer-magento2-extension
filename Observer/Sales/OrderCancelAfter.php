@@ -2,41 +2,49 @@
 
 namespace Dotdigitalgroup\Email\Observer\Sales;
 
-/**
- * Order single delete.
- */
+use Dotdigitalgroup\Email\Helper\Data;
+use Dotdigitalgroup\Email\Logger\Logger;
+use Dotdigitalgroup\Email\Model\ImporterFactory;
+use Magento\Store\Model\StoreManagerInterface;
+
 class OrderCancelAfter implements \Magento\Framework\Event\ObserverInterface
 {
     /**
-     * @var \Dotdigitalgroup\Email\Helper\Data
+     * @var Data
      */
     private $helper;
 
     /**
-     * @var \Magento\Store\Model\StoreManagerInterface
+     * @var Logger
+     */
+    private $logger;
+
+    /**
+     * @var StoreManagerInterface
      */
     private $storeManager;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\ImporterFactory
+     * @var ImporterFactory
      */
     private $importerFactory;
 
     /**
-     * CancelRegisterRemove constructor.
-     *
-     * @param \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
-     * @param \Dotdigitalgroup\Email\Helper\Data           $data
-     * @param \Magento\Store\Model\StoreManagerInterface   $storeManagerInterface
+     * @param ImporterFactory $importerFactory
+     * @param Data $data
+     * @param Logger $logger
+     * @param StoreManagerInterface $storeManagerInterface
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
-        \Dotdigitalgroup\Email\Helper\Data $data,
-        \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
+        ImporterFactory $importerFactory,
+        Data $data,
+        Logger $logger,
+        StoreManagerInterface $storeManagerInterface
     ) {
         $this->importerFactory = $importerFactory;
-        $this->helper          = $data;
-        $this->storeManager    = $storeManagerInterface;
+        $this->helper = $data;
+        $this->logger = $logger;
+        $this->storeManager = $storeManagerInterface;
     }
 
     /**
@@ -48,22 +56,26 @@ class OrderCancelAfter implements \Magento\Framework\Event\ObserverInterface
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
-        $order = $observer->getEvent()->getOrder();
-        $incrementId = $order->getIncrementId();
-        $websiteId = $this->storeManager->getStore($order->getStoreId())
-            ->getWebsiteId();
+        try {
+            $order = $observer->getEvent()->getOrder();
+            $incrementId = $order->getIncrementId();
+            $websiteId = $this->storeManager->getStore($order->getStoreId())
+                ->getWebsiteId();
 
-        $orderSync = $this->helper->isOrderSyncEnabled($websiteId);
+            $orderSync = $this->helper->isOrderSyncEnabled($websiteId);
 
-        if ($this->helper->isEnabled($websiteId) && $orderSync) {
-            //register in queue with importer
-            $this->importerFactory->create()
-                ->registerQueue(
-                    \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_ORDERS,
-                    [$incrementId],
-                    \Dotdigitalgroup\Email\Model\Importer::MODE_SINGLE_DELETE,
-                    $websiteId
-                );
+            if ($this->helper->isEnabled($websiteId) && $orderSync) {
+                //register in queue with importer
+                $this->importerFactory->create()
+                    ->registerQueue(
+                        \Dotdigitalgroup\Email\Model\Importer::IMPORT_TYPE_ORDERS,
+                        [$incrementId],
+                        \Dotdigitalgroup\Email\Model\Importer::MODE_SINGLE_DELETE,
+                        $websiteId
+                    );
+            }
+        } catch (\Exception $e) {
+            $this->logger->error('Error in Order CancelAfter observer', [(string) $e]);
         }
 
         return $this;

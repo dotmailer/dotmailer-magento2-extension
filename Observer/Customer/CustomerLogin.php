@@ -75,22 +75,20 @@ class CustomerLogin implements ObserverInterface
      *
      * @param Observer $observer
      * @return $this
-     * @throws \Magento\Framework\Exception\LocalizedException
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function execute(Observer $observer): CustomerLogin
     {
-        $websiteId = $this->storeManager->getWebsite()->getId();
-
-        if (!$this->helper->isEnabled($websiteId)) {
-            return $this;
-        }
-
-        $storeId = $this->storeManager->getStore()->getId();
-        $customerId = $observer->getEvent()->getCustomer()->getId();
-        $emailAddress = $observer->getEvent()->getCustomer()->getEmail();
-
         try {
+            $websiteId = $this->storeManager->getWebsite()->getId();
+
+            if (!$this->helper->isEnabled($websiteId)) {
+                return $this;
+            }
+
+            $storeId = $this->storeManager->getStore()->getId();
+            $customerId = $observer->getEvent()->getCustomer()->getId();
+            $emailAddress = $observer->getEvent()->getCustomer()->getEmail();
+
             $existingContact = $this->contactCollectionFactory->create()
                 ->loadByCustomerEmail($emailAddress, $websiteId);
 

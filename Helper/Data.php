@@ -518,6 +518,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param array $extra
      *
      * @return void
+     *
+     * @deprecated Use dedicated Logger.
+     * @see \Dotdigitalgroup\Email\Logger\Logger
      */
     public function log($data, $extra = [])
     {
@@ -533,6 +536,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param array $extra
      *
      * @return void
+     *
+     * @deprecated Use dedicated Logger.
+     * @see \Dotdigitalgroup\Email\Logger\Logger
      */
     public function debug($message, $extra = [])
     {
@@ -546,6 +552,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @param string $message
      * @param array $extra
+     *
+     * @deprecated Use dedicated Logger.
+     * @see \Dotdigitalgroup\Email\Logger\Logger
      */
     public function error($message, $extra = [])
     {
