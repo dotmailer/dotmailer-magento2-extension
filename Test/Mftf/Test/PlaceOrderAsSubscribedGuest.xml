@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
+    <test name="PlaceOrderAsSubscribedGuestTest">
+        <annotations>
+            <features value="Dotdigital module"/>
+            <stories value="Dotdigital order flow test"/>
+            <title value="Test order place as subscribed guest"/>
+            <description value="Validate that an order can be placed as a subscribed guest."/>
+            <severity value="CRITICAL"/>
+            <group value="dotmailer"/>
+        </annotations>
+
+        <before>
+            <actionGroup ref="AdminLoginActionGroup" stepKey="AdminLoginActionGroup1"/>
+            <actionGroup ref="SetDotmailerAccountData" stepKey="SetDotmailerAccountData"/>
+            <createData entity="SimpleSubCategory" stepKey="createCategory"/>
+            <createData entity="SimpleProduct" stepKey="createSimpleProduct">
+                <requiredEntity createDataKey="createCategory"/>
+            </createData>
+        </before>
+
+        <after>
+            <deleteData createDataKey="createSimpleProduct" stepKey="deleteSimpleProduct"/>
+            <deleteData createDataKey="createCategory" stepKey="deleteCategory"/>
+            <actionGroup ref="ResetDotmailerAccountData" stepKey="resetAccountData"/>
+            <actionGroup ref="AdminLogoutActionGroup" stepKey="logout"/>
+        </after>
+
+        <!-- Subscribe to the newsletter -->
+        <actionGroup ref="StorefrontOpenHomePageActionGroup" stepKey="openStorefrontPage"/>
+        <actionGroup ref="StorefrontCreateNewsletterSubscriberActionGroup" stepKey="createSubscription">
+            <argument name="email" value="{{Simple_US_Customer.email}}"/>
+        </actionGroup>
+
+        <!-- Guest order (adapted from StorefrontReorderAsGuestTest). -->
+        <actionGroup ref="StorefrontOpenProductEntityPageActionGroup" stepKey="openProductPageOnStorefront">
+            <argument name="product" value="$$createSimpleProduct$$"/>
+        </actionGroup>
+        <actionGroup ref="StorefrontAddToTheCartActionGroup" stepKey="addProductToCart"/>
+        <actionGroup ref="StorefrontOpenCheckoutPageActionGroup" stepKey="goToCheckoutPage"/>
+        <waitForPageLoad stepKey="waitForPaymentSelectionPageLoad"/>
+        <actionGroup ref="GuestCheckoutFillingShippingSectionActionGroup" stepKey="fillAddress">
+            <argument name="customerVar" value="Simple_US_Customer"/>
+            <argument name="customerAddressVar" value="US_Address_TX"/>
+        </actionGroup>
+        <comment userInput="BIC workaround" stepKey="waitForPlaceOrderButtonVisible"/>
+        <actionGroup ref="ClickPlaceOrderActionGroup" stepKey="placeOrder"/>
+        <comment userInput="BIC workaround" stepKey="waitUntilOrderPlaced"/>
+        <grabTextFrom selector="{{CheckoutSuccessMainSection.orderNumber}}" stepKey="getOrderId"/>
+        <assertNotEmpty stepKey="assertOrderIdIsNotEmpty" after="getOrderId">
+            <actualResult type="const">$getOrderId</actualResult>
+        </assertNotEmpty>
+    </test>
+</tests>
