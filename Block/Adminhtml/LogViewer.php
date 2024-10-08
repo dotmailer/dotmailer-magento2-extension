@@ -2,9 +2,11 @@
 
 namespace Dotdigitalgroup\Email\Block\Adminhtml;
 
+/**
+ * @api
+ */
 class LogViewer extends \Magento\Backend\Block\Widget\Container
 {
-
     /**
      * @var string
      */
