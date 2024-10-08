@@ -62,21 +62,21 @@ class NewsletterSubscriberSaveAfter implements \Magento\Framework\Event\Observer
      */
     public function execute(Observer $observer)
     {
-        $subscriber = $observer->getEvent()->getSubscriber();
-        $email = $subscriber->getEmail();
-        $subscriberStatus = $subscriber->getSubscriberStatus();
-        $websiteId = $this->storeManager->getStore($storeId = $subscriber->getStoreId())
-            ->getWebsiteId();
-
-        //If not confirmed or not enabled.
-        if ($subscriberStatus == \Magento\Newsletter\Model\Subscriber::STATUS_UNSUBSCRIBED ||
-            !$this->helper->isEnabled($websiteId) ||
-            !$this->configHelper->isConsentSubscriberEnabled($websiteId)
-        ) {
-            return $this;
-        }
-
         try {
+            $subscriber = $observer->getEvent()->getSubscriber();
+            $email = $subscriber->getEmail();
+            $subscriberStatus = $subscriber->getSubscriberStatus();
+            $websiteId = $this->storeManager->getStore($storeId = $subscriber->getStoreId())
+                ->getWebsiteId();
+
+            //If not confirmed or not enabled.
+            if ($subscriberStatus == \Magento\Newsletter\Model\Subscriber::STATUS_UNSUBSCRIBED ||
+                !$this->helper->isEnabled($websiteId) ||
+                !$this->configHelper->isConsentSubscriberEnabled($websiteId)
+            ) {
+                return $this;
+            }
+
             $contactEmail = $this->contactFactory->create()
                 ->loadByCustomerEmail($email, $websiteId);
             $emailContactId = $contactEmail->getId();

@@ -270,9 +270,9 @@
         <column xsi:type="smallint" name="import_status" padding="6" unsigned="false" nullable="false" identity="false" default="0" comment="Import Status"/>
         <column xsi:type="smallint" name="retry_count" padding="6" unsigned="false" nullable="false" identity="false" default="0" comment="Retry count"/>
         <column xsi:type="varchar" name="import_id" nullable="false" length="255" default="" comment="Import Id"/>
-        <column xsi:type="mediumblob" name="import_data" nullable="false" comment="Import Data"/>
+        <column xsi:type="longtext" name="import_data" nullable="false" comment="Import Data"/>
         <column xsi:type="varchar" name="import_mode" nullable="false" length="255" default="" comment="Import Mode"/>
-        <column xsi:type="text" name="import_file" nullable="false" comment="Import File"/>
+        <column xsi:type="text" name="import_file" nullable="false" comment="Import File [deprecated]"/>
         <column xsi:type="varchar" name="message" nullable="false" length="255" default="" comment="Error Message"/>
         <column xsi:type="timestamp" name="created_at" on_update="false" nullable="true" comment="Creation Time"/>
         <column xsi:type="timestamp" name="updated_at" on_update="false" nullable="true" comment="Update Time"/>

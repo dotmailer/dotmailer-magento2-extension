@@ -2,9 +2,9 @@
 
 namespace Dotdigitalgroup\Email\Test\Unit\Model\Sync\Customer;
 
+use Dotdigital\V3\Models\Contact as SdkContact;
 use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Connector\ContactData\CustomerFactory as ConnectorCustomerFactory;
-use Dotdigitalgroup\Email\Model\Connector\Datafield;
 use Dotdigitalgroup\Email\Model\Customer\CustomerDataFieldProvider;
 use Dotdigitalgroup\Email\Model\Customer\CustomerDataFieldProviderFactory;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory as ContactCollectionFactory;
@@ -12,6 +12,7 @@ use Dotdigitalgroup\Email\Model\Sync\Customer\CustomerDataManager;
 use Dotdigitalgroup\Email\Model\Sync\Customer\Exporter;
 use Dotdigitalgroup\Email\Model\Sync\Export\CsvHandler;
 use Dotdigitalgroup\Email\Model\Sync\Export\SalesDataManager;
+use Dotdigitalgroup\Email\Model\Sync\Export\SdkContactBuilder;
 use Magento\Customer\Model\ResourceModel\Customer\Collection as MageCustomerCollection;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Serialize\SerializerInterface;
@@ -71,6 +72,11 @@ class ExporterTest extends TestCase
     private $serializerMock;
 
     /**
+     * @var SdkContactBuilder|\PHPUnit\Framework\MockObject\MockObject
+     */
+    private $sdkContactBuilderMock;
+
+    /**
      * @var Exporter
      */
     private $exporter;
@@ -88,6 +94,7 @@ class ExporterTest extends TestCase
         $this->contactCollectionFactoryMock = $this->createMock(ContactCollectionFactory::class);
         $this->customerDataManagerMock = $this->createMock(CustomerDataManager::class);
         $this->csvHandlerMock = $this->createMock(CsvHandler::class);
+        $this->sdkContactBuilderMock = $this->createMock(SdkContactBuilder::class);
         $this->salesDataManagerMock = $this->createMock(SalesDataManager::class);
         $this->scopeConfigMock = $this->createMock(ScopeConfigInterface::class);
         $this->serializerMock = $this->createMock(SerializerInterface::class);
@@ -115,6 +122,7 @@ class ExporterTest extends TestCase
             $this->contactCollectionFactoryMock,
             $this->customerDataManagerMock,
             $this->csvHandlerMock,
+            $this->sdkContactBuilderMock,
             $this->salesDataManagerMock,
             $this->scopeConfigMock,
             $this->serializerMock
@@ -176,16 +184,12 @@ class ExporterTest extends TestCase
             ->method('init')
             ->willReturn($connectorCustomerMock);
 
-        $connectorCustomerMock->expects($this->exactly(5))
-            ->method('toCSVArray')
-            ->willReturn([]);
+        $this->sdkContactBuilderMock->expects($this->exactly(5))
+            ->method('createSdkContact')
+            ->willReturn($this->createMock(SdkContact::class));
 
-        $data = $this->exporter->export($this->customerIds, $this->websiteInterfaceMock);
+        $data = $this->exporter->export($this->customerIds, $this->websiteInterfaceMock, 123456);
 
-        /**
-         * We can't test the data that has been set on the Customer model, because
-         * setData($column, $value) doesn't do anything in the context of a unit test.
-         */
         $this->assertEquals(count($data), count($this->customerIds));
     }
 

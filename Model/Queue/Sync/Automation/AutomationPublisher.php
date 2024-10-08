@@ -4,12 +4,20 @@ declare(strict_types=1);
 
 namespace Dotdigitalgroup\Email\Model\Queue\Sync\Automation;
 
+use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Automation;
 use Dotdigitalgroup\Email\Model\Queue\Data\AutomationDataFactory;
 use Magento\Framework\MessageQueue\PublisherInterface;
 
 class AutomationPublisher
 {
+    public const TOPIC_SYNC_AUTOMATION = 'ddg.sync.automation';
+
+    /**
+     * @var Logger
+     */
+    private $logger;
+
     /**
      * @var AutomationDataFactory
      */
@@ -21,13 +29,16 @@ class AutomationPublisher
     private $publisher;
 
     /**
+     * @param Logger $logger
      * @param AutomationDataFactory $automationDataFactory
      * @param PublisherInterface $publisher
      */
     public function __construct(
+        Logger $logger,
         AutomationDataFactory $automationDataFactory,
         PublisherInterface $publisher
     ) {
+        $this->logger = $logger;
         $this->automationDataFactory = $automationDataFactory;
         $this->publisher = $publisher;
     }
@@ -45,6 +56,10 @@ class AutomationPublisher
         $message->setId((int) $automation->getId());
         $message->setType($automation->getAutomationType());
 
-        $this->publisher->publish('ddg.sync.automation', $message);
+        try {
+            $this->publisher->publish(self::TOPIC_SYNC_AUTOMATION, $message);
+        } catch (\Exception $e) {
+            $this->logger->error('Automation publish failed', [(string) $e]);
+        }
     }
 }

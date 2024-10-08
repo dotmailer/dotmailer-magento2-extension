@@ -91,8 +91,7 @@ class Cleaner implements TaskRunInterface
             $this->cleanTable($table, $dateColumn);
         }
 
-        $archivedFolder = $this->fileHelper->getArchiveFolder();
-        $this->fileHelper->deleteDir($archivedFolder);
+        $this->cleanUpCsvArchiveFolder();
     }
 
     /**
@@ -163,5 +162,20 @@ class Cleaner implements TaskRunInterface
     public function getTableCleanerInterval(): string
     {
         return (string) $this->scopeConfig->getValue(Config::XML_PATH_CRON_SCHEDULE_TABLE_CLEANER_INTERVAL);
+    }
+
+    /**
+     * Clean up CSV archive folder.
+     *
+     * @return void
+     * @throws FileSystemException
+     *
+     * @deprecated CSV files are no longer used.
+     * @see \Dotdigitalgroup\Email\Model\Sync\Importer\Type\Contact\BulkJson;
+     */
+    private function cleanUpCsvArchiveFolder()
+    {
+        $archivedFolder = $this->fileHelper->getArchiveFolder();
+        $this->fileHelper->deleteDir($archivedFolder);
     }
 }

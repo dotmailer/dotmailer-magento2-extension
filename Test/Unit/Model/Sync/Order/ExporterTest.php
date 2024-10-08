@@ -2,6 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Test\Unit\Model\Sync\Order;
 
+use Dotdigital\V3\Models\InsightData\RecordsCollection as RecordsCollectionAlias;
 use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Connector\OrderFactory as ConnectorOrderFactory;
@@ -9,12 +10,15 @@ use Dotdigitalgroup\Email\Model\Connector\Order as ConnectorOrder;
 use Dotdigitalgroup\Email\Model\OrderFactory;
 use Dotdigitalgroup\Email\Model\ResourceModel\Order\Collection as OrderCollection;
 use Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory as OrderCollectionFactory;
+use Dotdigitalgroup\Email\Model\Sync\Export\SdkOrderRecordCollectionBuilder;
+use Dotdigitalgroup\Email\Model\Sync\Export\SdkOrderRecordCollectionBuilderFactory;
 use Dotdigitalgroup\Email\Model\Validator\Schema\SchemaValidatorFactory;
 use Dotdigitalgroup\Email\Model\Validator\Schema\SchemaValidator;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Model\ResourceModel\Order\Collection as SalesOrderCollection;
 use Magento\Sales\Model\ResourceModel\Order\CollectionFactory as SalesOrderCollectionFactory;
+use Magento\Store\Api\Data\WebsiteInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Store\Api\Data\StoreInterface;
 use Dotdigitalgroup\Email\Model\Sync\Order\Exporter;
@@ -88,9 +92,29 @@ class ExporterTest extends TestCase
     private $storeInterfaceMock;
 
     /**
+     * @var WebsiteInterface|\PHPUnit\Framework\MockObject\MockObject
+     */
+    private $websiteInterfaceMock;
+
+    /**
      * @var OrderCollection|\PHPUnit\Framework\MockObject\MockObject
      */
     private $orderCollection;
+
+    /**
+     * @var SdkOrderRecordCollectionBuilderFactory|\PHPUnit\Framework\MockObject\MockObject
+     */
+    private $sdkOrderRecordCollectionBuilderFactory;
+
+    /**
+     * @var SdkOrderRecordCollectionBuilderFactory|\PHPUnit\Framework\MockObject\MockObject
+     */
+    private $sdkOrderRecordCollectionBuilder;
+
+    /**
+     * @var RecordsCollectionAlias|\PHPUnit\Framework\MockObject\MockObject
+     */
+    private $sdkRecordsCollection;
 
     protected function setUp() :void
     {
@@ -105,6 +129,7 @@ class ExporterTest extends TestCase
             ->addMethods(['getId','getOrderStatus', 'getStoreId', 'getStore', 'getIncrementId'])
             ->disableOriginalConstructor()
             ->getMock();
+        $this->websiteInterfaceMock = $this->createMock(WebsiteInterface::class);
         $this->storeInterfaceMock = $this->createMock(StoreInterface::class);
         $this->orderCollectionFactoryMock = $this->createMock(OrderCollectionFactory::class);
         $this->scopeConfigInterfaceMock = $this->createMock(ScopeConfigInterface::class);
@@ -118,13 +143,20 @@ class ExporterTest extends TestCase
             ->disallowMockingUnknownTypes()
             ->getMock();
 
+        $this->sdkOrderRecordCollectionBuilderFactory = $this->createMock(
+            SdkOrderRecordCollectionBuilderFactory::class
+        );
+        $this->sdkOrderRecordCollectionBuilder = $this->createMock(SdkOrderRecordCollectionBuilder::class);
+        $this->sdkRecordsCollection = $this->createMock(RecordsCollectionAlias::class);
+
         $this->exporter = new Exporter(
             $this->storeManagerInterfaceMock,
             $this->scopeConfigInterfaceMock,
             $this->connectorOrderFactory,
             $this->orderCollectionFactoryMock,
             $this->loggerMock,
-            $this->salesOrderCollectionFactoryMock
+            $this->salesOrderCollectionFactoryMock,
+            $this->sdkOrderRecordCollectionBuilderFactory
         );
     }
 
@@ -136,7 +168,7 @@ class ExporterTest extends TestCase
 
         $this->fetchMockedOrdersFromIds();
 
-        $result = $this->exporter->exportOrders(['1','2','3']);
+        $result = $this->exporter->export(['1','2','3'], $this->websiteInterfaceMock);
 
         $this->assertEmpty($result);
     }
@@ -162,21 +194,6 @@ class ExporterTest extends TestCase
             ->method('getSize')
             ->willReturn(1);
 
-        $this->orderCollectionMock
-            ->expects($this->atLeastOnce())
-            ->method('getIncrementId')
-            ->willReturn(1);
-
-        $this->orderCollectionMock
-            ->expects($this->atLeastOnce())
-            ->method('getStoreId')
-            ->willReturn(1);
-
-        $this->storeManagerInterfaceMock
-            ->expects($this->once())
-            ->method('getStore')
-            ->willReturn($this->storeInterfaceMock);
-
         $this->storeInterfaceMock
             ->expects($this->atLeastOnce())
             ->method('getWebsiteId')
@@ -194,15 +211,11 @@ class ExporterTest extends TestCase
 
         $this->orderCollectionMock
             ->expects($this->atLeastOnce())
-            ->method('getId')
-            ->willReturn(1);
-
-        $this->orderCollectionMock
-            ->expects($this->atLeastOnce())
             ->method('getStoreId')
             ->willReturn(1);
+
         $this->storeManagerInterfaceMock
-            ->expects($this->once())
+            ->expects($this->any())
             ->method('getStore')
             ->willReturn($this->storeInterfaceMock);
 
@@ -233,19 +246,23 @@ class ExporterTest extends TestCase
             ->method('addFieldToFilter')
             ->willReturn($this->orderCollection);
 
-        $this->orderCollectionMock->expects($this->atLeastOnce())
-            ->method('getStore')
-            ->willReturn($this->storeInterfaceMock);
-
-        $this->connectorOrderFactory->expects($this->atLeastOnce())
+        $this->sdkOrderRecordCollectionBuilderFactory->expects($this->once())
             ->method('create')
-            ->willReturn($this->connectorOrderMock);
+            ->willReturn($this->sdkOrderRecordCollectionBuilder);
 
-        $this->connectorOrderMock->expects($this->atLeastOnce())
-            ->method('setOrderData')
-            ->willReturn($this->connectorOrderMock);
+        $this->sdkOrderRecordCollectionBuilder->expects($this->once())
+            ->method('setBuildableData')
+            ->willReturn($this->sdkOrderRecordCollectionBuilder);
 
-        $result = $this->exporter->exportOrders(['1','2','3']);
+        $this->sdkOrderRecordCollectionBuilder->expects($this->once())
+            ->method('build')
+            ->willReturn($this->sdkRecordsCollection);
+
+        $this->sdkRecordsCollection->expects($this->once())
+            ->method('all')
+            ->willReturn([1]);
+
+        $result = $this->exporter->export(['1','2','3'], $this->websiteInterfaceMock);
 
         $this->assertEquals(1, count($result));
     }

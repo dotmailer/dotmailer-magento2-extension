@@ -12,7 +12,8 @@ use Dotdigitalgroup\Email\Model\Sync\Importer\Type\BulkItemPostProcessorFactory;
 use Magento\Framework\Serialize\SerializerInterface;
 
 /**
- * Handle bulk data for importer.
+ * @deprecated We now have a dedicated MergeManager class for merging batches.
+ * @see \Dotdigitalgroup\Email\Model\Sync\Importer\Type\Contact\BulkJson
  */
 class Bulk extends AbstractItemSyncer
 {

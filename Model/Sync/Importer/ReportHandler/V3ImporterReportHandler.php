@@ -1,8 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dotdigitalgroup\Email\Model\Sync\Importer\ReportHandler;
 
-use Dotdigital\V3\Models\Contact\Import as SdkImport;
+use Dotdigital\V3\Models\Import\ImportInterface as V3ImportInterface;
 use Dotdigitalgroup\Email\Logger\Logger;
 
 class V3ImporterReportHandler
@@ -24,17 +26,31 @@ class V3ImporterReportHandler
     /**
      * Process.
      *
-     * @param SdkImport $response
+     * @param V3ImportInterface $response
      * @return void
      */
-    public function process(SdkImport $response)
+    public function process(V3ImportInterface $response)
     {
-        $this->logger->debug(
-            sprintf(
-                'Import id %s summary: %s',
-                $response->getImportId(),
-                json_encode($response->getSummary())
-            )
-        );
+        if ($response->getSummary()) {
+            $this->logger->info(
+                sprintf(
+                    'Import id %s finished, summary: %s',
+                    $response->getImportId(),
+                    json_encode($response->getSummary())
+                )
+            );
+        }
+
+        if ($response->getFailures()) {
+            foreach ($response->getFailures() as $failure) {
+                $this->logger->debug(
+                    sprintf(
+                        'Import id %s failure: %s',
+                        $response->getImportId(),
+                        json_encode($failure)
+                    )
+                );
+            }
+        }
     }
 }

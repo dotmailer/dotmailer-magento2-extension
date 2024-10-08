@@ -29,6 +29,12 @@
         <click selector="li.item-dashboards a" stepKey="clickOnDashboard"/>
 
         <seeInCurrentUrl url="{{DotdigitalDashboardPage.url}}" stepKey="confirmThatImOnDashboard"/>
-        <seeElement selector="div.ddg-dashboard-container" stepKey="seeDDGDescription"/>
+        <seeElement selector="{{DotdigitalDashboardSection.dashboardContainer}}" stepKey="seeDashboardContainer"/>
+
+        <see userInput="Consumers runner last execution" selector="{{DotdigitalDashboardSection.dashboardContainer}}" stepKey="SeeConsumersRunnerText"/>
+        <seeElement selector="{{DotdigitalDashboardSection.consumersRunnerStatus}}" stepKey="seeConsumersRunnerStatus"/>
+
+        <see userInput="Queue connection" selector="{{DotdigitalDashboardSection.dashboardContainer}}" stepKey="SeeQueueConnectionText"/>
+        <seeElement selector="{{DotdigitalDashboardSection.queueConnectionStatus}}" stepKey="seeQueueConnectionStatus"/>
     </test>
 </tests>

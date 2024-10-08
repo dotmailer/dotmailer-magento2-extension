@@ -2,18 +2,22 @@
 
 namespace Dotdigitalgroup\Email\Test\Unit\Model\Sync\Subscriber;
 
+use Dotdigital\V3\Models\Contact as SdkContact;
 use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Connector\ContactData\Subscriber;
 use Dotdigitalgroup\Email\Model\Connector\ContactData\SubscriberFactory as ConnectorSubscriberFactory;
 use Dotdigitalgroup\Email\Model\Connector\Datafield;
+use Dotdigitalgroup\Email\Model\Newsletter\OptInTypeFinder;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact\Collection as ContactCollection;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory as ContactCollectionFactory;
 use Dotdigitalgroup\Email\Model\Sync\Export\CsvHandler;
+use Dotdigitalgroup\Email\Model\Sync\Export\SdkContactBuilder;
 use Dotdigitalgroup\Email\Model\Sync\Export\SalesDataManager;
 use Dotdigitalgroup\Email\Model\Sync\Subscriber\SubscriberExporterFactory;
 use Dotdigitalgroup\Email\Model\Sync\Subscriber\SubscriberWithSalesExporter;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Store\Api\Data\WebsiteInterface;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class SubscriberWithSalesExporterTest extends TestCase
@@ -27,6 +31,11 @@ class SubscriberWithSalesExporterTest extends TestCase
      * @var Datafield|\PHPUnit\Framework\MockObject\MockObject
      */
     private $datafieldMock;
+
+    /**
+     * @var OptInTypeFinder|MockObject
+     */
+    private $optInTypeFinderMock;
 
     /**
      * @var ConnectorSubscriberFactory|\PHPUnit\Framework\MockObject\MockObject
@@ -59,6 +68,11 @@ class SubscriberWithSalesExporterTest extends TestCase
     private $csvHandlerMock;
 
     /**
+     * @var SdkContactBuilder|MockObject
+     */
+    private $sdkContactBuilderMock;
+
+    /**
      * @var WebsiteInterface&\PHPUnit\Framework\MockObject\MockObject|\PHPUnit\Framework\MockObject\MockObject
      */
     private $websiteInterfaceMock;
@@ -73,11 +87,13 @@ class SubscriberWithSalesExporterTest extends TestCase
         $this->loggerMock = $this->createMock(Logger::class);
         $this->datafieldMock = $this->createMock(Datafield::class);
         $this->connectorSubscriberFactoryMock = $this->createMock(ConnectorSubscriberFactory::class);
+        $this->optInTypeFinderMock = $this->createMock(OptInTypeFinder::class);
         $this->contactCollectionFactoryMock = $this->createMock(ContactCollectionFactory::class);
         $this->salesDataManagerMock = $this->createMock(SalesDataManager::class);
         $this->subscriberExporterFactoryMock = $this->createMock(SubscriberExporterFactory::class);
         $this->scopeConfigMock = $this->createMock(ScopeConfigInterface::class);
         $this->csvHandlerMock = $this->createMock(CsvHandler::class);
+        $this->sdkContactBuilderMock = $this->createMock(SdkContactBuilder::class);
 
         $this->websiteInterfaceMock = $this->getMockBuilder(WebsiteInterface::class)
             ->onlyMethods([
@@ -100,11 +116,13 @@ class SubscriberWithSalesExporterTest extends TestCase
             $this->loggerMock,
             $this->datafieldMock,
             $this->connectorSubscriberFactoryMock,
+            $this->optInTypeFinderMock,
             $this->contactCollectionFactoryMock,
             $this->salesDataManagerMock,
+            $this->sdkContactBuilderMock,
             $this->subscriberExporterFactoryMock,
             $this->scopeConfigMock,
-            $this->csvHandlerMock
+            $this->csvHandlerMock,
         );
     }
 
@@ -117,6 +135,7 @@ class SubscriberWithSalesExporterTest extends TestCase
     public function testExportRetrievesDataAccordingToColumns()
     {
         $subscriberMocks = $this->createSubscriberMocks();
+        $sdkContactMock = $this->createMock(SdkContact::class);
 
         $subscriberCollectionMock = $this->createMock(ContactCollection::class);
         $this->contactCollectionFactoryMock->expects($this->once())
@@ -157,16 +176,20 @@ class SubscriberWithSalesExporterTest extends TestCase
             ->method('setContactData')
             ->willReturn($connectorSubscriberMock);
 
-        $connectorSubscriberMock->expects($this->exactly(5))
-            ->method('toCSVArray')
-            ->willReturn([]);
+        $this->sdkContactBuilderMock->expects($this->exactly(5))
+            ->method('createSdkContact')
+            ->willReturn($sdkContactMock);
 
-        $data = $this->exporter->export($this->getSubscribers(), $this->websiteInterfaceMock);
+        $this->optInTypeFinderMock->expects($this->exactly(5))
+            ->method('getOptInType')
+            ->willReturn('double');
 
-        /**
-         * We can't test the data that has been set on the Customer model, because
-         * setData($column, $value) doesn't do anything in the context of a unit test.
-         */
+        $data = $this->exporter->export(
+            $this->getSubscribers(),
+            $this->websiteInterfaceMock,
+            123456
+        );
+
         $this->assertEquals(count($data), count($this->getSubscribers()));
     }
 

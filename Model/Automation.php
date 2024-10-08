@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Dotdigitalgroup\Email\Model;
 
 use Dotdigitalgroup\Email\Helper\Config;
-use Dotdigitalgroup\Email\Helper\Data;
+use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Queue\Sync\Automation\AutomationPublisher;
 use Dotdigitalgroup\Email\Model\Sync\Automation\AutomationTypeHandler;
 use Exception;
@@ -33,9 +33,9 @@ class Automation extends AbstractModel
     private $dateTime;
 
     /**
-     * @var Data
+     * @var Logger
      */
-    private $helper;
+    private $logger;
 
     /**
      * @var StoreManagerInterface
@@ -55,10 +55,10 @@ class Automation extends AbstractModel
     /**
      * Automation constructor.
      *
+     * @param Logger $logger
      * @param Context $context
      * @param Registry $registry
      * @param DateTime $dateTime
-     * @param Data $helper
      * @param ResourceModel\Automation $automationResource
      * @param StoreManagerInterface $storeManagerInterface
      * @param ScopeConfigInterface $scopeConfig
@@ -68,10 +68,10 @@ class Automation extends AbstractModel
      * @param array $data
      */
     public function __construct(
+        Logger $logger,
         Context $context,
         Registry $registry,
         DateTime $dateTime,
-        Data $helper,
         ResourceModel\Automation $automationResource,
         StoreManagerInterface $storeManagerInterface,
         ScopeConfigInterface $scopeConfig,
@@ -80,9 +80,9 @@ class Automation extends AbstractModel
         AbstractDb $resourceCollection = null,
         array $data = []
     ) {
+        $this->logger = $logger;
         $this->dateTime = $dateTime;
         $this->automationResource = $automationResource;
-        $this->helper = $helper;
         $this->scopeConfig = $scopeConfig;
         $this->publisher = $publisher;
         $this->storeManager = $storeManagerInterface;
@@ -129,13 +129,14 @@ class Automation extends AbstractModel
      */
     public function newCustomerAutomation($customer)
     {
-        $email = $customer->getEmail();
-        $websiteId = $customer->getWebsiteId();
-        $storeId = $customer->getStoreId();
-        $customerId = $customer->getId();
-        $store = $this->storeManager->getStore($storeId);
-        $storeName = $store->getName();
         try {
+            $email = $customer->getEmail();
+            $websiteId = $customer->getWebsiteId();
+            $storeId = $customer->getStoreId();
+            $customerId = $customer->getId();
+            $store = $this->storeManager->getStore($storeId);
+            $storeName = $store->getName();
+
             $apiEnabled = $this->scopeConfig->getValue(
                 Config::XML_PATH_CONNECTOR_API_ENABLED,
                 ScopeInterface::SCOPE_WEBSITE,
@@ -165,7 +166,7 @@ class Automation extends AbstractModel
                 $this->publisher->publish($this);
             }
         } catch (Exception $e) {
-            $this->helper->debug((string)$e, []);
+            $this->logger->error('Error creating new customer automation', [(string) $e]);
         }
     }
 }

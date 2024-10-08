@@ -1,35 +1,39 @@
 <?php
 
-namespace Dotdigitalgroup\Email\Test\Unit\Model\AbandonedCart\ProgramEnrolment;
+namespace Dotdigitalgroup\Email\Test\Unit\Model\AbandonedCart;
 
-use Dotdigitalgroup\Email\Helper\Data;
+use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\AbandonedCart\ProgramEnrolment\Saver;
+use Dotdigitalgroup\Email\Model\Automation;
 use Dotdigitalgroup\Email\Model\AutomationFactory;
 use Dotdigitalgroup\Email\Model\Queue\Sync\Automation\AutomationPublisher;
-use Dotdigitalgroup\Email\Model\ResourceModel\Automation;
+use Dotdigitalgroup\Email\Model\ResourceModel\Automation as AutomationResource;
+use Magento\Quote\Model\Quote;
+use Magento\Store\Model\Store;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class ProgramEnrolmentSaverTest extends TestCase
 {
     /**
-     * @var AutomationFactory|\PHPUnit_Framework_MockObject_MockObject
+     * @var Logger|MockObject
+     */
+    private $loggerMock;
+
+    /**
+     * @var AutomationFactory|MockObject
      */
     private $automationFactoryMock;
 
     /**
-     * @var AutomationPublisher|\PHPUnit_Framework_MockObject_MockObject
+     * @var AutomationPublisher|MockObject
      */
     private $automationPublisherMock;
 
     /**
-     * @var Automation|\PHPUnit_Framework_MockObject_MockObject
+     * @var AutomationResource|MockObject
      */
     private $automationResourceMock;
-
-    /**
-     * @var Data|\PHPUnit_Framework_MockObject_MockObject
-     */
-    private $dataHelperMock;
 
     /**
      * @var Saver
@@ -40,21 +44,25 @@ class ProgramEnrolmentSaverTest extends TestCase
     {
         $this->automationFactoryMock = $this->createMock(AutomationFactory::class);
         $this->automationPublisherMock = $this->createMock(AutomationPublisher::class);
-        $this->automationResourceMock = $this->createMock(Automation::class);
-        $this->dataHelperMock = $this->createMock(Data::class);
+        $this->automationResourceMock = $this->createMock(AutomationResource::class);
+        $this->loggerMock = $this->createMock(Logger::class);
 
         $this->model = new Saver(
+            $this->loggerMock,
             $this->automationFactoryMock,
             $this->automationPublisherMock,
-            $this->automationResourceMock,
-            $this->dataHelperMock
+            $this->automationResourceMock
         );
     }
 
     public function testAutomationWasSaved()
     {
-        // Quote
-        $quoteModel = $this->getMockBuilder(\Magento\Quote\Model\Quote::class)
+        $automationModelMock = $this->createMock(Automation::class);
+        $this->automationFactoryMock->expects($this->once())
+            ->method('create')
+            ->willReturn($automationModelMock);
+
+        $quoteModel = $this->getMockBuilder(Quote::class)
             ->addMethods(['getCustomerEmail'])
             ->disableOriginalConstructor()
             ->getMock();
@@ -62,10 +70,7 @@ class ProgramEnrolmentSaverTest extends TestCase
         $quoteModel->expects($this->once())
             ->method('getCustomerEmail');
 
-        // Store
-        $storeModel = $this->getMockBuilder(\Magento\Store\Model\Store::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $storeModel = $this->createMock(Store::class);
 
         $storeModel->expects($this->once())
             ->method('getId');
@@ -76,40 +81,34 @@ class ProgramEnrolmentSaverTest extends TestCase
         $storeModel->expects($this->once())
             ->method('getName');
 
-        // Automation
-        $automationModelMock = $this->createMock(\Dotdigitalgroup\Email\Model\Automation::class);
-
-        $automationModelMock->expects($this->atLeastOnce())
+        $matcher = $this->exactly(8);
+        $automationModelMock
+            ->expects($matcher)
             ->method('__call')
-            ->withConsecutive(
-                [$this->equalTo('setEmail')],
-                [$this->equalTo('setAutomationType')],
-                [$this->equalTo('setEnrolmentStatus')],
-                [$this->equalTo('setTypeId')],
-                [$this->equalTo('setWebsiteId')],
-                [$this->equalTo('setStoreId')],
-                [$this->equalTo('setStoreName')],
-                [$this->equalTo('setProgramId')]
-            )
-            ->willReturnOnConsecutiveCalls(
-                $automationModelMock,
-                $automationModelMock,
-                $automationModelMock,
-                $automationModelMock,
-                $automationModelMock,
-                $automationModelMock,
-                $automationModelMock,
+            ->willReturnCallback(function () use ($matcher) {
+                return match ($matcher->numberOfInvocations()) {
+                    1 => 'setEmail',
+                    2 => 'setAutomationType',
+                    3 => 'setEnrolmentStatus',
+                    4 => 'setTypeId',
+                    5 => 'setWebsiteId',
+                    6 => 'setStoreId',
+                    7 => 'setStoreName',
+                    8 => 'setProgramId',
+                };
+            })
+            ->willReturn(
                 $automationModelMock
             );
-
-        $this->automationFactoryMock->expects($this->once())
-            ->method('create')
-            ->willReturn($automationModelMock);
 
         $this->automationResourceMock->expects($this->once())
             ->method('save')
             ->with($automationModelMock)
             ->willReturn($automationModelMock);
+
+        $this->automationPublisherMock->expects($this->once())
+            ->method('publish')
+            ->with($automationModelMock);
 
         // Arbitrary ID for Dotdigital program
         $programId = "123456";

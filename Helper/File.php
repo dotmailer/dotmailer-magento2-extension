@@ -8,6 +8,9 @@ use Magento\Framework\Filesystem\DriverInterface;
 /**
  * Creates the csv files in export folder and move to archive when it's complete.
  * Log info and debug to a custom log file connector.log
+ *
+ * @deprecated CSV data transfer is replaced with JSON.
+ * @see \Dotdigitalgroup\Email\Model\Sync\Batch\MegaBatchProcessor
  */
 class File
 {
@@ -87,8 +90,18 @@ class File
      */
     public function getArchiveFolder()
     {
-        $this->createDirectoryIfNotExists($this->outputArchiveFolder);
+        return $this->outputArchiveFolder;
+    }
 
+    /**
+     * Get archive folder.
+     *
+     * @return string
+     * @throws FileSystemException
+     */
+    public function getArchiveFolderCreatingIfNotExists()
+    {
+        $this->createDirectoryIfNotExists($this->outputArchiveFolder);
         return $this->outputArchiveFolder;
     }
 
@@ -116,7 +129,7 @@ class File
     {
         $this->moveFile(
             $this->getOutputFolder(),
-            $this->getArchiveFolder(),
+            $this->getArchiveFolderCreatingIfNotExists(),
             $filename
         );
     }
@@ -147,8 +160,6 @@ class File
      * Open for writing only; place the file pointer at the end of the file.
      * If the file does not exist, attempt to create it.
      *
-     * @deprecated use Magento\Framework\Filesystem\DriverInterface::filePutCsv instead
-     * @see Dotdigitalgroup\Email\Model\Sync\Batch\AbstractBatchProcessor::sendDataToFile
      * @param string $filepath
      * @param array $csv
      *
@@ -259,7 +270,7 @@ class File
     public function getFilePathWithFallback($filename)
     {
         $emailPath = $this->getOutputFolder() . DIRECTORY_SEPARATOR . $filename;
-        $archivePath = $this->getArchiveFolder() . DIRECTORY_SEPARATOR . $filename;
+        $archivePath = $this->getArchiveFolderCreatingIfNotExists() . DIRECTORY_SEPARATOR . $filename;
         return $this->driver->isFile($emailPath) ? $emailPath : $archivePath;
     }
 
@@ -285,7 +296,7 @@ class File
     public function isFilePathExistWithFallback($filename)
     {
         $emailPath = $this->getOutputFolder() . DIRECTORY_SEPARATOR . $filename;
-        $archivePath = $this->getArchiveFolder() . DIRECTORY_SEPARATOR . $filename;
+        $archivePath = $this->getArchiveFolderCreatingIfNotExists() . DIRECTORY_SEPARATOR . $filename;
         return $this->driver->isFile($emailPath) ? true : ($this->driver->isFile($archivePath) ? true : false);
     }
 

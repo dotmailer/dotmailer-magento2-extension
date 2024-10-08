@@ -381,6 +381,9 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      * @param string $cronJob
      *
      * @return boolean|string
+     *
+     * @deprecated
+     * @see \Dotdigitalgroup\Email\ViewModel\Adminhtml\DashboardInformationView
      */
     public function getDateLastCronRun($cronJob)
     {

@@ -9,6 +9,10 @@ use Dotdigitalgroup\Email\Model\ImporterFactory;
 use Dotdigitalgroup\Email\Model\ResourceModel\OrderFactory as OrderResourceFactory;
 use Magento\Sales\Model\ResourceModel\Order\CollectionFactory as OrderCollectionFactory;
 
+/**
+ * @deprecated We consolidated the batch processors into one class. This class will be removed in a future release.
+ * @see \Dotdigitalgroup\Email\Model\Sync\Batch\MegaBatchProcessor
+ */
 class BatchProcessor
 {
     /**
@@ -61,6 +65,9 @@ class BatchProcessor
 
     /**
      * Batch Processor.
+     *
+     * @deprecated please use `process()` found in RecordImportedStrategyInterface
+     * @see \Dotdigitalgroup\Email\Api\Model\Sync\Batch\Record\RecordImportedStrategyInterface
      *
      * @param array $batch
      */

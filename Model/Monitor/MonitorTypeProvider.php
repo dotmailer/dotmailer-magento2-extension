@@ -2,6 +2,8 @@
 
 namespace Dotdigitalgroup\Email\Model\Monitor;
 
+use Dotdigitalgroup\Email\Model\Monitor\Cron\Monitor;
+
 class MonitorTypeProvider
 {
     /**
@@ -30,26 +32,34 @@ class MonitorTypeProvider
     private $smtpMonitor;
 
     /**
+     * @var Queue\Monitor
+     */
+    private $queueMonitor;
+
+    /**
      * MonitorTypeProvider constructor.
      *
-     * @param Cron\Monitor $cronMonitor
+     * @param Monitor $cronMonitor
      * @param Importer\Monitor $importerMonitor
      * @param Campaign\Monitor $campaignMonitor
      * @param Automation\Monitor $automationMonitor
      * @param Smtp\Monitor $smtpMonitor
+     * @param Queue\Monitor $queueMonitor
      */
     public function __construct(
         Cron\Monitor $cronMonitor,
         Importer\Monitor $importerMonitor,
         Campaign\Monitor $campaignMonitor,
         Automation\Monitor $automationMonitor,
-        Smtp\Monitor $smtpMonitor
+        Smtp\Monitor $smtpMonitor,
+        Queue\Monitor $queueMonitor
     ) {
         $this->cronMonitor = $cronMonitor;
         $this->importerMonitor = $importerMonitor;
         $this->campaignMonitor = $campaignMonitor;
         $this->automationMonitor = $automationMonitor;
         $this->smtpMonitor = $smtpMonitor;
+        $this->queueMonitor = $queueMonitor;
     }
 
     /**

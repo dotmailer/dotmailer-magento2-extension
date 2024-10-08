@@ -52,11 +52,6 @@ trait MocksApiResponses
             Config::XML_PATH_CONNECTOR_API_USERNAME => 'test',
             Config::XML_PATH_CONNECTOR_API_PASSWORD => 'test',
             Config::PATH_FOR_API_ENDPOINT => 'https://r1-api.dotdigital.com',
-            Config::XML_PATH_CONNECTOR_SYNC_ORDER_ENABLED => 1,
-            Config::XML_PATH_CONNECTOR_SYNC_ORDER_STATUS => implode(',', [
-                \Magento\Sales\Model\Order::STATE_PROCESSING,
-                \Magento\Sales\Model\Order::STATE_COMPLETE,
-            ]),
         ] as $path => $value) {
             $this->getMutableScopeConfig()->setValue($path, $value, $scopeType, $scopeCode);
         }

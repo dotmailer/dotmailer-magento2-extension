@@ -98,7 +98,8 @@ class ContactManager
                 $automationDataFields,
                 $this->dataFieldCollector->collectForCustomer(
                     $contact,
-                    $websiteId
+                    $websiteId,
+                    (int) $addressBookId
                 )
             );
         } elseif ($this->canPushContactToGuestAddressBook($contact, $subscriber, $automationType)) {
@@ -107,7 +108,8 @@ class ContactManager
                 $automationDataFields,
                 $this->dataFieldCollector->collectForGuest(
                     $contact,
-                    $websiteId
+                    $websiteId,
+                    (int) $addressBookId
                 )
             );
         }
@@ -129,7 +131,7 @@ class ContactManager
 
         if ($subscriber->isSubscribed()) {
             $subscriberResponse = $this->singleSubscriberSyncer->pushContactToSubscriberAddressBook($contact);
-            if ($subscriberResponse && !isset($subscriberResponse->message)) {
+            if ($subscriberResponse) {
                 $this->markProcessedSubscriberAsImported($contact);
             }
         }
@@ -233,7 +235,7 @@ class ContactManager
      * @param string $addressBookId
      * @param array $dataFields
      *
-     * @return bool|\stdClass
+     * @return \stdClass
      * @throws LocalizedException
      */
     private function pushContactToAddressBook(string $email, int $websiteId, string $addressBookId, array $dataFields)

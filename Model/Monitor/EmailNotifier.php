@@ -9,7 +9,9 @@ use Dotdigitalgroup\Email\Model\Monitor\Automation\Monitor as AutomationMonitor;
 use Dotdigitalgroup\Email\Model\Monitor\Campaign\Monitor as CampaignMonitor;
 use Dotdigitalgroup\Email\Model\Monitor\Cron\Monitor as CronMonitor;
 use Dotdigitalgroup\Email\Model\Monitor\Importer\Monitor as ImporterMonitor;
+use Dotdigitalgroup\Email\Model\Monitor\Queue\Monitor as QueueMonitor;
 use Dotdigitalgroup\Email\Model\Monitor\Smtp\Monitor as SmtpMonitor;
+use Dotdigitalgroup\Email\Model\ResourceModel\User\Collection as UserCollection;
 use Dotdigitalgroup\Email\Model\ResourceModel\User\CollectionFactory as UserCollectionFactory;
 use Magento\Authorization\Model\ResourceModel\Role;
 use Magento\Backend\App\Area\FrontNameResolver;
@@ -21,7 +23,6 @@ use Magento\Framework\Mail\EmailMessageInterface;
 use Magento\Framework\Mail\Template\TransportBuilder;
 use Magento\Framework\UrlInterface;
 use Magento\Store\Model\Store;
-use Magento\User\Model\ResourceModel\User\Collection as UserCollection;
 
 class EmailNotifier
 {
@@ -73,6 +74,11 @@ class EmailNotifier
     private $automationMonitor;
 
     /**
+     * @var QueueMonitor
+     */
+    private $queueMonitor;
+
+    /**
      * @var SmtpMonitor
      */
     private $smtpMonitor;
@@ -112,6 +118,7 @@ class EmailNotifier
      * @param BackendData $backendHelper
      * @param CampaignMonitor $campaignMonitor
      * @param AutomationMonitor $automationMonitor
+     * @param QueueMonitor $queueMonitor
      * @param SmtpMonitor $smtpMonitor
      * @param Data $helper
      */
@@ -128,6 +135,7 @@ class EmailNotifier
         BackendData $backendHelper,
         CampaignMonitor $campaignMonitor,
         AutomationMonitor $automationMonitor,
+        QueueMonitor $queueMonitor,
         SmtpMonitor $smtpMonitor,
         Data $helper
     ) {
@@ -143,6 +151,7 @@ class EmailNotifier
         $this->backendHelper = $backendHelper;
         $this->campaignMonitor = $campaignMonitor;
         $this->automationMonitor = $automationMonitor;
+        $this->queueMonitor = $queueMonitor;
         $this->smtpMonitor = $smtpMonitor;
         $this->helper = $helper;
     }

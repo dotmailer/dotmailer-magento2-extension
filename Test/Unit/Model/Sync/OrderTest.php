@@ -2,51 +2,42 @@
 
 namespace Dotdigitalgroup\Email\Test\Unit\Model\Sync;
 
+use DateTime;
+use Dotdigitalgroup\Email\Api\Model\Sync\Batch\BatchMergerInterface;
 use Dotdigitalgroup\Email\Helper\Config;
 use Dotdigitalgroup\Email\Helper\Data;
+use Dotdigitalgroup\Email\Logger\Logger;
+use Dotdigitalgroup\Email\Model\ResourceModel\Order\Collection;
 use Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory as OrderCollectionFactory;
-use Dotdigitalgroup\Email\Model\ResourceModel\Order\Collection as OrderCollection;
-use Dotdigitalgroup\Email\Model\ResourceModel\OrderFactory as OrderResourceFactory;
 use Dotdigitalgroup\Email\Model\ResourceModel\Order as OrderResource;
-use Dotdigitalgroup\Email\Model\Sync\Order\BatchProcessor;
+use Dotdigitalgroup\Email\Model\ResourceModel\OrderFactory as OrderResourceFactory;
+use Dotdigitalgroup\Email\Model\Sync\Batch\MegaBatchProcessor;
+use Dotdigitalgroup\Email\Model\Sync\Batch\MegaBatchProcessorFactory;
 use Dotdigitalgroup\Email\Model\Sync\Order\Exporter;
-use Magento\Framework\App\Config\ScopeConfigInterface;
+use Dotdigitalgroup\Email\Model\Sync\Order\ExporterFactory;
 use Dotdigitalgroup\Email\Model\Sync\Order;
+use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Store\Api\Data\WebsiteInterface;
 use Magento\Store\Model\StoreManagerInterface;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class OrderTest extends TestCase
 {
     /**
-     * @var Config|\PHPUnit\Framework\MockObject\MockObject
+     * @var StoreManagerInterface|MockObject
      */
-    private $configMock;
+    private $storeManagerInterfaceMock;
 
     /**
-     * @var Data|\PHPUnit\Framework\MockObject\MockObject
+     * @var Data|MockObject
      */
     private $helperMock;
 
     /**
-     * @var OrderCollectionFactory|\PHPUnit\Framework\MockObject\MockObject
+     * @var ExporterFactory|MockObject
      */
-    private $orderCollectionFactoryMock;
-
-    /**
-     * @var OrderResourceFactory|\PHPUnit\Framework\MockObject\MockObject
-     */
-    private $orderResourceFactoryMock;
-
-    /**
-     * @var BatchProcessor|\PHPUnit\Framework\MockObject\MockObject
-     */
-    private $batchProcessorMock;
-
-    /**
-     * @var Exporter|\PHPUnit\Framework\MockObject\MockObject
-     */
-    private $exporterMock;
+    private $exporterFactoryMock;
 
     /**
      * @var ScopeConfigInterface|\PHPUnit\Framework\MockObject\MockObject
@@ -54,19 +45,29 @@ class OrderTest extends TestCase
     private $scopeConfigInterfaceMock;
 
     /**
-     * @var StoreManagerInterface|\PHPUnit\Framework\MockObject\MockObject
+     * @var MegaBatchProcessorFactory|MockObject
      */
-    private $storeManagerInterfaceMock;
+    private $megaBatchProcessorFactoryMock;
 
     /**
-     * @var OrderCollection|\PHPUnit\Framework\MockObject\MockObject
+     * @var OrderResourceFactory|MockObject
      */
-    private $orderCollectionMock;
+    private $orderResourceFactoryMock;
 
     /**
-     * @var OrderResource|\PHPUnit\Framework\MockObject\MockObject
+     * @var OrderCollectionFactory|MockObject
      */
-    private $orderResourceMock;
+    private $orderCollectionFactoryMock;
+
+    /**
+     * @var BatchMergerInterface|MockObject
+     */
+    private $mergeManagerMock;
+
+    /**
+     * @var Logger|MockObject
+     */
+    private $loggerMock;
 
     /**
      * @var WebsiteInterface|\PHPUnit\Framework\MockObject\MockObject
@@ -80,29 +81,28 @@ class OrderTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->configMock = $this->createMock(Config::class);
-        $this->helperMock = $this->createMock(Data::class);
-        $this->orderCollectionFactoryMock = $this->createMock(OrderCollectionFactory::class);
-        $this->orderResourceFactoryMock = $this->createMock(OrderResourceFactory::class);
-        $this->batchProcessorMock = $this->createMock(BatchProcessor::class);
-        $this->exporterMock = $this->createMock(Exporter::class);
         $this->scopeConfigInterfaceMock = $this->createMock(ScopeConfigInterface::class);
         $this->storeManagerInterfaceMock = $this->createMock(StoreManagerInterface::class);
-        $this->orderCollectionMock = $this->createMock(OrderCollection::class);
-        $this->orderResourceMock = $this->createMock(OrderResource::class);
+        $this->helperMock = $this->createMock(Data::class);
+        $this->exporterFactoryMock = $this->createMock(ExporterFactory::class);
+        $this->megaBatchProcessorFactoryMock = $this->createMock(MegaBatchProcessorFactory::class);
+        $this->orderResourceFactoryMock = $this->createMock(OrderResourceFactory::class);
+        $this->orderCollectionFactoryMock = $this->createMock(OrderCollectionFactory::class);
+        $this->mergeManagerMock = $this->createMock(BatchMergerInterface::class);
+        $this->loggerMock = $this->createMock(Logger::class);
         $this->websiteInterfaceMock = $this->getMockBuilder(WebsiteInterface::class)
             ->onlyMethods(
                 [
-                'getId',
-                'setId',
-                'getCode',
-                'setCode',
-                'getName',
-                'setName',
-                'getDefaultGroupId',
-                'setDefaultGroupId',
-                'getExtensionAttributes',
-                'setExtensionAttributes'
+                    'getId',
+                    'setId',
+                    'getCode',
+                    'setCode',
+                    'getName',
+                    'setName',
+                    'getDefaultGroupId',
+                    'setDefaultGroupId',
+                    'getExtensionAttributes',
+                    'setExtensionAttributes'
                 ]
             )
             ->addMethods(['getStoreIds'])
@@ -110,23 +110,21 @@ class OrderTest extends TestCase
             ->getMock();
 
         $this->order = new Order(
-            $this->orderResourceFactoryMock,
-            $this->helperMock,
             $this->scopeConfigInterfaceMock,
-            $this->batchProcessorMock,
-            $this->exporterMock,
+            $this->storeManagerInterfaceMock,
+            $this->helperMock,
+            $this->exporterFactoryMock,
+            $this->megaBatchProcessorFactoryMock,
+            $this->orderResourceFactoryMock,
             $this->orderCollectionFactoryMock,
-            $this->storeManagerInterfaceMock
+            $this->mergeManagerMock,
+            $this->loggerMock
         );
     }
 
     public function testOrderSyncIfOrdersAvailable()
     {
-        $unexpectedResultMessage = 'Done.';
-        $expectedResultMessage = '----------- Order sync ----------- : ' .
-            '00:00:00, Total processed = 10, Total synced = 15';
-
-        $this->getLimitAndBreakValue();
+        $this->getLimitAndBreakValue(1000, 4000);
 
         $this->storeManagerInterfaceMock
             ->expects($this->once())
@@ -135,65 +133,213 @@ class OrderTest extends TestCase
                 [$this->websiteInterfaceMock]
             );
 
-        $this->helperMock
-            ->expects($this->atLeastOnce())
-            ->method('isEnabled')
-            ->willReturn(true);
+        $this->helperMock->method('isEnabled')->willReturn(true);
+        $this->helperMock->method('isOrderSyncEnabled')->willReturn(true);
 
-        $this->websiteInterfaceMock
-            ->expects($this->atLeastOnce())
-            ->method('getStoreIds')
-            ->willReturn([1,2]);
-
-        $this->orderCollectionFactoryMock->expects($this->atLeastOnce())
+        $orderCollectionMock = $this->createMock(Collection::class);
+        $this->orderCollectionFactoryMock->expects($this->exactly(2))
             ->method('create')
-            ->willReturn($this->orderCollectionMock);
+            ->willReturn($orderCollectionMock);
 
-        $this->orderCollectionMock->expects($this->atLeastOnce())
+        $orderCollectionMock->expects($this->exactly(2))
             ->method('getOrdersToProcess')
             ->willReturnOnConsecutiveCalls($this->getMockOrdersToProcess(), []);
 
-        $this->exporterMock->expects($this->atLeastOnce())
-            ->method('exportOrders')
-            ->willReturn($this->getMockSyncedOrders());
+        $exporterMock = $this->createMock(Exporter::class);
+        $this->exporterFactoryMock->expects($this->once())
+            ->method('create')
+            ->willReturn($exporterMock);
 
+        $exporterMock->expects($this->atLeastOnce())
+            ->method('export')
+            ->willReturn($this->getMockOrderBatch(10));
+
+        $this->mergeManagerMock->expects($this->once())
+            ->method('mergeBatch')
+            ->willReturn($this->getMockOrderBatch(10));
+
+        $orderResourceMock = $this->createMock(OrderResource::class);
         $this->orderResourceFactoryMock->expects($this->atLeastOnce())
             ->method('create')
-            ->willReturn($this->orderResourceMock);
+            ->willReturn($orderResourceMock);
 
-        $this->orderResourceMock->expects($this->atLeastOnce())
+        $orderResourceMock->expects($this->once())
             ->method('setProcessed');
 
-        $this->helperMock->expects($this->atLeastOnce())
-            ->method('log');
+        $megaBatchProcessorMock = $this->createMock(MegaBatchProcessor::class);
+        $this->megaBatchProcessorFactoryMock->expects($this->once())
+            ->method('create')
+            ->willReturn($megaBatchProcessorMock);
 
-        $response = $this->order->sync();
+        $megaBatchProcessorMock->expects($this->once())
+            ->method('process');
 
-        $this->assertNotEquals($response['message'], $unexpectedResultMessage);
-        $this->assertEquals($response['message'], $expectedResultMessage);
+        $result = $this->order->sync(new DateTime());
+
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('message', $result);
+        $this->assertArrayHasKey('syncedOrders', $result);
+    }
+
+    public function testStopLoopingIfBreakValueReached()
+    {
+        $this->getLimitAndBreakValue(1000, 4000, 10);
+
+        $this->storeManagerInterfaceMock
+            ->expects($this->once())
+            ->method('getWebsites')
+            ->willReturn(
+                [$this->websiteInterfaceMock]
+            );
+
+        $this->helperMock->method('isEnabled')->willReturn(true);
+        $this->helperMock->method('isOrderSyncEnabled')->willReturn(true);
+
+        $orderCollectionMock = $this->createMock(Collection::class);
+        $this->orderCollectionFactoryMock->expects($this->once())
+            ->method('create')
+            ->willReturn($orderCollectionMock);
+
+        $orderCollectionMock->expects($this->once())
+            ->method('getOrdersToProcess')
+            ->willReturnOnConsecutiveCalls($this->getMockOrdersToProcess(), []);
+
+        $exporterMock = $this->createMock(Exporter::class);
+        $this->exporterFactoryMock->expects($this->once())
+            ->method('create')
+            ->willReturn($exporterMock);
+
+        $exporterMock->expects($this->atLeastOnce())
+            ->method('export')
+            ->willReturn($this->getMockOrderBatch(10));
+
+        $this->mergeManagerMock->expects($this->once())
+            ->method('mergeBatch')
+            ->willReturn($this->getMockOrderBatch(10));
+
+        $orderResourceMock = $this->createMock(OrderResource::class);
+        $this->orderResourceFactoryMock->expects($this->atLeastOnce())
+            ->method('create')
+            ->willReturn($orderResourceMock);
+
+        $orderResourceMock->expects($this->once())
+            ->method('setProcessed');
+
+        $megaBatchProcessorMock = $this->createMock(MegaBatchProcessor::class);
+        $this->megaBatchProcessorFactoryMock->expects($this->once())
+            ->method('create')
+            ->willReturn($megaBatchProcessorMock);
+
+        $megaBatchProcessorMock->expects($this->once())
+            ->method('process');
+
+        $this->order->sync(new DateTime());
+    }
+
+    public function testMultipleWebsitesStopAtBreakValue()
+    {
+        $this->getScopeConfigsInTwoWebsiteLoop(10, 400, 20);
+
+        $this->storeManagerInterfaceMock
+            ->expects($this->once())
+            ->method('getWebsites')
+            ->willReturn(
+                [$this->websiteInterfaceMock, $this->websiteInterfaceMock]
+            );
+
+        $this->helperMock->method('isEnabled')->willReturn(true);
+        $this->helperMock->method('isOrderSyncEnabled')->willReturn(true);
+
+        $orderCollectionMock = $this->createMock(Collection::class);
+        $this->orderCollectionFactoryMock->expects($this->exactly(2))
+            ->method('create')
+            ->willReturn($orderCollectionMock);
+
+        $orderCollectionMock->expects($this->exactly(2))
+            ->method('getOrdersToProcess')
+            ->willReturnOnConsecutiveCalls(
+                $this->getMockOrdersToProcess(),
+                $this->getMockOrdersToProcess()
+            );
+
+        $exporterMock = $this->createMock(Exporter::class);
+        $this->exporterFactoryMock->expects($this->once())
+            ->method('create')
+            ->willReturn($exporterMock);
+
+        $exporterMock->expects($this->exactly(2))
+            ->method('export')
+            ->willReturn($this->getMockOrderBatch(10));
+
+        $this->mergeManagerMock->expects($this->exactly(2))
+            ->method('mergeBatch')
+            ->willReturnOnConsecutiveCalls(
+                $this->getMockOrderBatch(10),
+                $this->getMockOrderBatch(20)
+            );
+
+        $orderResourceMock = $this->createMock(OrderResource::class);
+        $this->orderResourceFactoryMock->expects($this->exactly(2))
+            ->method('create')
+            ->willReturn($orderResourceMock);
+
+        $orderResourceMock->expects($this->exactly(2))
+            ->method('setProcessed');
+
+        $megaBatchProcessorMock = $this->createMock(MegaBatchProcessor::class);
+        $this->megaBatchProcessorFactoryMock->expects($this->once())
+            ->method('create')
+            ->willReturn($megaBatchProcessorMock);
+
+        $megaBatchProcessorMock->expects($this->once())
+            ->method('process');
+
+        $this->order->sync(new DateTime());
     }
 
     /**
      * Tests retrieving the configured sync limit.
      */
-    private function getLimitAndBreakValue()
+    private function getLimitAndBreakValue(int $limit, int $megaBatchSize, ?int $breakValue = null)
     {
-        $this->websiteInterfaceMock
-            ->expects($this->atLeastOnce())
-            ->method('getId')
-            ->willReturn($websiteId = 1);
+        $matcher = $this->exactly(3);
+        $this->scopeConfigInterfaceMock
+            ->expects($matcher)
+            ->method('getValue')
+            ->willReturnCallback(function () use ($matcher) {
+                return match ($matcher->numberOfInvocations()) {
+                    1 => [Config::XML_PATH_CONNECTOR_TRANSACTIONAL_DATA_SYNC_LIMIT],
+                    2 => [Config::XML_PATH_CONNECTOR_MEGA_BATCH_SIZE_ORDERS],
+                    3 => [Config::XML_PATH_CONNECTOR_SYNC_BREAK_VALUE],
+                };
+            })
+            ->willReturnOnConsecutiveCalls($limit, $megaBatchSize, $breakValue);
+    }
 
-        $this->scopeConfigInterfaceMock->method('getValue')
-            ->withConsecutive(
-                [\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_TRANSACTIONAL_DATA_SYNC_LIMIT],
-                [\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_BREAK_VALUE],
-                [\Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_MEGA_BATCH_SIZE_ORDERS],
-                [
-                    \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_ORDER_ENABLED,
-                    \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
-                    $websiteId
-                ]
-            )->willReturnOnConsecutiveCalls(1000, null, 5000, 1);
+    private function getScopeConfigsInTwoWebsiteLoop(int $limit, int $megaBatchSize, ?int $breakValue = null)
+    {
+        $matcher = $this->exactly(6);
+        $this->scopeConfigInterfaceMock
+            ->expects($matcher)
+            ->method('getValue')
+            ->willReturnCallback(function () use ($matcher) {
+                return match ($matcher->numberOfInvocations()) {
+                    1 => [Config::XML_PATH_CONNECTOR_TRANSACTIONAL_DATA_SYNC_LIMIT],
+                    2 => [Config::XML_PATH_CONNECTOR_MEGA_BATCH_SIZE_ORDERS],
+                    3 => [Config::XML_PATH_CONNECTOR_SYNC_BREAK_VALUE],
+                    4 => [Config::XML_PATH_CONNECTOR_TRANSACTIONAL_DATA_SYNC_LIMIT],
+                    5 => [Config::XML_PATH_CONNECTOR_MEGA_BATCH_SIZE_ORDERS],
+                    6 => [Config::XML_PATH_CONNECTOR_SYNC_BREAK_VALUE],
+                };
+            })
+            ->willReturnOnConsecutiveCalls(
+                $limit,
+                $megaBatchSize,
+                $breakValue,
+                $limit,
+                $megaBatchSize,
+                $breakValue
+            );
     }
 
     /**
@@ -201,7 +347,7 @@ class OrderTest extends TestCase
      *
      * @return array
      */
-    public function getMockOrdersToProcess()
+    private function getMockOrdersToProcess()
     {
         return [
             0 => '1205',
@@ -222,30 +368,22 @@ class OrderTest extends TestCase
      *
      * @return array
      */
-    public function getMockSyncedOrders()
+    private function getMockOrderBatch(int $count)
     {
-        return [
-            '1' => [
-                '1' => [],
-                '2' => [],
-                '3' => [],
-                '4' => [],
-                '5' => []
-            ],
-            '2' => [
-                '1' => [],
-                '2' => [],
-                '3' => [],
-                '4' => [],
-                '5' => []
-            ],
-            '3' => [
-                '1' => [],
-                '2' => [],
-                '3' => [],
-                '4' => [],
-                '5' => []
-            ],
-        ];
+        $batch = [];
+        for ($i = 1; $i <= $count; $i++) {
+            $batch[$i] = [
+                'email' => 'test' . $i . '@example.com',
+                'type' => 'Html',
+                'id' => $i,
+                'quote_id' => 0,
+                'store_id' => null,
+                'grand_total' => 0.0,
+                'firstname' => 'Test',
+                'lastname' => 'User'
+            ];
+        }
+
+        return $batch;
     }
 }

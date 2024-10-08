@@ -4,12 +4,13 @@ namespace Dotdigitalgroup\Email\Test\Unit\Model\Sync;
 
 use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Logger\Logger;
-use Dotdigitalgroup\Email\Model\Connector\Datafield;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact\Collection as ContactCollection;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory as ContactCollectionFactory;
-use Dotdigitalgroup\Email\Model\Sync\Batch\CustomerBatchProcessor;
-use Dotdigitalgroup\Email\Model\Sync\AbstractExporter;
+use Dotdigitalgroup\Email\Model\Sync\Batch\MegaBatchProcessor;
+use Dotdigitalgroup\Email\Model\Sync\Batch\MegaBatchProcessorFactory;
+use Dotdigitalgroup\Email\Model\Sync\Batch\MergeManager;
 use Dotdigitalgroup\Email\Model\Sync\Customer;
+use Dotdigitalgroup\Email\Model\Sync\Customer\Exporter;
 use Dotdigitalgroup\Email\Model\Sync\Customer\ExporterFactory;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Store\Api\Data\WebsiteInterface;
@@ -34,14 +35,19 @@ class CustomerTest extends TestCase
     private $contactCollectionFactoryMock;
 
     /**
-     * @var CustomerBatchProcessor|\PHPUnit\Framework\MockObject\MockObject
+     * @var MegaBatchProcessorFactory|\PHPUnit\Framework\MockObject\MockObject
      */
-    private $batchProcessorMock;
+    private $batchProcessorFactoryMock;
 
     /**
-     * @var AbstractExporter|\PHPUnit\Framework\MockObject\MockObject
+     * @var MergeManager|\PHPUnit\Framework\MockObject\MockObject
      */
-    private $abstractExporterMock;
+    private $mergeManagerMock;
+
+    /**
+     * @var Exporter|\PHPUnit\Framework\MockObject\MockObject
+     */
+    private $exporterMock;
 
     /**
      * @var ExporterFactory|\PHPUnit\Framework\MockObject\MockObject
@@ -79,12 +85,13 @@ class CustomerTest extends TestCase
         $this->loggerMock = $this->createMock(Logger::class);
         $this->contactCollectionMock = $this->createMock(ContactCollection::class);
         $this->contactCollectionFactoryMock = $this->createMock(ContactCollectionFactory::class);
-        $this->batchProcessorMock = $this->createMock(CustomerBatchProcessor::class);
+        $this->batchProcessorFactoryMock = $this->createMock(MegaBatchProcessorFactory::class);
+        $this->mergeManagerMock = $this->createMock(MergeManager::class);
         $this->exporterFactoryMock = $this->createMock(ExporterFactory::class);
         $this->scopeConfigMock = $this->createMock(ScopeConfigInterface::class);
         $this->storeManagerMock = $this->createMock(StoreManagerInterface::class);
 
-        $this->abstractExporterMock = $this->createMock(AbstractExporter::class);
+        $this->exporterMock = $this->createMock(Exporter::class);
         $this->websiteInterfaceMock = $this->getMockBuilder(WebsiteInterface::class)
             ->onlyMethods(
                 [
@@ -112,7 +119,8 @@ class CustomerTest extends TestCase
             $this->helperMock,
             $this->loggerMock,
             $this->contactCollectionFactoryMock,
-            $this->batchProcessorMock,
+            $this->batchProcessorFactoryMock,
+            $this->mergeManagerMock,
             $this->exporterFactoryMock,
             $this->scopeConfigMock,
             $this->storeManagerMock
@@ -138,8 +146,8 @@ class CustomerTest extends TestCase
         $this->exporterFactoryMock->expects($this->never())
             ->method('create');
 
-        $this->batchProcessorMock->expects($this->never())
-            ->method('process');
+        $this->batchProcessorFactoryMock->expects($this->never())
+            ->method('create');
 
         $this->customer->sync();
     }
@@ -151,7 +159,7 @@ class CustomerTest extends TestCase
     public function testNoExportingIfNoCustomersNeedSyncing()
     {
         $this->setupForOneEnabledWebsite();
-        $this->setUpColumns();
+        $this->setupFieldMapping();
 
         $this->contactCollectionFactoryMock->expects($this->once())
             ->method('create')
@@ -165,8 +173,13 @@ class CustomerTest extends TestCase
             ->method('getColumnValues')
             ->willReturn([]);
 
-        $this->abstractExporterMock->expects($this->never())
+        $this->exporterMock->expects($this->never())
             ->method('export');
+
+        $batchProcessorMock = $this->createMock(MegaBatchProcessor::class);
+        $this->batchProcessorFactoryMock->expects($this->once())
+            ->method('create')
+            ->willReturn($batchProcessorMock);
 
         $this->customer->sync();
     }
@@ -182,7 +195,7 @@ class CustomerTest extends TestCase
         $breakValue = 1;
 
         $this->setupForOneEnabledWebsite();
-        $this->setUpColumns();
+        $this->setupFieldMapping();
 
         /* Set loop limits */
         $this->scopeConfigMock->expects($this->exactly(3))
@@ -201,17 +214,18 @@ class CustomerTest extends TestCase
             ->method('getColumnValues')
             ->willReturn([1, 21, 309]);
 
-        $this->abstractExporterMock->expects($this->once())
+        $this->exporterMock->expects($this->once())
             ->method('export')
             ->willReturn($this->getCustomersBatch());
 
-        $this->abstractExporterMock->expects($this->once())
-            ->method('getCsvColumns')
-            ->willReturn($this->getColumns());
+        $this->mergeManagerMock->expects($this->once())
+            ->method('mergeBatch')
+            ->willReturn($this->getCustomersBatch());
 
-        $this->abstractExporterMock->expects($this->once())
-            ->method('initialiseCsvFile')
-            ->willReturn($this->getFilename());
+        $batchProcessorMock = $this->createMock(MegaBatchProcessor::class);
+        $this->batchProcessorFactoryMock->expects($this->once())
+            ->method('create')
+            ->willReturn($batchProcessorMock);
 
         $data = $this->customer->sync();
 
@@ -229,7 +243,7 @@ class CustomerTest extends TestCase
         $breakValue = null;
 
         $this->setupForOneEnabledWebsite();
-        $this->setUpColumns();
+        $this->setupFieldMapping();
 
         /* Set loop limits */
         $this->scopeConfigMock->expects($this->exactly(3))
@@ -253,22 +267,26 @@ class CustomerTest extends TestCase
                 []
             );
 
-        $this->abstractExporterMock->expects($this->exactly(2))
+        $this->exporterMock->expects($this->exactly(2))
             ->method('export')
             ->willReturnOnConsecutiveCalls(
                 $this->getCustomersBatch(),
                 $this->getCustomersBatchTwo()
             );
 
-        $this->abstractExporterMock->expects($this->once())
-            ->method('getCsvColumns')
-            ->willReturn($this->getColumns());
+        $this->mergeManagerMock->expects($this->exactly(2))
+            ->method('mergeBatch')
+            ->willReturnOnConsecutiveCalls(
+                $this->getCustomersBatch(),
+                $this->getMergedMegaBatch()
+            );
 
-        $this->abstractExporterMock->expects($this->once())
-            ->method('initialiseCsvFile')
-            ->willReturn($this->getFilename());
+        $batchProcessorMock = $this->createMock(MegaBatchProcessor::class);
+        $this->batchProcessorFactoryMock->expects($this->any())
+            ->method('create')
+            ->willReturn($batchProcessorMock);
 
-        $this->batchProcessorMock->expects($this->exactly(2))
+        $batchProcessorMock->expects($this->exactly(2))
             ->method('process');
 
         $data = $this->customer->sync();
@@ -280,10 +298,10 @@ class CustomerTest extends TestCase
      * @return void
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function testFileNotInitialisedIfNothingToBatch()
+    public function testMergeManagerNotCalledIfNothingToBatch()
     {
         $this->setupForOneEnabledWebsite();
-        $this->setUpColumns();
+        $this->setupFieldMapping();
 
         $this->contactCollectionFactoryMock->expects($this->once())
             ->method('create')
@@ -297,12 +315,17 @@ class CustomerTest extends TestCase
             ->method('getColumnValues')
             ->willReturn([1, 2, 3, 4, 5]);
 
-        $this->abstractExporterMock->expects($this->once())
+        $this->exporterMock->expects($this->once())
             ->method('export')
             ->willReturn([]);
 
-        $this->abstractExporterMock->expects($this->never())
-            ->method('initialiseCsvFile');
+        $this->mergeManagerMock->expects($this->never())
+            ->method('mergeBatch');
+
+        $batchProcessorMock = $this->createMock(MegaBatchProcessor::class);
+        $this->batchProcessorFactoryMock->expects($this->once())
+            ->method('create')
+            ->willReturn($batchProcessorMock);
 
         $this->customer->sync();
     }
@@ -331,10 +354,10 @@ class CustomerTest extends TestCase
 
         $this->exporterFactoryMock->expects($this->exactly(2))
             ->method('create')
-            ->willReturn($this->abstractExporterMock);
+            ->willReturn($this->exporterMock);
 
-        $this->abstractExporterMock->expects($this->exactly(2))
-            ->method('setCsvColumns');
+        $this->exporterMock->expects($this->exactly(2))
+            ->method('setFieldMapping');
 
         /* Two loops for each website (one with some customers, then none remaining) */
         $this->contactCollectionFactoryMock->expects($this->exactly(4))
@@ -354,22 +377,26 @@ class CustomerTest extends TestCase
                 []
             );
 
-        $this->abstractExporterMock->expects($this->exactly(2))
+        $this->exporterMock->expects($this->exactly(2))
             ->method('export')
             ->willReturnOnConsecutiveCalls(
                 $this->getCustomersBatch(),
                 $this->getCustomersBatchTwo()
             );
 
-        $this->abstractExporterMock->expects($this->exactly(2))
-            ->method('getCsvColumns')
-            ->willReturn($this->getColumns());
+        $this->mergeManagerMock->expects($this->exactly(2))
+            ->method('mergeBatch')
+            ->willReturnOnConsecutiveCalls(
+                $this->getCustomersBatch(),
+                $this->getMergedMegaBatch()
+            );
 
-        $this->abstractExporterMock->expects($this->exactly(2))
-            ->method('initialiseCsvFile')
-            ->willReturn($this->getFilename());
+        $batchProcessorMock = $this->createMock(MegaBatchProcessor::class);
+        $this->batchProcessorFactoryMock->expects($this->any())
+            ->method('create')
+            ->willReturn($batchProcessorMock);
 
-        $this->batchProcessorMock->expects($this->exactly(2))
+        $batchProcessorMock->expects($this->exactly(2))
             ->method('process');
 
         $data = $this->customer->sync();
@@ -394,7 +421,7 @@ class CustomerTest extends TestCase
         $breakValue = null;
 
         $this->setupForOneEnabledWebsite();
-        $this->setUpColumns();
+        $this->setupFieldMapping();
 
         /* Set loop limits */
         $this->scopeConfigMock->expects($this->exactly(3))
@@ -416,17 +443,18 @@ class CustomerTest extends TestCase
                 []
             );
 
-        $this->abstractExporterMock->expects($this->once())
+        $this->exporterMock->expects($this->once())
             ->method('export')
             ->willReturn($this->getCustomersBatch());
 
-        $this->abstractExporterMock->expects($this->once())
-            ->method('getCsvColumns')
-            ->willReturn($this->getColumns());
+        $this->mergeManagerMock->expects($this->once())
+            ->method('mergeBatch')
+            ->willReturn($this->getCustomersBatch());
 
-        $this->abstractExporterMock->expects($this->once())
-            ->method('initialiseCsvFile')
-            ->willReturn($this->getFilename());
+        $batchProcessorMock = $this->createMock(MegaBatchProcessor::class);
+        $this->batchProcessorFactoryMock->expects($this->once())
+            ->method('create')
+            ->willReturn($batchProcessorMock);
 
         $data = $this->customer->sync();
 
@@ -485,14 +513,14 @@ class CustomerTest extends TestCase
     /**
      * @return void
      */
-    private function setupColumns()
+    private function setupFieldMapping()
     {
         $this->exporterFactoryMock->expects($this->once())
             ->method('create')
-            ->willReturn($this->abstractExporterMock);
+            ->willReturn($this->exporterMock);
 
-        $this->abstractExporterMock->expects($this->once())
-            ->method('setCsvColumns');
+        $this->exporterMock->expects($this->once())
+            ->method('setFieldMapping');
     }
 
     /**
@@ -524,25 +552,19 @@ class CustomerTest extends TestCase
     }
 
     /**
-     * @return array
+     * Some more customers.
+     *
+     * @return array[]
      */
-    private function getColumns()
+    private function getMergedMegaBatch()
     {
-        $datafield = new Datafield();
-        $columns = [];
-
-        foreach ($datafield->getContactDatafields() as $key => $properties) {
-            $columns[$key] = $properties['name'];
-        }
-
-        return $columns;
-    }
-
-    /**
-     * @return string
-     */
-    private function getFilename()
-    {
-        return 'base_customer_25_05_2022_130304_85681d6a.csv';
+        return [
+            1 => ['chazco@emailsim.io', 'Html', '1', 0, null, 0.0, 'Chaz', 'Kangaroo'],
+            21 => ['chaz2@emailsim.io', 'Html', '1', 0, null, 0.0, 'Dave', 'Dot'],
+            309 => ['chaz3@emailsim.io', 'Html', '1', 0, null, 0.0, 'Chip', 'Chop'],
+            321 => ['chazco@emailsim.io', 'Html', '1', 0, null, 0.0, 'Chaz', 'Kangaroo'],
+            322 => ['chaz2@emailsim.io', 'Html', '1', 0, null, 0.0, 'Dave', 'Dot'],
+            323 => ['chaz3@emailsim.io', 'Html', '1', 0, null, 0.0, 'Chip', 'Chop'],
+        ];
     }
 }

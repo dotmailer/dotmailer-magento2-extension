@@ -172,6 +172,9 @@ class Customer extends ContactData
      * @param string $email
      *
      * @return void
+     *
+     * @deprecated email is an identifier, not a data field.
+     * @see \Dotdigitalgroup\Email\Model\Sync\Export\SdkContactBuilder::createSdkContact
      */
     public function setEmail($email)
     {
@@ -184,6 +187,9 @@ class Customer extends ContactData
      * @param string $emailType
      *
      * @return void
+     *
+     * @deprecated email_type is a channel property, not a data field.
+     * @see \Dotdigitalgroup\Email\Model\Sync\Export\SdkContactBuilder::createSdkContact
      */
     public function setEmailType($emailType)
     {

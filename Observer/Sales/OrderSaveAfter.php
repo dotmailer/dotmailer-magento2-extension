@@ -6,6 +6,7 @@ namespace Dotdigitalgroup\Email\Observer\Sales;
 
 use Dotdigitalgroup\Email\Helper\Config;
 use Dotdigitalgroup\Email\Helper\Data;
+use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\AutomationFactory;
 use Dotdigitalgroup\Email\Model\Contact;
 use Dotdigitalgroup\Email\Model\OrderFactory;
@@ -14,6 +15,7 @@ use Dotdigitalgroup\Email\Model\Queue\Sync\Automation\AutomationPublisher;
 use Dotdigitalgroup\Email\Model\ResourceModel\Automation;
 use Dotdigitalgroup\Email\Model\ResourceModel\Automation\CollectionFactory;
 use Dotdigitalgroup\Email\Model\StatusInterface;
+use Dotdigitalgroup\Email\Model\Subscriber as DotdigitalSubscriber;
 use Dotdigitalgroup\Email\Model\Sync\Automation\AutomationTypeHandler;
 use Exception;
 use InvalidArgumentException;
@@ -22,7 +24,6 @@ use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Exception\AlreadyExistsException;
 use Magento\Framework\MessageQueue\PublisherInterface;
-use Magento\Framework\Registry;
 use Magento\Framework\Serialize\SerializerInterface;
 use Magento\Sales\Model\Order;
 use Magento\Store\Model\App\EmulationFactory;
@@ -35,6 +36,11 @@ use Magento\Store\Model\StoreManagerInterface;
 class OrderSaveAfter implements ObserverInterface
 {
     /**
+     * @var Logger
+     */
+    private $logger;
+
+    /**
      * @var Automation
      */
     private $automationResource;
@@ -43,11 +49,6 @@ class OrderSaveAfter implements ObserverInterface
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Order
      */
     private $orderResource;
-
-    /**
-     * @var Registry
-     */
-    private $registry;
 
     /**
      * @var ScopeConfigInterface
@@ -120,11 +121,11 @@ class OrderSaveAfter implements ObserverInterface
     private $publisher;
 
     /**
+     * @param Logger $logger
      * @param AutomationFactory $automationFactory
      * @param Automation $automationResource
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Order $orderResource
      * @param OrderFactory $emailOrderFactory
-     * @param Registry $registry
      * @param SerializerInterface $serializer
      * @param ScopeConfigInterface $scopeConfig
      * @param StoreManagerInterface $storeManagerInterface
@@ -139,11 +140,11 @@ class OrderSaveAfter implements ObserverInterface
      * @param PublisherInterface $publisher
      */
     public function __construct(
+        Logger $logger,
         AutomationFactory $automationFactory,
         Automation $automationResource,
         \Dotdigitalgroup\Email\Model\ResourceModel\Order $orderResource,
         OrderFactory $emailOrderFactory,
-        Registry $registry,
         SerializerInterface $serializer,
         ScopeConfigInterface $scopeConfig,
         StoreManagerInterface $storeManagerInterface,
@@ -157,6 +158,7 @@ class OrderSaveAfter implements ObserverInterface
         AutomationPublisher $automationPublisher,
         PublisherInterface $publisher
     ) {
+        $this->logger = $logger;
         $this->serializer = $serializer;
         $this->orderResource = $orderResource;
         $this->automationResource = $automationResource;
@@ -164,7 +166,6 @@ class OrderSaveAfter implements ObserverInterface
         $this->emailOrderFactory = $emailOrderFactory;
         $this->scopeConfig = $scopeConfig;
         $this->storeManager = $storeManagerInterface;
-        $this->registry = $registry;
         $this->emulationFactory = $emulationFactory;
         $this->orderCollectionFactory = $orderCollectionFactory;
         $this->helper = $data;
@@ -185,77 +186,71 @@ class OrderSaveAfter implements ObserverInterface
      */
     public function execute(Observer $observer)
     {
-        $order = $observer->getEvent()->getOrder();
-        $status         = $order->getStatus();
-        $storeId        = $order->getStoreId();
-        $customerEmail  = $order->getCustomerEmail();
-        $store      = $this->storeManager->getStore($storeId);
-        $storeName  = $store->getName();
-        $websiteId  = $store->getWebsiteId();
-        if (empty($storeId)) {
-            $storeId = $store->getId();
-        }
-        // start app emulation
-        $appEmulation = $this->emulationFactory->create();
-        $appEmulation->startEnvironmentEmulation($storeId);
-        $emailOrder = $this->emailOrderFactory->create()
-            ->loadOrCreateOrder($order->getEntityId(), $order->getQuoteId());
-        //reimport email order
-        $emailOrder->setUpdatedAt($order->getUpdatedAt())
-            ->setCreatedAt($order->getUpdatedAt())
-            ->setStoreId($storeId)
-            ->setProcessed(0)
-            ->setOrderStatus($status);
+        try {
+            $order = $observer->getEvent()->getOrder();
+            $status         = $order->getStatus();
+            $storeId        = $order->getStoreId();
+            $customerEmail  = $order->getCustomerEmail();
+            $store      = $this->storeManager->getStore($storeId);
+            $storeName  = $store->getName();
+            $websiteId  = $store->getWebsiteId();
+            if (empty($storeId)) {
+                $storeId = $store->getId();
+            }
+            // start app emulation
+            $appEmulation = $this->emulationFactory->create();
+            $appEmulation->startEnvironmentEmulation($storeId);
+            $emailOrder = $this->emailOrderFactory->create()
+                ->loadOrCreateOrder($order->getEntityId(), $order->getQuoteId());
+            //reimport email order
+            $emailOrder->setUpdatedAt($order->getUpdatedAt())
+                ->setCreatedAt($order->getUpdatedAt())
+                ->setStoreId($storeId)
+                ->setProcessed(0)
+                ->setOrderStatus($status);
 
-        $isEnabled = $this->helper->isStoreEnabled($storeId);
-
-        //api not enabled, stop emulation and exit
-        if (! $isEnabled) {
+            // set back the current store
             $appEmulation->stopEnvironmentEmulation();
-            return $this;
-        }
+            $this->orderResource->save($emailOrder);
 
-        // set back the current store
-        $appEmulation->stopEnvironmentEmulation();
-        $this->orderResource->save($emailOrder);
+            if (!$this->helper->isEnabled($websiteId)) {
+                return $this;
+            }
 
-        $this->statusCheckAutomationEnrolment($order, $status, $customerEmail, $websiteId, $storeId, $storeName);
+            $this->statusCheckAutomationEnrolment($order, $status, $customerEmail, $websiteId, $storeId, $storeName);
 
-        //Reset contact if found
-        $contactCollection = $this->contactCollectionFactory->create();
-        $contact = $contactCollection->loadByCustomerEmail($customerEmail, $websiteId);
-        if ($contact) {
-            $this->resetContact($contact);
-        }
+            //Reset contact if found
+            $this->resetContactByEmailAndWebsiteId($customerEmail, $websiteId);
 
-        //If customer's first order
-        if ($order->getCustomerId()) {
-            $orders = $this->orderCollectionFactory->create()
-                ->addFieldToFilter('customer_id', $order->getCustomerId());
-            if ($orders->getSize() == 1) {
-                $automationTypeNewOrder = AutomationTypeHandler::AUTOMATION_TYPE_CUSTOMER_FIRST_ORDER;
-                $programIdNewOrder = $this->helper->getAutomationIdByType(
-                    'XML_PATH_CONNECTOR_AUTOMATION_STUDIO_FIRST_ORDER',
-                    $storeId
-                );
-                if ($programIdNewOrder) {
-                    //send to automation queue
-                    $this->doAutomationEnrolment(
-                        [
-                            'programId' => $programIdNewOrder,
-                            'automationType' => $automationTypeNewOrder,
-                            'email' => $customerEmail,
-                            'order_id' => $order->getIncrementId(),
-                            'website_id' => $websiteId,
-                            'store_id' => $storeId,
-                            'store_name' => $storeName
-                        ]
+            //If customer's first order
+            if ($order->getCustomerId()) {
+                $orders = $this->orderCollectionFactory->create()
+                    ->addFieldToFilter('customer_id', $order->getCustomerId());
+                if ($orders->getSize()==1) {
+                    $automationTypeNewOrder = AutomationTypeHandler::AUTOMATION_TYPE_CUSTOMER_FIRST_ORDER;
+                    $programIdNewOrder = $this->helper->getAutomationIdByType(
+                        'XML_PATH_CONNECTOR_AUTOMATION_STUDIO_FIRST_ORDER',
+                        $storeId
                     );
+                    if ($programIdNewOrder) {
+                        //send to automation queue
+                        $this->doAutomationEnrolment(
+                            [
+                                'programId' => $programIdNewOrder,
+                                'automationType' => $automationTypeNewOrder,
+                                'email' => $customerEmail,
+                                'order_id' => $order->getIncrementId(),
+                                'website_id' => $websiteId,
+                                'store_id' => $storeId,
+                                'store_name' => $storeName
+                            ]
+                        );
+                    }
                 }
             }
+        } catch (\Exception $e) {
+            $this->logger->error('Error in OrderSaveAfter observer', [(string) $e]);
         }
-        //admin oder when editing the first one is canceled
-        $this->registry->unregister('sales_order_status_before');
 
         return $this;
     }
@@ -263,12 +258,20 @@ class OrderSaveAfter implements ObserverInterface
     /**
      * Reset contact based on type and status
      *
-     * @param Contact $contact
+     * @param string $email
+     * @param int $websiteId
      *
      * @throws AlreadyExistsException
      */
-    private function resetContact($contact)
+    private function resetContactByEmailAndWebsiteId($email, $websiteId)
     {
+        $contact = $this->contactCollectionFactory->create()
+            ->loadByCustomerEmail($email, $websiteId);
+
+        if (!$contact) {
+            return;
+        }
+
         if ($contact->getCustomerId() && $contact->getEmailImported()) {
             $contact->setEmailImported(Contact::EMAIL_CONTACT_NOT_IMPORTED);
             $this->contactResource->save($contact);
@@ -282,7 +285,7 @@ class OrderSaveAfter implements ObserverInterface
             $subscriptionData->setEmail($contact->getEmail());
             $subscriptionData->setWebsiteId($contact->getWebsiteId());
             $subscriptionData->setType('subscribe');
-            $this->publisher->publish('ddg.newsletter.subscription', $subscriptionData);
+            $this->publisher->publish(DotdigitalSubscriber::TOPIC_NEWSLETTER_SUBSCRIPTION, $subscriptionData);
         }
     }
 
@@ -319,10 +322,10 @@ class OrderSaveAfter implements ObserverInterface
                     $this->automationPublisher->publish($automation);
                 }
             } catch (Exception $e) {
-                $this->helper->debug((string)$e, []);
+                $this->logger->debug((string)$e, []);
             }
         } else {
-            $this->helper->log('automation type : ' . $data['automationType'] . ' program id not found');
+            $this->logger->info('automation type : ' . $data['automationType'] . ' program id not found');
         }
     }
 
@@ -372,7 +375,7 @@ class OrderSaveAfter implements ObserverInterface
                 }
             }
         } catch (InvalidArgumentException $e) {
-            $this->helper->debug((string)$e, []);
+            $this->logger->debug((string)$e, []);
             return;
         }
     }

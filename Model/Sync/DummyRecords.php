@@ -94,7 +94,7 @@ class DummyRecords implements SyncInterface
             $contact = $this->sdkContactFactory->create();
             $contact->setMatchIdentifier('email');
             $contact->setIdentifiers(['email' => $identifier]);
-            $client->contacts->create($contact);
+            $client->contacts->patchByIdentifier($identifier, $contact);
         } catch (ResponseValidationException $e) {
             if (strpos($e->getMessage(), 'identifierConflict') === false) {
                 $this->logger->debug(

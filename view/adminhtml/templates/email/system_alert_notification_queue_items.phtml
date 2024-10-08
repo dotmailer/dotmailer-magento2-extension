@@ -1,0 +1,43 @@
+<?php
+/** @var $block Dotdigitalgroup\Email\Block\Adminhtml\Email\Items */
+// phpcs:disable Magento2.Legacy.EscapeMethodsOnBlockClass
+?>
+<?php if ($block->hasItems()) { ?>
+    <?php foreach ($block->getItems() as $type => $group): ?>
+        <p><strong>Message Queue - messages with '<?= $block->escapeHtml($type) ?>' status</strong></p>
+        <table class="notification-items"
+               summary="<?= $block->escapeHtmlAttr(__('System Alert Notifications - Message Queue Errors')) ?>"
+               style="border-collapse: collapse; border: 1px solid black;">
+            <thead>
+            <tr>
+                <th style="padding: 10px; border: 1px solid black;"><?= $block->escapeHtml(__('Id')) ?></th>
+                <th style="padding: 10px; border: 1px solid black;"><?= $block->escapeHtml(__('Topic Name')) ?></th>
+                <th style="padding: 10px; border: 1px solid black;"><?= $block->escapeHtml(__('Status')) ?></th>
+                <th style="padding: 10px; border: 1px solid black;"><?= $block->escapeHtml(__('Updated at')) ?></th>
+            </tr>
+            </thead>
+            <tbody>
+            <?php foreach ($group as $item): ?>
+                <tr>
+                    <td style="padding: 10px; border: 1px solid black;">
+                        <?= $block->escapeHtml($item->getMessageId()) ?>
+                    </td>
+                    <td style="padding: 10px; border: 1px solid black;">
+                        <?= $block->escapeHtml($item->getTopicName()) ?>
+                    </td>
+                    <td style="padding: 10px; border: 1px solid black;">
+                        <?= $block->escapeHtml($item->getStatus()) ?>
+                    </td>
+                    <td style="padding: 10px; border: 1px solid black;">
+                        <?= $block->escapeHtml($item->getUpdatedAt()) ?>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
+            </tbody>
+        </table>
+    <?php endforeach; ?>
+
+<p><?= $block->escapeHtml(__('Please go to the Message Queue report to review.')); ?></p>
+<?php }
+// phpcs:enable
+?>

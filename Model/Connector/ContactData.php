@@ -161,7 +161,18 @@ class ContactData
     {
         $this->model = $model;
         $this->columns = $columns;
+        $this->contactData = [];
         return $this;
+    }
+
+    /**
+     * Get contact data.
+     *
+     * @return array
+     */
+    public function getContactData()
+    {
+        return $this->contactData;
     }
 
     /**
@@ -181,10 +192,6 @@ class ContactData
                             $this->model->getDob()
                         )
                         : null;
-                    break;
-
-                case 'email_type':
-                    $value = 'Html';
                     break;
 
                 default:
@@ -701,7 +708,15 @@ class ContactData
 
             default:
                 //Text, Dates, Multilines, Boolean
-                return $this->model->getData($attributeCode);
+                $value = $this->model->getData($attributeCode);
+                if (!$value) {
+                    $defaultValue = $attribute->getDefaultValue();
+                    if ((string)$defaultValue != '') {
+                        return $defaultValue;
+                    }
+                }
+
+                return $value;
         }
     }
 

@@ -2,8 +2,9 @@
 
 namespace Dotdigitalgroup\Email\Observer\Adminhtml;
 
-use Dotdigitalgroup\Email\Helper\Data;
+use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Apiconnector\Test;
+use Dotdigitalgroup\Email\Model\Sync\Integration\IntegrationInsights;
 use Magento\Backend\App\Action\Context;
 use Magento\Config\Model\ResourceModel\Config;
 use Magento\Framework\Event\Observer;
@@ -18,9 +19,9 @@ use Dotdigitalgroup\Email\Model\Sync\DummyRecordsFactory;
 class AccountCredentials implements ObserverInterface
 {
     /**
-     * @var Data
+     * @var Logger
      */
-    private $helper;
+    private $logger;
 
     /**
      * @var Context
@@ -55,7 +56,7 @@ class AccountCredentials implements ObserverInterface
     /**
      * AccountCredentials constructor.
      *
-     * @param Data $data
+     * @param Logger $logger
      * @param Test $test
      * @param Context $context
      * @param DummyRecordsFactory $dummyRecordsFactory
@@ -63,7 +64,7 @@ class AccountCredentials implements ObserverInterface
      * @param PublisherInterface $publisher
      */
     public function __construct(
-        Data $data,
+        Logger $logger,
         Test $test,
         Context $context,
         DummyRecordsFactory $dummyRecordsFactory,
@@ -71,7 +72,7 @@ class AccountCredentials implements ObserverInterface
         PublisherInterface $publisher
     ) {
         $this->test = $test;
-        $this->helper = $data;
+        $this->logger = $logger;
         $this->context = $context;
         $this->messageManager = $context->getMessageManager();
         $this->resourceConfig = $resourceConfig;
@@ -87,7 +88,6 @@ class AccountCredentials implements ObserverInterface
      * @param Observer $observer
      *
      * @return $this
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function execute(Observer $observer)
     {
@@ -106,22 +106,26 @@ class AccountCredentials implements ObserverInterface
         $apiPassword = $groups['api']['fields']['password']['value'] ?? false;
 
         if ($apiUsername && $apiPassword) {
-            $isValidAccount = $this->isValidAccount($apiUsername, $apiPassword);
-            if ($isValidAccount) {
-                $this->helper->log('----PUBLISHING INTEGRATION INSIGHTS---');
-                $this->publisher->publish('ddg.sync.integration', '');
+            try {
+                $isValidAccount = $this->isValidAccount($apiUsername, $apiPassword);
+                if ($isValidAccount) {
+                    $this->logger->info('----PUBLISHING INTEGRATION INSIGHTS---');
+                    $this->publisher->publish(IntegrationInsights::TOPIC_SYNC_INTEGRATION, '');
 
-                $websiteId = $this->context->getRequest()->getParam('website');
+                    $websiteId = $this->context->getRequest()->getParam('website');
 
-                if ($websiteId) {
+                    if ($websiteId) {
+                        $this->dummyRecordsFactory->create()
+                            ->syncForWebsite($websiteId);
+
+                        return $this;
+                    }
+
                     $this->dummyRecordsFactory->create()
-                        ->syncForWebsite($websiteId);
-
-                    return $this;
+                        ->sync();
                 }
-
-                $this->dummyRecordsFactory->create()
-                    ->sync();
+            } catch (\Exception $e) {
+                $this->logger->error('Error in AccountCredentials controller', [(string) $e]);
             }
         }
 
@@ -133,11 +137,13 @@ class AccountCredentials implements ObserverInterface
      *
      * @param string $apiUsername
      * @param string $apiPassword
+     *
      * @return bool
+     * @throws \Exception
      */
     private function isValidAccount(string $apiUsername, string $apiPassword): bool
     {
-        $this->helper->log('----VALIDATING ACCOUNT---');
+        $this->logger->info('----VALIDATING ACCOUNT---');
 
         if ($this->test->validate($apiUsername, $apiPassword)) {
             $this->messageManager->addSuccessMessage(__('API Credentials Valid.'));

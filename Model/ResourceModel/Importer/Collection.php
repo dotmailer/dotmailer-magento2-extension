@@ -2,6 +2,9 @@
 
 namespace Dotdigitalgroup\Email\Model\ResourceModel\Importer;
 
+use Dotdigitalgroup\Email\Model\Importer as ImporterModel;
+use Dotdigitalgroup\Email\Model\ResourceModel\Importer;
+
 class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection
 {
     /**
@@ -37,15 +40,19 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
      *
      * @param array $websiteIds
      * @param array $types
-     *
+     * @param string $mode
      * @return $this|boolean
      */
-    public function getItemsWithImportingStatus($websiteIds, array $types)
-    {
+    public function getItemsWithImportingStatus(
+        $websiteIds,
+        array $types,
+        string $mode = ImporterModel::MODE_BULK
+    ) {
         $collection = $this->addFieldToFilter(
             'import_status',
             ['eq' => \Dotdigitalgroup\Email\Model\Importer::IMPORTING]
         )
+            ->addFieldToFilter('import_mode', ['eq'=> $mode])
             ->addFieldToFilter('import_id', ['neq' => ''])
             ->addFieldToFilter(
                 'website_id',

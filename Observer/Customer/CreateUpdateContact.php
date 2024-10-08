@@ -21,6 +21,8 @@ use Magento\Framework\MessageQueue\PublisherInterface;
  */
 class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
 {
+    private const TOPIC_CONTACT_EMAIL_UPDATE = 'ddg.contact.email_update';
+
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Contact
      */
@@ -123,18 +125,18 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
-        $storeManagerWebsiteId = $this->storeManager->getWebsite()->getId();
-        $customer = $observer->getEvent()->getCustomer();
-        $email = $customer->getEmail();
-        $customerId = $customer->getEntityId();
-        $websiteId = $customer->getWebsiteId();
-
-        if (!$this->helper->isEnabled($storeManagerWebsiteId) &&
-            !$this->helper->isEnabled($customer->getWebsiteId())) {
-            return $this;
-        }
-
         try {
+            $storeManagerWebsiteId = $this->storeManager->getWebsite()->getId();
+            $customer = $observer->getEvent()->getCustomer();
+            $email = $customer->getEmail();
+            $customerId = $customer->getEntityId();
+            $websiteId = $customer->getWebsiteId();
+
+            if (!$this->helper->isEnabled($storeManagerWebsiteId) &&
+                !$this->helper->isEnabled($customer->getWebsiteId())) {
+                return $this;
+            }
+
             // fix for a multiple hit of the observer
             $emailReg = $this->registry->registry($email . '_customer_save');
             if ($emailReg) {
@@ -168,7 +170,7 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
             foreach ($matchingCustomers as $contactModel) {
                 $contactModel = $this->checkForEmailUpdate($contactModel, $email);
                 $contactModel = $this->checkForWebsiteUpdate($contactModel, $websiteId);
-                
+
                 $contactModel->setEmailImported(Contact::EMAIL_CONTACT_NOT_IMPORTED);
                 $this->contactResource->save($contactModel);
             }
@@ -241,7 +243,7 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
             $emailUpdateData->setEmail($newEmail);
             $emailUpdateData->setWebsiteId((int) $contactModel->getWebsiteId());
 
-            $this->publisher->publish('ddg.contact.email_update', $emailUpdateData);
+            $this->publisher->publish(self::TOPIC_CONTACT_EMAIL_UPDATE, $emailUpdateData);
         }
 
         return $contactModel;

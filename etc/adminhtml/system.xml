@@ -250,51 +250,54 @@
                     <label>Last Increment ID</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
-
                 <field id="total_refund" type="select" translate="label" sortOrder="380" showInDefault="1"
                        showInWebsite="1" showInStore="0">
                     <label>Total Refund</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
-                <field id="most_pur_category" type="select" translate="label" sortOrder="390" showInDefault="1"
-                       showInWebsite="1" showInStore="0">
-                    <label>Most Purchased Category</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
-                </field>
-                <field id="most_pur_brand" type="select" translate="label" sortOrder="400" showInDefault="1"
-                       showInWebsite="1" showInStore="0">
-                    <label>Most Purchased Brand</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
-                </field>
-                <field id="most_freq_pur_day" type="select" translate="label" sortOrder="410" showInDefault="1"
+                <field id="most_freq_pur_day" type="select" translate="label" sortOrder="390" showInDefault="1"
                        showInWebsite="1" showInStore="0">
                     <label>Most Frequent Day Of Purchase</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
-                <field id="most_freq_pur_mon" type="select" translate="label" sortOrder="420" showInDefault="1"
+                <field id="most_freq_pur_mon" type="select" translate="label" sortOrder="400" showInDefault="1"
                        showInWebsite="1" showInStore="0">
                     <label>Most Frequent Month Of Purchase</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
-                <field id="first_category_pur" type="select" translate="label" sortOrder="430" showInDefault="1"
+                <field id="first_category_pur" type="select" translate="label" sortOrder="410" showInDefault="1"
                        showInWebsite="1" showInStore="0">
                     <label>First Category Purchased</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
                 </field>
-                <field id="last_category_pur" type="select" translate="label" sortOrder="440" showInDefault="1"
+                <field id="last_category_pur" type="select" translate="label" sortOrder="420" showInDefault="1"
                        showInWebsite="1" showInStore="0">
                     <label>Last Category Purchased</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
+                </field>
+                <field id="most_pur_category" type="select" translate="label" sortOrder="430" showInDefault="1"
+                       showInWebsite="1" showInStore="0">
+                    <label>Most Purchased Category</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
+                    <comment><![CDATA[Syncing this data field will increase server resource utilisation.]]></comment>
+                </field>
+                <field id="most_pur_brand" type="select" translate="label" sortOrder="440" showInDefault="1"
+                       showInWebsite="1" showInStore="0">
+                    <label>Most Purchased Brand</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
+                    <comment><![CDATA[Syncing this data field will increase server resource utilisation.]]></comment>
                 </field>
                 <field id="first_brand_pur" type="select" translate="label" sortOrder="450" showInDefault="1"
                        showInWebsite="1" showInStore="0">
                     <label>First Brand Purchased</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
+                    <comment><![CDATA[Syncing this data field will increase server resource utilisation.]]></comment>
                 </field>
                 <field id="last_brand_pur" type="select" translate="label" sortOrder="460" showInDefault="1"
                        showInWebsite="1" showInStore="0">
                     <label>Last Brand Purchased</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Datamapping\Datafields</source_model>
+                    <comment><![CDATA[Syncing this data field will increase server resource utilisation.]]></comment>
                 </field>
                 <field id="system_values" translate="label" sortOrder="470" showInDefault="1" showInStore="0"
                        showInWebsite="1">

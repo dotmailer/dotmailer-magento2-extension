@@ -1,11 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dotdigitalgroup\Email\Model\Sync;
 
+use Dotdigital\V3\Models\Contact as SdkContact;
 use Dotdigitalgroup\Email\Model\Sync\Export\CsvHandler;
 use Magento\Framework\Model\AbstractModel;
 use Magento\Store\Api\Data\WebsiteInterface;
 
+/**
+ * @deprecated We will be removing this class in favour of using composition instead of inheritance.
+ * @see \Dotdigitalgroup\Email\Model\Sync\Customer\Exporter
+ */
 abstract class AbstractExporter
 {
     /**
@@ -40,10 +47,11 @@ abstract class AbstractExporter
      *
      * @param array $contacts
      * @param WebsiteInterface $website
+     * @param int $listId
      *
-     * @return array
+     * @return array<SdkContact>
      */
-    abstract public function export(array $contacts, WebsiteInterface $website);
+    abstract public function export(array $contacts, WebsiteInterface $website, int $listId);
 
     /**
      * Set CSV columns for export.
@@ -51,6 +59,9 @@ abstract class AbstractExporter
      * @param WebsiteInterface $website
      *
      * @return void
+     *
+     * @deprecated We no longer send data using csv files.
+     * @see \Dotdigitalgroup\Email\Model\Sync\Customer\Exporter::setFieldMapping (for example)
      */
     abstract public function setCsvColumns(WebsiteInterface $website);
 
@@ -58,6 +69,9 @@ abstract class AbstractExporter
      * Get CSV columns.
      *
      * @return array
+     *
+     * @deprecated We no longer send data using csv files.
+     * @see \Dotdigitalgroup\Email\Model\Sync\Customer\Exporter (for example)
      */
     public function getCsvColumns()
     {
@@ -87,6 +101,9 @@ abstract class AbstractExporter
      *
      * @return string
      * @throws \Magento\Framework\Exception\FileSystemException
+     *
+     * @deprecated CSV data transfer is replaced with JSON.
+     * @see \Dotdigitalgroup\Email\Model\Sync\Batch\MegaBatchProcessor
      */
     public function initialiseCsvFile(
         WebsiteInterface $website,
@@ -108,6 +125,9 @@ abstract class AbstractExporter
      * @param string $syncType
      *
      * @return string
+     *
+     * @deprecated CSV data transfer is replaced with JSON.
+     * @see \Dotdigitalgroup\Email\Model\Sync\Batch\MegaBatchProcessor
      */
     public function getCsvFileName($websiteCode, $syncType)
     {

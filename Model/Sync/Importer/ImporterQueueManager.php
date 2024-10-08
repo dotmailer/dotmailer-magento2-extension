@@ -1,12 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dotdigitalgroup\Email\Model\Sync\Importer;
 
 use Dotdigitalgroup\Email\Model\Importer as ImporterModel;
 use Dotdigitalgroup\Email\Model\Sync\Importer;
 use Dotdigitalgroup\Email\Model\Sync\Importer\Type\Contact\BulkFactory as ContactBulkFactory;
+use Dotdigitalgroup\Email\Model\Sync\Importer\Type\Contact\BulkJsonFactory as ContactBulkJsonFactory;
 use Dotdigitalgroup\Email\Model\Sync\Importer\Type\Contact\DeleteFactory as ContactDeleteFactory;
 use Dotdigitalgroup\Email\Model\Sync\Importer\Type\Contact\UpdateFactory as ContactUpdateFactory;
+use Dotdigitalgroup\Email\Model\Sync\Importer\Type\TransactionalData\BulkJsonFactory as TransactionalBulkJsonFactory;
 use Dotdigitalgroup\Email\Model\Sync\Importer\Type\TransactionalData\BulkFactory;
 use Dotdigitalgroup\Email\Model\Sync\Importer\Type\TransactionalData\DeleteFactory;
 use Dotdigitalgroup\Email\Model\Sync\Importer\Type\TransactionalData\UpdateFactory;
@@ -19,6 +23,11 @@ class ImporterQueueManager
     private $contactBulkFactory;
 
     /**
+     * @var ContactBulkJsonFactory
+     */
+    private $contactBulkJsonFactory;
+
+    /**
      * @var ContactUpdateFactory
      */
     private $contactUpdateFactory;
@@ -27,6 +36,11 @@ class ImporterQueueManager
      * @var ContactDeleteFactory
      */
     private $contactDeleteFactory;
+
+    /**
+     * @var TransactionalBulkJsonFactory
+     */
+    private $transactionalBulkJsonFactory;
 
     /**
      * @var BulkFactory
@@ -44,78 +58,126 @@ class ImporterQueueManager
     private $deleteFactory;
 
     /**
+     * @var BulkImportBuilderFactory
+     */
+    private $bulkImportBuilderFactory;
+
+    /**
      * ImporterQueueManager constructor.
+     *
      * @param ContactBulkFactory $contactBulkFactory
+     * @param ContactBulkJsonFactory $contactBulkJsonFactory
      * @param ContactUpdateFactory $contactUpdateFactory
      * @param ContactDeleteFactory $contactDeleteFactory
+     * @param TransactionalBulkJsonFactory $transactionalBulkJsonFactory
      * @param BulkFactory $bulkFactory
      * @param UpdateFactory $updateFactory
      * @param DeleteFactory $deleteFactory
+     * @param BulkImportBuilderFactory $bulkImportBuilderFactory
      */
     public function __construct(
         ContactBulkFactory $contactBulkFactory,
+        ContactBulkJsonFactory $contactBulkJsonFactory,
         ContactUpdateFactory $contactUpdateFactory,
         ContactDeleteFactory $contactDeleteFactory,
+        TransactionalBulkJsonFactory $transactionalBulkJsonFactory,
         BulkFactory $bulkFactory,
         UpdateFactory $updateFactory,
-        DeleteFactory $deleteFactory
+        DeleteFactory $deleteFactory,
+        BulkImportBuilderFactory $bulkImportBuilderFactory
     ) {
         $this->contactBulkFactory = $contactBulkFactory;
+        $this->contactBulkJsonFactory = $contactBulkJsonFactory;
         $this->contactUpdateFactory = $contactUpdateFactory;
         $this->contactDeleteFactory = $contactDeleteFactory;
+        $this->transactionalBulkJsonFactory = $transactionalBulkJsonFactory;
         $this->bulkFactory = $bulkFactory;
         $this->updateFactory = $updateFactory;
         $this->deleteFactory = $deleteFactory;
+        $this->bulkImportBuilderFactory = $bulkImportBuilderFactory;
     }
 
     /**
      * Set importing priority for bulk imports.
      *
-     * @param array $additionalImportTypes
+     * @param array $additionalImports Additional instances of BulkImportBuilder may be included (provided via plugins).
+     *
      * @return array
      */
-    public function getBulkQueue(array $additionalImportTypes = [])
+    public function getBulkQueue(array $additionalImports = [])
     {
-        $defaultBulk = [
-            'model' => '',
-            'mode' => ImporterModel::MODE_BULK,
-            'type' => '',
-            'limit' => Importer::TOTAL_IMPORT_SYNC_LIMIT
-        ];
-
-        //Contact Bulk
-        $contact = $defaultBulk;
-        $contact['model'] = $this->contactBulkFactory;
-        $contact['type'] = [
-            ImporterModel::IMPORT_TYPE_CONTACT,
-            ImporterModel::IMPORT_TYPE_CUSTOMER,
-            ImporterModel::IMPORT_TYPE_GUEST,
-            ImporterModel::IMPORT_TYPE_SUBSCRIBERS,
-        ];
-        $contact['limit'] = Importer::CONTACT_IMPORT_SYNC_LIMIT;
-
-        //Bulk Order
-        $order = $defaultBulk;
-        $order['model'] = $this->bulkFactory;
-        $order['type'] = ImporterModel::IMPORT_TYPE_ORDERS;
-
-        //Bulk Other TD
-        $other = $defaultBulk;
-        $other['model'] = $this->bulkFactory;
-        $other['type'] = [
-            'Catalog',
-            ImporterModel::IMPORT_TYPE_REVIEWS,
-            ImporterModel::IMPORT_TYPE_WISHLIST,
-        ];
-
-        foreach ($additionalImportTypes as $type) {
-            $other['type'][] = $type;
+        foreach ($additionalImports as $key => $import) {
+            if (!$import instanceof BulkImportBuilder) {
+                $additionalImports[$key] = $this->bulkImportBuilderFactory
+                    ->create()
+                    ->setModel($this->bulkFactory)
+                    ->setType([$import]);
+            }
         }
 
         return [
-            $contact,
-            $order,
-            $other
+            ...$this->aggregateImports(),
+            ...array_map(function (BulkImportBuilder $builder): array {
+                return $builder->build();
+            }, $additionalImports)
+        ];
+    }
+
+    /**
+     * Build import configurations.
+     *
+     * BULK_JSON batches are sent during sync - but their importer rows may be reset, so this queue
+     * may need to pick them up.
+     *
+     * @return array<BulkImportBuilder> An array of classic import configurations.
+     */
+    private function aggregateImports(): array
+    {
+        $contactDeprecated = $this->bulkImportBuilderFactory
+            ->create()
+            ->setModel($this->contactBulkFactory)
+            ->setType([
+                ImporterModel::IMPORT_TYPE_CONTACT,
+                ImporterModel::IMPORT_TYPE_CUSTOMER,
+                ImporterModel::IMPORT_TYPE_GUEST,
+                ImporterModel::IMPORT_TYPE_SUBSCRIBERS,
+            ])
+            ->setLimit(Importer::CONTACT_IMPORT_SYNC_LIMIT)
+            ->setMode(ImporterModel::MODE_BULK);
+
+        $contactJson =$this->bulkImportBuilderFactory
+            ->create()
+            ->setModel($this->contactBulkJsonFactory)
+            ->setType([
+                ImporterModel::IMPORT_TYPE_CONSENT,
+                ImporterModel::IMPORT_TYPE_CUSTOMER,
+                ImporterModel::IMPORT_TYPE_GUEST,
+                ImporterModel::IMPORT_TYPE_SUBSCRIBERS,
+            ])
+            ->setLimit(Importer::CONTACT_IMPORT_SYNC_LIMIT)
+            ->setMode(ImporterModel::MODE_BULK_JSON);
+
+        $transactionalDeprecated = $this->bulkImportBuilderFactory
+            ->create()
+            ->setModel($this->bulkFactory)
+            ->setType(array_merge([
+                'Catalog',
+                ImporterModel::IMPORT_TYPE_REVIEWS,
+                ImporterModel::IMPORT_TYPE_WISHLIST,
+                ImporterModel::IMPORT_TYPE_ORDERS
+            ]));
+
+        $transactionalJson =$this->bulkImportBuilderFactory
+            ->create()
+            ->setModel($this->transactionalBulkJsonFactory)
+            ->setMode(ImporterModel::MODE_BULK_JSON)
+            ->setType([ImporterModel::IMPORT_TYPE_ORDERS]);
+
+        return [
+            $contactDeprecated->build(),
+            $contactJson->build(),
+            $transactionalDeprecated->build(),
+            $transactionalJson->build()
         ];
     }
 

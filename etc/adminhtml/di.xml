@@ -152,6 +152,7 @@
                 <item name="campaignErrorMessage" xsi:type="string">Dotdigitalgroup\Email\Model\System\Message\CampaignError</item>
                 <item name="automationErrorMessage" xsi:type="string">Dotdigitalgroup\Email\Model\System\Message\AutomationError</item>
                 <item name="smtpErrorMessage" xsi:type="string">Dotdigitalgroup\Email\Model\System\Message\SmtpError</item>
+                <item name="queueErrorMessage" xsi:type="string">Dotdigitalgroup\Email\Model\System\Message\QueueError</item>
             </argument>
         </arguments>
     </type>

@@ -9,6 +9,10 @@ use Dotdigitalgroup\Email\Model\ImporterFactory;
 use Dotdigitalgroup\Email\Model\ResourceModel\ContactFactory as ContactResourceFactory;
 use Magento\Framework\Filesystem\DriverInterface;
 
+/**
+ * @deprecated We consolidated the batch processors into one class. This class will be removed in a future release.
+ * @see \Dotdigitalgroup\Email\Model\Sync\Batch\MegaBatchProcessor
+ */
 class GuestBatchProcessor extends AbstractBatchProcessor
 {
     /**

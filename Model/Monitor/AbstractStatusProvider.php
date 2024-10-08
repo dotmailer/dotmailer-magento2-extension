@@ -74,7 +74,7 @@ abstract class AbstractStatusProvider
      *
      * @return array
      */
-    private function getErrorItemsFromFlag()
+    protected function getErrorItemsFromFlag()
     {
         try {
             $flagData = $this->flagManager->getFlagData($this->monitorErrorFlagCode);

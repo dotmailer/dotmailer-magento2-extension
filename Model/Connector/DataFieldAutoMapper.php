@@ -60,7 +60,19 @@ class DataFieldAutoMapper
 
         foreach ($this->dataField->getContactDatafields(true) as $xmlPathPrefix => $dataFields) {
             foreach ($dataFields as $key => $dataField) {
+                if (isset($dataField['automap']) && $dataField['automap'] === false) {
+                    continue;
+                }
                 $response = $client->postDataFields($dataField);
+
+                // ignore existing datafields message
+                if (isset($response->message) && $response->message != Client::API_ERROR_DATAFIELD_EXISTS) {
+                    $this->errors[] = [
+                        'field' => $dataField['name'],
+                        'message' => $response->message,
+                    ];
+                    continue;
+                }
 
                 // map the successfully created data field
                 $this->helper->saveConfigData(
@@ -70,13 +82,7 @@ class DataFieldAutoMapper
                     $websiteId ?: '0'
                 );
 
-                // ignore existing datafields message
-                if (isset($response->message) && $response->message != Client::API_ERROR_DATAFIELD_EXISTS) {
-                    $this->errors[] = [
-                        'field' => $dataField['name'],
-                        'message' => $response->message,
-                    ];
-                }
+                $this->helper->log('DataFieldAutoMapper successfully mapped : ' . $dataField['name']);
             }
         }
 

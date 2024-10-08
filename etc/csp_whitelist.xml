@@ -8,9 +8,6 @@
                 <value id="dotdigital_ddlnk" type="host">*.ddlnk.net</value>
                 <value id="dotdigital_pages" type="host">*.dotdigital-pages.com</value>
                 <value id="dotdigital_debug_internal" type="host">debug-tracking.dotdigital.internal</value>
-                <value id="dmpt_script_hash_r1" type="hash" algorithm="sha256">aqnk2yIXvD6iyk4qOV1/STUtdJ/WYTxD82VsHKYOY0M=</value>
-                <value id="dmpt_script_hash_r2" type="hash" algorithm="sha256">8uXzLRQKA2O1GOFJqGscNR8XvWeFXuMlh5gmAAMOydM=</value>
-                <value id="dmpt_script_hash_r3" type="hash" algorithm="sha256">SIGkMRGjRGm/FcNBxClSI86hmg4FZ7VvqN2AhD3y+5M=</value>
             </values>
         </policy>
         <policy id="connect-src">

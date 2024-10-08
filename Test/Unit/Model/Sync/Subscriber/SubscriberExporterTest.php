@@ -2,46 +2,53 @@
 
 namespace Dotdigitalgroup\Email\Test\Unit\Model\Sync\Subscriber;
 
-use Dotdigitalgroup\Email\Helper\Config;
+use Dotdigital\V3\Models\Contact as SdkContact;
 use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Connector\ContactData\SubscriberFactory as ConnectorSubscriberFactory;
+use Dotdigitalgroup\Email\Model\Newsletter\OptInTypeFinder;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact\Collection as ContactCollection;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory as ContactCollectionFactory;
-use Dotdigitalgroup\Email\Model\Sync\AbstractExporter;
 use Dotdigitalgroup\Email\Model\Sync\Export\CsvHandler;
+use Dotdigitalgroup\Email\Model\Sync\Export\SdkContactBuilder;
 use Dotdigitalgroup\Email\Model\Sync\Subscriber\SubscriberExporter;
 use Magento\Store\Api\Data\WebsiteInterface;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class SubscriberExporterTest extends TestCase
 {
     /**
-     * @var Config|\PHPUnit\Framework\MockObject\MockObject
-     */
-    private $configMock;
-
-    /**
-     * @var Logger|\PHPUnit\Framework\MockObject\MockObject
+     * @var Logger|MockObject
      */
     private $loggerMock;
 
     /**
-     * @var ConnectorSubscriberFactory|\PHPUnit\Framework\MockObject\MockObject
+     * @var ConnectorSubscriberFactory|MockObject
      */
     private $connectorSubscriberFactoryMock;
 
     /**
-     * @var ContactCollectionFactory|\PHPUnit\Framework\MockObject\MockObject
+     * @var OptInTypeFinder|MockObject
+     */
+    private $optInTypeFinderMock;
+
+    /**
+     * @var ContactCollectionFactory|MockObject
      */
     private $contactCollectionFactoryMock;
 
     /**
-     * @var CsvHandler|\PHPUnit\Framework\MockObject\MockObject
+     * @var CsvHandler|MockObject
      */
     private $csvHandlerMock;
 
     /**
-     * @var WebsiteInterface&\PHPUnit\Framework\MockObject\MockObject|\PHPUnit\Framework\MockObject\MockObject
+     * @var SdkContactBuilder|MockObject
+     */
+    private $sdkContactBuilderMock;
+
+    /**
+     * @var WebsiteInterface&MockObject|MockObject
      */
     private $websiteInterfaceMock;
 
@@ -52,11 +59,12 @@ class SubscriberExporterTest extends TestCase
 
     protected function setUp() :void
     {
-        $this->configMock = $this->createMock(Config::class);
         $this->loggerMock = $this->createMock(Logger::class);
         $this->connectorSubscriberFactoryMock = $this->createMock(ConnectorSubscriberFactory::class);
+        $this->optInTypeFinderMock = $this->createMock(OptInTypeFinder::class);
         $this->contactCollectionFactoryMock = $this->createMock(ContactCollectionFactory::class);
         $this->csvHandlerMock = $this->createMock(CsvHandler::class);
+        $this->sdkContactBuilderMock = $this->createMock(SdkContactBuilder::class);
 
         $this->websiteInterfaceMock = $this->getMockBuilder(WebsiteInterface::class)
             ->onlyMethods([
@@ -76,11 +84,12 @@ class SubscriberExporterTest extends TestCase
             ->getMock();
 
         $this->exporter = new SubscriberExporter(
-            $this->configMock,
             $this->loggerMock,
             $this->connectorSubscriberFactoryMock,
+            $this->optInTypeFinderMock,
             $this->contactCollectionFactoryMock,
-            $this->csvHandlerMock
+            $this->csvHandlerMock,
+            $this->sdkContactBuilderMock
         );
     }
 
@@ -93,6 +102,7 @@ class SubscriberExporterTest extends TestCase
     public function testExportRetrievesDataAccordingToColumns()
     {
         $subscriberMocks = $this->createSubscriberMocks();
+        $sdkContactMock = $this->createMock(SdkContact::class);
 
         $subscriberCollectionMock = $this->createMock(ContactCollection::class);
         $this->contactCollectionFactoryMock->expects($this->once())
@@ -131,22 +141,27 @@ class SubscriberExporterTest extends TestCase
             ->method('setContactData')
             ->willReturn($connectorSubscriberMock);
 
-        $connectorSubscriberMock->expects($this->exactly(5))
-            ->method('toCSVArray')
-            ->willReturn([]);
+        $this->sdkContactBuilderMock->expects($this->exactly(5))
+            ->method('createSdkContact')
+            ->willReturn($sdkContactMock);
 
-        $data = $this->exporter->export($this->getSubscribers(), $this->websiteInterfaceMock);
+        $this->optInTypeFinderMock->expects($this->exactly(5))
+            ->method('getOptInType')
+            ->willReturn('double');
 
-        /**
-         * We can't test the data that has been set on the Customer model, because
-         * setData($column, $value) doesn't do anything in the context of a unit test.
-         */
+        $data = $this->exporter->export(
+            $this->getSubscribers(),
+            $this->websiteInterfaceMock,
+            123456,
+            'double'
+        );
+
         $this->assertEquals(count($data), count($this->getSubscribers()));
     }
 
-    public function testDefaultCsvColumns()
+    public function testDefaultFieldMapping()
     {
-        $this->websiteInterfaceMock->expects($this->exactly(5))
+        $this->websiteInterfaceMock->expects($this->exactly(4))
             ->method('getConfig')
             ->willReturnOnConsecutiveCalls(
                 'STORE_NAME',
@@ -156,26 +171,9 @@ class SubscriberExporterTest extends TestCase
                 0
             );
 
-        $this->exporter->setCsvColumns($this->websiteInterfaceMock);
+        $this->exporter->setFieldMapping($this->websiteInterfaceMock);
 
-        $this->assertEquals($this->getColumns(), $this->exporter->getCsvColumns());
-    }
-
-    public function testOptInTypeColumnIsAddedIfConfigured()
-    {
-        $this->websiteInterfaceMock->expects($this->exactly(5))
-            ->method('getConfig')
-            ->willReturnOnConsecutiveCalls(
-                'STORE_NAME',
-                'STORE_NAME_ADDITIONAL',
-                'WEBSITE_NAME',
-                'SUBSCRIBER_STATUS',
-                1
-            );
-
-        $this->exporter->setCsvColumns($this->websiteInterfaceMock);
-
-        $this->assertEquals($this->getColumnsWithOptInType(), $this->exporter->getCsvColumns());
+        $this->assertEquals($this->getFieldMapping(), $this->exporter->getFieldMapping());
     }
 
     /**
@@ -216,25 +214,23 @@ class SubscriberExporterTest extends TestCase
         return $mocks;
     }
 
-    private function getColumns()
+    private function getFieldMapping()
     {
-        $defaultFields = [
+        return [
             'store_name' => 'STORE_NAME',
             'store_name_additional' => 'STORE_NAME_ADDITIONAL',
             'website_name' => 'WEBSITE_NAME',
             'subscriber_status' => 'SUBSCRIBER_STATUS',
         ];
-
-        return AbstractExporter::EMAIL_FIELDS + $defaultFields;
     }
 
-    private function getColumnsWithOptInType()
+    private function getFieldMappingWithOptInType()
     {
-        return $this->getColumns() + ['opt_in_type' => 'OptInType'];
+        return $this->getFieldMapping() + ['opt_in_type' => 'OptInType'];
     }
 
-    private function getAllPossibleColumns()
+    private function getAllPossibleFields()
     {
-        return $this->getColumnsWithOptInType();
+        return $this->getFieldMappingWithOptInType();
     }
 }

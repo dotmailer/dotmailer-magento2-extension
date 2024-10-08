@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
+    <test name="PlaceOrderAsCustomerTest">
+        <annotations>
+            <features value="Dotdigital module"/>
+            <stories value="Dotdigital order flow test"/>
+            <title value="Test order place as customer"/>
+            <description value="Validate that an order can be placed as a customer."/>
+            <severity value="CRITICAL"/>
+            <group value="dotmailer"/>
+        </annotations>
+
+        <before>
+            <actionGroup ref="AdminLoginActionGroup" stepKey="AdminLoginActionGroup1"/>
+            <actionGroup ref="SetDotmailerAccountData" stepKey="SetDotmailerAccountData"/>
+
+            <comment userInput="Set default flat rate shipping method settings" stepKey="setDefaultFlatRateShippingMethodComment"/>
+            <createData entity="FlatRateShippingMethodDefault" stepKey="setDefaultFlatRateShippingMethod"/>
+            <!-- Create simple customer -->
+            <comment userInput="Create simple customer" stepKey="createSimpleCustomerComment"/>
+            <createData entity="Simple_US_Customer_CA" stepKey="simpleCustomer"/>
+            <!-- Create the category -->
+            <comment userInput="Create the category" stepKey="createCategoryComment"/>
+            <createData entity="ApiCategory" stepKey="createCategory"/>
+            <!-- Create Simple Product -->
+            <comment userInput="Create Simple Product" stepKey="createSimpleProductComment"/>
+            <createData entity="SimpleProductPrice10Qty1" stepKey="simpleProduct">
+                <requiredEntity createDataKey="createCategory"/>
+            </createData>
+            <actionGroup ref="CreateOrderActionGroup" stepKey="createNewOrder">
+                <argument name="product" value="$$simpleProduct$$"/>
+                <argument name="customer" value="$$simpleCustomer$$"/>
+            </actionGroup>
+        </before>
+
+        <after>
+            <deleteData createDataKey="simpleCustomer" stepKey="deleteSimpleCustomer"/>
+            <deleteData createDataKey="simpleProduct" stepKey="deleteSimpleProduct"/>
+            <deleteData createDataKey="createCategory" stepKey="deleteCategory"/>
+            <actionGroup ref="ResetDotmailerAccountData" stepKey="resetAccountData"/>
+            <actionGroup ref="AdminLogoutActionGroup" stepKey="logout"/>
+        </after>
+
+        <!-- Check that contact is created and marked as not imported. -->
+        <amOnPage url="{{AdminContactReportPage.url}}" stepKey="amOnDotdigitalContactReportPage1"/>
+
+        <actionGroup ref="FilterReport" stepKey="filterEmail1">
+            <argument name="inputName" value="email"/>
+            <argument name="inputValue" value="{{Simple_US_Customer_CA.email}}"/>
+        </actionGroup>
+
+        <seeElement selector="{{AdminDotdigitalReportColumnsSection.statusInGrid('Not Imported')}}" stepKey="seeRecordFound"/>
+    </test>
+</tests>
+
+

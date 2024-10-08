@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
+    <test name="PlaceOrderAsCustomerAccountNotEnabledTest">
+        <annotations>
+            <features value="Dotdigital module"/>
+            <stories value="Dotdigital order flow test"/>
+            <title value="Test order place as customer with no active connection to Dotdigital"/>
+            <description value="Validate that an order can be placed as a customer even if the account connection is not yet active."/>
+            <severity value="CRITICAL"/>
+            <group value="dotmailer"/>
+        </annotations>
+
+        <before>
+            <actionGroup ref="AdminLoginActionGroup" stepKey="AdminLoginActionGroup1"/>
+            <comment userInput="Set default flat rate shipping method settings" stepKey="setDefaultFlatRateShippingMethodComment"/>
+            <createData entity="FlatRateShippingMethodDefault" stepKey="setDefaultFlatRateShippingMethod"/>
+            <!-- Create simple customer -->
+            <comment userInput="Create simple customer" stepKey="createSimpleCustomerComment"/>
+            <createData entity="Simple_US_Customer_CA" stepKey="simpleCustomer"/>
+            <!-- Create the category -->
+            <comment userInput="Create the category" stepKey="createCategoryComment"/>
+            <createData entity="ApiCategory" stepKey="createCategory"/>
+            <!-- Create Simple Product -->
+            <comment userInput="Create Simple Product" stepKey="createSimpleProductComment"/>
+            <createData entity="SimpleProductPrice10Qty1" stepKey="simpleProduct">
+                <requiredEntity createDataKey="createCategory"/>
+            </createData>
+        </before>
+
+        <after>
+            <deleteData createDataKey="simpleCustomer" stepKey="deleteSimpleCustomer"/>
+            <deleteData createDataKey="simpleProduct" stepKey="deleteSimpleProduct"/>
+            <deleteData createDataKey="createCategory" stepKey="deleteCategory"/>
+            <actionGroup ref="AdminLogoutActionGroup" stepKey="logout"/>
+        </after>
+
+        <actionGroup ref="CreateOrderActionGroup" stepKey="createNewOrder">
+            <argument name="product" value="$$simpleProduct$$"/>
+            <argument name="customer" value="$$simpleCustomer$$"/>
+        </actionGroup>
+        <grabFromCurrentUrl regex="~/order_id/(\d+)/~" stepKey="grabOrderId"/>
+
+        <!-- Check that order is created and marked as not processed. -->
+        <amOnPage url="{{AdminOrderReportPage.url}}" stepKey="amOnDotdigitalOrderReportPage"/>
+        <actionGroup ref="FilterReport" stepKey="filterOrder1">
+            <argument name="inputName" value="order_id"/>
+            <argument name="inputValue" value="{$grabOrderId}"/>
+        </actionGroup>
+        <seeElement selector="{{AdminDotdigitalReportColumnsSection.statusInGrid('Not processed')}}" stepKey="seeRecordFound"/>
+
+        <!-- Check that contact is not added to our table. -->
+        <amOnPage url="{{AdminContactReportPage.url}}" stepKey="amOnDotdigitalContactReportPage"/>
+        <actionGroup ref="FilterReport" stepKey="filterEmail1">
+            <argument name="inputName" value="email"/>
+            <argument name="inputValue" value="Simple_US_Customer_CA.email"/>
+        </actionGroup>
+        <dontSeeElement selector="{{AdminDotdigitalReportColumnsSection.statusInGrid('Not Imported')}}" stepKey="seeRecordNotFound"/>
+    </test>
+</tests>
+
+

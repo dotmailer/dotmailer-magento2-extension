@@ -13,6 +13,10 @@ use Dotdigitalgroup\Email\Model\ResourceModel\Consent;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Serialize\SerializerInterface;
 
+/**
+ * @deprecated We consolidated the batch processors into one class. This class will be removed in a future release.
+ * @see \Dotdigitalgroup\Email\Model\Sync\Batch\MegaBatchProcessor
+ */
 class ConsentBatchProcessor
 {
     /**
@@ -160,9 +164,9 @@ class ConsentBatchProcessor
     {
         $this->importerFactory->create()
             ->registerQueue(
-                Importer::MODE_CONSENT,
+                Importer::IMPORT_TYPE_CONSENT,
                 $batch,
-                Importer::MODE_BULK,
+                Importer::MODE_BULK_JSON,
                 $websiteId,
                 false,
                 0,
@@ -186,9 +190,9 @@ class ConsentBatchProcessor
     ) {
         $this->importerFactory->create()
             ->registerQueue(
-                Importer::MODE_CONSENT,
+                Importer::IMPORT_TYPE_CONSENT,
                 $batch,
-                Importer::MODE_BULK,
+                Importer::MODE_BULK_JSON,
                 $websiteId,
                 false,
                 0,

@@ -1,9 +1,9 @@
 <?php
 
-namespace Dotdigitalgroup\Email\Model\Integration;
+namespace Dotdigitalgroup\Email\Test\Integration\Model\Trial;
 
 use Dotdigitalgroup\Email\Helper\Config;
-use Dotdigitalgroup\Email\Model\Connector\Datafield;
+use Dotdigitalgroup\Email\Model\Integration\IntegrationSetup;
 use Dotdigitalgroup\Email\Test\Integration\MocksApiResponses;
 use Magento\Framework\App\Config\ReinitableConfigInterface;
 use Magento\Framework\App\Config\Storage\WriterInterface;
@@ -125,34 +125,6 @@ class TrialSetupTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('http://localhost', $signupQuery['magentohost']);
         $this->assertEquals(IntegrationSetup::SOURCE_CHAT, $signupQuery['source']);
         $this->assertStringEndsWith(Config::MAGENTO_ROUTE, $signupQuery['callback']);
-    }
-
-    /**
-     * Test that data fields were set
-     *
-     * @throws \ReflectionException
-     */
-    public function testSetupDataFields()
-    {
-        $this->setApiConfigFlags([], 0);
-
-        /** @var Datafield $dataFields */
-        $dataFields = $this->objectManager->create(Datafield::class);
-        $contactFields = $dataFields->getContactDatafields();
-        $this->mockClientFactory();
-        $this->mockClient
-            ->method('getAccountInfo')
-            ->willReturn('Go sell some casuals!');
-        $this->mockClient
-            ->expects($this->once())
-            ->method('getDataFields')
-            ->willReturn(['name'=>'dd_chaz_data_field']);
-        $this->mockClient->expects($this->atLeast(count($contactFields)))
-            ->method('postDataFields')
-            ->with($this->logicalOr(...array_values($contactFields)));
-
-        $this->instantiateDataHelper();
-        $this->getIntegrationSetup()->setupDataFields();
     }
 
     /**

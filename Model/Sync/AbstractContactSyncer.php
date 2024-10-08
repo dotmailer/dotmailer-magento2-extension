@@ -4,6 +4,10 @@ namespace Dotdigitalgroup\Email\Model\Sync;
 
 use Magento\Framework\DataObject;
 
+/**
+ * @deprecated We now have a dedicated MergeManager class for merging batches.
+ * @see \Dotdigitalgroup\Email\Model\Sync\Batch\MergeManager
+ */
 abstract class AbstractContactSyncer extends DataObject
 {
     /**

@@ -2,34 +2,43 @@
 
 namespace Dotdigitalgroup\Email\Test\Unit\Model\Sync\Guest;
 
+use Dotdigital\V3\Models\Contact as SdkContact;
 use Dotdigitalgroup\Email\Model\Connector\ContactData;
+use Dotdigitalgroup\Email\Model\Connector\ContactDataFactory;
 use Dotdigitalgroup\Email\Model\Contact;
-use Dotdigitalgroup\Email\Model\ResourceModel\Contact\Collection as ContactCollection;
 use Dotdigitalgroup\Email\Model\Sync\Export\CsvHandler;
+use Dotdigitalgroup\Email\Model\Sync\Export\SdkContactBuilder;
 use Dotdigitalgroup\Email\Model\Sync\Guest\GuestExporter;
+use Magento\Store\Api\Data\WebsiteInterface;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class GuestExporterTest extends TestCase
 {
     /**
-     * @var ContactData|ContactData&\PHPUnit\Framework\MockObject\MockObject|\PHPUnit\Framework\MockObject\MockObject
+     * @var ContactDataFactory|ContactDataFactory&MockObject|MockObject
      */
-    private $contactDataMock;
+    private $contactDataFactoryMock;
 
     /**
-     * @var CsvHandler|CsvHandler&\PHPUnit\Framework\MockObject\MockObject|\PHPUnit\Framework\MockObject\MockObject
+     * @var CsvHandler|CsvHandler&MockObject|MockObject
      */
     private $csvHandlerMock;
 
     /**
-     * @var ContactCollection|ContactCollection&\PHPUnit\Framework\MockObject\MockObject|\PHPUnit\Framework\MockObject\MockObject
+     * @var SdkContactBuilder|MockObject
      */
-    private $contactCollectionMock;
+    private $sdkContactBuilderMock;
 
     /**
-     * @var Contact|Contact&\PHPUnit\Framework\MockObject\MockObject|\PHPUnit\Framework\MockObject\MockObject
+     * @var Contact|Contact&MockObject|MockObject
      */
     private $contactMock;
+
+    /**
+     * @var WebsiteInterface|\PHPUnit\Framework\MockObject\MockObject
+     */
+    private $websiteInterfaceMock;
 
     /**
      * @var array
@@ -43,39 +52,52 @@ class GuestExporterTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->contactDataMock = $this->createMock(ContactData::class);
+        $this->contactDataFactoryMock = $this->createMock(ContactDataFactory::class);
         $this->csvHandlerMock = $this->createMock(CsvHandler::class);
-        $this->contactCollectionMock = $this->createMock(ContactCollection::class);
+        $this->sdkContactBuilderMock = $this->createMock(SdkContactBuilder::class);
         $this->contactMock = $this->getMockBuilder(Contact::class)
             ->addMethods(['getEmailContactId'])
             ->disableOriginalConstructor()
             ->getMock();
+        $this->websiteInterfaceMock = $this->createMock(WebsiteInterface::class);
 
         $this->guestExporter = new GuestExporter(
             $this->csvHandlerMock,
-            $this->contactDataMock,
+            $this->contactDataFactoryMock,
+            $this->sdkContactBuilderMock
         );
     }
 
     public function testGuestExporter()
     {
+        $contactDataMock = $this->createMock(ContactData::class);
+        $sdkContactMock = $this->createMock(SdkContact::class);
+
         $this->contactMock->expects($this->atLeastOnce())
             ->method('getEmailContactId')
             ->willReturn(1);
 
-        $this->contactDataMock->expects($this->atLeastOnce())
+        $this->contactDataFactoryMock->expects($this->atLeastOnce())
+            ->method('create')
+            ->willReturn($contactDataMock);
+
+        $contactDataMock->expects($this->atLeastOnce())
             ->method('init')
-            ->willReturn($this->contactDataMock);
+            ->willReturn($contactDataMock);
 
-        $this->contactDataMock->expects($this->atLeastOnce())
+        $contactDataMock->expects($this->atLeastOnce())
             ->method('setContactData')
-            ->willReturn($this->contactDataMock);
+            ->willReturn($contactDataMock);
 
-        $this->contactDataMock->expects($this->atLeastOnce())
-            ->method('toCSVArray')
-            ->willReturn([]);
+        $this->sdkContactBuilderMock->expects($this->atLeastOnce())
+            ->method('createSdkContact')
+            ->willReturn($sdkContactMock);
 
-        $data = $this->guestExporter->export($this->getGuestsForSync());
+        $data = $this->guestExporter->export(
+            $this->getGuestsForSync(),
+            $this->websiteInterfaceMock,
+            123456
+        );
 
         $this->assertEquals(count($data), count($this->guests));
     }
@@ -85,7 +107,7 @@ class GuestExporterTest extends TestCase
      */
     private function getGuestsForSync()
     {
-        $randomQuantity = rand(1, 20);
+        $randomQuantity = 5;
         for ($i = 0; $i < $randomQuantity; $i++) {
             $this->guests += [$this->contactMock];
         }

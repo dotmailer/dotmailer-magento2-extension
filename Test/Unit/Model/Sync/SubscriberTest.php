@@ -2,79 +2,95 @@
 
 namespace Dotdigitalgroup\Email\Test\Unit\Model\Sync;
 
+use ArrayIterator;
 use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact\Collection as ContactCollection;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory as ContactCollectionFactory;
 use Dotdigitalgroup\Email\Model\Subscriber as SubscriberModel;
-use Dotdigitalgroup\Email\Model\Sync\Batch\SubscriberBatchProcessor;
-use Dotdigitalgroup\Email\Model\Sync\AbstractExporter;
+use Dotdigitalgroup\Email\Model\Sync\Batch\MegaBatchProcessor;
+use Dotdigitalgroup\Email\Model\Sync\Batch\MegaBatchProcessorFactory;
+use Dotdigitalgroup\Email\Model\Sync\Batch\MergeManager;
+use Dotdigitalgroup\Email\Api\Model\Sync\Export\ContactExporterInterface;
 use Dotdigitalgroup\Email\Model\Sync\Subscriber;
 use Dotdigitalgroup\Email\Model\Sync\Subscriber\OrderHistoryChecker;
+use Dotdigitalgroup\Email\Model\Sync\Subscriber\SubscriberExporter;
 use Dotdigitalgroup\Email\Model\Sync\Subscriber\SubscriberExporterFactory;
+use Dotdigitalgroup\Email\Model\Sync\Subscriber\SubscriberWithSalesExporter;
 use Dotdigitalgroup\Email\Model\Sync\Subscriber\SubscriberWithSalesExporterFactory;
 use Magento\Framework\App\Config\ScopeConfigInterface;
-use Magento\Sales\Api\Data\OrderSearchResultInterfaceFactory;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Store\Api\Data\WebsiteInterface;
 use Magento\Store\Model\StoreManagerInterface;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class SubscriberTest extends TestCase
 {
     /**
-     * @var Data|\PHPUnit\Framework\MockObject\MockObject
+     * @var Data|MockObject
      */
     private $helperMock;
 
     /**
-     * @var Logger|\PHPUnit\Framework\MockObject\MockObject
+     * @var Logger|MockObject
      */
     private $loggerMock;
 
     /**
-     * @var ContactCollectionFactory|\PHPUnit\Framework\MockObject\MockObject
+     * @var ContactCollectionFactory|MockObject
      */
     private $contactCollectionFactoryMock;
 
     /**
-     * @var SubscriberBatchProcessor|\PHPUnit\Framework\MockObject\MockObject
+     * @var MegaBatchProcessorFactory|MockObject
      */
-    private $batchProcessorMock;
+    private $batchProcessorFactoryMock;
 
     /**
-     * @var AbstractExporter|\PHPUnit\Framework\MockObject\MockObject
+     * @var MergeManager|MockObject
      */
-    private $abstractExporterMock;
+    private $mergeManagerMock;
 
     /**
-     * @var SubscriberExporterFactory|\PHPUnit\Framework\MockObject\MockObject
+     * @var SubscriberExporterFactory|MockObject
      */
     private $subscriberExporterFactoryMock;
 
     /**
-     * @var SubscriberWithSalesExporterFactory|\PHPUnit\Framework\MockObject\MockObject
+     * @var SubscriberWithSalesExporterFactory|MockObject
      */
     private $subscriberWithSalesExporterFactoryMock;
 
     /**
-     * @var ScopeConfigInterface|\PHPUnit\Framework\MockObject\MockObject
+     * @var ScopeConfigInterface|MockObject
      */
     private $scopeConfigMock;
 
     /**
-     * @var OrderHistoryChecker|\PHPUnit\Framework\MockObject\MockObject
+     * @var OrderHistoryChecker|MockObject
      */
     private $orderHistoryCheckerMock;
 
     /**
-     * @var StoreManagerInterface|\PHPUnit\Framework\MockObject\MockObject
+     * @var StoreManagerInterface|MockObject
      */
     private $storeManagerMock;
 
     /**
-     * @var WebsiteInterface|\PHPUnit\Framework\MockObject\MockObject
+     * @var WebsiteInterface|MockObject
      */
     private $websiteInterfaceMock;
+
+    /**
+     * @var SubscriberExporter|MockObject
+     */
+    private $subscriberExporterMock;
+
+    /**
+     * @var SubscriberWithSalesExporter|MockObject
+     */
+    private $subscriberWithSalesExporterMock;
 
     /**
      * @var Subscriber
@@ -82,7 +98,7 @@ class SubscriberTest extends TestCase
     private $subscriber;
 
     /**
-     * @var ContactCollection|ContactCollection&\PHPUnit\Framework\MockObject\MockObject|\PHPUnit\Framework\MockObject\MockObject
+     * @var ContactCollection|ContactCollection&MockObject|MockObject
      */
     private $contactCollectionMock;
 
@@ -92,30 +108,33 @@ class SubscriberTest extends TestCase
         $this->loggerMock = $this->createMock(Logger::class);
         $this->contactCollectionMock = $this->createMock(ContactCollection::class);
         $this->contactCollectionFactoryMock = $this->createMock(ContactCollectionFactory::class);
-        $this->batchProcessorMock = $this->createMock(SubscriberBatchProcessor::class);
+        $this->batchProcessorFactoryMock = $this->createMock(MegaBatchProcessorFactory::class);
+        $this->mergeManagerMock = $this->createMock(MergeManager::class);
         $this->orderHistoryCheckerMock = $this->createMock(OrderHistoryChecker::class);
         $this->subscriberExporterFactoryMock = $this->createMock(SubscriberExporterFactory::class);
         $this->subscriberWithSalesExporterFactoryMock = $this->createMock(SubscriberWithSalesExporterFactory::class);
         $this->scopeConfigMock = $this->createMock(ScopeConfigInterface::class);
         $this->storeManagerMock = $this->createMock(StoreManagerInterface::class);
 
-        $this->abstractExporterMock = $this->createMock(AbstractExporter::class);
+        $this->subscriberExporterMock = $this->createMock(ContactExporterInterface::class);
+        $this->subscriberWithSalesExporterMock = $this->createMock(ContactExporterInterface::class);
+
         $this->websiteInterfaceMock = $this->getMockBuilder(WebsiteInterface::class)
             ->onlyMethods(
                 [
-                'getId',
-                'setId',
-                'getCode',
-                'setCode',
-                'getName',
-                'setName',
-                'getDefaultGroupId',
-                'setDefaultGroupId',
-                'getExtensionAttributes',
-                'setExtensionAttributes'
+                    'getId',
+                    'setId',
+                    'getCode',
+                    'setCode',
+                    'getName',
+                    'setName',
+                    'getDefaultGroupId',
+                    'setDefaultGroupId',
+                    'getExtensionAttributes',
+                    'setExtensionAttributes'
                 ]
             )
-            ->addMethods(['getStoreIds'])
+            ->addMethods(['getStoreIds', 'getConfig'])
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -123,7 +142,8 @@ class SubscriberTest extends TestCase
             $this->helperMock,
             $this->loggerMock,
             $this->contactCollectionFactoryMock,
-            $this->batchProcessorMock,
+            $this->batchProcessorFactoryMock,
+            $this->mergeManagerMock,
             $this->orderHistoryCheckerMock,
             $this->subscriberExporterFactoryMock,
             $this->subscriberWithSalesExporterFactoryMock,
@@ -134,7 +154,7 @@ class SubscriberTest extends TestCase
 
     /**
      * @return void
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws LocalizedException
      */
     public function testNoExportingOrBatchingIfSyncIsNotConfigured()
     {
@@ -153,15 +173,15 @@ class SubscriberTest extends TestCase
         $this->subscriberWithSalesExporterFactoryMock->expects($this->never())
             ->method('create');
 
-        $this->batchProcessorMock->expects($this->never())
-            ->method('process');
+        $this->batchProcessorFactoryMock->expects($this->never())
+            ->method('create');
 
         $this->subscriber->sync();
     }
 
     /**
      * @return void
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws LocalizedException
      */
     public function testNoExportingIfNoSubscribersNeedSyncing()
     {
@@ -184,7 +204,7 @@ class SubscriberTest extends TestCase
             ->method('getItems')
             ->willReturn([]);
 
-        $this->abstractExporterMock->expects($this->never())
+        $this->subscriberExporterMock->expects($this->never())
             ->method('export');
 
         $this->subscriber->sync();
@@ -192,7 +212,7 @@ class SubscriberTest extends TestCase
 
     /**
      * @return void
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws LocalizedException
      */
     public function testExportingStopsIfBreakValueIsExceeded()
     {
@@ -228,27 +248,26 @@ class SubscriberTest extends TestCase
 
         $this->contactCollectionMock->expects($this->any())
             ->method('getIterator')
-            ->willReturn(new \ArrayIterator($subscriberStubs));
+            ->willReturn(new ArrayIterator($subscriberStubs));
 
-        $this->abstractExporterMock->expects($this->once())
-            ->method('getCsvFileName')
-            ->willReturn($this->getSubscribersFilename());
-
-        $this->abstractExporterMock->expects($this->exactly(2))
-            ->method('getCsvColumns')
+        $this->subscriberExporterMock->expects($this->once())
+            ->method('getFieldMapping')
             ->willReturnOnConsecutiveCalls([], $this->getColumns());
 
-        $this->abstractExporterMock->expects($this->once())
-            ->method('setCsvColumns');
-
-        $this->abstractExporterMock->expects($this->once())
+        $this->subscriberExporterMock->expects($this->once())
             ->method('export')
             ->willReturn($this->getSubscribersBatch(5));
 
-        $this->abstractExporterMock->expects($this->once())
-            ->method('initialiseCsvFile');
+        $this->mergeManagerMock->expects($this->once())
+            ->method('mergeBatch')
+            ->willReturn($this->getSubscribersBatch(5));
 
-        $this->batchProcessorMock->expects($this->exactly(2))
+        $batchProcessorMock = $this->createMock(MegaBatchProcessor::class);
+        $this->batchProcessorFactoryMock->expects($this->any())
+            ->method('create')
+            ->willReturn($batchProcessorMock);
+
+        $batchProcessorMock->expects($this->exactly(2))
             ->method('process');
 
         $data = $this->subscriber->sync();
@@ -258,7 +277,7 @@ class SubscriberTest extends TestCase
 
     /**
      * @return void
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws LocalizedException
      */
     public function testBatchIsProcessedOnceMegaBatchSizeIsExceeded()
     {
@@ -298,27 +317,26 @@ class SubscriberTest extends TestCase
 
         $this->contactCollectionMock->expects($this->once())
             ->method('getIterator')
-            ->willReturn(new \ArrayIterator($subscriberStubs));
+            ->willReturn(new ArrayIterator($subscriberStubs));
 
-        $this->abstractExporterMock->expects($this->once())
-            ->method('getCsvFileName')
-            ->willReturn($this->getSubscribersFilename());
-
-        $this->abstractExporterMock->expects($this->exactly(2))
-            ->method('getCsvColumns')
+        $this->subscriberExporterMock->expects($this->once())
+            ->method('getFieldMapping')
             ->willReturnOnConsecutiveCalls([], $this->getColumns());
 
-        $this->abstractExporterMock->expects($this->once())
-            ->method('setCsvColumns');
-
-        $this->abstractExporterMock->expects($this->once())
+        $this->subscriberExporterMock->expects($this->once())
             ->method('export')
             ->willReturn($this->getSubscribersBatch(5));
 
-        $this->abstractExporterMock->expects($this->once())
-            ->method('initialiseCsvFile');
+        $this->mergeManagerMock->expects($this->once())
+            ->method('mergeBatch')
+            ->willReturn($this->getSubscribersBatch(5));
 
-        $this->batchProcessorMock->expects($this->exactly(3))
+        $batchProcessorMock = $this->createMock(MegaBatchProcessor::class);
+        $this->batchProcessorFactoryMock->expects($this->any())
+            ->method('create')
+            ->willReturn($batchProcessorMock);
+
+        $batchProcessorMock->expects($this->exactly(3))
             ->method('process');
 
         $data = $this->subscriber->sync();
@@ -328,7 +346,7 @@ class SubscriberTest extends TestCase
 
     /**
      * @return void
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws LocalizedException
      */
     public function testFileNotInitialisedIfNothingToBatch()
     {
@@ -368,24 +386,25 @@ class SubscriberTest extends TestCase
 
         $this->contactCollectionMock->expects($this->once())
             ->method('getIterator')
-            ->willReturn(new \ArrayIterator($subscriberStubs));
+            ->willReturn(new ArrayIterator($subscriberStubs));
 
-        $this->abstractExporterMock->expects($this->once())
-            ->method('getCsvFileName')
-            ->willReturn($this->getSubscribersFilename());
-
-        $this->abstractExporterMock->expects($this->once())
-            ->method('getCsvColumns')
+        $this->subscriberExporterMock->expects($this->once())
+            ->method('getFieldMapping')
             ->willReturn($this->getColumns());
 
-        $this->abstractExporterMock->expects($this->once())
+        $this->subscriberExporterMock->expects($this->once())
             ->method('export')
             ->willReturn([]);
 
-        $this->abstractExporterMock->expects($this->never())
-            ->method('initialiseCsvFile');
+        $this->mergeManagerMock->expects($this->never())
+            ->method('mergeBatch');
 
-        $this->batchProcessorMock->expects($this->exactly(2))
+        $batchProcessorMock = $this->createMock(MegaBatchProcessor::class);
+        $this->batchProcessorFactoryMock->expects($this->any())
+            ->method('create')
+            ->willReturn($batchProcessorMock);
+
+        $batchProcessorMock->expects($this->exactly(2))
             ->method('process');
 
         $this->subscriber->sync();
@@ -393,7 +412,7 @@ class SubscriberTest extends TestCase
 
     /**
      * @return void
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws LocalizedException
      */
     public function testTwoCohortsAreProcessedWhenSubscribersExportedWithSalesData()
     {
@@ -435,46 +454,61 @@ class SubscriberTest extends TestCase
         $this->contactCollectionMock->expects($this->exactly(2))
             ->method('getIterator')
             ->willReturnOnConsecutiveCalls(
-                new \ArrayIterator($this->createCustomerAndGuestSubscriberStubs($limit)),
-                new \ArrayIterator($this->createCustomerAndGuestSubscriberStubs($limit, $limit + 1))
+                new ArrayIterator($this->createCustomerAndGuestSubscriberStubs($limit)),
+                new ArrayIterator($this->createCustomerAndGuestSubscriberStubs($limit, $limit + 1))
             );
 
-        $this->abstractExporterMock->expects($this->exactly(2))
-            ->method('getCsvFileName')
-            ->willReturn($this->getSubscribersFilename());
+        $this->loggerMock->expects($this->exactly(3))
+            ->method('info');
 
-        $this->abstractExporterMock->expects($this->exactly(6))
-            ->method('getCsvColumns')
-            ->willReturnOnConsecutiveCalls(
-                [],
-                $this->getColumns(),
-                [],
-                $this->getColumns(),
-                $this->getColumns(),
-                $this->getColumns()
-            );
+        $this->subscriberExporterMock->expects($this->exactly(2))
+            ->method('getFieldMapping')
+            ->willReturnOnConsecutiveCalls([], $this->getColumns());
 
-        $this->abstractExporterMock->expects($this->exactly(2))
-            ->method('setCsvColumns');
+        $this->subscriberWithSalesExporterMock->expects($this->exactly(2))
+            ->method('getFieldMapping')
+            ->willReturnOnConsecutiveCalls([], $this->getColumns());
 
-        $this->abstractExporterMock->expects($this->exactly(4))
+        $this->subscriberExporterMock->expects($this->once())
+            ->method('setFieldMapping')
+            ->willReturnSelf();
+
+        $this->subscriberWithSalesExporterMock->expects($this->once())
+            ->method('setFieldMapping')
+            ->willReturnSelf();
+
+        $this->subscriberExporterMock->expects($this->exactly(2))
             ->method('export')
             ->willReturnOnConsecutiveCalls(
                 $this->getSubscribersBatch(4),
-                $this->getSubscribersBatch(1),
-                $this->getSubscribersBatch(4),
-                $this->getSubscribersBatch(1)
+                $this->getSubscribersBatch(0)
             );
 
-        $this->abstractExporterMock->expects($this->exactly(2))
-            ->method('initialiseCsvFile');
+        $this->subscriberWithSalesExporterMock->expects($this->exactly(2))
+            ->method('export')
+            ->willReturnOnConsecutiveCalls(
+                $this->getSubscribersBatch(2),
+                $this->getSubscribersBatch(0)
+            );
 
-        $this->batchProcessorMock->expects($this->exactly(2))
+        $this->mergeManagerMock->expects($this->exactly(2))
+            ->method('mergeBatch')
+            ->willReturnOnConsecutiveCalls(
+                $this->getSubscribersBatch(4),
+                $this->getSubscribersBatch(2)
+            );
+
+        $batchProcessorMock = $this->createMock(MegaBatchProcessor::class);
+        $this->batchProcessorFactoryMock->expects($this->any())
+            ->method('create')
+            ->willReturn($batchProcessorMock);
+
+        $batchProcessorMock->expects($this->exactly(2))
             ->method('process');
 
         $data = $this->subscriber->sync();
 
-        $this->assertEquals(10, $data['syncedSubscribers']);
+        $this->assertEquals(6, $data['syncedSubscribers']);
     }
 
     /**
@@ -506,10 +540,10 @@ class SubscriberTest extends TestCase
     {
         $this->subscriberExporterFactoryMock->expects($this->once())
             ->method('create')
-            ->willReturn($this->abstractExporterMock);
+            ->willReturn($this->subscriberExporterMock);
         $this->subscriberWithSalesExporterFactoryMock->expects($this->once())
             ->method('create')
-            ->willReturn($this->abstractExporterMock);
+            ->willReturn($this->subscriberWithSalesExporterMock);
     }
 
     private function setupSubsWithSalesData()
@@ -518,8 +552,8 @@ class SubscriberTest extends TestCase
             ->method('checkInSales')
             ->willReturn(
                 [
-                'chaz2@emailsim.io',
-                'chaz6@emailsim.io'
+                    'chaz2@emailsim.io',
+                    'chaz6@emailsim.io'
                 ]
             );
     }
@@ -597,8 +631,6 @@ class SubscriberTest extends TestCase
         for ($i = 1; $i <= $count; $i++) {
             $batch[] = [
                 $i => [
-                    'chaz' . $i . '@emailsim.io',
-                    'Html',
                     'Chaz store',
                     'Chaz store view',
                     'Chaz website',
@@ -608,21 +640,5 @@ class SubscriberTest extends TestCase
         }
 
         return $batch;
-    }
-
-    /**
-     * @return string
-     */
-    private function getSubscribersFilename()
-    {
-        return 'base_subscribers_25_05_2022_102840_c639d113.csv';
-    }
-
-    /**
-     * @return string
-     */
-    private function getSubscribersWithSalesFilename()
-    {
-        return 'base_subscribers_with_sales_25_05_2022_101744_f8f34b20.csv';
     }
 }

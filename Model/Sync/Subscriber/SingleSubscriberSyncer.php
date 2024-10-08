@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Dotdigitalgroup\Email\Model\Sync\Subscriber;
 
+use Dotdigital\V3\Models\Contact as SdkContact;
 use Dotdigitalgroup\Email\Helper\Data;
+use Dotdigitalgroup\Email\Model\Apiconnector\V3\ClientFactory;
 use Dotdigitalgroup\Email\Model\Contact;
 use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\DataFieldCollector;
 use Magento\Framework\Exception\LocalizedException;
@@ -17,19 +19,27 @@ class SingleSubscriberSyncer
     private $helper;
 
     /**
+     * @var ClientFactory
+     */
+    private $clientFactory;
+
+    /**
      * @var DataFieldCollector
      */
     private $dataFieldCollector;
 
     /**
      * @param Data $helper
+     * @param ClientFactory $clientFactory
      * @param DataFieldCollector $dataFieldCollector
      */
     public function __construct(
         Data $helper,
+        ClientFactory $clientFactory,
         DataFieldCollector $dataFieldCollector
     ) {
         $this->helper = $helper;
+        $this->clientFactory = $clientFactory;
         $this->dataFieldCollector = $dataFieldCollector;
     }
 
@@ -38,10 +48,10 @@ class SingleSubscriberSyncer
      *
      * @param Contact $contact
      *
-     * @return object|null
-     * @throws LocalizedException
+     * @return SdkContact|null
+     * @throws LocalizedException|\Http\Client\Exception
      */
-    public function pushContactToSubscriberAddressBook(Contact $contact)
+    public function pushContactToSubscriberAddressBook(Contact $contact): ?SdkContact
     {
         $websiteId = (int) $contact->getWebsiteId();
         $subscriberSyncEnabled = $this->helper->isSubscriberSyncEnabled($websiteId);
@@ -52,29 +62,22 @@ class SingleSubscriberSyncer
             return null;
         }
 
-        $client = $this->helper->getWebsiteApiClient($websiteId);
-        $subscriberDataFields = $this->dataFieldCollector->mergeFields(
-            [],
-            $this->dataFieldCollector->collectForSubscriber(
-                $contact,
-                $websiteId
-            )
+        $sdkSubscriber = $this->dataFieldCollector->collectForSubscriber(
+            $contact,
+            $websiteId,
+            (int) $subscriberAddressBookId
         );
 
-        // optInType is not a data field - this will be refactored in a future release
-        foreach ($subscriberDataFields as $i => $field) {
-            if ($field['Key'] === 'OptInType') {
-                $optInType = $field['Value'];
-                unset($subscriberDataFields[$i]);
-                break;
-            }
+        if (!$sdkSubscriber) {
+            return null;
         }
 
-        return $client->addContactToAddressBook(
-            $contact->getEmail(),
-            $subscriberAddressBookId,
-            $optInType,
-            $subscriberDataFields
-        );
+        return $this->clientFactory
+            ->create(['data' => ['websiteId' => $websiteId]])
+            ->contacts
+            ->patchByIdentifier(
+                $contact->getEmail(),
+                $sdkSubscriber
+            );
     }
 }

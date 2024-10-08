@@ -256,6 +256,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param int $storeId
      *
      * @return bool
+     *
+     * @deprecated This is not as thorough as isEnabled() and should not be used.
+     * @see isEnabled()
      */
     public function isStoreEnabled($storeId)
     {
@@ -515,6 +518,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param array $extra
      *
      * @return void
+     *
+     * @deprecated Use dedicated Logger.
+     * @see \Dotdigitalgroup\Email\Logger\Logger
      */
     public function log($data, $extra = [])
     {
@@ -530,6 +536,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param array $extra
      *
      * @return void
+     *
+     * @deprecated Use dedicated Logger.
+     * @see \Dotdigitalgroup\Email\Logger\Logger
      */
     public function debug($message, $extra = [])
     {
@@ -543,6 +552,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @param string $message
      * @param array $extra
+     *
+     * @deprecated Use dedicated Logger.
+     * @see \Dotdigitalgroup\Email\Logger\Logger
      */
     public function error($message, $extra = [])
     {
@@ -1167,6 +1179,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @param string $cronJob
      * @return boolean|string
+     *
+     * @deprecated
+     * @see \Dotdigitalgroup\Email\ViewModel\Adminhtml\DashboardInformationView
      */
     public function getDateLastCronRun($cronJob)
     {

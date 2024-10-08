@@ -2,6 +2,9 @@
 
 namespace Dotdigitalgroup\Email\Test\Unit\Model\Sync\Automation\DataField;
 
+use Dotdigital\V3\Models\Contact as SdkContact;
+use Dotdigital\V3\Models\Contact\DataField;
+use Dotdigital\V3\Models\DataFieldCollection;
 use Dotdigitalgroup\Email\Model\Contact;
 use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\DataFieldCollector;
 use Dotdigitalgroup\Email\Model\Sync\Customer\Exporter as CustomerExporter;
@@ -98,7 +101,10 @@ class DataFieldCollectorTest extends TestCase
 
     public function testDataFieldsCollectedForCustomer()
     {
+        $contactId = 4;
         $customerExporterMock = $this->createMock(CustomerExporter::class);
+        $sdkContactMock = $this->createMock(SdkContact::class);
+        $dataFieldCollectionMock = $this->createMock(DataFieldCollection::class);
 
         $this->storeManagerMock->expects($this->once())
             ->method('getWebsite')
@@ -109,20 +115,27 @@ class DataFieldCollectorTest extends TestCase
             ->willReturn($customerExporterMock);
 
         $customerExporterMock->expects($this->once())
-            ->method('export')
-            ->willReturn($this->getDummyExportData());
+            ->method('setFieldMapping');
 
         $customerExporterMock->expects($this->once())
-            ->method('getCsvColumns')
-            ->willReturn($this->getSampleKeys());
+            ->method('export')
+            ->willReturn([
+                $contactId => $sdkContactMock
+            ]);
 
         $this->contactModelMock->expects($this->exactly(2))
             ->method('getId')
-            ->willReturn(4);
+            ->willReturn($contactId);
 
-        $data = $this->dataFieldCollector->collectForCustomer($this->contactModelMock, 1);
+        $sdkContactMock->method('__call')
+            ->with('getDataFields')
+            ->willReturn($dataFieldCollectionMock);
 
-        $this->assertEquals($this->getCombinedKeysAndData(), $data);
+        $dataFieldCollectionMock->method('all')->willReturn($this->getExportedCustomerDataFields());
+
+        $data = $this->dataFieldCollector->collectForCustomer($this->contactModelMock, 1, 123456);
+
+        $this->assertEquals($this->getExportedCustomerDataFields(), $data);
     }
 
     public function testEmptyArrayReturnedIfCustomerExportFails()
@@ -142,17 +155,16 @@ class DataFieldCollectorTest extends TestCase
             ->method('export')
             ->willReturn([]);
 
-        $customerExporterMock->expects($this->never())
-            ->method('getCsvColumns');
-
-        $data = $this->dataFieldCollector->collectForCustomer($this->contactModelMock, 1);
+        $data = $this->dataFieldCollector->collectForCustomer($this->contactModelMock, 1, 123456);
 
         $this->assertEmpty($data);
     }
 
     public function testDataFieldsCollectedForSubscriber()
     {
+        $contactId = 4;
         $subscriberExporterMock = $this->createMock(SubscriberExporter::class);
+        $sdkContactMock = $this->createMock(SdkContact::class);
 
         $this->scopeConfigMock->expects($this->once())
             ->method('getValue')
@@ -168,24 +180,22 @@ class DataFieldCollectorTest extends TestCase
 
         $subscriberExporterMock->expects($this->once())
             ->method('export')
-            ->willReturn($this->getDummyExportData());
+            ->willReturn([
+                $contactId => $sdkContactMock
+            ]);
 
-        $subscriberExporterMock->expects($this->once())
-            ->method('getCsvColumns')
-            ->willReturn($this->getSampleKeys());
-
-        $this->contactModelMock->expects($this->exactly(3))
+        $this->contactModelMock->expects($this->exactly(2))
             ->method('getId')
-            ->willReturn(4);
+            ->willReturn($contactId);
 
-        $data = $this->dataFieldCollector->collectForSubscriber($this->contactModelMock, 1);
-
-        $this->assertEquals($this->getCombinedKeysAndData(), $data);
+        $this->dataFieldCollector->collectForSubscriber($this->contactModelMock, 1, 123456);
     }
 
     public function testSalesDataFieldsCollectedForSubscriber()
     {
+        $contactId = 4;
         $subscriberWithSalesExporterMock = $this->createMock(SubscriberWithSalesExporter::class);
+        $sdkContactMock = $this->createMock(SdkContact::class);
 
         // $isSubscriberSalesDataEnabled = 1
         $this->scopeConfigMock->expects($this->once())
@@ -210,19 +220,15 @@ class DataFieldCollectorTest extends TestCase
 
         $subscriberWithSalesExporterMock->expects($this->once())
             ->method('export')
-            ->willReturn($this->getDummyExportData());
+            ->willReturn([
+                $contactId => $sdkContactMock
+            ]);
 
-        $subscriberWithSalesExporterMock->expects($this->once())
-            ->method('getCsvColumns')
-            ->willReturn($this->getSampleKeys());
-
-        $this->contactModelMock->expects($this->exactly(3))
+        $this->contactModelMock->expects($this->exactly(2))
             ->method('getId')
-            ->willReturn(4);
+            ->willReturn($contactId);
 
-        $data = $this->dataFieldCollector->collectForSubscriber($this->contactModelMock, 1);
-
-        $this->assertEquals($this->getCombinedKeysAndData(), $data);
+        $this->dataFieldCollector->collectForSubscriber($this->contactModelMock, 1, 123456);
     }
 
     public function testMergeFields()
@@ -234,64 +240,33 @@ class DataFieldCollectorTest extends TestCase
 
         $this->assertEquals(
             [
-            [
-                'Key' => 'STORE_NAME',
-                'Value' => 'Chaz store',
-            ],
-            [
-                'Key' => 'WEBSITE_NAME',
-                'Value' => 'Chaz website',
-            ],
-            [
-                'Key' => 'FIRST_NAME',
-                'Value' => 'Chaz',
-            ],
-            [
-                'Key' => 'LAST_NAME',
-                'Value' => 'Kangaroo',
-            ],
-            [
-                'Key' => 'SUBSCRIBER_STATUS',
-                'Value' => 'Subscribed',
-            ]
+                [
+                    'Key' => 'STORE_NAME',
+                    'Value' => 'Chaz store',
+                ],
+                [
+                    'Key' => 'WEBSITE_NAME',
+                    'Value' => 'Chaz website',
+                ],
+                [
+                    'Key' => 'FIRST_NAME',
+                    'Value' => 'Chaz',
+                ],
+                [
+                    'Key' => 'LAST_NAME',
+                    'Value' => 'Kangaroo',
+                ],
+                [
+                    'Key' => 'SUBSCRIBER_STATUS',
+                    'Value' => 'Subscribed',
+                ],
+                [
+                    'Key' => 'CUSTOMER_ID',
+                    'Value' => '10',
+                ]
             ],
             $merged
         );
-    }
-
-    private function getDummyExportData()
-    {
-        return [
-            '4' => [
-                'chaz@emailsim.io',
-                'Html',
-                'Chaz',
-                'Kangaroo',
-                '10'
-            ]
-        ];
-    }
-
-    private function getSampleKeys()
-    {
-        return [
-            'Email',
-            'EmailType',
-            'FIRST_NAME',
-            'LAST_NAME',
-            'CUSTOMER_ID'
-        ];
-    }
-
-    private function getCombinedKeysAndData()
-    {
-        return [
-            'Email' => 'chaz@emailsim.io',
-            'EmailType' => 'Html',
-            'FIRST_NAME' => 'Chaz',
-            'LAST_NAME' => 'Kangaroo',
-            'CUSTOMER_ID' => '10'
-        ];
     }
 
     private function getDefaultDataFields()
@@ -311,34 +286,38 @@ class DataFieldCollectorTest extends TestCase
     private function getExportedCustomerDataFields()
     {
         return [
-            'Email' => 'chaz@emailsim.io',
-            'EmailType' => 'Html',
-            'FIRST_NAME' => 'Chaz',
-            'LAST_NAME' => 'Kangaroo',
-            'SUBSCRIBER_STATUS' => 'Subscribed',
-            'WEBSITE_NAME' => 'Chaz website'
+            new DataField('FIRST_NAME', 'Chaz'),
+            new DataField('LAST_NAME', 'Kangaroo'),
+            new DataField('SUBSCRIBER_STATUS', 'Subscribed'),
+            new DataField('CUSTOMER_ID', '10'),
+            new DataField('WEBSITE_NAME', 'Chaz website')
         ];
     }
 
-    private function getDummySubscriberDataFields()
+    private function getExportedSubscriberWithDataFields()
+    {
+        return new SdkContact([
+            'matchIdentifier' => 'email',
+            'identifiers' => [
+                'email' => 'chaz@emailsim.io'
+            ],
+            'dataFields' => [
+                new DataField('FIRST_NAME', 'Chaz'),
+                new DataField('LAST_NAME', 'Kangaroo'),
+                new DataField('SUBSCRIBER_STATUS', 'Subscribed'),
+                new DataField('CONSENTTEXT', 'You have consented!'),
+            ]
+        ]);
+    }
+
+    private function getExportedSubscriberDataFieldsWithSales()
     {
         return [
-            [
-                'Key' => 'FIRST_NAME',
-                'Value' => 'Chaz',
-            ],
-            [
-                'Key' => 'LAST_NAME',
-                'Value' => 'Kangaroo',
-            ],
-            [
-                'Key' => 'SUBSCRIBER_STATUS',
-                'Value' => 'Subscribed',
-            ],
-            [
-                'Key' => 'CONSENTTEXT',
-                'Value' => 'You have consented!',
-            ]
+            new DataField('FIRST_NAME', 'Chaz'),
+            new DataField('LAST_NAME', 'Kangaroo'),
+            new DataField('SUBSCRIBER_STATUS', 'Subscribed'),
+            new DataField('CONSENTTEXT', 'You have consented!'),
+            new DataField('NUMBER_OF_ORDERS', '5'),
         ];
     }
 }

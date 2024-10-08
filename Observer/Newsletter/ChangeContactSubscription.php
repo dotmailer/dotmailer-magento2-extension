@@ -15,6 +15,7 @@ use Dotdigitalgroup\Email\Model\ResourceModel\Automation;
 use Dotdigitalgroup\Email\Model\ResourceModel\Automation\CollectionFactory;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact;
 use Dotdigitalgroup\Email\Model\StatusInterface;
+use Dotdigitalgroup\Email\Model\Subscriber as DotdigitalSubscriber;
 use Dotdigitalgroup\Email\Model\Sync\Automation\AutomationTypeHandler;
 use Exception;
 use Magento\Framework\App\Config\ScopeConfigInterface;
@@ -211,7 +212,7 @@ class ChangeContactSubscription implements ObserverInterface
                     $resubscribeData->setEmail($email);
                     $resubscribeData->setWebsiteId($websiteId);
                     $resubscribeData->setType('resubscribe');
-                    $this->publisher->publish('ddg.newsletter.subscription', $resubscribeData);
+                    $this->publisher->publish(DotdigitalSubscriber::TOPIC_NEWSLETTER_SUBSCRIPTION, $resubscribeData);
                 } else {
                     // save first in order to have a row id for the queue publish
                     $this->contactResource->save($contactEmail);
@@ -221,7 +222,7 @@ class ChangeContactSubscription implements ObserverInterface
                     $subscribeData->setEmail($email);
                     $subscribeData->setWebsiteId($websiteId);
                     $subscribeData->setType('subscribe');
-                    $this->publisher->publish('ddg.newsletter.subscription', $subscribeData);
+                    $this->publisher->publish(DotdigitalSubscriber::TOPIC_NEWSLETTER_SUBSCRIPTION, $subscribeData);
                 }
             //not subscribed
             } else {
@@ -243,7 +244,7 @@ class ChangeContactSubscription implements ObserverInterface
                     $unsubscriber->setWebsiteId($websiteId);
                     $unsubscriber->setType('unsubscribe');
 
-                    $this->publisher->publish('ddg.newsletter.subscription', $unsubscriber);
+                    $this->publisher->publish(DotdigitalSubscriber::TOPIC_NEWSLETTER_SUBSCRIPTION, $unsubscriber);
                 }
 
                 $this->saveContactAsNotSubscribed($contactEmail);

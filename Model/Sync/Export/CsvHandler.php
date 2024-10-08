@@ -7,6 +7,10 @@ use Dotdigitalgroup\Email\Logger\Logger;
 use Magento\Framework\Filesystem\DriverInterface;
 use Magento\Store\Api\Data\WebsiteInterface;
 
+/**
+ * @deprecated CSV data transfer is replaced with JSON.
+ * @see \Dotdigitalgroup\Email\Model\Sync\Batch\MegaBatchProcessor
+ */
 class CsvHandler
 {
     /**

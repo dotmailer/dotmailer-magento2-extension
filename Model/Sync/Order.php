@@ -2,50 +2,30 @@
 
 namespace Dotdigitalgroup\Email\Model\Sync;
 
+use DateTime;
+use Dotdigitalgroup\Email\Api\Model\Sync\Batch\BatchMergerInterface;
 use Dotdigitalgroup\Email\Helper\Config;
 use Dotdigitalgroup\Email\Helper\Data;
+use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory as OrderCollectionFactory;
 use Dotdigitalgroup\Email\Model\ResourceModel\OrderFactory as OrderResourceFactory;
-use Dotdigitalgroup\Email\Model\Sync\Order\BatchProcessor;
-use Dotdigitalgroup\Email\Model\Sync\Order\Exporter;
+use Dotdigitalgroup\Email\Model\Sync\Batch\MegaBatchProcessorFactory;
+use Dotdigitalgroup\Email\Model\Sync\Order\ExporterFactory;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\DataObject;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Store\Model\StoreManagerInterface;
+use Magento\Store\Api\Data\WebsiteInterface;
+use Exception;
+use Dotdigitalgroup\Email\Model\Importer;
+use Magento\Store\Model\Website;
 
-/**
- * Sync Orders.
- */
 class Order extends DataObject implements SyncInterface
 {
-    /**
-     * @var Data
-     */
-    private $helper;
-
-    /**
-     * @var OrderResourceFactory
-     */
-    private $orderResourceFactory;
-
     /**
      * @var ScopeConfigInterface
      */
     private $scopeConfig;
-
-    /**
-     * @var BatchProcessor
-     */
-    private $batchProcessor;
-
-    /**
-     * @var Exporter
-     */
-    private $exporter;
-
-    /**
-     * @var OrderCollectionFactory
-     */
-    private $orderCollectionFactory;
 
     /**
      * @var StoreManagerInterface
@@ -53,134 +33,212 @@ class Order extends DataObject implements SyncInterface
     private $storeManager;
 
     /**
-     * @param OrderResourceFactory $orderResourceFactory
-     * @param Data $helper
+     * @var Data
+     */
+    private $helper;
+
+    /**
+     * @var ExporterFactory
+     */
+    private $exporterFactory;
+
+    /**
+     * @var MegaBatchProcessorFactory
+     */
+    private $megaBatchProcessorFactory;
+
+    /**
+     * @var OrderResourceFactory
+     */
+    private $orderResourceFactory;
+
+    /**
+     * @var OrderCollectionFactory
+     */
+    private $orderCollectionFactory;
+
+    /**
+     * @var BatchMergerInterface
+     */
+    private $mergeManager;
+
+    /**
+     * @var Logger
+     */
+    private $logger;
+
+    /**
+     * @var int
+     */
+    private $totalOrdersProcessedCount = 0;
+
+    /**
+     * @var int
+     */
+    private $totalOrdersSyncedCount = 0;
+
+    /**
+     * Order constructor.
+     *
      * @param ScopeConfigInterface $scopeConfig
-     * @param BatchProcessor $batchProcessor
-     * @param Exporter $exporter
-     * @param OrderCollectionFactory $orderCollectionFactory
      * @param StoreManagerInterface $storeManager
+     * @param Data $helper
+     * @param ExporterFactory $exporterFactory
+     * @param MegaBatchProcessorFactory $megaBatchProcessorFactory
+     * @param OrderResourceFactory $orderResourceFactory
+     * @param OrderCollectionFactory $orderCollectionFactory
+     * @param BatchMergerInterface $mergeManager
+     * @param Logger $logger
      * @param array $data
      */
     public function __construct(
-        OrderResourceFactory $orderResourceFactory,
-        Data $helper,
         ScopeConfigInterface $scopeConfig,
-        BatchProcessor $batchProcessor,
-        Exporter $exporter,
-        OrderCollectionFactory $orderCollectionFactory,
         StoreManagerInterface $storeManager,
+        Data $helper,
+        ExporterFactory $exporterFactory,
+        MegaBatchProcessorFactory $megaBatchProcessorFactory,
+        OrderResourceFactory $orderResourceFactory,
+        OrderCollectionFactory $orderCollectionFactory,
+        BatchMergerInterface $mergeManager,
+        Logger $logger,
         array $data = []
     ) {
-        $this->orderResourceFactory = $orderResourceFactory;
-        $this->helper = $helper;
         $this->scopeConfig = $scopeConfig;
-        $this->batchProcessor = $batchProcessor;
-        $this->exporter = $exporter;
-        $this->orderCollectionFactory = $orderCollectionFactory;
         $this->storeManager = $storeManager;
-
+        $this->helper = $helper;
+        $this->exporterFactory = $exporterFactory;
+        $this->megaBatchProcessorFactory = $megaBatchProcessorFactory;
+        $this->orderResourceFactory = $orderResourceFactory;
+        $this->orderCollectionFactory = $orderCollectionFactory;
+        $this->mergeManager = $mergeManager;
+        $this->logger = $logger;
         parent::__construct($data);
     }
 
     /**
-     * Sync process.
+     * Sync orders.
      *
-     * @param \DateTime|null $from
-     *
-     * @return array
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @param DateTime|null $from Optional start date for syncing orders.
+     * @return array Returns an array with a message and the total number of synced orders.
+     * @throws \Http\Client\Exception
      */
-    public function sync(\DateTime $from = null)
+    public function sync(DateTime $from = null): array
     {
         $start = microtime(true);
-        $limit = $this->scopeConfig->getValue(
-            Config::XML_PATH_CONNECTOR_TRANSACTIONAL_DATA_SYNC_LIMIT
-        );
-
-        $breakValue = $this->isRunFromDeveloperButton() ? $limit : $this->scopeConfig->getValue(
-            Config::XML_PATH_CONNECTOR_SYNC_BREAK_VALUE
-        );
-
-        $megaBatchSize = $this->scopeConfig->getValue(Config::XML_PATH_CONNECTOR_MEGA_BATCH_SIZE_ORDERS);
-        $megaBatch = [];
-        $totalOrdersSyncedCount = 0;
-        $megaBatchCount = 0;
-        $loopStart = true;
-        $ordersProcessedCount = 0;
-        $storeIds = $this->getOrderEnabledStoreIds();
-
-        do {
-            $ordersToProcess = $this->orderCollectionFactory
-                ->create()
-                ->getOrdersToProcess($limit, $storeIds);
-
-            if (!$ordersToProcess) {
-                break;
+        foreach ($this->storeManager->getWebsites() as $website) {
+            try {
+                $this->processWebsiteOrders($website);
+            } catch (Exception $e) {
+                $this->logger->error(
+                    sprintf('Error in order sync for website id: %d', $website->getId()),
+                    [(string)$e]
+                );
             }
-
-            if ($loopStart) {
-                $this->helper->log('----------- Order sync ----------- : Start batching');
-                $loopStart = false;
-            }
-
-            $megaBatch = $this->mergeBatch(
-                $megaBatch,
-                $batch = $this->exporter->exportOrders($ordersToProcess)
-            );
-
-            $ordersProcessedCount += count($ordersToProcess);
-            $megaBatchCount += $batchCount = $this->getBatchOrdersCount($batch);
-            $totalOrdersSyncedCount += $batchCount;
-
-            $this->orderResourceFactory->create()
-                ->setProcessed($ordersToProcess);
-
-            $this->helper->log(sprintf('Order sync: %s orders processed.', count($ordersToProcess)));
-
-            if ($megaBatchCount >= $megaBatchSize) {
-                $this->batchProcessor->process($megaBatch);
-                $megaBatchCount = 0;
-                $megaBatch = [];
-            }
-        } while (!$breakValue || $totalOrdersSyncedCount < $breakValue);
-
-        if (!empty($megaBatch)) {
-            $this->batchProcessor->process($megaBatch);
         }
 
         $message = '----------- Order sync ----------- : ' .
             gmdate('H:i:s', (int) (microtime(true) - $start)) .
-            ', Total processed = ' . $ordersProcessedCount . ', Total synced = ' . $totalOrdersSyncedCount;
+            ', Total processed = ' . $this->totalOrdersProcessedCount .
+            ', Total synced = ' .$this->totalOrdersSyncedCount;
 
-        if ($totalOrdersSyncedCount > 0 || $this->helper->isDebugEnabled()) {
-            $this->helper->log($message);
+        if ($this->totalOrdersSyncedCount > 0 || $this->helper->isDebugEnabled()) {
+            $this->logger->info($message);
         }
 
-        return [
-            'message' => $message,
-            'syncedOrders' => $totalOrdersSyncedCount
-        ];
+        return ['message' => $message, 'syncedOrders' => $this->totalOrdersSyncedCount];
     }
 
     /**
-     * Creates the order mega batch.
+     * Process orders for a specific website.
      *
-     * @param array $megaBatch
-     * @param array $batch
-     * @return array
+     * @param Website $website The website for which to process orders.
+     * @throws \Http\Client\Exception
+     * @throws LocalizedException
      */
-    private function mergeBatch(array $megaBatch, array $batch)
+    private function processWebsiteOrders(WebsiteInterface $website)
     {
-        foreach ($batch as $websiteId => $orders) {
-            if (array_key_exists($websiteId, $megaBatch)) {
-                $megaBatch[$websiteId] += $orders;
-            } else {
-                $megaBatch += [$websiteId => $orders];
-            }
+        $limit = (int) $this->scopeConfig->getValue(Config::XML_PATH_CONNECTOR_TRANSACTIONAL_DATA_SYNC_LIMIT);
+        $megaBatchSize = (int) $this->scopeConfig->getValue(Config::XML_PATH_CONNECTOR_MEGA_BATCH_SIZE_ORDERS);
+        $breakValue = $this->isRunFromDeveloperButton()
+            ? $limit
+            : (int) $this->scopeConfig->getValue(Config::XML_PATH_CONNECTOR_SYNC_BREAK_VALUE);
+
+        if (!$this->shouldSyncWebsite($website, $breakValue)) {
+            return;
         }
 
-        return $megaBatch;
+        $megaBatch = [];
+        $megaBatchCount = 0;
+        $loopStart = true;
+        $storeIds = $website->getStoreIds();
+
+        $exporter = $this->exporterFactory->create();
+
+        do {
+            $ordersToProcess = $this->orderCollectionFactory->create()
+                ->getOrdersToProcess($limit, $storeIds);
+
+            if (empty($ordersToProcess)) {
+                break;
+            }
+
+            if ($loopStart) {
+                $this->logger->info(
+                    sprintf('----------- Order sync ----------- : Website %d', $website->getId())
+                );
+                $loopStart = false;
+            }
+
+            $batch = $exporter->export($ordersToProcess);
+            $megaBatch = $this->mergeManager->mergeBatch($batch, $megaBatch);
+
+            $this->totalOrdersProcessedCount += count($ordersToProcess);
+            $megaBatchCount += count($batch);
+            $this->totalOrdersSyncedCount += count($batch);
+
+            $this->orderResourceFactory->create()
+                ->setProcessed($ordersToProcess);
+
+            $this->logger->info(
+                sprintf(
+                    'Order sync: %s orders processed, %s selected',
+                    count($ordersToProcess),
+                    count($batch)
+                )
+            );
+
+            if ($megaBatchCount >= $megaBatchSize) {
+                $this->megaBatchProcessorFactory->create()
+                    ->process(
+                        $megaBatch,
+                        (int) $website->getId(),
+                        Importer::IMPORT_TYPE_ORDERS
+                    );
+                $megaBatch = [];
+                $megaBatchCount = 0;
+            }
+        } while (!$breakValue || $this->totalOrdersSyncedCount < $breakValue);
+
+        $this->megaBatchProcessorFactory->create()
+            ->process(
+                $megaBatch,
+                (int) $website->getId(),
+                Importer::IMPORT_TYPE_ORDERS
+            );
+    }
+
+    /**
+     * Check if the website should be synced.
+     *
+     * @param WebsiteInterface $website The website to check.
+     * @param int|null $breakValue The break value to determine if syncing should stop.
+     * @return bool Returns true if the website should be synced, false otherwise.
+     */
+    private function shouldSyncWebsite(WebsiteInterface $website, ?int $breakValue): bool
+    {
+        return $this->helper->isEnabled($website->getId())
+            && $this->helper->isOrderSyncEnabled($website->getId())
+            && (!$breakValue || $this->totalOrdersSyncedCount < $breakValue);
     }
 
     /**
@@ -188,55 +246,8 @@ class Order extends DataObject implements SyncInterface
      *
      * @return bool
      */
-    private function isRunFromDeveloperButton()
+    private function isRunFromDeveloperButton(): bool
     {
         return (bool)$this->_getData('web');
-    }
-
-    /**
-     * Order counter.
-     *
-     * @param array $batch
-     * @return int
-     */
-    private function getBatchOrdersCount(array $batch)
-    {
-        $ordersToSync = 0;
-
-        foreach ($batch as $orders) {
-            $ordersToSync += count($orders);
-        }
-
-        return $ordersToSync;
-    }
-
-    /**
-     * Get all stores that order sync is enabled.
-     *
-     * @return array
-     * @throws \Magento\Framework\Exception\LocalizedException
-     */
-    private function getOrderEnabledStoreIds()
-    {
-        $websites = $this->storeManager->getWebsites(true);
-
-        $storeIds = [];
-        /** @var \Magento\Store\Model\Website $website */
-        foreach ($websites as $website) {
-            $apiEnabled = $this->helper->isEnabled($website->getId());
-            // api and order sync should be enabled, skip website with no store ids
-            if ($apiEnabled && $this->scopeConfig->getValue(
-                Config::XML_PATH_CONNECTOR_SYNC_ORDER_ENABLED,
-                \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
-                $website->getId()
-            )
-            ) {
-                foreach ($website->getStoreIds() as $storeId) {
-                    $storeIds[] = $storeId;
-                }
-            }
-        }
-
-        return $storeIds;
     }
 }

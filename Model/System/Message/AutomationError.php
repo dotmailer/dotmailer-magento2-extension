@@ -77,7 +77,7 @@ class AutomationError implements MessageInterface
     {
         $errorSummary = $this->statusProvider->getErrorSummary();
         $message = __(
-            'One or more of your dotdigital automation enrolment tasks have errors: %1. ',
+            'One or more of your Dotdigital automation enrolment tasks have errors: %1. ',
             $errorSummary
         ) . ' ';
         $url = $this->urlBuilder->getUrl('dotdigitalgroup_email/automation/index');

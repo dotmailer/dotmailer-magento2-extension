@@ -178,6 +178,9 @@ class Client extends Rest implements ClientInterface
      *
      * @return mixed
      * @throws \Magento\Framework\Exception\LocalizedException
+     *
+     * @deprecated We no longer post csv files to Dotdigital.
+     * @see \Dotdigitalgroup\Email\Model\Sync\Importer\Type\Contact\BulkJson
      */
     public function postAddressBookContactsImport($filename, $addressBookId)
     {
@@ -271,6 +274,9 @@ class Client extends Rest implements ClientInterface
      *
      * @return object
      * @throws LocalizedException
+     *
+     * @deprecated Use API V3.
+     * @see \Dotdigital\V3\Resources\Contacts::patchByIdentifier
      */
     public function addContactToAddressBook(
         string $email,

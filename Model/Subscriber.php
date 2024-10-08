@@ -6,6 +6,8 @@ use Dotdigitalgroup\Email\Model\ResourceModel\Contact;
 
 class Subscriber
 {
+    public const TOPIC_NEWSLETTER_SUBSCRIPTION = 'ddg.newsletter.subscription';
+
     /**
      * @var Contact
      */
