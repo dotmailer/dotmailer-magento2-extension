@@ -100,12 +100,27 @@ class ImporterQueueManager
     /**
      * Set importing priority for bulk imports.
      *
-     * @param array $additionalImportTypes
+     * @param array $additionalImports Additional instances of BulkImportBuilder may be included (provided via plugins).
+     *
      * @return array
      */
-    public function getBulkQueue(array $additionalImportTypes = [])
+    public function getBulkQueue(array $additionalImports = [])
     {
-        return $this->aggregateImports($additionalImportTypes);
+        foreach ($additionalImports as $key => $import) {
+            if (!$import instanceof BulkImportBuilder) {
+                $additionalImports[$key] = $this->bulkImportBuilderFactory
+                    ->create()
+                    ->setModel($this->bulkFactory)
+                    ->setType([$import]);
+            }
+        }
+
+        return [
+            ...$this->aggregateImports(),
+            ...array_map(function (BulkImportBuilder $builder): array {
+                return $builder->build();
+            }, $additionalImports)
+        ];
     }
 
     /**
@@ -114,12 +129,9 @@ class ImporterQueueManager
      * BULK_JSON batches are sent during sync - but their importer rows may be reset, so this queue
      * may need to pick them up.
      *
-     * @param array $additionalImportTypes Additional import types to be included in the
-     * transactionalDeprecated type (provided via plugins).
-     *
-     * @return array An array of classic import configurations.
+     * @return array<BulkImportBuilder> An array of classic import configurations.
      */
-    private function aggregateImports(array $additionalImportTypes = []): array
+    private function aggregateImports(): array
     {
         $contactDeprecated = $this->bulkImportBuilderFactory
             ->create()
@@ -154,7 +166,7 @@ class ImporterQueueManager
                 ImporterModel::IMPORT_TYPE_REVIEWS,
                 ImporterModel::IMPORT_TYPE_WISHLIST,
                 ImporterModel::IMPORT_TYPE_ORDERS
-            ], $additionalImportTypes));
+            ]));
 
         $transactionalJson =$this->bulkImportBuilderFactory
             ->create()
