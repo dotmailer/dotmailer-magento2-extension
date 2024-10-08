@@ -1,3 +1,26 @@
+# 4.27.0
+
+### What's new
+- Customers, subscribers and guests are now synced into the platform faster.
+- Orders are now synced into the platform faster.
+- System messages surface message queue problems in the Magento admin.
+
+### Improvements
+- Custom attributes mapped to data fields will now take their default attribute value as a fallback if no value is set. [External contribution](https://github.com/dotmailer/dotmailer-magento2-extension/pull/633)
+- Subscribers are synced into Dotdigital via API v3, prior to automation enrolment.
+- Queue topic names now use class constants.
+- All observer code is wrapped in try/catch statements.
+- We now use the `patchByIdentifier` method when sending dummy data to Dotdigital, to avoid an `identifierConflict` error.
+- We added a new integration test for the OrderSaveAfter observer.
+- We added new MFTF tests for placing orders with the module enabled.
+- We removed an OrderSaveBefore observer.
+- Data fields for most purchased category, most purchased brand, last purchased brand and first purchased brand are no longer auto-mapped by default.
+- We added an `@api` annotation to the LogViewer block.
+
+### Bug fixes
+- The inline script for the dmPt tracking code has been moved to a UI component.
+- We fixed a problem with list mapping for customers with more than 5000 lists in their account.
+
 # 4.26.3
 
 ### Bug fixes
