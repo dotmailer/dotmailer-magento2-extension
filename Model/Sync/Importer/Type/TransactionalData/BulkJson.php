@@ -66,7 +66,7 @@ class BulkJson extends AbstractItemSyncer implements BulkSyncInterface
             ->setBatch(array_map(function ($record) {
                 return new Record($record);
             }, $this->serializer->unserialize($item->getImportData())))
-            ->setWebsiteId($item->getWebsiteId())
+            ->setWebsiteId((int) $item->getWebsiteId())
             ->process();
     }
 }
