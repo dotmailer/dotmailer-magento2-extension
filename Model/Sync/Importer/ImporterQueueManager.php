@@ -138,7 +138,6 @@ class ImporterQueueManager
             ->setModel($this->contactBulkFactory)
             ->setType([
                 ImporterModel::IMPORT_TYPE_CONTACT,
-                ImporterModel::IMPORT_TYPE_CONSENT,
                 ImporterModel::IMPORT_TYPE_CUSTOMER,
                 ImporterModel::IMPORT_TYPE_GUEST,
                 ImporterModel::IMPORT_TYPE_SUBSCRIBERS,
