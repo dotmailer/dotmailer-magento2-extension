@@ -124,6 +124,8 @@ class InsertEmailContactTableCustomerSales extends AbstractBatchInserter impleme
      */
     public function isEnabled(): bool
     {
-        return $this->config->isAccountSharingGlobal();
+        global $argv;
+        $status = (isset($argv) && is_array($argv) && in_array('dotdigital:migrate', $argv));
+        return $this->config->isAccountSharingGlobal() && $status;
     }
 }
