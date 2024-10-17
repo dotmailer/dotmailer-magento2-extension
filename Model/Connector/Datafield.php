@@ -8,6 +8,9 @@ namespace Dotdigitalgroup\Email\Model\Connector;
  */
 class Datafield
 {
+    public const FIRST_CATEGORY_PUR = 'first_category_pur';
+    public const LAST_CATEGORY_PUR = 'last_category_pur';
+    public const MOST_PUR_CATEGORY = 'most_pur_category';
     private const DATA_MAPPING_PATH_PREFIX = 'customer_data';
 
     /**
@@ -232,7 +235,7 @@ class Datafield
             'type' => 'string',
             'visibility' => 'private',
         ],
-        'most_pur_category' => [
+        self::MOST_PUR_CATEGORY => [
             'name' => 'MOST_PUR_CATEGORY',
             'type' => 'string',
             'visibility' => 'private',
@@ -258,13 +261,13 @@ class Datafield
             'visibility' => 'private',
             'context' => 'sales',
         ],
-        'first_category_pur' => [
+        self::FIRST_CATEGORY_PUR => [
             'name' => 'FIRST_CATEGORY_PUR',
             'type' => 'string',
             'visibility' => 'private',
             'context' => 'sales',
         ],
-        'last_category_pur' => [
+        self::LAST_CATEGORY_PUR => [
             'name' => 'LAST_CATEGORY_PUR',
             'type' => 'string',
             'visibility' => 'private',

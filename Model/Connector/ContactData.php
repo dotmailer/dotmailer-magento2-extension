@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dotdigitalgroup\Email\Model\Connector;
 
 use Dotdigitalgroup\Email\Logger\Logger;
@@ -154,14 +156,16 @@ class ContactData
      *
      * @param AbstractModel $model
      * @param array $columns
+     * @param array $categoryNames
      *
      * @return $this
      */
-    public function init(AbstractModel $model, array $columns)
+    public function init(AbstractModel $model, array $columns, array $categoryNames = [])
     {
         $this->model = $model;
         $this->columns = $columns;
         $this->contactData = [];
+        $this->categoryNames = $categoryNames;
         return $this;
     }
 
@@ -358,7 +362,7 @@ class ContactData
 
         $categoryIds = $this->getCategoriesFromOrderItems($orderItems);
 
-        return $this->getCategoryNames($categoryIds);
+        return $this->getCategoryNamesFromIds($categoryIds);
     }
 
     /**
@@ -411,7 +415,7 @@ class ContactData
 
         $categoryIds = $this->getCategoriesFromOrderItems($orderItems);
 
-        return $this->getCategoryNames($categoryIds);
+        return $this->getCategoryNamesFromIds($categoryIds);
     }
 
     /**
@@ -438,6 +442,9 @@ class ContactData
      *
      * @param array $categoryIds
      * @return string
+     *
+     * @deprecated Use the new private method
+     * @see getCategoryNamesFromIds
      */
     public function getCategoryNames($categoryIds)
     {
@@ -454,6 +461,29 @@ class ContactData
         }
 
         return '';
+    }
+
+    /**
+     * Get category names from category ids.
+     *
+     * @param array $categoryIds
+     *
+     * @return string
+     */
+    private function getCategoryNamesFromIds(array $categoryIds): string
+    {
+        $names = [];
+        $storeId = $this->model->getStoreId();
+
+        foreach ($categoryIds as $id) {
+            if (!isset($this->categoryNames[$storeId][$id])) {
+                // no match found for the category id in the current category tree
+                continue;
+            }
+            $names[] = $this->categoryNames[$storeId][$id];
+        }
+
+        return (count($names)) ? implode(',', $names) : '';
     }
 
     /**
@@ -548,7 +578,7 @@ class ContactData
             if ($product->getId()) {
                 $categoryIds = $product->getCategoryIds();
                 if (count($categoryIds)) {
-                    $categories = $this->getCategoryNames($categoryIds);
+                    $categories = $this->getCategoryNamesFromIds($categoryIds);
                 }
             }
         }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dotdigitalgroup\Email\Model\Connector\ContactData;
 
 use Dotdigitalgroup\Email\Helper\Config;
@@ -13,6 +15,7 @@ use Magento\Catalog\Model\ResourceModel\Category;
 use Magento\Catalog\Model\ResourceModel\Product;
 use Magento\Customer\Model\GroupFactory;
 use Magento\Customer\Model\ResourceModel\Group;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Model\AbstractModel;
 use Magento\Newsletter\Model\SubscriberFactory;
 use Magento\Review\Model\ResourceModel\Review\CollectionFactory;
@@ -23,11 +26,6 @@ use Magento\Store\Model\StoreManagerInterface;
 
 /**
  * Manages the Customer data as datafields for contact.
- *
- * @SuppressWarnings(PHPMD.TooManyFields)
- * @SuppressWarnings(PHPMD.ExcessivePublicCount)
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
- * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
  */
 class Customer extends ContactData
 {
@@ -156,11 +154,14 @@ class Customer extends ContactData
      *
      * @param AbstractModel $model
      * @param array $columns
+     * @param array $categoryNames
+     *
      * @return $this|ContactData
+     * @throws LocalizedException
      */
-    public function init(AbstractModel $model, array $columns)
+    public function init(AbstractModel $model, array $columns, array $categoryNames = [])
     {
-        parent::init($model, $columns);
+        parent::init($model, $columns, $categoryNames);
         $this->setContactData();
 
         return $this;

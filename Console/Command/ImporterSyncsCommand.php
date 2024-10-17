@@ -5,6 +5,8 @@ namespace Dotdigitalgroup\Email\Console\Command;
 use Dotdigitalgroup\Email\Console\Command\Provider\SyncProvider;
 use Dotdigitalgroup\Email\Model\Sync\SyncInterface;
 use Magento\Framework\App\Area;
+use Magento\Framework\App\ObjectManager;
+use Magento\Framework\App\ResourceConnection;
 use Magento\Framework\App\State;
 use Magento\Framework\Exception\LocalizedException;
 use Symfony\Component\Console\Command\Command;
@@ -58,6 +60,12 @@ class ImporterSyncsCommand extends Command
                 null,
                 InputOption::VALUE_OPTIONAL,
                 __('Specify a date/time (parsable by \DateTime) to run a sync from (if supported)')
+            )
+            ->addOption(
+                'mode',
+                null,
+                InputOption::VALUE_OPTIONAL,
+                __('Switch to debug mode to output database profiler queries (if enabled)')
             )
         ;
         parent::configure();
@@ -120,6 +128,10 @@ class ImporterSyncsCommand extends Command
             round(microtime(true) - $start, 2)
         ));
 
+        if ($input->getOption('mode') == 'debug') {
+            $this->outputDbProfilerQueries($output);
+        }
+
         return 0;
     }
 
@@ -140,5 +152,59 @@ class ImporterSyncsCommand extends Command
         $syncQuestion->setErrorMessage(__('Please select a sync')->getText());
         /** @var QuestionHelper $helper */
         return $helper->ask($input, $output, $syncQuestion);
+    }
+
+    /**
+     * Output db profiler queries.
+     *
+     * Requires the Magento database profiler to be enabled.
+     * To view this output, run the command with the --mode=debug option.
+     * It's helpful to send the output to a file for easier reading, e.g.
+     * bin/magento dotdigital:sync --mode=debug > /tmp/dotdigital_sync.log
+     *
+     * @param OutputInterface $output
+     * @return void
+     */
+    private function outputDbProfilerQueries(OutputInterface $output): void
+    {
+        /** @var ResourceConnection $res */
+        $res = ObjectManager::getInstance()->get(ResourceConnection::class);
+        /** @var \Magento\Framework\DB\Adapter\Pdo\Mysql $connection */
+        $connection = $res->getConnection('read');
+        /** @var \Magento\Framework\DB\Profiler $profiler */
+        $profiler = $connection->getProfiler();
+
+        if (!$profiler->getQueryProfiles()) {
+            $output->writeln(__('Database profiler is not enabled')->getText());
+            return;
+        }
+
+        foreach ($profiler->getQueryProfiles() as $query) {
+            /** @var \Zend_Db_Profiler_Query $query*/
+            if ($query->getQueryType() == \Zend_Db_Profiler::INSERT) {
+                continue;
+            }
+            $output->writeln(sprintf(
+                '[%s] %s %s %s',
+                date('Y-m-d H:i:s'),
+                __('Query'),
+                $query->getQuery(),
+                json_encode($query->getQueryParams())
+            ));
+        }
+
+        $output->writeln(sprintf(
+            '[%s] %s %s',
+            date('Y-m-d H:i:s'),
+            __('Total queries run')->getText(),
+            $profiler->getTotalNumQueries()
+        ));
+
+        $output->write(sprintf(
+            '[%s] %s %s',
+            date('Y-m-d H:i:s'),
+            __('Total time taken')->getText(),
+            $profiler->getTotalElapsedSecs()
+        ));
     }
 }

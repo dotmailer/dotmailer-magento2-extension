@@ -12,6 +12,7 @@ use Dotdigitalgroup\Email\Model\Connector\Datafield;
 use Dotdigitalgroup\Email\Model\Newsletter\OptInTypeFinder;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory as ContactCollectionFactory;
 use Dotdigitalgroup\Email\Model\Sync\AbstractExporter;
+use Dotdigitalgroup\Email\Model\Sync\Export\CategoryNameFinder;
 use Dotdigitalgroup\Email\Model\Sync\Export\CsvHandler;
 use Dotdigitalgroup\Email\Model\Sync\Export\SalesDataManager;
 use Dotdigitalgroup\Email\Model\Sync\Export\SdkContactBuilder;
@@ -49,6 +50,11 @@ class SubscriberWithSalesExporter extends AbstractExporter implements ContactExp
     private $contactCollectionFactory;
 
     /**
+     * @var CategoryNameFinder
+     */
+    private $categoryNameFinder;
+
+    /**
      * @var SalesDataManager
      */
     private $salesDataManager;
@@ -79,6 +85,7 @@ class SubscriberWithSalesExporter extends AbstractExporter implements ContactExp
      * @param ConnectorSubscriberFactory $connectorSubscriberFactory
      * @param OptInTypeFinder $optInTypeFinder
      * @param ContactCollectionFactory $contactCollectionFactory
+     * @param CategoryNameFinder $categoryNameFinder
      * @param SalesDataManager $salesDataManager
      * @param SdkContactBuilder $sdkContactBuilder
      * @param SubscriberExporterFactory $subscriberExporterFactory
@@ -91,6 +98,7 @@ class SubscriberWithSalesExporter extends AbstractExporter implements ContactExp
         ConnectorSubscriberFactory $connectorSubscriberFactory,
         OptInTypeFinder $optInTypeFinder,
         ContactCollectionFactory $contactCollectionFactory,
+        CategoryNameFinder $categoryNameFinder,
         SalesDataManager $salesDataManager,
         SdkContactBuilder $sdkContactBuilder,
         SubscriberExporterFactory $subscriberExporterFactory,
@@ -102,6 +110,7 @@ class SubscriberWithSalesExporter extends AbstractExporter implements ContactExp
         $this->connectorSubscriberFactory = $connectorSubscriberFactory;
         $this->optInTypeFinder = $optInTypeFinder;
         $this->contactCollectionFactory = $contactCollectionFactory;
+        $this->categoryNameFinder = $categoryNameFinder;
         $this->salesDataManager = $salesDataManager;
         $this->sdkContactBuilder = $sdkContactBuilder;
         $this->subscriberExporterFactory = $subscriberExporterFactory;
@@ -127,6 +136,8 @@ class SubscriberWithSalesExporter extends AbstractExporter implements ContactExp
         $subscriberCollection = $this->contactCollectionFactory->create()
             ->getContactsByContactIds($subscriberIds);
 
+        $productCategoryData = $this->categoryNameFinder->getCategoryNamesByStore($website, $this->fieldMap);
+
         $subscriberSalesData = $this->salesDataManager->setContactSalesData(
             $subscribers,
             $website,
@@ -143,7 +154,7 @@ class SubscriberWithSalesExporter extends AbstractExporter implements ContactExp
                 }
 
                 $connectorSubscriber = $this->connectorSubscriberFactory->create()
-                    ->init($subscriber, $this->fieldMap)
+                    ->init($subscriber, $this->fieldMap, $productCategoryData)
                     ->setContactData();
 
                 $exportedData[$subscriber->getId()] = $this->sdkContactBuilder->createSdkContact(
