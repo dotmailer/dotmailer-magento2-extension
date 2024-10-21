@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Dotdigitalgroup\Email\Model\Connector;
 
 use Dotdigitalgroup\Email\Logger\Logger;
+use Dotdigitalgroup\Email\Model\Connector\Category as ConnectorCategoryModel;
 use Dotdigitalgroup\Email\Model\Customer\DataField\Date;
+use Magento\Framework\App\ObjectManager;
 use Magento\Framework\Model\AbstractModel;
 
 /**
@@ -59,6 +61,11 @@ class ContactData
      * @var \Magento\Catalog\Api\Data\CategoryInterfaceFactory
      */
     private $categoryFactory;
+
+    /**
+     * @var ConnectorCategoryModel
+     */
+    protected ConnectorCategoryModel $connectorCategoryModel;
 
     /**
      * @var \Magento\Catalog\Model\ResourceModel\Category
@@ -120,6 +127,7 @@ class ContactData
      * @param \Magento\Sales\Model\ResourceModel\Order $orderResource
      * @param \Magento\Catalog\Api\Data\CategoryInterfaceFactory $categoryFactory
      * @param \Magento\Catalog\Model\ResourceModel\Category $categoryResource
+     * @param Category $connectorCategoryModel
      * @param \Dotdigitalgroup\Email\Helper\Config $configHelper
      * @param Logger $logger
      * @param Date $dateField
@@ -133,6 +141,7 @@ class ContactData
         \Magento\Sales\Model\ResourceModel\Order $orderResource,
         \Magento\Catalog\Api\Data\CategoryInterfaceFactory $categoryFactory,
         \Magento\Catalog\Model\ResourceModel\Category $categoryResource,
+        ConnectorCategoryModel $connectorCategoryModel,
         \Dotdigitalgroup\Email\Helper\Config $configHelper,
         Logger $logger,
         Date $dateField,
@@ -144,6 +153,7 @@ class ContactData
         $this->orderResource = $orderResource;
         $this->productFactory = $productFactory;
         $this->categoryFactory = $categoryFactory;
+        $this->connectorCategoryModel = $connectorCategoryModel;
         $this->productResource = $productResource;
         $this->categoryResource = $categoryResource;
         $this->logger = $logger;
@@ -448,19 +458,11 @@ class ContactData
      */
     public function getCategoryNames($categoryIds)
     {
-        $names = [];
-        foreach ($categoryIds as $id) {
-            if (! isset($this->categoryNames[$id])) {
-                $this->categoryNames[$id] = $this->getCategoryValue($id);
-            }
-            $names[$this->categoryNames[$id]] = $this->categoryNames[$id];
-        }
-        //comma separated category names
-        if (count($names)) {
-            return implode(',', $names);
+        if (!$this->connectorCategoryModel) {
+            $this->connectorCategoryModel = ObjectManager::getInstance()->get(ConnectorCategoryModel::class);
         }
 
-        return '';
+        return $this->connectorCategoryModel->getCategoryNames($categoryIds, $this->model->getStoreId());
     }
 
     /**
