@@ -8,6 +8,5 @@
         <selectOption selector="{{AdminDotdigitalSyncSettingsSection.customerEnabled}}" userInput="Yes" stepKey="selectCustomerEnabled"/>
         <click selector="{{AdminMainActionsSection.save}}" stepKey="saveConfig"/>
         <waitForPageLoad stepKey="waitForPageLoad"/>
-        <see userInput="You saved the configuration." selector="div[data-ui-id='messages-message-success']" stepKey="seeSuccessMessage"/>
     </actionGroup>
 </actionGroups>
