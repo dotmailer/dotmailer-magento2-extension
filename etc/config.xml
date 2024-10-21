@@ -316,7 +316,7 @@
             <cron_schedules>
                 <customer>*/15 * * * *</customer>
                 <guest>*/15 * * * *</guest>
-                <subscriber>*/15 * * * *</subscriber>
+                <subscriber>0 * * * *</subscriber>
                 <importer>*/5 * * * *</importer>
                 <order>*/15 * * * *</order>
                 <catalog>*/15 * * * *</catalog>
