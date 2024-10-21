@@ -25,7 +25,6 @@
                     </arguments>
                 </block>
             </block>
-            <block class="Dotdigitalgroup\Email\Block\Adminhtml\Dashboard\Configuration" name="dotdigitalgroup.email.dashboard_config"/>
         </referenceContainer>
     </body>
 </page>
