@@ -23,16 +23,4 @@
     </div>
 </div>
 
-<?= $block->getChildHtml('dotdigitalgroup.email.dashboard_config') ?>
-
-<script type="text/x-magento-init">
-    {
-        "*": {
-            "Dotdigitalgroup_Email/js/dashboard":{
-                "contactLink":"<?= $block->escapeUrl($block->getContactSyncLink()); ?>",
-                "importerLink":"<?= $block->escapeUrl($block->getImporterLink()); ?>"
-            }
-        }
-    }
-</script>
 <?php // phpcs:enable ?>

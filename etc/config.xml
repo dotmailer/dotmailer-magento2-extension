@@ -301,17 +301,6 @@
                 <mega_batch_size_catalog>5000</mega_batch_size_catalog>
                 <mega_batch_size_contact>2000</mega_batch_size_contact>
             </import_settings>
-            <sync_settings>
-                <setup_data_fields></setup_data_fields>
-                <contact_sync></contact_sync>
-                <subscriber_sync></subscriber_sync>
-                <order_sync></order_sync>
-                <delete_contact></delete_contact>
-                <reimport_customers></reimport_customers>
-                <reimport_subscribers></reimport_subscribers>
-                <reimport_orders></reimport_orders>
-                <suppressed_contacts></suppressed_contacts>
-            </sync_settings>
             <debug>
                 <debug_enabled>0</debug_enabled>
                 <api_log_time>60</api_log_time>

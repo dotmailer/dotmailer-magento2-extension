@@ -1734,36 +1734,52 @@
             <label>Developer</label>
             <tab>ddg_automation</tab>
             <resource>Dotdigitalgroup_Email::config</resource>
-            <group id="import_settings" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1"
-                   showInStore="0">
+            <group id="import_settings" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="0">
                 <label>Import Settings</label>
-                <field id="batch_size" translate="label" sortOrder="20" showInStore="0" showInWebsite="1"
-                       showInDefault="1">
-                    <label>Contact Sync Size</label>
+                <comment><![CDATA[Configuration for bulk syncs. Use these options to tune the rate at which data is exported out of Magento and imported into Dotdigital. <a href="https://support.dotdigital.com/en/articles/8199588-edit-data-synchronisation-settings-in-magento-open-source-and-adobe-commerce#h_398b799dd3" target="_blank">Learn more</a>.]]></comment>
+
+                <field id="contact_syncs_heading" translate="label" sortOrder="5" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Contact syncs</label>
+                    <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
-                <field id="mega_batch_size_orders" translate="label" sortOrder="5" type="select" showInStore="0" showInWebsite="0" showInDefault="0">
-                    <label>Order sync mega batch size</label>
+                <field id="batch_size" translate="label" sortOrder="10" showInStore="0" showInWebsite="1" showInDefault="1" canRestore="1">
+                    <label>Contact sync batch size</label>
+                    <comment><![CDATA[Batch size is the database query limit. Applies to Customer, Subscriber and Guest syncs.]]></comment>
                 </field>
-                <field id="mega_batch_size_catalog" translate="label" sortOrder="5" type="select" showInStore="0" showInWebsite="0" showInDefault="0">
-                    <label>Catalog sync mega batch size</label>
-                </field>
-                <field id="mega_batch_size_contact" translate="label" sortOrder="5" type="select" showInStore="0" showInWebsite="0" showInDefault="0">
+                <field id="mega_batch_size_contact" translate="label" sortOrder="15" showInStore="0" showInWebsite="0" showInDefault="1" canRestore="1">
                     <label>Contact sync mega batch size</label>
+                    <comment><![CDATA[The number of objects we send in a single payload of JSON to the Dotdigital API. Applies to Customer, Subscriber and Guest syncs.]]></comment>
                 </field>
-                <field id="transactional_data" translate="label" sortOrder="30" type="select" showInStore="0"
-                       showInWebsite="0" showInDefault="1">
-                    <label>Transactional Data Sync Size</label>
-                    <source_model>Dotdigitalgroup\Email\Model\Config\Developer\Transactionaldata</source_model>
+                <field id="insight_data_syncs_heading" translate="label" sortOrder="20" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Insight data syncs</label>
+                    <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                 </field>
-                <field id="transactional_data_break" translate="label" sortOrder="35" showInStore="0" showInWebsite="0" showInDefault="0">
+                <field id="transactional_data" translate="label" sortOrder="25" showInStore="0" showInWebsite="0" showInDefault="1" canRestore="1">
+                    <label>Transactional data batch size</label>
+                    <comment><![CDATA[Batch size is the database query limit. Applies to order, catalog, review and wishlist syncs.]]></comment>
+                </field>
+                <field id="mega_batch_size_orders" translate="label" sortOrder="30" showInStore="0" showInWebsite="0" showInDefault="1" canRestore="1">
+                    <label>Order sync mega batch size</label>
+                    <comment><![CDATA[The number of objects we send in a single payload of JSON to the Dotdigital API.]]></comment>
+                </field>
+                <field id="mega_batch_size_catalog" translate="label" sortOrder="35" showInStore="0" showInWebsite="0" showInDefault="1" canRestore="1">
+                    <label>Catalog sync mega batch size</label>
+                    <comment><![CDATA[The number of objects we send in a single payload of JSON to the Dotdigital API.]]></comment>
+                </field>
+                <field id="additional_import_settings_heading" translate="label" sortOrder="40" showInStore="1" showInWebsite="1" showInDefault="1">
+                    <label>Additional settings</label>
+                    <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
+                </field>
+                <field id="transactional_data_break" translate="label" sortOrder="45" showInStore="0" showInWebsite="0" showInDefault="1" canRestore="1">
                     <label>Transactional data break</label>
+                    <comment><![CDATA[Limits the number of rows processed in a single sync. Applies to Customer, Subscriber, Guest, Order and Catalog syncs.]]></comment>
                 </field>
-                <field id="subscriber_sales_data_enabled" type="select" sortOrder="40" showInDefault="1" showInStore="0" showInWebsite="1">
+                <field id="subscriber_sales_data_enabled" type="select" sortOrder="50" showInDefault="1" showInStore="0" showInWebsite="1">
                     <label>Enable Subscribers Sales Data Sync</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <comment><![CDATA[Enabling ability to sync subscribers sales data increases server load and overall sync times.]]></comment>
                 </field>
-                <field id="strip_pub_from_media_paths" translate="label" sortOrder="50" type="select" showInStore="0"
+                <field id="strip_pub_from_media_paths" translate="label" sortOrder="55" type="select" showInStore="0"
                        showInWebsite="0" showInDefault="1">
                     <label>Remove /pub directory from URLs</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
