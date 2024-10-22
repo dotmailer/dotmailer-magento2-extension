@@ -94,6 +94,14 @@ class UpdateConsentPaths implements DataPatchInterface
      */
     private function updateConsentRow($configRow, $path)
     {
+        if ($this->keyAlreadyExists($path)) {
+            $this->moduleDataSetup->getConnection()->delete(
+                $this->moduleDataSetup->getTable('core_config_data'),
+                ['path = ?' => $configRow['path']]
+            );
+            return;
+        }
+
         $this->moduleDataSetup->getConnection()->update(
             $this->moduleDataSetup->getTable('core_config_data'),
             [
@@ -103,5 +111,26 @@ class UpdateConsentPaths implements DataPatchInterface
                 'path = ?' => $configRow['path']
             ]
         );
+    }
+
+    /**
+     * Check if newer path name equivalent already exists.
+     *
+     * @param string $path
+     *
+     * @return bool
+     */
+    private function keyAlreadyExists($path)
+    {
+        $existingKey = $this->moduleDataSetup->getConnection()->select()->from(
+            $this->moduleDataSetup->getTable('core_config_data'),
+            ['*']
+        )->where(
+            'path = ?',
+            $path
+        );
+
+        $result = $this->moduleDataSetup->getConnection()->fetchAll($existingKey);
+        return count($result) > 0;
     }
 }
