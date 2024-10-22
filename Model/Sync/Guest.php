@@ -192,7 +192,7 @@ class Guest extends DataObject implements SyncInterface
             if ($loopStart) {
                 $this->logger->info(
                     sprintf(
-                        '----------- %s sync ----------- : Website %d',
+                        '%s sync: syncing website %d',
                         Importer::IMPORT_TYPE_GUEST,
                         $website->getId()
                     )

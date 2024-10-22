@@ -200,7 +200,7 @@ class Customer extends DataObject implements SyncInterface
             if ($loopStart) {
                 $this->logger->info(
                     sprintf(
-                        '----------- %s sync ----------- : Website %d',
+                        '%s sync: syncing website %d',
                         Importer::IMPORT_TYPE_CUSTOMER,
                         $website->getId()
                     )
@@ -234,7 +234,7 @@ class Customer extends DataObject implements SyncInterface
                 $offset = 0;
             }
         } while (!$breakValue || $this->totalCustomersSyncedCount < $breakValue);
-        
+
         $this->megaBatchProcessorFactory->create()
             ->process(
                 $megaBatch,
