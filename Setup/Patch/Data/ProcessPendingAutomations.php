@@ -39,7 +39,7 @@ class ProcessPendingAutomations implements DataPatchInterface
      */
     public function apply()
     {
-        $this->automationFactory->create()->sync();
+        //$this->automationFactory->create()->sync();
     }
 
     /**

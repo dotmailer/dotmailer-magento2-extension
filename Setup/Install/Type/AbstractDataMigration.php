@@ -98,6 +98,8 @@ abstract class AbstractDataMigration
      */
     public function isEnabled(): bool
     {
-        return true;
+        //change applied to ensure no setup:upgrade induced data migration and sync
+        global $argv;
+        return (isset($argv) && is_array($argv) && in_array('dotdigital:migrate', $argv));
     }
 }

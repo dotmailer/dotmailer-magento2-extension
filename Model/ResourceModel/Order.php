@@ -3,9 +3,25 @@
 namespace Dotdigitalgroup\Email\Model\ResourceModel;
 
 use Dotdigitalgroup\Email\Setup\SchemaInterface as Schema;
+use Magento\Framework\Model\ResourceModel\Db\Context;
+use Psr\Log\LoggerInterface;
 
 class Order extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
+    /**
+     * @param Context $context
+     * @param LoggerInterface $_logger
+     * @param $connectionName
+     */
+    public function __construct(
+        Context $context,
+        LoggerInterface $_logger,
+        $connectionName = null
+    ) {
+        $this->_logger = $_logger;
+        parent::__construct($context, $connectionName);
+    }
+
     /**
      * Initialize resource.
      *
