@@ -1,3 +1,14 @@
+# 4.27.1
+
+### Improvements
+- Configs for bulk syncs can now be edited under 'Import Settings' in Dotdigital > Developer.
+- The MigrateData patch is removed.
+- The subscriber cron now defaults to run once per hour.
+- Log output for the new syncs has been adjusted.
+
+### Bug fixes
+- The UpdateConsentPaths data patch will now not break upgrade if re-run.
+
 # 4.27.0
 
 ### What's new
@@ -20,6 +31,7 @@
 ### Bug fixes
 - The inline script for the dmPt tracking code has been moved to a UI component.
 - We fixed a problem with list mapping for customers with more than 5000 lists in their account.
+- Consent sync now sends an ISO8601 date for `consent_datetime`.
 
 # 4.26.3
 
