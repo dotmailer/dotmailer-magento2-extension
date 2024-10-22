@@ -184,7 +184,7 @@ class Order extends DataObject implements SyncInterface
 
             if ($loopStart) {
                 $this->logger->info(
-                    sprintf('----------- Order sync ----------- : Website %d', $website->getId())
+                    sprintf('Order sync: syncing website %d', $website->getId())
                 );
                 $loopStart = false;
             }

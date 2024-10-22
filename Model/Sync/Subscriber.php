@@ -356,7 +356,7 @@ class Subscriber extends DataObject implements SyncInterface
         if ($this->$loopStart) {
             $this->logger->info(
                 sprintf(
-                    '----------- %s sync ----------- : Website %d',
+                    '%s sync: syncing website %d',
                     $prettyCohortName,
                     $website->getId()
                 )
