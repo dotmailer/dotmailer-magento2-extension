@@ -2,44 +2,42 @@
 
 namespace Dotdigitalgroup\Email\Model\Config\Source\Datamapping;
 
-class Datafields implements \Magento\Framework\Option\ArrayInterface
+use Dotdigitalgroup\Email\Helper\Data;
+use Magento\Framework\Data\OptionSourceInterface;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Registry;
+
+class Datafields implements OptionSourceInterface
 {
     /**
-     * @var \Dotdigitalgroup\Email\Helper\Data
+     * @var Data
      */
     private $helper;
 
     /**
-     * @var \Magento\Framework\Registry
+     * @var Registry
      */
     private $registry;
 
     /**
-     * @var \Magento\Store\Model\StoreManagerInterface
-     */
-    private $storeManager;
-
-    /**
      * Datafields constructor.
      *
-     * @param \Magento\Framework\Registry                $registry
-     * @param \Dotdigitalgroup\Email\Helper\Data         $data
-     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
+     * @param Registry $registry
+     * @param Data $data
      */
     public function __construct(
-        \Magento\Framework\Registry $registry,
-        \Dotdigitalgroup\Email\Helper\Data $data,
-        \Magento\Store\Model\StoreManagerInterface $storeManager
+        Registry $registry,
+        Data $data
     ) {
-        $this->helper        = $data;
-        $this->registry      = $registry;
-        $this->storeManager = $storeManager;
+        $this->helper = $data;
+        $this->registry = $registry;
     }
 
     /**
      *  Datafields option.
      *
      * @return array
+     * @throws LocalizedException
      */
     public function toOptionArray()
     {

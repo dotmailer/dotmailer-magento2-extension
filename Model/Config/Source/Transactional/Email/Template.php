@@ -4,22 +4,24 @@ namespace Dotdigitalgroup\Email\Model\Config\Source\Transactional\Email;
 
 use Magento\Email\Model\ResourceModel\Template\CollectionFactory;
 use Magento\Email\Model\Template\Config;
+use Magento\Framework\Data\OptionSourceInterface;
+use Magento\Framework\DataObject;
 use Magento\Framework\Registry;
 
-class Template extends \Magento\Framework\DataObject implements \Magento\Framework\Option\ArrayInterface
+class Template extends DataObject implements OptionSourceInterface
 {
     /**
-     * @var \Magento\Framework\Registry
+     * @var Registry
      */
     private $coreRegistry;
 
     /**
-     * @var \Magento\Email\Model\Template\Config
+     * @var Config
      */
     private $emailConfig;
 
     /**
-     * @var \Magento\Email\Model\ResourceModel\Template\CollectionFactory
+     * @var CollectionFactory
      */
     private $templateCollectionFactory;
 
@@ -30,9 +32,9 @@ class Template extends \Magento\Framework\DataObject implements \Magento\Framewo
      * @param array $data
      */
     public function __construct(
-        \Magento\Framework\Registry $coreRegistry,
-        \Magento\Email\Model\ResourceModel\Template\CollectionFactory $templateCollectionFactory,
-        \Magento\Email\Model\Template\Config $emailConfig,
+        Registry $coreRegistry,
+        CollectionFactory $templateCollectionFactory,
+        Config $emailConfig,
         array $data = []
     ) {
         parent::__construct($data);
