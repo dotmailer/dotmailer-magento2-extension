@@ -4,9 +4,10 @@ namespace Dotdigitalgroup\Email\Model\Config\Source\Sync;
 
 use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Model\Lists\ListFetcher;
+use Magento\Framework\Data\OptionSourceInterface;
 use Magento\Framework\Exception\LocalizedException;
 
-class Lists implements \Magento\Framework\Option\ArrayInterface
+class Lists implements OptionSourceInterface
 {
     /**
      * @var Data
@@ -25,7 +26,7 @@ class Lists implements \Magento\Framework\Option\ArrayInterface
      * @param ListFetcher $listFetcher
      */
     public function __construct(
-        Data        $data,
+        Data $data,
         ListFetcher $listFetcher
     ) {
         $this->helper = $data;
