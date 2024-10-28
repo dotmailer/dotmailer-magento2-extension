@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dotdigitalgroup\Email\Model\Product;
 
 use Dotdigitalgroup\Email\Logger\Logger;
@@ -120,12 +122,15 @@ class ParentFinder
      * Get parent product for no image selection.
      *
      * @param Product $product
-     * @param string $imageRole
+     * @param string|null $imageRole
      * @return \Magento\Catalog\Api\Data\ProductInterface|Product|null
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
-    public function getParentProductForNoImageSelection(Product $product, $imageRole = 'small_image')
+    public function getParentProductForNoImageSelection(Product $product, $imageRole)
     {
+        if (empty($imageRole)) {
+            $imageRole = 'small_image';
+        }
         if ($product->getTypeId() == \Magento\Catalog\Model\Product\Type::TYPE_SIMPLE
             && (empty($product->getData($imageRole)) || $product->getData($imageRole) == 'no_selection')
             && $parentProduct = $this->getParentProduct($product)
