@@ -168,6 +168,12 @@
                 <order_status>complete,pending</order_status>
                 <brand_attribute>manufacturer</brand_attribute>
             </data_fields>
+            <image_types>
+                <catalog_sync>0</catalog_sync>
+                <abandoned_cart>0</abandoned_cart>
+                <abandoned_browse>0</abandoned_browse>
+                <dynamic_content>0</dynamic_content>
+            </image_types>
             <transactional_data>
                 <order_statuses>complete,pending,processing</order_statuses>
                 <order_custom_attributes>0</order_custom_attributes>
