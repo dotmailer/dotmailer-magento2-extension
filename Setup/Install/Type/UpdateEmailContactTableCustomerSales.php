@@ -57,24 +57,17 @@ class UpdateEmailContactTableCustomerSales extends AbstractBulkUpdater implement
     }
 
     /**
-     * Where $customerId equals
-     *
-     * @param string $customerId
-     * @return array
+     * @inheritDoc
      */
-    public function getUpdateBindings($customerId)
+    public function getUpdateBindings($bind)
     {
         return [
-            'customer_id' => $customerId,
+            'customer_id' => $bind['customer_id'],
         ];
     }
 
     /**
-     * Update where
-     *
-     * @param array $row
-     *
-     * @return array
+     * @inheritDoc
      */
     public function getUpdateWhereClause($row)
     {

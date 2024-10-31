@@ -7,7 +7,7 @@ interface BulkUpdateTypeInterface
     /**
      * Get the bindings for this update
      *
-     * @param mixed $bind
+     * @param array $bind
      *
      * @return mixed
      */

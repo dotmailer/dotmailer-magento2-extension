@@ -62,14 +62,14 @@ class UpdateEmailContactTableGuestSales extends AbstractBulkUpdater implements B
     /**
      * Get the bindings for this update
      *
-     * @param bool $isGuest
+     * @param array $bind
      *
      * @return array
      */
-    public function getUpdateBindings($isGuest)
+    public function getUpdateBindings($bind)
     {
         return [
-            'is_guest' => $isGuest,
+            'is_guest' => $bind['is_guest'],
         ];
     }
 
@@ -89,9 +89,7 @@ class UpdateEmailContactTableGuestSales extends AbstractBulkUpdater implements B
     }
 
     /**
-     * Get the bind key
-     *
-     * @return string
+     * @inheritDoc
      */
     public function getBindKey(): string
     {
