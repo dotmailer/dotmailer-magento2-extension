@@ -328,9 +328,11 @@
                 <catalog>*/15 * * * *</catalog>
                 <review_wishlist>*/15 * * * *</review_wishlist>
                 <consent>*/15 * * * *</consent>
-                <cleaner>0 0 1 * *</cleaner>
-                <table_cleaner_interval>30</table_cleaner_interval>
             </cron_schedules>
+            <cleaner>
+                <schedule>0 0 1 * *</schedule>
+                <table_cleaner_interval>30</table_cleaner_interval>
+            </cleaner>
             <system_alerts>
                 <system_messages>1</system_messages>
                 <email_notifications>0</email_notifications>

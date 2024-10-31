@@ -1983,16 +1983,23 @@
                     <source_model>Dotdigitalgroup\Email\Model\Config\Developer\Cronexpressionsthree</source_model>
                     <backend_model>Dotdigitalgroup\Email\Model\Adminhtml\Backend\CronOffset</backend_model>
                 </field>
-                <field id="cleaner" translate="label" sortOrder="90" type="select" showInStore="0" showInWebsite="0" showInDefault="1">
+            </group>
+            <group id="cleaner" translate="label" sortOrder="80" showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>Cleaner</label>
+                <comment><![CDATA[The cleaner cron purges data from the email_automation, email_importer, email_campaign and email_contact_consent tables on a schedule.]]></comment>
+
+                <field id="schedule" translate="label" sortOrder="10" type="select" showInDefault="1" showInStore="0" showInWebsite="0" canRestore="1">
                     <label>Cleaner</label>
+                    <comment><![CDATA[Cron schedule for cleaner. Defaults to the first day of the month.]]></comment>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Developer\Cronexpressionsfour</source_model>
                     <backend_model>Dotdigitalgroup\Email\Model\Adminhtml\Backend\DailyIntervalCron</backend_model>
                 </field>
-                <field id="table_cleaner_interval" translate="label" sortOrder="100" showInStore="0" showInWebsite="0" showInDefault="0">
+                <field id="table_cleaner_interval" translate="label" sortOrder="20" showInDefault="1" showInStore="0" showInWebsite="0" canRestore="1">
                     <label>Table Cleaner Interval</label>
+                    <comment><![CDATA[Delete data older than x days. Defaults to 30.]]></comment>
                 </field>
             </group>
-            <group id="system_alerts" translate="label" sortOrder="80" showInDefault="1" showInWebsite="0" showInStore="0">
+            <group id="system_alerts" translate="label" sortOrder="90" showInDefault="1" showInWebsite="0" showInStore="0">
                 <label>System Alerts</label>
                 <field id="system_messages" translate="label" type="select" sortOrder="10" showInDefault="1" showInStore="0" showInWebsite="0">
                     <label>Enable System Messages</label>
@@ -2015,7 +2022,7 @@
                     <comment><![CDATA[This setting controls both email notification frequency and the time period in which we report errors. e.g. Select "24 Hours" to receive an email every 24 hours reporting any errors that may have occurred in the last 24 hours.]]></comment>
                 </field>
             </group>
-            <group id="pwa_settings" translate="label" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="0">
+            <group id="pwa_settings" translate="label" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="0">
                 <label>PWA Settings</label>
                 <field id="pwa_url" translate="label" type="text" sortOrder="10" showInDefault="1" showInStore="0" showInWebsite="1">
                     <label>PWA Storefront Base URL</label>
