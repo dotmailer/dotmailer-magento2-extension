@@ -175,7 +175,6 @@ class ProductTest extends TestCase
 
     protected function setUp() :void
     {
-
         $this->setUpValidator([]);
         $this->storeManagerMock = $this->createMock(StoreManagerInterface::class);
         $this->statusFactoryMock = $this->createMock(StatusFactory::class);
@@ -376,12 +375,38 @@ class ProductTest extends TestCase
             ->method('getTypeInstance')
             ->willReturn($this->configurableMock);
 
-        $arrayPrices = $this->getArrayPrices();
+        $childProducts = $this->getConfigurableChildProducts();
 
         $this->configurableMock->expects($this->atLeastOnce())
             ->method('getUsedProducts')
             ->with($this->mageProductMock)
-            ->willReturn($arrayPrices);
+            ->willReturn($childProducts);
+
+        $this->product->setProduct($this->mageProductMock, 1);
+
+        $this->assertEquals($minPrice, $this->product->price);
+        $this->assertEquals($minSpecialPrice, $this->product->specialPrice);
+    }
+
+    public function testConfigurableMinPriceIfProductNotInStore()
+    {
+        $minPrice = '0';
+        $minSpecialPrice = '0';
+
+        $this->mageProductMock->expects($this->atLeastOnce())
+            ->method('getTypeId')
+            ->willReturn('configurable');
+
+        $this->mageProductMock->expects($this->atLeastOnce())
+            ->method('getTypeInstance')
+            ->willReturn($this->configurableMock);
+
+        $childProducts = $this->getConfigurableChildProductsNotInStore();
+
+        $this->configurableMock->expects($this->atLeastOnce())
+            ->method('getUsedProducts')
+            ->with($this->mageProductMock)
+            ->willReturn($childProducts);
 
         $this->product->setProduct($this->mageProductMock, 1);
 
@@ -402,12 +427,12 @@ class ProductTest extends TestCase
             ->method('getTypeInstance')
             ->willReturn($this->configurableMock);
 
-        $arrayPrices = $this->getArrayNullSpecialPrices();
+        $childProducts = $this->getConfigurableNullSpecialPrices();
 
         $this->configurableMock->expects($this->atLeastOnce())
             ->method('getUsedProducts')
             ->with($this->mageProductMock)
-            ->willReturn($arrayPrices);
+            ->willReturn($childProducts);
 
         $this->product->setProduct($this->mageProductMock, 1);
 
@@ -460,7 +485,7 @@ class ProductTest extends TestCase
             ->method('getTypeInstance')
             ->willReturn($this->configurableMock);
 
-        $arrayPrices = $this->getArrayPrices();
+        $arrayPrices = $this->getGroupedChildProducts();
 
         $this->configurableMock->expects($this->atLeastOnce())
             ->method('getAssociatedProducts')
@@ -486,7 +511,7 @@ class ProductTest extends TestCase
             ->method('getTypeInstance')
             ->willReturn($this->configurableMock);
 
-        $arrayPrices = $this->getArrayNullSPecialPrices();
+        $arrayPrices = $this->getGroupedNullSpecialPrices();
 
         $this->configurableMock->expects($this->atLeastOnce())
             ->method('getAssociatedProducts')
@@ -596,7 +621,41 @@ class ProductTest extends TestCase
         $this->assertTrue(true, 'createdDate is correctly formatted');
     }
 
-    private function getArrayPrices()
+    private function getConfigurableChildProducts()
+    {
+        $firstElement = $this->createMock(MageProduct::class);
+        $firstElement->expects($this->once())->method('getStoreIds')->willReturn([1]);
+        $firstElement->expects($this->once())->method('getPrice')->willReturn('20.00');
+        $firstElement->expects($this->exactly(2))
+            ->method('getSpecialPrice')
+            ->willReturn('15.00');
+
+        $secondElement = $this->createMock(MageProduct::class);
+        $secondElement->expects($this->once())->method('getStoreIds')->willReturn([1]);
+        $secondElement->expects($this->once())->method('getPrice')->willReturn('15.00');
+        $secondElement->expects($this->exactly(2))
+            ->method('getSpecialPrice')
+            ->willReturn('8.00');
+
+        return [$firstElement, $secondElement];
+    }
+
+    private function getConfigurableChildProductsNotInStore()
+    {
+        $firstElement = $this->createMock(MageProduct::class);
+        $firstElement->expects($this->once())->method('getStoreIds')->willReturn([2]);
+        $firstElement->expects($this->never())->method('getPrice');
+        $firstElement->expects($this->never())->method('getSpecialPrice');
+
+        $secondElement = $this->createMock(MageProduct::class);
+        $secondElement->expects($this->once())->method('getStoreIds')->willReturn([2]);
+        $secondElement->expects($this->never())->method('getPrice');
+        $secondElement->expects($this->never())->method('getSpecialPrice');
+
+        return [$firstElement, $secondElement];
+    }
+
+    private function getGroupedChildProducts()
     {
         $firstElement = $this->createMock(MageProduct::class);
         $firstElement->expects($this->once())->method('getPrice')->willReturn('20.00');
@@ -610,10 +669,25 @@ class ProductTest extends TestCase
             ->method('getSpecialPrice')
             ->willReturn('8.00');
 
-        return $arrayPrices = [$firstElement, $secondElement];
+        return [$firstElement, $secondElement];
     }
 
-    private function getArrayNullSpecialPrices()
+    private function getConfigurableNullSpecialPrices()
+    {
+        $firstElement = $this->createMock(MageProduct::class);
+        $firstElement->expects($this->once())->method('getStoreIds')->willReturn([1]);
+        $firstElement->expects($this->once())->method('getPrice')->willReturn('20.00');
+        $firstElement->expects($this->once())->method('getSpecialPrice')->willReturn(null);
+
+        $secondElement = $this->createMock(MageProduct::class);
+        $secondElement->expects($this->once())->method('getStoreIds')->willReturn([1]);
+        $secondElement->expects($this->once())->method('getPrice')->willReturn('15.00');
+        $secondElement->expects($this->once())->method('getSpecialPrice')->willReturn(null);
+
+        return [$firstElement, $secondElement];
+    }
+
+    private function getGroupedNullSpecialPrices()
     {
         $firstElement = $this->createMock(MageProduct::class);
         $firstElement->expects($this->once())->method('getPrice')->willReturn('20.00');

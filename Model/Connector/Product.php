@@ -289,7 +289,7 @@ class Product extends AbstractConnectorModel
             ->getOptionArray();
         $this->visibility = (string)$options[$product->getVisibility()];
 
-        $this->setPrices($product);
+        $this->setPrices($product, $storeId);
         $this->setPricesIncTax($product, $storeId);
 
         $this->tierPrices = $this->tierPriceFinder->getTierPrices($product);
@@ -400,12 +400,17 @@ class Product extends AbstractConnectorModel
      * Set prices for all product types.
      *
      * @param mixed $product
+     * @param int|null $storeId
+     *
      * @return void
      */
-    private function setPrices($product)
+    private function setPrices($product, ?int $storeId)
     {
         if ($product->getTypeId() == 'configurable') {
             foreach ($product->getTypeInstance()->getUsedProducts($product) as $childProduct) {
+                if ($storeId && !in_array($storeId, $childProduct->getStoreIds())) {
+                    continue;
+                }
                 $childPrices[] = $childProduct->getPrice();
                 if ($childProduct->getSpecialPrice() !== null) {
                     $childSpecialPrices[] = $childProduct->getSpecialPrice();
