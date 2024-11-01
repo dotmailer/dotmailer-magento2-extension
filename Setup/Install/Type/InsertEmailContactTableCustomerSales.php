@@ -5,6 +5,12 @@ namespace Dotdigitalgroup\Email\Setup\Install\Type;
 use Dotdigitalgroup\Email\Setup\SchemaInterface as Schema;
 use Magento\Framework\DB\Select;
 
+/**
+ * For Global Account Sharing only.
+ *
+ * Add contact rows for customers who have placed orders on websites other than the one
+ * they are primarily associated with.
+ */
 class InsertEmailContactTableCustomerSales extends AbstractBatchInserter implements InsertTypeInterface
 {
     /**

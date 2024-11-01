@@ -4,6 +4,10 @@ namespace Dotdigitalgroup\Email\Setup\Install\Type;
 
 use Magento\Framework\DB\Select;
 
+/**
+ * @deprecated No longer used.
+ * @see AbstractBulkUpdater
+ */
 abstract class AbstractUpdater extends AbstractDataMigration
 {
     /**

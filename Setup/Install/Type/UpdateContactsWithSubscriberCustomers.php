@@ -3,9 +3,8 @@
 namespace Dotdigitalgroup\Email\Setup\Install\Type;
 
 use Dotdigitalgroup\Email\Setup\SchemaInterface as Schema;
-use Magento\Framework\DB\Select;
 
-class UpdateContactsWithSubscriberCustomers extends AbstractUpdater implements UpdateTypeInterface
+class UpdateContactsWithSubscriberCustomers extends AbstractBulkUpdater implements BulkUpdateTypeInterface
 {
     /**
      * @var string
@@ -13,25 +12,32 @@ class UpdateContactsWithSubscriberCustomers extends AbstractUpdater implements U
     protected $tableName = Schema::EMAIL_CONTACT_TABLE;
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     protected function getSelectStatement()
     {
         return $this->resourceConnection
             ->getConnection()
             ->select()
-            ->from(
-                $this->resourceConnection->getTableName('newsletter_subscriber'),
-                'subscriber_email'
+            ->from([
+                'subscriber' => $this->resourceConnection->getTableName('newsletter_subscriber')
+            ], [
+                'subscriber_email',
+                'store.website_id'
+            ])
+            ->joinInner(
+                ['store' => $this->resourceConnection->getTableName('store')],
+                'subscriber.store_id = store.store_id',
+                ['website_id' => 'store.website_id']
             )
             ->where('subscriber_status = ?', 1)
             ->order('subscriber_email');
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
-    public function getUpdateBindings()
+    public function getUpdateBindings($bind)
     {
         return [
             'is_subscriber' => new \Zend_Db_Expr('1'),
@@ -40,16 +46,21 @@ class UpdateContactsWithSubscriberCustomers extends AbstractUpdater implements U
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
-    public function getUpdateWhereClause(Select $selectStatement)
+    public function getUpdateWhereClause($row)
     {
-        $emails = $this->resourceConnection
-            ->getConnection()
-            ->fetchCol($selectStatement);
-
         return [
-            'email in (?)' => $emails,
+            'email = ?' => $row['subscriber_email'],
+            'website_id = ?' => $row['website_id']
         ];
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getBindKey()
+    {
+        return '';
     }
 }
