@@ -777,7 +777,7 @@ class Client extends Rest implements ClientInterface
      *
      * @param string $email
      *
-     * @return stdClass
+     * @return stdClass|string
      * @throws Exception
      */
     public function postContacts($email)

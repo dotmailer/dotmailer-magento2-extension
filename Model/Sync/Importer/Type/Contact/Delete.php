@@ -12,6 +12,9 @@ use Magento\Framework\Serialize\SerializerInterface;
 
 /**
  * Handle delete data for importer.
+ *
+ * @deprecated Will be moved to a message queue.
+ * @see \Dotdigitalgroup\Email\Model\Queue
  */
 class Delete extends AbstractItemSyncer
 {
@@ -49,10 +52,10 @@ class Delete extends AbstractItemSyncer
      * Process.
      *
      * @param mixed $item
-     * @return \stdClass|null
+     * @return \stdClass|null|string
      * @throws \Exception
      */
-    public function process($item): ?\stdClass
+    public function process($item)
     {
         $email = $this->serializer->unserialize($item->getImportData());
         $result = $this->client->postContacts($email);
