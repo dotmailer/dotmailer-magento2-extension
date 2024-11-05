@@ -8,7 +8,8 @@ use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Catalog\Helper\Image;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\Product\Media\ConfigFactory;
-use Magento\ConfigurableProduct\Block\Cart\Item\Renderer\Configurable;
+use Magento\ConfigurableProduct\Model\Product\Configuration\Item\ItemProductResolver as ConfigurableItemProductResolver;
+use Magento\GroupedProduct\Model\Product\Configuration\Item\ItemProductResolver as GroupedItemProductResolver;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\GroupedProduct\Block\Cart\Item\Renderer\Grouped;
 use Magento\Quote\Model\Quote\Item as QuoteItem;
@@ -101,7 +102,7 @@ class ImageFinder
         $base = $store->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_MEDIA, true) . 'catalog/product';
 
         $configurableProductImage = $this->scopeConfig->getValue(
-            Configurable::CONFIG_THUMBNAIL_SOURCE,
+            ConfigurableItemProductResolver::CONFIG_THUMBNAIL_SOURCE,
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
             $store->getId()
         );
@@ -235,7 +236,7 @@ class ImageFinder
     private function getProductIdForConfigurableType($item, $storeId)
     {
         $configurableProductImage = $this->scopeConfig->getValue(
-            Configurable::CONFIG_THUMBNAIL_SOURCE,
+            ConfigurableItemProductResolver::CONFIG_THUMBNAIL_SOURCE,
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
             $storeId
         );
@@ -262,7 +263,7 @@ class ImageFinder
     private function getProductIdForGroupedType($item, $storeId)
     {
         $groupedProductImage = $this->scopeConfig->getValue(
-            Grouped::CONFIG_THUMBNAIL_SOURCE,
+            GroupedItemProductResolver::CONFIG_THUMBNAIL_SOURCE,
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
             $storeId
         );
