@@ -79,6 +79,7 @@ class SalesDataManager
      */
     public function setContactSalesData(array $emails, WebsiteInterface $website, $columns)
     {
+        $this->salesDataArray = [];
         $this->setColumns($columns);
         if (!$this->salesDataFieldsAreMapped()) {
             return [];
@@ -94,9 +95,10 @@ class SalesDataManager
             'number_of_orders',
             'average_order_value',
             'last_order_date',
-            'first_order_id',
             'last_order_id',
-            'last_increment_id'
+            'last_increment_id',
+            'first_brand_pur',
+            'last_brand_pur'
         ])) {
             foreach ($this->fetchBaseOrderCollection($emails, $storeIds, $statuses) as $item) {
                 $this->updateSalesDataArrayFromCollectionItem($item, [
@@ -112,17 +114,19 @@ class SalesDataManager
             }
         }
 
-        if ($this->salesDataFieldsAreMapped(['first_brand_pur'])) {
-            $firstOrderIds = $this->getOrderIds($emails, $storeIds, $statuses, 'first');
+        if ($this->salesDataFieldsAreMapped(['first_brand_pur', 'first_category_pur'])) {
+            $firstOrderIds = array_column($this->salesDataArray, 'first_order_id');
             foreach ($this->fetchOrderedProductIds($firstOrderIds) as $row) {
-                $this->updateSalesDataArrayFromResultRow($row, 'product_id', 'product_id_for_first_brand');
+                $customerEmail = $row['customer_email'];
+                $this->salesDataArray[$customerEmail]['product_ids_for_first_order'][] = $row['product_id'];
             }
         }
 
-        if ($this->salesDataFieldsAreMapped(['last_brand_pur'])) {
-            $lastOrderIds = $this->getOrderIds($emails, $storeIds, $statuses, 'last');
+        if ($this->salesDataFieldsAreMapped(['last_brand_pur', 'last_category_pur'])) {
+            $lastOrderIds = array_column($this->salesDataArray, 'last_order_id');
             foreach ($this->fetchOrderedProductIds($lastOrderIds) as $row) {
-                $this->updateSalesDataArrayFromResultRow($row, 'product_id', 'product_id_for_last_brand');
+                $customerEmail = $row['customer_email'];
+                $this->salesDataArray[$customerEmail]['product_ids_for_last_order'][] = $row['product_id'];
             }
         }
 
@@ -187,7 +191,7 @@ class SalesDataManager
     }
 
     /**
-     * Fetches the first product id from an array of order IDs.
+     * Fetches an array of product ids from an array of order IDs.
      *
      * @param array $orderIds
      *
@@ -214,8 +218,6 @@ class SalesDataManager
                 'entity_id IN (?)',
                 $orderIds
             );
-
-        $select->group('customer_email');
 
         return $connection->fetchAll($select);
     }
@@ -348,59 +350,6 @@ class SalesDataManager
         $quoteCollection->getSelect()->group('customer_email');
 
         return $quoteCollection;
-    }
-
-    /**
-     * Fetches the first or last order IDs for a batch of emails.
-     *
-     * @param array $emails
-     * @param array $storeIds
-     * @param array $statuses
-     * @param string $firstOrLast
-     *
-     * @return array
-     */
-    private function getOrderIds(array $emails, array $storeIds, array $statuses, string $firstOrLast)
-    {
-        $collection = $this->salesOrderCollectionFactory->create();
-        $connection = $collection->getResource()->getConnection();
-
-        $select = $connection->select()
-            ->from(
-                [
-                    'sales_order' => $collection->getMainTable()
-                ],
-                $this->getOrderIdKeyPair($firstOrLast)
-            )
-            ->joinLeft(
-                ['sales_order_item' => $collection->getTable('sales_order_item')],
-                'sales_order_item.order_id = sales_order.entity_id',
-                []
-            )
-            ->where('customer_email IN (?)', $emails)
-            ->where('sales_order.store_id IN (?)', $storeIds)
-            ->where('sales_order_item.product_type = ?', 'simple');
-
-        if (!empty($statuses)) {
-            $select->where('sales_order.status in (?)', $statuses);
-        }
-        $select->group('customer_email');
-
-        return $connection->fetchAll($select);
-    }
-
-    /**
-     * Get order id filter key pair.
-     *
-     * @param string $firstOrLast
-     *
-     * @return string[]
-     */
-    private function getOrderIdKeyPair($firstOrLast)
-    {
-        return $firstOrLast === 'first' ?
-            ['first_order_id' => 'MIN(entity_id)'] :
-            ['last_order_id' => 'MAX(entity_id)'];
     }
 
     /**

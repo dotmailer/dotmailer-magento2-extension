@@ -7,7 +7,6 @@ use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Connector\ContactData\CustomerFactory as ConnectorCustomerFactory;
 use Dotdigitalgroup\Email\Model\Customer\CustomerDataFieldProvider;
 use Dotdigitalgroup\Email\Model\Customer\CustomerDataFieldProviderFactory;
-use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory as ContactCollectionFactory;
 use Dotdigitalgroup\Email\Model\Sync\Customer\CustomerDataManager;
 use Dotdigitalgroup\Email\Model\Sync\Customer\Exporter;
 use Dotdigitalgroup\Email\Model\Sync\Export\CategoryNameFinder;
@@ -37,11 +36,6 @@ class ExporterTest extends TestCase
      * @var CustomerDataFieldProviderFactory|MockObject
      */
     private $customerDataFieldProviderFactoryMock;
-
-    /**
-     * @var CustomerDataFieldProviderFactory|MockObject
-     */
-    private $contactCollectionFactoryMock;
 
     /**
      * @var WebsiteInterface|MockObject
@@ -98,7 +92,6 @@ class ExporterTest extends TestCase
         $this->loggerMock = $this->createMock(Logger::class);
         $this->connectorCustomerFactoryMock = $this->createMock(ConnectorCustomerFactory::class);
         $this->customerDataFieldProviderFactoryMock = $this->createMock(CustomerDataFieldProviderFactory::class);
-        $this->contactCollectionFactoryMock = $this->createMock(ContactCollectionFactory::class);
         $this->customerDataManagerMock = $this->createMock(CustomerDataManager::class);
         $this->categoryNameFinderMock = $this->createMock(CategoryNameFinder::class);
         $this->csvHandlerMock = $this->createMock(CsvHandler::class);
@@ -127,7 +120,6 @@ class ExporterTest extends TestCase
             $this->loggerMock,
             $this->connectorCustomerFactoryMock,
             $this->customerDataFieldProviderFactoryMock,
-            $this->contactCollectionFactoryMock,
             $this->customerDataManagerMock,
             $this->categoryNameFinderMock,
             $this->csvHandlerMock,
@@ -201,6 +193,9 @@ class ExporterTest extends TestCase
             ->method('createSdkContact')
             ->willReturn($this->createMock(SdkContact::class));
 
+        $mageCustomerCollectionMock->expects($this->exactly(5))
+            ->method('removeItemByKey');
+
         $data = $this->exporter->export($this->customerIds, $this->websiteInterfaceMock, 123456);
 
         $this->assertEquals(count($data), count($this->customerIds));
@@ -248,7 +243,6 @@ class ExporterTest extends TestCase
             $mageCustomerMock->method('getEmail')->willReturn('chaz' . $i . '@emailsim.io');
             $mageCustomerMock->method('getEmailContactId')->willReturn($contactIds[$i-1]);
             $mageCustomerMock->expects($this->exactly(17))->method('setData');
-            $mageCustomerMock->expects($this->once())->method('clearInstance');
             $mocks[] = $mageCustomerMock;
         }
 

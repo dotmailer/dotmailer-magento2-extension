@@ -4,9 +4,17 @@ declare(strict_types=1);
 
 namespace Dotdigitalgroup\Email\Model\Connector;
 
+use Dotdigitalgroup\Email\Helper\Config as ConfigHelper;
 use Dotdigitalgroup\Email\Logger\Logger;
+use Dotdigitalgroup\Email\Model\Connector\ContactData\ProductLoader;
 use Dotdigitalgroup\Email\Model\Customer\DataField\Date;
+use Magento\Catalog\Api\Data\CategoryInterfaceFactory;
+use Magento\Catalog\Model\ResourceModel\Category;
+use Magento\Catalog\Model\ResourceModel\Product;
+use Magento\Eav\Model\Config;
 use Magento\Framework\Model\AbstractModel;
+use Magento\Newsletter\Model\Subscriber;
+use Magento\Store\Model\StoreManagerInterface;
 
 /**
  * Manages data synced as contact.
@@ -31,42 +39,27 @@ class ContactData
     private $columns;
 
     /**
-     * @var \Magento\Sales\Model\ResourceModel\Order
-     */
-    private $orderResource;
-
-    /**
-     * @var \Magento\Sales\Model\OrderFactory
-     */
-    private $orderFactory;
-
-    /**
-     * @var \Dotdigitalgroup\Email\Helper\Config
+     * @var ConfigHelper
      */
     private $configHelper;
 
     /**
-     * @var \Magento\Catalog\Model\ProductFactory
-     */
-    private $productFactory;
-
-    /**
-     * @var \Magento\Catalog\Model\ResourceModel\Product
+     * @var Product
      */
     private $productResource;
 
     /**
-     * @var \Magento\Catalog\Api\Data\CategoryInterfaceFactory
+     * @var CategoryInterfaceFactory
      */
     private $categoryFactory;
 
     /**
-     * @var \Magento\Catalog\Model\ResourceModel\Category
+     * @var Category
      */
     private $categoryResource;
 
     /**
-     * @var \Magento\Store\Model\StoreManagerInterface
+     * @var StoreManagerInterface
      */
     private $storeManager;
 
@@ -81,17 +74,12 @@ class ContactData
     private $categoryNames = [];
 
     /**
-     * @var array
-     */
-    private $products = [];
-
-    /**
      * @var Logger
      */
     private $logger;
 
     /**
-     * @var \Magento\Eav\Model\Config
+     * @var Config
      */
     protected $eavConfig;
 
@@ -101,54 +89,53 @@ class ContactData
     protected $dateField;
 
     /**
+     * @var ProductLoader
+     */
+    protected $productLoader;
+
+    /**
      * @var array
      */
     private $subscriberStatuses = [
-        \Magento\Newsletter\Model\Subscriber::STATUS_SUBSCRIBED => 'Subscribed',
-        \Magento\Newsletter\Model\Subscriber::STATUS_NOT_ACTIVE => 'Not Active',
-        \Magento\Newsletter\Model\Subscriber::STATUS_UNSUBSCRIBED => 'Unsubscribed',
-        \Magento\Newsletter\Model\Subscriber::STATUS_UNCONFIRMED => 'Unconfirmed',
+        Subscriber::STATUS_SUBSCRIBED => 'Subscribed',
+        Subscriber::STATUS_NOT_ACTIVE => 'Not Active',
+        Subscriber::STATUS_UNSUBSCRIBED => 'Unsubscribed',
+        Subscriber::STATUS_UNCONFIRMED => 'Unconfirmed',
     ];
 
     /**
      * ContactData constructor.
      *
-     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
-     * @param \Magento\Catalog\Api\Data\ProductInterfaceFactory $productFactory
-     * @param \Magento\Catalog\Model\ResourceModel\Product $productResource
-     * @param \Magento\Sales\Model\OrderFactory $orderFactory
-     * @param \Magento\Sales\Model\ResourceModel\Order $orderResource
-     * @param \Magento\Catalog\Api\Data\CategoryInterfaceFactory $categoryFactory
-     * @param \Magento\Catalog\Model\ResourceModel\Category $categoryResource
-     * @param \Dotdigitalgroup\Email\Helper\Config $configHelper
+     * @param StoreManagerInterface $storeManager
+     * @param Product $productResource
+     * @param CategoryInterfaceFactory $categoryFactory
+     * @param Category $categoryResource
+     * @param ConfigHelper $configHelper
      * @param Logger $logger
      * @param Date $dateField
-     * @param \Magento\Eav\Model\Config $eavConfig
+     * @param Config $eavConfig
+     * @param ProductLoader $productLoader
      */
     public function __construct(
-        \Magento\Store\Model\StoreManagerInterface $storeManager,
-        \Magento\Catalog\Api\Data\ProductInterfaceFactory $productFactory,
-        \Magento\Catalog\Model\ResourceModel\Product $productResource,
-        \Magento\Sales\Model\OrderFactory $orderFactory,
-        \Magento\Sales\Model\ResourceModel\Order $orderResource,
-        \Magento\Catalog\Api\Data\CategoryInterfaceFactory $categoryFactory,
-        \Magento\Catalog\Model\ResourceModel\Category $categoryResource,
-        \Dotdigitalgroup\Email\Helper\Config $configHelper,
+        StoreManagerInterface $storeManager,
+        Product $productResource,
+        CategoryInterfaceFactory $categoryFactory,
+        Category $categoryResource,
+        ConfigHelper $configHelper,
         Logger $logger,
         Date $dateField,
-        \Magento\Eav\Model\Config $eavConfig
+        Config $eavConfig,
+        ProductLoader $productLoader
     ) {
         $this->storeManager = $storeManager;
-        $this->orderFactory = $orderFactory;
         $this->configHelper = $configHelper;
-        $this->orderResource = $orderResource;
-        $this->productFactory = $productFactory;
         $this->categoryFactory = $categoryFactory;
         $this->productResource = $productResource;
         $this->categoryResource = $categoryResource;
         $this->logger = $logger;
         $this->dateField = $dateField;
         $this->eavConfig = $eavConfig;
+        $this->productLoader = $productLoader;
     }
 
     /**
@@ -324,7 +311,7 @@ class ContactData
         if (! isset($this->brandValue[$id])) {
             //attribute mapped from the config
             $attributeCode = $this->configHelper->getWebsiteConfig(
-                \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_DATA_FIELDS_BRAND_ATTRIBUTE,
+                ConfigHelper::XML_PATH_CONNECTOR_SYNC_DATA_FIELDS_BRAND_ATTRIBUTE,
                 $this->model->getWebsiteId()
             );
 
@@ -341,27 +328,34 @@ class ContactData
     }
 
     /**
-     * Get first purchased category.
+     * Get the categories of all products purchased in the first order.
      *
      * @return string
      */
     public function getFirstCategoryPur()
     {
-        $firstOrderId = $this->model->getFirstOrderId();
-        $order = $this->orderFactory->create();
-        $this->orderResource->load($order, $firstOrderId);
-        try {
-            $orderItems = $order->getAllItems();
-        } catch (\Exception $e) {
-            $orderItems = [];
-            $this->logger->debug(
-                'Error fetching items for order ID: ' . $firstOrderId,
-                [(string) $e]
-            );
+        $productIds = $this->model->getProductIdsForFirstOrder();
+        if (empty($productIds)) {
+            return '';
         }
 
-        $categoryIds = $this->getCategoriesFromOrderItems($orderItems);
+        $categoryIds = $this->getCategoriesFromProducts($productIds);
+        return $this->getCategoryNamesFromIds($categoryIds);
+    }
 
+    /**
+     * Get the categories of all products purchased in the last order.
+     *
+     * @return string
+     */
+    public function getLastCategoryPur()
+    {
+        $productIds = $this->model->getProductIdsForLastOrder();
+        if (empty($productIds)) {
+            return '';
+        }
+
+        $categoryIds = $this->getCategoriesFromProducts($productIds);
         return $this->getCategoryNamesFromIds($categoryIds);
     }
 
@@ -370,6 +364,9 @@ class ContactData
      *
      * @param array $orderItems
      * @return array
+     *
+     * @deprecated Use the new private method
+     * @see getCategoriesFromProducts
      */
     public function getCategoriesFromOrderItems($orderItems)
     {
@@ -390,32 +387,6 @@ class ContactData
         }
 
         return array_unique($catIds);
-    }
-
-    /**
-     * Get last purchased category.
-     *
-     * @return string
-     */
-    public function getLastCategoryPur()
-    {
-        $lastOrderId = $this->model->getLastOrderId();
-        $order = $this->orderFactory->create();
-        $this->orderResource->load($order, $lastOrderId);
-
-        try {
-            $orderItems = $order->getAllItems();
-        } catch (\Exception $e) {
-            $orderItems = [];
-            $this->logger->debug(
-                'Error fetching items for order ID: ' . $lastOrderId,
-                [(string) $e]
-            );
-        }
-
-        $categoryIds = $this->getCategoriesFromOrderItems($orderItems);
-
-        return $this->getCategoryNamesFromIds($categoryIds);
     }
 
     /**
@@ -487,25 +458,33 @@ class ContactData
     }
 
     /**
-     * Get first purchased brand.
+     * Get the brand value of the first product in the first order.
      *
      * @return string
      */
     public function getFirstBrandPur()
     {
-        $id = $this->model->getProductIdForFirstBrand();
-        return $this->getBrandValue($id);
+        $ids = $this->model->getProductIdsForFirstOrder();
+        if (empty($ids)) {
+            return '';
+        }
+        $id = reset($ids);
+        return empty($id) ? '' : $this->getBrandValue($id);
     }
 
     /**
-     * Get last purchased brand.
+     * Get the brand value of the first product in the last order.
      *
      * @return string
      */
     public function getLastBrandPur()
     {
-        $id = $this->model->getProductIdForLastBrand();
-        return $this->getBrandValue($id);
+        $ids = $this->model->getProductIdsForLastOrder();
+        if (empty($ids)) {
+            return '';
+        }
+        $id = reset($ids);
+        return empty($id) ? '' : $this->getBrandValue($id);
     }
 
     /**
@@ -518,13 +497,13 @@ class ContactData
     {
         $productId = $this->model->getProductIdForMostSoldProduct();
         $attributeCode = $this->configHelper->getWebsiteConfig(
-            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_SYNC_DATA_FIELDS_BRAND_ATTRIBUTE,
+            ConfigHelper::XML_PATH_CONNECTOR_SYNC_DATA_FIELDS_BRAND_ATTRIBUTE,
             $this->model->getWebsiteId()
         );
 
         //if the id and attribute found
         if ($productId && $attributeCode) {
-            $product = $this->getProduct($productId);
+            $product = $this->productLoader->getProduct((int) $productId, (int) $this->model->getStoreId());
             if ($product->getId()) {
                 $attribute = $this->productResource->getAttribute($attributeCode);
                 $value = is_object($attribute) ? $attribute->getFrontend()->getValue($product) : null;
@@ -573,7 +552,7 @@ class ContactData
         $productId = $this->model->getProductIdForMostSoldProduct();
         //sales data found for customer with product id
         if ($productId) {
-            $product = $this->getProduct($productId);
+            $product = $this->productLoader->getProduct((int) $productId, (int) $this->model->getStoreId());
             //product found
             if ($product->getId()) {
                 $categoryIds = $product->getCategoryIds();
@@ -679,9 +658,7 @@ class ContactData
     {
         //if the id and attribute found
         if ($id && $attributeCode) {
-            $product = $this->productFactory->create();
-            $product = $product->setStoreId($storeId);
-            $this->productResource->load($product, $id);
+            $product = $this->productLoader->getProduct((int) $id, (int) $storeId);
             $attribute = $this->productResource->getAttribute($attributeCode);
 
             if ($attribute && $product->getId()) {
@@ -697,25 +674,6 @@ class ContactData
         }
 
         return '';
-    }
-
-    /**
-     * Load a product by id.
-     *
-     * @param int $productId
-     *
-     * @return \Magento\Catalog\Model\Product
-     */
-    private function getProduct($productId)
-    {
-        if (! isset($this->products[$productId])) {
-            $product = $this->productFactory->create()
-                ->setStoreId($this->model->getStoreId());
-            $this->productResource->load($product, $productId);
-            $this->products[$productId] = $product;
-        }
-
-        return $this->products[$productId];
     }
 
     /**
@@ -781,5 +739,28 @@ class ContactData
             throw new \InvalidArgumentException();
         }
         return $this->subscriberStatuses[$statusCode];
+    }
+
+    /**
+     * Get categories from an array of product ids.
+     *
+     * @param array $productIds
+     *
+     * @return array
+     */
+    private function getCategoriesFromProducts(array $productIds): array
+    {
+        $categoryIds = [];
+        foreach ($productIds as $productId) {
+            $product = $this->productLoader->getProduct((int) $productId, (int) $this->model->getStoreId());
+            if ($product->getId()) {
+                foreach ($product->getCategoryIds() as $categoryId) {
+                    if (!in_array($categoryId, $categoryIds)) {
+                        $categoryIds[] = $categoryId;
+                    }
+                }
+            }
+        }
+        return $categoryIds;
     }
 }

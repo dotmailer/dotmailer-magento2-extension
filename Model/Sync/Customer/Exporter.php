@@ -10,7 +10,6 @@ use Dotdigitalgroup\Email\Helper\Config;
 use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Connector\ContactData\CustomerFactory as ConnectorCustomerFactory;
 use Dotdigitalgroup\Email\Model\Customer\CustomerDataFieldProviderFactory;
-use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory as ContactCollectionFactory;
 use Dotdigitalgroup\Email\Model\Sync\AbstractExporter;
 use Dotdigitalgroup\Email\Model\Sync\Export\CategoryNameFinder;
 use Dotdigitalgroup\Email\Model\Sync\Export\CsvHandler;
@@ -39,11 +38,6 @@ class Exporter extends AbstractExporter implements ContactExporterInterface
      * @var CustomerDataFieldProviderFactory
      */
     private $customerDataFieldProviderFactory;
-
-    /**
-     * @var ContactCollectionFactory
-     */
-    private $contactCollectionFactory;
 
     /**
      * @var CustomerDataManager
@@ -86,7 +80,6 @@ class Exporter extends AbstractExporter implements ContactExporterInterface
      * @param Logger $logger
      * @param ConnectorCustomerFactory $connectorCustomerFactory
      * @param CustomerDataFieldProviderFactory $customerDataFieldProviderFactory
-     * @param ContactCollectionFactory $contactCollectionFactory
      * @param CustomerDataManager $customerDataManager
      * @param CategoryNameFinder $categoryNameFinder
      * @param CsvHandler $csvHandler
@@ -99,7 +92,6 @@ class Exporter extends AbstractExporter implements ContactExporterInterface
         Logger $logger,
         ConnectorCustomerFactory $connectorCustomerFactory,
         CustomerDataFieldProviderFactory $customerDataFieldProviderFactory,
-        ContactCollectionFactory $contactCollectionFactory,
         CustomerDataManager $customerDataManager,
         CategoryNameFinder $categoryNameFinder,
         CsvHandler $csvHandler,
@@ -111,7 +103,6 @@ class Exporter extends AbstractExporter implements ContactExporterInterface
         $this->logger = $logger;
         $this->connectorCustomerFactory = $connectorCustomerFactory;
         $this->customerDataFieldProviderFactory = $customerDataFieldProviderFactory;
-        $this->contactCollectionFactory = $contactCollectionFactory;
         $this->customerDataManager = $customerDataManager;
         $this->categoryNameFinder = $categoryNameFinder;
         $this->sdkContactBuilder = $sdkContactBuilder;
@@ -138,6 +129,7 @@ class Exporter extends AbstractExporter implements ContactExporterInterface
 
         $customerScopeData = $this->customerDataManager->setCustomerScopeData($customerIds, $website->getId());
         $customerLoginData = $this->customerDataManager->fetchLastLoggedInDates($customerIds, $this->fieldMap);
+        $customerReviewData = $this->customerDataManager->fetchReviewData($customerIds, $this->fieldMap);
 
         $productCategoryData = $this->categoryNameFinder->getCategoryNamesByStore($website, $this->fieldMap);
 
@@ -163,6 +155,13 @@ class Exporter extends AbstractExporter implements ContactExporterInterface
                     );
                 }
 
+                if (isset($customerReviewData[$customer->getId()])) {
+                    $this->setAdditionalDataOnModel(
+                        $customer,
+                        $customerReviewData[$customer->getId()]
+                    );
+                }
+
                 if (isset($customerSalesData[$customer->getEmail()])) {
                     $this->setAdditionalDataOnModel(
                         $customer,
@@ -179,8 +178,8 @@ class Exporter extends AbstractExporter implements ContactExporterInterface
                     $listId
                 );
 
-                //clear collection and free memory
-                $customer->clearInstance();
+                $customerCollection->removeItemByKey($customer->getId());
+                unset($connectorCustomer);
             } catch (\Exception $e) {
                 $this->logger->debug(
                     sprintf(
@@ -192,6 +191,12 @@ class Exporter extends AbstractExporter implements ContactExporterInterface
                 continue;
             }
         }
+
+        unset($customerScopeData);
+        unset($customerLoginData);
+        unset($productCategoryData);
+        unset($customerSalesData);
+        $customerCollection->clear();
 
         return $exportedData;
     }

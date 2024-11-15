@@ -167,8 +167,8 @@ class SalesDataManagerTest extends TestCase
         $this->assertArrayHasKey('first_order_id', $salesDataArray['chaz1@emailsim.io']);
         $this->assertArrayHasKey('last_order_id', $salesDataArray['chaz1@emailsim.io']);
         $this->assertArrayHasKey('last_increment_id', $salesDataArray['chaz1@emailsim.io']);
-        $this->assertArrayHasKey('product_id_for_first_brand', $salesDataArray['chaz1@emailsim.io']);
-        $this->assertArrayHasKey('product_id_for_last_brand', $salesDataArray['chaz1@emailsim.io']);
+        $this->assertArrayHasKey('product_ids_for_first_order', $salesDataArray['chaz1@emailsim.io']);
+        $this->assertArrayHasKey('product_ids_for_last_order', $salesDataArray['chaz1@emailsim.io']);
         $this->assertArrayHasKey('week_day', $salesDataArray['chaz1@emailsim.io']);
         $this->assertArrayHasKey('month', $salesDataArray['chaz1@emailsim.io']);
         $this->assertArrayHasKey('product_id_for_most_sold_product', $salesDataArray['chaz1@emailsim.io']);
@@ -231,7 +231,7 @@ class SalesDataManagerTest extends TestCase
                 'average_order_value' => 60.00,
                 'last_order_date' => '2022-03-17 00:00:00',
                 'first_order_id' => 1,
-                'last_order_id' => 2,
+                'last_order_id' => 1,
                 'last_increment_id' => '00000001'
             ]);
             $stubs[] = $mageOrderStub;
@@ -316,6 +316,7 @@ class SalesDataManagerTest extends TestCase
                 'product_id' => 1,
                 'week_day' => 'Monday',
                 'month' => 'February',
+                'order_id' => 1
             ];
         }
         return $data;
