@@ -9,6 +9,7 @@ use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Store\Model\App\Emulation;
 use Magento\Store\Model\Store;
+use Magento\Store\Model\StoreManagerInterface;
 
 class StoreLevelCatalogSyncer implements CatalogSyncerInterface
 {
@@ -33,23 +34,31 @@ class StoreLevelCatalogSyncer implements CatalogSyncerInterface
     private $syncCatalog;
 
     /**
+     * @var StoreManagerInterface
+     */
+    private $storeManager;
+
+    /**
      * StoreLevelCatalogSyncer constructor.
      *
      * @param Data $helper
      * @param StoreCatalogSyncer $storeCatalogSyncer
      * @param Emulation $appEmulation
      * @param Catalog $syncCatalog
+     * @param StoreManagerInterface $storeManager
      */
     public function __construct(
         Data $helper,
         StoreCatalogSyncer $storeCatalogSyncer,
         Emulation $appEmulation,
-        Catalog $syncCatalog
+        Catalog $syncCatalog,
+        StoreManagerInterface $storeManager
     ) {
         $this->helper = $helper;
         $this->storeCatalogSyncer = $storeCatalogSyncer;
         $this->appEmulation = $appEmulation;
         $this->syncCatalog = $syncCatalog;
+        $this->storeManager = $storeManager;
     }
 
     /**
@@ -64,15 +73,16 @@ class StoreLevelCatalogSyncer implements CatalogSyncerInterface
      */
     public function sync($products)
     {
-        $stores = $this->helper->getStores();
+        $stores = $this->storeManager->getStores();
         $syncedProducts = [];
 
         /** @var Store $store */
         foreach ($stores as $store) {
             $enabled = $this->helper->isEnabled($store->getWebsiteId());
             $catalogSyncEnabled = $this->helper->isCatalogSyncEnabled($store->getWebsiteId());
+            $storeIsActive = $store->isActive();
 
-            if (!$enabled || !$catalogSyncEnabled) {
+            if (!$enabled || !$catalogSyncEnabled || !$storeIsActive) {
                 continue;
             }
 

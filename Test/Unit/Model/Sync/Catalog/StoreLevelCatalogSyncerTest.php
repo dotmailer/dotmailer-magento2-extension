@@ -3,14 +3,14 @@
 namespace Dotdigitalgroup\Email\Test\Unit\Model\Sync\Catalog;
 
 use Dotdigitalgroup\Email\Helper\Data;
-use Dotdigitalgroup\Email\Model\ResourceModel\Catalog as CatalogResource;
-use Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory;
 use Dotdigitalgroup\Email\Model\Sync\Catalog;
 use Dotdigitalgroup\Email\Model\Sync\Catalog\StoreCatalogSyncer;
 use Dotdigitalgroup\Email\Model\Sync\Catalog\StoreLevelCatalogSyncer;
-use Magento\Store\Api\Data\StoreInterface;
-use Magento\Store\Api\Data\WebsiteInterface;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Store\Model\App\Emulation;
+use Magento\Store\Model\Store;
+use Magento\Store\Model\StoreManagerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
@@ -27,11 +27,6 @@ class StoreLevelCatalogSyncerTest extends TestCase
     private $helperMock;
 
     /**
-     * @var CatalogFactory
-     */
-    private $catalogResourceFactoryMock;
-
-    /**
      * @var Catalog|MockObject
      */
     private $catalogMock;
@@ -42,14 +37,9 @@ class StoreLevelCatalogSyncerTest extends TestCase
     private $storeCatalogSyncerMock;
 
     /**
-     * @var CatalogResource
+     * @var StoreManagerInterface
      */
-    private $catalogResourceMock;
-
-    /**
-     * @var WebsiteInterface;
-     */
-    private $websiteInterfaceMock;
+    private $storeManagerMock;
 
     /**
      * @var Emulation
@@ -60,22 +50,25 @@ class StoreLevelCatalogSyncerTest extends TestCase
     {
         $this->helperMock = $this->createMock(Data::class);
         $this->catalogMock = $this->createMock(Catalog::class);
-        $this->catalogResourceFactoryMock = $this->createMock(CatalogFactory::class);
         $this->storeCatalogSyncerMock = $this->createMock(StoreCatalogSyncer::class);
-        $this->catalogResourceMock = $this->createMock(CatalogResource::class);
-        $this->websiteInterfaceMock = $this->createMock(WebsiteInterface::class);
         $this->appEmulation = $this->createMock(Emulation::class);
+        $this->storeManagerMock = $this->createMock(StoreManagerInterface::class);
         $this->storeLevelCatalogSyncer = new StoreLevelCatalogSyncer(
             $this->helperMock,
             $this->storeCatalogSyncerMock,
             $this->appEmulation,
-            $this->catalogMock
+            $this->catalogMock,
+            $this->storeManagerMock
         );
     }
 
     /**
      * @dataProvider getProducts
+     *
      * @param        $products
+     *
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
      */
     public function testNumberOfProductsIfBothAreEnabled($products)
     {
@@ -85,7 +78,7 @@ class StoreLevelCatalogSyncerTest extends TestCase
         $expected = 2;
 
         $stores = [$store1['store'], $store2['store']];
-        $this->helperMock->expects($this->once())
+        $this->storeManagerMock->expects($this->once())
             ->method('getStores')
             ->willReturn($stores);
 
@@ -125,7 +118,11 @@ class StoreLevelCatalogSyncerTest extends TestCase
 
     /**
      * @dataProvider getProducts
+     *
      * @param        $products
+     *
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
      */
     public function testNumberOfProductsIfOnlyOneEnabled($products)
     {
@@ -135,7 +132,7 @@ class StoreLevelCatalogSyncerTest extends TestCase
         $expected = 1;
 
         $stores = [$store1['store'], $store2['store']];
-        $this->helperMock->expects($this->once())
+        $this->storeManagerMock->expects($this->once())
             ->method('getStores')
             ->willReturn($stores);
 
@@ -171,37 +168,23 @@ class StoreLevelCatalogSyncerTest extends TestCase
         $this->assertEquals(count($result), $expected);
     }
 
-    private function getMockedStoresEnabled()
-    {
-        $storeDetails = $this->getStoreDetails();
-        $store = $this->createMock(StoreInterface::class);
-
-        $store->expects($this->exactly(3))
-            ->method('getWebsiteId')
-            ->willReturn($storeDetails['websiteId']);
-        $store->expects($this->once())
-            ->method('getId')
-            ->willReturn($storeDetails['storeId']);
-
-        return [
-            'store' => $store,
-            'details' => $storeDetails
-        ];
-    }
-
     /**
      * @dataProvider getProducts
+     *
      * @param        $products
+     *
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
      */
-    public function testNumberOfProductsIfNoOneEnabled($products)
+    public function testNumberOfProductsIfNoStoreEnabled($products)
     {
         $store1 = $this->getMockedStoresDisabled();
-        $store2 = $this->getMockedStoresDisabled();
+        $store2 = $this->getMockedStoresIsActiveFalse();
 
         $expected = 0;
 
         $stores = [$store1['store'], $store2['store']];
-        $this->helperMock->expects($this->once())
+        $this->storeManagerMock->expects($this->once())
             ->method('getStores')
             ->willReturn($stores);
 
@@ -212,7 +195,7 @@ class StoreLevelCatalogSyncerTest extends TestCase
             )
             ->willReturnOnConsecutiveCalls(
                 false,
-                false
+                true
             );
 
         $this->helperMock->method('isCatalogSyncEnabled')
@@ -222,7 +205,7 @@ class StoreLevelCatalogSyncerTest extends TestCase
             )
             ->willReturnOnConsecutiveCalls(
                 false,
-                false
+                true
             );
 
         $this->storeCatalogSyncerMock->expects($this->never())
@@ -237,14 +220,18 @@ class StoreLevelCatalogSyncerTest extends TestCase
 
     /**
      * @dataProvider getProducts
+     *
      * @param        $products
+     *
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
      */
     public function testAppEmulationIsUsedIfSyncEnabled($products)
     {
         $store1 = $this->getMockedStoresEnabled();
         $store2 = $this->getMockedStoresEnabled();
 
-        $this->helperMock->expects($this->once())
+        $this->storeManagerMock->expects($this->once())
             ->method('getStores')
             ->willReturn([$store1['store'],$store2['store']]);
 
@@ -288,6 +275,27 @@ class StoreLevelCatalogSyncerTest extends TestCase
         $this->storeLevelCatalogSyncer->sync($products);
     }
 
+    private function getMockedStoresEnabled()
+    {
+        $storeDetails = $this->getStoreDetails();
+        $store = $this->createMock(Store::class);
+
+        $store->expects($this->exactly(3))
+            ->method('getWebsiteId')
+            ->willReturn($storeDetails['websiteId']);
+        $store->expects($this->once())
+            ->method('getId')
+            ->willReturn($storeDetails['storeId']);
+        $store->expects($this->once())
+            ->method('isActive')
+            ->willReturn(true);
+
+        return [
+            'store' => $store,
+            'details' => $storeDetails
+        ];
+    }
+
     /**
      * Generates the disabled stores to be mocked
      *
@@ -296,14 +304,41 @@ class StoreLevelCatalogSyncerTest extends TestCase
     private function getMockedStoresDisabled()
     {
         $storeDetails = $this->getStoreDetails();
-        $store = $this->getMockBuilder(StoreInterface::class)
-            ->setMethods(['getWebsite'])
-            ->getMockForAbstractClass();
+        $store = $this->createMock(Store::class);
+
         $store->expects($this->exactly(2))
             ->method('getWebsiteId')
             ->willReturn($storeDetails['websiteId']);
         $store->expects($this->never())
             ->method('getId');
+        $store->expects($this->once())
+            ->method('isActive')
+            ->willReturn(true);
+
+        return [
+            'store' => $store,
+            'details' => $storeDetails
+        ];
+    }
+
+    /**
+     * Generates the disabled stores to be mocked
+     *
+     * @return array
+     */
+    private function getMockedStoresIsActiveFalse()
+    {
+        $storeDetails = $this->getStoreDetails();
+        $store = $this->createMock(Store::class);
+
+        $store->expects($this->exactly(2))
+            ->method('getWebsiteId')
+            ->willReturn($storeDetails['websiteId']);
+        $store->expects($this->never())
+            ->method('getId');
+        $store->expects($this->once())
+            ->method('isActive')
+            ->willReturn(false);
 
         return [
             'store' => $store,
