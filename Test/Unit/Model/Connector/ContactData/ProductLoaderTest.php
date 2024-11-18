@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Dotdigitalgroup\Email\Test\Unit\Model\Connector\ContactData;
 
-use Magento\Catalog\Api\Data\ProductInterfaceFactory;
+use ArrayIterator;
 use Magento\Catalog\Model\Product;
-use Magento\Catalog\Model\ResourceModel\Product as ProductResource;
+use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as CatalogCollectionFactory;
 use Dotdigitalgroup\Email\Model\Connector\ContactData\ProductLoader;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -14,14 +14,9 @@ use PHPUnit\Framework\TestCase;
 class ProductLoaderTest extends TestCase
 {
     /**
-     * @var ProductInterfaceFactory|MockObject
+     * @var CatalogCollectionFactory|MockObject
      */
-    private $productFactoryMock;
-
-    /**
-     * @var ProductResource|MockObject
-     */
-    private $productResourceMock;
+    private $catalogCollectionFactoryMock;
 
     /**
      * @var ProductLoader
@@ -30,20 +25,16 @@ class ProductLoaderTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->productFactoryMock = $this->getMockBuilder(ProductInterfaceFactory::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->productResourceMock = $this->getMockBuilder(ProductResource::class)
+        $this->catalogCollectionFactoryMock = $this->getMockBuilder(CatalogCollectionFactory::class)
             ->disableOriginalConstructor()
             ->getMock();
 
         $this->productLoader = new ProductLoader(
-            $this->productFactoryMock,
-            $this->productResourceMock
+            $this->catalogCollectionFactoryMock
         );
     }
 
-    public function testGetProduct(): void
+    public function testGetCachedProductById(): void
     {
         $productId = 1;
         $storeId = 1;
@@ -52,23 +43,47 @@ class ProductLoaderTest extends TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->productFactoryMock->expects($this->once())
+        $collectionMock = $this->getMockBuilder(\Magento\Catalog\Model\ResourceModel\Product\Collection::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->catalogCollectionFactoryMock->expects($this->once())
             ->method('create')
+            ->willReturn($collectionMock);
+
+        $collectionMock->expects($this->once())
+            ->method('addStoreFilter')
+            ->with($storeId)
+            ->willReturn($collectionMock);
+
+        $collectionMock->expects($this->once())
+            ->method('addIdFilter')
+            ->with([$productId])
+            ->willReturn($collectionMock);
+
+        $collectionMock->expects($this->once())
+            ->method('addAttributeToSelect')
+            ->with('*')
+            ->willReturn($collectionMock);
+
+        $collectionMock->expects($this->once())
+            ->method('load')
+            ->willReturn($collectionMock);
+
+        $collectionMock->expects($this->any())
+            ->method('getIterator')
+            ->willReturn(new ArrayIterator([$productMock]));
+
+        $collectionMock->expects($this->once())
+            ->method('getItemById')
+            ->with($productId)
             ->willReturn($productMock);
 
-        $productMock->expects($this->once())
-            ->method('setStoreId')
-            ->with($storeId);
-
-        $this->productResourceMock->expects($this->once())
-            ->method('load')
-            ->with($productMock, $productId);
-
-        $result = $this->productLoader->getProduct($productId, $storeId);
+        $result = $this->productLoader->getCachedProductById($productId, $storeId);
         $this->assertSame($productMock, $result);
 
         // Test caching of loaded product
-        $resultCached = $this->productLoader->getProduct($productId, $storeId);
+        $resultCached = $this->productLoader->getCachedProductById($productId, $storeId);
         $this->assertSame($productMock, $resultCached);
     }
 }

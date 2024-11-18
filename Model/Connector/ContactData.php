@@ -503,8 +503,8 @@ class ContactData
 
         //if the id and attribute found
         if ($productId && $attributeCode) {
-            $product = $this->productLoader->getProduct((int) $productId, (int) $this->model->getStoreId());
-            if ($product->getId()) {
+            $product = $this->productLoader->getCachedProductById((int) $productId, (int) $this->model->getStoreId());
+            if ($product && $product->getId()) {
                 $attribute = $this->productResource->getAttribute($attributeCode);
                 $value = is_object($attribute) ? $attribute->getFrontend()->getValue($product) : null;
                 if ($value) {
@@ -552,9 +552,9 @@ class ContactData
         $productId = $this->model->getProductIdForMostSoldProduct();
         //sales data found for customer with product id
         if ($productId) {
-            $product = $this->productLoader->getProduct((int) $productId, (int) $this->model->getStoreId());
+            $product = $this->productLoader->getCachedProductById((int) $productId, (int) $this->model->getStoreId());
             //product found
-            if ($product->getId()) {
+            if ($product && $product->getId()) {
                 $categoryIds = $product->getCategoryIds();
                 if (count($categoryIds)) {
                     $categories = $this->getCategoryNamesFromIds($categoryIds);
@@ -658,10 +658,10 @@ class ContactData
     {
         //if the id and attribute found
         if ($id && $attributeCode) {
-            $product = $this->productLoader->getProduct((int) $id, (int) $storeId);
+            $product = $this->productLoader->getCachedProductById((int) $id, (int) $storeId);
             $attribute = $this->productResource->getAttribute($attributeCode);
 
-            if ($attribute && $product->getId()) {
+            if ($attribute && $product && $product->getId()) {
                 $value = $attribute->setStoreId($storeId)
                     ->getSource()
                     ->getOptionText($product->getData($attributeCode));
@@ -751,9 +751,10 @@ class ContactData
     private function getCategoriesFromProducts(array $productIds): array
     {
         $categoryIds = [];
-        foreach ($productIds as $productId) {
-            $product = $this->productLoader->getProduct((int) $productId, (int) $this->model->getStoreId());
-            if ($product->getId()) {
+        $products = $this->productLoader->getCachedProducts($productIds, (int) $this->model->getStoreId());
+
+        foreach ($products as $product) {
+            if ($product && $product->getId()) {
                 foreach ($product->getCategoryIds() as $categoryId) {
                     if (!in_array($categoryId, $categoryIds)) {
                         $categoryIds[] = $categoryId;
