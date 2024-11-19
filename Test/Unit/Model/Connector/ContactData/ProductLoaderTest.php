@@ -8,11 +8,17 @@ use ArrayIterator;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as CatalogCollectionFactory;
 use Dotdigitalgroup\Email\Model\Connector\ContactData\ProductLoader;
+use Dotdigitalgroup\Email\Model\Sync\Export\BrandAttributeFinder;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class ProductLoaderTest extends TestCase
 {
+    /**
+     * @var BrandAttributeFinder|MockObject
+     */
+    private $brandAttributeFinderMock;
+
     /**
      * @var CatalogCollectionFactory|MockObject
      */
@@ -25,11 +31,13 @@ class ProductLoaderTest extends TestCase
 
     protected function setUp(): void
     {
+        $this->brandAttributeFinderMock = $this->createMock(BrandAttributeFinder::class);
         $this->catalogCollectionFactoryMock = $this->getMockBuilder(CatalogCollectionFactory::class)
             ->disableOriginalConstructor()
             ->getMock();
 
         $this->productLoader = new ProductLoader(
+            $this->brandAttributeFinderMock,
             $this->catalogCollectionFactoryMock
         );
     }
@@ -38,6 +46,7 @@ class ProductLoaderTest extends TestCase
     {
         $productId = 1;
         $storeId = 1;
+        $brandAttributeCode = 'brand';
 
         $productMock = $this->getMockBuilder(Product::class)
             ->disableOriginalConstructor()
@@ -63,7 +72,7 @@ class ProductLoaderTest extends TestCase
 
         $collectionMock->expects($this->once())
             ->method('addAttributeToSelect')
-            ->with('*')
+            ->with($brandAttributeCode)
             ->willReturn($collectionMock);
 
         $collectionMock->expects($this->once())
@@ -78,6 +87,10 @@ class ProductLoaderTest extends TestCase
             ->method('getItemById')
             ->with($productId)
             ->willReturn($productMock);
+
+        $this->brandAttributeFinderMock->expects($this->once())
+            ->method('getBrandAttributeCodeByStoreId')
+            ->willReturn($brandAttributeCode);
 
         $result = $this->productLoader->getCachedProductById($productId, $storeId);
         $this->assertSame($productMock, $result);

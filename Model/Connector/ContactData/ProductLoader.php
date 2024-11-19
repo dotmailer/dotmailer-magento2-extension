@@ -4,11 +4,17 @@ declare(strict_types=1);
 
 namespace Dotdigitalgroup\Email\Model\Connector\ContactData;
 
+use Dotdigitalgroup\Email\Model\Sync\Export\BrandAttributeFinder;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as CatalogCollectionFactory;
 
 class ProductLoader
 {
+    /**
+     * @var BrandAttributeFinder
+     */
+    private $brandAttributeFinder;
+
     /**
      * @var CatalogCollectionFactory
      */
@@ -20,11 +26,14 @@ class ProductLoader
     private $products = [];
 
     /**
+     * @param BrandAttributeFinder $brandAttributeFinder
      * @param CatalogCollectionFactory $catalogCollectionFactory
      */
     public function __construct(
+        BrandAttributeFinder $brandAttributeFinder,
         CatalogCollectionFactory $catalogCollectionFactory
     ) {
+        $this->brandAttributeFinder = $brandAttributeFinder;
         $this->catalogCollectionFactory = $catalogCollectionFactory;
     }
 
@@ -69,7 +78,7 @@ class ProductLoader
 
         $productsToReturn = [];
         foreach ($productIds as $productId) {
-            if (! isset($this->products[$productId][$storeId])) {
+            if (!isset($this->products[$productId][$storeId])) {
                 continue;
             }
             $productsToReturn[] = $this->products[$productId][$storeId];
@@ -94,9 +103,13 @@ class ProductLoader
     {
         $productsCollection = $this->catalogCollectionFactory->create()
             ->addStoreFilter($storeId)
-            ->addIdFilter($productIds)
-            ->addAttributeToSelect('*')
-            ->load();
+            ->addIdFilter($productIds);
+
+        if ($brandAttributeCode = $this->brandAttributeFinder->getBrandAttributeCodeByStoreId($storeId)) {
+            $productsCollection->addAttributeToSelect($brandAttributeCode);
+        }
+
+        $productsCollection->load();
 
         foreach ($productIds as $productId) {
             $this->products[$productId][$storeId] = $productsCollection->getItemById($productId) ?? null;

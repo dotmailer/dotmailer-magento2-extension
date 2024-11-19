@@ -10,6 +10,7 @@ use Dotdigitalgroup\Email\Model\Connector\Datafield;
 use Dotdigitalgroup\Email\Model\Newsletter\OptInTypeFinder;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact\Collection as ContactCollection;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory as ContactCollectionFactory;
+use Dotdigitalgroup\Email\Model\Sync\Export\BrandAttributeFinder;
 use Dotdigitalgroup\Email\Model\Sync\Export\CategoryNameFinder;
 use Dotdigitalgroup\Email\Model\Sync\Export\CsvHandler;
 use Dotdigitalgroup\Email\Model\Sync\Export\SdkContactBuilder;
@@ -64,6 +65,11 @@ class SubscriberWithSalesExporterTest extends TestCase
     private $scopeConfigMock;
 
     /**
+     * @var BrandAttributeFinder|MockObject
+     */
+    private $brandAttributeFinderMock;
+
+    /**
      * @var CategoryNameFinder|MockObject
      */
     private $categoryNameFinderMock;
@@ -98,6 +104,7 @@ class SubscriberWithSalesExporterTest extends TestCase
         $this->salesDataManagerMock = $this->createMock(SalesDataManager::class);
         $this->subscriberExporterFactoryMock = $this->createMock(SubscriberExporterFactory::class);
         $this->scopeConfigMock = $this->createMock(ScopeConfigInterface::class);
+        $this->brandAttributeFinderMock = $this->createMock(BrandAttributeFinder::class);
         $this->categoryNameFinderMock = $this->createMock(CategoryNameFinder::class);
         $this->csvHandlerMock = $this->createMock(CsvHandler::class);
         $this->sdkContactBuilderMock = $this->createMock(SdkContactBuilder::class);
@@ -125,6 +132,7 @@ class SubscriberWithSalesExporterTest extends TestCase
             $this->connectorSubscriberFactoryMock,
             $this->optInTypeFinderMock,
             $this->contactCollectionFactoryMock,
+            $this->brandAttributeFinderMock,
             $this->categoryNameFinderMock,
             $this->salesDataManagerMock,
             $this->sdkContactBuilderMock,
@@ -168,6 +176,11 @@ class SubscriberWithSalesExporterTest extends TestCase
         $this->categoryNameFinderMock->expects($this->once())
             ->method('getCategoryNamesByStore')
             ->willReturn([]);
+
+        $abstractAttributeMock = $this->createMock(\Magento\Eav\Model\Entity\Attribute\AbstractAttribute::class);
+        $this->brandAttributeFinderMock->expects($this->once())
+            ->method('getBrandAttribute')
+            ->willReturn($abstractAttributeMock);
 
         /* Subscriber sales data */
         $this->salesDataManagerMock->expects($this->once())

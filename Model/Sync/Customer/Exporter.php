@@ -11,6 +11,7 @@ use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Connector\ContactData\CustomerFactory as ConnectorCustomerFactory;
 use Dotdigitalgroup\Email\Model\Customer\CustomerDataFieldProviderFactory;
 use Dotdigitalgroup\Email\Model\Sync\AbstractExporter;
+use Dotdigitalgroup\Email\Model\Sync\Export\BrandAttributeFinder;
 use Dotdigitalgroup\Email\Model\Sync\Export\CategoryNameFinder;
 use Dotdigitalgroup\Email\Model\Sync\Export\CsvHandler;
 use Dotdigitalgroup\Email\Model\Sync\Export\SalesDataManager;
@@ -43,6 +44,11 @@ class Exporter extends AbstractExporter implements ContactExporterInterface
      * @var CustomerDataManager
      */
     private $customerDataManager;
+
+    /**
+     * @var BrandAttributeFinder
+     */
+    private $brandAttributeFinder;
 
     /**
      * @var CategoryNameFinder
@@ -81,6 +87,7 @@ class Exporter extends AbstractExporter implements ContactExporterInterface
      * @param ConnectorCustomerFactory $connectorCustomerFactory
      * @param CustomerDataFieldProviderFactory $customerDataFieldProviderFactory
      * @param CustomerDataManager $customerDataManager
+     * @param BrandAttributeFinder $brandAttributeFinder
      * @param CategoryNameFinder $categoryNameFinder
      * @param CsvHandler $csvHandler
      * @param SdkContactBuilder $sdkContactBuilder
@@ -93,6 +100,7 @@ class Exporter extends AbstractExporter implements ContactExporterInterface
         ConnectorCustomerFactory $connectorCustomerFactory,
         CustomerDataFieldProviderFactory $customerDataFieldProviderFactory,
         CustomerDataManager $customerDataManager,
+        BrandAttributeFinder $brandAttributeFinder,
         CategoryNameFinder $categoryNameFinder,
         CsvHandler $csvHandler,
         SdkContactBuilder $sdkContactBuilder,
@@ -104,6 +112,7 @@ class Exporter extends AbstractExporter implements ContactExporterInterface
         $this->connectorCustomerFactory = $connectorCustomerFactory;
         $this->customerDataFieldProviderFactory = $customerDataFieldProviderFactory;
         $this->customerDataManager = $customerDataManager;
+        $this->brandAttributeFinder = $brandAttributeFinder;
         $this->categoryNameFinder = $categoryNameFinder;
         $this->sdkContactBuilder = $sdkContactBuilder;
         $this->salesDataManager = $salesDataManager;
@@ -132,6 +141,7 @@ class Exporter extends AbstractExporter implements ContactExporterInterface
         $customerReviewData = $this->customerDataManager->fetchReviewData($customerIds, $this->fieldMap);
 
         $productCategoryData = $this->categoryNameFinder->getCategoryNamesByStore($website, $this->fieldMap);
+        $brandAttribute = $this->brandAttributeFinder->getBrandAttribute($website->getId());
 
         $customerSalesData = $this->salesDataManager->setContactSalesData(
             $this->getEmailsFromCollection($customerCollection),
@@ -170,7 +180,12 @@ class Exporter extends AbstractExporter implements ContactExporterInterface
                 }
 
                 $connectorCustomer = $this->connectorCustomerFactory->create()
-                    ->init($customer, $this->fieldMap, $productCategoryData);
+                    ->init(
+                        $customer,
+                        $this->fieldMap,
+                        $productCategoryData,
+                        $brandAttribute
+                    );
 
                 $exportedData[$customer->getEmailContactId()] = $this->sdkContactBuilder->createSdkContact(
                     $connectorCustomer,

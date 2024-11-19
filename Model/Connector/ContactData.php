@@ -10,8 +10,8 @@ use Dotdigitalgroup\Email\Model\Connector\ContactData\ProductLoader;
 use Dotdigitalgroup\Email\Model\Customer\DataField\Date;
 use Magento\Catalog\Api\Data\CategoryInterfaceFactory;
 use Magento\Catalog\Model\ResourceModel\Category;
-use Magento\Catalog\Model\ResourceModel\Product;
 use Magento\Eav\Model\Config;
+use Magento\Eav\Model\Entity\Attribute\AbstractAttribute;
 use Magento\Framework\Model\AbstractModel;
 use Magento\Newsletter\Model\Subscriber;
 use Magento\Store\Model\StoreManagerInterface;
@@ -44,11 +44,6 @@ class ContactData
     private $configHelper;
 
     /**
-     * @var Product
-     */
-    private $productResource;
-
-    /**
      * @var CategoryInterfaceFactory
      */
     private $categoryFactory;
@@ -72,6 +67,11 @@ class ContactData
      * @var array
      */
     private $categoryNames = [];
+
+    /**
+     * @var AbstractAttribute
+     */
+    private $brandAttribute;
 
     /**
      * @var Logger
@@ -107,7 +107,6 @@ class ContactData
      * ContactData constructor.
      *
      * @param StoreManagerInterface $storeManager
-     * @param Product $productResource
      * @param CategoryInterfaceFactory $categoryFactory
      * @param Category $categoryResource
      * @param ConfigHelper $configHelper
@@ -118,7 +117,6 @@ class ContactData
      */
     public function __construct(
         StoreManagerInterface $storeManager,
-        Product $productResource,
         CategoryInterfaceFactory $categoryFactory,
         Category $categoryResource,
         ConfigHelper $configHelper,
@@ -130,7 +128,6 @@ class ContactData
         $this->storeManager = $storeManager;
         $this->configHelper = $configHelper;
         $this->categoryFactory = $categoryFactory;
-        $this->productResource = $productResource;
         $this->categoryResource = $categoryResource;
         $this->logger = $logger;
         $this->dateField = $dateField;
@@ -144,15 +141,17 @@ class ContactData
      * @param AbstractModel $model
      * @param array $columns
      * @param array $categoryNames
+     * @param AbstractAttribute $brandAttribute
      *
      * @return $this
      */
-    public function init(AbstractModel $model, array $columns, array $categoryNames = [])
+    public function init(AbstractModel $model, array $columns, array $categoryNames = [], $brandAttribute = null)
     {
         $this->model = $model;
         $this->columns = $columns;
         $this->contactData = [];
         $this->categoryNames = $categoryNames;
+        $this->brandAttribute = $brandAttribute;
         return $this;
     }
 
@@ -305,6 +304,9 @@ class ContactData
      *
      * @param mixed $id
      * @return string
+     *
+     * @deprecated Use the newer updated method
+     * @see getBrandAttributeValue
      */
     public function getBrandValue($id)
     {
@@ -314,16 +316,13 @@ class ContactData
                 ConfigHelper::XML_PATH_CONNECTOR_SYNC_DATA_FIELDS_BRAND_ATTRIBUTE,
                 $this->model->getWebsiteId()
             );
-
-            $brandValue = $this->getBrandAttributeValue($id, $attributeCode, $this->model->getStoreId());
-
+            $brandValue = $this->getBrandAttributeValue($id, $this->model->getStoreId());
             if (is_array($brandValue)) {
                 $this->brandValue[$id] = implode(',', $brandValue);
             } else {
                 $this->brandValue[$id] = $brandValue;
             }
         }
-
         return $this->brandValue[$id];
     }
 
@@ -464,12 +463,15 @@ class ContactData
      */
     public function getFirstBrandPur()
     {
+        if (!$this->brandAttribute) {
+            return '';
+        }
         $ids = $this->model->getProductIdsForFirstOrder();
         if (empty($ids)) {
             return '';
         }
         $id = reset($ids);
-        return empty($id) ? '' : $this->getBrandValue($id);
+        return empty($id) ? '' : $this->getBrandAttributeValue($id, $this->model->getStoreId());
     }
 
     /**
@@ -479,12 +481,15 @@ class ContactData
      */
     public function getLastBrandPur()
     {
+        if (!$this->brandAttribute) {
+            return '';
+        }
         $ids = $this->model->getProductIdsForLastOrder();
         if (empty($ids)) {
             return '';
         }
         $id = reset($ids);
-        return empty($id) ? '' : $this->getBrandValue($id);
+        return empty($id) ? '' : $this->getBrandAttributeValue($id, $this->model->getStoreId());
     }
 
     /**
@@ -495,25 +500,11 @@ class ContactData
      */
     public function getMostPurBrand()
     {
-        $productId = $this->model->getProductIdForMostSoldProduct();
-        $attributeCode = $this->configHelper->getWebsiteConfig(
-            ConfigHelper::XML_PATH_CONNECTOR_SYNC_DATA_FIELDS_BRAND_ATTRIBUTE,
-            $this->model->getWebsiteId()
-        );
-
-        //if the id and attribute found
-        if ($productId && $attributeCode) {
-            $product = $this->productLoader->getCachedProductById((int) $productId, (int) $this->model->getStoreId());
-            if ($product && $product->getId()) {
-                $attribute = $this->productResource->getAttribute($attributeCode);
-                $value = is_object($attribute) ? $attribute->getFrontend()->getValue($product) : null;
-                if ($value) {
-                    return $value;
-                }
-            }
+        if (!$this->brandAttribute) {
+            return '';
         }
-
-        return '';
+        $productId = $this->model->getProductIdForMostSoldProduct();
+        return empty($productId) ? '' : $this->getBrandAttributeValue($productId, $this->model->getStoreId());
     }
 
     /**
@@ -648,32 +639,32 @@ class ContactData
     /**
      * Get the value of the nominated 'Brand' attribute.
      *
-     * @param int $id
-     * @param string $attributeCode
+     * @param int $productId
      * @param int $storeId
      *
      * @return string
      */
-    private function getBrandAttributeValue($id, $attributeCode, $storeId)
+    private function getBrandAttributeValue($productId, $storeId)
     {
-        //if the id and attribute found
-        if ($id && $attributeCode) {
-            $product = $this->productLoader->getCachedProductById((int) $id, (int) $storeId);
-            $attribute = $this->productResource->getAttribute($attributeCode);
-
-            if ($attribute && $product && $product->getId()) {
-                $value = $attribute->setStoreId($storeId)
-                    ->getSource()
-                    ->getOptionText($product->getData($attributeCode));
-
-                //check for brand text
-                if ($value) {
-                    return $value;
-                }
-            }
+        if (!$productId || !$this->brandAttribute->getAttributeCode()) {
+            return '';
         }
 
-        return '';
+        $product = $this->productLoader->getCachedProductById((int) $productId, (int) $storeId);
+        if (!$product || !$product->getId()) {
+            return '';
+        }
+
+        $attribute = $this->brandAttribute;
+        $value = $attribute->setStoreId($storeId)
+            ->getSource()
+            ->getOptionText($product->getData($attribute->getAttributeCode()));
+
+        if (is_array($value)) {
+            return implode(',', $value);
+        }
+
+        return $value ?: '';
     }
 
     /**

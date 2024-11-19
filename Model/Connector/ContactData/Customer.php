@@ -11,7 +11,7 @@ use Dotdigitalgroup\Email\Model\Customer\DataField\Date;
 use Dotdigitalgroup\Email\Model\Newsletter\BackportedSubscriberLoader;
 use Magento\Catalog\Api\Data\CategoryInterfaceFactory;
 use Magento\Catalog\Model\ResourceModel\Category;
-use Magento\Catalog\Model\ResourceModel\Product;
+use Magento\Eav\Model\Entity\Attribute\AbstractAttribute;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Model\AbstractModel;
 use Magento\Store\Model\StoreManagerInterface;
@@ -59,7 +59,6 @@ class Customer extends ContactData
     /**
      * Customer constructor.
      *
-     * @param Product $productResource
      * @param Category $categoryResource
      * @param StoreManagerInterface $storeManager
      * @param CategoryInterfaceFactory $categoryFactory
@@ -72,7 +71,6 @@ class Customer extends ContactData
      * @param CustomerGroupLoader $customerGroupLoader
      */
     public function __construct(
-        Product $productResource,
         Category $categoryResource,
         StoreManagerInterface $storeManager,
         CategoryInterfaceFactory $categoryFactory,
@@ -90,7 +88,6 @@ class Customer extends ContactData
 
         parent::__construct(
             $storeManager,
-            $productResource,
             $categoryFactory,
             $categoryResource,
             $configHelper,
@@ -107,13 +104,14 @@ class Customer extends ContactData
      * @param AbstractModel $model
      * @param array $columns
      * @param array $categoryNames
+     * @param AbstractAttribute|false $brandAttribute
      *
      * @return $this|ContactData
      * @throws LocalizedException
      */
-    public function init(AbstractModel $model, array $columns, array $categoryNames = [])
+    public function init(AbstractModel $model, array $columns, array $categoryNames = [], $brandAttribute = null)
     {
-        parent::init($model, $columns, $categoryNames);
+        parent::init($model, $columns, $categoryNames, $brandAttribute);
         $this->setContactData();
 
         return $this;
