@@ -1,3 +1,16 @@
+# 4.27.2
+
+### Improvements
+- Default cron group configuration has been modified to better accommodate merchants running cron less often than every minute.
+- The deprecated `\Magento\Framework\Option\ArrayInterface` is replaced by `\Magento\Framework\Data\OptionSourceInterface`.
+- We replaced some deprecated constants in our `ImageFinder` class.
+- Catalogs will now not be synced for stores disabled via Stores > All Stores.
+
+### Bug fixes
+- Simple products which are part of a bundle will use their own thumbnail (if available) in web insights, not their bundle parent’s thumbnail.
+- In catalog sync, configurable products will now show a price that reflects the lowest available price for the current catalog scope.
+- Deleting customers who were suppressed in Dotdigital caused an error in the importer; this has been fixed.
+
 # 4.27.1
 
 ### Improvements
