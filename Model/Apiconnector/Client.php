@@ -2055,4 +2055,29 @@ class Client extends Rest implements ClientInterface
 
         return $response;
     }
+
+    /**
+     * Delete data field by name.
+     *
+     * @param string $dataFieldName
+     *
+     * @return array|stdClass|string|null
+     * @throws LocalizedException
+     */
+    public function deleteDataField($dataFieldName)
+    {
+        $url = $this->getApiEndpoint() . self::REST_DATA_FIELDS . '/' . $dataFieldName;
+        $this->setUrl($url)
+            ->setVerb('DELETE');
+
+        $response = $this->execute();
+
+        if (isset($response->message)) {
+            $this->addClientLog('Error deleting data field', [
+                'data_field_name' => $dataFieldName
+            ]);
+        }
+
+        return $response;
+    }
 }
