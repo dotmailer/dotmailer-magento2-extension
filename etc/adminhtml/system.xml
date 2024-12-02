@@ -1338,19 +1338,27 @@
             <resource>Dotdigitalgroup_Email::config</resource>
             <group id="email" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Email</label>
-                <field id="enabled" translate="label" sortOrder="10" type="select" showInStore="1"
-                       showInWebsite="1" showInDefault="1">
+                <field id="enabled" translate="label" sortOrder="10" type="select" showInStore="1" showInWebsite="1" showInDefault="1">
                     <label>Import subscribers with consent</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <backend_model>Dotdigitalgroup\Email\Model\Config\Backend\Consent\RequireConsentText</backend_model>
                     <comment><![CDATA[Enable this to record consent when customers subscribe or opt-in anywhere on your store.]]></comment>
                 </field>
                 <field id="text_newsletter_registration_checkout" translate="label" sortOrder="20" type="textarea" showInWebsite="1" showInStore="1" showInDefault="1">
                     <label>Opt-in consent text (checkout, account)</label>
-                    <comment><![CDATA[Enter the consent text you want to record against contacts that opt-in from a page with a URL that includes checkout/ or customer/account/.]]></comment>
+                    <backend_model>Dotdigitalgroup\Email\Model\Config\Backend\Consent\PreventConsentTextDeletion</backend_model>
+                    <comment><![CDATA[[Required] Enter the consent text you want to record against contacts that opt-in from a page with a URL that includes checkout/ or customer/account/.]]></comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
                 </field>
                 <field id="text_newsletter_signup_form" translate="label" sortOrder="20" type="textarea" showInWebsite="1" showInStore="1" showInDefault="1">
                     <label>Opt-in consent text (other pages)</label>
-                    <comment><![CDATA[Enter the consent text you want to record against contacts that opt-in from any page that doesn't have a URL that includes checkout/ or customer/account/.]]></comment>
+                    <backend_model>Dotdigitalgroup\Email\Model\Config\Backend\Consent\PreventConsentTextDeletion</backend_model>
+                    <comment><![CDATA[[Required] Enter the consent text you want to record against contacts that opt-in from any page that doesn't have a URL that includes checkout/ or customer/account/.]]></comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
                 </field>
             </group>
         </section>
