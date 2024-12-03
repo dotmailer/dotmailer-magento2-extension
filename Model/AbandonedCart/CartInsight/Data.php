@@ -13,6 +13,7 @@ use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Framework\App\Area;
 use Magento\Framework\Pricing\PriceCurrencyInterface;
 use Magento\Framework\Stdlib\DateTime\DateTime;
+use Magento\Quote\Api\CartTotalRepositoryInterface;
 use Magento\Quote\Model\Quote;
 use Magento\Quote\Model\Quote\Item;
 use Magento\Store\Model\App\Emulation;
@@ -31,27 +32,32 @@ class Data
     private $clientFactory;
 
     /**
-     * @var \Magento\Store\Model\StoreManagerInterface
+     * @var StoreManagerInterface
      */
     private $storeManager;
 
     /**
-     * @var \Magento\Catalog\Api\ProductRepositoryInterface
+     * @var ProductRepositoryInterface
      */
     private $productRepository;
 
     /**
-     * @var \Magento\Framework\Stdlib\DateTime\DateTime
+     * @var DateTime
      */
     private $dateTime;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\Catalog\UrlFinder
+     * @var CartTotalRepositoryInterface
+     */
+    private $cartTotalRepository;
+
+    /**
+     * @var UrlFinder
      */
     private $urlFinder;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\Product\ImageFinder
+     * @var ImageFinder
      */
     private $imageFinder;
 
@@ -83,6 +89,7 @@ class Data
      * @param ProductRepositoryInterface $productRepository
      * @param Emulation $appEmulation
      * @param DateTime $dateTime
+     * @param CartTotalRepositoryInterface $cartTotalRepository
      * @param UrlFinder $urlFinder
      * @param ImageFinder $imageFinder
      * @param Logger $logger
@@ -91,12 +98,13 @@ class Data
      */
     public function __construct(
         ClientFactory $clientFactory,
-        \Magento\Store\Model\StoreManagerInterface $storeManager,
-        \Magento\Catalog\Api\ProductRepositoryInterface $productRepository,
+        StoreManagerInterface $storeManager,
+        ProductRepositoryInterface $productRepository,
         Emulation $appEmulation,
-        \Magento\Framework\Stdlib\DateTime\DateTime $dateTime,
-        \Dotdigitalgroup\Email\Model\Catalog\UrlFinder $urlFinder,
-        \Dotdigitalgroup\Email\Model\Product\ImageFinder $imageFinder,
+        DateTime $dateTime,
+        CartTotalRepositoryInterface $cartTotalRepository,
+        UrlFinder $urlFinder,
+        ImageFinder $imageFinder,
         Logger $logger,
         AbandonedCart $imageType,
         PriceCurrencyInterface $priceCurrencyInterface
@@ -106,6 +114,7 @@ class Data
         $this->productRepository = $productRepository;
         $this->appEmulation = $appEmulation;
         $this->dateTime = $dateTime;
+        $this->cartTotalRepository = $cartTotalRepository;
         $this->urlFinder = $urlFinder;
         $this->imageFinder = $imageFinder;
         $this->logger = $logger;
@@ -184,6 +193,7 @@ class Data
     public function getPayload($quote, $store)
     {
         $quoteCurrency = $quote->getQuoteCurrencyCode();
+        $total = $this->cartTotalRepository->get($quote->getId());
 
         $data = [
             'cartId' => $quote->getId(),
@@ -192,6 +202,7 @@ class Data
             'modifiedDate' => $this->dateTime->date(\DateTime::ATOM, $quote->getUpdatedAt()),
             'currency' => $quoteCurrency,
             'subTotal' => round($quote->getSubtotal() ?: 0, 2),
+            'subtotal_incl_tax' => round($total->getSubtotalInclTax() ?: 0, 2),
             'taxAmount' => round($quote->getShippingAddress()->getTaxAmount() ?: 0, 2),
             'shipping' => round($quote->getShippingAddress()->getShippingAmount() ?: 0, 2),
             'grandTotal' => round($quote->getGrandTotal() ?: 0, 2)

@@ -14,6 +14,8 @@ use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Catalog\Model\Product;
 use Magento\Framework\Pricing\PriceCurrencyInterface;
 use Magento\Framework\Stdlib\DateTime\DateTime;
+use Magento\Quote\Api\CartTotalRepositoryInterface;
+use Magento\Quote\Api\Data\TotalsInterface;
 use Magento\Quote\Model\Quote;
 use Magento\Quote\Model\Quote\Item;
 use Magento\Store\Model\App\Emulation;
@@ -60,7 +62,12 @@ class DataTest extends TestCase
     private $dateTimeMock;
 
     /**
-     * @var \Magento\Quote\Model\Quote|MockObject
+     * @var CartTotalRepositoryInterface|MockObject
+     */
+    private $cartTotalRepositoryMock;
+
+    /**
+     * @var Quote|MockObject
      */
     private $quoteMock;
 
@@ -156,6 +163,7 @@ class DataTest extends TestCase
         $this->loggerMock = $this->createMock(Logger::class);
         $this->imageTypeMock = $this->createMock(AbandonedCart::class);
         $this->priceCurrencyInterfaceMock = $this->createMock(PriceCurrencyInterface::class);
+        $this->cartTotalRepositoryMock = $this->createMock(CartTotalRepositoryInterface::class);
 
         $this->clientMock = $this->createMock(Client::class);
         $this->abstractResourceMock = $this->getMockBuilder(AbstractResource::class)
@@ -170,6 +178,7 @@ class DataTest extends TestCase
             $this->productRepositoryMock,
             $this->emulationMock,
             $this->dateTimeMock,
+            $this->cartTotalRepositoryMock,
             $this->urlFinderMock,
             $this->imageFinderMock,
             $this->loggerMock,
@@ -187,7 +196,6 @@ class DataTest extends TestCase
             ->willReturn($this->clientMock);
 
         $key = "12345";
-        $contactIdentifier = "test@emailsim.io";
         $expectedPayload = $this->getMockPayload();
 
         $this->quoteMock->expects($this->atLeastOnce())
@@ -206,6 +214,16 @@ class DataTest extends TestCase
                 $expectedPayload['subTotal'],
                 $expectedPayload['grandTotal']
             );
+
+        $totalMock = $this->createMock(TotalsInterface::class);
+        $this->cartTotalRepositoryMock->expects($this->once())
+            ->method('get')
+            ->with($key)
+            ->willReturn($totalMock);
+
+        $totalMock->expects($this->once())
+            ->method('getSubtotalInclTax')
+            ->willReturn($expectedPayload['subtotal_incl_tax']);
 
         $this->storeMock->expects($this->atLeastOnce())
             ->method('getId')
@@ -382,6 +400,7 @@ class DataTest extends TestCase
             "modifiedDate" => "2018-03-31T19:53:28+00:00",
             "currency" => "GBP",
             "subTotal" => 98.4,
+            "subtotal_incl_tax" => 105.40,
             "discountAmount" => 8.4,
             "taxAmount" => 12.34,
             "shipping" => 11.43,
