@@ -1,3 +1,19 @@
+# 4.28.0
+
+### What's new
+- Cart insight data contains a new key for `subtotal_incl_tax`.
+
+### Improvements
+- Performance is improved for customer and subscriber sync.
+- All configs for the cleaner cron are now surfaced in a new section in Dotdigital > Developer > Cleaner.
+- All migration types now move data in batches.
+- We removed an unnecessary data patch that was causing problems in some cases.
+- Consent can now only be enabled if consent text is provided.
+  
+### Bug fixes
+- The `UpdateContactsWithSubscriberCustomers` migration type was updating rows in scopes where emails were not subscribed; this has been fixed.
+- Rows in campaign sync will be marked as failed if we cannot get or create a contact for the recipient.
+
 # 4.27.2
 
 ### Improvements
