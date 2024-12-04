@@ -43,6 +43,12 @@ abstract class AbstractDataMigration
     protected $config;
 
     /**
+     * Flag whether batched queries should be offset
+     * @var bool
+     */
+    protected $useOffset = true;
+
+    /**
      * @param ResourceConnection $resourceConnection
      * @param ScopeConfigInterface $scopeConfig
      * @param Config $config

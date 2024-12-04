@@ -2,6 +2,8 @@
 
 namespace Dotdigitalgroup\Email\Setup\Install\Type;
 
+use Magento\Framework\DB\Select;
+
 abstract class AbstractBulkUpdater extends AbstractDataMigration
 {
     /**
@@ -11,38 +13,51 @@ abstract class AbstractBulkUpdater extends AbstractDataMigration
      */
     public function execute(): self
     {
-        $this->bulkUpdate();
+        $this->bulkUpdate($this->getSelectStatement());
         return $this;
     }
 
     /**
      * Run a bulk update statement
      *
+     * @param Select $selectStatement
+     *
      * @return void
      */
-    protected function bulkUpdate()
+    protected function bulkUpdate(Select $selectStatement)
     {
-        foreach ($this->fetchRecords() as $record) {
-            $this->rowsAffected += $this->resourceConnection
-                ->getConnection()
-                ->update(
-                    $this->resourceConnection->getTableName($this->tableName),
-                    $this->getUpdateBindings($record[$this->getBindKey()]),
-                    $this->getUpdateWhereClause($record)
-                );
-        }
+        $totalRowsSelected = 0;
+
+        do {
+            $selectStatement->limit(self::BATCH_SIZE, $this->useOffset ? $totalRowsSelected : 0);
+            $records = $this->fetchRecords($selectStatement);
+            $rowsSelected = count($records);
+            $totalRowsSelected += $rowsSelected;
+
+            foreach ($records as $record) {
+                $this->rowsAffected += $this->resourceConnection
+                    ->getConnection()
+                    ->update(
+                        $this->resourceConnection->getTableName($this->tableName),
+                        $this->getUpdateBindings($record),
+                        $this->getUpdateWhereClause($record)
+                    );
+            }
+        } while ($rowsSelected === self::BATCH_SIZE);
     }
 
     /**
      * Fetch records for this update
      *
+     * @param Select $selectStatement
+     *
      * @return array
      */
-    protected function fetchRecords()
+    protected function fetchRecords(Select $selectStatement)
     {
         return $this->resourceConnection
             ->getConnection()
-            ->fetchAll($this->getSelectStatement());
+            ->fetchAll($selectStatement);
     }
 
     /**
@@ -60,6 +75,9 @@ abstract class AbstractBulkUpdater extends AbstractDataMigration
      * Get the key for the update clause
      *
      * @return mixed
+     *
+     * @deprecated getUpdateBindings() needs to receive an array for flexibility.
+     * @see getUpdateBindings
      */
     abstract protected function getBindKey();
 

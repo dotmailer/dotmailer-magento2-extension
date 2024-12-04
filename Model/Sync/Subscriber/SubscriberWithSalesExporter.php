@@ -12,12 +12,13 @@ use Dotdigitalgroup\Email\Model\Connector\Datafield;
 use Dotdigitalgroup\Email\Model\Newsletter\OptInTypeFinder;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory as ContactCollectionFactory;
 use Dotdigitalgroup\Email\Model\Sync\AbstractExporter;
+use Dotdigitalgroup\Email\Model\Sync\Export\BrandAttributeFinder;
+use Dotdigitalgroup\Email\Model\Sync\Export\CategoryNameFinder;
 use Dotdigitalgroup\Email\Model\Sync\Export\CsvHandler;
 use Dotdigitalgroup\Email\Model\Sync\Export\SalesDataManager;
 use Dotdigitalgroup\Email\Model\Sync\Export\SdkContactBuilder;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Exception\LocalizedException;
-use Magento\Newsletter\Model\Subscriber;
 use Magento\Store\Api\Data\WebsiteInterface;
 use Magento\Store\Model\ScopeInterface;
 
@@ -47,6 +48,16 @@ class SubscriberWithSalesExporter extends AbstractExporter implements ContactExp
      * @var ContactCollectionFactory
      */
     private $contactCollectionFactory;
+
+    /**
+     * @var BrandAttributeFinder
+     */
+    private $brandAttributeFinder;
+
+    /**
+     * @var CategoryNameFinder
+     */
+    private $categoryNameFinder;
 
     /**
      * @var SalesDataManager
@@ -79,6 +90,8 @@ class SubscriberWithSalesExporter extends AbstractExporter implements ContactExp
      * @param ConnectorSubscriberFactory $connectorSubscriberFactory
      * @param OptInTypeFinder $optInTypeFinder
      * @param ContactCollectionFactory $contactCollectionFactory
+     * @param BrandAttributeFinder $brandAttributeFinder
+     * @param CategoryNameFinder $categoryNameFinder
      * @param SalesDataManager $salesDataManager
      * @param SdkContactBuilder $sdkContactBuilder
      * @param SubscriberExporterFactory $subscriberExporterFactory
@@ -91,6 +104,8 @@ class SubscriberWithSalesExporter extends AbstractExporter implements ContactExp
         ConnectorSubscriberFactory $connectorSubscriberFactory,
         OptInTypeFinder $optInTypeFinder,
         ContactCollectionFactory $contactCollectionFactory,
+        BrandAttributeFinder $brandAttributeFinder,
+        CategoryNameFinder $categoryNameFinder,
         SalesDataManager $salesDataManager,
         SdkContactBuilder $sdkContactBuilder,
         SubscriberExporterFactory $subscriberExporterFactory,
@@ -102,6 +117,8 @@ class SubscriberWithSalesExporter extends AbstractExporter implements ContactExp
         $this->connectorSubscriberFactory = $connectorSubscriberFactory;
         $this->optInTypeFinder = $optInTypeFinder;
         $this->contactCollectionFactory = $contactCollectionFactory;
+        $this->brandAttributeFinder = $brandAttributeFinder;
+        $this->categoryNameFinder = $categoryNameFinder;
         $this->salesDataManager = $salesDataManager;
         $this->sdkContactBuilder = $sdkContactBuilder;
         $this->subscriberExporterFactory = $subscriberExporterFactory;
@@ -127,6 +144,9 @@ class SubscriberWithSalesExporter extends AbstractExporter implements ContactExp
         $subscriberCollection = $this->contactCollectionFactory->create()
             ->getContactsByContactIds($subscriberIds);
 
+        $productCategoryData = $this->categoryNameFinder->getCategoryNamesByStore($website, $this->fieldMap);
+        $brandAttribute = $this->brandAttributeFinder->getBrandAttribute($website->getId());
+
         $subscriberSalesData = $this->salesDataManager->setContactSalesData(
             $subscribers,
             $website,
@@ -143,7 +163,7 @@ class SubscriberWithSalesExporter extends AbstractExporter implements ContactExp
                 }
 
                 $connectorSubscriber = $this->connectorSubscriberFactory->create()
-                    ->init($subscriber, $this->fieldMap)
+                    ->init($subscriber, $this->fieldMap, $productCategoryData, $brandAttribute)
                     ->setContactData();
 
                 $exportedData[$subscriber->getId()] = $this->sdkContactBuilder->createSdkContact(

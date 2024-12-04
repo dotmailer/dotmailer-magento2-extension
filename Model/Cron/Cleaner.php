@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dotdigitalgroup\Email\Model\Cron;
 
 use Dotdigitalgroup\Email\Helper\File;
@@ -83,12 +85,13 @@ class Cleaner implements TaskRunInterface
     public function run(): void
     {
         $tables = $this->getTablesForCleanUp();
+        $olderThanDateString = $this->getOlderThanDateString();
 
         foreach ($tables as $table) {
             $dateColumn = $table === SchemaInterface::EMAIL_CONTACT_CONSENT_TABLE ?
                 'consent_datetime' :
                 'created_at';
-            $this->cleanTable($table, $dateColumn);
+            $this->cleanTable($table, $dateColumn, $olderThanDateString);
         }
 
         $this->cleanUpCsvArchiveFolder();
@@ -107,21 +110,28 @@ class Cleaner implements TaskRunInterface
     }
 
     /**
+     * Get table cleaner interval.
+     *
+     * @return string
+     */
+    public function getTableCleanerInterval(): string
+    {
+        return (string) $this->scopeConfig->getValue(Config::XML_PATH_CRON_SCHEDULE_TABLE_CLEANER_INTERVAL);
+    }
+
+    /**
      * Delete records older than x days from the provided table.
      *
      * @param string $tableName
      * @param string $dateColumn
+     * @param string $olderThanDateString
      *
      * @return void
      */
-    private function cleanTable(string $tableName, string $dateColumn)
+    private function cleanTable(string $tableName, string $dateColumn, string $olderThanDateString): void
     {
         try {
-            $now = $this->dateTimeFactory->create('now', new \DateTimeZone('UTC'));
-            $interval = new \DateInterval(sprintf('P%sD', $this->getTableCleanerInterval()));
-            $date = $now->sub($interval)->format('Y-m-d H:i:s');
             $conn = $this->resourceConnection->getConnection();
-
             $numRows = 0;
             while (true) {
                 $select = $conn->select()
@@ -129,7 +139,7 @@ class Cleaner implements TaskRunInterface
                         ['table_to_clean' => $this->resourceConnection->getTableName($tableName)],
                         ['table_to_clean.id']
                     )->where(
-                        $conn->quoteInto($dateColumn . ' < ?', $date)
+                        $conn->quoteInto($dateColumn . ' < ?', $olderThanDateString)
                     )->limit(self::BATCH_SIZE);
 
                 $ids = $conn->fetchCol($select);
@@ -155,27 +165,36 @@ class Cleaner implements TaskRunInterface
     }
 
     /**
-     * Get table cleaner interval.
+     * Get the from x date string.
      *
      * @return string
+     * @throws \Exception
      */
-    public function getTableCleanerInterval(): string
+    private function getOlderThanDateString(): string
     {
-        return (string) $this->scopeConfig->getValue(Config::XML_PATH_CRON_SCHEDULE_TABLE_CLEANER_INTERVAL);
+        $now = $this->dateTimeFactory->create('now', new \DateTimeZone('UTC'));
+        $interval = new \DateInterval(sprintf('P%sD', $this->getTableCleanerInterval()));
+        return $now->sub($interval)->format('Y-m-d H:i:s');
     }
 
     /**
      * Clean up CSV archive folder.
      *
      * @return void
-     * @throws FileSystemException
      *
      * @deprecated CSV files are no longer used.
      * @see \Dotdigitalgroup\Email\Model\Sync\Importer\Type\Contact\BulkJson;
      */
     private function cleanUpCsvArchiveFolder()
     {
-        $archivedFolder = $this->fileHelper->getArchiveFolder();
-        $this->fileHelper->deleteDir($archivedFolder);
+        try {
+            $archivedFolder = $this->fileHelper->getArchiveFolder();
+            $this->fileHelper->deleteDir($archivedFolder);
+        } catch (\Exception $e) {
+            $this->logger->debug(
+                'Could not clean up the CSV archive folder.',
+                [$e->getMessage()]
+            );
+        }
     }
 }

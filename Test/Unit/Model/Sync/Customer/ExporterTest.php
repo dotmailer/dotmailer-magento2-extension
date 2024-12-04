@@ -7,9 +7,10 @@ use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Connector\ContactData\CustomerFactory as ConnectorCustomerFactory;
 use Dotdigitalgroup\Email\Model\Customer\CustomerDataFieldProvider;
 use Dotdigitalgroup\Email\Model\Customer\CustomerDataFieldProviderFactory;
-use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory as ContactCollectionFactory;
 use Dotdigitalgroup\Email\Model\Sync\Customer\CustomerDataManager;
 use Dotdigitalgroup\Email\Model\Sync\Customer\Exporter;
+use Dotdigitalgroup\Email\Model\Sync\Export\BrandAttributeFinder;
+use Dotdigitalgroup\Email\Model\Sync\Export\CategoryNameFinder;
 use Dotdigitalgroup\Email\Model\Sync\Export\CsvHandler;
 use Dotdigitalgroup\Email\Model\Sync\Export\SalesDataManager;
 use Dotdigitalgroup\Email\Model\Sync\Export\SdkContactBuilder;
@@ -17,62 +18,68 @@ use Magento\Customer\Model\ResourceModel\Customer\Collection as MageCustomerColl
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Serialize\SerializerInterface;
 use Magento\Store\Api\Data\WebsiteInterface;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class ExporterTest extends TestCase
 {
     /**
-     * @var Logger|\PHPUnit\Framework\MockObject\MockObject
+     * @var Logger|MockObject
      */
     private $loggerMock;
 
     /**
-     * @var ConnectorCustomerFactory|\PHPUnit\Framework\MockObject\MockObject
+     * @var ConnectorCustomerFactory|MockObject
      */
     private $connectorCustomerFactoryMock;
 
     /**
-     * @var CustomerDataFieldProviderFactory|\PHPUnit\Framework\MockObject\MockObject
+     * @var CustomerDataFieldProviderFactory|MockObject
      */
     private $customerDataFieldProviderFactoryMock;
 
     /**
-     * @var CustomerDataFieldProviderFactory|\PHPUnit\Framework\MockObject\MockObject
-     */
-    private $contactCollectionFactoryMock;
-
-    /**
-     * @var WebsiteInterface|\PHPUnit\Framework\MockObject\MockObject
+     * @var WebsiteInterface|MockObject
      */
     private $websiteInterfaceMock;
 
     /**
-     * @var CustomerDataManager|\PHPUnit\Framework\MockObject\MockObject
+     * @var CustomerDataManager|MockObject
      */
     private $customerDataManagerMock;
 
     /**
-     * @var CsvHandler|\PHPUnit\Framework\MockObject\MockObject
+     * @var BrandAttributeFinder|MockObject
+     */
+    private $brandAttributeFinderMock;
+
+    /**
+     * @var CategoryNameFinder|MockObject
+     */
+    private $categoryNameFinderMock;
+
+    /**
+     * @var CsvHandler|MockObject
      */
     private $csvHandlerMock;
 
     /**
-     * @var SalesDataManager|\PHPUnit\Framework\MockObject\MockObject
+     * @var SalesDataManager|MockObject
      */
     private $salesDataManagerMock;
 
     /**
-     * @var ScopeConfigInterface|\PHPUnit\Framework\MockObject\MockObject
+     * @var ScopeConfigInterface|MockObject
      */
     private $scopeConfigMock;
 
     /**
-     * @var SerializerInterface|\PHPUnit\Framework\MockObject\MockObject
+     * @var SerializerInterface|MockObject
      */
     private $serializerMock;
 
     /**
-     * @var SdkContactBuilder|\PHPUnit\Framework\MockObject\MockObject
+     * @var SdkContactBuilder|MockObject
      */
     private $sdkContactBuilderMock;
 
@@ -91,8 +98,9 @@ class ExporterTest extends TestCase
         $this->loggerMock = $this->createMock(Logger::class);
         $this->connectorCustomerFactoryMock = $this->createMock(ConnectorCustomerFactory::class);
         $this->customerDataFieldProviderFactoryMock = $this->createMock(CustomerDataFieldProviderFactory::class);
-        $this->contactCollectionFactoryMock = $this->createMock(ContactCollectionFactory::class);
         $this->customerDataManagerMock = $this->createMock(CustomerDataManager::class);
+        $this->brandAttributeFinderMock = $this->createMock(BrandAttributeFinder::class);
+        $this->categoryNameFinderMock = $this->createMock(CategoryNameFinder::class);
         $this->csvHandlerMock = $this->createMock(CsvHandler::class);
         $this->sdkContactBuilderMock = $this->createMock(SdkContactBuilder::class);
         $this->salesDataManagerMock = $this->createMock(SalesDataManager::class);
@@ -119,8 +127,9 @@ class ExporterTest extends TestCase
             $this->loggerMock,
             $this->connectorCustomerFactoryMock,
             $this->customerDataFieldProviderFactoryMock,
-            $this->contactCollectionFactoryMock,
             $this->customerDataManagerMock,
+            $this->brandAttributeFinderMock,
+            $this->categoryNameFinderMock,
             $this->csvHandlerMock,
             $this->sdkContactBuilderMock,
             $this->salesDataManagerMock,
@@ -153,6 +162,15 @@ class ExporterTest extends TestCase
         $this->customerDataManagerMock->expects($this->once())
             ->method('fetchLastLoggedInDates')
             ->willReturn($this->getLastLoggedInDates());
+
+        $this->categoryNameFinderMock->expects($this->once())
+            ->method('getCategoryNamesByStore')
+            ->willReturn([]);
+
+        $abstractAttributeMock = $this->createMock(\Magento\Eav\Model\Entity\Attribute\AbstractAttribute::class);
+        $this->brandAttributeFinderMock->expects($this->once())
+            ->method('getBrandAttribute')
+            ->willReturn($abstractAttributeMock);
 
         /* Customer sales data */
         $mageCustomerCollectionMock->expects($this->once())
@@ -187,6 +205,9 @@ class ExporterTest extends TestCase
         $this->sdkContactBuilderMock->expects($this->exactly(5))
             ->method('createSdkContact')
             ->willReturn($this->createMock(SdkContact::class));
+
+        $mageCustomerCollectionMock->expects($this->exactly(5))
+            ->method('removeItemByKey');
 
         $data = $this->exporter->export($this->customerIds, $this->websiteInterfaceMock, 123456);
 
@@ -235,7 +256,6 @@ class ExporterTest extends TestCase
             $mageCustomerMock->method('getEmail')->willReturn('chaz' . $i . '@emailsim.io');
             $mageCustomerMock->method('getEmailContactId')->willReturn($contactIds[$i-1]);
             $mageCustomerMock->expects($this->exactly(17))->method('setData');
-            $mageCustomerMock->expects($this->once())->method('clearInstance');
             $mocks[] = $mageCustomerMock;
         }
 

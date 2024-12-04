@@ -12,23 +12,27 @@
             <group value="dotmailer"/>
         </annotations>
         <before>
+            <actionGroup ref="AdminLoginActionGroup" stepKey="AdminLoginActionGroup"/>
+            <actionGroup ref="SetDotmailerAccountData" stepKey="SetDotmailerAccountData"/>
             <createData entity="Simple_US_Customer" stepKey="createSimpleUsCustomer">
                 <field key="group_id">1</field>
             </createData>
             <actionGroup ref="LoginToStorefrontActionGroup" stepKey="signUpNewUser">
                 <argument name="Customer" value="$$createSimpleUsCustomer$$"/>
             </actionGroup>
-            <actionGroup ref="AdminLoginActionGroup" stepKey="AdminLoginActionGroup"/>
-            <actionGroup ref="SetDotmailerAccountData" stepKey="SetDotmailerAccountData"/>
         </before>
         <after>
-            <actionGroup ref="ResetDotmailerAccountData" stepKey="resetAccountData"/>
             <deleteData createDataKey="createSimpleUsCustomer" stepKey="deleteCustomer"/>
+            <actionGroup ref="ResetDotmailerAccountData" stepKey="resetAccountData"/>
             <actionGroup ref="AdminLogoutActionGroup" stepKey="logoutAsAdmin"/>
         </after>
         <actionGroup ref="SetAllPreferencesTypeToShowNo" stepKey="setAllPreferencesTypeToShowNo"/>
+        <actionGroup ref="CliCacheFlushActionGroup" stepKey="FlushConfigCache">
+            <argument name="tags" value="config"/>
+        </actionGroup>
         <amOnPage url="newsletter/manage/" stepKey="amOnCustomerNewsletterManagePage"/>
         <waitForPageLoad stepKey="waitForPageLoad"/>
+        <waitForText userInput="Newsletter Subscription" selector="h1.page-title" stepKey="waitForText"/>
         <seeInCurrentUrl url="connector" stepKey="dotmailerPreferencesPage"/>
     </test>
 </tests>

@@ -4,6 +4,17 @@ namespace Dotdigitalgroup\Email\Setup\Install\Type;
 
 use Dotdigitalgroup\Email\Setup\SchemaInterface as Schema;
 
+/**
+ * For Global Account Sharing only.
+ *
+ * Set customer_id on any contact rows where the email matches other customer orders in sales_order.
+ * For example we may have:
+ * - a customer row created for chaz@emailsim.io (website 1)
+ * - a subscriber created for chaz@emailsim.io (website 2)
+ * - order history for chaz@emailsim.io in website 2
+ * In GAS, there should be a row per website id, with the same customer_id,
+ * even if the website 2 order was a guest order.
+ */
 class UpdateEmailContactTableCustomerSales extends AbstractBulkUpdater implements BulkUpdateTypeInterface
 {
     /**
@@ -57,24 +68,17 @@ class UpdateEmailContactTableCustomerSales extends AbstractBulkUpdater implement
     }
 
     /**
-     * Where $customerId equals
-     *
-     * @param string $customerId
-     * @return array
+     * @inheritDoc
      */
-    public function getUpdateBindings($customerId)
+    public function getUpdateBindings($bind)
     {
         return [
-            'customer_id' => $customerId,
+            'customer_id' => $bind['customer_id'],
         ];
     }
 
     /**
-     * Update where
-     *
-     * @param array $row
-     *
-     * @return array
+     * @inheritDoc
      */
     public function getUpdateWhereClause($row)
     {

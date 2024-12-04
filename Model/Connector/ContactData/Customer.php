@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dotdigitalgroup\Email\Model\Connector\ContactData;
 
 use Dotdigitalgroup\Email\Helper\Config;
@@ -8,26 +10,14 @@ use Dotdigitalgroup\Email\Model\Connector\ContactData;
 use Dotdigitalgroup\Email\Model\Customer\DataField\Date;
 use Dotdigitalgroup\Email\Model\Newsletter\BackportedSubscriberLoader;
 use Magento\Catalog\Api\Data\CategoryInterfaceFactory;
-use Magento\Catalog\Api\Data\ProductInterfaceFactory;
 use Magento\Catalog\Model\ResourceModel\Category;
-use Magento\Catalog\Model\ResourceModel\Product;
-use Magento\Customer\Model\GroupFactory;
-use Magento\Customer\Model\ResourceModel\Group;
+use Magento\Eav\Model\Entity\Attribute\AbstractAttribute;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Model\AbstractModel;
-use Magento\Newsletter\Model\SubscriberFactory;
-use Magento\Review\Model\ResourceModel\Review\CollectionFactory;
-use Magento\Review\Model\Review;
-use Magento\Sales\Model\OrderFactory;
-use Magento\Sales\Model\ResourceModel\Order;
 use Magento\Store\Model\StoreManagerInterface;
 
 /**
  * Manages the Customer data as datafields for contact.
- *
- * @SuppressWarnings(PHPMD.TooManyFields)
- * @SuppressWarnings(PHPMD.ExcessivePublicCount)
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
- * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
  */
 class Customer extends ContactData
 {
@@ -35,11 +25,6 @@ class Customer extends ContactData
      * @var \Magento\Customer\Model\Customer
      */
     public $model;
-
-    /**
-     * @var CollectionFactory
-     */
-    private $reviewCollectionFactory;
 
     /**
      * @var array
@@ -52,24 +37,9 @@ class Customer extends ContactData
     public $logger;
 
     /**
-     * @var GroupFactory
-     */
-    public $groupFactory;
-
-    /**
-     * @var SubscriberFactory
-     */
-    public $subscriberFactory;
-
-    /**
      * @var CategoryInterfaceFactory
      */
     public $categoryFactory;
-
-    /**
-     * @var ProductInterfaceFactory
-     */
-    public $productFactory;
 
     /**
      * @var object
@@ -77,77 +47,54 @@ class Customer extends ContactData
     public $contactFactory;
 
     /**
-     * @var Group
-     */
-    private $groupResource;
-
-    /**
      * @var BackportedSubscriberLoader
      */
     private $backportedSubscriberLoader;
 
     /**
-     * @var array
+     * @var CustomerGroupLoader
      */
-    private $customerReviews;
+    private $customerGroupLoader;
 
     /**
      * Customer constructor.
      *
-     * @param Product $productResource
      * @param Category $categoryResource
-     * @param Group $groupResource
      * @param StoreManagerInterface $storeManager
-     * @param CollectionFactory $reviewCollectionFactory
-     * @param GroupFactory $groupFactory
-     * @param SubscriberFactory $subscriberFactory
      * @param CategoryInterfaceFactory $categoryFactory
-     * @param ProductInterfaceFactory $productFactory
-     * @param OrderFactory $orderFactory
-     * @param Order $resourceOrder
      * @param Config $configHelper
      * @param Logger $logger
      * @param \Magento\Eav\Model\Config $eavConfig
      * @param Date $dateField
      * @param BackportedSubscriberLoader $backportedSubscriberLoader
+     * @param ProductLoader $productLoader
+     * @param CustomerGroupLoader $customerGroupLoader
      */
     public function __construct(
-        Product $productResource,
         Category $categoryResource,
-        Group $groupResource,
         StoreManagerInterface $storeManager,
-        CollectionFactory $reviewCollectionFactory,
-        GroupFactory $groupFactory,
-        SubscriberFactory $subscriberFactory,
         CategoryInterfaceFactory $categoryFactory,
-        ProductInterfaceFactory $productFactory,
-        OrderFactory $orderFactory,
-        Order $resourceOrder,
         Config $configHelper,
         Logger $logger,
         \Magento\Eav\Model\Config $eavConfig,
         Date $dateField,
-        BackportedSubscriberLoader $backportedSubscriberLoader
+        BackportedSubscriberLoader $backportedSubscriberLoader,
+        ProductLoader $productLoader,
+        CustomerGroupLoader $customerGroupLoader
     ) {
-        $this->reviewCollectionFactory = $reviewCollectionFactory;
-        $this->groupFactory = $groupFactory;
-        $this->subscriberFactory = $subscriberFactory;
-        $this->groupResource = $groupResource;
         $this->backportedSubscriberLoader = $backportedSubscriberLoader;
         $this->dateField = $dateField;
+        $this->customerGroupLoader = $customerGroupLoader;
 
         parent::__construct(
             $storeManager,
-            $productFactory,
-            $productResource,
-            $orderFactory,
-            $resourceOrder,
             $categoryFactory,
             $categoryResource,
             $configHelper,
             $logger,
             $dateField,
-            $eavConfig
+            $eavConfig,
+            $productLoader
         );
     }
 
@@ -156,11 +103,15 @@ class Customer extends ContactData
      *
      * @param AbstractModel $model
      * @param array $columns
+     * @param array $categoryNames
+     * @param AbstractAttribute|false $brandAttribute
+     *
      * @return $this|ContactData
+     * @throws LocalizedException
      */
-    public function init(AbstractModel $model, array $columns)
+    public function init(AbstractModel $model, array $columns, array $categoryNames = [], $brandAttribute = null)
     {
-        parent::init($model, $columns);
+        parent::init($model, $columns, $categoryNames, $brandAttribute);
         $this->setContactData();
 
         return $this;
@@ -203,7 +154,10 @@ class Customer extends ContactData
      */
     public function getReviewCount()
     {
-        return count($this->getReviewsForCustomer());
+        $reviewData = $this->model->getReviewData();
+        return isset($reviewData[$this->model->getStoreId()]['review_count']) ?
+            (int) $reviewData[$this->model->getStoreId()]['review_count'] :
+            0;
     }
 
     /**
@@ -213,10 +167,10 @@ class Customer extends ContactData
      */
     public function getLastReviewDate()
     {
-        $reviews = $this->getReviewsForCustomer();
-        $lastReview = reset($reviews);
-
-        return $lastReview instanceof Review ? $lastReview->getCreatedAt() : '';
+        $reviewData = $this->model->getReviewData();
+        return isset($reviewData[$this->model->getStoreId()]['last_review_date']) ?
+            $reviewData[$this->model->getStoreId()]['last_review_date'] :
+            '';
     }
 
     /**
@@ -499,14 +453,7 @@ class Customer extends ContactData
      */
     public function getCustomerGroup()
     {
-        $groupId = $this->model->getGroupId();
-        $groupModel = $this->groupFactory->create();
-        $this->groupResource->load($groupModel, $groupId);
-        if ($groupModel) {
-            return $groupModel->getCode();
-        }
-
-        return '';
+        return $this->customerGroupLoader->getCustomerGroup((int) $this->model->getGroupId());
     }
 
     /**
@@ -550,34 +497,5 @@ class Customer extends ContactData
     public function getDeliveryCompany()
     {
         return $this->model->getShippingCompany();
-    }
-
-    /**
-     * Get reviews for customer.
-     *
-     * @return array
-     */
-    private function getReviewsForCustomer()
-    {
-        if (!is_array($this->customerReviews)) {
-            $this->setReviewsForCustomer();
-        }
-
-        return $this->customerReviews;
-    }
-    /**
-     * Set reviews for customer.
-     *
-     * @return void
-     */
-    private function setReviewsForCustomer()
-    {
-        $collection = $this->reviewCollectionFactory->create()
-            ->addCustomerFilter($this->model->getId())
-            ->addStoreFilter($this->model->getStoreId())
-            ->addFieldToSelect(['review_id', 'created_at'])
-            ->setOrder('created_at');
-
-        $this->customerReviews = $collection->getItems();
     }
 }

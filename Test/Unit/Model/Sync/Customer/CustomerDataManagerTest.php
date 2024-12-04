@@ -3,28 +3,35 @@
 namespace Dotdigitalgroup\Email\Test\Unit\Model\Sync\Customer;
 
 use Dotdigitalgroup\Email\Model\Connector\Datafield;
+use Dotdigitalgroup\Email\Model\Sync\Customer\CustomerDataManager;
 use Magento\Customer\Model\ResourceModel\CustomerFactory as CustomerResourceFactory;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory as ContactCollectionFactory;
 use Magento\Customer\Model\ResourceModel\Customer\CollectionFactory as CustomerCollectionFactory;
-use Dotdigitalgroup\Email\Model\Sync\Customer\CustomerDataManager;
+use Magento\Review\Model\ResourceModel\ReviewFactory as ReviewResourceFactory;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class CustomerDataManagerTest extends TestCase
 {
     /**
-     * @var CustomerResourceFactory|\PHPUnit\Framework\MockObject\MockObject
+     * @var CustomerResourceFactory|MockObject
      */
     private $customerResourceFactoryMock;
 
     /**
-     * @var ContactCollectionFactory|\PHPUnit\Framework\MockObject\MockObject
+     * @var ContactCollectionFactory|MockObject
      */
     private $contactCollectionFactoryMock;
 
     /**
-     * @var CustomerCollectionFactory|\PHPUnit\Framework\MockObject\MockObject
+     * @var CustomerCollectionFactory|MockObject
      */
     private $customerCollectionFactoryMock;
+
+    /**
+     * @var ReviewResourceFactory|MockObject
+     */
+    private $reviewResourceFactoryMock;
 
     /**
      * @var CustomerDataManager
@@ -36,11 +43,13 @@ class CustomerDataManagerTest extends TestCase
         $this->customerResourceFactoryMock = $this->createMock(CustomerResourceFactory::class);
         $this->contactCollectionFactoryMock = $this->createMock(ContactCollectionFactory::class);
         $this->customerCollectionFactoryMock = $this->createMock(CustomerCollectionFactory::class);
+        $this->reviewResourceFactoryMock = $this->createMock(ReviewResourceFactory::class);
 
         $this->customerDataManager = new CustomerDataManager(
             $this->customerResourceFactoryMock,
             $this->contactCollectionFactoryMock,
-            $this->customerCollectionFactoryMock
+            $this->customerCollectionFactoryMock,
+            $this->reviewResourceFactoryMock
         );
     }
 
@@ -53,7 +62,7 @@ class CustomerDataManagerTest extends TestCase
     {
         $customerIds = [1, 2, 3, 4, 5];
         $columns = $this->getColumns();
-        $results = $this->getResults();
+        $results = $this->getLoggedInDataResults();
 
         $customerResourceModelMock = $this->createMock(\Magento\Customer\Model\ResourceModel\Customer::class);
         $this->customerResourceFactoryMock->expects($this->once())
@@ -99,6 +108,43 @@ class CustomerDataManagerTest extends TestCase
     }
 
     /**
+     * @return void
+     */
+    public function testFetchReviewData()
+    {
+        $customerIds = [1, 2, 3, 4, 5];
+        $columns = $this->getColumns();
+        $results = $this->getReviewDataResults();
+
+        $reviewResourceModelMock = $this->createMock(\Magento\Review\Model\ResourceModel\Review::class);
+        $this->reviewResourceFactoryMock->expects($this->once())
+            ->method('create')
+            ->willReturn($reviewResourceModelMock);
+
+        $adapterInterfaceMock = $this->createMock(\Magento\Framework\DB\Adapter\AdapterInterface::class);
+        $reviewResourceModelMock->expects($this->exactly(2))
+            ->method('getConnection')
+            ->willReturn($adapterInterfaceMock);
+
+        $selectMock = $this->createMock(\Magento\Framework\DB\Select::class);
+        $adapterInterfaceMock->expects($this->once())
+            ->method('select')
+            ->willReturn($selectMock);
+
+        $selectMock->expects($this->once())->method('from')->willReturn($selectMock);
+        $selectMock->expects($this->once())->method('join')->willReturn($selectMock);
+        $selectMock->expects($this->once())->method('where')->willReturn($selectMock);
+        $selectMock->expects($this->exactly(2))->method('group')->willReturn($selectMock);
+        $adapterInterfaceMock->expects($this->once())->method('fetchAll')->willReturn($results);
+
+        $reviewData = $this->customerDataManager->fetchReviewData($customerIds, $columns);
+
+        $this->assertCount(5, $reviewData);
+        $this->assertCount(1, $reviewData[1]['review_data']);
+        $this->assertCount(2, $reviewData[2]['review_data']);
+    }
+
+    /**
      * @return array
      */
     private function getColumns()
@@ -134,7 +180,7 @@ class CustomerDataManagerTest extends TestCase
     /**
      * @return array[]
      */
-    private function getResults()
+    private function getLoggedInDataResults()
     {
         return [
             [
@@ -156,6 +202,53 @@ class CustomerDataManagerTest extends TestCase
             [
                 'customer_id' => 5,
                 'last_login_at' => '2021-11-03 14:55:27'
+            ],
+        ];
+    }
+
+    /**
+     * Mock review data including a customer who has placed reviews on 2 different stores.
+     *
+     * @return array[]
+     */
+    private function getReviewDataResults()
+    {
+        return [
+            [
+                'customer_id' => 1,
+                'store_id' => 1,
+                'review_count' => 0,
+                'last_review_date' => null
+            ],
+            [
+                'customer_id' => 2,
+                'store_id' => 1,
+                'review_count' => 2,
+                'last_review_date' => '2021-11-03 14:55:24'
+            ],
+            [
+                'customer_id' => 2,
+                'store_id' => 3,
+                'review_count' => 1,
+                'last_review_date' => '2021-11-04 14:55:24'
+            ],
+            [
+                'customer_id' => 3,
+                'store_id' => 1,
+                'review_count' => 2,
+                'last_review_date' => '2021-11-03 14:55:24'
+            ],
+            [
+                'customer_id' => 4,
+                'store_id' => 1,
+                'review_count' => 2,
+                'last_review_date' => '2021-11-03 14:55:24'
+            ],
+            [
+                'customer_id' => 5,
+                'store_id' => 1,
+                'review_count' => 2,
+                'last_review_date' => '2021-11-03 14:55:24'
             ],
         ];
     }

@@ -205,10 +205,13 @@ class Campaign implements SyncInterface
                         (int) $campaign->getStoreId()
                     );
                 } catch (ResponseValidationException $e) {
+                    $campaign->setSendStatus(CampaignModel::FAILED)
+                        ->setMessage($e->getMessage());
+                    $this->campaignResourceModel->saveItem($campaign);
                     $this->logger->error(
                         sprintf(
-                            '%s: %s',
-                            'Error getting contact in campaign sync',
+                            'Error getting contact %s in campaign sync: %s',
+                            $campaign->getEmail(),
                             $e->getMessage()
                         ),
                         [$e->getDetails()]

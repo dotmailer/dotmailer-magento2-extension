@@ -13,12 +13,6 @@ abstract class AbstractBatchInserter extends AbstractDataMigration
     private $onDuplicate = false;
 
     /**
-     * Flag whether batched queries should be offset
-     * @var bool
-     */
-    protected $useOffset = true;
-
-    /**
      * Run this type
      *
      * @return static

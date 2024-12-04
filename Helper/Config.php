@@ -452,9 +452,9 @@ class Config extends AbstractHelper
     public const XML_PATH_CRON_SCHEDULE_CONSENT =
         'connector_developer_settings/cron_schedules/consent';
     public const XML_PATH_CRON_SCHEDULE_CLEANER =
-        'connector_developer_settings/cron_schedules/cleaner';
+        'connector_developer_settings/cleaner/schedule';
     public const XML_PATH_CRON_SCHEDULE_TABLE_CLEANER_INTERVAL =
-        'connector_developer_settings/cron_schedules/table_cleaner_interval';
+        'connector_developer_settings/cleaner/table_cleaner_interval';
 
     /**
      * API and portal endpoints
