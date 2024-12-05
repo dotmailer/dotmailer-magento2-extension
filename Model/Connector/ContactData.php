@@ -453,7 +453,7 @@ class ContactData
             $names[] = $this->categoryNames[$storeId][$id];
         }
 
-        return (count($names)) ? implode(',', $names) : '';
+        return (count($names)) ? implode(',', array_unique($names)) : '';
     }
 
     /**
