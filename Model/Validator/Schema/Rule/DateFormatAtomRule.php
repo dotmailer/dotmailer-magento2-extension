@@ -13,6 +13,9 @@ class DateFormatAtomRule implements ValidatorRuleInterface
     public function passes($value):bool
     {
         $date = \DateTime::createFromFormat(\DateTimeInterface::ATOM, $value);
+        if ($date === false) {
+            return false;
+        }
         $formattedDate = $date->format(\DateTimeInterface::ATOM);
         return ($formattedDate === $value);
     }
