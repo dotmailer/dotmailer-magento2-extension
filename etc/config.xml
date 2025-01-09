@@ -81,6 +81,7 @@
                 <campaign></campaign>
                 <link_to_product_page>0</link_to_product_page>
                 <anchor></anchor>
+                <link_text>Leave a review</link_text>
                 <new_product></new_product>
             </review_settings>
             <feefo_feedback_engine>
