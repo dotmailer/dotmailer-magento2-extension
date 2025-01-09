@@ -94,8 +94,9 @@ $mode = $block->getMode();
                     <?= $block->escapeHtml(mb_substr($item->getName(), 0, 40)) ?></b></div>
             <div align="center">
                 <?php $url = $block->getReviewItemUrl($item->getId()) . $block->getReviewReminderAnchor(); ?>
+                <?php $linkText = $block->getReviewItemLinkText(); ?>
                 <a class="product-url" href="<?= $block->escapeUrl($url); ?>">
-                    <?= $block->escapeHtml(__('Leave a review')); ?>
+                    <?= $block->escapeHtml(__($linkText)); ?>
                 </a>
             </div>
         </td>

@@ -728,9 +728,13 @@
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <comment><![CDATA[Enable this if your reviews are displayed on your product pages.]]></comment>
                 </field>
-                <field id="anchor" translate="comment label" sortOrder="70" showInStore="0" showInWebsite="1" showInDefault="1">
+                <field id="anchor" translate="comment label" sortOrder="70" showInStore="0" showInWebsite="1" showInDefault="1" >
                     <label>Reviews Anchor</label>
                     <comment><![CDATA[(Optional) Provide the anchor used on product or review pages e.g. #reviews.]]></comment>
+                </field>
+                <field id="link_text" translate="comment label" sortOrder="80" showInStore="0" showInWebsite="1" showInDefault="1" canRestore="1">
+                    <label>Reviews Link Text</label>
+                    <comment><![CDATA[The link text displayed beneath products on the external dynamic content page for reviews.]]></comment>
                 </field>
             </group>
             <group id="feefo_feedback_engine" translate="label" sortOrder="40" showInDefault="1" showInWebsite="1"
