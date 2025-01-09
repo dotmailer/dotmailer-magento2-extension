@@ -51,7 +51,7 @@ class IntegrationSetup
      *
      * @var array[]
      */
-    private static $addressBookMap = [
+    public static $addressBookMap = [
         'Magento Customers' => [
             'visibility' => 'Private',
             'path' => Config::XML_PATH_CONNECTOR_CUSTOMERS_ADDRESS_BOOK_ID,
@@ -257,6 +257,17 @@ class IntegrationSetup
     public function getAddressBookMap(): array
     {
         return self::$addressBookMap;
+    }
+
+    /**
+     * Set address book map.
+     *
+     * @param array $addressBookMap
+     * @return void
+     */
+    public function setAddressBookMap(array $addressBookMap)
+    {
+        self::$addressBookMap = $addressBookMap;
     }
 
     /**
