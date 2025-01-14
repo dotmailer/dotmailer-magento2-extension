@@ -188,7 +188,7 @@
                 <link_enabled>0</link_enabled>
                 <link_text></link_text>
                 <cart_url></cart_url>
-                <login_url></login_url>
+                <login_url>customer/account/login</login_url>
                 <allow_non_subscribers>0</allow_non_subscribers>
                 <expire_time>24</expire_time>
             </abandoned_carts>
