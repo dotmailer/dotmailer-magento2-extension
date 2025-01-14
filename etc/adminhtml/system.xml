@@ -1515,10 +1515,9 @@
                     <label>Cart URL</label>
                     <comment><![CDATA[Please provide the cart url. If no url provided then default cart url checkout/cart will be used. Only enter the url after base url. For example for http://www.localhost.com/checkout/cart only enter checkout/cart]]></comment>
                 </field>
-                <field id="login_url" translate="comment label" sortOrder="70" showInStore="0" showInWebsite="1"
-                       showInDefault="1">
+                <field id="login_url" translate="comment label" sortOrder="70" showInStore="0" showInWebsite="1" showInDefault="1" canRestore="1">
                     <label>Customer Login URL</label>
-                    <comment><![CDATA[Please provide the customer login url. If no url provided then default login url customer/account/login will be used. Only enter the url after base url. For example for http://www.localhost.com/customer/account/login only enter customer/account/login]]></comment>
+                    <comment><![CDATA[For example for http://www.localhost.com/customer/account/login only enter customer/account/login.]]></comment>
                 </field>
                 <field id="expire_time" translate="comment label" sortOrder="80" showInStore="0" showInWebsite="0"
                        showInDefault="0">

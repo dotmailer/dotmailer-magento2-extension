@@ -209,14 +209,8 @@ class Getbasket implements HttpGetActionInterface
                 ->getWebsite()
                 ->getConfig(Config::XML_PATH_CONNECTOR_CONTENT_LOGIN_URL);
 
-            if ($configLoginUrl) {
-                $loginUrl = $configLoginUrl;
-            } else {
-                $loginUrl = 'customer/account/login';
-            }
-
             return $this->redirectFactory->create()
-                ->setPath($this->quote->getStore()->getUrl($loginUrl));
+                ->setPath($this->quote->getStore()->getUrl($configLoginUrl));
         }
     }
 
