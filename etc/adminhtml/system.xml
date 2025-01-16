@@ -1510,10 +1510,9 @@
                     <label>Link Text</label>
                     <comment><![CDATA[Please provide the link text. If no text provided then default text "Take Me To My Basket" will be used.]]></comment>
                 </field>
-                <field id="cart_url" translate="comment label" sortOrder="60" showInStore="0" showInWebsite="1"
-                       showInDefault="1">
+                <field id="cart_url" translate="comment label" sortOrder="60" showInStore="0" showInWebsite="1" showInDefault="1" canRestore="1">
                     <label>Cart URL</label>
-                    <comment><![CDATA[Please provide the cart url. If no url provided then default cart url checkout/cart will be used. Only enter the url after base url. For example for http://www.localhost.com/checkout/cart only enter checkout/cart]]></comment>
+                    <comment><![CDATA[For example for http://www.localhost.com/checkout/cart only enter checkout/cart.]]></comment>
                 </field>
                 <field id="login_url" translate="comment label" sortOrder="70" showInStore="0" showInWebsite="1" showInDefault="1" canRestore="1">
                     <label>Customer Login URL</label>
