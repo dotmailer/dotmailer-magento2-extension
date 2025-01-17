@@ -1855,6 +1855,10 @@
                     <label>Importer Sync</label>
                     <frontend_model>syncImporterVirtualType</frontend_model>
                 </field>
+                <field id="consent_sync" translate="label" sortOrder="138" showInDefault="1" showInStore="0" showInWebsite="1">
+                    <label>Consent Sync</label>
+                    <frontend_model>syncConsentVirtualType</frontend_model>
+                </field>
                 <field id="template_sync" translate="label" sortOrder="139" showInDefault="1" showInStore="0" showInWebsite="1">
                     <label>Template Sync</label>
                     <frontend_model>syncTemplateVirtualType</frontend_model>
