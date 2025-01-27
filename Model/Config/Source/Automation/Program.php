@@ -78,6 +78,19 @@ class Program implements \Magento\Framework\Data\OptionSourceInterface
                 //message
                 $fields[] = ['value' => 0, 'label' => $programs->message];
             } elseif (!empty($programs)) {
+                //sort programs by status
+                $statusOrder = ['Active','Draft','ReadOnly','Deactivated','NotAvailableInThisVersion'];
+
+                $statusIndices = array_map(function ($program) use ($statusOrder) {
+                    return array_search($program->status, $statusOrder) ?? PHP_INT_MAX;
+                }, $programs);
+
+                $nameIndices = array_map(function ($program) {
+                    return $program->name; // assuming 'name' is the alphabetically sortable property
+                }, $programs);
+
+                array_multisort($statusIndices, SORT_ASC, $nameIndices, SORT_ASC, $programs);
+
                 //loop for all programs option
                 foreach ($programs as $program) {
                     if (isset($program->id) && isset($program->name) && isset($program->status)) {

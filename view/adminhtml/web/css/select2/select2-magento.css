@@ -1,0 +1,21 @@
+.admin__control-select .select2-selection__arrow{
+    display: none;
+}
+
+.select2-selection {
+    border: none !important;
+}
+
+.select2.select2-container.select.admin__control-select{
+    padding-left: 0;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    padding-right: 0px;
+}
+
+.select2.select2-container.select2-container--disabled{
+    background-color: #eee;
+}
+.select2-container--default .select2-selection--single {
+    background-color: transparent !important;
+}

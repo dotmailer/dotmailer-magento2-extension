@@ -514,6 +514,7 @@
                 <field id="id" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Enrol abandoned cart to</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Automation\Program</source_model>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\SearchableSelect</frontend_model>
                 </field>
                 <field id="send_after" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Enrol abandoned cart after</label>
@@ -636,36 +637,43 @@
                        showInWebsite="1" showInDefault="1">
                     <label>New Customer</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Automation\Program</source_model>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\SearchableSelect</frontend_model>
                 </field>
                 <field id="subscriber_automation" translate="label" type="select" sortOrder="20" showInStore="1"
                        showInWebsite="1" showInDefault="1">
                     <label>New Subscriber</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Automation\Program</source_model>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\SearchableSelect</frontend_model>
                 </field>
                 <field id="first_order_automation" translate="label" type="select" sortOrder="25" showInStore="1"
                        showInWebsite="1" showInDefault="1">
                     <label>First Customer Order</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Automation\Program</source_model>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\SearchableSelect</frontend_model>
                 </field>
                 <field id="order_automation" translate="label" type="select" sortOrder="30" showInStore="1"
                        showInWebsite="1" showInDefault="1">
                     <label>Customer Order</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Automation\Program</source_model>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\SearchableSelect</frontend_model>
                 </field>
                 <field id="guest_order_automation" translate="label" type="select" sortOrder="40" showInStore="1"
                        showInWebsite="1" showInDefault="1">
                     <label>Guest Order</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Automation\Program</source_model>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\SearchableSelect</frontend_model>
                 </field>
                 <field id="review_automation" translate="label" type="select" sortOrder="50" showInStore="1"
                        showInWebsite="1" showInDefault="1">
                     <label>Approved Review</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Automation\Program</source_model>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\SearchableSelect</frontend_model>
                 </field>
                 <field id="wishlist_automation" translate="label" type="select" sortOrder="60" showInStore="1"
                        showInWebsite="1" showInDefault="1">
                     <label>New Wishlist</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Automation\Program</source_model>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\SearchableSelect</frontend_model>
                 </field>
             </group>
             <group id="order_status_automation" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
