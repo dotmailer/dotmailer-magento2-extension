@@ -20,6 +20,8 @@ use Magento\Catalog\Model\Product\VisibilityFactory;
 use Magento\Framework\Stdlib\DateTime\DateTime;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Tax\Api\TaxCalculationInterface;
+use Magento\Tax\Helper\Data as TaxHelper;
+use phpseclib3\Crypt\RSA\Formats\Keys\OpenSSH;
 
 /**
  * Transactional data for catalog products to sync.
@@ -204,6 +206,11 @@ class Product extends AbstractConnectorModel
     private $taxCalculation;
 
     /**
+     * @var TaxHelper
+     */
+    protected TaxHelper $taxHelper;
+
+    /**
      * @var SchemaValidator
      */
     private $schemaValidator;
@@ -227,6 +234,7 @@ class Product extends AbstractConnectorModel
      * @param StockFinderInterface $stockFinderInterface
      * @param CatalogSync $imageType
      * @param TaxCalculationInterface $taxCalculation
+     * @param TaxHelper $taxHelper
      * @param SchemaValidatorFactory $schemaValidatorFactory
      * @param DateTime $dateTime
      */
@@ -242,6 +250,7 @@ class Product extends AbstractConnectorModel
         StockFinderInterface $stockFinderInterface,
         CatalogSync $imageType,
         TaxCalculationInterface $taxCalculation,
+        TaxHelper $taxHelper,
         SchemaValidatorFactory $schemaValidatorFactory,
         DateTime $dateTime
     ) {
@@ -256,6 +265,7 @@ class Product extends AbstractConnectorModel
         $this->stockFinderInterface = $stockFinderInterface;
         $this->imageType = $imageType;
         $this->taxCalculation = $taxCalculation;
+        $this->taxHelper = $taxHelper;
         $this->schemaValidator = $schemaValidatorFactory->create(['pattern'=>static::SCHEMA_RULES]);
         $this->dateTime = $dateTime;
     }
@@ -448,20 +458,31 @@ class Product extends AbstractConnectorModel
      *
      * @param MagentoProduct $product
      * @param string|int|null $storeId
-     * @return void
+     *
+     * @return $this
      */
     private function setPricesIncTax($product, $storeId)
     {
-        $rate = $this->taxCalculation->getCalculatedRate(
-            $product->getTaxClassId(),
-            null,
-            $storeId
-        );
-        $this->price_incl_tax = $this->formatPriceValue(
-            $this->price + ($this->price * ($rate / 100))
-        );
-        $this->specialPrice_incl_tax = $this->formatPriceValue(
-            $this->specialPrice + ($this->specialPrice * ($rate / 100))
+        if (!$this->taxHelper->priceIncludesTax()) {
+            $rate = $this->taxCalculation->getCalculatedRate(
+                $product->getTaxClassId(),
+                null,
+                $storeId
+            );
+            $this->price_incl_tax = $this->adjustPricesWithTaxes($this->price, $rate);
+            $this->specialPrice_incl_tax = $this->adjustPricesWithTaxes($this->specialPrice, $rate);
+        } else {
+            $this->price_incl_tax = $this->price;
+            $this->specialPrice_incl_tax = $this->specialPrice;
+        }
+
+        return $this;
+    }
+
+    protected function adjustPricesWithTaxes($price, $taxRate)
+    {
+        return $this->formatPriceValue(
+            $price + ($price * ($taxRate / 100))
         );
     }
 
