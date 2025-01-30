@@ -96,7 +96,6 @@ class SalesDataManager
             'average_order_value',
             'last_order_date',
             'last_order_id',
-            'last_increment_id',
             'first_brand_pur',
             'last_brand_pur'
         ])) {
@@ -108,9 +107,16 @@ class SalesDataManager
                     'average_order_value',
                     'last_order_date',
                     'first_order_id',
-                    'last_order_id',
-                    'last_increment_id'
+                    'last_order_id'
                 ]);
+            }
+        }
+
+        if ($this->salesDataFieldsAreMapped(['last_increment_id'])) {
+            $lastOrderIds = array_column($this->salesDataArray, 'last_order_id');
+            foreach ($this->fetchLastIncrementIds($lastOrderIds) as $row) {
+                $customerEmail = $row['customer_email'];
+                $this->salesDataArray[$customerEmail]['last_increment_id'] = $row['increment_id'];
             }
         }
 
@@ -177,7 +183,6 @@ class SalesDataManager
             ->addExpressionFieldToSelect('last_order_date', 'MAX(created_at)', 'created_at')
             ->addExpressionFieldToSelect('first_order_id', 'MIN(entity_id)', 'entity_id')
             ->addExpressionFieldToSelect('last_order_id', 'MAX(entity_id)', 'entity_id')
-            ->addExpressionFieldToSelect('last_increment_id', 'MAX(increment_id)', 'increment_id')
             ->addFieldToFilter('customer_email', ['in' => $emails])
             ->addFieldToFilter('store_id', ['in' => $storeIds]);
 
@@ -188,6 +193,33 @@ class SalesDataManager
         }
 
         return $baseOrderCollection;
+    }
+
+    /**
+     * Fetch last increment ids.
+     *
+     * @param array $orderIds
+     *
+     * @return array
+     */
+    private function fetchLastIncrementIds(array $orderIds)
+    {
+        $collection = $this->salesOrderCollectionFactory->create();
+        $connection = $collection->getResource()->getConnection();
+
+        $select = $connection->select()
+            ->from([
+                'sales_order' => $collection->getMainTable()
+            ], [
+                'customer_email',
+                'increment_id'
+            ])
+            ->where(
+                'entity_id IN (?)',
+                $orderIds
+            );
+
+        return $connection->fetchAll($select);
     }
 
     /**

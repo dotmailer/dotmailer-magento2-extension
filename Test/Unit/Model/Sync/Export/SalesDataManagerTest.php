@@ -316,7 +316,8 @@ class SalesDataManagerTest extends TestCase
                 'product_id' => 1,
                 'week_day' => 'Monday',
                 'month' => 'February',
-                'order_id' => 1
+                'order_id' => 1,
+                'increment_id' => '00000001'
             ];
         }
         return $data;
