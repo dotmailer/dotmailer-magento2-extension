@@ -21,7 +21,6 @@ use Magento\Framework\Stdlib\DateTime\DateTime;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Tax\Api\TaxCalculationInterface;
 use Magento\Tax\Helper\Data as TaxHelper;
-use phpseclib3\Crypt\RSA\Formats\Keys\OpenSSH;
 
 /**
  * Transactional data for catalog products to sync.
