@@ -250,6 +250,23 @@ class Review extends Recommended
     }
 
     /**
+     * Get review link text.
+     *
+     * @return string|null
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
+    public function getReviewItemLinkText()
+    {
+        /** @var Store $store */
+        $store = $this->_storeManager->getStore($this->getStoreIdFromOrder());
+        return $this->_scopeConfig->getValue(
+            \Dotdigitalgroup\Email\Helper\Config::XML_PATH_AUTOMATION_REVIEW_LINK_TEXT,
+            \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
+            $store->getWebsite()->getId()
+        );
+    }
+
+    /**
      * Get store ID from order.
      *
      * @return int

@@ -183,25 +183,12 @@ class Getbasket implements HttpGetActionInterface
                 }
             }
 
-            if ($configCartUrl) {
-                $url = $configCartUrl;
-            } else {
-                $url = $this->quote->getStore()->getUrl(
-                    'checkout/cart'
-                );
-            }
-
             return $this->redirectFactory->create()
-                ->setPath($url);
+                ->setPath($configCartUrl);
         } else {
-            if ($configCartUrl) {
-                $cartUrl = $configCartUrl;
-            } else {
-                $cartUrl = 'checkout/cart';
-            }
             //set before auth url. customer will be redirected to cart after successful login
             $customerSession->setBeforeAuthUrl(
-                $this->getRedirectWithParams($this->quote->getStore()->getUrl($cartUrl))
+                $this->getRedirectWithParams($this->quote->getStore()->getUrl($configCartUrl))
             );
 
             //send customer to login page
@@ -209,14 +196,8 @@ class Getbasket implements HttpGetActionInterface
                 ->getWebsite()
                 ->getConfig(Config::XML_PATH_CONNECTOR_CONTENT_LOGIN_URL);
 
-            if ($configLoginUrl) {
-                $loginUrl = $configLoginUrl;
-            } else {
-                $loginUrl = 'customer/account/login';
-            }
-
             return $this->redirectFactory->create()
-                ->setPath($this->quote->getStore()->getUrl($loginUrl));
+                ->setPath($this->quote->getStore()->getUrl($configLoginUrl));
         }
     }
 
@@ -278,14 +259,8 @@ class Getbasket implements HttpGetActionInterface
             ->getWebsite()
             ->getConfig(Config::XML_PATH_CONNECTOR_CONTENT_CART_URL);
 
-        if ($configCartUrl) {
-            $url = $configCartUrl;
-        } else {
-            $url = 'checkout/cart';
-        }
-
         return $this->redirectFactory->create()
-            ->setPath($this->quote->getStore()->getUrl($url));
+            ->setPath($this->quote->getStore()->getUrl($configCartUrl));
     }
 
     /**

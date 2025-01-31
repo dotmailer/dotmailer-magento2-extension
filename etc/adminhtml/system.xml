@@ -514,6 +514,7 @@
                 <field id="id" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Enrol abandoned cart to</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Automation\Program</source_model>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\SearchableSelect</frontend_model>
                 </field>
                 <field id="send_after" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Enrol abandoned cart after</label>
@@ -636,36 +637,43 @@
                        showInWebsite="1" showInDefault="1">
                     <label>New Customer</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Automation\Program</source_model>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\SearchableSelect</frontend_model>
                 </field>
                 <field id="subscriber_automation" translate="label" type="select" sortOrder="20" showInStore="1"
                        showInWebsite="1" showInDefault="1">
                     <label>New Subscriber</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Automation\Program</source_model>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\SearchableSelect</frontend_model>
                 </field>
                 <field id="first_order_automation" translate="label" type="select" sortOrder="25" showInStore="1"
                        showInWebsite="1" showInDefault="1">
                     <label>First Customer Order</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Automation\Program</source_model>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\SearchableSelect</frontend_model>
                 </field>
                 <field id="order_automation" translate="label" type="select" sortOrder="30" showInStore="1"
                        showInWebsite="1" showInDefault="1">
                     <label>Customer Order</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Automation\Program</source_model>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\SearchableSelect</frontend_model>
                 </field>
                 <field id="guest_order_automation" translate="label" type="select" sortOrder="40" showInStore="1"
                        showInWebsite="1" showInDefault="1">
                     <label>Guest Order</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Automation\Program</source_model>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\SearchableSelect</frontend_model>
                 </field>
                 <field id="review_automation" translate="label" type="select" sortOrder="50" showInStore="1"
                        showInWebsite="1" showInDefault="1">
                     <label>Approved Review</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Automation\Program</source_model>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\SearchableSelect</frontend_model>
                 </field>
                 <field id="wishlist_automation" translate="label" type="select" sortOrder="60" showInStore="1"
                        showInWebsite="1" showInDefault="1">
                     <label>New Wishlist</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Automation\Program</source_model>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\SearchableSelect</frontend_model>
                 </field>
             </group>
             <group id="order_status_automation" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
@@ -728,9 +736,13 @@
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <comment><![CDATA[Enable this if your reviews are displayed on your product pages.]]></comment>
                 </field>
-                <field id="anchor" translate="comment label" sortOrder="70" showInStore="0" showInWebsite="1" showInDefault="1">
+                <field id="anchor" translate="comment label" sortOrder="70" showInStore="0" showInWebsite="1" showInDefault="1" >
                     <label>Reviews Anchor</label>
                     <comment><![CDATA[(Optional) Provide the anchor used on product or review pages e.g. #reviews.]]></comment>
+                </field>
+                <field id="link_text" translate="comment label" sortOrder="80" showInStore="0" showInWebsite="1" showInDefault="1" canRestore="1">
+                    <label>Reviews Link Text</label>
+                    <comment><![CDATA[The link text displayed beneath products on the external dynamic content page for reviews.]]></comment>
                 </field>
             </group>
             <group id="feefo_feedback_engine" translate="label" sortOrder="40" showInDefault="1" showInWebsite="1"
@@ -1506,15 +1518,13 @@
                     <label>Link Text</label>
                     <comment><![CDATA[Please provide the link text. If no text provided then default text "Take Me To My Basket" will be used.]]></comment>
                 </field>
-                <field id="cart_url" translate="comment label" sortOrder="60" showInStore="0" showInWebsite="1"
-                       showInDefault="1">
+                <field id="cart_url" translate="comment label" sortOrder="60" showInStore="0" showInWebsite="1" showInDefault="1" canRestore="1">
                     <label>Cart URL</label>
-                    <comment><![CDATA[Please provide the cart url. If no url provided then default cart url checkout/cart will be used. Only enter the url after base url. For example for http://www.localhost.com/checkout/cart only enter checkout/cart]]></comment>
+                    <comment><![CDATA[For example for http://www.localhost.com/checkout/cart only enter checkout/cart.]]></comment>
                 </field>
-                <field id="login_url" translate="comment label" sortOrder="70" showInStore="0" showInWebsite="1"
-                       showInDefault="1">
+                <field id="login_url" translate="comment label" sortOrder="70" showInStore="0" showInWebsite="1" showInDefault="1" canRestore="1">
                     <label>Customer Login URL</label>
-                    <comment><![CDATA[Please provide the customer login url. If no url provided then default login url customer/account/login will be used. Only enter the url after base url. For example for http://www.localhost.com/customer/account/login only enter customer/account/login]]></comment>
+                    <comment><![CDATA[For example for http://www.localhost.com/customer/account/login only enter customer/account/login.]]></comment>
                 </field>
                 <field id="expire_time" translate="comment label" sortOrder="80" showInStore="0" showInWebsite="0"
                        showInDefault="0">
@@ -1852,6 +1862,10 @@
                 <field id="importer_sync" translate="label" sortOrder="135" showInDefault="1" showInStore="0" showInWebsite="1">
                     <label>Importer Sync</label>
                     <frontend_model>syncImporterVirtualType</frontend_model>
+                </field>
+                <field id="consent_sync" translate="label" sortOrder="138" showInDefault="1" showInStore="0" showInWebsite="1">
+                    <label>Consent Sync</label>
+                    <frontend_model>syncConsentVirtualType</frontend_model>
                 </field>
                 <field id="template_sync" translate="label" sortOrder="139" showInDefault="1" showInStore="0" showInWebsite="1">
                     <label>Template Sync</label>

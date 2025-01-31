@@ -331,6 +331,8 @@ class Config extends AbstractHelper
         'connector_automation/review_settings/link_to_product_page';
     public const XML_PATH_AUTOMATION_REVIEW_ANCHOR =
         'connector_automation/review_settings/anchor';
+    public const XML_PATH_AUTOMATION_REVIEW_LINK_TEXT =
+        'connector_automation/review_settings/link_text';
     public const XML_PATH_REVIEWS_FEEFO_LOGON =
         'connector_automation/feefo_feedback_engine/logon';
     public const XML_PATH_REVIEWS_FEEFO_REVIEWS =

@@ -34,6 +34,7 @@ class Sync extends Action implements HttpGetActionInterface
         'importer' => 'ddg_automation_importer',
         'review' => 'ddg_automation_reviews_and_wishlist',
         'wishlist' => 'ddg_automation_reviews_and_wishlist',
+        'consent' => 'ddg_automation_consent_sync',
         'template' => 'ddg_automation_email_templates'
     ];
 

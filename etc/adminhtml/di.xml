@@ -136,6 +136,11 @@
             <argument name="syncType" xsi:type="string">importer</argument>
         </arguments>
     </virtualType>
+    <virtualType name="syncConsentVirtualType" type="Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\ButtonSync">
+        <arguments>
+            <argument name="syncType" xsi:type="string">consent</argument>
+        </arguments>
+    </virtualType>
     <virtualType name="syncTemplateVirtualType" type="Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\ButtonSync">
         <arguments>
             <argument name="syncType" xsi:type="string">template</argument>

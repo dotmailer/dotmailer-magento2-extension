@@ -81,6 +81,7 @@
                 <campaign></campaign>
                 <link_to_product_page>0</link_to_product_page>
                 <anchor></anchor>
+                <link_text>Leave a review</link_text>
                 <new_product></new_product>
             </review_settings>
             <feefo_feedback_engine>
@@ -186,10 +187,10 @@
                 <email_capture_newsletter>0</email_capture_newsletter>
                 <link_enabled>0</link_enabled>
                 <link_text></link_text>
-                <cart_url></cart_url>
-                <login_url></login_url>
+                <login_url>customer/account/login</login_url>
                 <allow_non_subscribers>0</allow_non_subscribers>
                 <expire_time>24</expire_time>
+                <cart_url>checkout/cart</cart_url>
             </abandoned_carts>
             <tracking>
                 <integration_insights>1</integration_insights>
