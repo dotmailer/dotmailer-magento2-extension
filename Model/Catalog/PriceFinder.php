@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Dotdigitalgroup\Email\Model\Catalog;
 
+use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Helper\Data as CatalogHelper;
-use Magento\Catalog\Model\Product as MagentoProduct;
-use Magento\Catalog\Model\ProductRenderFactory;
-use Magento\Catalog\Ui\DataProvider\Product\ProductRenderCollectorComposite;
-use Magento\Framework\EntityManager\Hydrator;
-use Magento\Tax\Api\TaxCalculationInterface;
+use Magento\Catalog\Model\Product;
+use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
+use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Store\Model\StoreManagerInterface;
 
 class PriceFinder
 {
@@ -19,24 +19,9 @@ class PriceFinder
     private $catalogHelper;
 
     /**
-     * @var TaxCalculationInterface
+     * @var StoreManagerInterface
      */
-    private $taxCalculation;
-
-    /**
-     * @var ProductRenderCollectorComposite
-     */
-    private $productRenderCollectorComposite;
-
-    /**
-     * @var ProductRenderFactory
-     */
-    private $productRenderFactory;
-
-    /**
-     * @var Hydrator
-     */
-    private $hydrator;
+    private $storeManager;
 
     /**
      * @var array
@@ -50,23 +35,25 @@ class PriceFinder
 
     /**
      * @param CatalogHelper $catalogHelper
-     * @param TaxCalculationInterface $taxCalculation
+     * @param StoreManagerInterface $storeManager
      */
     public function __construct(
-        ProductRenderCollectorComposite $productRenderCollectorComposite,
-        ProductRenderFactory $productRenderFactory,
         CatalogHelper $catalogHelper,
-        TaxCalculationInterface $taxCalculation,
-        Hydrator $hydrator
+        StoreManagerInterface $storeManager
     ) {
-        $this->productRenderCollectorComposite = $productRenderCollectorComposite;
-        $this->productRenderFactory = $productRenderFactory;
-        $this->taxCalculation = $taxCalculation;
+        $this->storeManager = $storeManager;
         $this->catalogHelper = $catalogHelper;
-        $this->hydrator = $hydrator;
     }
 
-    public function getPrice($product, ?int $storeId): float
+    /**
+     * Get price.
+     *
+     * @param Product $product
+     * @param int|null $storeId
+     *
+     * @return float
+     */
+    public function getPrice(Product $product, ?int $storeId): float
     {
         if (!isset($this->prices)) {
             $this->setPrices($product, $storeId);
@@ -74,7 +61,15 @@ class PriceFinder
         return $this->prices['price'] ?? 0.00;
     }
 
-    public function getSpecialPrice($product, ?int $storeId): float
+    /**
+     * Get special price.
+     *
+     * @param Product $product
+     * @param int|null $storeId
+     *
+     * @return float
+     */
+    public function getSpecialPrice(Product $product, ?int $storeId): float
     {
         if (!isset($this->prices)) {
             $this->setPrices($product, $storeId);
@@ -82,7 +77,15 @@ class PriceFinder
         return $this->prices['specialPrice'] ?? 0.00;
     }
 
-    public function getPriceInclTax($product, ?int $storeId): float
+    /**
+     * Get price including tax.
+     *
+     * @param Product $product
+     * @param int|null $storeId
+     *
+     * @return float
+     */
+    public function getPriceInclTax(Product $product, ?int $storeId): float
     {
         if (!isset($this->pricesInclTax)) {
             $this->setPricesInclTax($product, $storeId);
@@ -90,7 +93,15 @@ class PriceFinder
         return $this->pricesInclTax['price'] ?? 0.00;
     }
 
-    public function getSpecialPriceInclTax($product, ?int $storeId): float
+    /**
+     * Get special price including tax.
+     *
+     * @param Product $product
+     * @param int|null $storeId
+     *
+     * @return float
+     */
+    public function getSpecialPriceInclTax(Product $product, ?int $storeId): float
     {
         if (!isset($this->pricesInclTax)) {
             $this->setPricesInclTax($product, $storeId);
@@ -101,15 +112,19 @@ class PriceFinder
     /**
      * Set prices for all product types.
      *
-     * @param mixed $product
+     * @param Product $product
      * @param int|null $storeId
      *
      * @return void
      */
-    private function setPrices($product, ?int $storeId)
+    private function setPrices(Product $product, ?int $storeId)
     {
         if ($product->getTypeId() == 'configurable') {
-            foreach ($product->getTypeInstance()->getUsedProducts($product) as $childProduct) {
+            $configurableProductInstance = $product->getTypeInstance();
+            /** @var Configurable $configurableProductInstance */
+            $childProducts = $configurableProductInstance->getUsedProducts($product);
+            /** @var Product $childProduct */
+            foreach ($childProducts as $childProduct) {
                 if ($storeId && !in_array($storeId, $childProduct->getStoreIds())) {
                     continue;
                 }
@@ -121,9 +136,15 @@ class PriceFinder
             $price = isset($childPrices) ? min($childPrices) : null;
             $specialPrice = isset($childSpecialPrices) ? min($childSpecialPrices) : null;
         } elseif ($product->getTypeId() == 'bundle') {
-            $price = $product->getPriceInfo()->getPrice('regular_price')->getMinimalPrice()->getValue();
-            $specialPrice = $product->getPriceInfo()->getPrice('final_price')->getMinimalPrice()->getValue();
-            //if special price equals to price then its wrong.
+            $regularPrice = $product->getPriceInfo()->getPrice('regular_price');
+            /** @var \Magento\Bundle\Pricing\Price\BundleRegularPrice $regularPrice */
+            $price = $regularPrice->getMinimalPrice()->getValue();
+
+            $finalPrice = $product->getPriceInfo()->getPrice('final_price');
+            /** @var \Magento\Bundle\Pricing\Price\FinalPrice $finalPrice */
+            $specialPrice = $finalPrice->getMinimalPrice()->getValue();
+
+            // if special price equals to price then it's wrong.
             $specialPrice = ($specialPrice === $price) ? null : $specialPrice;
         } elseif ($product->getTypeId() == 'grouped') {
             foreach ($product->getTypeInstance()->getAssociatedProducts($product) as $childProduct) {
@@ -144,59 +165,57 @@ class PriceFinder
 
     /**
      * Set prices including tax.
-     * In catalog sync, the rate is based on the (scoped) tax origin, as configured in
+     * - In catalog sync, the rate is based on the (scoped) tax origin, as configured in
      * Default Tax Destination Calculation > Default Country.
-     * Here we calculate the 'inc' figures with the rate and the prices we already obtained.
+     * - If the prices are already including tax, we just set them to the existing price and
+     * special price values.
      *
-     * @param MagentoProduct $product
+     * @param Product $product
      * @param string|int|null $storeId
      * @return void
      */
-    private function setPricesInclTax($product, $storeId)
+    private function setPricesInclTax(Product $product, $storeId)
     {
-        $rate = $this->taxCalculation->getCalculatedRate(
-            $product->getTaxClassId(),
-            null,
-            $storeId
-        );
         $price = $this->getPrice($product, $storeId);
         $specialPrice = $this->getSpecialPrice($product, $storeId);
-        $taxPrice = $this->catalogHelper->getTaxPrice($product, $price);
-        $weirdPrice = $this->catalogHelper->getTaxPrice(
+
+        $this->pricesInclTax['price'] = $this->getTaxCalculatedPrice($product, $price);
+        $this->pricesInclTax['specialPrice'] = $this->getTaxCalculatedPrice($product, $specialPrice);
+    }
+
+    /**
+     * Get the tax calculated price of a product.
+     *
+     * This method uses the taxHelper to calculate the tax price for a given product and price.
+     *
+     * @param ProductInterface $product The product for which the tax is to be calculated.
+     * @param float $price The price to which the tax is to be applied.
+     *
+     * @return float
+     */
+    private function getTaxCalculatedPrice(ProductInterface $product, float $price): float
+    {
+        try {
+            $store = $this->storeManager->getStore();
+        } catch (NoSuchEntityException $e) {
+            $store = null;
+        }
+
+        return $this->catalogHelper->getTaxPrice(
             $product,
-            $product->getFinalPrice(),
-            true,
+            $price,
             null,
             null,
             null,
             null,
-            true
-        );
-        $regularPrice = $product->getPriceInfo()->getPrice('regular_price')->getAmount()->getValue();
-        $finalPrice = $product->getPriceInfo()->getPrice('final_price')->getAmount()->getValue();
-
-        $productRender = $this->productRenderFactory->create();
-
-        $productRender->setStoreId($storeId);
-        //$productRender->setCurrencyCode($store->getCurrentCurrencyCode());
-        $productRender->setCurrencyCode('GBP');
-        $this->productRenderCollectorComposite
-            ->collect($product, $productRender);
-        $data = $this->hydrator->extract($productRender);
-
-        $priceBeforeTax = $data['price_info']['extension_attributes']['tax_adjustments']['regular_price'];
-        $this->pricesInclTax['price'] = $this->formatPriceValue(
-            $price + ($price * ($rate / 100))
-        );
-        $this->pricesInclTax['specialPrice'] = $this->formatPriceValue(
-            $specialPrice + ($specialPrice * ($rate / 100))
+            $store
         );
     }
 
     /**
      * Formats a price value.
      *
-     * @param float|null $price
+     * @param string|float|null $price
      *
      * @return float
      */

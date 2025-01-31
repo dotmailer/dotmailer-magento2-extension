@@ -263,7 +263,7 @@ class Product extends AbstractConnectorModel
     /**
      * Set the product data
      *
-     * @param mixed $product
+     * @param MagentoProduct $product
      * @param int|null $storeId
      * @return $this
      * @throws SchemaValidationException
