@@ -1,3 +1,6 @@
+/**
+ * @deprecated This product_data_storage approach will be removed in favour of a View Model.
+ */
 define([
     'Magento_Catalog/js/product/storage/storage-service',
     'jquery'
