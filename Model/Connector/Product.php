@@ -462,7 +462,7 @@ class Product extends AbstractConnectorModel
      */
     private function setPricesIncTax($product, $storeId)
     {
-        if (!$this->taxHelper->priceIncludesTax()) {
+        if (!$this->taxHelper->priceIncludesTax($storeId)) {
             $rate = $this->taxCalculation->getCalculatedRate(
                 $product->getTaxClassId(),
                 null,
