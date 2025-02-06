@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Dotdigitalgroup\Email\Model\Catalog;
 
-use Magento\Catalog\Api\Data\ProductInterface;
+use Dotdigitalgroup\Email\Api\Product\PriceFinderInterface;
 use Magento\Catalog\Helper\Data as CatalogHelper;
 use Magento\Catalog\Model\Product;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Store\Model\StoreManagerInterface;
 
-class PriceFinder
+class PriceFinder implements PriceFinderInterface
 {
     /**
      * @var CatalogHelper
@@ -188,12 +188,12 @@ class PriceFinder
      *
      * This method uses the taxHelper to calculate the tax price for a given product and price.
      *
-     * @param ProductInterface $product The product for which the tax is to be calculated.
+     * @param Product $product The product for which the tax is to be calculated.
      * @param float $price The price to which the tax is to be applied.
      *
      * @return float
      */
-    private function getTaxCalculatedPrice(ProductInterface $product, float $price): float
+    private function getTaxCalculatedPrice(Product $product, float $price): float
     {
         try {
             $store = $this->storeManager->getStore();
