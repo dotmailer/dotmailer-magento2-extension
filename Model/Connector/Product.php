@@ -18,6 +18,7 @@ use Dotdigitalgroup\Email\Model\Validator\Schema\SchemaValidatorFactory;
 use Magento\Catalog\Model\Product as MagentoProduct;
 use Magento\Catalog\Model\Product\Attribute\Source\StatusFactory;
 use Magento\Catalog\Model\Product\VisibilityFactory;
+use Magento\Catalog\Model\ResourceModel\Category\Collection as CategoryCollection;
 use Magento\Framework\Stdlib\DateTime\DateTime;
 use Magento\Store\Model\StoreManagerInterface;
 
@@ -325,8 +326,9 @@ class Product extends AbstractConnectorModel
 
         //category data
         $count = 0;
-        $categoryCollection = $product->getCategoryCollection()
-            ->addNameToResult();
+        $categoryCollection = $product->getCategoryCollection();
+        /** @var CategoryCollection $categoryCollection */
+        $categoryCollection->addNameToResult();
         foreach ($categoryCollection as $cat) {
             $this->categories[$count]['Id'] = $cat->getId();
             $this->categories[$count]['Name'] = $cat->getName();
