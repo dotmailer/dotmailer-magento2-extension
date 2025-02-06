@@ -8,8 +8,6 @@ use Dotdigitalgroup\Email\Api\Product\PriceFinderInterface;
 use Magento\Catalog\Helper\Data as CatalogHelper;
 use Magento\Catalog\Model\Product;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
-use Magento\Framework\Exception\NoSuchEntityException;
-use Magento\Store\Model\StoreManagerInterface;
 
 class PriceFinder implements PriceFinderInterface
 {
@@ -17,11 +15,6 @@ class PriceFinder implements PriceFinderInterface
      * @var CatalogHelper
      */
     private $catalogHelper;
-
-    /**
-     * @var StoreManagerInterface
-     */
-    private $storeManager;
 
     /**
      * @var array
@@ -35,13 +28,10 @@ class PriceFinder implements PriceFinderInterface
 
     /**
      * @param CatalogHelper $catalogHelper
-     * @param StoreManagerInterface $storeManager
      */
     public function __construct(
-        CatalogHelper $catalogHelper,
-        StoreManagerInterface $storeManager
+        CatalogHelper $catalogHelper
     ) {
-        $this->storeManager = $storeManager;
         $this->catalogHelper = $catalogHelper;
     }
 
@@ -167,7 +157,7 @@ class PriceFinder implements PriceFinderInterface
      * Set prices including tax.
      *
      * @param Product $product
-     * @param string|int|null $storeId
+     * @param int|null $storeId
      * @return void
      */
     private function setPricesInclTax(Product $product, $storeId)
@@ -175,8 +165,8 @@ class PriceFinder implements PriceFinderInterface
         $price = $this->getPrice($product, $storeId);
         $specialPrice = $this->getSpecialPrice($product, $storeId);
 
-        $this->pricesInclTax['price'] = $this->getTaxCalculatedPrice($product, $price);
-        $this->pricesInclTax['specialPrice'] = $this->getTaxCalculatedPrice($product, $specialPrice);
+        $this->pricesInclTax['price'] = $this->getTaxCalculatedPrice($product, $price, $storeId);
+        $this->pricesInclTax['specialPrice'] = $this->getTaxCalculatedPrice($product, $specialPrice, $storeId);
     }
 
     /**
@@ -186,17 +176,12 @@ class PriceFinder implements PriceFinderInterface
      *
      * @param Product $product
      * @param float $price
+     * @param int|null $storeId
      *
      * @return float
      */
-    private function getTaxCalculatedPrice(Product $product, float $price): float
+    private function getTaxCalculatedPrice(Product $product, float $price, $storeId): float
     {
-        try {
-            $store = $this->storeManager->getStore();
-        } catch (NoSuchEntityException $e) {
-            $store = null;
-        }
-
         return $this->catalogHelper->getTaxPrice(
             $product,
             $price,
@@ -204,7 +189,7 @@ class PriceFinder implements PriceFinderInterface
             null,
             null,
             null,
-            $store
+            $storeId
         );
     }
 
