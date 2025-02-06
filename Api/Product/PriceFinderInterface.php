@@ -30,11 +30,21 @@ interface PriceFinderInterface
 
     /**
      * Get special price.
+     *
+     * @param Product $product
+     * @param int|null $storeId
+     *
+     * @return float
      */
     public function getSpecialPrice(Product $product, ?int $storeId): float;
 
     /**
      * Get special price including tax.
+     *
+     * @param Product $product
+     * @param int|null $storeId
+     *
+     * @return float
      */
     public function getSpecialPriceInclTax(Product $product, ?int $storeId): float;
 }

@@ -36,12 +36,7 @@ class PriceFinder implements PriceFinderInterface
     }
 
     /**
-     * Get price.
-     *
-     * @param Product $product
-     * @param int|null $storeId
-     *
-     * @return float
+     * @inheritDoc
      */
     public function getPrice(Product $product, ?int $storeId): float
     {
@@ -52,12 +47,7 @@ class PriceFinder implements PriceFinderInterface
     }
 
     /**
-     * Get special price.
-     *
-     * @param Product $product
-     * @param int|null $storeId
-     *
-     * @return float
+     * @inheritDoc
      */
     public function getSpecialPrice(Product $product, ?int $storeId): float
     {
@@ -68,12 +58,7 @@ class PriceFinder implements PriceFinderInterface
     }
 
     /**
-     * Get price including tax.
-     *
-     * @param Product $product
-     * @param int|null $storeId
-     *
-     * @return float
+     * @inheritDoc
      */
     public function getPriceInclTax(Product $product, ?int $storeId): float
     {
@@ -84,12 +69,7 @@ class PriceFinder implements PriceFinderInterface
     }
 
     /**
-     * Get special price including tax.
-     *
-     * @param Product $product
-     * @param int|null $storeId
-     *
-     * @return float
+     * @inheritDoc
      */
     public function getSpecialPriceInclTax(Product $product, ?int $storeId): float
     {
