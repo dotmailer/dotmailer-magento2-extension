@@ -165,10 +165,6 @@ class PriceFinder implements PriceFinderInterface
 
     /**
      * Set prices including tax.
-     * - In catalog sync, the rate is based on the (scoped) tax origin, as configured in
-     * Default Tax Destination Calculation > Default Country.
-     * - If the prices are already including tax, we just set them to the existing price and
-     * special price values.
      *
      * @param Product $product
      * @param string|int|null $storeId
@@ -186,10 +182,10 @@ class PriceFinder implements PriceFinderInterface
     /**
      * Get the tax calculated price of a product.
      *
-     * This method uses the taxHelper to calculate the tax price for a given product and price.
+     * This method uses the catalogHelper to calculate the tax price for a given product and price.
      *
-     * @param Product $product The product for which the tax is to be calculated.
-     * @param float $price The price to which the tax is to be applied.
+     * @param Product $product
+     * @param float $price
      *
      * @return float
      */
