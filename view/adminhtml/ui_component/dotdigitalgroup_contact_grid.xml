@@ -71,7 +71,7 @@
         </column>
         <column name="customer_id" sortOrder="30">
             <settings>
-                <filter>text</filter>
+                <filter>textRange</filter>
                 <label translate="true">Customer Id</label>
             </settings>
         </column>
