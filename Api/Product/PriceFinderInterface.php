@@ -23,10 +23,11 @@ interface PriceFinderInterface
      *
      * @param Product $product
      * @param int|null $storeId
+     * @param int|null $customerId
      *
      * @return float
      */
-    public function getPriceInclTax(Product $product, ?int $storeId): float;
+    public function getPriceInclTax(Product $product, ?int $storeId, ?int $customerId = null): float;
 
     /**
      * Get special price.
@@ -43,8 +44,9 @@ interface PriceFinderInterface
      *
      * @param Product $product
      * @param int|null $storeId
+     * @param int|null $customerId
      *
      * @return float
      */
-    public function getSpecialPriceInclTax(Product $product, ?int $storeId): float;
+    public function getSpecialPriceInclTax(Product $product, ?int $storeId, ?int $customerId = null): float;
 }

@@ -5,16 +5,22 @@ declare(strict_types=1);
 namespace Dotdigitalgroup\Email\Model\Catalog;
 
 use Dotdigitalgroup\Email\Api\Product\PriceFinderInterface;
-use Magento\Catalog\Helper\Data as CatalogHelper;
 use Magento\Catalog\Model\Product;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
+use Magento\Tax\Api\TaxCalculationInterface;
+use Magento\Tax\Helper\Data as TaxHelper;
 
 class PriceFinder implements PriceFinderInterface
 {
     /**
-     * @var CatalogHelper
+     * @var TaxCalculationInterface
      */
-    private $catalogHelper;
+    private $taxCalculation;
+
+    /**
+     * @var TaxHelper
+     */
+    private $taxHelper;
 
     /**
      * @var array
@@ -27,12 +33,15 @@ class PriceFinder implements PriceFinderInterface
     private $pricesInclTax;
 
     /**
-     * @param CatalogHelper $catalogHelper
+     * @param TaxCalculationInterface $taxCalculation
+     * @param TaxHelper $taxHelper
      */
     public function __construct(
-        CatalogHelper $catalogHelper
+        TaxCalculationInterface $taxCalculation,
+        TaxHelper $taxHelper
     ) {
-        $this->catalogHelper = $catalogHelper;
+        $this->taxCalculation = $taxCalculation;
+        $this->taxHelper = $taxHelper;
     }
 
     /**
@@ -60,10 +69,10 @@ class PriceFinder implements PriceFinderInterface
     /**
      * @inheritDoc
      */
-    public function getPriceInclTax(Product $product, ?int $storeId): float
+    public function getPriceInclTax(Product $product, ?int $storeId, ?int $customerId = null): float
     {
         if (!isset($this->pricesInclTax)) {
-            $this->setPricesInclTax($product, $storeId);
+            $this->setPricesInclTax($product, $storeId, $customerId);
         }
         return $this->pricesInclTax['price'] ?? 0.00;
     }
@@ -71,10 +80,10 @@ class PriceFinder implements PriceFinderInterface
     /**
      * @inheritDoc
      */
-    public function getSpecialPriceInclTax(Product $product, ?int $storeId): float
+    public function getSpecialPriceInclTax(Product $product, ?int $storeId, ?int $customerId = null): float
     {
         if (!isset($this->pricesInclTax)) {
-            $this->setPricesInclTax($product, $storeId);
+            $this->setPricesInclTax($product, $storeId, $customerId);
         }
         return $this->pricesInclTax['specialPrice'] ?? 0.00;
     }
@@ -136,40 +145,47 @@ class PriceFinder implements PriceFinderInterface
     /**
      * Set prices including tax.
      *
+     * If prices include tax in the catalog, we can use the prices directly.
+     * If prices exclude tax in the catalog, we need to calculate the prices including tax.
+     * $customerId is passed in from storefront view models, left null for catalog sync.
+     *
      * @param Product $product
      * @param int|null $storeId
+     * @param int|null $customerId
+     *
      * @return void
      */
-    private function setPricesInclTax(Product $product, $storeId)
+    private function setPricesInclTax(Product $product, $storeId, ?int $customerId = null): void
     {
         $price = $this->getPrice($product, $storeId);
         $specialPrice = $this->getSpecialPrice($product, $storeId);
 
-        $this->pricesInclTax['price'] = $this->getTaxCalculatedPrice($product, $price, $storeId);
-        $this->pricesInclTax['specialPrice'] = $this->getTaxCalculatedPrice($product, $specialPrice, $storeId);
+        if ($this->taxHelper->priceIncludesTax($storeId)) {
+            $this->pricesInclTax['price'] = $price;
+            $this->pricesInclTax['specialPrice'] = $specialPrice;
+        } else {
+            $rate = $this->taxCalculation->getCalculatedRate(
+                $product->getTaxClassId(),
+                $customerId,
+                $storeId
+            );
+            $this->pricesInclTax['price'] = $this->adjustPricesWithTaxes($price, $rate);
+            $this->pricesInclTax['specialPrice'] = $this->adjustPricesWithTaxes($specialPrice, $rate);
+        }
     }
 
     /**
-     * Get the tax calculated price of a product.
+     * Adjust prices with taxes.
      *
-     * This method uses the catalogHelper to calculate the tax price for a given product and price.
-     *
-     * @param Product $product
      * @param float $price
-     * @param int|null $storeId
+     * @param float $taxRate
      *
      * @return float
      */
-    private function getTaxCalculatedPrice(Product $product, float $price, $storeId): float
+    private function adjustPricesWithTaxes(float $price, float $taxRate): float
     {
-        return $this->catalogHelper->getTaxPrice(
-            $product,
-            $price,
-            null,
-            null,
-            null,
-            null,
-            $storeId
+        return $this->formatPriceValue(
+            $price + ($price * ($taxRate / 100))
         );
     }
 
