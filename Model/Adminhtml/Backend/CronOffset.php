@@ -79,6 +79,6 @@ class CronOffset extends \Magento\Framework\App\Config\Value
     private function isCronValueChanged()
     {
         $oldValue = $this->cronOffsetter->getDecodedCronValue($this->getOldValue());
-        return $this->getValue() != $oldValue;
+        return $oldValue === '' || $this->getValue() != $oldValue;
     }
 }
