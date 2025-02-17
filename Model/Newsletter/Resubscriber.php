@@ -101,6 +101,10 @@ class Resubscriber implements ContactUpdaterInterface
      */
     private function getLastSubscribedAt(?DataFieldCollection $dataFields)
     {
+        if (empty($dataFields)) {
+            return false;
+        }
+
         foreach ($dataFields->all() as $dataField) {
             if ($dataField->getKey() === 'LASTSUBSCRIBED') {
                 return $dataField->getValue();
