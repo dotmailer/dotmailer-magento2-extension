@@ -6,6 +6,7 @@ class Account
 {
     private const EMAIL_PROPERTY_NAME = 'MainEmail';
     private const API_ENDPOINT_PROPERTY_NAME = 'ApiEndpoint';
+    private const API_LOCALE_PROPERTY_NAME = 'APILocale';
 
     /**
      * Get account owner email.
@@ -66,5 +67,25 @@ class Account
     {
         preg_match("/https:\/\/(.*)api(.*).(dotmailer|dotdigital).com/", $apiEndpoint, $matches);
         return $matches[1] ?? '';
+    }
+
+    /**
+     * Get account API locale.
+     *
+     * @param object $accountDetails
+     *
+     * @return string
+     */
+    public function getAccountLocale(object $accountDetails): string
+    {
+        if (isset($accountDetails->properties)) {
+            foreach ($accountDetails->properties as $property) {
+                if ($property->name == self::API_LOCALE_PROPERTY_NAME && !empty($property->value)) {
+                    return $property->value;
+                }
+            }
+        }
+
+        return 'en-GB';
     }
 }

@@ -12,6 +12,7 @@ use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Apiconnector\V3\Client;
 use Dotdigitalgroup\Email\Model\Apiconnector\V3\ClientFactory;
 use Dotdigitalgroup\Email\Model\Connector\AccountHandler;
+use Dotdigitalgroup\Email\Model\Connector\DataFieldTranslator;
 use Dotdigitalgroup\Email\Model\Contact\ContactUpdaterPool;
 use Dotdigitalgroup\Email\Model\Contact\PlatformChangeManager;
 use Dotdigitalgroup\Email\Model\Cron\CronFromTimeSetter;
@@ -45,6 +46,11 @@ class PlatformChangeManagerTest extends TestCase
     private $accountHandlerMock;
 
     /**
+     * @var DataFieldTranslator|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $dataFieldTranslatorMock;
+
+    /**
      * @var CronFromTimeSetter|\PHPUnit_Framework_MockObject_MockObject
      */
     private $cronFromTimeSetterMock;
@@ -68,6 +74,7 @@ class PlatformChangeManagerTest extends TestCase
         $this->paginatorFactoryMock = $this->createMock(PaginatorFactory::class);
         $this->loggerMock = $this->createMock(Logger::class);
         $this->clientFactoryMock = $this->createMock(ClientFactory::class);
+        $this->dataFieldTranslatorMock = $this->createMock(DataFieldTranslator::class);
         $this->accountHandlerMock = $this->createMock(AccountHandler::class);
         $this->cronFromTimeSetterMock = $this->createMock(CronFromTimeSetter::class);
         $this->contactUpdaterPoolMock = $this->createMock(ContactUpdaterPool::class);
@@ -77,6 +84,7 @@ class PlatformChangeManagerTest extends TestCase
             $this->paginatorFactoryMock,
             $this->loggerMock,
             $this->clientFactoryMock,
+            $this->dataFieldTranslatorMock,
             $this->accountHandlerMock,
             $this->cronFromTimeSetterMock,
             $this->contactUpdaterPoolMock
@@ -88,6 +96,10 @@ class PlatformChangeManagerTest extends TestCase
         $this->accountHandlerMock->expects($this->once())
             ->method('getAPIUsersForECEnabledWebsites')
             ->willReturn($this->getApiUserData());
+
+        $this->dataFieldTranslatorMock->expects($this->exactly(2))
+            ->method('translate')
+            ->willReturn('LASTSUBSCRIBED');
 
         $clientMock = $this->createMock(Client::class);
         $this->clientFactoryMock->expects($this->exactly(2))

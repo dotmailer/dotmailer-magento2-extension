@@ -238,6 +238,10 @@ class ResubscriberTest extends TestCase
         $contact4->setIdentifiers(['email' => 'chaz-never-subscribed@emailsim.io']);
         $contact4->setDataFields(['RANDOM_DF' => 'chaz']);
 
-        return [$contact1, $contact2, $contact3, $contact4];
+        $contact5 = new SdkContact();
+        $contact5->setIdentifiers(['email' => 'chaz-no-datafields@emailsim.io']);
+        $contact5->setDataFields([]);
+
+        return [$contact1, $contact2, $contact3, $contact4, $contact5];
     }
 }

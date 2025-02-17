@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dotdigitalgroup\Email\Model\Contact;
 
 use Dotdigital\V3\Models\Contact as SdkContact;
@@ -8,6 +10,7 @@ use Dotdigital\V3\Utility\PaginatorFactory;
 use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Apiconnector\V3\ClientFactory;
 use Dotdigitalgroup\Email\Model\Connector\AccountHandler;
+use Dotdigitalgroup\Email\Model\Connector\DataFieldTranslator;
 use Dotdigitalgroup\Email\Model\Cron\CronFromTimeSetter;
 use Dotdigitalgroup\Email\Model\Task\TaskRunInterface;
 use Magento\Framework\DataObject;
@@ -42,6 +45,11 @@ class PlatformChangeManager extends DataObject implements TaskRunInterface
     private $accountHandler;
 
     /**
+     * @var DataFieldTranslator
+     */
+    private $dataFieldTranslator;
+
+    /**
      * @var CronFromTimeSetter
      */
     private $cronFromTimeSetter;
@@ -56,6 +64,7 @@ class PlatformChangeManager extends DataObject implements TaskRunInterface
      * @param PaginatorFactory $paginatorFactory
      * @param Logger $logger
      * @param ClientFactory $clientFactory
+     * @param DataFieldTranslator $dataFieldTranslator
      * @param AccountHandler $accountHandler
      * @param CronFromTimeSetter $cronFromTimeSetter
      * @param ContactUpdaterPool $contactUpdaterPool
@@ -66,6 +75,7 @@ class PlatformChangeManager extends DataObject implements TaskRunInterface
         PaginatorFactory $paginatorFactory,
         Logger $logger,
         ClientFactory $clientFactory,
+        DataFieldTranslator $dataFieldTranslator,
         AccountHandler $accountHandler,
         CronFromTimeSetter $cronFromTimeSetter,
         ContactUpdaterPool $contactUpdaterPool,
@@ -75,6 +85,7 @@ class PlatformChangeManager extends DataObject implements TaskRunInterface
         $this->paginatorFactory = $paginatorFactory;
         $this->logger = $logger;
         $this->clientFactory = $clientFactory;
+        $this->dataFieldTranslator = $dataFieldTranslator;
         $this->accountHandler = $accountHandler;
         $this->cronFromTimeSetter = $cronFromTimeSetter;
         $this->contactUpdaterPool = $contactUpdaterPool;
@@ -101,7 +112,9 @@ class PlatformChangeManager extends DataObject implements TaskRunInterface
 
         foreach ($activeApiUsers as $apiUser) {
             try {
-                $this->batchProcessModifiedContacts($apiUser['websites'], $batchSize);
+                $firstWebsiteId = (int) $apiUser['websites'][0];
+                $lastSubscribedDataFieldName = $this->dataFieldTranslator->translate('LASTSUBSCRIBED', $firstWebsiteId);
+                $this->batchProcessModifiedContacts($apiUser['websites'], $batchSize, $lastSubscribedDataFieldName);
             } catch (\Exception $e) {
                 continue;
             }
@@ -113,11 +126,16 @@ class PlatformChangeManager extends DataObject implements TaskRunInterface
      *
      * @param array $websiteIds
      * @param int $batchSize
+     * @param string $lastSubscribedDataFieldName
      *
      * @return void
+     * @throws \Exception
      */
-    private function batchProcessModifiedContacts(array $websiteIds, int $batchSize): void
-    {
+    private function batchProcessModifiedContacts(
+        array $websiteIds,
+        int $batchSize,
+        string $lastSubscribedDataFieldName
+    ): void {
         $client = $this->clientFactory->create([
             'data' => [
                 'websiteId' => $websiteIds[0]
@@ -125,7 +143,7 @@ class PlatformChangeManager extends DataObject implements TaskRunInterface
         ]);
 
         $criteria = $this->parameterCollectionFactory->create()
-            ->setParam('data-fields', 'LASTSUBSCRIBED')
+            ->setParam('data-fields', $lastSubscribedDataFieldName)
             ->setParam('include', 'channelProperties')
             ->setParam(
                 '~modified',
