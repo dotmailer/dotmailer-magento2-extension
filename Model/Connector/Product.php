@@ -11,15 +11,16 @@ use Dotdigitalgroup\Email\Model\Product\AttributeFactory;
 use Dotdigitalgroup\Email\Model\Product\ImageFinder;
 use Dotdigitalgroup\Email\Model\Product\ImageType\Context\CatalogSync;
 use Dotdigitalgroup\Email\Model\Product\ParentFinder;
+use Dotdigitalgroup\Email\Model\Product\PriceFinderFactory;
 use Dotdigitalgroup\Email\Model\Validator\Schema\Exception\SchemaValidationException;
 use Dotdigitalgroup\Email\Model\Validator\Schema\SchemaValidator;
 use Dotdigitalgroup\Email\Model\Validator\Schema\SchemaValidatorFactory;
 use Magento\Catalog\Model\Product as MagentoProduct;
 use Magento\Catalog\Model\Product\Attribute\Source\StatusFactory;
 use Magento\Catalog\Model\Product\VisibilityFactory;
+use Magento\Catalog\Model\ResourceModel\Category\Collection as CategoryCollection;
 use Magento\Framework\Stdlib\DateTime\DateTime;
 use Magento\Store\Model\StoreManagerInterface;
-use Magento\Tax\Api\TaxCalculationInterface;
 
 /**
  * Transactional data for catalog products to sync.
@@ -164,12 +165,17 @@ class Product extends AbstractConnectorModel
     private $visibilityFactory;
 
     /**
+     * @var PriceFinderFactory
+     */
+    private $priceFinderFactory;
+
+    /**
      * @var UrlFinder
      */
     private $urlFinder;
 
     /**
-     * @var AttributeFactory $attributeHandler
+     * @var AttributeFactory
      */
     private $attributeHandler;
 
@@ -199,11 +205,6 @@ class Product extends AbstractConnectorModel
     private $imageType;
 
     /**
-     * @var TaxCalculationInterface
-     */
-    private $taxCalculation;
-
-    /**
      * @var SchemaValidator
      */
     private $schemaValidator;
@@ -219,6 +220,7 @@ class Product extends AbstractConnectorModel
      * @param StoreManagerInterface $storeManagerInterface
      * @param StatusFactory $statusFactory
      * @param VisibilityFactory $visibilityFactory
+     * @param PriceFinderFactory $priceFinderFactory
      * @param UrlFinder $urlFinder
      * @param AttributeFactory $attributeHandler
      * @param ParentFinder $parentFinder
@@ -226,7 +228,6 @@ class Product extends AbstractConnectorModel
      * @param TierPriceFinderInterface $tierPriceFinder
      * @param StockFinderInterface $stockFinderInterface
      * @param CatalogSync $imageType
-     * @param TaxCalculationInterface $taxCalculation
      * @param SchemaValidatorFactory $schemaValidatorFactory
      * @param DateTime $dateTime
      */
@@ -234,6 +235,7 @@ class Product extends AbstractConnectorModel
         StoreManagerInterface $storeManagerInterface,
         StatusFactory $statusFactory,
         VisibilityFactory $visibilityFactory,
+        PriceFinderFactory $priceFinderFactory,
         UrlFinder $urlFinder,
         AttributeFactory $attributeHandler,
         ParentFinder $parentFinder,
@@ -241,13 +243,13 @@ class Product extends AbstractConnectorModel
         TierPriceFinderInterface $tierPriceFinder,
         StockFinderInterface $stockFinderInterface,
         CatalogSync $imageType,
-        TaxCalculationInterface $taxCalculation,
         SchemaValidatorFactory $schemaValidatorFactory,
         DateTime $dateTime
     ) {
         $this->visibilityFactory = $visibilityFactory;
         $this->statusFactory = $statusFactory;
         $this->storeManager = $storeManagerInterface;
+        $this->priceFinderFactory = $priceFinderFactory;
         $this->urlFinder = $urlFinder;
         $this->attributeHandler = $attributeHandler;
         $this->parentFinder = $parentFinder;
@@ -255,15 +257,14 @@ class Product extends AbstractConnectorModel
         $this->tierPriceFinder = $tierPriceFinder;
         $this->stockFinderInterface = $stockFinderInterface;
         $this->imageType = $imageType;
-        $this->taxCalculation = $taxCalculation;
-        $this->schemaValidator = $schemaValidatorFactory->create(['pattern'=>static::SCHEMA_RULES]);
+        $this->schemaValidator = $schemaValidatorFactory->create(['pattern'=> static::SCHEMA_RULES]);
         $this->dateTime = $dateTime;
     }
 
     /**
      * Set the product data
      *
-     * @param mixed $product
+     * @param MagentoProduct $product
      * @param int|null $storeId
      * @return $this
      * @throws SchemaValidationException
@@ -289,8 +290,11 @@ class Product extends AbstractConnectorModel
             ->getOptionArray();
         $this->visibility = (string)$options[$product->getVisibility()];
 
-        $this->setPrices($product, $storeId);
-        $this->setPricesIncTax($product, $storeId);
+        $priceFinder = $this->priceFinderFactory->create();
+        $this->price = $priceFinder->getPrice($product, $storeId);
+        $this->specialPrice = $priceFinder->getSpecialPrice($product, $storeId);
+        $this->price_incl_tax = $priceFinder->getPriceInclTax($product, $storeId);
+        $this->specialPrice_incl_tax = $priceFinder->getSpecialPriceInclTax($product, $storeId);
 
         $this->tierPrices = $this->tierPriceFinder->getTierPrices($product);
 
@@ -322,8 +326,9 @@ class Product extends AbstractConnectorModel
 
         //category data
         $count = 0;
-        $categoryCollection = $product->getCategoryCollection()
-            ->addNameToResult();
+        $categoryCollection = $product->getCategoryCollection();
+        /** @var CategoryCollection $categoryCollection */
+        $categoryCollection->addNameToResult();
         foreach ($categoryCollection as $cat) {
             $this->categories[$count]['Id'] = $cat->getId();
             $this->categories[$count]['Name'] = $cat->getName();
@@ -394,92 +399,6 @@ class Product extends AbstractConnectorModel
 
             $this->attributes = $attributeProperties;
         }
-    }
-
-    /**
-     * Set prices for all product types.
-     *
-     * @param mixed $product
-     * @param int|null $storeId
-     *
-     * @return void
-     */
-    private function setPrices($product, ?int $storeId)
-    {
-        if ($product->getTypeId() == 'configurable') {
-            foreach ($product->getTypeInstance()->getUsedProducts($product) as $childProduct) {
-                if ($storeId && !in_array($storeId, $childProduct->getStoreIds())) {
-                    continue;
-                }
-                $childPrices[] = $childProduct->getPrice();
-                if ($childProduct->getSpecialPrice() !== null) {
-                    $childSpecialPrices[] = $childProduct->getSpecialPrice();
-                }
-            }
-            $price = isset($childPrices) ? min($childPrices) : null;
-            $specialPrice = isset($childSpecialPrices) ? min($childSpecialPrices) : null;
-        } elseif ($product->getTypeId() == 'bundle') {
-            $price = $product->getPriceInfo()->getPrice('regular_price')->getMinimalPrice()->getValue();
-            $specialPrice = $product->getPriceInfo()->getPrice('final_price')->getMinimalPrice()->getValue();
-            //if special price equals to price then its wrong.
-            $specialPrice = ($specialPrice === $price) ? null : $specialPrice;
-        } elseif ($product->getTypeId() == 'grouped') {
-            foreach ($product->getTypeInstance()->getAssociatedProducts($product) as $childProduct) {
-                $childPrices[] = $childProduct->getPrice();
-                if ($childProduct->getSpecialPrice() !== null) {
-                    $childSpecialPrices[] = $childProduct->getSpecialPrice();
-                }
-            }
-            $price = isset($childPrices) ? min($childPrices) : null;
-            $specialPrice = isset($childSpecialPrices) ? min($childSpecialPrices) : null;
-        } else {
-            $price = $product->getPrice();
-            $specialPrice = $product->getSpecialPrice();
-        }
-        $this->price = $this->formatPriceValue($price);
-        $this->specialPrice = $this->formatPriceValue($specialPrice);
-    }
-
-    /**
-     * Set prices including tax.
-     * In catalog sync, the rate is based on the (scoped) tax origin, as configured in
-     * Default Tax Destination Calculation > Default Country.
-     * Here we calculate the 'inc' figures with the rate and the prices we already obtained.
-     *
-     * @param MagentoProduct $product
-     * @param string|int|null $storeId
-     * @return void
-     */
-    private function setPricesIncTax($product, $storeId)
-    {
-        $rate = $this->taxCalculation->getCalculatedRate(
-            $product->getTaxClassId(),
-            null,
-            $storeId
-        );
-        $this->price_incl_tax = $this->formatPriceValue(
-            $this->price + ($this->price * ($rate / 100))
-        );
-        $this->specialPrice_incl_tax = $this->formatPriceValue(
-            $this->specialPrice + ($this->specialPrice * ($rate / 100))
-        );
-    }
-
-    /**
-     * Formats a price value.
-     *
-     * @param float|null $price
-     *
-     * @return float
-     */
-    private function formatPriceValue($price): float
-    {
-        return (float) number_format(
-            (float) $price,
-            2,
-            '.',
-            ''
-        );
     }
 
     /**
