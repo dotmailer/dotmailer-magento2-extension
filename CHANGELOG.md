@@ -1,3 +1,22 @@
+# 4.29.0
+
+### What's new
+- When mapping automation programs, merchants can now search and select programs from the list.
+- We added the ability to customise the ‘Review link text’ on the external dynamic content page for reviews.
+- We added the ability to run consent sync manually from the admin.
+
+### Improvements
+- Default values for cart URL and login URL, used in the ‘get basket’ external dynamic link, are now set in config.xml.
+- We removed some custom store switcher code from our admin dashboard.
+- We added a simple fix for merchants with malformed cron patterns.
+- It is now possible to filter a customer id range in the contact report.
+
+### Bug fixes
+- Product prices including tax have been amended for catalog sync. 
+- Catalog sync no longer fails if `created_date` fails the validation date check.
+- We fixed incorrect `last_increment_id` values in the sales data export.
+- The _LASTSUBSCRIBED_ data field is translated for Dotdigital accounts in different locales.
+
 # 4.28.0
 
 ### What's new
