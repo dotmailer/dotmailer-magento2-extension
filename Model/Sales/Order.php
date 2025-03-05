@@ -6,7 +6,6 @@ use Magento\Store\Model\Website;
 
 /**
  * Transactional data for orders to sync.
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 class Order
 {

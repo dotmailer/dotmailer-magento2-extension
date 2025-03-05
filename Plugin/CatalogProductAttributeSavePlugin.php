@@ -9,8 +9,6 @@ use Magento\Framework\Controller\Result\Redirect;
 
 /**
  * Class CatalogProductAttributeSavePlugin - reset product in email_catalog when update attribute mass action is used.
- *
- * @SuppressWarnings(PHPMD.UnusedFormalParameter)
  */
 class CatalogProductAttributeSavePlugin
 {

@@ -10,7 +10,6 @@ class Report extends AbstractConfigField
      * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
      *
      * @return string
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
     {

@@ -18,8 +18,6 @@ use Magento\TestFramework\ObjectManager;
 /**
  * Class OrderSyncTest
  * magentoAppArea cron
- *
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 class OrderSyncTest extends \Magento\TestFramework\TestCase\AbstractController
 {

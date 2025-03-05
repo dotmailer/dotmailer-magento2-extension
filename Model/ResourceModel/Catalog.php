@@ -16,10 +16,6 @@ use Magento\Framework\Model\ResourceModel\Db\Context;
 use Magento\Reports\Model\ResourceModel\Product\CollectionFactory;
 use Zend_Db_Statement_Exception;
 
-/**
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
- * @SuppressWarnings(PHPMD.ExcessiveParameterList)
- */
 class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
     /**

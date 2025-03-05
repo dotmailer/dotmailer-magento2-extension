@@ -4,7 +4,6 @@ namespace Dotdigitalgroup\Email\Observer\Catalog;
 
 /**
  * Product that was deleted to be removed.
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 class RemoveProduct implements \Magento\Framework\Event\ObserverInterface
 {

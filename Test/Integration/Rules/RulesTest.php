@@ -21,9 +21,6 @@ use Magento\TestFramework\ObjectManager;
 /**
  * @magentoDataFixture Magento/Customer/_files/customer.php
  * @magentoDataFixture Magento/Customer/_files/customer_address.php
- *
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
- * @SuppressWarnings(PHPMD.UnusedFormalParameter)
  */
 class RulesTest extends \PHPUnit\Framework\TestCase
 {

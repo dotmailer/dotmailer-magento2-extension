@@ -10,8 +10,6 @@ use Magento\Framework\Mail\TransportInterface;
 
 /**
  * SMTP mail transport.
- *
- * @SuppressWarnings(PHPMD.UnusedFormalParameter)
  */
 class TransportPlugin
 {

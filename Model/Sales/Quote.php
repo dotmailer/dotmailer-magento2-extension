@@ -32,8 +32,6 @@ use Magento\Store\Model\StoreManagerInterface;
 
 /**
  * Customer and guest Abandoned Carts.
- *
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 class Quote
 {
