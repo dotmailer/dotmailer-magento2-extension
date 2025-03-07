@@ -63,7 +63,7 @@ class Program implements \Magento\Framework\Data\OptionSourceInterface
                     $programResponse = $client->getPrograms(count($programs));
 
                     if (is_object($programResponse)) {
-                        $programs = $programResponse;
+                        $programs = (array) $programResponse;
                         break;
                     }
 
@@ -74,9 +74,9 @@ class Program implements \Magento\Framework\Data\OptionSourceInterface
             }
 
             //set the api error message for the first option
-            if (isset($programs->message)) {
+            if (isset($programs['message'])) {
                 //message
-                $fields[] = ['value' => 0, 'label' => $programs->message];
+                $fields[] = ['value' => 0, 'label' => $programs['message']];
             } elseif (!empty($programs)) {
                 //sort programs by status
                 $statusOrder = ['Active','Draft','ReadOnly','Deactivated','NotAvailableInThisVersion'];
