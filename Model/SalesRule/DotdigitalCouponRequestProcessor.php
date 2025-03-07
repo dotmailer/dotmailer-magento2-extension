@@ -310,8 +310,9 @@ class DotdigitalCouponRequestProcessor
             return false;
         }
 
-        $ruleExpiryTime = strtotime($rule->getToDate());
-        $couponExpiration = $this->localeDate->date($ruleExpiryTime);
+        $configTimeZone = $this->localeDate->getConfigTimezone();
+        $couponExpiration = new \DateTime($rule->getToDate(), new \DateTimeZone($configTimeZone));
+        $couponExpiration->setTime(23, 59, 59);
 
         return $couponExpiration && $couponExpiration < $this->localeDate->date();
     }
