@@ -29,7 +29,6 @@ class CustomerManagementPlugin
      * @param \Magento\Sales\Api\OrderCustomerManagementInterface $subject
      * @param mixed $customer
      * @return mixed
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function afterCreate(\Magento\Sales\Api\OrderCustomerManagementInterface $subject, $customer)
     {

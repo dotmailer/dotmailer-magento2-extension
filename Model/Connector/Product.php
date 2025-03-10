@@ -24,8 +24,6 @@ use Magento\Store\Model\StoreManagerInterface;
 
 /**
  * Transactional data for catalog products to sync.
- *
- * @SuppressWarnings(PHPMD.TooManyFields)
  */
 class Product extends AbstractConnectorModel
 {

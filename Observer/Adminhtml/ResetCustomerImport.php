@@ -49,8 +49,6 @@ class ResetCustomerImport implements \Magento\Framework\Event\ObserverInterface
      * @param \Magento\Framework\Event\Observer $observer
      *
      * @return $this
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {

@@ -5,9 +5,6 @@ namespace Dotdigitalgroup\Email\Observer\Newsletter;
 use Magento\Framework\Event\Observer;
 use Dotdigitalgroup\Email\Model\Consent\ConsentManager;
 
-/**
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
- */
 class NewsletterSubscriberSaveAfter implements \Magento\Framework\Event\ObserverInterface
 {
     /**

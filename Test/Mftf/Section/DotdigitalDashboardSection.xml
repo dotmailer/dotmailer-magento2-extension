@@ -3,6 +3,7 @@
 <sections xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:noNamespaceSchemaLocation="urn:magento:mftf:Page/etc/SectionObject.xsd">
     <section name="DotdigitalDashboardSection">
+        <element name="reportsMenuDashboardLink" type="text" selector="li[data-ui-id='menu-dotdigitalgroup-email-dashboards'] a" />
         <element name="dashboardContainer" type="text" selector=".ddg-dashboard-container" />
         <element name="queueConnectionStatus" type="text" selector="td[data-id='queue-connection-status']" />
         <element name="consumersRunnerStatus" type="text" selector="td[data-id='consumers-runner-status']" />

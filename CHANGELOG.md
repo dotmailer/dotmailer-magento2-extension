@@ -1,3 +1,14 @@
+# 4.29.1
+
+### Improvements
+- We repaired an MFTF test for the extension dashboard.
+- `@SuppressWarnings` docblock annotations are removed from the module.
+  
+### Bug fixes
+- Cart price rules with from and to dates (Community only) will be treated as expired only at the end of the to date.
+- We fixed the config path for the cleaner cron in crontab.xml.
+- We fixed an error with program selects if no programs existed on the account.
+
 # 4.29.0
 
 ### What's new
@@ -298,6 +309,11 @@ We fixed an issue with `explode()` when syncing multi-select custom attribute va
 - Data migration in a split database setup will now complete all possible steps without breaking.
 - Changes to customer website association, made from the admin, will now update the matching row in `email_contact`.
 - We fixed a bug that occurred if a customer changed email address to match an existing guest row in `email_contact`.
+
+# 4.21.6
+
+### Bug fixes
+- We restored a specific connection type to our queue_topology.xml, and set one in queue_consumer.xml as well.
 
 # 4.21.5
 

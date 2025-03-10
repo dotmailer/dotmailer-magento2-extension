@@ -25,8 +25,8 @@
 
         <click selector="li#menu-magento-reports-report" stepKey="clickReportsButton"/>
         <seeElement selector="li[data-ui-id='menu-dotdigitalgroup-email-marketing-automation-report']" stepKey="seeCustomerEngagementSubMenu"/>
-        <seeElement selector="li.item-dashboards" stepKey="seeDDGDashboard"/>
-        <click selector="li.item-dashboards a" stepKey="clickOnDashboard"/>
+        <seeElement selector="{{DotdigitalDashboardSection.reportsMenuDashboardLink}}" stepKey="seeDDGDashboardLink"/>
+        <click selector="{{DotdigitalDashboardSection.reportsMenuDashboardLink}}" stepKey="clickOnDashboardLink"/>
 
         <seeInCurrentUrl url="{{DotdigitalDashboardPage.url}}" stepKey="confirmThatImOnDashboard"/>
         <seeElement selector="{{DotdigitalDashboardSection.dashboardContainer}}" stepKey="seeDashboardContainer"/>

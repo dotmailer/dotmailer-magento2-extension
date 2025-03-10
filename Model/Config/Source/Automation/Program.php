@@ -77,7 +77,8 @@ class Program implements \Magento\Framework\Data\OptionSourceInterface
             if (isset($programs->message)) {
                 //message
                 $fields[] = ['value' => 0, 'label' => $programs->message];
-            } elseif (!empty($programs)) {
+            } elseif (!empty($programs) && !empty((array)$programs)) {
+
                 //sort programs by status
                 $statusOrder = ['Active','Draft','ReadOnly','Deactivated','NotAvailableInThisVersion'];
 

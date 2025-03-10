@@ -4,8 +4,6 @@ namespace Dotdigitalgroup\Email\Plugin;
 
 /**
  * Class UrlRewriteSavePlugin - reset product in email_catalog when url rewrite is saved for product.
- *
- * @SuppressWarnings(PHPMD.UnusedFormalParameter)
  */
 class UrlRewriteSavePlugin
 {

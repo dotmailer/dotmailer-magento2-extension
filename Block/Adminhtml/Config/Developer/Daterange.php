@@ -7,7 +7,6 @@ class Daterange extends \Magento\Config\Block\System\Config\Form\Field
     /**
      * Get element HTML.
      *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
      * @return string
      */

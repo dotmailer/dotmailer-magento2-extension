@@ -11,8 +11,6 @@ use Magento\Store\Model\Website;
 
 /**
  * Disable customer email depending on settings value.
- *
- * @SuppressWarnings(PHPMD.UnusedFormalParameter)
  */
 class CustomerEmailNotificationPlugin
 {

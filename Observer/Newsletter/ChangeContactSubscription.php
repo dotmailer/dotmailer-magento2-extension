@@ -33,7 +33,6 @@ use Dotdigitalgroup\Email\Model\Queue\Data\SubscriptionDataFactory;
 
 /**
  * Contact newsletter subscription change.
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 class ChangeContactSubscription implements ObserverInterface
 {
