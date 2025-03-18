@@ -111,7 +111,7 @@ class Review implements SyncInterface
      * @return array
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function sync(\DateTime $from = null)
+    public function sync(?\DateTime $from = null)
     {
         $this->orderFactory->create()
             ->createReviewCampaigns();

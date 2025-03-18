@@ -67,8 +67,8 @@ class Consent extends AbstractModel
         Config $config,
         StringUtils $stringUtils,
         DateTimeFactory $dateTimeFactory,
-        AbstractResource $resource = null,
-        AbstractDb $resourceCollection = null,
+        ?AbstractResource $resource = null,
+        ?AbstractDb $resourceCollection = null,
         array $data = []
     ) {
         $this->configHelper = $config;

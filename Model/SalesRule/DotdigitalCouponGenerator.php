@@ -102,11 +102,11 @@ class DotdigitalCouponGenerator
      */
     public function generateCoupon(
         RuleModel $rule,
-        string $codeFormat = null,
-        string $codePrefix = null,
-        string $codeSuffix = null,
-        string $emailAddress = null,
-        int $expireDays = null
+        ?string $codeFormat = null,
+        ?string $codePrefix = null,
+        ?string $codeSuffix = null,
+        ?string $emailAddress = null,
+        ?int $expireDays = null
     ) {
         if ($this->request->getParam('debug')) {
             $this->logger->debug(

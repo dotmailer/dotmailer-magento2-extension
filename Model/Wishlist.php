@@ -37,8 +37,8 @@ class Wishlist extends \Magento\Framework\Model\AbstractModel
         \Magento\Framework\Registry $registry,
         \Magento\Framework\Stdlib\DateTime $dateTime,
         WishlistResource $wishlistResource,
-        \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
-        \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
+        ?\Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
+        ?\Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         array $data = []
     ) {
         $this->dateTime = $dateTime;
@@ -86,7 +86,7 @@ class Wishlist extends \Magento\Framework\Model\AbstractModel
      * @param string|null $to
      * @return int
      */
-    public function reset(string $from = null, string $to = null)
+    public function reset(?string $from = null, ?string $to = null)
     {
         return $this->wishlistResource->resetWishlists($from, $to);
     }

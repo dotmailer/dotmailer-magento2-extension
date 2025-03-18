@@ -122,7 +122,7 @@ class Order extends DataObject implements SyncInterface
      * @return array Returns an array with a message and the total number of synced orders.
      * @throws \Http\Client\Exception
      */
-    public function sync(DateTime $from = null): array
+    public function sync(?DateTime $from = null): array
     {
         $start = microtime(true);
         foreach ($this->storeManager->getWebsites() as $website) {

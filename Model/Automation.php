@@ -76,8 +76,8 @@ class Automation extends AbstractModel
         StoreManagerInterface $storeManagerInterface,
         ScopeConfigInterface $scopeConfig,
         AutomationPublisher $publisher,
-        AbstractResource $resource = null,
-        AbstractDb $resourceCollection = null,
+        ?AbstractResource $resource = null,
+        ?AbstractDb $resourceCollection = null,
         array $data = []
     ) {
         $this->logger = $logger;

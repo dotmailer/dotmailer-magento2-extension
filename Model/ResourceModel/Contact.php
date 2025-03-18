@@ -43,7 +43,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         \Magento\Framework\Model\ResourceModel\Db\Context $context,
         ExpressionFactory $expressionFactory,
         ScheduleCollectionFactory $scheduleCollectionFactory,
-        string $connectionName = null
+        ?string $connectionName = null
     ) {
         $this->expressionFactory        = $expressionFactory;
         $this->scheduleCollectionFactory = $scheduleCollectionFactory;
@@ -75,7 +75,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      * @param string|null $to
      * @return int
      */
-    public function resetAllCustomers(string $from = null, string $to = null)
+    public function resetAllCustomers(?string $from = null, ?string $to = null)
     {
         $conn = $this->getConnection();
 
@@ -119,7 +119,7 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
      * @param string|null $to
      * @return int
      */
-    public function resetSubscribers(string $from = null, string $to = null)
+    public function resetSubscribers(?string $from = null, ?string $to = null)
     {
         $conn = $this->getConnection();
 

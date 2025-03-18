@@ -58,7 +58,7 @@ class DummyRecords implements SyncInterface
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      * @return void
      */
-    public function sync(\DateTime $from = null)
+    public function sync(?\DateTime $from = null)
     {
         foreach ($this->dummyData->getActiveWebsites() as $websiteId) {
             $this->postContactAndCartInsightData($websiteId);

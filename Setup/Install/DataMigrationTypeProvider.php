@@ -108,7 +108,7 @@ class DataMigrationTypeProvider
      *
      * @return array
      */
-    public function getTypes(string $table = null, array $afterMigrationTypes = [])
+    public function getTypes(?string $table = null, array $afterMigrationTypes = [])
     {
         switch ($table) {
             case SchemaInterface::EMAIL_CONTACT_TABLE:
@@ -144,7 +144,7 @@ class DataMigrationTypeProvider
      *
      * @return array
      */
-    public function getEnabledTypes(string $table = null)
+    public function getEnabledTypes(?string $table = null)
     {
         if (isset($this->enabledMigrationTypes)) {
             return $this->enabledMigrationTypes;

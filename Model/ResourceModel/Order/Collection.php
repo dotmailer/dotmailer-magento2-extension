@@ -76,8 +76,8 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
         OrderCollectionFactory $orderCollection,
         Data $helper,
         SubscriberFilterer $subscriberFilterer,
-        AdapterInterface $connection = null,
-        AbstractDb $resource = null
+        ?AdapterInterface $connection = null,
+        ?AbstractDb $resource = null
     ) {
         $this->helper             = $helper;
         $this->quoteCollection    = $quoteCollection;

@@ -260,7 +260,7 @@ class Template extends \Magento\Framework\DataObject implements SyncInterface
      *
      * @return array
      */
-    public function sync(\DateTime $from = null)
+    public function sync(?\DateTime $from = null)
     {
         $result = ['store' => 'Stores : ', 'message' => 'Done.'];
         $lastWebsiteId = '0';

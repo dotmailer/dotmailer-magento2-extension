@@ -177,11 +177,11 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @param string $apiUsername
      * @param string $apiPassword
-     * @param string|null $apiEndpoint
      * @param WebsiteInterface $website
+     * @param string|null $apiEndpoint
      * @return $this
      */
-    public function saveApiCredentials(string $apiUsername, string $apiPassword, string $apiEndpoint = null, $website)
+    public function saveApiCredentials(string $apiUsername, string $apiPassword, $website, ?string $apiEndpoint = null)
     {
         $scopeInterface = $website->getId() ? ScopeInterface::SCOPE_WEBSITES : ScopeConfigInterface::SCOPE_TYPE_DEFAULT;
 

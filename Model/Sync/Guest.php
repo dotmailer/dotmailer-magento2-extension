@@ -109,7 +109,7 @@ class Guest extends DataObject implements SyncInterface
      * @return array
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function sync(\DateTime $from = null)
+    public function sync(?\DateTime $from = null)
     {
         $start = microtime(true);
         $megaBatchSize = (int) $this->scopeConfig->getValue(Config::XML_PATH_CONNECTOR_MEGA_BATCH_SIZE_CONTACT);

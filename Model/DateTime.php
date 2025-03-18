@@ -20,7 +20,7 @@ class DateTime extends \DateTime
     public function __construct(
         DateTimeZoneFactory $dateTimeZoneFactory,
         $time = 'now',
-        DateTimeZone $timezone = null
+        ?DateTimeZone $timezone = null
     ) {
         $this->dateTimeZoneFactory = $dateTimeZoneFactory;
         parent::__construct($time, $timezone);

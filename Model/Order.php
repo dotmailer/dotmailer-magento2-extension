@@ -47,8 +47,8 @@ class Order extends \Magento\Framework\Model\AbstractModel
         OrderResource $orderResource,
         OrderCollectionFactory $orderCollectionFactory,
         array $data = [],
-        \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
-        \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null
+        ?\Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
+        ?\Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null
     ) {
         $this->orderResource = $orderResource;
         $this->orderCollectionFactory = $orderCollectionFactory;
@@ -90,7 +90,7 @@ class Order extends \Magento\Framework\Model\AbstractModel
      * @param string|null $to
      * @return int
      */
-    public function reset(string $from = null, string $to = null)
+    public function reset(?string $from = null, ?string $to = null)
     {
         return $this->orderResource->resetOrders($from, $to);
     }

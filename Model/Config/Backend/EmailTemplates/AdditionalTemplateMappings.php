@@ -39,8 +39,8 @@ class AdditionalTemplateMappings extends ArraySerialized
         ScopeConfigInterface $config,
         TypeListInterface $cacheTypeList,
         SerializerInterface $serializer,
-        AbstractResource $resource = null,
-        AbstractDb $resourceCollection = null,
+        ?AbstractResource $resource = null,
+        ?AbstractDb $resourceCollection = null,
         array $data = []
     ) {
         $this->templateFactory = $templateFactory;

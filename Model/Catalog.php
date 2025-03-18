@@ -43,8 +43,8 @@ class Catalog extends \Magento\Framework\Model\AbstractModel
         \Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory  $catalogCollection,
         \Magento\Framework\Stdlib\DateTime $dateTime,
         array $data = [],
-        \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
-        \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null
+        ?\Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
+        ?\Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null
     ) {
         $this->catalogResource = $catalogResource;
         $this->catalogCollection = $catalogCollection;
@@ -107,7 +107,7 @@ class Catalog extends \Magento\Framework\Model\AbstractModel
      * @param string|null $to
      * @return int
      */
-    public function reset(string $from = null, string $to = null)
+    public function reset(?string $from = null, ?string $to = null)
     {
         return $this->catalogResource->resetCatalog($from, $to);
     }

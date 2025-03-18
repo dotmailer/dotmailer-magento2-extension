@@ -43,7 +43,7 @@ class SyncTimeService
      * @param DateInterval|null $subInterval
      * @return DateTime
      */
-    public function getSyncToTime(DateInterval $subInterval = null): DateTime
+    public function getSyncToTime(?DateInterval $subInterval = null): DateTime
     {
         $toTime = $this->getUTCNowTime();
         if ($subInterval) {

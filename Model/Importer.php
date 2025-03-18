@@ -107,8 +107,8 @@ class Importer extends AbstractModel
         SerializerInterface $serializer,
         Data $helper,
         array $data = [],
-        \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
-        \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null
+        ?\Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
+        ?\Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null
     ) {
         $this->dateTime      = $dateTime;
         $this->serializer    = $serializer;

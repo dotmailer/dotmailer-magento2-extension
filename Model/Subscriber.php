@@ -31,7 +31,7 @@ class Subscriber
      * @param string|null $to
      * @return int
      */
-    public function reset(string $from = null, string $to = null)
+    public function reset(?string $from = null, ?string $to = null)
     {
         return $this->contact->resetSubscribers($from, $to);
     }

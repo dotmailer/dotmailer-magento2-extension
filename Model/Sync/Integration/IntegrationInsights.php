@@ -40,7 +40,7 @@ class IntegrationInsights implements SyncInterface
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      * @return bool
      */
-    public function sync(\DateTime $from = null)
+    public function sync(?\DateTime $from = null)
     {
         if (!(bool) $this->helper->getConfigValue(Config::XML_PATH_CONNECTOR_INTEGRATION_INSIGHTS_ENABLED)) {
             return false;

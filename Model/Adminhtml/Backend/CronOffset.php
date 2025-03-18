@@ -30,8 +30,8 @@ class CronOffset extends \Magento\Framework\App\Config\Value
         ScopeConfigInterface $config,
         CronOffsetter $cronOffsetter,
         \Magento\Framework\App\Cache\TypeListInterface $cacheTypeList,
-        \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
-        \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
+        ?\Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
+        ?\Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         array $data = []
     ) {
         $this->cronOffsetter = $cronOffsetter;

@@ -74,7 +74,7 @@ class Importer implements SyncInterface
      * @return void
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function sync(\DateTime $from = null)
+    public function sync(?\DateTime $from = null)
     {
         $activeApiUsers = $this->accountHandler->getAPIUsersForECEnabledWebsites();
         if (!$activeApiUsers) {

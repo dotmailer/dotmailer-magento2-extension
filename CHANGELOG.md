@@ -1,3 +1,8 @@
+# 4.29.2
+
+### Improvements
+- We updated our code for compatibility with PHP 8.4.
+
 # 4.29.1
 
 ### Improvements

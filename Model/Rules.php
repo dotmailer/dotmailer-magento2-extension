@@ -122,8 +122,8 @@ class Rules extends \Magento\Framework\Model\AbstractModel
         MageQuoteCollectionFactory $quoteCollectionFactory,
         SerializerInterface $serializer,
         array $data = [],
-        AbstractResource $resource = null,
-        AbstractDb $resourceCollection = null
+        ?AbstractResource $resource = null,
+        ?AbstractDb $resourceCollection = null
     ) {
         $this->serializer = $serializer;
         $this->config = $config;

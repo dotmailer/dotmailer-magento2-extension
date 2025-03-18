@@ -102,8 +102,8 @@ class Accountcallback implements HttpPostActionInterface
             $this->helper->saveApiCredentials(
                 $params['apiusername'],
                 $params['apipassword'],
+                $website,
                 $params['apiendpoint'] ?? null,
-                $website
             );
 
             // enable EC in Magento

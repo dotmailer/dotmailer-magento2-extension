@@ -31,8 +31,8 @@ class Abandoned extends \Magento\Framework\Model\AbstractModel
         \Dotdigitalgroup\Email\Model\ResourceModel\Abandoned\CollectionFactory $abandoned,
         \Magento\Framework\Stdlib\DateTime $dateTime,
         array $data = [],
-        \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
-        \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null
+        ?\Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
+        ?\Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null
     ) {
         $this->abandonedCollectionFactory = $abandoned;
         $this->dateTime     = $dateTime;
