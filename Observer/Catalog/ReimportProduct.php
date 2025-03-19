@@ -3,6 +3,7 @@
 namespace Dotdigitalgroup\Email\Observer\Catalog;
 
 use Dotdigitalgroup\Email\Model\Catalog\CatalogService;
+use Magento\Framework\Exception\AlreadyExistsException;
 
 /**
  * Product to be marked as unprocessed and reimported.
@@ -37,13 +38,20 @@ class ReimportProduct implements \Magento\Framework\Event\ObserverInterface
      * Execute.
      *
      * @param \Magento\Framework\Event\Observer $observer
+     *
+     * @return $this
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
         if ($this->catalogService->isCatalogUpdated()) {
             return $this;
         }
-        $productModel = $observer->getEvent()->getDataObject();
-        $this->updater->execute($productModel);
+        try {
+            $productModel = $observer->getEvent()->getProduct();
+            $this->updater->execute($productModel);
+        } catch (AlreadyExistsException $e) {
+            return $this;
+        }
+        return $this;
     }
 }

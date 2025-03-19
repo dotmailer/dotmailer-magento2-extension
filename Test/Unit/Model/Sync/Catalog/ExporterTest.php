@@ -189,7 +189,7 @@ class ExporterTest extends TestCase
      * @return array
      * Returns ids for products and store
      */
-    public function getProductIdStoreIdsTypesAndVisibilities()
+    public static function getProductIdStoreIdsTypesAndVisibilities()
     {
         return [
             [1, 1254, 337, '0', '0'],

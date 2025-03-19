@@ -36,10 +36,7 @@ class EmailcaptureTest extends AbstractController
         $objectManager = ObjectManager::getInstance();
 
         $this->sessionMock = $this->createMock(Session::class);
-        $this->quoteMock = $this->getMockBuilder(Quote::class)
-            ->disableOriginalConstructor()
-            ->setMethods(['hasItems', 'getCustomerEmail', 'setCustomerEmail'])
-            ->getMock();
+        $this->quoteMock = $this->createMock(Quote::class);
         $this->quoteResourceMock = $this->createMock(QuoteResource::class);
 
         $objectManager->addSharedInstance($this->quoteResourceMock, QuoteResource::class);
@@ -84,19 +81,24 @@ class EmailcaptureTest extends AbstractController
     {
         $this->setUpForAvailableQuote('wingman@cauals.com');
 
-        $this->quoteMock->expects($this->once())
-            ->method('setCustomerEmail');
-
         $this->getRequest()->setParams(['email' => 'chaz@kangaroo.com'])->setMethod(HttpRequest::METHOD_POST);
         $this->dispatch('/connector/ajax/emailcapture');
     }
 
     public function testQuoteAlreadyHasSameEmail()
     {
-        $this->setUpForAvailableQuote('wingman@cauals.com');
+        $this->sessionMock->expects($this->once())
+            ->method('getQuote')
+            ->willReturn($this->quoteMock);
 
-        $this->quoteMock->expects($this->never())
-            ->method('setCustomerEmail');
+        $this->quoteMock->expects($this->once())
+            ->method('hasItems')
+            ->willReturn(true);
+
+        $this->quoteMock->expects($this->once())
+            ->method('__call')
+            ->with('getCustomerEmail')
+            ->willReturn('wingman@cauals.com');
 
         $this->getRequest()->setParams(['email' => 'wingman@cauals.com'])->setMethod(HttpRequest::METHOD_POST);
         $this->dispatch('/connector/ajax/emailcapture');
@@ -112,14 +114,18 @@ class EmailcaptureTest extends AbstractController
             ->method('hasItems')
             ->willReturn(true);
 
-        $this->quoteMock->expects($this->once())
-            ->method('getCustomerEmail')
-            ->willReturn($customerEmail);
-
-        if (!$customerEmail) {
-            $this->quoteResourceMock->expects($this->once())
-                ->method('save')
-                ->with($this->quoteMock);
-        }
+        $matcher = $this->exactly(2);
+        $this->quoteMock->expects($matcher)
+            ->method('__call')
+            ->willReturnCallback(function () use ($matcher, $customerEmail) {
+                return match ($matcher->numberOfInvocations()) {
+                    0 => ['getCustomerEmail'],
+                    1 => ['setCustomerEmail'],
+                };
+            })
+            ->willReturnOnConsecutiveCalls(
+                $customerEmail,
+                null
+            );
     }
 }

@@ -71,17 +71,9 @@ class StockFinderTest extends TestCase
         $this->stockItemInterfaceMock = $this->getMockBuilder(StockItemInterface::class);
         $this->typeInstanceMock = $this->createMock(Configurable::class);
 
-        $this->stockItemCriteriaFactoryMock = $this->getMockBuilder(StockItemCriteriaInterfaceFactory::class)
-            ->disableOriginalConstructor()
-            ->setMethods(['create', 'setProductsFilter'])
-            ->getMock();
-
+        $this->stockItemCriteriaFactoryMock = $this->createMock(StockItemCriteriaInterfaceFactory::class);
         $this->stockItemCriteriaMock = $this->createMock(StockItemCriteriaInterface::class);
-
-        $this->stockItemCollectionInterfaceMock = $this->getMockBuilder(StockItemCollectionInterface::class)
-            ->disableOriginalConstructor()
-            ->setMethods(array_merge(get_class_methods(StockItemCollectionInterface::class), ['getSize']))
-            ->getMock();
+        $this->stockItemCollectionInterfaceMock = $this->createMock(StockItemCollectionInterface::class);
 
         $this->stockFinder = new StockFinder(
             $this->stockItemRepositoryMock,

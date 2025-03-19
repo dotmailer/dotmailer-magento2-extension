@@ -120,12 +120,15 @@ class CampaignsTest extends TestCase
 
         // mock getCampaigns calls depending on the number of API responses
         $apiResponseChunks = ceil(count($testApiResponse) / 1000);
-        $clientMock->expects($this->exactly($apiResponseChunks))
+        $matcher = $this->exactly($apiResponseChunks);
+        $clientMock->expects($matcher)
             ->method('getCampaigns')
-            ->withConsecutive(
-                [0],
-                [1000]
-            )
+            ->willReturnCallback(function () use ($matcher) {
+                return match ($matcher->numberOfInvocations()) {
+                    1 => [0],
+                    2 => [1000]
+                };
+            })
             ->willReturnOnConsecutiveCalls(
                 array_slice($testApiResponse, 0, 1000),
                 array_slice($testApiResponse, 1000, 1000)

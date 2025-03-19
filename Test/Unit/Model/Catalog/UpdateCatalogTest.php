@@ -47,10 +47,7 @@ class UpdateCatalogTest extends TestCase
         $this->productMock = $this->createMock(Product::class);
         $this->catalogResourceMock = $this->createMock(Catalog::class);
         $this->catalogFactoryMock = $this->createMock(CatalogFactory::class);
-        $this->catalogMock = $this->getMockBuilder(ModelCatalog::class)
-            ->setMethods(['loadProductById', 'getId', 'getProcessed', 'setProductId'])
-            ->disableOriginalConstructor()
-            ->getMock();
+        $this->catalogMock = $this->createMock(ModelCatalog::class);
 
         $this->parentFinderMock = $this->createMock(ParentFinder::class);
         $this->updateCatalog = new Update(
@@ -75,7 +72,8 @@ class UpdateCatalogTest extends TestCase
             ->willReturn(2455);
 
         $this->catalogMock->expects($this->never())
-            ->method('setProductId');
+            ->method('__call')
+            ->with('setProductId');
 
         $this->parentFinderMock->expects($this->once())
             ->method('getConfigurableParentIdsFromProductIds')
@@ -102,7 +100,8 @@ class UpdateCatalogTest extends TestCase
             ->willReturn(null);
 
         $this->catalogMock->expects($this->once())
-            ->method('setProductId');
+            ->method('__call')
+            ->with('setProductId');
 
         $this->updateCatalog->execute($this->productMock);
     }

@@ -34,10 +34,7 @@ class ReimportProductTest extends TestCase
     {
         $this->updaterMock = $this->createMock(UpdateCatalog::class);
         $this->catalogServiceMock = $this->createMock(CatalogService::class);
-        $this->observerMock = $this->getMockBuilder(Observer::class)
-            ->setMethods(['getEvent','getDataObject','getId'])
-            ->disableOriginalConstructor()
-            ->getMock();
+        $this->observerMock = $this->createMock(Observer::class);
 
         $this->reimportProduct = new ReimportProduct(
             $this->updaterMock,
@@ -47,17 +44,20 @@ class ReimportProductTest extends TestCase
 
     public function testThatGetEventGetDataObjectGetIdAndExecuteMethodsExecuted()
     {
+        $eventMock = $this->createMock(\Magento\Framework\Event::class);
         $this->observerMock->expects($this->once())
             ->method('getEvent')
-            ->willReturn($this->observerMock);
+            ->willReturn($eventMock);
 
-        $this->observerMock->expects($this->once())
-            ->method('getDataObject')
-            ->willReturn($this->observerMock);
+        $productInterfaceMock = $this->createMock(\Magento\Catalog\Api\Data\ProductInterface::class);
+        $eventMock->expects($this->once())
+            ->method('__call')
+            ->with('getProduct')
+            ->willReturn($productInterfaceMock);
 
         $this->updaterMock->expects($this->once())
             ->method('execute')
-            ->with($this->observerMock);
+            ->with($productInterfaceMock);
 
         $this->reimportProduct->execute($this->observerMock);
     }

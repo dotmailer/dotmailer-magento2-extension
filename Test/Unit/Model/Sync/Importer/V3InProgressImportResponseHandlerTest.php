@@ -3,6 +3,7 @@
 namespace Dotdigitalgroup\Email\Test\Unit\Model\Sync\Importer;
 
 use Dotdigital\Resources\AbstractResource;
+use Dotdigital\V3\Resources\Contacts;
 use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Importer;
 use Dotdigitalgroup\Email\Model\ResourceModel\Importer as ImporterResource;
@@ -12,57 +13,63 @@ use Dotdigitalgroup\Email\Model\ResourceModel\Importer\Collection as ImporterCol
 use Dotdigitalgroup\Email\Model\Sync\Importer\ReportHandler\V3ImporterReportHandler;
 use Dotdigital\V3\Models\Contact\Import;
 use Dotdigitalgroup\Email\Model\Apiconnector\V3\ClientFactory;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class V3InProgressImportResponseHandlerTest extends TestCase
 {
     /**
-     * @var ImporterResource|ImporterResource&\PHPUnit\Framework\MockObject\MockObject|\PHPUnit\Framework\MockObject\MockObject
+     * @var ImporterResource|ImporterResource&MockObject|MockObject
      */
     private $importerResourceMock;
 
     /**
-     * @var Logger|Logger&\PHPUnit\Framework\MockObject\MockObject|\PHPUnit\Framework\MockObject\MockObject
+     * @var Logger|Logger&MockObject|MockObject
      */
     private $loggerMock;
 
     /**
-     * @var V3InProgressImportResponseHandlerFactory
+     * @var V3InProgressImportResponseHandler
      */
-    private $v3ProgressHandlerFactory;
+    private $v3ProgressHandler;
 
     /**
-     * @var Client|Client&\PHPUnit\Framework\MockObject\MockObject|\PHPUnit\Framework\MockObject\MockObject
+     * @var Client|Client&MockObject|MockObject
      */
     private $v3ClientMock;
 
     /**
-     * @var ImporterCollection|ImporterCollection&\PHPUnit\Framework\MockObject\MockObject|\PHPUnit\Framework\MockObject\MockObject
+     * @var ImporterCollection|ImporterCollection&MockObject|MockObject
      */
     private $importerCollectionMock;
 
     /**
-     * @var Importer|Importer&\PHPUnit\Framework\MockObject\MockObject|\PHPUnit\Framework\MockObject\MockObject
+     * @var Importer|Importer&MockObject|MockObject
      */
     private $importerModelMock;
 
     /**
-     * @var AbstractResource&\PHPUnit\Framework\MockObject\MockObject|\PHPUnit\Framework\MockObject\MockObject
+     * @var AbstractResource&MockObject|MockObject
      */
     private $abstractResourceMock;
 
     /**
-     * @var Import&\PHPUnit\Framework\MockObject\MockObject|\PHPUnit\Framework\MockObject\MockObject
+     * @var Contacts|MockObject
+     */
+    private $contactResourceMock;
+
+    /**
+     * @var Import&MockObject|MockObject
      */
     private $responseMock;
 
     /**
-     * @var ClientFactory|ClientFactory&\PHPUnit\Framework\MockObject\MockObject|\PHPUnit\Framework\MockObject\MockObject
+     * @var ClientFactory|ClientFactory&MockObject|MockObject
      */
     private $clientFactoryMock;
 
     /**
-     * @var V3ImporterReportHandler|V3ImporterReportHandler&\PHPUnit\Framework\MockObject\MockObject|\PHPUnit\Framework\MockObject\MockObject
+     * @var V3ImporterReportHandler|V3ImporterReportHandler&MockObject|MockObject
      */
     private $reportHandlerMock;
 
@@ -78,37 +85,19 @@ class V3InProgressImportResponseHandlerTest extends TestCase
             ->getMock();
 
         $this->importerCollectionMock = $this->createMock(ImporterCollection::class);
-        $this->importerModelMock = $this->getMockBuilder(Importer::class)
-            ->disableOriginalConstructor()
-            ->setMethods(['getImportId','getWebsiteId'])
-            ->getMock();
-
-        $this->abstractResourceMock = $this->getMockBuilder(AbstractResource::class)
-            ->disableOriginalConstructor()
-            ->setMethods(['getImportById'])
-            ->getMock();
-
-        $this->v3ClientMock->contacts = $this->abstractResourceMock;
-
-        $this->responseMock = $this->getMockBuilder(Import::class)
-            ->disableOriginalConstructor()
-            ->setMethods(['getStatus'])
-            ->getMock();
-
+        $this->importerModelMock = $this->createMock(Importer::class);
+        $this->abstractResourceMock = $this->createMock(AbstractResource::class);
+        $this->contactResourceMock = $this->createMock(Contacts::class);
+        $this->v3ClientMock->contacts = $this->contactResourceMock;
+        $this->responseMock = $this->createMock(Import::class);
         $this->clientFactoryMock = $this->createMock(ClientFactory::class);
-
         $this->reportHandlerMock = $this->createMock(V3ImporterReportHandler::class);
-        $this->clientFactoryMock = $this->createMock(ClientFactory::class);
 
         $this->importerCollectionMock->expects($this->atLeastOnce())
             ->method('getIterator')
             ->willReturn(new \ArrayIterator([$this->importerModelMock]));
 
-        $this->importerModelMock->expects($this->atLeastOnce())
-            ->method('getWebsiteId')
-            ->willReturn(1);
-
-        $this->v3ProgressHandlerFactory = new V3InProgressImportResponseHandler(
+        $this->v3ProgressHandler = new V3InProgressImportResponseHandler(
             $this->loggerMock,
             $this->clientFactoryMock,
             $this->importerResourceMock,
@@ -129,16 +118,22 @@ class V3InProgressImportResponseHandlerTest extends TestCase
             'method' => 'getImportById'
         ];
 
+        $matcher = $this->exactly(2);
         $this->importerModelMock->expects($this->atLeastOnce())
-            ->method('getImportId')
-            ->willReturn('import-id');
+            ->method('__call')
+            ->willReturnCallback(function () use ($matcher) {
+                return match ($matcher->getInvocationCount()) {
+                    1 => ['getWebsiteId'],
+                    2 => ['getImportId']
+                };
+            })
+            ->willReturnOnConsecutiveCalls(1, 'import-id');
 
-        $this->abstractResourceMock->expects($this->atLeastOnce())
+        $this->contactResourceMock->expects($this->atLeastOnce())
             ->method('getImportById')
-            ->with('import-id')
             ->willReturn($this->responseMock);
 
-        $itemsCount = $this->v3ProgressHandlerFactory->process($group, $this->importerCollectionMock);
+        $itemsCount = $this->v3ProgressHandler->process($group, $this->importerCollectionMock);
 
         $this->assertEquals($itemsCount, 1);
     }
@@ -156,20 +151,35 @@ class V3InProgressImportResponseHandlerTest extends TestCase
             'method' => 'getImportById'
         ];
 
+        $matcher = $this->exactly(3);
         $this->importerModelMock->expects($this->atLeastOnce())
-            ->method('getImportId')
-            ->willReturn('import-id');
+            ->method('__call')
+            ->willReturnCallback(function () use ($matcher) {
+                return match ($matcher->getInvocationCount()) {
+                    1 => ['getWebsiteId'],
+                    2 => ['getImportId'],
+                    3 => ['setImportStatus'],
+                    4 => ['setImportFinished'],
+                    5 => ['setMessage'],
+                };
+            })
+            ->willReturnOnConsecutiveCalls(
+                1,
+                'import-id',
+                $this->importerModelMock,
+                $this->importerModelMock,
+                $this->importerModelMock
+            );
 
-        $this->abstractResourceMock->expects($this->atLeastOnce())
+        $this->contactResourceMock->expects($this->atLeastOnce())
             ->method('getImportById')
-            ->with('import-id')
             ->willReturn($this->responseMock);
 
         $this->responseMock->expects($this->atLeastOnce())
             ->method('getStatus')
             ->willReturn('Finished');
 
-        $itemsCount = $this->v3ProgressHandlerFactory->process($group, $this->importerCollectionMock);
+        $itemsCount = $this->v3ProgressHandler->process($group, $this->importerCollectionMock);
         $this->assertEquals($itemsCount, 0);
     }
 }

@@ -273,7 +273,7 @@ class UpdateCatalogBulkTest extends TestCase
      *
      * @return array
      */
-    public function getProductCount()
+    public static function getProductCount()
     {
         return [
             [200],

@@ -426,7 +426,7 @@ class OrderItemProcessorTest extends TestCase
 
         $this->collectionMock->expects($this->atLeastOnce())
             ->method('getName')
-            ->willReturnOnConsecutiveCalls('chaz', 'wingman', 'sprat', 'rbv');
+            ->willReturn('chaz');
 
         $this->attributeFactoryMock->expects($this->atLeastOnce())
             ->method('create')

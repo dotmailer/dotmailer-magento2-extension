@@ -182,7 +182,7 @@ class DefaultLevelCatalogSyncerTest extends TestCase
      *
      * @return array
      */
-    public function getProducts()
+    public static function getProducts()
     {
         return [
             [['Product 1','Product 2','Product 3']],

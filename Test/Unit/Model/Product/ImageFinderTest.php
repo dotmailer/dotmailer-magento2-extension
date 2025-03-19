@@ -86,10 +86,7 @@ class ImageFinderTest extends TestCase
             ->disableOriginalConstructor()
             ->getMock();
         $this->mediaConfigMock = $this->createMock(Config::class);
-        $this->mediaConfigFactoryMock = $this->getMockBuilder(ConfigFactory::class)
-            ->disableOriginalConstructor()
-            ->setMethods(['create'])
-            ->getMock();
+        $this->mediaConfigFactoryMock = $this->createMock(ConfigFactory::class);
         $this->imageHelperMock = $this->createMock(Image::class);
         $this->loggerMock = $this->createMock(Logger::class);
 

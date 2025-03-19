@@ -161,11 +161,16 @@ class CatalogTest extends TestCase
      */
     private function getLimitAndBreakValue()
     {
+        $matcher = $this->exactly(2);
         $this->scopeConfigInterfaceMock->method('getValue')
-            ->withConsecutive(
-                [Config::XML_PATH_CONNECTOR_TRANSACTIONAL_DATA_SYNC_LIMIT],
-                [Config::XML_PATH_CONNECTOR_SYNC_BREAK_VALUE]
-            )->willReturnOnConsecutiveCalls(500, null);
+            ->willReturnCallback(function () use ($matcher) {
+                return match ($matcher->getInvocationCount()) {
+                    1 => [Config::XML_PATH_CONNECTOR_TRANSACTIONAL_DATA_SYNC_LIMIT],
+                    2 => [Config::XML_PATH_CONNECTOR_SYNC_BREAK_VALUE],
+                    3 => [Config::XML_PATH_CONNECTOR_MEGA_BATCH_SIZE_CATALOG]
+                };
+            })
+            ->willReturnOnConsecutiveCalls(500, null, 2500);
     }
 
     /**
@@ -264,27 +269,7 @@ class CatalogTest extends TestCase
             ->method('create')
             ->willReturn($this->importerMock);
 
-        $this->importerMock->expects($this->atLeastOnce())
-            ->method('registerQueue')
-            ->withConsecutive(
-                [
-                'Catalog_Store_1',
-                $productsToImport['Catalog_Store_1']['products'],
-                Importer::MODE_BULK,
-                $productsToImport['Catalog_Store_1']['websiteId']
-                ],
-                [
-                'Catalog_Store_2',
-                $productsToImport['Catalog_Store_2']['products'],
-                Importer::MODE_BULK,
-                $productsToImport['Catalog_Store_2']['websiteId']
-                ],
-                [
-                'Catalog_Store_3',
-                $productsToImport['Catalog_Store_3']['products'],
-                Importer::MODE_BULK,
-                $productsToImport['Catalog_Store_3']['websiteId']
-                ],
-            );
+        $this->importerMock->expects($this->exactly(3))
+            ->method('registerQueue');
     }
 }

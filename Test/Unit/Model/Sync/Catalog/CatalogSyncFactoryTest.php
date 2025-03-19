@@ -91,7 +91,8 @@ class CatalogSyncFactoryTest extends TestCase
 
     /**
      * @dataProvider getInvalidSyncLevel
-     * @param        int
+     *
+     * @param int $syncLevel
      */
     public function testThatIfSyncLevelFailsToBeDefinedAsStoredOrDefaultLevel($syncLevel)
     {
@@ -121,7 +122,7 @@ class CatalogSyncFactoryTest extends TestCase
      *
      * @return array
      */
-    public function getInvalidSyncLevel()
+    public static function getInvalidSyncLevel()
     {
         return [
             [0],

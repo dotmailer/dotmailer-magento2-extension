@@ -81,24 +81,13 @@ class V2InProgressImportResponseHandlerTest extends TestCase
         $this->v2ReportHandler = $this->createMock(V2ImporterReportHandler::class);
 
         $this->clientMock = $this->createMock(Client::class);
-        $this->importerModelMock = $this->getMockBuilder(Importer::class)
-            ->disableOriginalConstructor()
-            ->setMethods(['getImportId','getWebsiteId','getImportType','getImportFile'])
-            ->getMock();
+        $this->importerModelMock = $this->createMock(Importer::class);
 
         $this->importerCollectionMock = $this->createMock(ImporterCollection::class);
 
         $this->importerCollectionMock->expects($this->atLeastOnce())
             ->method('getIterator')
             ->willReturn(new \ArrayIterator([$this->importerModelMock]));
-
-        $this->importerModelMock->expects($this->atLeastOnce())
-            ->method('getWebsiteId')
-            ->willReturn(1);
-
-        $this->importerModelMock->expects($this->atLeastOnce())
-            ->method('getImportId')
-            ->willReturn('import-id');
 
         $this->helperMock->expects($this->atLeastOnce())
             ->method('getWebsiteApiClient')
@@ -130,9 +119,39 @@ class V2InProgressImportResponseHandlerTest extends TestCase
             ->method('getContactsTransactionalDataImportByImportId')
             ->willReturn((object) ['status' => 'Finished']);
 
+        $matcher = $this->exactly(12);
         $this->importerModelMock->expects($this->atLeastOnce())
-            ->method('getImportType')
-            ->willReturn(ImporterModel::IMPORT_TYPE_ORDERS);
+            ->method('__call')
+            ->willReturnCallback(function () use ($matcher) {
+                return match ($matcher->getInvocationCount()) {
+                    1 => ['getWebsiteId'],
+                    2 => ['getImportId'],
+                    3 => ['setImportStatus'],
+                    4 => ['setImportFinished'],
+                    5 => ['setMessage'],
+                    6 => ['getImportType'],
+                    7 => ['getImportId'],
+                    8 => ['getImportId'],
+                    9 => ['getWebsiteId'],
+                    10 => ['getWebsiteId'],
+                    11 => ['getImportType'],
+                    12 => ['getWebsiteId'],
+                };
+            })
+            ->willReturnOnConsecutiveCalls(
+                1,
+                'import-id',
+                $this->importerModelMock,
+                $this->importerModelMock,
+                $this->importerModelMock,
+                ImporterModel::IMPORT_TYPE_ORDERS,
+                'import-id',
+                'import-id',
+                1,
+                1,
+                ImporterModel::IMPORT_TYPE_CONTACT,
+                1
+            );
 
         $this->v2ReportHandler->expects($this->atLeastOnce())
             ->method('processInsightReportFaults');
@@ -159,13 +178,39 @@ class V2InProgressImportResponseHandlerTest extends TestCase
             ->method('getContactsImportByImportId')
             ->willReturn((object) ['status' => 'Finished']);
 
+        $matcher = $this->exactly(12);
         $this->importerModelMock->expects($this->atLeastOnce())
-            ->method('getImportType')
-            ->willReturn(ImporterModel::IMPORT_TYPE_CONTACT);
-
-        $this->importerModelMock->expects($this->atLeastOnce())
-            ->method('getImportFile')
-            ->willReturn('file');
+            ->method('__call')
+            ->willReturnCallback(function () use ($matcher) {
+                return match ($matcher->getInvocationCount()) {
+                    1 => ['getWebsiteId'],
+                    2 => ['getImportId'],
+                    3 => ['setImportStatus'],
+                    4 => ['setImportFinished'],
+                    5 => ['setMessage'],
+                    6 => ['getImportType'],
+                    7 => ['getImportFile'],
+                    8 => ['getImportId'],
+                    9 => ['getImportId'],
+                    10 => ['getWebsiteId'],
+                    11 => ['getImportType'],
+                    12 => ['getWebsiteId'],
+                };
+            })
+            ->willReturnOnConsecutiveCalls(
+                1,
+                'import-id',
+                $this->importerModelMock,
+                $this->importerModelMock,
+                $this->importerModelMock,
+                ImporterModel::IMPORT_TYPE_CONTACT,
+                'customers.csv',
+                'import-id',
+                'import-id',
+                1,
+                ImporterModel::IMPORT_TYPE_CONTACT,
+                1
+            );
 
         $this->fileMock->expects($this->atLeastOnce())
             ->method('isFilePathExistWithFallback')
