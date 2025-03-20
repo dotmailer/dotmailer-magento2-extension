@@ -37,12 +37,12 @@ define(['jquery', 'domReady!'], function ($) {
         consoleScroll();
 
         //Observer select
-        $('#connector-log-selector').change(function () {
+        $('#connector-log-selector').on('change', function () {
             doUpdate($('#connector-log-selector').val(), logUpdater.url);
         });
 
         //Observe button click for reload
-        $('#connector-log-reloader').click(function () {
+        $('#connector-log-reloader').on('click', function () {
             doUpdate($('#connector-log-selector').val(), logUpdater.url);
         });
     };

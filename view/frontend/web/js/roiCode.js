@@ -22,7 +22,7 @@ define(['jquery', 'dmmpt'], function ($) {
      * @param {Object} roiCode
      */
     return function (roiCode) {
-        $(document).ready(function () {
+        $(function () {
             init(roiCode.items, roiCode.total);
         });
     };

@@ -6,7 +6,7 @@ define(['jquery', 'domReady!'], function ($) {
      * @param {String} url
      */
     function init(url) {
-        $('#connector_data_mapping_dynamic_datafield_datafield_button').click(function () {
+        $('#connector_data_mapping_dynamic_datafield_datafield_button').on('click', function () {
             var name = $('#connector_data_mapping_dynamic_datafield_datafield_name').val(),
                 type = $('#connector_data_mapping_dynamic_datafield_datafield_type').val(),
                 defaultVal = $('#connector_data_mapping_dynamic_datafield_datafield_default').val(),

@@ -6,7 +6,7 @@ define(['jquery','domReady!'], function ($) {
      * @param {String} url
      */
     function init(url) {
-        $('#sync_settings_dynamic_addressbook_addressbook_button').click(function () {
+        $('#sync_settings_dynamic_addressbook_addressbook_button').on('click', function () {
             var name = $('#sync_settings_dynamic_addressbook_addressbook_name').val(),
                 visibility = $('#sync_settings_dynamic_addressbook_visibility').val();
 
