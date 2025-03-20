@@ -103,6 +103,8 @@
     <preference for="Dotdigitalgroup\Email\Api\Model\Sync\Batch\Record\RecordImportedStrategyInterface" type="Dotdigitalgroup\Email\Model\Sync\Batch\Record\ContactImportedStrategy"/>
     <preference for="Dotdigitalgroup\Email\Api\Model\Sync\Batch\Sender\SenderStrategyInterface" type="Dotdigitalgroup\Email\Model\Sync\Batch\Sender\ContactSenderStrategy"/>
     <preference for="Dotdigitalgroup\Email\Api\Model\Sync\Batch\BatchMergerInterface" type="Dotdigitalgroup\Email\Model\Sync\Batch\MergeManager"/>
+    <preference for="Dotdigitalgroup\Email\Api\Logger\LoggerInterface" type="Dotdigitalgroup\Email\Logger\Logger"/>
+
     <type name="Dotdigitalgroup\Email\Logger\Handler\ConnectorLogHandler">
         <arguments>
             <argument name="filesystem" xsi:type="object">Magento\Framework\Filesystem\Driver\File</argument>
