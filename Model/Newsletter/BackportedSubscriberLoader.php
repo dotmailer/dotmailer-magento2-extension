@@ -20,17 +20,17 @@ class BackportedSubscriberLoader
     /**
      * @var SubscriberFactory
      */
-    protected $subscriberFactory;
+    private $subscriberFactory;
 
     /**
      * @var SubscriberResourceFactory
      */
-    protected $subscriberResourceFactory;
+    private $subscriberResourceFactory;
 
     /**
      * @var StoreManagerInterface
      */
-    protected $storeManager;
+    private $storeManager;
 
     /**
      * @param SubscriberFactory $subscriberFactory

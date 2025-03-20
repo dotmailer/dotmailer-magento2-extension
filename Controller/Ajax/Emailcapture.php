@@ -35,7 +35,7 @@ class Emailcapture implements HttpPostActionInterface
     /**
      * @var JsonFactory
      */
-    protected $resultJsonFactory;
+    private $resultJsonFactory;
 
     /**
      * Emailcapture constructor.
