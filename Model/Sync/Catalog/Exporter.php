@@ -34,29 +34,21 @@ class Exporter
     private $scopeConfig;
 
     /**
-     * @var StoreManagerInterface
-     */
-    private $storeManager;
-
-    /**
      * @param CollectionFactory $catalogCollectionFactory
      * @param ProductFactory $connectorProductFactory
      * @param Logger $logger
      * @param ScopeConfigInterface $scopeConfig
-     * @param StoreManagerInterface $storeManager
      */
     public function __construct(
         CollectionFactory $catalogCollectionFactory,
         ProductFactory $connectorProductFactory,
         Logger $logger,
-        ScopeConfigInterface $scopeConfig,
-        StoreManagerInterface $storeManager
+        ScopeConfigInterface $scopeConfig
     ) {
         $this->catalogCollectionFactory = $catalogCollectionFactory;
         $this->connectorProductFactory = $connectorProductFactory;
         $this->logger = $logger;
         $this->scopeConfig = $scopeConfig;
-        $this->storeManager = $storeManager;
     }
 
     /**
@@ -107,32 +99,30 @@ class Exporter
      */
     private function getProductsToExport($storeId, $productIds)
     {
-        $websiteId = $this->storeManager->getStore($storeId)->getWebsiteId();
-
         return $this->catalogCollectionFactory->create()
             ->filterProductsByStoreTypeAndVisibility(
                 $storeId,
                 $productIds,
-                $this->getAllowedProductTypes($websiteId),
-                $this->getAllowedProductVisibilities($websiteId)
+                $this->getAllowedProductTypes($storeId),
+                $this->getAllowedProductVisibilities($storeId)
             );
     }
 
     /**
      * Get allowed product types.
      *
-     * @param int $websiteId
+     * @param int|null $storeId
      *
      * @return array
      */
-    private function getAllowedProductTypes(int $websiteId): array
+    private function getAllowedProductTypes(?int $storeId): array
     {
         $types = explode(
             ',',
             $this->scopeConfig->getValue(
                 Config::XML_PATH_CONNECTOR_SYNC_CATALOG_TYPE,
-                ScopeInterface::SCOPE_WEBSITE,
-                $websiteId
+                ScopeInterface::SCOPE_STORE,
+                $storeId
             )
         );
         return array_filter($types);
@@ -141,18 +131,18 @@ class Exporter
     /**
      * Get allowed product visibilities.
      *
-     * @param int $websiteId
+     * @param int|null $storeId
      *
      * @return array
      */
-    private function getAllowedProductVisibilities(int $websiteId): array
+    private function getAllowedProductVisibilities(?int $storeId): array
     {
         $visibilities = explode(
             ',',
             $this->scopeConfig->getValue(
                 Config::XML_PATH_CONNECTOR_SYNC_CATALOG_VISIBILITY,
-                ScopeInterface::SCOPE_WEBSITE,
-                $websiteId
+                ScopeInterface::SCOPE_STORE,
+                $storeId
             )
         );
         return array_filter($visibilities);
