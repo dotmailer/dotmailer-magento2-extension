@@ -92,20 +92,13 @@ class NewsletterTest extends \Magento\TestFramework\TestCase\AbstractController
             ->getMock();
         $this->mockContactCollection = $this->createMock(ContactCollection::class);
         $this->mockContactCollectionFactory = $this->createMock(ContactCollectionFactory::class);
-        $this->mockCustomer = $this->getMockBuilder(Customer::class)
-            ->disableOriginalConstructor()
-            ->setMethods(array_merge(get_class_methods(Customer::class), ['getEmail']))
-            ->getMock();
+        $this->mockCustomer = $this->createMock(Customer::class);
         $this->mockHelper = $this->createMock(Data::class);
         $this->mockAccountConfig = $this->createMock(Configuration::class);
         $this->mockClient = $this->createMock(Client::class);
         $this->mockStore = $this->createMock(Store::class);
         $this->mockStoreManager = $this->createMock(StoreManagerInterface::class);
-        $sessionMethods = array_merge(get_class_methods(CustomerSession::class), ['getConnectorContactId']);
-        $this->mockCustomerSession = $this->getMockBuilder(CustomerSession::class)
-            ->disableOriginalConstructor()
-            ->setMethods($sessionMethods)
-            ->getMock();
+        $this->mockCustomerSession = $this->createMock(CustomerSession::class);
         $this->mockECContactObject = (object) ['id' => '111'];
 
         $objectManager->addSharedInstance($this->mockFormKeyValidator, FormKeyValidator::class);
@@ -171,7 +164,7 @@ class NewsletterTest extends \Magento\TestFramework\TestCase\AbstractController
         $this->mockCustomerSession->method('getCustomer')
             ->willReturn($this->mockCustomer);
 
-        $this->mockCustomer->method('getEmail')
+        $this->mockCustomer->method('__call')->with('getEmail')
             ->willReturn('test@emailsim.io');
 
         $this->mockContactCollectionFactory->method('create')
@@ -182,9 +175,6 @@ class NewsletterTest extends \Magento\TestFramework\TestCase\AbstractController
 
         $this->mockContact->method('getContactId')
             ->willReturn(20);
-
-        $this->mockCustomerSession->method('getConnectorContactId')
-            ->willReturn($contactId);
 
         $this->mockHelper->method('getWebsiteApiClient')
             ->willReturn($this->mockClient);

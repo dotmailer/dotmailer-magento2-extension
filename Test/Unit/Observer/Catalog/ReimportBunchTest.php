@@ -27,10 +27,7 @@ class ReimportBunchTest extends TestCase
     protected function setUp() :void
     {
         $this->bulkUpdater = $this->createMock(UpdateCatalogBulk::class);
-        $this->observerMock = $this->getMockBuilder(Observer::class)
-            ->setMethods(['getBunch'])
-            ->disableOriginalConstructor()
-            ->getMock();
+        $this->observerMock = $this->createMock(Observer::class);
 
         $this->reimportBunch = new ReimportBunch(
             $this->bulkUpdater
@@ -40,7 +37,8 @@ class ReimportBunchTest extends TestCase
     public function testThatMethodGetBunchAndExecuteAreCalling()
     {
         $this->observerMock->expects($this->once())
-            ->method('getBunch')
+            ->method('__call')
+            ->with('getBunch')
             ->willReturn($this->observerMock);
 
         $this->bulkUpdater->expects($this->once())

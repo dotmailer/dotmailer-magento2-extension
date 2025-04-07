@@ -22,6 +22,7 @@ use Dotdigitalgroup\Email\Model\Validator\Schema\SchemaValidatorRuleFactory;
 use Dotdigitalgroup\Email\Model\Validator\Schema\SchemaValidatorRuleSet;
 use Dotdigitalgroup\Email\Model\Validator\Schema\SchemaValidatorRuleSetFactory;
 use Magento\Framework\Url\Validator;
+use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\TestCase;
 
 class SchemaValidatorTest extends TestCase
@@ -67,6 +68,7 @@ class SchemaValidatorTest extends TestCase
     protected function setUp() :void
     {
         $this->urlValidatorMock = $this->createMock(Validator::class);
+        $this->schemaOrderValidatorRuleSetFactory = $this->createMock(SchemaValidatorRuleSetFactory::class);
 
         $this->setUpValidator();
 
@@ -106,12 +108,6 @@ class SchemaValidatorTest extends TestCase
         $this->assertEmpty($this->schemaOrderValidator->getErrors());
     }
 
-    /**
-     * Test Valid Order
-     *
-     * @throws \Dotdigitalgroup\Email\Model\Validator\Schema\Exception\RuleNotDefinedException
-     * @throws \Dotdigitalgroup\Email\Model\Validator\Schema\Exception\PatternInvalidException
-     */
     public function testPatternMatchIsNotValid()
     {
         $this->urlValidatorMock->expects($this->once())
@@ -193,66 +189,69 @@ class SchemaValidatorTest extends TestCase
      * Prepare test classes for validation
      *
      * @return void
+     * @throws Exception
      */
-    private function setUpValidator()
+    private function setUpValidator(): void
     {
-        $this->schemaOrderValidatorRuleSetFactory = $this->createMock(SchemaValidatorRuleSetFactory::class);
+        $matcher = $this->exactly(9);
         $schemaOrderValidatorRuleMockFactory = $this->createMock(SchemaValidatorRuleFactory::class);
         $schemaOrderValidatorRuleMockFactory->expects($this->exactly(9))
             ->method('create')
-            ->withConsecutive(
-                [["pattern" =>'isFloat']],
-                [["pattern" =>'isString']],
-                [["pattern" =>'dateFormat']],
-                [["pattern" =>'isFloat']],
-                [["pattern" =>'isString']],
-                [["pattern" =>'isFloat']],
-                [["pattern" =>'isString']],
-                [["pattern" =>'isInt']],
-                [["pattern" =>'url']]
-            )
-            ->will(
-                $this->onConsecutiveCalls(
-                    $this->getRuleFactory('isFloat'),
-                    $this->getRuleFactory('isString'),
-                    $this->getRuleFactory('dateFormat'),
-                    $this->getRuleFactory('isFloat'),
-                    $this->getRuleFactory('isString'),
-                    $this->getRuleFactory('isFloat'),
-                    $this->getRuleFactory('isString'),
-                    $this->getRuleFactory('isInt'),
-                    $this->getRuleFactory('url')
-                )
+            ->willReturnCallback(function () use ($matcher) {
+                return match ($matcher->numberOfInvocations()) {
+                    1 => [["pattern" => 'isFloat']],
+                    2 => [["pattern" => 'isString']],
+                    3 => [["pattern" => 'dateFormat']],
+                    4 => [["pattern" => 'isFloat']],
+                    5 => [["pattern" => 'isString']],
+                    6 => [["pattern" => 'isFloat']],
+                    7 => [["pattern" => 'isString']],
+                    8 => [["pattern" => 'isInt']],
+                    9 => [["pattern" => 'url']]
+                };
+            })
+            ->willReturnOnConsecutiveCalls(
+                $this->getRuleFactory('isFloat'),
+                $this->getRuleFactory('isString'),
+                $this->getRuleFactory('dateFormat'),
+                $this->getRuleFactory('isFloat'),
+                $this->getRuleFactory('isString'),
+                $this->getRuleFactory('isFloat'),
+                $this->getRuleFactory('isString'),
+                $this->getRuleFactory('isInt'),
+                $this->getRuleFactory('url')
             );
+
+        $matcher = $this->exactly(11);
         $this->schemaOrderValidatorRuleSetFactory->expects($this->exactly(11))
             ->method('create')
-            ->withConsecutive(
-                [["key" =>'orderTotal']],
-                [["key" =>'currency']],
-                [["key" =>'purchaseDate']],
-                [["key" =>'orderSubtotal']],
-                [["key" =>'products']],
-                [["key" =>'products.*']],
-                [["key" =>'products.*.name']],
-                [["key" =>'products.*.price']],
-                [["key" =>'products.*.sku']],
-                [["key" =>'products.*.qty']],
-                [["key" =>'products.*.imagePath']]
-            )
-            ->will(
-                $this->onConsecutiveCalls(
-                    new SchemaValidatorRuleSet($schemaOrderValidatorRuleMockFactory),
-                    new SchemaValidatorRuleSet($schemaOrderValidatorRuleMockFactory),
-                    new SchemaValidatorRuleSet($schemaOrderValidatorRuleMockFactory),
-                    new SchemaValidatorRuleSet($schemaOrderValidatorRuleMockFactory),
-                    new SchemaValidatorRuleSet($schemaOrderValidatorRuleMockFactory),
-                    new SchemaValidatorRuleSet($schemaOrderValidatorRuleMockFactory),
-                    new SchemaValidatorRuleSet($schemaOrderValidatorRuleMockFactory),
-                    new SchemaValidatorRuleSet($schemaOrderValidatorRuleMockFactory),
-                    new SchemaValidatorRuleSet($schemaOrderValidatorRuleMockFactory),
-                    new SchemaValidatorRuleSet($schemaOrderValidatorRuleMockFactory),
-                    new SchemaValidatorRuleSet($schemaOrderValidatorRuleMockFactory)
-                )
+            ->willReturnCallback(function () use ($matcher) {
+                return match ($matcher->numberOfInvocations()) {
+                    1 => [["key" => 'orderTotal']],
+                    2 => [["key" => 'currency']],
+                    3 => [["key" => 'purchaseDate']],
+                    4 => [["key" => 'orderSubtotal']],
+                    5 => [["key" => 'products']],
+                    6 => [["key" => 'products.*']],
+                    7 => [["key" => 'products.*.name']],
+                    8 => [["key" => 'products.*.price']],
+                    9 => [["key" => 'products.*.sku']],
+                    10 => [["key" => 'products.*.qty']],
+                    11 => [["key" => 'products.*.imagePath']]
+                };
+            })
+            ->willReturn(
+                new SchemaValidatorRuleSet($schemaOrderValidatorRuleMockFactory),
+                new SchemaValidatorRuleSet($schemaOrderValidatorRuleMockFactory),
+                new SchemaValidatorRuleSet($schemaOrderValidatorRuleMockFactory),
+                new SchemaValidatorRuleSet($schemaOrderValidatorRuleMockFactory),
+                new SchemaValidatorRuleSet($schemaOrderValidatorRuleMockFactory),
+                new SchemaValidatorRuleSet($schemaOrderValidatorRuleMockFactory),
+                new SchemaValidatorRuleSet($schemaOrderValidatorRuleMockFactory),
+                new SchemaValidatorRuleSet($schemaOrderValidatorRuleMockFactory),
+                new SchemaValidatorRuleSet($schemaOrderValidatorRuleMockFactory),
+                new SchemaValidatorRuleSet($schemaOrderValidatorRuleMockFactory),
+                new SchemaValidatorRuleSet($schemaOrderValidatorRuleMockFactory),
             );
     }
 }

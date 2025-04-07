@@ -2,6 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Test\Unit\Model\AbandonedCart\CartInsight;
 
+use DateTimeInterface;
 use Dotdigital\Resources\AbstractResource;
 use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\AbandonedCart\CartInsight\Data as CartInsightData;
@@ -202,17 +203,22 @@ class DataTest extends TestCase
             ->method('getId')
             ->willReturn($key);
 
+        $matcher = $this->exactly(3);
         $this->quoteMock->expects($this->atLeastOnce())
             ->method('__call')
-            ->withConsecutive(
-                [$this->equalTo('getQuoteCurrencyCode')],
-                [$this->equalTo('getSubtotal')],
-                [$this->equalTo('getGrandTotal')]
-            )
+            ->willReturnCallback(function () use ($matcher, $expectedPayload) {
+                return match ($matcher->numberOfInvocations()) {
+                    1 => [$this->equalTo('getQuoteCurrencyCode')],
+                    2 => [$this->equalTo('getSubtotal')],
+                    3 => [$this->equalTo('getGrandTotal')],
+                    4 => [$this->equalTo('getCustomerEmail')],
+                };
+            })
             ->willReturnOnConsecutiveCalls(
                 $expectedPayload['currency'],
                 $expectedPayload['subTotal'],
-                $expectedPayload['grandTotal']
+                $expectedPayload['grandTotal'],
+                'chaz@emailsim.io'
             );
 
         $totalMock = $this->createMock(TotalsInterface::class);
@@ -249,12 +255,15 @@ class DataTest extends TestCase
             ->method('getUpdatedAt')
             ->willReturn($updatedAt);
 
+        $matcher = $this->exactly(2);
         $this->dateTimeMock
             ->method('date')
-            ->withConsecutive(
-                [\DateTime::ATOM, $createdAt],
-                [\DateTime::ATOM, $updatedAt]
-            )
+            ->willReturnCallback(function () use ($matcher, $createdAt, $updatedAt) {
+                return match ($matcher->numberOfInvocations()) {
+                    1 => [DateTimeInterface::ATOM, $createdAt],
+                    2 => [DateTimeInterface::ATOM, $updatedAt],
+                };
+            })
             ->willReturnOnConsecutiveCalls(
                 $expectedPayload['createdDate'],
                 $expectedPayload['modifiedDate']
@@ -265,12 +274,15 @@ class DataTest extends TestCase
             ->method('getShippingAddress')
             ->willReturn($addressMock);
 
+        $matcher = $this->exactly(2);
         $addressMock->expects($this->atLeastOnce())
             ->method('__call')
-            ->withConsecutive(
-                [$this->equalTo('getTaxAmount')],
-                [$this->equalTo('getShippingAmount')]
-            )
+            ->willReturnCallback(function () use ($matcher, $expectedPayload) {
+                return match ($matcher->numberOfInvocations()) {
+                    1 => [$this->equalTo('getTaxAmount')],
+                    2 => [$this->equalTo('getShippingAmount')]
+                };
+            })
             ->willReturnOnConsecutiveCalls(
                 $expectedPayload['taxAmount'],
                 $expectedPayload['shipping']
@@ -341,13 +353,16 @@ class DataTest extends TestCase
             ->method('getQty')
             ->willReturn($expectedPayload['lineItems'][0]['quantity']);
 
+        $matcher = $this->exactly(2);
         $this->priceCurrencyInterfaceMock
             ->expects($this->atLeast(2))
             ->method('convertAndRound')
-            ->withConsecutive(
-                [$productPrice, $this->storeId, $expectedPayload['currency']],
-                [$itemBasePrice, $this->storeId, $expectedPayload['currency']]
-            )
+            ->willReturnCallback(function () use ($matcher, $productPrice, $itemBasePrice, $expectedPayload) {
+                return match ($matcher->numberOfInvocations()) {
+                    1 => [$productPrice, $this->storeId, $expectedPayload['currency']],
+                    2 => [$itemBasePrice, $this->storeId, $expectedPayload['currency']]
+                };
+            })
             ->willReturnOnConsecutiveCalls(
                 $productPrice,
                 $itemBasePrice

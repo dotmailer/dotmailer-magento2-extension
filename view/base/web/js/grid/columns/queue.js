@@ -48,7 +48,7 @@ define([
                 }
             );
 
-            previewPopup = $('<div/>').html(modalHtml);
+            previewPopup = $('<div></div>').html(modalHtml);
 
             previewPopup.modal(
                 {

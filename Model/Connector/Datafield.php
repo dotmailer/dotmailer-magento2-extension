@@ -319,7 +319,7 @@ class Datafield
      *
      * @return void
      */
-    public function setContactDatafields(array $contactDatafields, string $xmlPathPrefix = null)
+    public function setContactDatafields(array $contactDatafields, ?string $xmlPathPrefix = null)
     {
         if ($xmlPathPrefix) {
             $this->xmlPathPrefixedFields[$xmlPathPrefix] = $contactDatafields;

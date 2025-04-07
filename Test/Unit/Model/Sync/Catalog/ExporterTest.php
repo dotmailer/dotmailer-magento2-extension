@@ -9,8 +9,6 @@ use Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory;
 use Dotdigitalgroup\Email\Model\Sync\Catalog\Exporter;
 use Magento\Catalog\Model\Product;
 use Magento\Framework\App\Config\ScopeConfigInterface;
-use Magento\Store\Api\Data\StoreInterface;
-use Magento\Store\Model\StoreManagerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
@@ -46,11 +44,6 @@ class ExporterTest extends TestCase
      */
     private $scopeConfigMock;
 
-    /**
-     * @var StoreManagerInterface
-     */
-    private $storeManagerMock;
-
     protected function setUp() :void
     {
         $this->collectionFactoryMock = $this->createMock(CollectionFactory::class);
@@ -58,14 +51,12 @@ class ExporterTest extends TestCase
         $this->collectionMock = $this->createMock(Collection::class);
         $this->loggerMock = $this->createMock(Logger::class);
         $this->scopeConfigMock = $this->createMock(ScopeConfigInterface::class);
-        $this->storeManagerMock = $this->createMock(StoreManagerInterface::class);
 
         $this->exporter = new Exporter(
             $this->collectionFactoryMock,
             $this->productFactoryMock,
             $this->loggerMock,
-            $this->scopeConfigMock,
-            $this->storeManagerMock
+            $this->scopeConfigMock
         );
     }
 
@@ -86,15 +77,6 @@ class ExporterTest extends TestCase
         string $visibilities
     ) {
         $productsToProcess = $this->getMockProductsToProcess();
-
-        $storeMock = $this->createMock(StoreInterface::class);
-        $this->storeManagerMock->expects($this->once())
-            ->method('getStore')
-            ->willReturn($storeMock);
-
-        $storeMock->expects($this->once())
-            ->method('getWebsiteId')
-            ->willReturn(1);
 
         $this->scopeConfigMock->expects($this->exactly(2))
             ->method('getValue')
@@ -189,7 +171,7 @@ class ExporterTest extends TestCase
      * @return array
      * Returns ids for products and store
      */
-    public function getProductIdStoreIdsTypesAndVisibilities()
+    public static function getProductIdStoreIdsTypesAndVisibilities()
     {
         return [
             [1, 1254, 337, '0', '0'],

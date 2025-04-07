@@ -58,8 +58,8 @@ class BackInStockEnabled extends Value
         Data $helper,
         Account $account,
         WriterInterface $configWriter,
-        AbstractResource $resource = null,
-        AbstractDb $resourceCollection = null,
+        ?AbstractResource $resource = null,
+        ?AbstractDb $resourceCollection = null,
         array $data = []
     ) {
         $this->configWriter = $configWriter;

@@ -186,7 +186,7 @@ class ServerSentEvents
      *
      * @return void
      */
-    protected function init()
+    private function init()
     {
         // Disable time limit
         set_time_limit(0); // phpcs:ignore

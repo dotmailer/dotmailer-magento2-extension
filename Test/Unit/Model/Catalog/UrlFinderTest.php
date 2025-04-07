@@ -89,10 +89,7 @@ class UrlFinderTest extends TestCase
         $this->imageBuilderMock = $this->createMock(ImageBuilder::class);
         $this->parentFinderMock = $this->createMock(ParentFinder::class);
 
-        $imageBuilderFactory = $this->getMockBuilder(ImageBuilderFactory::class)
-            ->disableOriginalConstructor()
-            ->setMethods(['create'])
-            ->getMock();
+        $imageBuilderFactory = $this->createMock(ImageBuilderFactory::class);
         $imageBuilderFactory->expects($this->once())
             ->method('create')
             ->willReturn($this->imageBuilderMock);

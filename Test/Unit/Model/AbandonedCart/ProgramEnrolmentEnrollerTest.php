@@ -11,6 +11,7 @@ use Dotdigitalgroup\Email\Model\AbandonedCart\ProgramEnrolment\Rules;
 use Dotdigitalgroup\Email\Model\AbandonedCart\ProgramEnrolment\Saver;
 use Dotdigitalgroup\Email\Model\AbandonedCart\TimeLimit;
 use Dotdigitalgroup\Email\Model\Apiconnector\V3\Contact\Patcher;
+use Dotdigitalgroup\Email\Model\ResourceModel\Automation\Collection as AutomationCollection;
 use Dotdigitalgroup\Email\Model\ResourceModel\Automation\CollectionFactory as AutomationCollectionFactory;
 use Dotdigitalgroup\Email\Model\ResourceModel\Order\Collection;
 use Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory;
@@ -95,11 +96,7 @@ class ProgramEnrolmentEnrollerTest extends TestCase
 
     protected function setUp() :void
     {
-        $this->orderCollectionFactoryMock = $this->getMockBuilder(CollectionFactory::class)
-            ->setMethods(['create'])
-            ->disableOriginalConstructor()
-            ->getMock();
-
+        $this->orderCollectionFactoryMock = $this->createMock(CollectionFactory::class);
         $this->scopeConfigMock = $this->createMock(ScopeConfigInterface::class);
         $this->interval = $this->createMock(Interval::class);
         $this->saver = $this->createMock(Saver::class);
@@ -115,11 +112,7 @@ class ProgramEnrolmentEnrollerTest extends TestCase
         $this->orderCollectionMock->expects($this->any())
             ->method('getIterator')
             ->willReturn(new \ArrayIterator([$this->quoteMock]));
-
-        $this->automationCollectionFactoryMock = $this->getMockBuilder(AutomationCollectionFactory::class)
-            ->disableOriginalConstructor()
-            ->setMethods(['create','getAbandonedCartAutomationsForContactByInterval','getSize'])
-            ->getMock();
+        $this->automationCollectionFactoryMock = $this->createMock(AutomationCollectionFactory::class);
 
         $this->timeLimitMock = $this->createMock(TimeLimit::class);
         $this->loggerMock = $this->createMock(Logger::class);
@@ -179,15 +172,16 @@ class ProgramEnrolmentEnrollerTest extends TestCase
             ->method('getAbandonedCartTimeLimit')
             ->willReturn('6');
 
+        $automationCollectionMock = $this->createMock(AutomationCollection::class);
         $this->automationCollectionFactoryMock->expects($this->atLeastOnce())
             ->method('create')
-            ->willReturn($this->automationCollectionFactoryMock);
+            ->willReturn($automationCollectionMock);
 
-        $this->automationCollectionFactoryMock->expects($this->atLeastOnce())
+        $automationCollectionMock->expects($this->atLeastOnce())
             ->method('getAbandonedCartAutomationsForContactByInterval')
-            ->willReturn($this->automationCollectionFactoryMock);
+            ->willReturn($automationCollectionMock);
 
-        $this->automationCollectionFactoryMock->expects($this->atLeastOnce())
+        $automationCollectionMock->expects($this->atLeastOnce())
             ->method('getSize')
             ->willReturn(0);
 
@@ -207,15 +201,16 @@ class ProgramEnrolmentEnrollerTest extends TestCase
             ->method('getAbandonedCartTimeLimit')
             ->willReturn('6');
 
+        $automationCollectionMock = $this->createMock(AutomationCollection::class);
         $this->automationCollectionFactoryMock->expects($this->atLeastOnce())
             ->method('create')
-            ->willReturn($this->automationCollectionFactoryMock);
+            ->willReturn($automationCollectionMock);
 
-        $this->automationCollectionFactoryMock->expects($this->atLeastOnce())
+        $automationCollectionMock->expects($this->atLeastOnce())
             ->method('getAbandonedCartAutomationsForContactByInterval')
-            ->willReturn($this->automationCollectionFactoryMock);
+            ->willReturn($automationCollectionMock);
 
-        $this->automationCollectionFactoryMock->expects($this->atLeastOnce())
+        $automationCollectionMock->expects($this->atLeastOnce())
             ->method('getSize')
             ->willReturn(1);
 
@@ -248,15 +243,15 @@ class ProgramEnrolmentEnrollerTest extends TestCase
         $storesArray[0]->method('getId')
             ->willReturn($storeId);
 
+        $matcher = $this->exactly(2);
         $this->scopeConfigMock->expects($this->atLeastOnce())
             ->method('getValue')
-            ->withConsecutive(
-                [Config::XML_PATH_LOSTBASKET_ENROL_TO_PROGRAM_ID,
-                ScopeInterface::SCOPE_STORE,
-                $storeId],
-                [Config::XML_PATH_CONNECTOR_SYNC_LIMIT,
-                    ScopeInterface::SCOPE_STORE]
-            )
+            ->willReturnCallback(function () use ($matcher, $storeId, $programId) {
+                return match ($matcher->numberOfInvocations()) {
+                    1 => [Config::XML_PATH_LOSTBASKET_ENROL_TO_PROGRAM_ID, ScopeInterface::SCOPE_STORE, $storeId],
+                    2 => [Config::XML_PATH_CONNECTOR_SYNC_LIMIT, ScopeInterface::SCOPE_STORE]
+                };
+            })
             ->willReturnOnConsecutiveCalls(
                 $programId,
                 500

@@ -82,25 +82,13 @@ class StoreLevelCatalogSyncerTest extends TestCase
             ->method('getStores')
             ->willReturn($stores);
 
-        $this->helperMock->method('isEnabled')
-            ->withConsecutive(
-                [$store1['details']['websiteId']],
-                [$store2['details']['websiteId']]
-            )
-            ->willReturnOnConsecutiveCalls(
-                true,
-                true
-            );
+        $this->helperMock->expects($this->exactly(2))
+            ->method('isEnabled')
+            ->willReturn(true);
 
-        $this->helperMock->method('isCatalogSyncEnabled')
-            ->withConsecutive(
-                [$store1['details']['websiteId']],
-                [$store2['details']['websiteId']]
-            )
-            ->willReturnOnConsecutiveCalls(
-                true,
-                true
-            );
+        $this->helperMock->expects($this->exactly(2))
+            ->method('isCatalogSyncEnabled')
+            ->willReturn(true);
 
         $this->storeCatalogSyncerMock->expects($this->exactly(2))
             ->method('syncByStore')
@@ -128,7 +116,7 @@ class StoreLevelCatalogSyncerTest extends TestCase
     {
         $store1 = $this->getMockedStoresEnabled();
         $store2 = $this->getMockedStoresDisabled();
-
+        $matcher = $this->exactly(2);
         $expected = 1;
 
         $stores = [$store1['store'], $store2['store']];
@@ -137,20 +125,24 @@ class StoreLevelCatalogSyncerTest extends TestCase
             ->willReturn($stores);
 
         $this->helperMock->method('isEnabled')
-            ->withConsecutive(
-                [$store1['details']['websiteId']],
-                [$store2['details']['websiteId']]
-            )
+            ->willReturnCallback(function () use ($matcher, $store1, $store2) {
+                return match ($matcher->getInvocationCount()) {
+                    1 => [$store1['details']['websiteId']],
+                    2 => [$store2['details']['websiteId']]
+                };
+            })
             ->willReturnOnConsecutiveCalls(
                 true,
                 false
             );
 
         $this->helperMock->method('isCatalogSyncEnabled')
-            ->withConsecutive(
-                [$store1['details']['websiteId']],
-                [$store2['details']['websiteId']]
-            )
+            ->willReturnCallback(function () use ($matcher, $store1, $store2) {
+                return match ($matcher->getInvocationCount()) {
+                    1 => [$store1['details']['websiteId']],
+                    2 => [$store2['details']['websiteId']]
+                };
+            })
             ->willReturnOnConsecutiveCalls(
                 true,
                 false
@@ -180,7 +172,7 @@ class StoreLevelCatalogSyncerTest extends TestCase
     {
         $store1 = $this->getMockedStoresDisabled();
         $store2 = $this->getMockedStoresIsActiveFalse();
-
+        $matcher = $this->exactly(2);
         $expected = 0;
 
         $stores = [$store1['store'], $store2['store']];
@@ -189,20 +181,24 @@ class StoreLevelCatalogSyncerTest extends TestCase
             ->willReturn($stores);
 
         $this->helperMock->method('isEnabled')
-            ->withConsecutive(
-                [$store1['details']['websiteId']],
-                [$store2['details']['websiteId']]
-            )
+            ->willReturnCallback(function () use ($matcher, $store1, $store2) {
+                return match ($matcher->getInvocationCount()) {
+                    1 => [$store1['details']['websiteId']],
+                    2 => [$store2['details']['websiteId']]
+                };
+            })
             ->willReturnOnConsecutiveCalls(
                 false,
                 true
             );
 
         $this->helperMock->method('isCatalogSyncEnabled')
-            ->withConsecutive(
-                [$store1['details']['websiteId']],
-                [$store2['details']['websiteId']]
-            )
+            ->willReturnCallback(function () use ($matcher, $store1, $store2) {
+                return match ($matcher->getInvocationCount()) {
+                    1 => [$store1['details']['websiteId']],
+                    2 => [$store2['details']['websiteId']]
+                };
+            })
             ->willReturnOnConsecutiveCalls(
                 false,
                 true
@@ -236,39 +232,30 @@ class StoreLevelCatalogSyncerTest extends TestCase
             ->willReturn([$store1['store'],$store2['store']]);
 
         $this->appEmulation->expects($this->exactly(2))
-            ->method('startEnvironmentEmulation')
-            ->withConsecutive(
-                [$store1['details']['storeId']],
-                [$store2['details']['storeId']]
-            );
+            ->method('startEnvironmentEmulation');
 
         $this->appEmulation->expects($this->exactly(2))
             ->method('stopEnvironmentEmulation');
 
-        $this->helperMock->method('isEnabled')
-            ->withConsecutive(
-                [$store1['details']['websiteId']],
-                [$store2['details']['websiteId']]
-            )
-            ->willReturnOnConsecutiveCalls(
-                true,
-                true
-            );
+        $this->helperMock->expects($this->exactly(2))
+            ->method('isEnabled')
+            ->willReturn(true);
 
-        $this->helperMock->method('isCatalogSyncEnabled')
-            ->withConsecutive(
-                [$store1['details']['websiteId']],
-                [$store2['details']['websiteId']]
-            )
-            ->willReturnOnConsecutiveCalls(
-                true,
-                true
-            );
+        $this->helperMock->expects($this->exactly(2))
+            ->method('isCatalogSyncEnabled')
+            ->willReturn(true);
 
+        $matcher = $this->exactly(2);
         $this->storeCatalogSyncerMock->expects($this->exactly(2))
             ->method('syncByStore')
+            ->willReturnCallback(function () use ($matcher) {
+                return match ($matcher->getInvocationCount()) {
+                    1 => [['product1'], 1, 1, 'my_catalog'],
+                    2 => [['product2'], 1, 1, 'my_catalog']
+                };
+            })
             ->willReturnOnConsecutiveCalls(
-                [0 =>'product1'],
+                [0 => 'product1'],
                 [1 => 'product2']
             );
 
@@ -365,7 +352,7 @@ class StoreLevelCatalogSyncerTest extends TestCase
      *
      * @return array
      */
-    public function getProducts()
+    public static function getProducts()
     {
         return [
             [['Product 1','Product 2','Product 3']],

@@ -181,10 +181,19 @@ class PriceFinderTest extends TestCase
             ->method('getPriceInfo')
             ->willReturn($this->baseMock);
 
+        $matcher = $this->exactly(2);
         $this->baseMock->expects($this->atLeastonce())
             ->method('getPrice')
-            ->withConsecutive(['regular_price'], ['final_price'])
-            ->willReturnOnConsecutiveCalls($this->bundleRegularPriceMock, $this->bundleRegularPriceMock);
+            ->willReturnCallback(function () use ($matcher) {
+                return match ($matcher->numberOfInvocations()) {
+                    1 => ['regular_price'],
+                    2 => ['final_price']
+                };
+            })
+            ->willReturnOnConsecutiveCalls(
+                $this->bundleRegularPriceMock,
+                $this->bundleRegularPriceMock
+            );
 
         $this->bundleRegularPriceMock->expects($this->atLeastOnce())
             ->method('getMinimalPrice')

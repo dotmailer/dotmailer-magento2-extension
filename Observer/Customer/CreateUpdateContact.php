@@ -53,11 +53,6 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
     private $storeManager;
 
     /**
-     * @var ScopeConfigInterface
-     */
-    protected $scopeConfig;
-
-    /**
      * @var Config
      */
     private $config;
@@ -84,7 +79,6 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
      * @param Data $data
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contactResource
      * @param StoreManagerInterface $storeManager
-     * @param ScopeConfigInterface $scopeConfig
      * @param Config $config
      * @param StoreWebsiteRelationInterface $storeWebsiteRelation
      * @param EmailUpdateDataFactory $emailUpdateDataFactory
@@ -97,7 +91,6 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contactResource,
         StoreManagerInterface $storeManager,
-        ScopeConfigInterface $scopeConfig,
         Config $config,
         StoreWebsiteRelationInterface $storeWebsiteRelation,
         EmailUpdateDataFactory $emailUpdateDataFactory,
@@ -109,7 +102,6 @@ class CreateUpdateContact implements \Magento\Framework\Event\ObserverInterface
         $this->helper = $data;
         $this->registry = $registry;
         $this->storeManager = $storeManager;
-        $this->scopeConfig = $scopeConfig;
         $this->config = $config;
         $this->storeWebsiteRelation = $storeWebsiteRelation;
         $this->emailUpdateDataFactory = $emailUpdateDataFactory;

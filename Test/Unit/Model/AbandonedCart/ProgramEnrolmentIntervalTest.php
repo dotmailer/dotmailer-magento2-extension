@@ -73,12 +73,15 @@ class ProgramEnrolmentIntervalTest extends TestCase
         $fromString = "2018-01-01 10:00:00";
         $toString = "2018-01-02 10:00:00";
 
+        $matcher = $this->exactly(2);
         $dateTimeMock->expects($this->exactly(2))
             ->method('format')
-            ->withConsecutive(
-                [$this->equalTo('Y-m-d H:i:s')],
-                [$this->equalTo('Y-m-d H:i:s')]
-            )
+            ->willReturnCallback(function () use ($matcher, $fromString, $toString) {
+                return match ($matcher->numberOfInvocations()) {
+                    1 => [$this->equalTo('Y-m-d H:i:s')],
+                    2 => [$this->equalTo('Y-m-d H:i:s')]
+                };
+            })
             ->willReturnOnConsecutiveCalls(
                 $fromString,
                 $toString

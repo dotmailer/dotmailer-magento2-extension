@@ -59,10 +59,7 @@ class CustomerGuestAbandonedTest extends TestCase
         $cartInsightMock->method('send')->willReturn(true);
         $this->objectManager->addSharedInstance($cartInsightMock, Data::class);
 
-        $mockClient = $this->getMockBuilder(Client::class)
-            ->disableOriginalConstructor()
-            ->setMethods(get_class_methods(Client::class))
-            ->getMock();
+        $mockClient = $this->createMock(Client::class);
         $mockClient->method('setApiUsername')
             ->willReturn(new class() {
                 public function setApiPassword($password)

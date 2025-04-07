@@ -2,28 +2,31 @@
 
 namespace Dotdigitalgroup\Email\Controller\Ajax;
 
-use Dotdigitalgroup\Email\Helper\Data;
+use Dotdigitalgroup\Email\Api\Logger\LoggerInterface;
 use Magento\Checkout\Model\Session;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\Action\HttpPostActionInterface;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Controller\Result\JsonFactory;
-use Magento\Quote\Model\ResourceModel\Quote;
+use Magento\Framework\Controller\ResultInterface;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Quote\Api\CartRepositoryInterface;
 
 class Emailcapture implements HttpPostActionInterface
 {
     /**
-     * @var \Magento\Quote\Model\ResourceModel\Quote
+     * @var CartRepositoryInterface
      */
-    private $quoteResource;
+    private $cartRepository;
 
     /**
-     * @var \Dotdigitalgroup\Email\Helper\Data
+     * @var LoggerInterface
      */
-    private $helper;
+    private $logger;
 
     /**
-     * @var \Magento\Checkout\Model\Session
+     * @var Session
      */
     private $checkoutSession;
 
@@ -35,26 +38,26 @@ class Emailcapture implements HttpPostActionInterface
     /**
      * @var JsonFactory
      */
-    protected $resultJsonFactory;
+    private $resultJsonFactory;
 
     /**
      * Emailcapture constructor.
      *
-     * @param Data $data
-     * @param Quote $quoteResource
+     * @param LoggerInterface $logger
+     * @param CartRepositoryInterface $cartRepository
      * @param Session $session
      * @param Context $context
      * @param JsonFactory $resultJsonFactory
      */
     public function __construct(
-        \Dotdigitalgroup\Email\Helper\Data $data,
-        \Magento\Quote\Model\ResourceModel\Quote $quoteResource,
-        \Magento\Checkout\Model\Session $session,
+        LoggerInterface $logger,
+        CartRepositoryInterface $cartRepository,
+        Session $session,
         Context $context,
         JsonFactory $resultJsonFactory
     ) {
-        $this->helper = $data;
-        $this->quoteResource = $quoteResource;
+        $this->logger = $logger;
+        $this->cartRepository = $cartRepository;
         $this->checkoutSession = $session;
         $this->request = $context->getRequest();
         $this->resultJsonFactory = $resultJsonFactory;
@@ -63,9 +66,9 @@ class Emailcapture implements HttpPostActionInterface
     /**
      * Easy email capture for Newsletter and Checkout.
      *
-     * @return \Magento\Framework\Controller\ResultInterface
-     * @throws \Magento\Framework\Exception\LocalizedException
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @return ResultInterface
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
      */
     public function execute()
     {
@@ -85,9 +88,9 @@ class Emailcapture implements HttpPostActionInterface
             if ($quote->hasItems() && $quote->getCustomerEmail() !== $email) {
                 try {
                     $quote->setCustomerEmail($email);
-                    $this->quoteResource->save($quote);
+                    $this->cartRepository->save($quote);
                 } catch (\Exception $e) {
-                    $this->helper->debug((string)$e, []);
+                    $this->logger->error('Error saving quote: ' . $e->getMessage());
                 }
             }
         }

@@ -34,10 +34,7 @@ class AutomationMonitorTest extends TestCase
     {
         $this->flagManagerMock = $this->createMock(FlagManager::class);
         $this->scopeConfigInterfaceMock = $this->createMock(ScopeConfigInterface::class);
-        $this->collectionFactoryMock = $this->getMockBuilder(CollectionFactory::class)
-            ->disableOriginalConstructor()
-            ->setMethods(['create'])
-            ->getMock();
+        $this->collectionFactoryMock = $this->createMock(CollectionFactory::class);
 
         $this->automationMonitor = new AutomationMonitor(
             $this->flagManagerMock,

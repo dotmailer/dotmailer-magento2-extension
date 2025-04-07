@@ -62,7 +62,7 @@ class Automation implements SyncInterface
      * @param \DateTime|null $from
      * @return void
      */
-    public function sync(\DateTime $from = null)
+    public function sync(?\DateTime $from = null)
     {
         foreach ($this->automationTypeHandler->getAutomationTypes() as $type => $properties) {
 

@@ -217,8 +217,9 @@ class Customer extends ContactData
      * Get customer gender.
      *
      * @return string
+     * @throws LocalizedException
      */
-    protected function getGender()
+    public function getGender()
     {
         $genderId = $this->model->getGender();
         if (is_numeric($genderId)) {

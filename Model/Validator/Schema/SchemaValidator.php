@@ -106,8 +106,8 @@ class SchemaValidator implements SchemaValidatorInterface
      * @throws RuleNotDefinedException
      */
     private function buildRuleSetsFromPattern(
-        array $pattern = null,
-        string $patternParentKey = null,
+        ?array $pattern = null,
+        ?string $patternParentKey = null,
         array $ruleSets = []
     ): array {
         if ($pattern === null) {
@@ -136,7 +136,7 @@ class SchemaValidator implements SchemaValidatorInterface
      * @param string|null $validatableParentKey
      * @return bool
      */
-    private function matchValidatablePattern(array $validatableStructure, string $validatableParentKey = null): bool
+    private function matchValidatablePattern(array $validatableStructure, ?string $validatableParentKey = null): bool
     {
         $validationSuccessful = true;
         foreach ($validatableStructure as $validatableKey => $validatableValue) {

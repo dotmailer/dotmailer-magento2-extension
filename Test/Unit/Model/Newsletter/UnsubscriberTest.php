@@ -113,7 +113,7 @@ class UnsubscriberTest extends TestCase
 
         $this->contactResourceMock->expects($this->exactly(3))
             ->method('unsubscribeByWebsiteAndStore')
-            ->willReturnOnConsecutiveCalls(count($filteredA), count($filteredB));
+            ->willReturnOnConsecutiveCalls(count($filteredA), count($filteredB), 0);
 
         $unsubscribes = $this->unsubscriber->run();
 

@@ -77,7 +77,7 @@ class DataMigrationHelper
      *
      * @param string|null $table
      */
-    public function run(string $table = null)
+    public function run(?string $table = null)
     {
         $types = $this->dataMigrationTypeProvider->getEnabledTypes($table);
 
@@ -127,7 +127,7 @@ class DataMigrationHelper
      *
      * @return $this
      */
-    public function emptyTables(string $table = null)
+    public function emptyTables(?string $table = null)
     {
         foreach ($this->dataMigrationTypeProvider->getEnabledTypes($table) as $migrationType) {
             /** @var AbstractDataMigration $migrationType */

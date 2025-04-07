@@ -163,10 +163,8 @@ class DotdigitalSenderResolverTest extends TestCase
     private function mockRegistry($storeId)
     {
         $this->registryMock->method('registry')
-            ->withConsecutive(
-                [$this->equalTo('transportBuilderPluginStoreId')]
-            )
-            ->willReturnOnConsecutiveCalls($storeId);
+            ->with($this->equalTo('transportBuilderPluginStoreId'))
+            ->willReturn($storeId);
     }
 
     private function mockTransactionalHelperToReturnValueForSMTPEnabled($storeId, $value)
@@ -184,12 +182,16 @@ class DotdigitalSenderResolverTest extends TestCase
     ) {
         $templateCode = 'dm_template_code';
         $templateModelMock = $this->createMock(\Magento\Email\Model\Template::class);
+
+        $matcher = $this->exactly(3);
         $templateModelMock->method('__call')
-            ->withConsecutive(
-                [$this->equalTo('getTemplateCode')],
-                [$this->equalTo('getTemplateSenderEmail')],
-                [$this->equalTo('getTemplateSenderName')]
-            )
+            ->willReturnCallback(function () use ($matcher) {
+                return match ($matcher->numberOfInvocations()) {
+                    1 => [$this->equalTo('getTemplateCode')],
+                    2 => [$this->equalTo('getTemplateSenderEmail')],
+                    3 => [$this->equalTo('getTemplateSenderName')]
+                };
+            })
             ->willReturnOnConsecutiveCalls(
                 $templateCode,
                 $senderEmail,

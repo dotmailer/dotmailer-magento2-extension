@@ -99,7 +99,7 @@ class Wishlist implements SyncInterface
      * @param \DateTime|null $from
      * @return array
      */
-    public function sync(\DateTime $from = null)
+    public function sync(?\DateTime $from = null)
     {
         $response = ['success' => true, 'message' => '----------- Wishlist bulk sync ----------- : '];
         $syncSummary = '';

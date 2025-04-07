@@ -17,6 +17,7 @@ use Magento\Framework\Oauth\Oauth;
 use Magento\TestFramework\Helper\Bootstrap;
 use Magento\Backend\Model\Auth\Credential\StorageInterface;
 use Magento\TestFramework\ObjectManager;
+use Magento\User\Model\User;
 
 class StudioTest extends \PHPUnit\Framework\TestCase
 {
@@ -58,7 +59,7 @@ class StudioTest extends \PHPUnit\Framework\TestCase
     private $oauthValidator;
 
     /**
-     * @var StorageInterface
+     * @var User
      */
     private $userMock;
 
@@ -68,10 +69,7 @@ class StudioTest extends \PHPUnit\Framework\TestCase
         $this->mockClientFactory();
 
         $this->authMock = $this->createMock(Auth::class);
-        $this->userMock = $this->getMockBuilder(StorageInterface::class)
-            ->disableOriginalConstructor()
-            ->setMethods(array_merge(get_class_methods(StorageInterface::class), ['getRefreshToken']))
-            ->getMock();
+        $this->userMock = $this->createMock(User::class);
 
         $objectManager->addSharedInstance($this->authMock, Auth::class);
         $helper = $this->instantiateDataHelper();
@@ -117,7 +115,8 @@ class StudioTest extends \PHPUnit\Framework\TestCase
             ->method('getUser')
             ->willReturn($this->userMock);
         $this->userMock->expects($this->once())
-            ->method('getRefreshToken')
+            ->method('__call')
+            ->with('getRefreshToken')
             ->willReturn(null);
 
         $url = $this->studio->getAction();
@@ -144,7 +143,8 @@ class StudioTest extends \PHPUnit\Framework\TestCase
             ->method('getUser')
             ->willReturn($this->userMock);
         $this->userMock->expects($this->once())
-            ->method('getRefreshToken')
+            ->method('__call')
+            ->with('getRefreshToken')
             ->willReturn('hangleSalesOrderCancel');
 
         $url = $this->studio->getAction();

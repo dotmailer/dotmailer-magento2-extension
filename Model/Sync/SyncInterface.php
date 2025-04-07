@@ -10,5 +10,5 @@ interface SyncInterface
      * @param \DateTime|null $from   A date to sync from (if supported)
      * @return array|void
      */
-    public function sync(\DateTime $from = null);
+    public function sync(?\DateTime $from = null);
 }

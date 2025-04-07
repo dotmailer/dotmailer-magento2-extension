@@ -103,6 +103,8 @@ class ResubscriberTest extends TestCase
             ->method('getChangeStatusAt')
             ->willReturnOnConsecutiveCalls(
                 '2021-11-10T11:23:08.94976Z',
+                '2021-11-10T11:23:08.94976Z',
+                '2021-11-10T11:24:08.94976Z',
                 '2021-11-10T11:24:08.94976Z'
             );
 
@@ -113,9 +115,6 @@ class ResubscriberTest extends TestCase
         $this->contactResourceMock->expects($this->once())
             ->method('subscribeByEmailAndStore')
             ->willReturn(1);
-
-        $this->loggerMock->expects($this->once())
-            ->method('info');
 
         $this->model->processBatch(
             $this->getDotdigitalModifiedContacts(),

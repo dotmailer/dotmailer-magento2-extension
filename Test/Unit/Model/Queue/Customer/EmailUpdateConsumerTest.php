@@ -21,32 +21,33 @@ use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory as Conta
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact as ContactResource;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact\Collection as ContactCollection;
 use Dotdigitalgroup\Email\Model\Contact\ContactResponseHandler;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class EmailUpdateConsumerTest extends TestCase
 {
     /**
-     * @var EmailUpdateData|EmailUpdateData&\PHPUnit\Framework\MockObject\MockObject|\PHPUnit\Framework\MockObject\MockObject
+     * @var EmailUpdateData|EmailUpdateData&MockObject|MockObject
      */
     private $emailUpdateDataMock;
 
     /**
-     * @var Logger|Logger&\PHPUnit\Framework\MockObject\MockObject|\PHPUnit\Framework\MockObject\MockObject
+     * @var Logger|Logger&MockObject|MockObject
      */
     private $loggerMock;
 
     /**
-     * @var AutomationFactory|AutomationFactory&\PHPUnit\Framework\MockObject\MockObject|\PHPUnit\Framework\MockObject\MockObject
+     * @var AutomationFactory|AutomationFactory&MockObject|MockObject
      */
     private $automationFactoryMock;
 
     /**
-     * @var CampaignFactory|CampaignFactory&\PHPUnit\Framework\MockObject\MockObject|\PHPUnit\Framework\MockObject\MockObject
+     * @var CampaignFactory|CampaignFactory&MockObject|MockObject
      */
     private $campaignFactoryMock;
 
     /**
-     * @var AbandonedFactory|AbandonedFactory&\PHPUnit\Framework\MockObject\MockObject|\PHPUnit\Framework\MockObject\MockObject
+     * @var AbandonedFactory|AbandonedFactory&MockObject|MockObject
      */
     private $abandonedFactoryMock;
 
@@ -56,62 +57,67 @@ class EmailUpdateConsumerTest extends TestCase
     private $emailUpdaterConsumer;
 
     /**
-     * @var ClientFactory|\PHPUnit\Framework\MockObject\MockObject
+     * @var ClientFactory|MockObject
      */
     private $clientFactoryMock;
 
     /**
-     * @var DotdigitalContactFactory|\PHPUnit\Framework\MockObject\MockObject
+     * @var DotdigitalContactFactory|MockObject
      */
     private $sdkContactFactoryMock;
 
     /**
-     * @var Client|Client&\PHPUnit\Framework\MockObject\MockObject|\PHPUnit\Framework\MockObject\MockObject
+     * @var Client|Client&MockObject|MockObject
      */
     private $clientMock;
 
     /**
-     * @var Automation|Automation&\PHPUnit\Framework\MockObject\MockObject|\PHPUnit\Framework\MockObject\MockObject
+     * @var Automation|Automation&MockObject|MockObject
      */
     private $automationMock;
 
     /**
-     * @var Campaign|Campaign&\PHPUnit\Framework\MockObject\MockObject|\PHPUnit\Framework\MockObject\MockObject
+     * @var Campaign|Campaign&MockObject|MockObject
      */
     private $campaignMock;
 
     /**
-     * @var Abandoned|Abandoned&\PHPUnit\Framework\MockObject\MockObject|\PHPUnit\Framework\MockObject\MockObject
+     * @var Abandoned|Abandoned&MockObject|MockObject
      */
     private $abandonedMock;
 
     /**
-     * @var AbstractResource&\PHPUnit\Framework\MockObject\MockObject|\PHPUnit\Framework\MockObject\MockObject
+     * @var AbstractResource&MockObject|MockObject
      */
     private $abstractResourceMock;
 
     /**
-     * @var DotdigitalContact&\PHPUnit\Framework\MockObject\MockObject|\PHPUnit\Framework\MockObject\MockObject
+     * @var \Dotdigital\V3\Resources\Contacts|MockObject
+     */
+    private $sdkContactResourceMock;
+
+    /**
+     * @var DotdigitalContact&MockObject|MockObject
      */
     private $responseMock;
 
     /**
-     * @var ContactCollectionFactory|ContactCollectionFactory&\PHPUnit\Framework\MockObject\MockObject|\PHPUnit\Framework\MockObject\MockObject
+     * @var ContactCollectionFactory|ContactCollectionFactory&MockObject|MockObject
      */
     private $contactCollectionFactoryMock;
 
     /**
-     * @var ContactResource|ContactResource&\PHPUnit\Framework\MockObject\MockObject|\PHPUnit\Framework\MockObject\MockObject
+     * @var ContactResource|ContactResource&MockObject|MockObject
      */
     private $contactResourceMock;
 
     /**
-     * @var ContactCollection|ContactCollection&\PHPUnit\Framework\MockObject\MockObject|\PHPUnit\Framework\MockObject\MockObject
+     * @var ContactCollection|ContactCollection&MockObject|MockObject
      */
     private $contactCollectionMock;
 
     /**
-     * @var ContactResponseHandler|\PHPUnit\Framework\MockObject\MockObject
+     * @var ContactResponseHandler|MockObject
      */
     private $contactResponseHandlerMock;
 
@@ -130,10 +136,7 @@ class EmailUpdateConsumerTest extends TestCase
         $this->automationFactoryMock = $this->createMock(AutomationFactory::class);
         $this->campaignFactoryMock = $this->createMock(CampaignFactory::class);
         $this->abandonedFactoryMock = $this->createMock(AbandonedFactory::class);
-        $this->sdkContactFactoryMock = $this->getMockBuilder(DotdigitalContactFactory::class)
-            ->disableOriginalConstructor()
-            ->setMethods(['create'])
-            ->getMock();
+        $this->sdkContactFactoryMock = $this->createMock(DotdigitalContactFactory::class);
 
         $this->automationMock = $this->createMock(Automation::class);
         $this->campaignMock = $this->createMock(Campaign::class);
@@ -141,12 +144,9 @@ class EmailUpdateConsumerTest extends TestCase
         $sdkContactMock = $this->createMock(DotdigitalContact::class);
         $this->clientMock = $this->createMock(Client::class);
 
-        $this->abstractResourceMock = $this->getMockBuilder(AbstractResource::class)
-            ->disableOriginalConstructor()
-            ->setMethods(['patchByIdentifier'])
-            ->getMock();
-
-        $this->clientMock->contacts = $this->abstractResourceMock;
+        $this->abstractResourceMock = $this->createMock(AbstractResource::class);
+        $this->sdkContactResourceMock = $this->createMock(\Dotdigital\V3\Resources\Contacts::class);
+        $this->clientMock->contacts = $this->sdkContactResourceMock;
 
         $this->sdkContactFactoryMock->expects($this->once())
             ->method('create')
@@ -199,7 +199,7 @@ class EmailUpdateConsumerTest extends TestCase
             ->method('create')
             ->willReturn($this->clientMock);
 
-        $this->abstractResourceMock->expects($this->once())
+        $this->sdkContactResourceMock->expects($this->once())
             ->method('patchByIdentifier')
             ->willReturn($this->responseMock);
 
@@ -260,7 +260,7 @@ class EmailUpdateConsumerTest extends TestCase
             ->method('create')
             ->willReturn($this->clientMock);
 
-        $this->abstractResourceMock->expects($this->once())
+        $this->sdkContactResourceMock->expects($this->once())
             ->method('patchByIdentifier')
             ->willThrowException($e = new ResponseValidationException('Error'));
 

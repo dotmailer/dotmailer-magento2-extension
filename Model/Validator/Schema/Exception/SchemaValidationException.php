@@ -23,7 +23,7 @@ class SchemaValidationException extends \Exception
      * @param SchemaValidator $validator
      * @param string|null $message
      */
-    public function __construct(SchemaValidator $validator, string $message = null)
+    public function __construct(SchemaValidator $validator, ?string $message = null)
     {
         parent::__construct($message, $this->code);
         $this->validator = $validator;
