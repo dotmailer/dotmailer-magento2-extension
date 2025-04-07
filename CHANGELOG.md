@@ -1,3 +1,14 @@
+# 4.30.0
+
+### Improvements
+- We removed implicitly null types for compatibility with PHP 8.4.
+- Unit tests are now compatible with PHPUnit 10.
+- Our Dotdigital Logger now uses composition instead of inheritance, in line with changes in `monolog/monolog` 3.0.0.
+- We removed further instances of using `protected` class properties and methods.
+- We replaced the `Quote` resource model with `CartRepositoryInterface`  in our `Emailcapture` controller.
+- Various jQuery deprecations have been updated.
+- Catalog sync type and visibility filters are now store-scoped.
+
 # 4.29.2
 
 ### Improvements
