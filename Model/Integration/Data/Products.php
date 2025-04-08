@@ -98,7 +98,7 @@ class Products
             );
 
             $catalogName = 'Catalog_' . $store->getWebsite()->getCode() . '_' . $store->getCode();
-            $products = $this->exporter->exportCatalog($store->getId(), $productsToProcess);
+            $products = $this->exporter->exportCatalog((int) $store->getId(), $productsToProcess);
             $catalogs[$catalogName] = [
                 'products' => $products,
                 'websiteId' => $websiteId

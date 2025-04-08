@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dotdigitalgroup\Email\Test\Unit\Model\Connector;
 
 use Dotdigitalgroup\Email\Api\StockFinderInterface;
@@ -13,6 +15,7 @@ use Dotdigitalgroup\Email\Model\Product\ImageType\Context\CatalogSync;
 use Dotdigitalgroup\Email\Model\Product\ParentFinder;
 use Dotdigitalgroup\Email\Model\Product\PriceFinder;
 use Dotdigitalgroup\Email\Model\Product\PriceFinderFactory;
+use Dotdigitalgroup\Email\Model\Product\RulePriceFinder;
 use Dotdigitalgroup\Email\Model\Product\TierPriceFinder;
 use Dotdigitalgroup\Email\Model\Validator\Schema\Exception\SchemaValidationException;
 use Dotdigitalgroup\Email\Model\Validator\Schema\SchemaValidator;
@@ -137,6 +140,11 @@ class ProductTest extends TestCase
      */
     private $priceFinderFactoryMock;
 
+    /**
+     * @var RulePriceFinder|MockObject
+     */
+    private $rulePriceFinderMock;
+
     protected function setUp() :void
     {
         $this->storeManagerMock = $this->createMock(StoreManagerInterface::class);
@@ -183,6 +191,7 @@ class ProductTest extends TestCase
         );
         $this->dateTimeMock = $this->createMock(\Magento\Framework\Stdlib\DateTime\DateTime::class);
         $this->priceFinderFactoryMock = $this->createMock(PriceFinderFactory::class);
+        $this->rulePriceFinderMock = $this->createMock(RulePriceFinder::class);
         $this->schemaValidatorFactory = $this->createMock(SchemaValidatorFactory::class);
         $this->schemaValidator = $this->createMock(SchemaValidator::class);
         $this->schemaValidatorFactory
@@ -200,6 +209,7 @@ class ProductTest extends TestCase
             $this->parentFinderMock,
             $this->imageFinderMock,
             $this->tierPriceFinderMock,
+            $this->rulePriceFinderMock,
             $this->stockFinderInterfaceMock,
             $this->imageTypeMock,
             $this->schemaValidatorFactory,
@@ -326,6 +336,25 @@ class ProductTest extends TestCase
             ->willReturn(false);
 
         $this->expectException(SchemaValidationException::class);
+
+        $this->product->setProduct($this->mageProductMock, 1);
+    }
+
+    public function testGetRulePrices()
+    {
+        $this->setUpValidator();
+        $this->baselineExpectations();
+
+        $this->rulePriceFinderMock->expects($this->once())
+            ->method('getRulePrices')
+            ->with($this->mageProductMock, 1)
+            ->willReturn([
+                [
+                    'customer_group' => 'General',
+                    'final_price' => 10.00,
+                    'final_price_incl_tax' => 12.00
+                ]
+            ]);
 
         $this->product->setProduct($this->mageProductMock, 1);
     }

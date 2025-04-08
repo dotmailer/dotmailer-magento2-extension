@@ -5,22 +5,16 @@ declare(strict_types=1);
 namespace Dotdigitalgroup\Email\Model\Product;
 
 use Dotdigitalgroup\Email\Api\Product\PriceFinderInterface;
+use Dotdigitalgroup\Email\Model\Tax\TaxCalculator;
 use Magento\Catalog\Model\Product;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
-use Magento\Tax\Api\TaxCalculationInterface;
-use Magento\Tax\Helper\Data as TaxHelper;
 
 class PriceFinder implements PriceFinderInterface
 {
     /**
-     * @var TaxCalculationInterface
+     * @var TaxCalculator
      */
-    private $taxCalculation;
-
-    /**
-     * @var TaxHelper
-     */
-    private $taxHelper;
+    private $taxCalculator;
 
     /**
      * @var array
@@ -33,15 +27,12 @@ class PriceFinder implements PriceFinderInterface
     private $pricesInclTax;
 
     /**
-     * @param TaxCalculationInterface $taxCalculation
-     * @param TaxHelper $taxHelper
+     * @param TaxCalculator $taxCalculator
      */
     public function __construct(
-        TaxCalculationInterface $taxCalculation,
-        TaxHelper $taxHelper
+        TaxCalculator $taxCalculator
     ) {
-        $this->taxCalculation = $taxCalculation;
-        $this->taxHelper = $taxHelper;
+        $this->taxCalculator = $taxCalculator;
     }
 
     /**
@@ -160,32 +151,21 @@ class PriceFinder implements PriceFinderInterface
         $price = $this->getPrice($product, $storeId);
         $specialPrice = $this->getSpecialPrice($product, $storeId);
 
-        if ($this->taxHelper->priceIncludesTax($storeId)) {
-            $this->pricesInclTax['price'] = $price;
-            $this->pricesInclTax['specialPrice'] = $specialPrice;
-        } else {
-            $rate = $this->taxCalculation->getCalculatedRate(
-                $product->getTaxClassId(),
-                $customerId,
-                $storeId
-            );
-            $this->pricesInclTax['price'] = $this->adjustPricesWithTaxes($price, $rate);
-            $this->pricesInclTax['specialPrice'] = $this->adjustPricesWithTaxes($specialPrice, $rate);
-        }
-    }
-
-    /**
-     * Adjust prices with taxes.
-     *
-     * @param float $price
-     * @param float $taxRate
-     *
-     * @return float
-     */
-    private function adjustPricesWithTaxes(float $price, float $taxRate): float
-    {
-        return $this->formatPriceValue(
-            $price + ($price * ($taxRate / 100))
+        $this->pricesInclTax['price'] = $this->formatPriceValue(
+            $this->taxCalculator->calculatePriceInclTax(
+                $product,
+                $price,
+                $storeId,
+                $customerId
+            )
+        );
+        $this->pricesInclTax['specialPrice'] = $this->formatPriceValue(
+            $this->taxCalculator->calculatePriceInclTax(
+                $product,
+                $specialPrice,
+                $storeId,
+                $customerId
+            )
         );
     }
 

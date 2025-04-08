@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dotdigitalgroup\Email\Model\Sync;
 
 use DateTime;
@@ -90,7 +92,9 @@ class Catalog extends DataObject implements SyncInterface
      * Catalog sync.
      *
      * @param DateTime|null $from
+     *
      * @return array
+     * @throws \Zend_Db_Statement_Exception
      */
     public function sync(?DateTime $from = null)
     {

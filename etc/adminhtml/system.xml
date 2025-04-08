@@ -1709,6 +1709,11 @@
                     <backend_model>Dotdigitalgroup\Email\Model\Adminhtml\Backend\CatalogReset</backend_model>
                     <comment>Selected product types will be exported.</comment>
                 </field>
+                <field id="price_rules_enabled" translate="label" sortOrder="40" type="select" showInStore="1" showInWebsite="1" showInDefault="1" canRestore="1">
+                    <label>Sync Catalog Price Rules</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment><![CDATA[Enable this to sync rule-based final prices for all customer groups, in addition to regular price values.]]></comment>
+                </field>
             </group>
             <group id="customer_addressbook" translate="label" sortOrder="90" showInDefault="1" showInWebsite="1"
                    showInStore="0">

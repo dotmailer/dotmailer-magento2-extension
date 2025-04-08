@@ -256,6 +256,8 @@ class Config extends AbstractHelper
         'connector_configuration/catalog_sync/catalog_visibility';
     public const XML_PATH_CONNECTOR_SYNC_CATALOG_TYPE =
         'connector_configuration/catalog_sync/catalog_type';
+    public const XML_PATH_CONNECTOR_SYNC_CATALOG_PRICE_RULES_ENABLED =
+        'connector_configuration/catalog_sync/price_rules_enabled';
 
     //Abandoned Cart
     public const XML_PATH_CONNECTOR_EMAIL_CAPTURE =

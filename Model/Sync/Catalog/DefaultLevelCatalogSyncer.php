@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dotdigitalgroup\Email\Model\Sync\Catalog;
 
 use Magento\Framework\App\Area;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Store\Model\App\Emulation;
 use Dotdigitalgroup\Email\Model\Sync\Catalog;
 
@@ -43,9 +46,11 @@ class DefaultLevelCatalogSyncer implements CatalogSyncerInterface
     /**
      * Sync
      *
-     * @see CatalogSyncerInterface::sync()
      * @param array $products
+     *
      * @return array
+     * @throws NoSuchEntityException
+     * @see CatalogSyncerInterface::sync()
      */
     public function sync($products)
     {
