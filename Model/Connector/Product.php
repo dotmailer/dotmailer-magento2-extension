@@ -391,7 +391,7 @@ class Product extends AbstractConnectorModel
             )->getProperties();
 
             if (empty($attributeProperties)) {
-                unset($this->attributes);
+                $this->attributes = null;
                 return;
             }
 
