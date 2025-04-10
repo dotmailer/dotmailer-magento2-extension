@@ -159,7 +159,7 @@ class EmailcaptureTest extends TestCase
         $this->controller->execute();
     }
 
-    private function setUpForAvailableQuote(string $customerEmail = null)
+    private function setUpForAvailableQuote(?string $customerEmail = null)
     {
         $this->sessionMock->expects($this->once())
             ->method('getQuote')
