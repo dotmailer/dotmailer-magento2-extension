@@ -52,6 +52,8 @@
     "magento/module-mysql-mq": "^100.3|^100.4",
     "laminas/laminas-http": "^2.6",
     "laminas/laminas-uri": "^2.5",
+    "symfony/mailer": "^5.4 || ^6.4",
+    "symfony/mime": "^5.4 || ^6.4",
     "dotdigital/dotdigital-php": "^2.6",
     "php-http/curl-client": "~2.3.0",
     "nyholm/psr7": "^1.8",

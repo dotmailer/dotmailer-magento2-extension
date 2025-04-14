@@ -1,42 +1,30 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dotdigitalgroup\Email\Model\Mail;
 
-use Dotdigitalgroup\Email\Helper\Transactional;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Mail\EmailMessageInterface;
-use Magento\Framework\Mail\MailMessageInterface;
 use Magento\Framework\Mail\TransportInterface;
-use Laminas\Mail\Message;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 
 class SmtpTransporter
 {
     /**
-     * @var Transactional
+     * @var SymfonySmtpTransporter
      */
-    private $transactionalEmailSettings;
-
-    /**
-     * @var ZendMailTransportSmtp2Factory
-     */
-    private $zendMailTransportSmtp2Factory;
-
-    /**
-     * Default encoding
-     */
-    private const ENCODING = 'utf-8';
+    private $symfonySmtpTransporter;
 
     /**
      * SmtpTransporter constructor.
      *
-     * @param Transactional $transactionalEmailSettings
-     * @param ZendMailTransportSmtp2Factory $zendMailTransportSmtp2Factory
+     * @param SymfonySmtpTransporter $symfonySmtpTransporter
      */
     public function __construct(
-        Transactional $transactionalEmailSettings,
-        ZendMailTransportSmtp2Factory $zendMailTransportSmtp2Factory
+        SymfonySmtpTransporter $symfonySmtpTransporter
     ) {
-        $this->transactionalEmailSettings = $transactionalEmailSettings;
-        $this->zendMailTransportSmtp2Factory = $zendMailTransportSmtp2Factory;
+        $this->symfonySmtpTransporter = $symfonySmtpTransporter;
     }
 
     /**
@@ -44,39 +32,13 @@ class SmtpTransporter
      *
      * @param TransportInterface $subject
      * @param int $storeId
-     * @throws \Magento\Framework\Exception\LocalizedException
+     *
+     * @throws LocalizedException|TransportExceptionInterface
      */
     public function send($subject, $storeId)
     {
-        $message = $this->extractZendMailMessage($subject);
-        $this->sendMessage($message, $storeId);
-    }
-
-    /**
-     * Extract Zend mail message.
-     *
-     * @param TransportInterface $subject
-     * @return Message
-     */
-    private function extractZendMailMessage($subject)
-    {
         /** @var EmailMessageInterface $message */
         $message = $subject->getMessage();
-        return Message::fromString($message->getRawMessage());
-    }
-
-    /**
-     * Send message.
-     *
-     * @param Message $message
-     * @param int $storeId
-     * @throws \Magento\Framework\Exception\LocalizedException
-     */
-    private function sendMessage($message, $storeId)
-    {
-        $smtpOptions = $this->transactionalEmailSettings->getSmtpOptions($storeId);
-        $smtp = $this->zendMailTransportSmtp2Factory->create($smtpOptions);
-        $message->setEncoding(self::ENCODING);
-        $smtp->send($message);
+        $this->symfonySmtpTransporter->execute($message, $storeId);
     }
 }

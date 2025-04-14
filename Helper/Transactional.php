@@ -4,7 +4,6 @@ namespace Dotdigitalgroup\Email\Helper;
 
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Store\Model\ScopeInterface;
-use Laminas\Mail\Transport\SmtpOptions;
 
 /**
  * Transactional emails configuration data values.
@@ -72,7 +71,7 @@ class Transactional extends AbstractHelper
      *
      * @return boolean|string
      */
-    private function getSmtpUsername($storeId = null)
+    public function getSmtpUsername($storeId = null)
     {
         return $this->scopeConfig->getValue(
             self::XML_PATH_DDG_TRANSACTIONAL_USERNAME,
@@ -88,7 +87,7 @@ class Transactional extends AbstractHelper
      *
      * @return boolean|string
      */
-    private function getSmtpPassword($storeId = null)
+    public function getSmtpPassword($storeId = null)
     {
         return $this->scopeConfig->getValue(
             self::XML_PATH_DDG_TRANSACTIONAL_PASSWORD,
@@ -104,42 +103,13 @@ class Transactional extends AbstractHelper
      *
      * @return boolean|string
      */
-    private function getSmtpPort($storeId)
+    public function getSmtpPort($storeId)
     {
         return $this->scopeConfig->getValue(
             self::XML_PATH_DDG_TRANSACTIONAL_PORT,
             ScopeInterface::SCOPE_STORE,
             $storeId
         );
-    }
-
-    /**
-     * Fetch options.
-     *
-     * @param int $storeId
-     *
-     * @return SmtpOptions|null
-     * @throws \Magento\Framework\Exception\LocalizedException
-     */
-    public function getSmtpOptions($storeId)
-    {
-        try {
-            return new SmtpOptions(
-                [
-                    'host' => $this->getSmtpHost($storeId),
-                    'port' => $this->getSmtpPort($storeId),
-                    'connection_class' => 'login',
-                    'connection_config' => [
-                        'username' => $this->getSmtpUsername($storeId),
-                        'password' => $this->getSmtpPassword($storeId),
-                        'ssl' => 'tls'
-                    ]
-                ]
-            );
-        } catch (\Exception $e) {
-            $this->_logger->debug((string) $e);
-            return null;
-        }
     }
 
     /**

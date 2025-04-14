@@ -2,11 +2,15 @@
 
 namespace Dotdigitalgroup\Email\Plugin;
 
-use Dotdigitalgroup\Email\Model\Mail\SmtpTransporter;
+use Dotdigitalgroup\Email\Helper\Data;
+use Dotdigitalgroup\Email\Helper\Transactional;
+use Dotdigitalgroup\Email\Logger\Logger;
+use Dotdigitalgroup\Email\Model\Mail\SmtpTransporterFactory;
 use Dotdigitalgroup\Email\Model\Monitor\Smtp\Monitor;
 use Magento\Framework\FlagManager;
 use Magento\Framework\Mail\EmailMessageInterface;
 use Magento\Framework\Mail\TransportInterface;
+use Magento\Framework\Registry;
 
 /**
  * SMTP mail transport.
@@ -18,22 +22,22 @@ class TransportPlugin
     ];
 
     /**
-     * @var SmtpTransporter
+     * @var Logger
      */
-    private $smtpTransporter;
+    private $logger;
 
     /**
-     * @var \Dotdigitalgroup\Email\Helper\Transactional
+     * @var SmtpTransporterFactory
+     */
+    private $smtpTransporterFactory;
+
+    /**
+     * @var Transactional
      */
     private $helper;
 
     /**
-     * @var \Dotdigitalgroup\Email\Helper\Data
-     */
-    private $dataHelper;
-
-    /**
-     * @var \Magento\Framework\Registry
+     * @var Registry
      */
     private $registry;
 
@@ -45,22 +49,22 @@ class TransportPlugin
     /**
      * TransportPlugin constructor.
      *
-     * @param SmtpTransporter $smtpTransporter
-     * @param \Dotdigitalgroup\Email\Helper\Transactional $helper
-     * @param \Dotdigitalgroup\Email\Helper\Data $dataHelper
-     * @param \Magento\Framework\Registry $registry
+     * @param Logger $logger
+     * @param SmtpTransporterFactory $smtpTransporterFactory
+     * @param Transactional $helper
+     * @param Registry $registry
      * @param FlagManager $flagManager
      */
     public function __construct(
-        SmtpTransporter $smtpTransporter,
-        \Dotdigitalgroup\Email\Helper\Transactional $helper,
-        \Dotdigitalgroup\Email\Helper\Data $dataHelper,
-        \Magento\Framework\Registry $registry,
+        Logger $logger,
+        SmtpTransporterFactory $smtpTransporterFactory,
+        Transactional $helper,
+        Registry $registry,
         FlagManager $flagManager
     ) {
-        $this->smtpTransporter = $smtpTransporter;
+        $this->logger = $logger;
+        $this->smtpTransporterFactory = $smtpTransporterFactory;
         $this->helper = $helper;
-        $this->dataHelper = $dataHelper;
         $this->registry = $registry;
         $this->flagManager = $flagManager;
     }
@@ -77,17 +81,18 @@ class TransportPlugin
         TransportInterface $subject,
         \Closure $proceed
     ) {
-        $storeId = $this->registry->registry('transportBuilderPluginStoreId');
+        $storeId = (int) $this->registry->registry('transportBuilderPluginStoreId');
         if (!$this->helper->isEnabled($storeId)) {
             return $proceed();
         }
 
         try {
-            $this->smtpTransporter->send($subject, $storeId);
+            $this->smtpTransporterFactory->create()
+                ->send($subject, $storeId);
         } catch (\Exception $e) {
             if (in_array(str_replace("\r\n", "", $e->getMessage()), self::EXCLUDED_ERRORS)) {
                 $to = $this->getAddressee($subject);
-                $this->dataHelper->log(
+                $this->logger->debug(
                     sprintf(
                         "Unable to deliver transactional email. Invalid email address. %s",
                         $to ? '[' . $to . ']' : ''
@@ -111,7 +116,7 @@ class TransportPlugin
                 $flagData
             );
 
-            $this->dataHelper->log("TransportPlugin send exception: " . $e->getMessage());
+            $this->logger->error("TransportPlugin send exception: " . $e->getMessage());
             return $proceed();
         }
     }
