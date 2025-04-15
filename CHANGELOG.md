@@ -1,3 +1,11 @@
+# 4.31.0
+
+### What's new
+- We have updated our SMTP transport code to be compatible with Symfony packages.
+
+### Improvements
+- We fixed a PHPStan error in `Connector\Product`.
+
 # 4.30.0
 
 ### Improvements
