@@ -241,7 +241,7 @@ class Exporter
     private function joinIndexedPrices(ProductCollection $productCollection, ?int $storeId)
     {
         if (!$this->scopeConfig->isSetFlag(
-            Config::XML_PATH_CONNECTOR_SYNC_CATALOG_PRICE_RULES_ENABLED,
+            Config::XML_PATH_CONNECTOR_SYNC_CATALOG_INDEX_PRICES_ENABLED,
             ScopeInterface::SCOPE_STORE,
             $storeId
         )) {
@@ -261,8 +261,12 @@ class Exporter
                 $alias . ".customer_group_id = " . $groupId . " AND " .
                 $alias . ".website_id = " . $websiteId,
                 [
-                    "rule_pricing_" . $groupId => 'final_price',
-                    "rule_pricing_group_name_" . $groupId => new \Zend_Db_Expr("'$groupLabel'")
+                    "index_pricing_price_" . $groupId => 'price',
+                    "index_pricing_final_price_" . $groupId => 'final_price',
+                    "index_pricing_min_price_" . $groupId => 'min_price',
+                    "index_pricing_max_price_" . $groupId => 'max_price',
+                    "index_pricing_tier_price_" . $groupId => 'tier_price',
+                    "index_pricing_group_name_" . $groupId => new \Zend_Db_Expr("'$groupLabel'")
                 ]
             );
 

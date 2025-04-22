@@ -15,7 +15,7 @@ use Dotdigitalgroup\Email\Model\Product\ImageType\Context\CatalogSync;
 use Dotdigitalgroup\Email\Model\Product\ParentFinder;
 use Dotdigitalgroup\Email\Model\Product\PriceFinder;
 use Dotdigitalgroup\Email\Model\Product\PriceFinderFactory;
-use Dotdigitalgroup\Email\Model\Product\RulePriceFinder;
+use Dotdigitalgroup\Email\Model\Product\IndexPriceFinder;
 use Dotdigitalgroup\Email\Model\Product\TierPriceFinder;
 use Dotdigitalgroup\Email\Model\Validator\Schema\Exception\SchemaValidationException;
 use Dotdigitalgroup\Email\Model\Validator\Schema\SchemaValidator;
@@ -141,9 +141,9 @@ class ProductTest extends TestCase
     private $priceFinderFactoryMock;
 
     /**
-     * @var RulePriceFinder|MockObject
+     * @var IndexPriceFinder|MockObject
      */
-    private $rulePriceFinderMock;
+    private $indexPriceFinderMock;
 
     protected function setUp() :void
     {
@@ -191,7 +191,7 @@ class ProductTest extends TestCase
         );
         $this->dateTimeMock = $this->createMock(\Magento\Framework\Stdlib\DateTime\DateTime::class);
         $this->priceFinderFactoryMock = $this->createMock(PriceFinderFactory::class);
-        $this->rulePriceFinderMock = $this->createMock(RulePriceFinder::class);
+        $this->indexPriceFinderMock = $this->createMock(IndexPriceFinder::class);
         $this->schemaValidatorFactory = $this->createMock(SchemaValidatorFactory::class);
         $this->schemaValidator = $this->createMock(SchemaValidator::class);
         $this->schemaValidatorFactory
@@ -209,7 +209,7 @@ class ProductTest extends TestCase
             $this->parentFinderMock,
             $this->imageFinderMock,
             $this->tierPriceFinderMock,
-            $this->rulePriceFinderMock,
+            $this->indexPriceFinderMock,
             $this->stockFinderInterfaceMock,
             $this->imageTypeMock,
             $this->schemaValidatorFactory,
@@ -340,19 +340,27 @@ class ProductTest extends TestCase
         $this->product->setProduct($this->mageProductMock, 1);
     }
 
-    public function testGetRulePrices()
+    public function testGetIndexPrices()
     {
         $this->setUpValidator();
         $this->baselineExpectations();
 
-        $this->rulePriceFinderMock->expects($this->once())
-            ->method('getRulePrices')
+        $this->indexPriceFinderMock->expects($this->once())
+            ->method('getIndexPrices')
             ->with($this->mageProductMock, 1)
             ->willReturn([
                 [
                     'customer_group' => 'General',
+                    'price' => 10.00,
+                    'price_incl_tax' => 12.00,
                     'final_price' => 10.00,
-                    'final_price_incl_tax' => 12.00
+                    'final_price_incl_tax' => 12.00,
+                    'min_price' => 10.00,
+                    'min_price_incl_tax' => 12.00,
+                    'max_price' => 10.00,
+                    'max_price_incl_tax' => 12.00,
+                    'tier_price' => 10.00,
+                    'tier_price_incl_tax' => 12.00
                 ]
             ]);
 

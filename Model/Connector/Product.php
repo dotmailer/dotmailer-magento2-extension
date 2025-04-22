@@ -14,7 +14,7 @@ use Dotdigitalgroup\Email\Model\Product\ImageFinder;
 use Dotdigitalgroup\Email\Model\Product\ImageType\Context\CatalogSync;
 use Dotdigitalgroup\Email\Model\Product\ParentFinder;
 use Dotdigitalgroup\Email\Model\Product\PriceFinderFactory;
-use Dotdigitalgroup\Email\Model\Product\RulePriceFinder;
+use Dotdigitalgroup\Email\Model\Product\IndexPriceFinder;
 use Dotdigitalgroup\Email\Model\Validator\Schema\Exception\SchemaValidationException;
 use Dotdigitalgroup\Email\Model\Validator\Schema\SchemaValidator;
 use Dotdigitalgroup\Email\Model\Validator\Schema\SchemaValidatorFactory;
@@ -103,7 +103,7 @@ class Product extends AbstractConnectorModel
     /**
      * @var array
      */
-    public $rulePrices = [];
+    public $indexPrices = [];
 
     /**
      * @var array
@@ -201,9 +201,9 @@ class Product extends AbstractConnectorModel
     private $tierPriceFinder;
 
     /**
-     * @var RulePriceFinder
+     * @var IndexPriceFinder
      */
-    private $rulePriceFinder;
+    private $indexPriceFinder;
 
     /**
      * @var StockFinderInterface
@@ -237,7 +237,7 @@ class Product extends AbstractConnectorModel
      * @param ParentFinder $parentFinder
      * @param ImageFinder $imageFinder
      * @param TierPriceFinderInterface $tierPriceFinder
-     * @param RulePriceFinder $rulePriceFinder
+     * @param IndexPriceFinder $indexPriceFinder
      * @param StockFinderInterface $stockFinderInterface
      * @param CatalogSync $imageType
      * @param SchemaValidatorFactory $schemaValidatorFactory
@@ -253,7 +253,7 @@ class Product extends AbstractConnectorModel
         ParentFinder $parentFinder,
         ImageFinder $imageFinder,
         TierPriceFinderInterface $tierPriceFinder,
-        RulePriceFinder $rulePriceFinder,
+        IndexPriceFinder $indexPriceFinder,
         StockFinderInterface $stockFinderInterface,
         CatalogSync $imageType,
         SchemaValidatorFactory $schemaValidatorFactory,
@@ -268,7 +268,7 @@ class Product extends AbstractConnectorModel
         $this->parentFinder = $parentFinder;
         $this->imageFinder = $imageFinder;
         $this->tierPriceFinder = $tierPriceFinder;
-        $this->rulePriceFinder = $rulePriceFinder;
+        $this->indexPriceFinder = $indexPriceFinder;
         $this->stockFinderInterface = $stockFinderInterface;
         $this->imageType = $imageType;
         $this->schemaValidator = $schemaValidatorFactory->create(['pattern'=> static::SCHEMA_RULES]);
@@ -311,7 +311,7 @@ class Product extends AbstractConnectorModel
         $this->specialPrice_incl_tax = $priceFinder->getSpecialPriceInclTax($product, $storeId);
 
         $this->tierPrices = $this->tierPriceFinder->getTierPrices($product);
-        $this->rulePrices = $this->rulePriceFinder->getRulePrices($product, $storeId);
+        $this->indexPrices = $this->indexPriceFinder->getIndexPrices($product, $storeId);
 
         $this->url = $this->urlFinder->fetchFor($product);
 
