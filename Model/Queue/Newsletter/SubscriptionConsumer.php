@@ -6,11 +6,13 @@ use Dotdigital\Exception\ResponseValidationException;
 use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Apiconnector\Client;
+use Dotdigitalgroup\Email\Model\Apiconnector\V3\StatusInterface as V3StatusInterface;
 use Dotdigitalgroup\Email\Model\Connector\ContactData;
 use Dotdigitalgroup\Email\Model\ContactFactory;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact as ContactResource;
 use Dotdigitalgroup\Email\Model\Queue\Data\SubscriptionData;
 use Dotdigitalgroup\Email\Model\Sync\Subscriber\SingleSubscriberSyncer;
+use Http\Client\Exception;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Newsletter\Model\Subscriber;
 
@@ -76,7 +78,7 @@ class SubscriptionConsumer
      * @param SubscriptionData $data
      *
      * @return void
-     * @throws LocalizedException
+     * @throws LocalizedException|Exception
      */
     public function process(SubscriptionData $data)
     {
@@ -103,9 +105,13 @@ class SubscriptionConsumer
     /**
      * Subscribe.
      *
+     * If the upstream contact is unsubscribed or mail blocked,
+     * the API request will trigger a resubscribe challenge.
+     *
      * @param SubscriptionData $subscribeData
      *
      * @return void
+     * @throws Exception
      */
     private function subscribe(SubscriptionData $subscribeData)
     {
@@ -184,6 +190,9 @@ class SubscriptionConsumer
      * @param int $listId
      *
      * @return void
+     *
+     * @deprecated Use the 'subscribe' route. Retaining for backwards compatibility.
+     * @see SubscriptionConsumer::subscribe
      */
     private function resubscribe(SubscriptionData $resubscribeData, Client $client, int $listId)
     {
@@ -199,8 +208,8 @@ class SubscriptionConsumer
             $this->logger->error(
                 'Newsletter resubscribe error',
                 [
-                'identifier' => $resubscribeData->getEmail(),
-                'exception' => $e,
+                    'identifier' => $resubscribeData->getEmail(),
+                    'exception' => $e,
                 ]
             );
         }

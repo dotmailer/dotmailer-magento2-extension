@@ -7,6 +7,7 @@ namespace Dotdigitalgroup\Email\Model\Sync\Subscriber;
 use Dotdigital\V3\Models\Contact as SdkContact;
 use Dotdigitalgroup\Email\Api\Model\Sync\Export\ContactExporterInterface;
 use Dotdigitalgroup\Email\Logger\Logger;
+use Dotdigitalgroup\Email\Model\Apiconnector\V3\StatusInterface;
 use Dotdigitalgroup\Email\Model\Connector\ContactData\SubscriberFactory as ConnectorSubscriberFactory;
 use Dotdigitalgroup\Email\Model\Connector\Datafield;
 use Dotdigitalgroup\Email\Model\Newsletter\OptInTypeFinder;
@@ -170,7 +171,8 @@ class SubscriberWithSalesExporter extends AbstractExporter implements ContactExp
                     $connectorSubscriber,
                     $this->fieldMap,
                     $listId,
-                    $this->optInTypeFinder->getOptInType($subscriber->getStoreId())
+                    $this->optInTypeFinder->getOptInType($subscriber->getStoreId()),
+                    StatusInterface::SUBSCRIBED
                 );
 
                 $subscriber->clearInstance();

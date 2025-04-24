@@ -135,6 +135,7 @@ class SingleSubscriberSyncerTest extends TestCase
                 'email' => [
                     'optInType' => 'double',
                     'emailType' => 'html',
+                    'status' => 'subscribed',
                 ]
             ],
             'lists' => [123],

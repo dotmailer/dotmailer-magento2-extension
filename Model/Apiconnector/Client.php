@@ -1141,6 +1141,9 @@ class Client extends Rest implements ClientInterface
      * @return string|array|stdClass
      *
      * @throws Exception
+     *
+     * @deprecated use the V3 SDK and pass resubscribeOptions for the email channel property if desired.
+     * @see \Dotdigital\V3\Resources\Contacts::patchByIdentifier
      */
     public function resubscribeContactByEmail(string $email)
     {
@@ -1956,6 +1959,9 @@ class Client extends Rest implements ClientInterface
      *
      * @return mixed
      * @throws \Magento\Framework\Exception\LocalizedException
+     *
+     * @deprecated use the V3 SDK and pass resubscribeOptions for the email channel property if desired.
+     * @see \Dotdigital\V3\Resources\Contacts::patchByIdentifier
      */
     public function postAddressBookContactResubscribe($addressBookId, $email)
     {
