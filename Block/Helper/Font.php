@@ -84,7 +84,7 @@ class Font extends \Magento\Framework\View\Element\Template
             if (strpos($font, '\'') !== false) {
                 $font = str_replace('\'', '', $font);
                 $font = $this->escaper->escapeHtml($font);
-                return "\'$font\'";
+                return "'$font'";
             } else {
                 return $this->escaper->escapeHtml($font);
             }
