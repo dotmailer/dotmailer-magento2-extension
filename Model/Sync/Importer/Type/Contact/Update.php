@@ -201,7 +201,7 @@ class Update extends AbstractItemSyncer
     /**
      * Sync Subscriber_Resubscribed.
      *
-     * @deprecated Use message queue topic ddg.newsletter.resubscribe instead
+     * @deprecated Use message queue topic ddg.newsletter.subscription instead
      * @see \Dotdigitalgroup\Email\Model\Queue\Newsletter\ResubscribeConsumer::process()
      *
      * @param array $importData

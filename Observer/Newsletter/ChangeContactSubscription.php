@@ -204,25 +204,18 @@ class ChangeContactSubscription implements ObserverInterface
 
                 if ($contactEmail->getSuppressed()) {
                     $contactEmail->setSuppressed(null);
-                    $this->contactResource->save($contactEmail);
-
-                    $resubscribeData = $this->subscriptionDataFactory->create();
-                    $resubscribeData->setId($contactEmail->getId());
-                    $resubscribeData->setEmail($email);
-                    $resubscribeData->setWebsiteId($websiteId);
-                    $resubscribeData->setType('resubscribe');
-                    $this->publisher->publish(DotdigitalSubscriber::TOPIC_NEWSLETTER_SUBSCRIPTION, $resubscribeData);
-                } else {
-                    // save first in order to have a row id for the queue publish
-                    $this->contactResource->save($contactEmail);
-
-                    $subscribeData = $this->subscriptionDataFactory->create();
-                    $subscribeData->setId($contactEmail->getId());
-                    $subscribeData->setEmail($email);
-                    $subscribeData->setWebsiteId($websiteId);
-                    $subscribeData->setType('subscribe');
-                    $this->publisher->publish(DotdigitalSubscriber::TOPIC_NEWSLETTER_SUBSCRIPTION, $subscribeData);
                 }
+
+                // save first in order to have a row id for the queue publish
+                $this->contactResource->save($contactEmail);
+
+                $subscribeData = $this->subscriptionDataFactory->create();
+                $subscribeData->setId($contactEmail->getId());
+                $subscribeData->setEmail($email);
+                $subscribeData->setWebsiteId($websiteId);
+                $subscribeData->setType('subscribe');
+                $this->publisher->publish(DotdigitalSubscriber::TOPIC_NEWSLETTER_SUBSCRIPTION, $subscribeData);
+
             //not subscribed
             } else {
                 if ($contactEmail->getSuppressed()) {

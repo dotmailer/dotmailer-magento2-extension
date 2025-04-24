@@ -152,28 +152,4 @@ class SubscriptionConsumerTest extends TestCase
 
         $this->subscriptionConsumer->process($this->subscriptionDataMock);
     }
-
-    public function testProcessResubscribeToList(): void
-    {
-        $this->subscriptionDataMock->method('getType')->willReturn('resubscribe');
-
-        $this->helperMock->method('getSubscriberAddressBook')->willReturn(123456);
-
-        $this->clientMock->expects($this->once())
-            ->method('postAddressBookContactResubscribe');
-
-        $this->subscriptionConsumer->process($this->subscriptionDataMock);
-    }
-
-    public function testProcessResubscribeNotToList(): void
-    {
-        $this->subscriptionDataMock->method('getType')->willReturn('resubscribe');
-
-        $this->helperMock->method('getSubscriberAddressBook')->willReturn(0);
-
-        $this->clientMock->expects($this->once())
-            ->method('resubscribeContactByEmail');
-
-        $this->subscriptionConsumer->process($this->subscriptionDataMock);
-    }
 }

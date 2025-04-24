@@ -6,9 +6,7 @@ namespace Dotdigitalgroup\Email\Model\Sync\Export;
 
 use Dotdigital\V3\Models\Contact as SdkContact;
 use Dotdigital\V3\Models\Contact\ChannelProperties\EmailChannelProperty;
-use Dotdigitalgroup\Email\Model\Contact;
 use Dotdigitalgroup\Email\Model\Connector\ContactData;
-use Dotdigitalgroup\Email\Model\Sync\Subscriber;
 
 class SdkContactBuilder
 {
@@ -33,6 +31,7 @@ class SdkContactBuilder
      * @param array $columns
      * @param int $listId
      * @param string|null $optInType
+     * @param string|null $emailChannelStatus
      *
      * @return SdkContact
      * @throws \Exception
@@ -41,7 +40,8 @@ class SdkContactBuilder
         ContactData $connectorModel,
         array $columns,
         int $listId,
-        ?string $optInType = null
+        ?string $optInType = null,
+        ?string $emailChannelStatus = null
     ): SdkContact {
         $sdkContact = new SdkContact([
             'matchIdentifier' => 'email'
@@ -57,10 +57,13 @@ class SdkContactBuilder
         if ($optInType) {
             $emailChannelProperty->setOptInType($optInType);
         }
+        if ($emailChannelStatus) {
+            $emailChannelProperty->setStatus($emailChannelStatus);
+        }
         $sdkContact->setChannelProperties([
             'email' => $emailChannelProperty
         ]);
-        
+
         $sdkContact->setDataFields(
             $this->dataFieldMapper->mapFields(
                 $connectorModel->getContactData(),

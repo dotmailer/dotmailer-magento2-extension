@@ -6,4 +6,6 @@ interface StatusInterface
 {
     public const PENDING_OPT_IN = 'pendingOptIn';
     public const SUPPRESSED = 'suppressed';
+    public const SUBSCRIBED = 'subscribed';
+    public const UNSUBSCRIBED = 'unsubscribed';
 }
