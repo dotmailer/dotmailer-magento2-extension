@@ -156,22 +156,16 @@ class Enroller
         foreach ($quoteCollection as $batchQuoteCollection) {
             foreach ($batchQuoteCollection as $quote) {
                 try {
-                    if ($quote->hasItems()) {
-                        $this->saveIfNotAlreadyInDatabase($quote, $store, $programId);
-                    }
-                } catch (\Exception $e) {
-                    $this->logger->debug(
-                        sprintf('Error checking items for quote ID: %s', $quote->getId()),
-                        [(string) $e]
-                    );
-                }
-
-                try {
                     $this->patcher->getOrCreateContactByEmail(
                         $quote->getCustomerEmail(),
                         (int) $store->getWebsiteId(),
                         (int) $storeId
                     );
+                    $this->cartInsight->send($quote, $storeId);
+
+                    if ($quote->hasItems()) {
+                        $this->saveIfNotAlreadyInDatabase($quote, $store, $programId);
+                    }
                 } catch (ResponseValidationException $e) {
                     $this->logger->error(
                         sprintf(
@@ -182,12 +176,10 @@ class Enroller
                         [$e->getDetails()]
                     );
                     continue;
-                } catch (\Exception $e) {
+                } catch (\Exception|\Http\Client\Exception $e) {
                     $this->logger->error((string) $e);
                     continue;
                 }
-
-                $this->cartInsight->send($quote, $storeId);
             }
         }
     }
