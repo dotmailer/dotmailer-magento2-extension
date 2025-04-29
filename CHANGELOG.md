@@ -1,3 +1,10 @@
+# 4.31.1
+
+### Bug fixes
+- We fixed multi-word font styling for EDC content.
+- We resolved 'Could not find matching contact in email_contact.' for guest abandoned carts.
+- We fixed a problem with malformed transactional emails in 2.4.7 and below.
+
 # 4.31.0
 
 ### What's new
