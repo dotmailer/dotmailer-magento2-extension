@@ -9,6 +9,7 @@ use Dotdigitalgroup\Email\Model\Mail\SymfonySmtpTransporter;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Mail\EmailMessage;
 use Magento\Framework\Mail\MimeMessageInterface;
+use Magento\Framework\Mail\MimePartInterface;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Mailer\Mailer;
 use Symfony\Component\Mailer\Transport\TransportInterface as SymfonyTransportInterface;
@@ -115,10 +116,20 @@ class SymfonySmtpTransporterTest extends TestCase
             ->with($emailMessage)
             ->willReturn(false);
 
-        // Mock the behavior of getMessageBody and getHeaders
+        $mimeMessageMock = $this->createMock(MimeMessageInterface::class);
+        $mimePartMock = $this->createMock(MimePartInterface::class);
+
         $emailMessage->expects($this->once())
             ->method('getMessageBody')
-            ->willReturn($this->createMock(MimeMessageInterface::class));
+            ->willReturn($mimeMessageMock);
+
+        $mimeMessageMock->expects($this->once())
+            ->method('getParts')
+            ->willReturn([$mimePartMock]);
+
+        $mimePartMock->expects($this->once())
+            ->method('getRawContent')
+            ->willReturn('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" etc.');
 
         $emailMessage->expects($this->once())
             ->method('getHeaders')
@@ -161,11 +172,52 @@ class SymfonySmtpTransporterTest extends TestCase
     }
 
     /**
+     * Test the execute method.
+     */
+    public function testExceptionThrownIfNoRawContentFromPart()
+    {
+        $storeId = 1;
+
+        $emailMessage = $this->createMock(EmailMessage::class);
+        $this->emailMessageMethodCheckerMock->expects($this->once())
+            ->method('hasGetSymfonyMessageMethod')
+            ->with($emailMessage)
+            ->willReturn(false);
+
+        $mimeMessageMock = $this->createMock(MimeMessageInterface::class);
+        $mimePartMock = $this->createMock(MimePartInterface::class);
+
+        $emailMessage->expects($this->once())
+            ->method('getMessageBody')
+            ->willReturn($mimeMessageMock);
+
+        $mimeMessageMock->expects($this->once())
+            ->method('getParts')
+            ->willReturn([$mimePartMock]);
+
+        $mimePartMock->expects($this->once())
+            ->method('getRawContent')
+            ->willReturn('');
+
+        $this->expectException(LocalizedException::class);
+        $this->expectExceptionMessage('Unable to get raw content from message parts');
+
+        $this->symfonySmtpTransporter->execute($emailMessage, $storeId);
+    }
+
+    /**
      * Test the execute method throws exception on invalid SMTP settings.
      */
     public function testExecuteThrowsExceptionOnInvalidSmtpSettings()
     {
         $storeId = 1;
+
+        $emailMessage = $this->createMock(EmailMessage::class);
+
+        $this->emailMessageMethodCheckerMock->expects($this->once())
+            ->method('hasGetSymfonyMessageMethod')
+            ->with($emailMessage)
+            ->willReturn(true);
 
         $this->transactionalEmailSettingsMock->expects($this->once())
             ->method('getSmtpHost')
