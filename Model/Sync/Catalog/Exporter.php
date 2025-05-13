@@ -77,10 +77,11 @@ class Exporter
      *
      * @param int|null $storeId
      * @param array $productsToProcess
+     * @param int|null $customerGroupId
      *
      * @return array
      */
-    public function exportCatalog(?int $storeId, array $productsToProcess): array
+    public function exportCatalog(?int $storeId, $productsToProcess, ?int $customerGroupId = null): array
     {
         $connectorProducts = [];
         try {
@@ -93,7 +94,7 @@ class Exporter
         foreach ($products as $product) {
             try {
                 $connectorProduct = $this->connectorProductFactory->create();
-                $connectorProduct->setProduct($product, $storeId);
+                $connectorProduct->setProduct($product, $storeId, $customerGroupId);
                 $connectorProducts[$product->getId()] = $connectorProduct->toArray();
             } catch (SchemaValidationException $exception) {
                 $this->logger->debug(

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Dotdigitalgroup\Email\Model\Connector\ContactData;
 
+use Magento\Customer\Api\Data\GroupInterface;
 use Magento\Customer\Model\GroupFactory;
 use Magento\Customer\Model\ResourceModel\Group as GroupResource;
 
@@ -45,6 +46,9 @@ class CustomerGroupLoader
      */
     public function getCustomerGroup(int $groupId): string
     {
+        if ($groupId === GroupInterface::CUST_GROUP_ALL) {
+            return 'ALL GROUPS';
+        }
         if (!isset($this->groups[$groupId])) {
             $groupModel = $this->groupFactory->create();
             $this->groupResource->load($groupModel, $groupId);
