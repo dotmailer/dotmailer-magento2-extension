@@ -388,7 +388,6 @@ class Product extends AbstractConnectorModel
     {
         $attributeModel = $this->attributeHandler->create();
         $this->attribute_set = $attributeModel->getAttributeSetName($product);
-        $this->attributes = $attributeModel;
 
         //selected attributes from config
         $configAttributes = $attributeModel->getConfigAttributesForSync(
@@ -408,7 +407,6 @@ class Product extends AbstractConnectorModel
             )->getProperties();
 
             if (empty($attributeProperties)) {
-                $this->attributes = null;
                 return;
             }
 
