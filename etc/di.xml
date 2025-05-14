@@ -161,4 +161,9 @@
             </argument>
         </arguments>
     </type>
+    <type name="Dotdigitalgroup\Email\Model\Sync\Catalog">
+    <arguments>
+        <argument name="mergeManager" xsi:type="object">Dotdigitalgroup\Email\Model\Sync\Batch\CatalogMergeManager</argument>
+    </arguments>
+    </type>
 </config>

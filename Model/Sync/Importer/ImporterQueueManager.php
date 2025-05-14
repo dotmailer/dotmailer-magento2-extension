@@ -161,7 +161,7 @@ class ImporterQueueManager
             ->create()
             ->setModel($this->bulkFactory)
             ->setType(array_merge([
-                'Catalog',
+                ImporterModel::IMPORT_TYPE_CATALOG,
                 ImporterModel::IMPORT_TYPE_REVIEWS,
                 ImporterModel::IMPORT_TYPE_WISHLIST,
                 ImporterModel::IMPORT_TYPE_ORDERS
@@ -171,7 +171,7 @@ class ImporterQueueManager
             ->create()
             ->setModel($this->transactionalBulkJsonFactory)
             ->setMode(ImporterModel::MODE_BULK_JSON)
-            ->setType([ImporterModel::IMPORT_TYPE_ORDERS]);
+            ->setType([ImporterModel::IMPORT_TYPE_CATALOG,ImporterModel::IMPORT_TYPE_ORDERS]);
 
         return [
             $contactDeprecated->build(),
@@ -252,7 +252,7 @@ class ImporterQueueManager
         $tdDelete['model'] = $this->deleteFactory;
         $tdDelete['mode'] = ImporterModel::MODE_SINGLE_DELETE;
         $tdDelete['type'] = [
-            'Catalog',
+            ImporterModel::IMPORT_TYPE_CATALOG,
             ImporterModel::IMPORT_TYPE_REVIEWS,
             ImporterModel::IMPORT_TYPE_WISHLIST,
             ImporterModel::IMPORT_TYPE_ORDERS,

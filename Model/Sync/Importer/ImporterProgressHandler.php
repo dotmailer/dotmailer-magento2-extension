@@ -107,7 +107,7 @@ class ImporterProgressHandler
                 ImporterModel::IMPORT_TYPE_ORDERS,
                 ImporterModel::IMPORT_TYPE_REVIEWS,
                 ImporterModel::IMPORT_TYPE_WISHLIST,
-                'Catalog'
+                ImporterModel::IMPORT_TYPE_CATALOG
             ]
         ];
 
@@ -142,6 +142,7 @@ class ImporterProgressHandler
             self::PROGRESS_GROUP_RESOURCE => 'insightData',
             self::PROGRESS_GROUP_TYPES => [
                 ImporterModel::IMPORT_TYPE_ORDERS,
+                ImporterModel::IMPORT_TYPE_CATALOG
             ],
             self::PROGRESS_GROUP_MODEL => $this->v3HandlerFactory,
             self::PROGRESS_GROUP_METHOD => 'getImportById'

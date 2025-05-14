@@ -6,8 +6,7 @@ namespace Dotdigitalgroup\Email\Model\Sync\Catalog;
 
 use Dotdigitalgroup\Email\Helper\Config;
 use Dotdigitalgroup\Email\Logger\Logger;
-use Dotdigitalgroup\Email\Model\Connector\ProductFactory;
-use Dotdigitalgroup\Email\Model\Validator\Schema\Exception\SchemaValidationException;
+use Dotdigitalgroup\Email\Model\Sync\Export\SdkCatalogRecordCollectionBuilderFactory;
 use Magento\Catalog\Model\ResourceModel\Product\Collection as ProductCollection;
 use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
 use Magento\Customer\Model\ResourceModel\Group\Collection as CustomerGroupCollection;
@@ -15,13 +14,10 @@ use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
+use Zend_Db_Expr;
 
 class Exporter
 {
-    /**
-     * @var ProductFactory
-     */
-    private $connectorProductFactory;
 
     /**
      * @var Logger
@@ -49,27 +45,32 @@ class Exporter
     private $customerGroup;
 
     /**
-     * @param ProductFactory $connectorProductFactory
+     * @var SdkCatalogRecordCollectionBuilderFactory
+     */
+    private $sdkCatalogRecordCollectionBuilderFactory;
+
+    /**
      * @param Logger $logger
      * @param ScopeConfigInterface $scopeConfig
      * @param StoreManagerInterface $storeManager
      * @param ProductCollectionFactory $productCollectionFactory
      * @param CustomerGroupCollection $customerGroup
+     * @param SdkCatalogRecordCollectionBuilderFactory $sdkCatalogRecordCollectionBuilderFactory
      */
     public function __construct(
-        ProductFactory $connectorProductFactory,
         Logger $logger,
         ScopeConfigInterface $scopeConfig,
         StoreManagerInterface $storeManager,
         ProductCollectionFactory $productCollectionFactory,
-        CustomerGroupCollection $customerGroup
+        CustomerGroupCollection $customerGroup,
+        SdkCatalogRecordCollectionBuilderFactory $sdkCatalogRecordCollectionBuilderFactory
     ) {
-        $this->connectorProductFactory = $connectorProductFactory;
         $this->logger = $logger;
         $this->scopeConfig = $scopeConfig;
         $this->storeManager = $storeManager;
-        $this->customerGroup = $customerGroup;
         $this->productCollectionFactory = $productCollectionFactory;
+        $this->customerGroup = $customerGroup;
+        $this->sdkCatalogRecordCollectionBuilderFactory = $sdkCatalogRecordCollectionBuilderFactory;
     }
 
     /**
@@ -79,11 +80,11 @@ class Exporter
      * @param array $productsToProcess
      * @param int|null $customerGroupId
      *
-     * @return array
+     * @return array|array[]
+     * @throws NoSuchEntityException
      */
     public function exportCatalog(?int $storeId, $productsToProcess, ?int $customerGroupId = null): array
     {
-        $connectorProducts = [];
         try {
             $products = $this->getProductsToExport($storeId, $productsToProcess);
         } catch (NoSuchEntityException $e) {
@@ -91,30 +92,16 @@ class Exporter
             return [];
         }
 
-        foreach ($products as $product) {
-            try {
-                $connectorProduct = $this->connectorProductFactory->create();
-                $connectorProduct->setProduct($product, $storeId, $customerGroupId);
-                $connectorProducts[$product->getId()] = $connectorProduct->toArray();
-            } catch (SchemaValidationException $exception) {
-                $this->logger->debug(
-                    sprintf(
-                        "Product id %s was not exported, but will be marked as processed.",
-                        $product->getId()
-                    ),
-                    [$exception, $exception->errors()]
-                );
-            } catch (\Exception $exception) {
-                $this->logger->debug(
-                    sprintf(
-                        'Product id %s was not exported, but will be marked as processed.',
-                        $product->getId()
-                    ),
-                    [$exception]
-                );
-            }
+        if ($products->getSize() === 0) {
+            return [];
         }
-        return $connectorProducts;
+
+        return $this->sdkCatalogRecordCollectionBuilderFactory->create([
+                'storeId' => $storeId,
+                'customerGroupId' => $customerGroupId
+            ])->setBuildableData($products)
+            ->build()
+            ->all();
     }
 
     /**
@@ -126,7 +113,7 @@ class Exporter
      * @return ProductCollection
      * @throws NoSuchEntityException
      */
-    private function getProductsToExport(?int $storeId, array $productIds)
+    private function getProductsToExport(?int $storeId, array $productIds): ProductCollection
     {
         $collection = $this->filterProductsByStoreTypeAndVisibility(
             $storeId,
@@ -135,9 +122,7 @@ class Exporter
             $this->getAllowedProductVisibilities($storeId)
         );
 
-        $this->joinIndexedPrices($collection, $storeId);
-
-        return $collection;
+        return $this->joinIndexedPrices($collection, $storeId);
     }
 
     /**
@@ -195,7 +180,7 @@ class Exporter
         array $productIds,
         array $types,
         array $visibilities
-    ) {
+    ): ProductCollection {
         $productCollection = $this->productCollectionFactory->create()
             ->addAttributeToSelect('*')
             ->addAttributeToFilter(
@@ -239,7 +224,7 @@ class Exporter
      * @return ProductCollection
      * @throws NoSuchEntityException
      */
-    private function joinIndexedPrices(ProductCollection $productCollection, ?int $storeId)
+    private function joinIndexedPrices(ProductCollection $productCollection, ?int $storeId): ProductCollection
     {
         if (!$this->scopeConfig->isSetFlag(
             Config::XML_PATH_CONNECTOR_SYNC_CATALOG_INDEX_PRICES_ENABLED,
@@ -267,10 +252,9 @@ class Exporter
                     "index_pricing_min_price_" . $groupId => 'min_price',
                     "index_pricing_max_price_" . $groupId => 'max_price',
                     "index_pricing_tier_price_" . $groupId => 'tier_price',
-                    "index_pricing_group_name_" . $groupId => new \Zend_Db_Expr("'$groupLabel'")
+                    "index_pricing_group_name_" . $groupId => new Zend_Db_Expr("'$groupLabel'")
                 ]
             );
-
         }
 
         return $productCollection;
