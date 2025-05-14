@@ -6,14 +6,17 @@ use Dotdigital\Exception\ResponseValidationException;
 use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Apiconnector\Client;
-use Dotdigitalgroup\Email\Model\Apiconnector\V3\StatusInterface as V3StatusInterface;
 use Dotdigitalgroup\Email\Model\Connector\ContactData;
 use Dotdigitalgroup\Email\Model\ContactFactory;
+use Dotdigitalgroup\Email\Model\Queue\Data\AutomationDataFactory;
+use Dotdigitalgroup\Email\Model\Queue\Sync\Automation\AutomationPublisher;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact as ContactResource;
 use Dotdigitalgroup\Email\Model\Queue\Data\SubscriptionData;
+use Dotdigitalgroup\Email\Model\Sync\Automation\AutomationTypeHandler;
 use Dotdigitalgroup\Email\Model\Sync\Subscriber\SingleSubscriberSyncer;
 use Http\Client\Exception;
 use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\MessageQueue\PublisherInterface;
 use Magento\Newsletter\Model\Subscriber;
 
 class SubscriptionConsumer
@@ -39,6 +42,11 @@ class SubscriptionConsumer
     private $contactFactory;
 
     /**
+     * @var AutomationDataFactory
+     */
+    private $automationDataFactory;
+
+    /**
      * @var ContactResource
      */
     private $contactResource;
@@ -49,27 +57,38 @@ class SubscriptionConsumer
     private $singleSubscriberSyncer;
 
     /**
+     * @var PublisherInterface
+     */
+    private $publisher;
+
+    /**
      * @param Data $helper
      * @param Logger $logger
+     * @param AutomationDataFactory $automationDataFactory
      * @param ContactData $contactData
      * @param ContactFactory $contactFactory
      * @param ContactResource $contactResource
+     * @param PublisherInterface $publisher
      * @param SingleSubscriberSyncer $singleSubscriberSyncer
      */
     public function __construct(
         Data $helper,
         Logger $logger,
+        AutomationDataFactory $automationDataFactory,
         ContactData $contactData,
         ContactFactory $contactFactory,
         ContactResource $contactResource,
+        PublisherInterface $publisher,
         SingleSubscriberSyncer $singleSubscriberSyncer
     ) {
         $this->helper = $helper;
         $this->logger = $logger;
+        $this->automationDataFactory = $automationDataFactory;
         $this->contactData = $contactData;
         $this->contactFactory = $contactFactory;
         $this->contactResource = $contactResource;
         $this->singleSubscriberSyncer = $singleSubscriberSyncer;
+        $this->publisher = $publisher;
     }
 
     /**
@@ -111,14 +130,12 @@ class SubscriptionConsumer
      * @param SubscriptionData $subscribeData
      *
      * @return void
-     * @throws Exception
      */
     private function subscribe(SubscriptionData $subscribeData)
     {
-        $contact = $this->contactFactory->create();
-        $this->contactResource->load($contact, $subscribeData->getId());
-
         try {
+            $contact = $this->contactFactory->create();
+            $this->contactResource->load($contact, $subscribeData->getId());
             $this->singleSubscriberSyncer->pushContactToSubscriberAddressBook($contact);
             $this->logger->info('Newsletter subscribe success', ['email' => $subscribeData->getEmail()]);
         } catch (ResponseValidationException $e) {
@@ -129,7 +146,7 @@ class SubscriptionConsumer
                 ),
                 [$e->getDetails()]
             );
-        } catch (\Exception $e) {
+        } catch (\Exception|Exception $e) {
             $this->logger->error(
                 'Newsletter subscribe error',
                 [
@@ -137,6 +154,21 @@ class SubscriptionConsumer
                 'exception' => $e,
                 ]
             );
+        }
+
+        if (!$subscribeData->getAutomationId()) {
+            return;
+        }
+
+        $message = $this->automationDataFactory->create();
+        $message->setId($subscribeData->getAutomationId());
+        $message->setType(AutomationTypeHandler::AUTOMATION_TYPE_NEW_SUBSCRIBER);
+
+        try {
+            $this->publisher->publish(AutomationPublisher::TOPIC_SYNC_AUTOMATION, $message);
+            $this->logger->info('Subscriber automation publish success', ['email' => $subscribeData->getEmail()]);
+        } catch (\Exception $e) {
+            $this->logger->error('Subscriber automation publish failed', [(string) $e]);
         }
     }
 
