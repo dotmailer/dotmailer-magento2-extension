@@ -27,6 +27,11 @@ class SubscriptionData
     private $type;
 
     /**
+     * @var int
+     */
+    private $automationId;
+
+    /**
      * Set id.
      *
      * This is the row id from email_contact.
@@ -77,6 +82,18 @@ class SubscriptionData
     }
 
     /**
+     * Set automation id.
+     *
+     * @param int $automationId
+     *
+     * @return void
+     */
+    public function setAutomationId(int $automationId)
+    {
+        $this->automationId = $automationId;
+    }
+
+    /**
      * Get id.
      *
      * @return string
@@ -116,5 +133,15 @@ class SubscriptionData
     public function getType(): string
     {
         return $this->type;
+    }
+
+    /**
+     * Get automation id.
+     *
+     * @return int|null
+     */
+    public function getAutomationId(): ?int
+    {
+        return $this->automationId;
     }
 }

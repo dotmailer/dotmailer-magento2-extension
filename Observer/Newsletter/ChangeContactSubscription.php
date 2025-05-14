@@ -209,11 +209,14 @@ class ChangeContactSubscription implements ObserverInterface
                 // save first in order to have a row id for the queue publish
                 $this->contactResource->save($contactEmail);
 
+                $automationId = $this->getAutomationIdForEnrolment($email, $subscriber, $websiteId, $storeId);
+
                 $subscribeData = $this->subscriptionDataFactory->create();
                 $subscribeData->setId($contactEmail->getId());
                 $subscribeData->setEmail($email);
                 $subscribeData->setWebsiteId($websiteId);
                 $subscribeData->setType('subscribe');
+                $subscribeData->setAutomationId($automationId);
                 $this->publisher->publish(DotdigitalSubscriber::TOPIC_NEWSLETTER_SUBSCRIPTION, $subscribeData);
 
             //not subscribed
@@ -249,8 +252,6 @@ class ChangeContactSubscription implements ObserverInterface
             }
             $this->registry->unregister($email . '_subscriber_save'); // additional measure
             $this->registry->register($email . '_subscriber_save', $email);
-            //add subscriber to automation
-            $this->addSubscriberToAutomation($email, $subscriber, $websiteId, $storeId);
         } catch (Exception $e) {
             $this->helper->debug((string)$e, []);
         }
@@ -259,16 +260,20 @@ class ChangeContactSubscription implements ObserverInterface
     }
 
     /**
-     * Register subscriber to automation.
+     * Get automation id for enrolment.
+     *
+     * Save an automation, if we should enrol, and return the automation id.
+     * Queue publish happens in the SubscriptionConsumer.
      *
      * @param string $email
      * @param Subscriber $subscriber
      * @param string|int $websiteId
      * @param string|int $storeId
+     * @return int
      * @throws AlreadyExistsException
      * @throws NoSuchEntityException
      */
-    private function addSubscriberToAutomation($email, $subscriber, $websiteId, $storeId)
+    private function getAutomationIdForEnrolment($email, $subscriber, $websiteId, $storeId): int
     {
         $programId = $this->scopeConfig->getValue(
             Config::XML_PATH_CONNECTOR_AUTOMATION_STUDIO_SUBSCRIBER,
@@ -278,7 +283,7 @@ class ChangeContactSubscription implements ObserverInterface
 
         // If no New Subscriber automation is set, ignore
         if (!$programId) {
-            return;
+            return 0;
         }
 
         $isSubscriberConfirming = $this->isSubscriberConfirming($subscriber);
@@ -290,7 +295,7 @@ class ChangeContactSubscription implements ObserverInterface
         if (($isSubscriberConfirming && $this->hasSubscriberAutomation($email, $websiteId)) ||
             (!$isSubscriberConfirming && !$this->isSubscriberNew)
         ) {
-            return;
+            return 0;
         }
 
         //save subscriber to the queue
@@ -305,7 +310,7 @@ class ChangeContactSubscription implements ObserverInterface
             ->setProgramId($programId);
         $this->automationResource->save($automation);
 
-        $this->automationPublisher->publish($automation);
+        return (int) $automation->getId();
     }
 
     /**
