@@ -125,7 +125,6 @@ class CatalogTest extends TestCase
     public function testSyncCatalogIfProductsAvailableToProcess()
     {
         $countProducts = 5;
-        $removeOrphanProductsResult = null;
         $unexpectedResultMessage = 'Done.';
         $expectedResultMessage = '----------- Catalog sync ----------- : ' .
             '00:00:00, Total processed = 10, Total synced = 15';
@@ -146,10 +145,6 @@ class CatalogTest extends TestCase
         $this->catalogResourceFactoryMock->expects($this->atLeastOnce())
             ->method('create')
             ->willReturn($this->resourceCatalogMock);
-
-        $this->resourceCatalogMock->expects($this->atLeastOnce())
-            ->method('removeOrphanProducts')
-            ->willReturn($removeOrphanProductsResult);
 
         $this->catalogSyncFactoryMock->expects($this->atLeastOnce())
             ->method('create')
@@ -174,7 +169,6 @@ class CatalogTest extends TestCase
         $response = $this->catalog->sync();
 
         $this->assertEquals($countProducts, 5);
-        $this->assertNull($removeOrphanProductsResult);
         $this->assertNotEquals($response['message'], $unexpectedResultMessage);
         $this->assertEquals($response['message'], $expectedResultMessage);
     }

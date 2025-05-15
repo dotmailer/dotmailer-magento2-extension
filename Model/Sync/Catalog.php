@@ -119,10 +119,6 @@ class Catalog extends DataObject implements SyncInterface
             Config::XML_PATH_CONNECTOR_TRANSACTIONAL_DATA_SYNC_LIMIT
         );
 
-        //remove product with product id set and no product
-        $this->catalogResourceFactory->create()
-            ->removeOrphanProducts();
-
         $megaBatch = [];
         $productsProcessedCount = 0;
         $megaBatchCount = 0;
