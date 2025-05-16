@@ -685,16 +685,23 @@ class ContactData
             case 'multiselect':
                 return $this->getMultiSelectValues($attribute, $attributeCode);
 
+            case 'boolean':
+                $value = $this->model->getData($attributeCode);
+                if ($value === null) {
+                    $defaultValue = $attribute->getDefaultValue();
+                    return $defaultValue ?? '0';
+                }
+                return $value;
+
             default:
-                //Text, Dates, Multilines, Boolean
+                //Text, Dates, Multilines
                 $value = $this->model->getData($attributeCode);
                 if (!$value) {
                     $defaultValue = $attribute->getDefaultValue();
-                    if ((string)$defaultValue != '') {
+                    if ((string) $defaultValue != '') {
                         return $defaultValue;
                     }
                 }
-
                 return $value;
         }
     }
