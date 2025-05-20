@@ -1,3 +1,10 @@
+# 4.31.2
+
+### Bug fixes
+- We fixed a bug with catalog sync that could occur if product attributes were initially synced, but afterwards turned off.
+- We fixed a potential race condition affecting new subscriber automations.
+- We fixed incorrect synced values for boolean customer attributes with a default value of 'Yes'.
+
 # 4.31.1
 
 ### Bug fixes
