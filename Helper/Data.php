@@ -1492,4 +1492,19 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
         return false;
     }
+
+    /**
+     * Check if catalog price rules are enabled.
+     *
+     * @param int $websiteId
+     * @return bool
+     */
+    public function catalogIndexPricesEnabled($websiteId = 0)
+    {
+        return $this->scopeConfig->isSetFlag(
+            EmailConfig::XML_PATH_CONNECTOR_SYNC_CATALOG_INDEX_PRICES_ENABLED,
+            ScopeInterface::SCOPE_WEBSITE,
+            $websiteId
+        );
+    }
 }

@@ -6,6 +6,7 @@ namespace Dotdigitalgroup\Email\Model\Sync;
 
 use DateTime;
 use Dotdigitalgroup\Email\Api\Model\Sync\Batch\BatchMergerInterface;
+use Dotdigitalgroup\Email\Api\Model\Sync\SyncDeferralInterface;
 use Dotdigitalgroup\Email\Helper\Config;
 use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory;
@@ -29,7 +30,7 @@ class Catalog extends DataObject implements SyncInterface
     /**
      * @cont string
      */
-    public const string DEFAULT_CATALOG_NAME = 'Catalog_Default';
+    public const DEFAULT_CATALOG_NAME = 'Catalog_Default';
 
     /**
      * @var Data
@@ -67,6 +68,11 @@ class Catalog extends DataObject implements SyncInterface
     private $mergeManager;
 
     /**
+     * @var SyncDeferralInterface
+     */
+    private $syncDeferral;
+
+    /**
      * Catalog constructor.
      *
      * @param Data $helper
@@ -76,6 +82,7 @@ class Catalog extends DataObject implements SyncInterface
      * @param CatalogSyncFactory $catalogSyncFactory
      * @param MegaBatchProcessorFactory $megaBatchProcessorFactory
      * @param BatchMergerInterface $mergeManager
+     * @param SyncDeferralInterface $syncDeferral
      * @param array $data
      */
     public function __construct(
@@ -86,6 +93,7 @@ class Catalog extends DataObject implements SyncInterface
         Catalog\CatalogSyncFactory $catalogSyncFactory,
         MegaBatchProcessorFactory $megaBatchProcessorFactory,
         BatchMergerInterface $mergeManager,
+        SyncDeferralInterface $syncDeferral,
         array $data = []
     ) {
         $this->helper = $helper;
@@ -95,6 +103,7 @@ class Catalog extends DataObject implements SyncInterface
         $this->catalogSyncFactory = $catalogSyncFactory;
         $this->megaBatchProcessorFactory = $megaBatchProcessorFactory;
         $this->mergeManager = $mergeManager;
+        $this->syncDeferral = $syncDeferral;
         parent::__construct($data);
     }
 
@@ -111,6 +120,12 @@ class Catalog extends DataObject implements SyncInterface
         $response = ['success' => true, 'message' => 'Done.'];
 
         if (!$this->shouldProceed()) {
+            return $response;
+        }
+
+        if ($this->syncDeferral->shouldDeferSync()) {
+            $response['success'] = false;
+            $response['message'] = 'Sync deferred';
             return $response;
         }
 

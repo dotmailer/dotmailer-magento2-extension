@@ -162,8 +162,9 @@
         </arguments>
     </type>
     <type name="Dotdigitalgroup\Email\Model\Sync\Catalog">
-    <arguments>
-        <argument name="mergeManager" xsi:type="object">Dotdigitalgroup\Email\Model\Sync\Batch\CatalogMergeManager</argument>
-    </arguments>
+        <arguments>
+            <argument name="mergeManager" xsi:type="object">Dotdigitalgroup\Email\Model\Sync\Batch\CatalogMergeManager</argument>
+            <argument name="syncDeferral" xsi:type="object">Dotdigitalgroup\Email\Model\Sync\Catalog\CatalogSyncDeferralHandler</argument>
+        </arguments>
     </type>
 </config>

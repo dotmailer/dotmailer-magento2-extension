@@ -29,5 +29,9 @@
                  topic="ddg.sales.cart_phase_update"
                  destinationType="queue"
                  destination="ddg.cart_phase_update.queue"/>
+        <binding id="dotdigitalCatalogRulesBinding"
+                 topic="ddg.catalog.rules"
+                 destinationType="queue"
+                 destination="ddg.catalog.queue"/>
     </exchange>
 </config>

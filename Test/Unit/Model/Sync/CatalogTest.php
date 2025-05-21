@@ -12,11 +12,10 @@ use Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory;
 use Dotdigitalgroup\Email\Model\Sync\Batch\MegaBatchProcessor;
 use Dotdigitalgroup\Email\Model\Sync\Batch\MegaBatchProcessorFactory;
 use Dotdigitalgroup\Email\Model\Sync\Catalog;
+use Dotdigitalgroup\Email\Model\Sync\Catalog\CatalogSyncDeferralHandler;
 use Dotdigitalgroup\Email\Model\Sync\Catalog\CatalogSyncerInterface;
 use Dotdigitalgroup\Email\Model\Sync\Catalog\CatalogSyncFactory;
 use Magento\Framework\App\Config\ScopeConfigInterface;
-use Dotdigitalgroup\Email\Model\ImporterFactory;
-use Dotdigitalgroup\Email\Model\Importer;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
@@ -68,16 +67,6 @@ class CatalogTest extends TestCase
     private $scopeConfigInterfaceMock;
 
     /**
-     * @var ImporterFactory|MockObject
-     */
-    private $importerFactoryMock;
-
-    /**
-     * @var Importer|mixed|MockObject
-     */
-    private $importerMock;
-
-    /**
      * @var MegaBatchProcessorFactory|MockObject
      */
     private $megaBatchProcessorFactoryMock;
@@ -87,18 +76,24 @@ class CatalogTest extends TestCase
      */
     private $mergeManagerMock;
 
-    protected function setUp() :void
+    /**
+     * @var CatalogSyncDeferralHandler|MockObject
+     */
+    private $syncDeferralMock;
+
+    protected function setUp(): void
     {
-        $this->catalogCollectionMock = $this->createMock(CatalogCollection::Class);
+        $this->catalogCollectionMock = $this->createMock(CatalogCollection::class);
         $this->catalogCollectionFactoryMock = $this->createMock(CollectionFactory::class);
         $this->helperMock = $this->createMock(Data::class);
         $this->catalogSyncFactoryMock = $this->createMock(CatalogSyncFactory::class);
         $this->catalogResourceFactoryMock = $this->createMock(CatalogFactory::class);
         $this->catalogSyncerInterfaceMock = $this->createMock(CatalogSyncerInterface::class);
-        $this->resourceCatalogMock = $this->createMock(ResourceCatalog::class);
         $this->scopeConfigInterfaceMock = $this->createMock(ScopeConfigInterface::class);
         $this->megaBatchProcessorFactoryMock = $this->createMock(MegaBatchProcessorFactory::class);
         $this->mergeManagerMock = $this->createMock(BatchMergerInterface::class);
+        $this->resourceCatalogMock = $this->createMock(ResourceCatalog::class);
+        $this->syncDeferralMock = $this->createMock(CatalogSyncDeferralHandler::class);
 
         $this->helperMock->expects($this->any())
             ->method('isEnabled')
@@ -116,6 +111,7 @@ class CatalogTest extends TestCase
             $this->catalogSyncFactoryMock,
             $this->megaBatchProcessorFactoryMock,
             $this->mergeManagerMock,
+            $this->syncDeferralMock
         );
     }
 
