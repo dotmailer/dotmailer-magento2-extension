@@ -48,6 +48,7 @@ class V3InProgressImportResponseHandler extends AbstractInProgressImportResponse
      * @param array $group
      *
      * @return V3ImportInterface
+     * @throws \Exception
      */
     protected function checkItemImportStatus(
         ImporterModel $item,
@@ -98,7 +99,10 @@ class V3InProgressImportResponseHandler extends AbstractInProgressImportResponse
             $itemCount = 1;
         }
 
-        $this->reportHandler->process($response);
+        $this->reportHandler->logSummary($response);
+        $this->reportHandler->logFailures($response);
+        $this->reportHandler->storeContactIds($response, (int) $item->getWebsiteId());
+
         $this->importerResource->save($item);
 
         return $itemCount;

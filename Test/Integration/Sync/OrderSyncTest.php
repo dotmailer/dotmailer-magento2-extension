@@ -7,18 +7,17 @@ if (!class_exists('\Magento\Catalog\Api\Data\ProductExtensionInterfaceFactory'))
 }
 
 use Dotdigitalgroup\Email\Helper\Config;
+use Dotdigitalgroup\Email\Model\Contact;
 use Dotdigitalgroup\Email\Model\Sync\Order;
 use Dotdigitalgroup\Email\Test\Integration\MocksApiResponses;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Quote\Model\ResourceModel\Quote\Collection;
 use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\Sales\Model\Order\Address as OrderAddress;
 use Magento\Sales\Model\Order\Payment;
+use Magento\TestFramework\Helper\Bootstrap;
 use Magento\TestFramework\ObjectManager;
 
-/**
- * Class OrderSyncTest
- * magentoAppArea cron
- */
 class OrderSyncTest extends \Magento\TestFramework\TestCase\AbstractController
 {
     use MocksApiResponses;
@@ -26,61 +25,61 @@ class OrderSyncTest extends \Magento\TestFramework\TestCase\AbstractController
     /**
      * @var \Dotdigitalgroup\Email\Helper\Data|\PHPUnit_Framework_MockObject_MockObject
      */
-    public $helper;
+    private $helper;
 
     /**
      * @var \Dotdigitalgroup\Email\Model\ImporterFactory|\PHPUnit_Framework_MockObject_MockObject
      */
-    public $importerFactory;
+    private $importerFactory;
 
     /**
      * @var \Dotdigitalgroup\Email\Model\Connector\AccountFactory|\PHPUnit_Framework_MockObject_MockObject
      */
-    public $account;
+    private $account;
 
     /**
      * @var \Dotdigitalgroup\Email\Model\OrderFactory|\PHPUnit_Framework_MockObject_MockObject
      */
-    public $orderFactory;
+    private $orderFactory;
 
     /**
      * @var \Dotdigitalgroup\Email\Model\ResourceModel\Contact|\PHPUnit_Framework_MockObject_MockObject
      */
-    public $contactResource;
+    private $contactResource;
 
     /**
-     * @var \Magento\Framework\App\ResourceConnection | \PHPUnit_Framework_MockObject_MockObject
+     * @var \Magento\Framework\App\ResourceConnection|\PHPUnit_Framework_MockObject_MockObject
      */
-    public $resource;
+    private $resource;
 
     /**
      * @var \Magento\Sales\Model\OrderFactory|\PHPUnit_Framework_MockObject_MockObject
      */
-    public $salesOrderFactory;
+    private $salesOrderFactory;
 
     /**
      * @var \Dotdigitalgroup\Email\Model\Connector\OrderFactory|\PHPUnit_Framework_MockObject_MockObject
      */
-    public $connectorOrderFactory;
+    private $connectorOrderFactory;
 
     /**
      * @var \Dotdigitalgroup\Email\Model\Sync\Order
      */
-    public $orderSync;
+    private $orderSync;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Order \PHPUnit_Framework_MockObject_MockObject
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Order|\PHPUnit_Framework_MockObject_MockObject
      */
-    public $orderResource;
+    private $orderResource;
 
     /**
-     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory |
-     * \PHPUnit_Framework_MockObject_MockObject
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory|\PHPUnit_Framework_MockObject_MockObject
      */
-    public $contactCollectionFactory;
+    private $contactCollectionFactory;
 
     /**
      * @return void
+     * @throws \ReflectionException
      */
     public function setUp() :void
     {
@@ -99,7 +98,7 @@ class OrderSyncTest extends \Magento\TestFramework\TestCase\AbstractController
     }
 
     /**
-     * Sync orders and find guest.
+     * Test that orders are not synced without a contact id.
      *
      * @magentoDbIsolation enabled
      * @magentoDataFixture Magento/Sales/_files/order.php
@@ -107,7 +106,7 @@ class OrderSyncTest extends \Magento\TestFramework\TestCase\AbstractController
      * @magentoConfigFixture default_store sync_settings/sync/order_enabled 1
      * @magentoConfigFixture default_store connector_api_credentials/api/enabled 1
      */
-    public function testOrderSync()
+    public function testOrderNotSyncedForContactWithNoContactId()
     {
         /** @var Collection $quoteCollection */
         $quoteCollection = ObjectManager::getInstance()->create(Collection::class);
@@ -127,10 +126,42 @@ class OrderSyncTest extends \Magento\TestFramework\TestCase\AbstractController
             'order_status' => $order->getStatus(),
             'quote_id' => $order->getQuoteId(),
             'store_id' => $order->getStoreId(),
+            'processed' => '0',
         ]);
         ObjectManager::getInstance()
             ->create(\Dotdigitalgroup\Email\Model\ResourceModel\Order::class)
             ->save($emailOrder);
+
+        $result = $this->orderSync->sync();
+
+        $this->assertEmpty($result['syncedOrders'], 'Failed, should not have synced order.');
+        $this->assertEquals(0, $result['syncedOrders']);
+    }
+
+    /**
+     * Sync orders and find guest.
+     *
+     * @magentoDbIsolation enabled
+     * @magentoDataFixture Magento/Sales/_files/order.php
+     * @magentoDataFixture Magento/Sales/_files/quote.php
+     * @magentoConfigFixture default_store sync_settings/sync/order_enabled 1
+     * @magentoConfigFixture default_store connector_api_credentials/api/enabled 1
+     */
+    public function testOrderSync()
+    {
+        $order = Bootstrap::getObjectManager()->get(\Magento\Sales\Model\Order::class);
+        $order->loadByIncrementId('100000001');
+
+        $emailContact = ObjectManager::getInstance()->create(Contact::class);
+        $emailContact->setData([
+            'contact_id' => '12345',
+            'email' => $order->getCustomerEmail(),
+            'website_id' => $order->getStore()->getWebsiteId(),
+            'store_id' => $order->getStoreId()
+        ]);
+        ObjectManager::getInstance()
+            ->create(\Dotdigitalgroup\Email\Model\ResourceModel\Contact::class)
+            ->save($emailContact);
 
         $result = $this->orderSync->sync();
 
@@ -139,37 +170,8 @@ class OrderSyncTest extends \Magento\TestFramework\TestCase\AbstractController
     }
 
     /**
-     * @magentoDataFixture Magento/Sales/_files/order.php
-     * @magentoConfigFixture default_store sync_settings/sync/order_enabled 1
-     * @magentoConfigFixture default_store connector_api_credentials/api/enabled 1
-     */
-    public function testCanSyncUnprocessedOrders()
-    {
-        /** @var \Magento\Sales\Model\Order $latestOrder */
-        $orderCollection = ObjectManager::getInstance()
-            ->create(\Magento\Sales\Model\ResourceModel\Order\Collection::class);
-        $latestOrder = $orderCollection->getFirstItem();
-
-        /** @var \Dotdigitalgroup\Email\Model\Order $order */
-        $order = ObjectManager::getInstance()->create(\Dotdigitalgroup\Email\Model\Order::class);
-        $order->setData([
-            'order_id' => $latestOrder->getId(),
-            'order_status' => $latestOrder->getStatus(),
-            'quote_id' => $latestOrder->getQuoteId(),
-            'store_id' => $latestOrder->getStoreId(),
-            'processed' => '0',
-        ]);
-        ObjectManager::getInstance()
-            ->create(\Dotdigitalgroup\Email\Model\ResourceModel\Order::class)
-            ->save($order);
-
-        $result = $this->orderSync->sync();
-
-        $this->assertEquals(1, $result['syncedOrders']);
-    }
-
-    /**
      * @return void
+     * @throws LocalizedException
      */
     private function createNewEmailOrder()
     {
@@ -232,23 +234,5 @@ class OrderSyncTest extends \Magento\TestFramework\TestCase\AbstractController
             ->setShippingAddress($shippingAddress);
 
         $orderRepository->save($order);
-    }
-
-    /**
-     * @return void
-     */
-    private function createModifiedEmailOrder()
-    {
-        $objectManager = \Magento\TestFramework\Helper\Bootstrap::getObjectManager();
-        $order = $objectManager->create(\Magento\Sales\Model\ResourceModel\Order\Collection::class);
-        $order = $order->getFirstItem();
-        $emailOrder = $objectManager->create(\Dotdigitalgroup\Email\Model\Order::class);
-        $emailOrder->setOrderId($order->getId());
-        $emailOrder->setOrderStatus($order->getStatus());
-        $emailOrder->setQuoteId($order->getQuoteId());
-        $emailOrder->setStoreId($order->getStoreId());
-        $emailOrder->setEmailImported('1');
-        $emailOrder->setModified('1');
-        $emailOrder->save();
     }
 }

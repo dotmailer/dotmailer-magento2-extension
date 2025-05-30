@@ -117,6 +117,27 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     }
 
     /**
+     * Load Contact by Email and Store Id.
+     *
+     * @param string $email
+     * @param int $storeId
+     *
+     * @return bool|\Dotdigitalgroup\Email\Model\Contact
+     */
+    public function loadByCustomerEmailAndStoreId($email, $storeId)
+    {
+        $collection = $this->addFieldToFilter('email', $email)
+            ->addFieldToFilter('store_id', $storeId)
+            ->setPageSize(1);
+
+        if ($collection->getSize()) {
+            return $collection->getFirstItem();
+        }
+
+        return false;
+    }
+
+    /**
      * Get guest by email and website id.
      *
      * @param string $email

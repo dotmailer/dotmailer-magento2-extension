@@ -256,7 +256,9 @@ class OrderSaveAfter implements ObserverInterface
     }
 
     /**
-     * Reset contact based on type and status
+     * Reset contact based on email and website_id.
+     *
+     * Reset any customers, guest or subscribers after saving an order.
      *
      * @param string $email
      * @param int $websiteId
@@ -272,10 +274,10 @@ class OrderSaveAfter implements ObserverInterface
             return;
         }
 
-        if ($contact->getCustomerId() && $contact->getEmailImported()) {
-            $contact->setEmailImported(Contact::EMAIL_CONTACT_NOT_IMPORTED);
-            $this->contactResource->save($contact);
-        } elseif (! $contact->getCustomerId() && $contact->getIsSubscriber()) {
+        $contact->setEmailImported(Contact::EMAIL_CONTACT_NOT_IMPORTED);
+        $this->contactResource->save($contact);
+
+        if (! $contact->getCustomerId() && $contact->getIsSubscriber()) {
             // the queue will do the sync so mark as imported now
             $contact->setSubscriberImported(Contact::EMAIL_CONTACT_IMPORTED);
             $this->contactResource->save($contact);

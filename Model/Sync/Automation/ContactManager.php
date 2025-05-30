@@ -126,14 +126,11 @@ class ContactManager
         }
 
         if ($addressBookId) {
-            $this->markProcessedContactAsImported($contact);
+            $this->markProcessedContactAsImported($contact, $contactId);
         }
 
         if ($subscriber->isSubscribed()) {
-            $subscriberResponse = $this->singleSubscriberSyncer->pushContactToSubscriberAddressBook($contact);
-            if ($subscriberResponse) {
-                $this->markProcessedSubscriberAsImported($contact);
-            }
+            $this->singleSubscriberSyncer->execute($contact);
         }
 
         return $contactId;
@@ -250,27 +247,15 @@ class ContactManager
      * Mark contact as imported.
      *
      * @param Contact $contact
+     * @param int $contactId
      *
      * @return void
      * @throws AlreadyExistsException
      */
-    private function markProcessedContactAsImported(Contact $contact): void
+    private function markProcessedContactAsImported(Contact $contact, int $contactId): void
     {
+        $contact->setContactId($contactId);
         $contact->setEmailImported(1);
-        $this->contactResource->save($contact);
-    }
-
-    /**
-     * Mark contact as imported.
-     *
-     * @param Contact $contact
-     *
-     * @return void
-     * @throws \Magento\Framework\Exception\AlreadyExistsException
-     */
-    private function markProcessedSubscriberAsImported(Contact $contact): void
-    {
-        $contact->setSubscriberImported(1);
         $this->contactResource->save($contact);
     }
 

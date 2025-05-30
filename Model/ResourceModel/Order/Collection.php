@@ -137,15 +137,27 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     public function getOrdersToProcess($limit, $storeIds)
     {
         $connectorCollection = $this;
-        $connectorCollection->addFieldToFilter('processed', '0');
-        $connectorCollection->addFieldToFilter('store_id', ['in' => $storeIds]);
+        $connectorCollection->getSelect()
+            ->joinLeft(
+                ['sales_order' => $this->getTable('sales_order')],
+                'main_table.order_id = sales_order.entity_id',
+                ['customer_email']
+            )->joinLeft(
+                ['email_contact' => $this->getTable('email_contact')],
+                'sales_order.customer_email = email_contact.email',
+                ['contact_id']
+            );
+        $connectorCollection
+            ->addFieldToFilter('main_table.processed', '0')
+            ->addFieldToFilter('main_table.store_id', ['in' => $storeIds])
+            ->addFieldToFilter('email_contact.contact_id', ['notnull' => true])
+            ->addFieldToFilter('email_contact.contact_id', ['neq' => '']);
         $connectorCollection->getSelect()->limit($limit);
         $connectorCollection->setOrder(
             'order_id',
             'asc'
         );
 
-        //check number of orders
         if ($connectorCollection->getSize()) {
             return $connectorCollection->getColumnValues('order_id');
         }

@@ -125,7 +125,7 @@ class SubscriptionConsumerTest extends TestCase
             ->with($contactModelMock);
 
         $this->singleSubscriberSyncerMock->expects($this->once())
-            ->method('pushContactToSubscriberAddressBook');
+            ->method('execute');
 
         $this->subscriptionConsumer->process($this->subscriptionDataMock);
     }
@@ -182,7 +182,7 @@ class SubscriptionConsumerTest extends TestCase
             ->with($contactModelMock);
 
         $this->singleSubscriberSyncerMock->expects($this->once())
-            ->method('pushContactToSubscriberAddressBook');
+            ->method('execute');
 
         $this->subscriptionDataMock->expects($this->exactly(2))
             ->method('getAutomationId')
