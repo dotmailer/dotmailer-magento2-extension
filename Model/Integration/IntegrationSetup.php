@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dotdigitalgroup\Email\Model\Integration;
 
 use Dotdigitalgroup\Email\Helper\Config;
@@ -218,7 +220,7 @@ class IntegrationSetup
      * @return bool
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function setupDataFields($websiteId = 0): bool
+    public function setupDataFields(int $websiteId = 0): bool
     {
         $dataFieldAutoMapper = $this->dataFieldAutoMapperFactory->create()
             ->run($websiteId);

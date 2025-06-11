@@ -1,10 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dotdigitalgroup\Email\Model\Integration\Data;
 
 use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory as CatalogCollectionFactory;
+use Dotdigitalgroup\Email\Model\Sync\Batch\MegaBatchProcessorFactory;
 use Dotdigitalgroup\Email\Model\Sync\Catalog\Exporter;
 use Magento\Framework\App\Area;
 use Magento\Store\Model\App\Emulation;
@@ -30,6 +33,11 @@ class Products
     private $catalogCollectionFactory;
 
     /**
+     * @var MegaBatchProcessorFactory
+     */
+    private $megaBatchProcessorFactory;
+
+    /**
      * @var Exporter
      */
     private $exporter;
@@ -48,6 +56,7 @@ class Products
      * @param Logger $logger
      * @param Data $helper
      * @param CatalogCollectionFactory $catalogCollectionFactory
+     * @param MegaBatchProcessorFactory $megaBatchProcessorFactory
      * @param Exporter $exporter
      * @param StoreManagerInterface $storeManager
      * @param Emulation $appEmulation
@@ -56,6 +65,7 @@ class Products
         Logger $logger,
         Data $helper,
         CatalogCollectionFactory $catalogCollectionFactory,
+        MegaBatchProcessorFactory $megaBatchProcessorFactory,
         Exporter $exporter,
         StoreManagerInterface $storeManager,
         Emulation $appEmulation
@@ -63,6 +73,7 @@ class Products
         $this->logger = $logger;
         $this->helper = $helper;
         $this->catalogCollectionFactory = $catalogCollectionFactory;
+        $this->megaBatchProcessorFactory = $megaBatchProcessorFactory;
         $this->exporter = $exporter;
         $this->storeManager = $storeManager;
         $this->appEmulation = $appEmulation;
@@ -139,12 +150,12 @@ class Products
                 return false;
             }
 
-            foreach ($batch['products'] as $product) {
-                $result = $client->postAccountTransactionalData($product, $catalogName);
-                if (isset($result->message)) {
-                    return false;
-                }
-            }
+            $this->megaBatchProcessorFactory->create()
+                ->process(
+                    $batch['products'],
+                    $websiteId,
+                    $catalogName
+                );
 
             $this->logger->info(sprintf(
                 '%d products posted for catalog %s',
