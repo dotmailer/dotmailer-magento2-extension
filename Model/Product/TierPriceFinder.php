@@ -235,9 +235,7 @@ class TierPriceFinder implements TierPriceFinderInterface
         );
 
         return [
-            'customer_group' => $customerGroupId ?
-                $this->customerGroupLoader->getCustomerGroup($customerGroupId) :
-                'ALL GROUPS',
+            'customer_group' => $this->customerGroupLoader->getCustomerGroup($customerGroupId),
             'price' => $price,
             'price_incl_tax' => $price_incl_tax,
             'quantity' => (int) $tier->getQty(),

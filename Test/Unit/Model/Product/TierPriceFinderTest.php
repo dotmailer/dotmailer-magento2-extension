@@ -7,7 +7,6 @@ namespace Dotdigitalgroup\Email\Test\Unit\Model\Product;
 use Dotdigitalgroup\Email\Model\Connector\ContactData\CustomerGroupLoader;
 use Dotdigitalgroup\Email\Model\Product\TierPriceFinder;
 use Dotdigitalgroup\Email\Model\Tax\TaxCalculator;
-use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Api\Data\ProductTierPriceExtensionInterface;
 use Magento\Catalog\Api\Data\ProductTierPriceInterface;
 use Magento\Catalog\Model\Product;
@@ -15,7 +14,6 @@ use Magento\Catalog\Model\ProductRepository;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Magento\Framework\Api\ExtensionAttributesInterface;
 
 class TierPriceFinderTest extends TestCase
 {
@@ -95,8 +93,10 @@ class TierPriceFinderTest extends TestCase
             ->method('getPercentageValue')
             ->willReturn(null);
 
-        $this->customerGroupLoader->expects($this->never())
-            ->method('getCustomerGroup');
+        $this->customerGroupLoader->expects($this->once())
+            ->method('getCustomerGroup')
+            ->with($customerGroupId)
+            ->willReturn('ALL GROUPS');
 
         $this->taxCalculator->expects($this->once())
             ->method('calculatePriceInclTax')
@@ -286,9 +286,14 @@ class TierPriceFinderTest extends TestCase
             ->method('getPercentageValue')
             ->willReturn(null);
 
-        $this->customerGroupLoader->expects($this->exactly(2))
+        $this->customerGroupLoader->expects($this->exactly(4))
             ->method('getCustomerGroup')
-            ->willReturn('Chaz');
+            ->willReturnOnConsecutiveCalls(
+                'NOT LOGGED IN',
+                'Chaz',
+                'NOT LOGGED IN',
+                'Chaz'
+            );
 
         $matcher = $this->exactly(4);
         $this->taxCalculator->expects($matcher)
@@ -322,7 +327,7 @@ class TierPriceFinderTest extends TestCase
 
         $this->assertEquals([
             [
-                'customer_group' => 'ALL GROUPS',
+                'customer_group' => 'NOT LOGGED IN',
                 'price' => 12.00,
                 'price_incl_tax' => 18.00,
                 'quantity' => 3,

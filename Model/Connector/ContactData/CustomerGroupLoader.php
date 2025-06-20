@@ -49,6 +49,9 @@ class CustomerGroupLoader
         if ($groupId === GroupInterface::CUST_GROUP_ALL) {
             return 'ALL GROUPS';
         }
+        if ($groupId === GroupInterface::NOT_LOGGED_IN_ID) {
+            return 'NOT LOGGED IN';
+        }
         if (!isset($this->groups[$groupId])) {
             $groupModel = $this->groupFactory->create();
             $this->groupResource->load($groupModel, $groupId);
