@@ -116,7 +116,12 @@ class SymfonySmtpTransporter
                 $symfonyMessage->getHeaders()->addTextHeader('Subject', $headerValue);
             }
             if (in_array($headerName, ['From', 'Reply-to', 'To', 'Cc', 'Bcc'], true)) {
-                $symfonyMessage->getHeaders()->addMailboxListHeader($headerName, [$headerValue]);
+                if (strpos($headerValue, ',') !== false) {
+                    $headerValues = explode(',', $headerValue);
+                    $symfonyMessage->getHeaders()->addMailboxListHeader($headerName, $headerValues);
+                } else {
+                    $symfonyMessage->getHeaders()->addMailboxListHeader($headerName, [$headerValue]);
+                }
             }
         }
 
