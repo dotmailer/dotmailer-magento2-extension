@@ -17,7 +17,8 @@ class Productattributes implements \Magento\Framework\Data\OptionSourceInterface
         'quantity_and_stock_status',
         'name',
         'sku',
-        'price'
+        'price',
+        'tier_price'
     ];
 
     /**
