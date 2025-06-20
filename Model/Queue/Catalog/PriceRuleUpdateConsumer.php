@@ -75,6 +75,6 @@ class PriceRuleUpdateConsumer
         $productIds = array_merge($newRule->getMatchingProductIds(), $oldRule->getMatchingProductIds());
 
         $catalogResource = $this->catalogResourceFactory->create();
-        $catalogResource->setUnprocessedByIds(array_keys($productIds));
+        $catalogResource->setUnprocessedByIds($productIds);
     }
 }
