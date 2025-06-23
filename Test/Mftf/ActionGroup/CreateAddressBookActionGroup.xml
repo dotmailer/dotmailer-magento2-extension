@@ -13,6 +13,6 @@
         <selectOption selector="{{AdminDotdigitalSyncSettingsSection.addressBookVisibility}}" userInput="Private" stepKey="setAddressBookVisibility"/>
         <click selector="{{AdminDotdigitalSyncSettingsSection.createNewAddressBook}}" stepKey="clickCreateNewAddressBookButton" />
         <waitForPageLoad stepKey="waitForPageLoad"/>
-        <see userInput="List successfully created." selector="div[data-ui-id='messages-message-success']" stepKey="seeSuccessMessage"/>
+        <waitForText userInput="List successfully created." selector="div[data-ui-id='messages-message-success']" stepKey="seeSuccessMessage"/>
     </actionGroup>
 </actionGroups>

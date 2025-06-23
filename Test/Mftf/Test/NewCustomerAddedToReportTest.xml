@@ -40,9 +40,6 @@
                 <argument name="selectedOption" value="No"/>
             </actionGroup>
             <actionGroup ref="DeleteContactsReportRows" stepKey="deleteContactReportRows"/>
-            <actionGroup ref="AdminDeleteCustomerActionGroup" stepKey="deleteCustomer">
-                <argument name="customerEmail" value="CustomerEntityOne.email"/>
-            </actionGroup>
             <actionGroup ref="ResetDotmailerAccountData" stepKey="resetAccountData"/>
             <actionGroup ref="AdminLogoutActionGroup" stepKey="logout"/>
         </after>

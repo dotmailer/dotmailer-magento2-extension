@@ -25,13 +25,9 @@
             <createData entity="ApiCategory" stepKey="createCategory"/>
             <!-- Create Simple Product -->
             <comment userInput="Create Simple Product" stepKey="createSimpleProductComment"/>
-            <createData entity="SimpleProductPrice10Qty1" stepKey="simpleProduct">
+            <createData entity="simpleProductDefault" stepKey="simpleProduct">
                 <requiredEntity createDataKey="createCategory"/>
             </createData>
-            <actionGroup ref="CreateOrderActionGroup" stepKey="createNewOrder">
-                <argument name="product" value="$$simpleProduct$$"/>
-                <argument name="customer" value="$$simpleCustomer$$"/>
-            </actionGroup>
         </before>
 
         <after>
@@ -41,6 +37,22 @@
             <actionGroup ref="ResetDotmailerAccountData" stepKey="resetAccountData"/>
             <actionGroup ref="AdminLogoutActionGroup" stepKey="logout"/>
         </after>
+
+        <!-- Assign default source to simple product -->
+        <actionGroup ref="DotAdminAssignDefaultSourceToSimpleProductsActionGroup" stepKey="bulkAssignSourcesToAllProducts">
+            <argument name="product1Sku" value="$$simpleProduct.sku$$"/>
+            <argument name="source1_code" value="default"/>
+        </actionGroup>
+
+        <!-- Reindex data -->
+        <actionGroup ref="CliIndexerReindexActionGroup" stepKey="performReindex">
+            <argument name="indices" value="cataloginventory_stock inventory"/>
+        </actionGroup>
+
+        <actionGroup ref="CreateOrderActionGroup" stepKey="createNewOrder">
+            <argument name="product" value="$$simpleProduct$$"/>
+            <argument name="customer" value="$$simpleCustomer$$"/>
+        </actionGroup>
 
         <!-- Check that contact is created and marked as not imported. -->
         <amOnPage url="{{AdminContactReportPage.url}}" stepKey="amOnDotdigitalContactReportPage1"/>

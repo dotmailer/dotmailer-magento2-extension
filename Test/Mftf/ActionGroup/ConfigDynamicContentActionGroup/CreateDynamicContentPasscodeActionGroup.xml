@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<actionGroups xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/actionGroupSchema.xsd">
+    <actionGroup name="CreateDynamicContentPasscode">
+        <amOnPage url="{{AdminDynamicContentSettingsPage.url}}" stepKey="amOnDynamicContentSettingsPage"/>
+        <conditionalClick stepKey="expandExternalDynamicUrlTab" selector="{{AdminDynamicContentSettingsSection.externalDynamicUrlHead}}" dependentSelector="{{AdminDynamicContentSettingsSection.externalDynamicUrlFieldset}}" visible="false"/>
+        <fillField selector="{{AdminDynamicContentSettingsSection.dynamicContentPasscode}}" userInput="{{DynamicContent.passcode}}" stepKey="setPasscode"/>
+        <click selector="{{AdminDynamicContentSettingsSection.save}}" stepKey="clickSaveDynamicContentSettingsButton" />
+        <waitForPageLoad stepKey="waitForPageLoad"/>
+    </actionGroup>
+</actionGroups>

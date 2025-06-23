@@ -15,7 +15,7 @@
             <actionGroup ref="AdminLoginActionGroup" stepKey="AdminLoginActionGroup1"/>
             <actionGroup ref="SetDotmailerAccountData" stepKey="SetDotmailerAccountData"/>
             <createData entity="SimpleSubCategory" stepKey="createCategory"/>
-            <createData entity="SimpleProduct" stepKey="createSimpleProduct">
+            <createData entity="simpleProductDefault" stepKey="createSimpleProduct">
                 <requiredEntity createDataKey="createCategory"/>
             </createData>
         </before>
@@ -26,6 +26,17 @@
             <actionGroup ref="ResetDotmailerAccountData" stepKey="resetAccountData"/>
             <actionGroup ref="AdminLogoutActionGroup" stepKey="logout"/>
         </after>
+
+        <!-- Assign default source to simple product -->
+        <actionGroup ref="DotAdminAssignDefaultSourceToSimpleProductsActionGroup" stepKey="bulkAssignSourcesToAllProducts">
+            <argument name="product1Sku" value="$$createSimpleProduct.sku$$"/>
+            <argument name="source1_code" value="default"/>
+        </actionGroup>
+
+        <!-- Reindex data -->
+        <actionGroup ref="CliIndexerReindexActionGroup" stepKey="performReindex">
+            <argument name="indices" value="cataloginventory_stock inventory"/>
+        </actionGroup>
 
         <!-- Subscribe to the newsletter -->
         <actionGroup ref="StorefrontOpenHomePageActionGroup" stepKey="openStorefrontPage"/>

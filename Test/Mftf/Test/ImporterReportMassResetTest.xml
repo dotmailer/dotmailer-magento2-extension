@@ -51,11 +51,6 @@
 
         <after>
 
-            <!-- Remove Customer -->
-            <actionGroup ref="DeleteCustomerByEmailActionGroup" stepKey="deleteNewUser">
-                <argument name="email" value="{{CustomerEntityOne.email}}"/>
-            </actionGroup>
-
             <!-- Delink Address books for Customers and Subscribers -->
             <actionGroup ref="DelinkAddressBooksActionGroup" stepKey="DelinkAddressBooks">
                 <argument name="customerBookName" value="{{AddressBooks.customerAddressBookName}}"/>
@@ -77,15 +72,15 @@
         <magentoCLI command="dotdigital:sync Customer" stepKey="runCustomerSync"/>
         <wait time="5" stepKey="waitFiveSecondsForSyncContactToGetPickedUpByCron"/>
 
-        <!-- Run  Importer syncs -->
+        <!-- Run Importer sync -->
         <magentoCLI command="dotdigital:sync Importer" stepKey="runImporterSync1"/>
-        <wait time="30" stepKey="waitThirtySecondsForSyncImporter1"/>
+        <wait time="60" stepKey="waitSixtySecondsForSyncImporter1"/>
 
-        <!-- Run  Importer syncs -->
+        <!-- Run Importer sync -->
         <magentoCLI command="dotdigital:sync Importer" stepKey="runImporterSync2"/>
         <wait time="30" stepKey="waitThirtySecondsForSyncImporter2"/>
 
-        <!-- Navigate to Importer report page -->
+        <!-- Navigate to Import report page -->
         <amOnPage url="{{AdminImporterReportPage.url}}" stepKey="amOnImportReportPage"/>
         <waitForPageLoad stepKey="waitForImportsPageLoad"/>
 

@@ -22,9 +22,15 @@
             <actionGroup ref="DotAdminCreateCartPriceRuleActionGroup" stepKey="createCartPriceRule">
                 <argument name="ruleName" value="DotSalesRule"/>
             </actionGroup>
+
+            <!-- Set the dynamic content passcode -->
+            <actionGroup ref="CreateDynamicContentPasscode" stepKey="createDynamicContentPasscode"/>
         </before>
 
         <after>
+            <!-- Clear the dynamic content passcode -->
+            <actionGroup ref="ClearDynamicContentPasscode" stepKey="clearDynamicContentPasscode" />
+
             <!-- Delete the sales rule we created for the test -->
             <actionGroup ref="DeleteCartPriceRuleByName" stepKey="DeleteCartPriceRuleByName">
                 <argument name="ruleName" value="{{DotSalesRule.name}}"/>
@@ -35,9 +41,10 @@
         </after>
 
         <!-- Test configuration of URL builder -->
+        <amOnPage url="{{AdminCartPriceRulesPage.url}}" stepKey="amOnCartPriceList"/>
         <click selector="{{AdminCartPriceRulesSection.rowContainingText(DotSalesRule.name)}}" stepKey="goToEditRule"/>
         <seeElement selector="{{EngagementCloudCouponUrlBuilderSection.couponUrlBuilderHeader}}" stepKey="seeCouponUrlBuilder"/>
-        <click selector="{{EngagementCloudCouponUrlBuilderSection.couponUrlBuilderHeader}}" stepKey="clickToExpandCouponUrlBuilder"/>
+        <conditionalClick selector="{{EngagementCloudCouponUrlBuilderSection.couponUrlBuilderHeader}}" dependentSelector="{{EngagementCloudCouponUrlBuilderSection.couponUrlBuilderFieldset}}" visible="false" stepKey="clickToExpandCouponUrlBuilder"/>
 
         <!-- Verify default value -->
         <grabValueFrom selector="{{EngagementCloudCouponUrlBuilderSection.urlBuilderOutput}}" stepKey="grabDefaultUrlValue"/>
@@ -48,7 +55,9 @@
 
         <!-- Set some options for format, prefix and suffix and re-verify -->
         <selectOption selector="{{EngagementCloudCouponUrlBuilderSection.codeFormat}}" userInput="{{DotCouponUrl.codeFormatNum}}" stepKey="setCodeFormat"/>
+
         <fillField selector="{{EngagementCloudCouponUrlBuilderSection.codePrefix}}" userInput="{{DotCouponUrl.codePrefix}}" stepKey="setCodePrefix"/>
+
         <fillField selector="{{EngagementCloudCouponUrlBuilderSection.codeSuffix}}" userInput="{{DotCouponUrl.codeSuffix}}" stepKey="setCodeSuffix"/>
 
         <grabValueFrom selector="{{EngagementCloudCouponUrlBuilderSection.urlBuilderOutput}}" stepKey="grabUrlValueWithFormatPrefixSuffixUpdated"/>

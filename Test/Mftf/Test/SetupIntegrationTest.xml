@@ -20,11 +20,20 @@
             <actionGroup ref="SelectOptionForNotSubscribedContacts" stepKey="enableForNotSubscribedContacts"/>
             <!-- create order data -->
             <createData entity="_defaultCategory" stepKey="createOrderCategory"/>
-            <createData entity="SimpleProduct" stepKey="createOrderProduct">
+            <createData entity="simpleProductDefault" stepKey="createOrderProduct">
                 <requiredEntity createDataKey="createOrderCategory"/>
             </createData>
             <!-- customer for order -->
             <createData entity="Simple_US_Customer_CA" stepKey="orderCustomer"/>
+            <!-- Assign default source to simple product -->
+            <actionGroup ref="DotAdminAssignDefaultSourceToSimpleProductsActionGroup" stepKey="bulkAssignSourcesToAllProducts">
+                <argument name="product1Sku" value="$$createOrderProduct.sku$$"/>
+                <argument name="source1_code" value="default"/>
+            </actionGroup>
+            <!-- Reindex data -->
+            <actionGroup ref="CliIndexerReindexActionGroup" stepKey="performReindex">
+                <argument name="indices" value="cataloginventory_stock inventory"/>
+            </actionGroup>
             <!-- Create Order  -->
             <actionGroup ref="CreateOrderActionGroup" stepKey="createOrder">
                 <argument name="product" value="$createOrderProduct$"/>
@@ -33,6 +42,16 @@
         </before>
 
         <after>
+            <amOnPage url="{{LogViewerPage.url}}" stepKey="amOnLogViewerPage"/>
+            <waitForPageLoad stepKey="waitForPageLoad"/>
+            <makeScreenshot userInput="log_output_connector" stepKey="screenshotLogViewerPage"/>
+
+            <!-- Exception Log -->
+            <selectOption selector="{{LogViewerSection.switcher}}" userInput="exception" stepKey="setSwitcherToExceptionLog"/>
+            <click selector="{{LogViewerSection.reloader}}" stepKey="reload3" />
+            <waitForAjaxLoad stepKey="waitForReload3"/>
+            <makeScreenshot userInput="log_output_exception" stepKey="screenshotExceptionLogViewerPage"/>
+
             <!--Delete created entity -->
             <deleteData createDataKey="createOrderCategory" stepKey="deleteOrderCategory"/>
             <deleteData createDataKey="createOrderProduct" stepKey="deleteOrderProduct"/>
@@ -47,7 +66,7 @@
         <waitForPageLoad stepKey="waitForPageLoad"/>
         <!-- Go bag Go -->
         <click selector="{{AdminDotmailerAccountsSection.setupIntegrationAction}}" stepKey="clickSetupIntegrationButton"/>
-        <wait time="5" stepKey="waitFiveSecondsForConfirmation"/>
+        <wait time="10" stepKey="waitTenSecondsForConfirmation"/>
         <click selector="{{AdminDotmailerAccountsSection.setupIntegrationActionConfirmation}}" stepKey="clickSetupIntegrationConfirmationButton"/>
         <!-- Loader Displays -->
         <grabTextFrom selector="{{AdminDotmailerAccountsSection.setupIntegrationLoaderText}}" stepKey="loaderMessage"/>
@@ -56,7 +75,7 @@
             <actualResult type="string">{$loaderMessage}</actualResult>
         </assertStringContainsString>
         <!-- Wait for page to finish -->
-        <wait time="30" stepKey="waitForMessageRender"/>
+        <wait time="60" stepKey="waitForMessageRender"/>
         <!-- Check Address books -->
         <grabTextFrom selector="{{AdminDotmailerAccountsSection.setupIntegrationEventMessage('2')}}" stepKey="stepAddressBookMessage"/>
         <assertElementContainsAttribute stepKey="assertAddressBookAttributes">
@@ -103,6 +122,7 @@
             <actualResult type="string">{$stepOrdersMessage}</actualResult>
         </assertStringContainsString>
         <!-- Check Products preload -->
+        <scrollTo selector="{{AdminDotmailerAccountsSection.setupIntegrationEventMessage('6')}}" stepKey="scrollToProgressItem6"/>
         <grabTextFrom selector="{{AdminDotmailerAccountsSection.setupIntegrationEventMessage('7')}}" stepKey="stepProductsMessage"/>
         <assertElementContainsAttribute stepKey="assertProductsAttributes">
             <expectedResult selector="{{AdminDotmailerAccountsSection.setupIntegrationEventMessage('7')}}" attribute="class" type="string">{{SetupIntegrationData.setupIntegrationSuccessClasses}}</expectedResult>
@@ -111,11 +131,8 @@
             <expectedResult type="string">{{SetupIntegrationData.setupIntegrationProductsEventMessage}}</expectedResult>
             <actualResult type="string">{$stepProductsMessage}</actualResult>
         </assertStringContainsString>
-        <!-- Check Cron Failed-->
+        <!-- Check Cron check happened (it may succeed or fail depending on the host environment) -->
         <grabTextFrom selector="{{AdminDotmailerAccountsSection.setupIntegrationEventMessage('8')}}" stepKey="stepCronMessage"/>
-        <assertElementContainsAttribute stepKey="assertCronAttributes">
-            <expectedResult selector="{{AdminDotmailerAccountsSection.setupIntegrationEventMessage('8')}}" attribute="class" type="string">{{SetupIntegrationData.setupIntegrationWarningClasses}}</expectedResult>
-        </assertElementContainsAttribute>
         <assertStringContainsString stepKey="assertCronMessage">
             <expectedResult type="string">{{SetupIntegrationData.setupIntegrationCronEventMessage}}</expectedResult>
             <actualResult type="string">{$stepCronMessage}</actualResult>

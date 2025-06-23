@@ -30,8 +30,7 @@
         <selectOption selector="{{AdminDotdigitalDataMappingSection.customerLastname}}" userInput="LASTNAME" stepKey="mapLastName"/>
 
         <click selector="{{AdminDotdigitalDataMappingSection.save}}" stepKey="saveMapping"/>
-        <waitForPageLoad stepKey="waitForPageLoad2"/>
-        <see userInput="You saved the configuration." selector="div[data-ui-id='messages-message-success']" stepKey="seeSuccessMessage"/>
+        <see userInput="You saved the configuration." selector="{{AdminMessagesSection.success}}" stepKey="seeSuccessMessage"/>
 
     </test>
 </tests>

@@ -3,7 +3,8 @@ require([
     'jquery',
     'Magento_Ui/js/modal/confirm',
     'mage/url',
-    'eventsource'
+    'eventsource',
+    'domReady!'
 ], function ($, confirmation) {
     'use strict';
     const confirmationBody = 'Clicking confirm will reset some Dotdigital configuration settings (lists, sync settings, data mapping and email capture).',
@@ -69,13 +70,14 @@ require([
     },
 
     /**
-     * Handle error event
+     * Handle error event with more detailed information
      * @param errorEvent
      * @param source
      */
-    onError = function (errorEvent,source) {
-        onClose(errorEvent,source);
+    onError = function (errorEvent, source) {
+        onClose(errorEvent, source);
         console.log(errorEvent);
+
         $('div.setup-progress').css('visibility', 'visible')
             .addClass('message-error')
             .addClass('message')
@@ -121,8 +123,6 @@ require([
 
     };
 
-    $(window).on('load', function(){
-        $('.ddg-integration').click(showConfirmation);
-    });
+    $('.ddg-integration').click(showConfirmation);
 });
 

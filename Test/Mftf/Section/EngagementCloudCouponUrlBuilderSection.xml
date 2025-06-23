@@ -4,6 +4,7 @@
           xsi:noNamespaceSchemaLocation="urn:magento:mftf:Page/etc/SectionObject.xsd">
     <section name="EngagementCloudCouponUrlBuilderSection">
         <element name="couponUrlBuilderHeader" type="button" selector="div[data-index='engagement_cloud_coupon_url_builder']" timeout="30"/>
+        <element name="couponUrlBuilderFieldset" type="block" selector=".ddg-fieldset fieldset"/>
         <element name="codeFormat" type="select" selector="#ddg_coupons_format"/>
         <element name="codePrefix" type="input" selector="#ddg_coupons_prefix"/>
         <element name="codeSuffix" type="input" selector="#ddg_coupons_suffix"/>

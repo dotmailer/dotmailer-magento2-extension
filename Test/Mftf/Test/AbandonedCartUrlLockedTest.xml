@@ -19,8 +19,12 @@
             <grabValueFrom selector="{{AdminDeveloperSettingsSection.developerIpAddresses}}" stepKey="beforeIps"/>
             <setCookie userInput="beforeIps" value="{$beforeIps}" stepKey="setCookie1"/>
             <clearField selector="{{AdminDeveloperSettingsSection.developerIpAddresses}}" stepKey="noIpLimit"/>
+            <click selector="{{AdminDeveloperSettingsSection.developerSettingSaveButton}}" stepKey="click1"/>
         </before>
         <after>
+            <!-- Clear the dynamic content passcode -->
+            <actionGroup ref="ClearDynamicContentPasscode" stepKey="clearDynamicContentPasscode" />
+
             <amOnPage url="{{AdminDotmailerDeveloperSettingPage.url}}" stepKey="dotmailerDeveloperSettingsBack"/>
             <waitForPageLoad stepKey="waitForPageLoad4"/>
             <conditionalClick selector="{{AdminDeveloperSettingsSection.developerIpRestrictionFieldsetToggle}}" dependentSelector="{{AdminDeveloperSettingsSection.developerIpRestrictionFieldset}}" visible="false" stepKey="click"/>
@@ -31,24 +35,30 @@
             <actionGroup ref="AdminLogoutActionGroup" stepKey="logoutAdminUserAfterTest"/>
         </after>
 
-        <click selector="{{AdminDeveloperSettingsSection.developerSettingSaveButton}}" stepKey="click1"/>
-        <amOnPage url="{{AdminAbandonedCartSettingPage.url}}" stepKey="amOnConfigurationPage"/>
-        <waitForPageLoad stepKey="waitForPageLoad2"/>
-        <grabValueFrom selector="{{AdminAbandonedCartSettingsSection.dynamicContentPasscode}}" stepKey="passcode"/>
-        <amOnPage url="{{StorefrontAbandonedCartPage.url}}/{$passcode}" stepKey="amOnAbandonedCartPage"/>
-        <seeInCurrentUrl url="connector" stepKey="abandonedCartPage"/>
-        <dontSee userInput="401 Unauthorized" selector="h1" stepKey="dontSeeUnauthorized"/>
+        <!-- Test no passcode -->
+        <amOnPage url="{{StorefrontAbandonedCartPage.url}}" stepKey="amOnAbandonedCartPage_1"/>
+        <dontSee userInput="401 Unauthorized" selector="h1" stepKey="dontSeeUnauthorized1"/>
+
+        <!-- Test valid passcode -->
+        <actionGroup ref="CreateDynamicContentPasscode" stepKey="createDynamicContentPasscode"/>
+        <grabValueFrom selector="{{AdminDynamicContentSettingsSection.dynamicContentPasscode}}" stepKey="passcode"/>
+        <amOnPage url="{{StorefrontAbandonedCartPage.url}}/{$passcode}" stepKey="amOnAbandonedCartPage_2"/>
+        <dontSee userInput="401 Unauthorized" selector="h1" stepKey="dontSeeUnauthorized2"/>
+
+        <!-- Test invalid passcode -->
         <amOnPage url="{{StorefrontAbandonedCartPage.url}}/hacked" stepKey="amOnACHackedPage"/>
         <see selector="{{StorefrontAbandonedCartEdcSection.dynamicPageContent}}" userInput="401" stepKey="seeUnauthorized"/>
+
+        <!-- Test auth is locked after multiple incorrect attempts -->
         <amOnPage url="{{AdminDotmailerDashboardPage.url}}" stepKey="amOnDashboardPage"/>
         <waitForPageLoad stepKey="waitForPageLoad3"/>
         <seeInCurrentUrl url="{{AdminDotmailerDashboardPage.url}}" stepKey="seeDashboard"/>
         <see userInput="Not locked" selector="{{DotdigitalDashboardSection.dashboardContainer}}" stepKey="SeeLockStatus"/>
-        <amOnPage url="{{StorefrontAbandonedCartPage.url}}/hacked" stepKey="amOnAbandonedCartPage_1"/>
-        <amOnPage url="{{StorefrontAbandonedCartPage.url}}/hacked" stepKey="amOnAbandonedCartPage_2"/>
         <amOnPage url="{{StorefrontAbandonedCartPage.url}}/hacked" stepKey="amOnAbandonedCartPage_3"/>
         <amOnPage url="{{StorefrontAbandonedCartPage.url}}/hacked" stepKey="amOnAbandonedCartPage_4"/>
         <amOnPage url="{{StorefrontAbandonedCartPage.url}}/hacked" stepKey="amOnAbandonedCartPage_5"/>
+        <amOnPage url="{{StorefrontAbandonedCartPage.url}}/hacked" stepKey="amOnAbandonedCartPage_6"/>
+        <amOnPage url="{{StorefrontAbandonedCartPage.url}}/hacked" stepKey="amOnAbandonedCartPage_7"/>
         <amOnPage url="{{AdminDotmailerDashboardPage.url}}" stepKey="amBackOnDashboard"/>
         <see userInput="Locked" selector="{{DotdigitalDashboardSection.dashboardContainer}}" stepKey="SeeLockStatus1"/>
     </test>

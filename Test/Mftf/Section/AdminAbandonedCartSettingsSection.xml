@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<sections xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:noNamespaceSchemaLocation="urn:magento:mftf:Page/etc/SectionObject.xsd">
-    <section name="AdminAbandonedCartSettingsSection">
-        <element name="dynamicContentPasscode" type="input" selector="#connector_dynamic_content_external_dynamic_content_urls_passcode" />
-    </section>
-</sections>
