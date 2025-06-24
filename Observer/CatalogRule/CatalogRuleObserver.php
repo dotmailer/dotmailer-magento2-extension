@@ -100,7 +100,13 @@ class CatalogRuleObserver implements ObserverInterface
      */
     private function shouldProcessRule(Rule $rule): bool
     {
-        if (!$rule->getIsActive()) {
+        $oldRuleData = $rule->getOrigData();
+        $oldRuleActive = false;
+        if ($oldRuleData) {
+            $oldRuleActive = (bool)$oldRuleData['is_active'] ?? false;
+        }
+
+        if (!$rule->getIsActive() && !$oldRuleActive) {
             return false;
         }
 
