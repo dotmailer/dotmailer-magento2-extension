@@ -15,9 +15,13 @@ use Dotdigitalgroup\Email\Logger\Logger;
 class CatalogSyncDeferralHandler implements SyncDeferralInterface
 {
     /**
-     * @var string
+     * @var array
      */
-    public const INDEX = 'catalogrule_rule';
+    public const INDEXERS = [
+        'catalog_product_price',
+        'catalogrule_rule',
+        'catalogrule_product'
+    ];
 
     /**
      * @var IndexerRegistry
@@ -71,21 +75,23 @@ class CatalogSyncDeferralHandler implements SyncDeferralInterface
         }
 
         if ($indexPricesEnabled) {
-            $indexer = $this->indexerRegistry->get(self::INDEX);
-            $indexerScheduledUpdateCount = $this->getPendingCount($indexer->getView());
-            if ($indexer->isInvalid()) {
-                $this->logger->info('Catalog sync: Indexer is invalid, skipping sync.');
-                return true;
-            }
+            foreach (self::INDEXERS as $indexer) {
+                $indexer = $this->indexerRegistry->get($indexer);
+                $indexerScheduledUpdateCount = $this->getPendingCount($indexer->getView());
+                if ($indexer->isInvalid()) {
+                    $this->logger->info('Catalog sync: Indexer is invalid, skipping sync.');
+                    return true;
+                }
 
-            if ($indexerScheduledUpdateCount > 0) {
-                $this->logger->info('Catalog sync: Indexer is scheduled, skipping sync.');
-                return true;
-            }
+                if ($indexerScheduledUpdateCount > 0) {
+                    $this->logger->info('Catalog sync: Indexer is scheduled, skipping sync.');
+                    return true;
+                }
 
-            if ($indexer->isWorking()) {
-                $this->logger->info('Catalog sync: Indexer is working, skipping sync.');
-                return true;
+                if ($indexer->isWorking()) {
+                    $this->logger->info('Catalog sync: Indexer is working, skipping sync.');
+                    return true;
+                }
             }
         }
 

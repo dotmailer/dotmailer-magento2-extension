@@ -92,10 +92,6 @@ class CatalogSyncDeferralHandlerTest extends TestCase
         $this->viewMock->method('getChangelog')->willReturn($this->changelogMock);
         $this->viewMock->method('getState')->willReturn($this->stateMock);
 
-        $this->indexerRegistryMock->method('get')
-            ->with(CatalogSyncDeferralHandler::INDEX)
-            ->willReturn($this->indexerMock);
-
         $this->handler = new CatalogSyncDeferralHandler(
             $this->indexerRegistryMock,
             $this->storeManagerMock,
@@ -111,7 +107,9 @@ class CatalogSyncDeferralHandlerTest extends TestCase
      */
     public function testShouldDeferSyncWhenIndexerIsInvalid(): void
     {
-        $this->indexerRegistryMock->method('get')->with(CatalogSyncDeferralHandler::INDEX)
+        $this->indexerRegistryMock->expects($this->once())
+            ->method('get')
+            ->with(CatalogSyncDeferralHandler::INDEXERS[0])
             ->willReturn($this->indexerMock);
         $this->indexerMock->method('isInvalid')->willReturn(true);
 
@@ -135,7 +133,9 @@ class CatalogSyncDeferralHandlerTest extends TestCase
      */
     public function testShouldDeferSyncWhenIndexerIsWorking(): void
     {
-        $this->indexerRegistryMock->method('get')->with(CatalogSyncDeferralHandler::INDEX)
+        $this->indexerRegistryMock->expects($this->once())
+            ->method('get')
+            ->with(CatalogSyncDeferralHandler::INDEXERS[0])
             ->willReturn($this->indexerMock);
         $this->indexerMock->method('isInvalid')->willReturn(false);
         $this->indexerMock->method('isWorking')->willReturn(true);
@@ -160,7 +160,9 @@ class CatalogSyncDeferralHandlerTest extends TestCase
      */
     public function testShouldDeferSyncWhenIndexerHasScheduledUpdates(): void
     {
-        $this->indexerRegistryMock->method('get')->with(CatalogSyncDeferralHandler::INDEX)
+        $this->indexerRegistryMock->expects($this->once())
+            ->method('get')
+            ->with(CatalogSyncDeferralHandler::INDEXERS[0])
             ->willReturn($this->indexerMock);
         $this->indexerMock->method('isInvalid')->willReturn(false);
         $this->indexerMock->method('isWorking')->willReturn(false);
@@ -183,21 +185,13 @@ class CatalogSyncDeferralHandlerTest extends TestCase
      *
      * @return void
      */
-    public function testShouldNotDeferSyncWhenConditionsAreMet(): void
+    public function testShouldNotDeferSyncWhenIndexPricesDisabled(): void
     {
-        $this->indexerRegistryMock->method('get')->with(CatalogSyncDeferralHandler::INDEX)
-            ->willReturn($this->indexerMock);
-        $this->indexerMock->method('isInvalid')->willReturn(false);
-        $this->indexerMock->method('isWorking')->willReturn(false);
-        $this->indexerMock->method('getView')->willReturn($this->viewMock);
-
-        $this->viewMock->method('getChangelog')->willReturn($this->changelogMock);
-        $this->viewMock->method('getState')->willReturn($this->stateMock);
-        $this->stateMock->method('getVersionId')->willReturn(1);
-        $this->changelogMock->method('getVersion')->willReturn(1);
-        $this->changelogMock->method('getList')->with(1, 1)->willReturn([]);
-
         $this->storeManagerMock->method('getWebsites')->willReturn([$this->websiteMock]);
+        $this->emailConfigMock->method('catalogIndexPricesEnabled')->willReturn(false);
+
+        $this->indexerRegistryMock->expects($this->never())
+            ->method('get');
 
         $result = $this->handler->shouldDeferSync();
 
