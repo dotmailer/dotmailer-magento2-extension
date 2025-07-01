@@ -296,24 +296,27 @@ class CustomerTest extends TestCase
 
     /**
      * @return void
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Magento\Framework\Exception\LocalizedException|\PHPUnit\Framework\MockObject\Exception
      */
     public function testMergeManagerNotCalledIfNothingToBatch()
     {
         $this->setupForOneEnabledWebsite();
         $this->setupFieldMapping();
 
-        $this->contactCollectionFactoryMock->expects($this->once())
+        $this->contactCollectionFactoryMock->expects($this->exactly(2))
             ->method('create')
             ->willReturn($this->contactCollectionMock);
 
-        $this->contactCollectionMock->expects($this->once())
+        $this->contactCollectionMock->expects($this->exactly(2))
             ->method('getCustomersToImportByWebsite')
             ->willReturn($this->contactCollectionMock);
 
-        $this->contactCollectionMock->expects($this->once())
+        $this->contactCollectionMock->expects($this->exactly(2))
             ->method('getColumnValues')
-            ->willReturn([1, 2, 3, 4, 5]);
+            ->willReturnOnConsecutiveCalls(
+                [1, 2, 3, 4, 5],
+                []
+            );
 
         $this->exporterMock->expects($this->once())
             ->method('export')
@@ -459,6 +462,58 @@ class CustomerTest extends TestCase
         $data = $this->customer->sync();
 
         $this->assertEquals(3, $data['syncedCustomers']);
+    }
+
+    /**
+     * @return void
+     * @throws \Magento\Framework\Exception\LocalizedException|\PHPUnit\Framework\MockObject\Exception
+     */
+    public function testEmptyBatchContinuesToSync()
+    {
+        $megaBatchSize = 10;
+        $limit = 10;
+        $breakValue = null;
+
+        $this->setupForOneEnabledWebsite();
+        $this->setupFieldMapping();
+
+        $this->scopeConfigMock->expects($this->exactly(3))
+            ->method('getValue')
+            ->willReturnOnConsecutiveCalls($megaBatchSize, $breakValue, $limit);
+
+        $this->contactCollectionFactoryMock->expects($this->exactly(3))
+            ->method('create')
+            ->willReturn($this->contactCollectionMock);
+
+        $this->contactCollectionMock->expects($this->exactly(3))
+            ->method('getCustomersToImportByWebsite')
+            ->willReturn($this->contactCollectionMock);
+
+        $this->contactCollectionMock->expects($this->exactly(3))
+            ->method('getColumnValues')
+            ->willReturnOnConsecutiveCalls(
+                [1, 2, 3, 4, 5],
+                [6, 7, 8, 9, 10],
+                []
+            );
+
+        $this->exporterMock->expects($this->exactly(2))
+            ->method('export')
+            ->willReturnOnConsecutiveCalls(
+                [],
+                $this->getCustomersBatchTwo()
+            );
+
+        $this->mergeManagerMock->expects($this->once())
+            ->method('mergeBatch')
+            ->willReturn($this->getCustomersBatchTwo());
+
+        $batchProcessorMock = $this->createMock(MegaBatchProcessor::class);
+        $this->batchProcessorFactoryMock->expects($this->once())
+            ->method('create')
+            ->willReturn($batchProcessorMock);
+
+        $this->customer->sync();
     }
 
     /**

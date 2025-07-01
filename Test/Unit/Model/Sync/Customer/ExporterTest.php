@@ -237,6 +237,25 @@ class ExporterTest extends TestCase
         $this->exporter->setCsvColumns($this->websiteInterfaceMock);
     }
 
+    public function testExporterReturnsEarlyForEmptyCollection()
+    {
+        $mageCustomerCollectionMock = $this->createMock(MageCustomerCollection::class);
+        $this->customerDataManagerMock->expects($this->once())
+            ->method('buildCustomerCollection')
+            ->willReturn($mageCustomerCollectionMock);
+
+        $mageCustomerCollectionMock->expects($this->once())
+            ->method('getSize')
+            ->willReturn(0);
+
+        $this->customerDataManagerMock->expects($this->never())
+            ->method('setCustomerScopeData');
+
+        $data = $this->exporter->export([], $this->websiteInterfaceMock, 123456);
+
+        $this->assertEmpty($data);
+    }
+
     /**
      * @return array
      */
