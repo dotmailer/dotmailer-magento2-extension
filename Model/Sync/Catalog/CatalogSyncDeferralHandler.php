@@ -77,19 +77,20 @@ class CatalogSyncDeferralHandler implements SyncDeferralInterface
         if ($indexPricesEnabled) {
             foreach (self::INDEXERS as $indexer) {
                 $indexer = $this->indexerRegistry->get($indexer);
-                $indexerScheduledUpdateCount = $this->getPendingCount($indexer->getView());
+
                 if ($indexer->isInvalid()) {
                     $this->logger->info('Catalog sync: Indexer is invalid, skipping sync.');
                     return true;
                 }
 
-                if ($indexerScheduledUpdateCount > 0) {
-                    $this->logger->info('Catalog sync: Indexer is scheduled, skipping sync.');
+                if ($indexer->isWorking()) {
+                    $this->logger->info('Catalog sync: Indexer is working, skipping sync.');
                     return true;
                 }
 
-                if ($indexer->isWorking()) {
-                    $this->logger->info('Catalog sync: Indexer is working, skipping sync.');
+                $indexerScheduledUpdateCount = $this->getPendingCount($indexer->getView());
+                if ($indexerScheduledUpdateCount > 0) {
+                    $this->logger->info('Catalog sync: Indexer is scheduled, skipping sync.');
                     return true;
                 }
             }
@@ -111,10 +112,7 @@ class CatalogSyncDeferralHandler implements SyncDeferralInterface
         try {
             $currentVersionId = $changelog->getVersion();
         } catch (ChangelogTableNotExistsException $e) {
-            $this->logger->debug(
-                'Changelog table does not exist. Changelog: ' . $changelog->getName(),
-                ['exception' => $e]
-            );
+            // Magento 2.4.6 and lower do not have changelog tables.
             return 0;
         }
 
