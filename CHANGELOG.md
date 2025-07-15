@@ -1,3 +1,23 @@
+# 4.32.0
+
+### What's new
+- Indexed prices can now be exported to capture prices set by catalog price rules.
+- Tier prices are now exported in all product catalogs.
+  
+### Improvements
+- Catalog sync is refactored to run faster, importing into the platform during the sync run.
+- The deletion of 'orphan' products in catalog sync has been removed.
+- We set an upper bound for Magento version compatibility in composer.json (currently 2.4.9).
+- Sending transactional email with attachments (via custom code) is restored for pre-2.4.8 installations.
+
+### Bug fixes
+- Orders are now only synced for contacts that have contact ids in `email_contact`. Upgrading will trigger a full contact re-sync.
+- Customer sync will continue to process customer ids even if the exporter returns an empty batch.
+- Sending transactional email to multiple recipients (via custom code) is restored for pre-2.4.8 installations.
+  
+### Notes
+- Merchants running our Dotdigital for Adobe Commerce: B2B module should also upgrade to ensure correct functionality.
+
 # 4.31.2
 
 ### Bug fixes

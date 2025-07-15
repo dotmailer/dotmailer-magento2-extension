@@ -26,7 +26,7 @@ composer require dotdigital/dotdigital-magento2-os-package
 ```
 
 ## Usage and support
-Full support documentation and setup guides are available [here](https://support.dotdigital.com/hc/en-gb/sections/360000722900-Engagement-Cloud-for-Magento-2).
+Full support documentation and setup guides are available [here](https://support.dotdigital.com/en/collections/5610169-magento-open-source-and-adobe-commerce).
 
 ### CLI commands
 #### sync
