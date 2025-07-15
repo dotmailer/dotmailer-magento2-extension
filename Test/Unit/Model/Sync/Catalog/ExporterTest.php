@@ -1,14 +1,22 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dotdigitalgroup\Email\Test\Unit\Model\Sync\Catalog;
 
-use Dotdigitalgroup\Email\Model\Connector\ProductFactory;
+use Dotdigital\V3\Models\InsightData\RecordsCollection as RecordsCollectionAlias;
+use Dotdigitalgroup\Email\Model\Connector\ProductFactory as ConnectorProductFactory;
 use Dotdigitalgroup\Email\Logger\Logger;
-use Dotdigitalgroup\Email\Model\ResourceModel\Catalog\Collection;
-use Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory;
 use Dotdigitalgroup\Email\Model\Sync\Catalog\Exporter;
+use Dotdigitalgroup\Email\Model\Sync\Export\SdkCatalogRecordCollectionBuilder;
+use Dotdigitalgroup\Email\Model\Sync\Export\SdkCatalogRecordCollectionBuilderFactory;
 use Magento\Catalog\Model\Product;
+use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
+use Magento\Catalog\Model\ResourceModel\Product\Collection as ProductCollection;
+use Magento\Customer\Model\ResourceModel\Group\Collection as CustomerGroupCollection;
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Store\Model\StoreManagerInterface;
+use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
@@ -20,19 +28,19 @@ class ExporterTest extends TestCase
     private $exporter;
 
     /**
-     * @var CollectionFactory|MockObject
+     * @var ProductCollectionFactory|MockObject
      */
     private $collectionFactoryMock;
 
     /**
-     * @var ProductFactory|MockObject
+     * @var ConnectorProductFactory|MockObject
      */
     private $productFactoryMock;
 
     /**
-     * @var Collection|MockObject
+     * @var ProductCollection|MockObject
      */
-    private $collectionMock;
+    private $productCollectionMock;
 
     /**
      * @var Logger|MockObject
@@ -44,30 +52,68 @@ class ExporterTest extends TestCase
      */
     private $scopeConfigMock;
 
+    /**
+     * @var StoreManagerInterface|MockObject
+     */
+    private $storeManagerMock;
+
+    /**
+     * @var CustomerGroupCollection|MockObject
+     */
+    private $customerGroupCollectionMock;
+
+    /**
+     * @var SdkCatalogRecordCollectionBuilderFactory|\PHPUnit\Framework\MockObject\MockObject
+     */
+    private $sdkCatalogRecordCollectionBuilderFactory;
+
+    /**
+     * @var SdkCatalogRecordCollectionBuilderFactory|\PHPUnit\Framework\MockObject\MockObject
+     */
+    private $sdkCatalogRecordCollectionBuilder;
+
+    /**
+     * @var RecordsCollectionAlias|\PHPUnit\Framework\MockObject\MockObject
+     */
+    private $sdkRecordsCollection;
+
     protected function setUp() :void
     {
-        $this->collectionFactoryMock = $this->createMock(CollectionFactory::class);
-        $this->productFactoryMock = $this->createMock(ProductFactory::class);
-        $this->collectionMock = $this->createMock(Collection::class);
+        $this->productCollectionMock = $this->createMock(ProductCollection::class);
+
+        $this->productFactoryMock = $this->createMock(ConnectorProductFactory::class);
         $this->loggerMock = $this->createMock(Logger::class);
         $this->scopeConfigMock = $this->createMock(ScopeConfigInterface::class);
+        $this->storeManagerMock = $this->createMock(StoreManagerInterface::class);
+        $this->customerGroupCollectionMock = $this->createMock(CustomerGroupCollection::class);
+        $this->collectionFactoryMock = $this->createMock(ProductCollectionFactory::class);
+        $this->sdkCatalogRecordCollectionBuilderFactory = $this->createMock(
+            SdkCatalogRecordCollectionBuilderFactory::class
+        );
+        $this->sdkCatalogRecordCollectionBuilder = $this->createMock(SdkCatalogRecordCollectionBuilder::class);
+        $this->sdkRecordsCollection = $this->createMock(RecordsCollectionAlias::class);
 
         $this->exporter = new Exporter(
-            $this->collectionFactoryMock,
-            $this->productFactoryMock,
             $this->loggerMock,
-            $this->scopeConfigMock
+            $this->scopeConfigMock,
+            $this->storeManagerMock,
+            $this->collectionFactoryMock,
+            $this->customerGroupCollectionMock,
+            $this->sdkCatalogRecordCollectionBuilderFactory
         );
     }
 
     /**
      * @dataProvider getProductIdStoreIdsTypesAndVisibilities
-     * @param        int    $storeId
-     * @param        int    $product1Id
-     * @param        int    $product2Id
-     * @param        string $types
-     * @param        string $visibilities
+     *
+     * @param int $storeId
+     * @param int $product1Id
+     * @param int $product2Id
+     * @param string $types
+     * @param string $visibilities
+     *
      * @return       void
+     * @throws Exception
      */
     public function testThatExportKeysAndProductsMatch(
         int $storeId,
@@ -77,7 +123,6 @@ class ExporterTest extends TestCase
         string $visibilities
     ) {
         $productsToProcess = $this->getMockProductsToProcess();
-
         $this->scopeConfigMock->expects($this->exactly(2))
             ->method('getValue')
             ->willReturnOnConsecutiveCalls(
@@ -85,9 +130,23 @@ class ExporterTest extends TestCase
                 $visibilities
             );
 
+        $this->scopeConfigMock->method('isSetFlag')
+            ->willReturn(true);
+
         $this->collectionFactoryMock->expects($this->once())
             ->method('create')
-            ->willReturn($this->collectionMock);
+            ->willReturn($this->productCollectionMock);
+
+        $this->productCollectionMock->method('addAttributeToSelect')->willReturnSelf();
+        $this->productCollectionMock->method('addAttributeToFilter')->willReturnSelf();
+        $this->productCollectionMock->method('addUrlRewrite')->willReturnSelf();
+        $this->productCollectionMock->method('addWebsiteNamesToResult')->willReturnSelf();
+        $this->productCollectionMock->method('addCategoryIds')->willReturnSelf();
+        $this->productCollectionMock->method('addOptionsToResult')->willReturnSelf();
+
+        $selectMock = $this->createMock(\Magento\Framework\DB\Select::class);
+        $this->productCollectionMock->method('getSelect')->willReturn($selectMock);
+        $selectMock->method('joinLeft')->willReturnSelf();
 
         $productMock1 = $this->getMockProducts($product1Id);
         $productMock2 = $this->getMockProducts($product2Id);
@@ -98,12 +157,29 @@ class ExporterTest extends TestCase
         $connectorProductMock1 = $this->getMockConnectorProducts($productMock1, $exposedProduct1);
         $connectorProductMock2 = $this->getMockConnectorProducts($productMock2, $exposedProduct2);
 
-        $products = [$productMock1, $productMock2];
+        $this->productCollectionMock->expects($this->atLeastOnce())
+            ->method('getIterator')
+            ->willReturn(new \ArrayIterator([$productMock1, $productMock2]));
 
-        $this->collectionMock->expects($this->once())
-            ->method('filterProductsByStoreTypeAndVisibility')
-            ->with($storeId, $productsToProcess)
-            ->willReturn($products);
+        $this->productCollectionMock->method('getSize')
+            ->willReturn(2);
+
+        $this->customerGroupCollectionMock->expects($this->atLeastOnce())
+            ->method('toOptionArray')
+            ->willReturn([
+                ['value' => 1, 'label' => 'General'],
+                ['value' => 2, 'label' => 'Wholesale'],
+                ['value' => 3, 'label' => 'Retailer']
+            ]);
+
+        $storeMock = $this->createMock(\Magento\Store\Model\Store::class);
+        $this->storeManagerMock->expects($this->once())
+            ->method('getStore')
+            ->willReturn($storeMock);
+
+        $storeMock->expects($this->once())
+            ->method('getWebsiteId')
+            ->willReturn(1);
 
         $this->productFactoryMock
             ->expects($this->exactly(2))
@@ -113,25 +189,51 @@ class ExporterTest extends TestCase
                 $connectorProductMock2
             );
 
-        $actual = $this->exporter->exportCatalog($storeId, $productsToProcess);
+        $builder = new SdkCatalogRecordCollectionBuilder(
+            $this->productFactoryMock,
+            $this->loggerMock,
+            $storeId // storeId
+        );
 
-        $actualExposedProduct1 = $actual[$product1Id];
+        $builderResult = $builder->setBuildableData($this->productCollectionMock)->build()->all();
+        $this->sdkCatalogRecordCollectionBuilderFactory->expects($this->once())
+            ->method('create')
+            ->willReturn($this->sdkCatalogRecordCollectionBuilder);
+
+        $this->sdkCatalogRecordCollectionBuilder->expects($this->once())
+            ->method('setBuildableData')
+            ->with($this->productCollectionMock)
+            ->willReturn($this->sdkCatalogRecordCollectionBuilder);
+
+        $this->sdkCatalogRecordCollectionBuilder->expects($this->once())
+            ->method('build')
+            ->willReturn($this->sdkRecordsCollection);
+
+        $this->sdkRecordsCollection->expects($this->once())
+            ->method('all')
+            ->willReturn($builderResult);
+
+        $actual = $this->exporter->exportCatalog($storeId, $productsToProcess);
+        $actualExposedProduct1 = $actual[$product1Id]->getJson();
+
         $this->assertEquals($exposedProduct1, $actualExposedProduct1);
 
-        $actualExposedProduct2 = $actual[$product2Id];
+        $actualExposedProduct2 = $actual[$product2Id]->getJson();
         $this->assertEquals($exposedProduct2, $actualExposedProduct2);
     }
 
     /**
      * Returns the mocked Products
      *
-     * @param  int $productId
+     * @param int $productId
+     *
      * @return MockObject
+     * @throws Exception
      */
     private function getMockProducts(int $productId)
     {
         $product = $this->createMock(Product::class);
-        $product->expects($this->once())
+        $product->expects($this->atLeastOnce())
             ->method('getId')
             ->willReturn($productId);
 
@@ -145,9 +247,11 @@ class ExporterTest extends TestCase
     /**
      * Returns the connector Mock Products
      *
-     * @param  MockObject $productMock
-     * @param  array      $exposedMock
+     * @param MockObject $productMock
+     * @param array $exposedMock
+     *
      * @return MockObject
+     * @throws Exception
      */
     private function getMockConnectorProducts(MockObject $productMock, array $exposedMock)
     {

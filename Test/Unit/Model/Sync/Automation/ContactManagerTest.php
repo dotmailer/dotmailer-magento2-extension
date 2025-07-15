@@ -306,15 +306,8 @@ class ContactManagerTest extends TestCase
             ->method('postContactWithConsentAndPreferences');
 
         $this->singleSubscriberSyncerMock->expects($this->once())
-            ->method('pushContactToSubscriberAddressBook')
-            ->with($this->contactModelMock)
-            ->willReturn(new \Dotdigital\V3\Models\Contact());
-
-        $this->contactModelMock->expects($this->once())
-            ->method('setSubscriberImported');
-
-        $this->contactResourceMock->expects($this->once())
-            ->method('save');
+            ->method('execute')
+            ->with($this->contactModelMock);
 
         $this->contactManager->prepareDotdigitalContact(
             $this->contactModelMock,

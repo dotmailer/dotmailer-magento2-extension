@@ -8,14 +8,13 @@ use Dotdigitalgroup\Email\Helper\Transactional;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Mail\EmailMessage;
 use Magento\Framework\Mail\EmailMessageInterface;
-use Magento\Framework\Mail\MimeInterface;
 use Magento\Framework\Mail\MimePart;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\Transport\Smtp\Auth\LoginAuthenticator;
 use Symfony\Component\Mailer\Transport\Smtp\EsmtpTransport;
 use Symfony\Component\Mailer\Transport\TransportInterface as SymfonyTransportInterface;
 use Symfony\Component\Mime\Message as SymfonyMimeMessage;
-use Symfony\Component\Mime\Part\TextPart;
+use Magento\Framework\Filesystem\Io\File;
 
 class SymfonySmtpTransporter
 {
@@ -35,18 +34,26 @@ class SymfonySmtpTransporter
     private SymfonyMailerFactory $mailerFactory;
 
     /**
+     * @var \Magento\Framework\Filesystem\Io\File
+     */
+    private $fileSystem;
+
+    /**
      * @param Transactional $transactionalEmailSettings
      * @param EmailMessageMethodChecker $emailMessageMethodChecker
      * @param SymfonyMailerFactory $mailerFactory
+     * @param File $fileSystem
      */
     public function __construct(
         Transactional $transactionalEmailSettings,
         EmailMessageMethodChecker $emailMessageMethodChecker,
-        SymfonyMailerFactory $mailerFactory
+        SymfonyMailerFactory $mailerFactory,
+        File $fileSystem
     ) {
         $this->transactionalEmailSettings = $transactionalEmailSettings;
         $this->emailMessageMethodChecker = $emailMessageMethodChecker;
         $this->mailerFactory = $mailerFactory;
+        $this->fileSystem = $fileSystem;
     }
 
     /**
@@ -89,24 +96,50 @@ class SymfonySmtpTransporter
             return $message->getSymfonyMessage();
         }
 
-        $messageBody = '';
-        foreach ($message->getMessageBody()->getParts() as $part) {
-            $messageBody = $part->getRawContent();
-            break;
+        $parts = $message->getMessageBody()->getParts();
+
+        // Use Email class to support attachments
+        $symfonyEmail = new \Symfony\Component\Mime\Email();
+
+        $contentSet = false;
+        // Find HTML or text content
+        foreach ($parts as $mimePart) {
+            $contentType = $mimePart->getType();
+            $disposition = $mimePart->getDisposition();
+
+            if ($disposition === 'attachment') {
+                $filename = $mimePart->getFileName();
+
+                if ($filename && (strpos($filename, '/') !== false || strpos($filename, '\\') !== false)) {
+                    $fileInfo = $this->fileSystem->getPathInfo($filename);
+                    $filename = $fileInfo['basename'];
+                }
+
+                $content = $mimePart->getRawContent();
+
+                $symfonyEmail->attach(
+                    $content,
+                    $filename ?? 'attachment',
+                    $contentType ?: 'application/octet-stream'
+                );
+            } elseif ($contentType && strpos($contentType, 'text/html') !== false) {
+                $content = $mimePart->getRawContent();
+                $contentSet = true;
+
+                $symfonyEmail->html($content);
+            } elseif ($contentType && strpos($contentType, 'text/plain') !== false) {
+                $content = $mimePart->getRawContent();
+                $contentSet = true;
+
+                $symfonyEmail->text($content);
+            }
         }
 
-        if (empty($messageBody)) {
+        if (!$contentSet) {
             throw new LocalizedException(__('Unable to get raw content from message parts'));
         }
 
-        $symfonyBody = new TextPart(
-            $messageBody,
-            MimePart::CHARSET_UTF8,
-            'html',
-            MimeInterface::ENCODING_QUOTED_PRINTABLE
-        );
-        $symfonyBody->setDisposition('inline');
-        $symfonyMessage = new SymfonyMimeMessage(null, $symfonyBody);
+        $symfonyMessage = new SymfonyMimeMessage(null, $symfonyEmail->getBody());
 
         foreach ($message->getHeaders() as $headerName => $headerValue) {
             if ($headerName === 'Date') {
@@ -116,13 +149,17 @@ class SymfonySmtpTransporter
                 $symfonyMessage->getHeaders()->addTextHeader('Subject', $headerValue);
             }
             if (in_array($headerName, ['From', 'Reply-to', 'To', 'Cc', 'Bcc'], true)) {
-                $symfonyMessage->getHeaders()->addMailboxListHeader($headerName, [$headerValue]);
+                if (strpos($headerValue, ',') !== false) {
+                    $headerValues = explode(',', $headerValue);
+                    $symfonyMessage->getHeaders()->addMailboxListHeader($headerName, $headerValues);
+                } else {
+                    $symfonyMessage->getHeaders()->addMailboxListHeader($headerName, [$headerValue]);
+                }
             }
         }
 
         return $symfonyMessage;
     }
-
     /**
      * Create SMTP object.
      *

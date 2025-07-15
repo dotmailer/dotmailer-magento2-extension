@@ -13,6 +13,6 @@
         <closeAdminNotification stepKey="closeAdminNotification"/>
         <click selector="{{AdminMainActionsSection.save}}" stepKey="saveConfig"/>
         <waitForPageLoad stepKey="waitForPageLoad"/>
-        <see userInput="You saved the configuration." selector="div[data-ui-id='messages-message-success']" stepKey="seeSuccessMessage"/>
+        <waitForText userInput="You saved the configuration." selector="div[data-ui-id='messages-message-success']" stepKey="seeSuccessMessage"/>
     </actionGroup>
 </actionGroups>

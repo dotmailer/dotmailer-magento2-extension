@@ -35,6 +35,7 @@ class Importer extends AbstractModel
     public const MODE_SUBSCRIBER_RESUBSCRIBED = 'Subscriber_Resubscribed';
 
     //import type
+    public const IMPORT_TYPE_CATALOG = 'Catalog';
     public const IMPORT_TYPE_GUEST = 'Guest';
     public const IMPORT_TYPE_ORDERS = 'Orders';
     public const IMPORT_TYPE_CUSTOMER = 'Customer';

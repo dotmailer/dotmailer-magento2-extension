@@ -21,4 +21,7 @@
     <publisher topic="ddg.sales.cart_phase_update">
         <connection name="db" exchange="magento-db" />
     </publisher>
+    <publisher topic="ddg.catalog.rules">
+        <connection name="db" exchange="magento-db" />
+    </publisher>
 </config>

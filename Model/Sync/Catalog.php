@@ -1,21 +1,26 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dotdigitalgroup\Email\Model\Sync;
 
 use DateTime;
+use Dotdigitalgroup\Email\Api\Model\Sync\Batch\BatchMergerInterface;
+use Dotdigitalgroup\Email\Api\Model\Sync\SyncDeferralInterface;
 use Dotdigitalgroup\Email\Helper\Config;
 use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory;
 use Dotdigitalgroup\Email\Model\Sync\Catalog\CatalogSyncFactory;
-use Dotdigitalgroup\Email\Model\ImporterFactory;
-use Dotdigitalgroup\Email\Model\Importer;
+use Dotdigitalgroup\Email\Model\Sync\Batch\MegaBatchProcessorFactory;
 use Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory;
 use Exception;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\DataObject;
+use Magento\Framework\Exception\AlreadyExistsException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\Store;
+use Zend_Db_Statement_Exception;
 
 /**
  * Sync account TD for catalog.
@@ -53,9 +58,19 @@ class Catalog extends DataObject implements SyncInterface
     private $catalogSyncFactory;
 
     /**
-     * @var ImporterFactory
+     * @var MegaBatchProcessorFactory
      */
-    private $importerFactory;
+    private $megaBatchProcessorFactory;
+
+    /**
+     * @var BatchMergerInterface
+     */
+    private $mergeManager;
+
+    /**
+     * @var SyncDeferralInterface
+     */
+    private $syncDeferral;
 
     /**
      * Catalog constructor.
@@ -65,7 +80,9 @@ class Catalog extends DataObject implements SyncInterface
      * @param CatalogFactory $catalogResourceFactory
      * @param CollectionFactory $catalogCollectionFactory
      * @param CatalogSyncFactory $catalogSyncFactory
-     * @param ImporterFactory $importerFactory
+     * @param MegaBatchProcessorFactory $megaBatchProcessorFactory
+     * @param BatchMergerInterface $mergeManager
+     * @param SyncDeferralInterface $syncDeferral
      * @param array $data
      */
     public function __construct(
@@ -74,7 +91,9 @@ class Catalog extends DataObject implements SyncInterface
         CatalogFactory $catalogResourceFactory,
         CollectionFactory $catalogCollectionFactory,
         Catalog\CatalogSyncFactory $catalogSyncFactory,
-        ImporterFactory $importerFactory,
+        MegaBatchProcessorFactory $megaBatchProcessorFactory,
+        BatchMergerInterface $mergeManager,
+        SyncDeferralInterface $syncDeferral,
         array $data = []
     ) {
         $this->helper = $helper;
@@ -82,7 +101,9 @@ class Catalog extends DataObject implements SyncInterface
         $this->catalogResourceFactory = $catalogResourceFactory;
         $this->catalogCollectionFactory = $catalogCollectionFactory;
         $this->catalogSyncFactory = $catalogSyncFactory;
-        $this->importerFactory = $importerFactory;
+        $this->megaBatchProcessorFactory = $megaBatchProcessorFactory;
+        $this->mergeManager = $mergeManager;
+        $this->syncDeferral = $syncDeferral;
         parent::__construct($data);
     }
 
@@ -90,9 +111,11 @@ class Catalog extends DataObject implements SyncInterface
      * Catalog sync.
      *
      * @param DateTime|null $from
+     *
      * @return array
+     * @throws Zend_Db_Statement_Exception|AlreadyExistsException
      */
-    public function sync(?DateTime $from = null)
+    public function sync(?DateTime $from = null): array
     {
         $response = ['success' => true, 'message' => 'Done.'];
 
@@ -100,14 +123,16 @@ class Catalog extends DataObject implements SyncInterface
             return $response;
         }
 
+        if ($this->syncDeferral->shouldDeferSync()) {
+            $response['success'] = false;
+            $response['message'] = 'Sync deferred';
+            return $response;
+        }
+
         $start = microtime(true);
-        $limit = $this->scopeConfig->getValue(
+        $limit = (int) $this->scopeConfig->getValue(
             Config::XML_PATH_CONNECTOR_TRANSACTIONAL_DATA_SYNC_LIMIT
         );
-
-        //remove product with product id set and no product
-        $this->catalogResourceFactory->create()
-            ->removeOrphanProducts();
 
         $megaBatch = [];
         $productsProcessedCount = 0;
@@ -133,10 +158,8 @@ class Catalog extends DataObject implements SyncInterface
                 $loopStart = false;
             }
 
-            $megaBatch = $this->mergeBatch(
-                $megaBatch,
-                $batch = $this->syncCatalog($productsToProcess)
-            );
+            $batch = $this->syncCatalog($productsToProcess);
+            $megaBatch = $this->mergeManager->mergeBatch($batch, $megaBatch);
 
             $productsProcessedCount += count($productsToProcess);
             $megaBatchCount += $batchCount = $this->getBatchProductsCount($batch);
@@ -148,7 +171,17 @@ class Catalog extends DataObject implements SyncInterface
             $this->helper->log(sprintf('Catalog sync: %s products processed.', count($productsToProcess)));
 
             if ($megaBatchCount >= $megaBatchSize) {
-                $this->addToImportQueue($megaBatch);
+                foreach ($megaBatch as $catalogName => $batch) {
+                    if (!$batch['products']) {
+                        continue;
+                    }
+                    $this->megaBatchProcessorFactory->create()
+                        ->process(
+                            $batch['products'],
+                            (int)$batch['websiteId'],
+                            $catalogName
+                        );
+                }
                 $megaBatchCount = 0;
                 $megaBatch = [];
             }
@@ -156,15 +189,28 @@ class Catalog extends DataObject implements SyncInterface
         } while (!$breakValue || $totalProductsSyncedCount < $breakValue);
 
         if (!empty($megaBatch)) {
-            //Add the rest of the products (if any) to the importer
-            $this->addToImportQueue($megaBatch);
+            foreach ($megaBatch as $catalogName => $batch) {
+                if (!$batch['products']) {
+                    continue;
+                }
+                //Add the rest of the products (if any) to the megaBatchProcessor
+                $this->megaBatchProcessorFactory->create()
+                    ->process(
+                        $batch['products'],
+                        (int)$batch['websiteId'],
+                        $catalogName
+                    );
+            }
         }
 
-        $message = '----------- Catalog sync ----------- : ' .
-            gmdate('H:i:s', (int) (microtime(true) - $start)) .
-            ', Total processed = ' . $productsProcessedCount . ', Total synced = ' . $totalProductsSyncedCount;
-        $this->helper->log($message);
-        $response['message'] = $message;
+        if ($productsProcessedCount > 0 || $this->helper->isDebugEnabled()) {
+            $message = '----------- Catalog sync ----------- : ' .
+                gmdate('H:i:s', (int)(microtime(true) - $start)) .
+                ', Total processed = ' . $productsProcessedCount . ', Total synced = ' . $totalProductsSyncedCount;
+            $this->helper->log($message);
+            $response['message'] = $message;
+        }
+
         return $response;
     }
 
@@ -183,7 +229,7 @@ class Catalog extends DataObject implements SyncInterface
         $syncLevel = $catalogSyncLevel ?? $this->getCatalogSyncLevel();
         if ($syncLevel == CatalogSyncFactory::SYNC_CATALOG_DEFAULT_LEVEL) {
             return self::DEFAULT_CATALOG_NAME;
-        };
+        }
         /** @var Store $store */
         $website = $store->getWebsite();
         return join('_', [
@@ -200,23 +246,7 @@ class Catalog extends DataObject implements SyncInterface
      */
     public function getCatalogSyncLevel():int
     {
-        return $this->scopeConfig->getValue(Config::XML_PATH_CONNECTOR_SYNC_CATALOG_VALUES);
-    }
-
-    /**
-     * Fetch product ids.
-     *
-     * @param array $syncedProducts
-     * @return array
-     */
-    private function getSyncedProductIds($syncedProducts)
-    {
-        $productIds = [];
-        foreach ($syncedProducts as $batch) {
-            $productIds += array_keys($batch['products']);
-        }
-
-        return array_unique($productIds);
+        return (int) $this->scopeConfig->getValue(Config::XML_PATH_CONNECTOR_SYNC_CATALOG_VALUES);
     }
 
     /**
@@ -226,14 +256,14 @@ class Catalog extends DataObject implements SyncInterface
      *
      * @return array
      */
-    private function syncCatalog($products)
+    private function syncCatalog(array $products): array
     {
         try {
             return $this->catalogSyncFactory->create()
                 ->sync($products);
 
         } catch (Exception $e) {
-            $this->helper->debug((string)$e, []);
+            $this->helper->debug((string)$e);
         }
 
         return [];
@@ -246,7 +276,7 @@ class Catalog extends DataObject implements SyncInterface
      *
      * @return array
      */
-    private function getProductsToProcess($limit)
+    private function getProductsToProcess(int $limit): array
     {
         return $this->catalogCollectionFactory->create()
             ->getUnprocessedProducts($limit);
@@ -257,7 +287,7 @@ class Catalog extends DataObject implements SyncInterface
      *
      * @return bool
      */
-    private function shouldProceed()
+    private function shouldProceed(): bool
     {
         // check default level
         $apiEnabled = $this->helper->isEnabled();
@@ -282,78 +312,12 @@ class Catalog extends DataObject implements SyncInterface
     }
 
     /**
-     * Creates the catalog mega batch.
-     *
-     * @param array $megaBatch
-     * @param array $batch
-     * @return array
-     */
-    private function mergeBatch(array $megaBatch, array $batch)
-    {
-        foreach ($batch as $catalogName => $set) {
-            if (array_key_exists($catalogName, $megaBatch)) {
-                if (isset($set['products'])) {
-                    $megaBatch[$catalogName]['products'] += $set['products'];
-                }
-            } else {
-                $megaBatch += [$catalogName => $set];
-            }
-        }
-
-        return $megaBatch;
-    }
-
-    /**
-     * Register catalog to importer.
-     *
-     * @param array $catalogs
-     */
-    private function addToImportQueue(array $catalogs)
-    {
-        foreach ($catalogs as $catalogName => $batch) {
-            if (!$batch['products']) {
-                continue;
-            }
-
-            $importer = $this->importerFactory->create();
-            /** @var Importer $importer */
-            $success = $importer
-                ->registerQueue(
-                    $catalogName,
-                    $batch['products'],
-                    Importer::MODE_BULK,
-                    $batch['websiteId']
-                );
-
-            if (!$success) {
-                $pid = implode(",", array_keys($batch['products']));
-                $msg = "Failed to register with IMPORTER."
-                    . "Type(Catalog) / Scope(Bulk) / Website({$batch['websiteId']}) / Product Ids($pid)";
-                $this->helper->log($msg);
-            } else {
-                $this->helper->log(
-                    sprintf(
-                        'Catalog sync [%s]: %s products batched for importer.',
-                        $catalogName,
-                        count($batch['products'])
-                    )
-                );
-            }
-        }
-
-        $this->catalogResourceFactory->create()
-            ->setImportedDateByIds(
-                $this->getSyncedProductIds($catalogs)
-            );
-    }
-
-    /**
      * Product counter.
      *
      * @param array $batch
      * @return int
      */
-    private function getBatchProductsCount(array $batch)
+    private function getBatchProductsCount(array $batch): int
     {
         $productsToSync = 0;
 
@@ -369,8 +333,8 @@ class Catalog extends DataObject implements SyncInterface
      *
      * @return bool
      */
-    private function isRunFromDeveloperButton()
+    private function isRunFromDeveloperButton(): bool
     {
-        return $this->_getData('web') ? true : false;
+        return (bool)$this->_getData('web');
     }
 }

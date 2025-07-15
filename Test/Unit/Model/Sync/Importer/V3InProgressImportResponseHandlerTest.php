@@ -2,7 +2,6 @@
 
 namespace Dotdigitalgroup\Email\Test\Unit\Model\Sync\Importer;
 
-use Dotdigital\Resources\AbstractResource;
 use Dotdigital\V3\Resources\Contacts;
 use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Importer;
@@ -49,11 +48,6 @@ class V3InProgressImportResponseHandlerTest extends TestCase
     private $importerModelMock;
 
     /**
-     * @var AbstractResource&MockObject|MockObject
-     */
-    private $abstractResourceMock;
-
-    /**
      * @var Contacts|MockObject
      */
     private $contactResourceMock;
@@ -86,7 +80,6 @@ class V3InProgressImportResponseHandlerTest extends TestCase
 
         $this->importerCollectionMock = $this->createMock(ImporterCollection::class);
         $this->importerModelMock = $this->createMock(Importer::class);
-        $this->abstractResourceMock = $this->createMock(AbstractResource::class);
         $this->contactResourceMock = $this->createMock(Contacts::class);
         $this->v3ClientMock->contacts = $this->contactResourceMock;
         $this->responseMock = $this->createMock(Import::class);
@@ -118,16 +111,17 @@ class V3InProgressImportResponseHandlerTest extends TestCase
             'method' => 'getImportById'
         ];
 
-        $matcher = $this->exactly(2);
+        $matcher = $this->exactly(3);
         $this->importerModelMock->expects($this->atLeastOnce())
             ->method('__call')
             ->willReturnCallback(function () use ($matcher) {
                 return match ($matcher->getInvocationCount()) {
                     1 => ['getWebsiteId'],
-                    2 => ['getImportId']
+                    2 => ['getImportId'],
+                    3  => ['getWebsiteId']
                 };
             })
-            ->willReturnOnConsecutiveCalls(1, 'import-id');
+            ->willReturnOnConsecutiveCalls(1, 'import-id', 1);
 
         $this->contactResourceMock->expects($this->atLeastOnce())
             ->method('getImportById')
@@ -151,7 +145,7 @@ class V3InProgressImportResponseHandlerTest extends TestCase
             'method' => 'getImportById'
         ];
 
-        $matcher = $this->exactly(3);
+        $matcher = $this->exactly(6);
         $this->importerModelMock->expects($this->atLeastOnce())
             ->method('__call')
             ->willReturnCallback(function () use ($matcher) {
@@ -161,6 +155,7 @@ class V3InProgressImportResponseHandlerTest extends TestCase
                     3 => ['setImportStatus'],
                     4 => ['setImportFinished'],
                     5 => ['setMessage'],
+                    6 => ['getWebsiteId']
                 };
             })
             ->willReturnOnConsecutiveCalls(
@@ -168,7 +163,8 @@ class V3InProgressImportResponseHandlerTest extends TestCase
                 'import-id',
                 $this->importerModelMock,
                 $this->importerModelMock,
-                $this->importerModelMock
+                $this->importerModelMock,
+                1
             );
 
         $this->contactResourceMock->expects($this->atLeastOnce())

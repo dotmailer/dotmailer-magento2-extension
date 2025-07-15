@@ -232,6 +232,7 @@
                 <catalog_values>2</catalog_values>
                 <catalog_visibility>0</catalog_visibility>
                 <catalog_type>0</catalog_type>
+                <index_prices_enabled>0</index_prices_enabled>
             </catalog_sync>
             <customer_addressbook>
                 <show_preferences>0</show_preferences>

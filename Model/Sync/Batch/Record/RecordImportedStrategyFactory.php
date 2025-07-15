@@ -25,6 +25,7 @@ class RecordImportedStrategyFactory implements BatchStrategyFactoryInterface
         Importer::IMPORT_TYPE_GUEST => ContactImportedStrategy::class,
         Importer::IMPORT_TYPE_SUBSCRIBERS => SubscriberImportedStrategy::class,
         Importer::IMPORT_TYPE_ORDERS => OrderImportedStrategy::class,
+        'Catalog' => CatalogImportedStrategy::class,
     ];
 
     /**
@@ -42,6 +43,7 @@ class RecordImportedStrategyFactory implements BatchStrategyFactoryInterface
      */
     public function create(string $importType): RecordImportedStrategyInterface
     {
+        $importType = strpos($importType, 'Catalog') === 0 ? 'Catalog' : $importType;
         if (!isset($this->strategies[$importType])) {
             throw new InvalidArgumentException("Unknown record imported strategy for type {$importType}");
         }

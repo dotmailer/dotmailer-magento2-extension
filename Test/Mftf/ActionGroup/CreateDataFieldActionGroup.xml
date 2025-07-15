@@ -11,6 +11,6 @@
         <fillField selector="{{AdminDotdigitalDataMappingSection.dataFieldName}}" userInput="{{dataFieldName}}" stepKey="setDataFieldName"/>
         <click selector="{{AdminDotdigitalDataMappingSection.createNewDataField}}" stepKey="clickCreateNewDataFieldButton" />
         <waitForPageLoad stepKey="waitForPageLoad"/>
-        <see userInput="Data field successfully created." selector="div[data-ui-id='messages-message-success']" stepKey="seeSuccessMessage"/>
+        <waitForText userInput="Data field successfully created." selector="div[data-ui-id='messages-message-success']" stepKey="seeSuccessMessage"/>
     </actionGroup>
 </actionGroups>

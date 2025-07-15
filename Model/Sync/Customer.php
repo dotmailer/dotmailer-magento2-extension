@@ -197,6 +197,9 @@ class Customer extends DataObject implements SyncInterface
                 break;
             }
 
+            // offset is not always the same as batch count
+            $offset += $customerIdCount;
+
             if ($loopStart) {
                 $this->logger->info(
                     sprintf(
@@ -211,16 +214,22 @@ class Customer extends DataObject implements SyncInterface
             $batch = $exporter->export($customerIds, $website, $listId);
             $batchCount = count($batch);
             if ($batchCount === 0) {
-                break;
+                $this->logger->debug(
+                    sprintf(
+                        'Could not batch customers in website %d. Tried exporting %d ids from %d to %d. Continuing.',
+                        $website->getId(),
+                        $limit,
+                        min($customerIds),
+                        max($customerIds)
+                    )
+                );
+                continue;
             }
 
             $megaBatch = $this->mergeManager->mergeBatch($batch, $megaBatch);
 
             $megaBatchCount += $batchCount;
             $this->totalCustomersSyncedCount += $batchCount;
-
-            // offset is not always the same as batch count
-            $offset += $customerIdCount;
 
             if ($megaBatchCount >= $megaBatchSize) {
                 $this->megaBatchProcessorFactory->create()

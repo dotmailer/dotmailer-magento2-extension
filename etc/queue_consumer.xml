@@ -30,4 +30,8 @@
               queue="ddg.subscription.queue"
               handler="Dotdigitalgroup\Email\Model\Queue\Newsletter\SubscriptionConsumer::process"
               connection="db" />
+    <consumer name="ddg.catalog.rules"
+              queue="ddg.catalog.queue"
+              handler="Dotdigitalgroup\Email\Model\Queue\Catalog\PriceRuleUpdateConsumer::process"
+              connection="db" />
 </config>

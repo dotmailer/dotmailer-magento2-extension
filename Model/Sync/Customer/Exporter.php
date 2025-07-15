@@ -136,6 +136,10 @@ class Exporter extends AbstractExporter implements ContactExporterInterface
         $exportedData = [];
         $customerCollection = $this->customerDataManager->buildCustomerCollection($customerIds);
 
+        if ($customerCollection->getSize() === 0) {
+            return $exportedData;
+        }
+
         $customerScopeData = $this->customerDataManager->setCustomerScopeData($customerIds, $website->getId());
         $customerLoginData = $this->customerDataManager->fetchLastLoggedInDates($customerIds, $this->fieldMap);
         $customerReviewData = $this->customerDataManager->fetchReviewData($customerIds, $this->fieldMap);

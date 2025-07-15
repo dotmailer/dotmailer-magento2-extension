@@ -2,18 +2,20 @@
 
 namespace Dotdigitalgroup\Email\Test\Unit\Model\Sync;
 
+use Dotdigitalgroup\Email\Api\Model\Sync\Batch\BatchMergerInterface;
 use Dotdigitalgroup\Email\Helper\Config;
 use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Model\ResourceModel\Catalog as ResourceCatalog;
 use Dotdigitalgroup\Email\Model\ResourceModel\Catalog\Collection as CatalogCollection;
 use Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory;
 use Dotdigitalgroup\Email\Model\ResourceModel\CatalogFactory;
+use Dotdigitalgroup\Email\Model\Sync\Batch\MegaBatchProcessor;
+use Dotdigitalgroup\Email\Model\Sync\Batch\MegaBatchProcessorFactory;
 use Dotdigitalgroup\Email\Model\Sync\Catalog;
+use Dotdigitalgroup\Email\Model\Sync\Catalog\CatalogSyncDeferralHandler;
 use Dotdigitalgroup\Email\Model\Sync\Catalog\CatalogSyncerInterface;
 use Dotdigitalgroup\Email\Model\Sync\Catalog\CatalogSyncFactory;
 use Magento\Framework\App\Config\ScopeConfigInterface;
-use Dotdigitalgroup\Email\Model\ImporterFactory;
-use Dotdigitalgroup\Email\Model\Importer;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
@@ -65,27 +67,33 @@ class CatalogTest extends TestCase
     private $scopeConfigInterfaceMock;
 
     /**
-     * @var ImporterFactory|MockObject
+     * @var MegaBatchProcessorFactory|MockObject
      */
-    private $importerFactoryMock;
+    private $megaBatchProcessorFactoryMock;
 
     /**
-     * @var Importer|mixed|MockObject
+     * @var BatchMergerInterface|MockObject
      */
-    private $importerMock;
+    private $mergeManagerMock;
 
-    protected function setUp() :void
+    /**
+     * @var CatalogSyncDeferralHandler|MockObject
+     */
+    private $syncDeferralMock;
+
+    protected function setUp(): void
     {
-        $this->catalogCollectionMock = $this->createMock(CatalogCollection::Class);
+        $this->catalogCollectionMock = $this->createMock(CatalogCollection::class);
         $this->catalogCollectionFactoryMock = $this->createMock(CollectionFactory::class);
         $this->helperMock = $this->createMock(Data::class);
         $this->catalogSyncFactoryMock = $this->createMock(CatalogSyncFactory::class);
         $this->catalogResourceFactoryMock = $this->createMock(CatalogFactory::class);
         $this->catalogSyncerInterfaceMock = $this->createMock(CatalogSyncerInterface::class);
-        $this->resourceCatalogMock = $this->createMock(ResourceCatalog::class);
         $this->scopeConfigInterfaceMock = $this->createMock(ScopeConfigInterface::class);
-        $this->importerFactoryMock = $this->createMock(ImporterFactory::class);
-        $this->importerMock = $this->createMock(Importer::class);
+        $this->megaBatchProcessorFactoryMock = $this->createMock(MegaBatchProcessorFactory::class);
+        $this->mergeManagerMock = $this->createMock(BatchMergerInterface::class);
+        $this->resourceCatalogMock = $this->createMock(ResourceCatalog::class);
+        $this->syncDeferralMock = $this->createMock(CatalogSyncDeferralHandler::class);
 
         $this->helperMock->expects($this->any())
             ->method('isEnabled')
@@ -101,7 +109,9 @@ class CatalogTest extends TestCase
             $this->catalogResourceFactoryMock,
             $this->catalogCollectionFactoryMock,
             $this->catalogSyncFactoryMock,
-            $this->importerFactoryMock
+            $this->megaBatchProcessorFactoryMock,
+            $this->mergeManagerMock,
+            $this->syncDeferralMock
         );
     }
 
@@ -111,7 +121,6 @@ class CatalogTest extends TestCase
     public function testSyncCatalogIfProductsAvailableToProcess()
     {
         $countProducts = 5;
-        $removeOrphanProductsResult = null;
         $unexpectedResultMessage = 'Done.';
         $expectedResultMessage = '----------- Catalog sync ----------- : ' .
             '00:00:00, Total processed = 10, Total synced = 15';
@@ -133,10 +142,6 @@ class CatalogTest extends TestCase
             ->method('create')
             ->willReturn($this->resourceCatalogMock);
 
-        $this->resourceCatalogMock->expects($this->atLeastOnce())
-            ->method('removeOrphanProducts')
-            ->willReturn($removeOrphanProductsResult);
-
         $this->catalogSyncFactoryMock->expects($this->atLeastOnce())
             ->method('create')
             ->willReturn($this->catalogSyncerInterfaceMock);
@@ -145,13 +150,21 @@ class CatalogTest extends TestCase
             ->method('sync')
             ->willReturn($syncedProducts);
 
-        $this->setProcessed($productsToProcess);
-        $this->addToImportQueue();
+        $this->mergeManagerMock->expects($this->once())
+            ->method('mergeBatch')
+            ->willReturn($this->getMockSyncedProducts());
+
+        $megaBatchProcessorMock = $this->createMock(MegaBatchProcessor::class);
+        $this->megaBatchProcessorFactoryMock->expects($this->exactly(3))
+            ->method('create')
+            ->willReturn($megaBatchProcessorMock);
+
+        $megaBatchProcessorMock->expects($this->exactly(3))
+            ->method('process');
 
         $response = $this->catalog->sync();
 
         $this->assertEquals($countProducts, 5);
-        $this->assertNull($removeOrphanProductsResult);
         $this->assertNotEquals($response['message'], $unexpectedResultMessage);
         $this->assertEquals($response['message'], $expectedResultMessage);
     }
@@ -171,16 +184,6 @@ class CatalogTest extends TestCase
                 };
             })
             ->willReturnOnConsecutiveCalls(500, null, 2500);
-    }
-
-    /**
-     * @param array $products
-     */
-    private function setProcessed($products)
-    {
-        $this->resourceCatalogMock->expects($this->once())
-            ->method('setProcessedByIds')
-            ->with($products);
     }
 
     /**
@@ -243,33 +246,5 @@ class CatalogTest extends TestCase
                 'websiteId' => 3
             ],
         ];
-    }
-
-    /**
-     * @return string[]
-     */
-    private function getProductIds()
-    {
-        return [
-            '1205',
-            '1206',
-            '1207',
-            '1208',
-            '1209'
-        ];
-    }
-
-    /**
-     * Mocks the importer register process
-     */
-    private function addToImportQueue()
-    {
-        $productsToImport = $this->getMockSyncedProducts();
-        $this->importerFactoryMock->expects($this->atLeastOnce())
-            ->method('create')
-            ->willReturn($this->importerMock);
-
-        $this->importerMock->expects($this->exactly(3))
-            ->method('registerQueue');
     }
 }

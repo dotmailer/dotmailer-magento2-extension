@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dotdigitalgroup\Email\Model\Events\SetupIntegration;
 
 use Dotdigitalgroup\Email\Logger\Logger;
@@ -47,7 +49,7 @@ class DataFieldsHandler extends AbstractSetupIntegrationHandler
     public function update(): string
     {
         try {
-            $websiteId = $this->request->getParam('website', 0);
+            $websiteId = (int) $this->request->getParam('website', 0);
             $dataFieldsStatus = $this->integrationSetup->setupDataFields($websiteId);
         } catch (\Exception $exception) {
             $this->logger->debug('Error in setupDataFields', ['exception' => $exception]);

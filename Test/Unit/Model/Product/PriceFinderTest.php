@@ -1,14 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dotdigitalgroup\Email\Test\Unit\Model\Product;
 
 use Dotdigitalgroup\Email\Model\Product\PriceFinder;
+use Dotdigitalgroup\Email\Model\Tax\TaxCalculator;
 use Magento\Bundle\Pricing\Price\BundleRegularPrice;
 use Magento\Catalog\Model\Product;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
 use Magento\Framework\Pricing\Amount\Base as AmountBase;
 use Magento\Framework\Pricing\PriceInfo\Base;
-use Magento\Tax\Api\TaxCalculationInterface;
 use Magento\Tax\Helper\Data as TaxHelper;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -41,9 +43,9 @@ class PriceFinderTest extends TestCase
     private $amountBaseMock;
 
     /**
-     * @var TaxCalculationInterface|MockObject
+     * @var TaxCalculator|MockObject
      */
-    private $taxCalculationMock;
+    private $taxCalculatorMock;
 
     /**
      * @var TaxHelper|MockObject
@@ -78,12 +80,10 @@ class PriceFinderTest extends TestCase
         $this->bundleRegularPriceMock = $this->createMock(BundleRegularPrice::class);
         $this->amountBaseMock = $this->createMock(AmountBase::class);
         $this->configurableMock = $this->createMock(Configurable::class);
-        $this->taxCalculationMock = $this->createMock(TaxCalculationInterface::class);
-        $this->taxHelperMock = $this->createMock(TaxHelper::class);
+        $this->taxCalculatorMock = $this->createMock(TaxCalculator::class);
 
         $this->priceFinder = new PriceFinder(
-            $this->taxCalculationMock,
-            $this->taxHelperMock
+            $this->taxCalculatorMock
         );
     }
 
@@ -264,7 +264,7 @@ class PriceFinderTest extends TestCase
         $this->assertEquals($minSpecialPrice, $specialPrice);
     }
 
-    public function testSetPricesIncTaxIfPricesShouldIncludeTax()
+    public function testSetPricesIncTax()
     {
         $price = 20.00;
         $price_incl_tax = 20.00;
@@ -283,99 +283,22 @@ class PriceFinderTest extends TestCase
             ->method('getSpecialPrice')
             ->willReturn($specialPrice);
 
-        $this->taxHelperMock->expects($this->once())
-            ->method('priceIncludesTax')
-            ->willReturn(true);
-
-        $this->taxCalculationMock->expects($this->never())
-            ->method('getCalculatedRate');
-
-        $priceInclTax = $this->priceFinder->getPriceInclTax($this->productMock, 1);
-        $specialPriceInclTax = $this->priceFinder->getSpecialPriceInclTax($this->productMock, 1);
-
-        $this->assertEquals($price_incl_tax, $priceInclTax);
-        $this->assertEquals($specialPrice_incl_tax, $specialPriceInclTax);
-    }
-
-    public function testSetPricesIncTaxIfPricesShouldNotIncludeTax()
-    {
-        $price = '20.00';
-        $price_incl_tax = '24.00';
-        $specialPrice = '15.00';
-        $specialPrice_incl_tax = '18.00';
-        $taxableGoodsClassId = 2;
-        $taxRate = 20.0;
-
-        $this->productMock->expects($this->atLeastOnce())
-            ->method('getTypeId')
-            ->willReturn('simple');
-
-        $this->productMock->expects($this->once())
-            ->method('getPrice')
-            ->willReturn($price);
-
-        $this->productMock->expects($this->atLeastOnce())
-            ->method('getSpecialPrice')
-            ->willReturn($specialPrice);
-
-        $this->taxHelperMock->expects($this->once())
-            ->method('priceIncludesTax')
-            ->willReturn(false);
-
-        $this->productMock->expects($this->once())
-            ->method('getTaxClassId')
-            ->willReturn($taxableGoodsClassId);
-
-        $this->taxCalculationMock->expects($this->once())
-            ->method('getCalculatedRate')
-            ->with($taxableGoodsClassId, null, 1)
-            ->willReturn($taxRate);
+        $matcher = $this->exactly(2);
+        $this->taxCalculatorMock->expects($matcher)
+            ->method('calculatePriceInclTax')
+            ->willReturnCallback(function () use ($matcher, $price, $specialPrice) {
+                return match ($matcher->getInvocationCount()) {
+                    1 => [$this->productMock, $price, 1],
+                    2 => [$this->productMock, $specialPrice, 1]
+                };
+            })
+            ->willReturnOnConsecutiveCalls(
+                $price_incl_tax,
+                $specialPrice_incl_tax
+            );
 
         $priceInclTax = $this->priceFinder->getPriceInclTax($this->productMock, 1);
         $specialPriceInclTax = $this->priceFinder->getSpecialPriceInclTax($this->productMock, 1);
-
-        $this->assertEquals($price_incl_tax, $priceInclTax);
-        $this->assertEquals($specialPrice_incl_tax, $specialPriceInclTax);
-    }
-
-    public function testSetPricesIncTaxIfPricesShouldNotIncludeTaxAndCustomerIdSet()
-    {
-        $price = '20.00';
-        $price_incl_tax = '24.00';
-        $specialPrice = '15.00';
-        $specialPrice_incl_tax = '18.00';
-        $taxableGoodsClassId = 2;
-        $taxRate = 20.0;
-        $storeId = 1;
-        $customerId = 1;
-
-        $this->productMock->expects($this->atLeastOnce())
-            ->method('getTypeId')
-            ->willReturn('simple');
-
-        $this->productMock->expects($this->once())
-            ->method('getPrice')
-            ->willReturn($price);
-
-        $this->productMock->expects($this->atLeastOnce())
-            ->method('getSpecialPrice')
-            ->willReturn($specialPrice);
-
-        $this->taxHelperMock->expects($this->once())
-            ->method('priceIncludesTax')
-            ->willReturn(false);
-
-        $this->productMock->expects($this->once())
-            ->method('getTaxClassId')
-            ->willReturn($taxableGoodsClassId);
-
-        $this->taxCalculationMock->expects($this->once())
-            ->method('getCalculatedRate')
-            ->with($taxableGoodsClassId, $customerId, 1)
-            ->willReturn($taxRate);
-
-        $priceInclTax = $this->priceFinder->getPriceInclTax($this->productMock, $storeId, $customerId);
-        $specialPriceInclTax = $this->priceFinder->getSpecialPriceInclTax($this->productMock, $storeId, $customerId);
 
         $this->assertEquals($price_incl_tax, $priceInclTax);
         $this->assertEquals($specialPrice_incl_tax, $specialPriceInclTax);

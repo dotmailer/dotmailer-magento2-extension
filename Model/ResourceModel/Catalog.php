@@ -466,49 +466,6 @@ class Catalog extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     }
 
     /**
-     * Remove product with product id set and no product
-     *
-     * @return void
-     * @throws Zend_Db_Statement_Exception
-     */
-    public function removeOrphanProducts()
-    {
-        $write = $this->getConnection();
-        $catalogTable = $this->getTable(Schema::EMAIL_CATALOG_TABLE);
-
-        $batchSize = 500;
-        $startPoint = 0;
-        $endPoint = $startPoint + $batchSize;
-
-        do {
-            $select = $write->select();
-            $batching = $select->reset()
-                ->from(
-                    ['c' => $catalogTable],
-                    ['c.product_id']
-                )
-                ->joinLeft(
-                    [
-                        'e' => $this->getTable(
-                            'catalog_product_entity'
-                        ),
-                    ],
-                    'c.product_id = e.entity_id'
-                )
-                ->where('c.id >= ?', $startPoint)
-                ->where('c.id < ?', $endPoint);
-
-            $rowCount = $write->query($batching)->rowCount();
-            $select = $batching->where('e.entity_id is NULL');
-            $deleteSql = $select->deleteFromSelect('c');
-            $write->query($deleteSql);
-
-            $startPoint += $batchSize;
-            $endPoint += $batchSize;
-        } while ($rowCount > 0);
-    }
-
-    /**
      * Bulk product import.
      *
      * @param array $products

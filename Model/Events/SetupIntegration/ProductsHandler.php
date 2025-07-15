@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dotdigitalgroup\Email\Model\Events\SetupIntegration;
 
 use Dotdigitalgroup\Email\Logger\Logger;
@@ -53,7 +55,7 @@ class ProductsHandler extends AbstractSetupIntegrationHandler
             $this->logger->debug('Error in sendProducts', ['exception' => $exception]);
             return $this->encode([
                 'success' => false,
-                'data' => "Error when sending orders - please check the Log Viewer",
+                'data' => "Error when sending products - please check the Log Viewer",
             ]);
         }
 

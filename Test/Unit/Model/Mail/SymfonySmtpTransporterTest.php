@@ -7,6 +7,7 @@ use Dotdigitalgroup\Email\Model\Mail\EmailMessageMethodChecker;
 use Dotdigitalgroup\Email\Model\Mail\SymfonyMailerFactory;
 use Dotdigitalgroup\Email\Model\Mail\SymfonySmtpTransporter;
 use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Filesystem\Io\File;
 use Magento\Framework\Mail\EmailMessage;
 use Magento\Framework\Mail\MimeMessageInterface;
 use Magento\Framework\Mail\MimePartInterface;
@@ -33,6 +34,11 @@ class SymfonySmtpTransporterTest extends TestCase
     private $symfonyMailerFactoryMock;
 
     /**
+     * @var File|\PHPUnit\Framework\MockObject\MockObject
+     */
+    private $fileSystemMock;
+
+    /**
      * @var SymfonySmtpTransporter
      */
     private $symfonySmtpTransporter;
@@ -45,11 +51,13 @@ class SymfonySmtpTransporterTest extends TestCase
         $this->transactionalEmailSettingsMock = $this->createMock(Transactional::class);
         $this->emailMessageMethodCheckerMock = $this->createMock(EmailMessageMethodChecker::class);
         $this->symfonyMailerFactoryMock = $this->createMock(SymfonyMailerFactory::class);
+        $this->fileSystemMock = $this->createMock(File::class);
 
         $this->symfonySmtpTransporter = new SymfonySmtpTransporter(
             $this->transactionalEmailSettingsMock,
             $this->emailMessageMethodCheckerMock,
-            $this->symfonyMailerFactoryMock
+            $this->symfonyMailerFactoryMock,
+            $this->fileSystemMock
         );
     }
 
@@ -127,6 +135,14 @@ class SymfonySmtpTransporterTest extends TestCase
             ->method('getParts')
             ->willReturn([$mimePartMock]);
 
+        $mimePartMock->expects($this->atLeastOnce())
+            ->method('getType')
+            ->willReturn('text/html');
+
+        $mimePartMock->expects($this->atLeastOnce())
+            ->method('getDisposition')
+            ->willReturn('inline');
+
         $mimePartMock->expects($this->once())
             ->method('getRawContent')
             ->willReturn('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" etc.');
@@ -195,9 +211,18 @@ class SymfonySmtpTransporterTest extends TestCase
             ->method('getParts')
             ->willReturn([$mimePartMock]);
 
-        $mimePartMock->expects($this->once())
-            ->method('getRawContent')
-            ->willReturn('');
+        // Set up the mime part to not match any conditions that would set contentSet to true
+        $mimePartMock->expects($this->atLeastOnce())
+            ->method('getType')
+            ->willReturn('application/octet-stream'); // Not text/html or text/plain
+
+        $mimePartMock->expects($this->atLeastOnce())
+            ->method('getDisposition')
+            ->willReturn('inline'); // Not attachment
+
+        // getRawContent should never be called in this scenario
+        $mimePartMock->expects($this->never())
+            ->method('getRawContent');
 
         $this->expectException(LocalizedException::class);
         $this->expectExceptionMessage('Unable to get raw content from message parts');

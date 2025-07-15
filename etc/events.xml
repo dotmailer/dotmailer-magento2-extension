@@ -42,4 +42,13 @@
     <event name="customer_delete_after">
         <observer name="ddg_remove_contact" instance="Dotdigitalgroup\Email\Observer\Customer\RemoveContact"/>
     </event>
+    <event name="catalogrule_rule_save_after">
+        <observer name="dotdigitalgroup_email_catalogrule_save_after" instance="Dotdigitalgroup\Email\Observer\CatalogRule\CatalogRuleObserver" />
+    </event>
+    <event name="catalogrule_rule_delete_after">
+        <observer name="dotdigitalgroup_email_catalogrule_delete_after" instance="Dotdigitalgroup\Email\Observer\CatalogRule\CatalogRuleObserver" />
+    </event>
+    <event name="catalogrule_rule_daily_update">
+        <observer name="dotdigitalgroup_email_catalogrule_daily_update" instance="Dotdigitalgroup\Email\Observer\CatalogRule\CatalogRuleObserver" />
+    </event>
 </config>

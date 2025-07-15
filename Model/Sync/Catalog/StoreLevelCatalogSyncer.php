@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dotdigitalgroup\Email\Model\Sync\Catalog;
 
 use Dotdigitalgroup\Email\Helper\Data;
@@ -86,7 +88,7 @@ class StoreLevelCatalogSyncer implements CatalogSyncerInterface
                 continue;
             }
 
-            $storeId = $store->getId();
+            $storeId = (int) $store->getId();
             $this->appEmulation->startEnvironmentEmulation(
                 $storeId,
                 Area::AREA_FRONTEND,
@@ -100,7 +102,7 @@ class StoreLevelCatalogSyncer implements CatalogSyncerInterface
             $syncedProducts += $this->storeCatalogSyncer->syncByStore(
                 $products,
                 $storeId,
-                $store->getWebsiteId(),
+                (int) $store->getWebsiteId(),
                 $catalogName
             );
 

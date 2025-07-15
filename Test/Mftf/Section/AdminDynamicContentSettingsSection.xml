@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sections xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:noNamespaceSchemaLocation="urn:magento:mftf:Page/etc/SectionObject.xsd">
+    <section name="AdminDynamicContentSettingsSection">
+        <element name="dynamicContentPasscode" type="input" selector="#connector_dynamic_content_external_dynamic_content_urls_passcode" />
+        <element name="externalDynamicUrlHead" selector="#connector_dynamic_content_external_dynamic_content_urls-head" type="button" />
+        <element name="externalDynamicUrlFieldset" selector="#connector_dynamic_content_external_dynamic_content_urls" type="block" />
+        <element name="save" type="button" selector="#save" timeout="30"/>
+    </section>
+</sections>

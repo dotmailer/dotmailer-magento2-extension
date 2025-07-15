@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dotdigitalgroup\Email\Model\Connector;
 
 use Dotdigitalgroup\Email\Api\StockFinderInterface;
-use Dotdigitalgroup\Email\Api\TierPriceFinderInterface;
+use Dotdigitalgroup\Email\Api\TierPriceFinderInterfaceFactory;
 use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Model\Catalog\UrlFinder;
 use Dotdigitalgroup\Email\Model\Product\Attribute as AttributeModel;
@@ -12,6 +14,7 @@ use Dotdigitalgroup\Email\Model\Product\ImageFinder;
 use Dotdigitalgroup\Email\Model\Product\ImageType\Context\CatalogSync;
 use Dotdigitalgroup\Email\Model\Product\ParentFinder;
 use Dotdigitalgroup\Email\Model\Product\PriceFinderFactory;
+use Dotdigitalgroup\Email\Model\Product\IndexPriceFinder;
 use Dotdigitalgroup\Email\Model\Validator\Schema\Exception\SchemaValidationException;
 use Dotdigitalgroup\Email\Model\Validator\Schema\SchemaValidator;
 use Dotdigitalgroup\Email\Model\Validator\Schema\SchemaValidatorFactory;
@@ -19,6 +22,8 @@ use Magento\Catalog\Model\Product as MagentoProduct;
 use Magento\Catalog\Model\Product\Attribute\Source\StatusFactory;
 use Magento\Catalog\Model\Product\VisibilityFactory;
 use Magento\Catalog\Model\ResourceModel\Category\Collection as CategoryCollection;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Stdlib\DateTime\DateTime;
 use Magento\Store\Model\StoreManagerInterface;
 
@@ -96,6 +101,11 @@ class Product extends AbstractConnectorModel
      * @var array
      */
     public $tierPrices = [];
+
+    /**
+     * @var array
+     */
+    public $indexPrices = [];
 
     /**
      * @var array
@@ -188,9 +198,14 @@ class Product extends AbstractConnectorModel
     private $imageFinder;
 
     /**
-     * @var TierPriceFinderInterface
+     * @var TierPriceFinderInterfaceFactory
      */
-    private $tierPriceFinder;
+    private $tierPriceFinderFactory;
+
+    /**
+     * @var IndexPriceFinder
+     */
+    private $indexPriceFinder;
 
     /**
      * @var StockFinderInterface
@@ -223,7 +238,8 @@ class Product extends AbstractConnectorModel
      * @param AttributeFactory $attributeHandler
      * @param ParentFinder $parentFinder
      * @param ImageFinder $imageFinder
-     * @param TierPriceFinderInterface $tierPriceFinder
+     * @param TierPriceFinderInterfaceFactory $tierPriceFinderFactory
+     * @param IndexPriceFinder $indexPriceFinder
      * @param StockFinderInterface $stockFinderInterface
      * @param CatalogSync $imageType
      * @param SchemaValidatorFactory $schemaValidatorFactory
@@ -238,7 +254,8 @@ class Product extends AbstractConnectorModel
         AttributeFactory $attributeHandler,
         ParentFinder $parentFinder,
         ImageFinder $imageFinder,
-        TierPriceFinderInterface $tierPriceFinder,
+        TierPriceFinderInterfaceFactory $tierPriceFinderFactory,
+        IndexPriceFinder $indexPriceFinder,
         StockFinderInterface $stockFinderInterface,
         CatalogSync $imageType,
         SchemaValidatorFactory $schemaValidatorFactory,
@@ -252,7 +269,8 @@ class Product extends AbstractConnectorModel
         $this->attributeHandler = $attributeHandler;
         $this->parentFinder = $parentFinder;
         $this->imageFinder = $imageFinder;
-        $this->tierPriceFinder = $tierPriceFinder;
+        $this->tierPriceFinderFactory = $tierPriceFinderFactory;
+        $this->indexPriceFinder = $indexPriceFinder;
         $this->stockFinderInterface = $stockFinderInterface;
         $this->imageType = $imageType;
         $this->schemaValidator = $schemaValidatorFactory->create(['pattern'=> static::SCHEMA_RULES]);
@@ -264,12 +282,14 @@ class Product extends AbstractConnectorModel
      *
      * @param MagentoProduct $product
      * @param int|null $storeId
+     * @param int|null $customerGroupId
+     *
      * @return $this
      * @throws SchemaValidationException
-     * @throws \Magento\Framework\Exception\LocalizedException
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
      */
-    public function setProduct($product, ?int $storeId)
+    public function setProduct($product, ?int $storeId, ?int $customerGroupId = null): self
     {
         $this->id = $product->getId();
         $this->sku = $product->getSku();
@@ -294,7 +314,9 @@ class Product extends AbstractConnectorModel
         $this->price_incl_tax = $priceFinder->getPriceInclTax($product, $storeId);
         $this->specialPrice_incl_tax = $priceFinder->getSpecialPriceInclTax($product, $storeId);
 
-        $this->tierPrices = $this->tierPriceFinder->getTierPrices($product);
+        $this->tierPrices = $this->tierPriceFinderFactory->create()
+            ->getTierPricesByStoreAndGroup($product, $storeId, $customerGroupId);
+        $this->indexPrices = $this->indexPriceFinder->getIndexPrices($product, $storeId);
 
         $this->url = $this->urlFinder->fetchFor($product);
 

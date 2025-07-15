@@ -2,12 +2,12 @@
 
 namespace Dotdigitalgroup\Email\Helper;
 
+use Dotdigitalgroup\Email\Api\Logger\LoggerInterface;
 use Dotdigitalgroup\Email\Model\Events\EventInterface;
 use Dotdigitalgroup\Email\Model\Events\Response\StreamedResponse;
 use Laminas\Http\Response;
 use Laminas\Http\Request;
 use Magento\Setup\Exception;
-use Psr\Log\LoggerInterface;
 
 /**
  * @property int $client_reconnect

@@ -12,6 +12,6 @@
         <data key="setupIntegrationEasyEmailCaptureEventMessage">Easy email capture</data>
         <data key="setupIntegrationOrdersEventMessage">Orders preload</data>
         <data key="setupIntegrationProductsEventMessage">Products preload</data>
-        <data key="setupIntegrationCronEventMessage">Cron check failed - there are no pending Dotdigital cron jobs</data>
+        <data key="setupIntegrationCronEventMessage">Cron check</data>
     </entity>
 </entities>

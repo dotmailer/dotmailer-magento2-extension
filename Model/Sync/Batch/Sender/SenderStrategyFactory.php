@@ -26,6 +26,7 @@ class SenderStrategyFactory implements BatchStrategyFactoryInterface
         Importer::IMPORT_TYPE_SUBSCRIBERS => ContactSenderStrategy::class,
         Importer::IMPORT_TYPE_CONSENT => ContactSenderStrategy::class,
         Importer::IMPORT_TYPE_ORDERS => OrderSenderStrategy::class,
+        Importer::IMPORT_TYPE_CATALOG => CatalogSenderStrategy::class,
     ];
 
     /**
@@ -33,8 +34,9 @@ class SenderStrategyFactory implements BatchStrategyFactoryInterface
      *
      * @param ObjectManagerInterface $objectManager Injected object manager for class instantiation.
      */
-    public function __construct(ObjectManagerInterface $objectManager)
-    {
+    public function __construct(
+        ObjectManagerInterface $objectManager
+    ) {
         $this->objectManager = $objectManager;
     }
 
@@ -43,11 +45,17 @@ class SenderStrategyFactory implements BatchStrategyFactoryInterface
      */
     public function create(string $importType): SenderStrategyInterface
     {
+        $data = [];
+        if (strpos($importType, 'Catalog') === 0) {
+            $data['catalogName'] = $importType;
+            $importType = 'Catalog';
+        }
+
         if (!isset($this->strategies[$importType])) {
             throw new InvalidArgumentException("Unknown sender strategy for type {$importType}");
         }
 
         $className = $this->strategies[$importType];
-        return $this->objectManager->create($className);
+        return $this->objectManager->create($className, $data);
     }
 }

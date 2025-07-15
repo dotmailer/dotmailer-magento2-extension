@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dotdigitalgroup\Email\Test\Unit\Model\Connector;
 
 use Dotdigitalgroup\Email\Api\StockFinderInterface;
-use Dotdigitalgroup\Email\Api\TierPriceFinderInterface;
+use Dotdigitalgroup\Email\Api\TierPriceFinderInterfaceFactory;
 use Dotdigitalgroup\Email\Model\Catalog\UrlFinder;
 use Dotdigitalgroup\Email\Model\Connector\Product;
 use Dotdigitalgroup\Email\Model\Product\Attribute;
@@ -13,6 +15,7 @@ use Dotdigitalgroup\Email\Model\Product\ImageType\Context\CatalogSync;
 use Dotdigitalgroup\Email\Model\Product\ParentFinder;
 use Dotdigitalgroup\Email\Model\Product\PriceFinder;
 use Dotdigitalgroup\Email\Model\Product\PriceFinderFactory;
+use Dotdigitalgroup\Email\Model\Product\IndexPriceFinder;
 use Dotdigitalgroup\Email\Model\Product\TierPriceFinder;
 use Dotdigitalgroup\Email\Model\Validator\Schema\Exception\SchemaValidationException;
 use Dotdigitalgroup\Email\Model\Validator\Schema\SchemaValidator;
@@ -98,9 +101,9 @@ class ProductTest extends TestCase
     private $parentFinderMock;
 
     /**
-     * @var TierPriceFinder|MockObject
+     * @var TierPriceFinderInterfaceFactory\|MockObject
      */
-    private $tierPriceFinderMock;
+    private $tierPriceFinderFactoryMock;
 
     /**
      * @var StockFinderInterface|MockObject
@@ -136,6 +139,11 @@ class ProductTest extends TestCase
      * @var PriceFinderFactory|MockObject
      */
     private $priceFinderFactoryMock;
+
+    /**
+     * @var IndexPriceFinder|MockObject
+     */
+    private $indexPriceFinderMock;
 
     protected function setUp() :void
     {
@@ -174,7 +182,7 @@ class ProductTest extends TestCase
         $this->attributeMock = $this->createMock(Attribute::class);
         $this->attributeFactoryMock = $this->createMock(AttributeFactory::class);
         $this->parentFinderMock = $this->createMock(ParentFinder::class);
-        $this->tierPriceFinderMock = $this->createMock(TierPriceFinderInterface::class);
+        $this->tierPriceFinderFactoryMock = $this->createMock(TierPriceFinderInterfaceFactory::class);
         $this->stockFinderInterfaceMock = $this->createMock(StockFinderInterface::class);
         $this->imageFinderMock = $this->createMock(ImageFinder::class);
         $this->imageTypeMock = $this->createMock(CatalogSync::class);
@@ -183,6 +191,7 @@ class ProductTest extends TestCase
         );
         $this->dateTimeMock = $this->createMock(\Magento\Framework\Stdlib\DateTime\DateTime::class);
         $this->priceFinderFactoryMock = $this->createMock(PriceFinderFactory::class);
+        $this->indexPriceFinderMock = $this->createMock(IndexPriceFinder::class);
         $this->schemaValidatorFactory = $this->createMock(SchemaValidatorFactory::class);
         $this->schemaValidator = $this->createMock(SchemaValidator::class);
         $this->schemaValidatorFactory
@@ -199,7 +208,8 @@ class ProductTest extends TestCase
             $this->attributeFactoryMock,
             $this->parentFinderMock,
             $this->imageFinderMock,
-            $this->tierPriceFinderMock,
+            $this->tierPriceFinderFactoryMock,
+            $this->indexPriceFinderMock,
             $this->stockFinderInterfaceMock,
             $this->imageTypeMock,
             $this->schemaValidatorFactory,
@@ -235,7 +245,7 @@ class ProductTest extends TestCase
         $specialPrice = 15.00;
 
         $this->setUpValidator();
-        $this->baselineExpectations($price, $price, $specialPrice, $specialPrice);
+        $this->baselineExpectations($price, $price, $specialPrice, $specialPrice, null);
 
         $this->mageProductMock->expects($this->atLeastOnce())
             ->method('getTypeId')
@@ -330,11 +340,39 @@ class ProductTest extends TestCase
         $this->product->setProduct($this->mageProductMock, 1);
     }
 
+    public function testGetIndexPrices()
+    {
+        $this->setUpValidator();
+        $this->baselineExpectations();
+
+        $this->indexPriceFinderMock->expects($this->once())
+            ->method('getIndexPrices')
+            ->with($this->mageProductMock, 1)
+            ->willReturn([
+                [
+                    'customer_group' => 'General',
+                    'price' => 10.00,
+                    'price_incl_tax' => 12.00,
+                    'final_price' => 10.00,
+                    'final_price_incl_tax' => 12.00,
+                    'min_price' => 10.00,
+                    'min_price_incl_tax' => 12.00,
+                    'max_price' => 10.00,
+                    'max_price_incl_tax' => 12.00,
+                    'tier_price' => 10.00,
+                    'tier_price_incl_tax' => 12.00
+                ]
+            ]);
+
+        $this->product->setProduct($this->mageProductMock, 1);
+    }
+
     private function baselineExpectations(
         $price = 0.00,
         $price_incl_tax = 0.00,
         $specialPrice = 0.00,
-        $specialPrice_incl_tax = 0.00
+        $specialPrice_incl_tax = 0.00,
+        $storeId = 1
     ) {
         $status = 1;
         $visibility = 1;
@@ -432,6 +470,29 @@ class ProductTest extends TestCase
         $this->attributeFactoryMock->expects($this->once())
             ->method('create')
             ->willReturn($this->attributeMock);
+
+        $tierPriceFinderMock = $this->createMock(TierPriceFinder::class);
+        $this->tierPriceFinderFactoryMock->expects($this->once())
+            ->method('create')
+            ->willReturn($tierPriceFinderMock);
+
+        $tierPriceFinderMock->expects($this->once())
+            ->method('getTierPricesByStoreAndGroup')
+            ->with($this->mageProductMock, $storeId)
+            ->willReturn([
+                [
+                    'price' => 10.00,
+                    'quantity' => 1,
+                    'percentage' => 0.0,
+                    'type' => 'Fixed Price'
+                ],
+                [
+                    'price' => 9.00,
+                    'quantity' => 2,
+                    'percentage' => 0.0,
+                    'type' => 'Fixed Price'
+                ]
+            ]);
     }
 
     private function setUpValidator()

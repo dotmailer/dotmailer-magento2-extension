@@ -3,6 +3,7 @@
 namespace Dotdigitalgroup\Email\Model\Validator\Schema\Exception;
 
 use Dotdigitalgroup\Email\Model\Validator\Schema\SchemaValidator;
+use Magento\Framework\Phrase;
 
 class SchemaValidationException extends \Exception
 {
@@ -21,9 +22,9 @@ class SchemaValidationException extends \Exception
      * Create a new exception instance.
      *
      * @param SchemaValidator $validator
-     * @param string|null $message
+     * @param Phrase|null $message
      */
-    public function __construct(SchemaValidator $validator, ?string $message = null)
+    public function __construct(SchemaValidator $validator, ?Phrase $message = null)
     {
         parent::__construct($message, $this->code);
         $this->validator = $validator;

@@ -10,6 +10,7 @@ use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Model\Apiconnector\V3\Client;
 use Dotdigitalgroup\Email\Model\Apiconnector\V3\ClientFactory;
 use Dotdigitalgroup\Email\Model\Contact;
+use Dotdigitalgroup\Email\Model\ResourceModel\Contact as ContactResource;
 use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\DataFieldCollector;
 use Dotdigitalgroup\Email\Model\Sync\Subscriber\SingleSubscriberSyncer;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -33,6 +34,11 @@ class SingleSubscriberSyncerTest extends TestCase
     private $contactModelMock;
 
     /**
+     * @var ContactResource|MockObject
+     */
+    private $contactResourceMock;
+
+    /**
      * @var ClientFactory|MockObject
      */
     private $clientFactoryMock;
@@ -50,7 +56,7 @@ class SingleSubscriberSyncerTest extends TestCase
     /**
      * @var Contacts|MockObject
      */
-    private $contactsResourceMock;
+    private $sdkContactsResourceMock;
 
     protected function setUp()
     : void
@@ -65,22 +71,25 @@ class SingleSubscriberSyncerTest extends TestCase
                 'getCustomerId',
                 'getIsGuest',
                 'setSubscriberImported',
-                'setEmailImported'
+                'setEmailImported',
+                'setContactId',
             ])
             ->disableOriginalConstructor()
             ->getMock();
         $this->clientFactoryMock = $this->createMock(ClientFactory::class);
+        $this->contactResourceMock = $this->createMock(ContactResource::class);
 
         $this->v3ClientMock = $this->createMock(Client::class);
         $this->clientFactoryMock->expects($this->any())
             ->method('create')
             ->willReturn($this->v3ClientMock);
-        $this->contactsResourceMock = $this->createMock(Contacts::class);
-        $this->v3ClientMock->contacts = $this->contactsResourceMock;
+        $this->sdkContactsResourceMock = $this->createMock(Contacts::class);
+        $this->v3ClientMock->contacts = $this->sdkContactsResourceMock;
 
         $this->singleSubscriberSyncer = new SingleSubscriberSyncer(
             $this->helperMock,
             $this->clientFactoryMock,
+            $this->contactResourceMock,
             $this->dataFieldCollectorMock
         );
     }
@@ -101,7 +110,7 @@ class SingleSubscriberSyncerTest extends TestCase
         $this->dataFieldCollectorMock->method('collectForSubscriber')
             ->willReturn($sdkSubscriber);
 
-        $this->contactsResourceMock->expects($this->once())
+        $this->sdkContactsResourceMock->expects($this->once())
             ->method('patchByIdentifier')
             ->with(
                 $this->contactModelMock->getEmail(),
@@ -109,7 +118,15 @@ class SingleSubscriberSyncerTest extends TestCase
             )
             ->willReturn($sdkSubscriber);
 
-        $this->singleSubscriberSyncer->pushContactToSubscriberAddressBook($this->contactModelMock);
+        $this->contactModelMock->expects($this->once())
+            ->method('setContactId')
+            ->with(123);
+
+        $this->contactModelMock->expects($this->once())
+            ->method('setSubscriberImported')
+            ->with(1);
+
+        $this->singleSubscriberSyncer->execute($this->contactModelMock);
     }
 
     public function testPushContactToSubscriberAddressBookReturnsNullWhenDisabled()
@@ -128,6 +145,7 @@ class SingleSubscriberSyncerTest extends TestCase
     private function getDummySdkSubscriber()
     {
         return new SdkContact([
+            'contactId' => 123,
             'identifiers' => [
                 'email' => 'chaz@emailsim.io',
             ],

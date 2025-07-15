@@ -136,7 +136,7 @@ class SubscriptionConsumer
         try {
             $contact = $this->contactFactory->create();
             $this->contactResource->load($contact, $subscribeData->getId());
-            $this->singleSubscriberSyncer->pushContactToSubscriberAddressBook($contact);
+            $this->singleSubscriberSyncer->execute($contact);
             $this->logger->info('Newsletter subscribe success', ['email' => $subscribeData->getEmail()]);
         } catch (ResponseValidationException $e) {
             $this->logger->error(
@@ -150,8 +150,8 @@ class SubscriptionConsumer
             $this->logger->error(
                 'Newsletter subscribe error',
                 [
-                'identifier' => $subscribeData->getEmail(),
-                'exception' => $e,
+                    'identifier' => $subscribeData->getEmail(),
+                    'exception' => $e,
                 ]
             );
         }
@@ -207,8 +207,8 @@ class SubscriptionConsumer
             $this->logger->error(
                 'Newsletter unsubscribe error',
                 [
-                'identifier' => $unsubscribeData->getEmail(),
-                'exception' => $e,
+                    'identifier' => $unsubscribeData->getEmail(),
+                    'exception' => $e,
                 ]
             );
         }

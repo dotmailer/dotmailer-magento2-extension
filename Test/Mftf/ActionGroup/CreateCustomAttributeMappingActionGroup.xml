@@ -13,7 +13,7 @@
 
         <click selector="{{AdminDotdigitalDataMappingSection.save}}" stepKey="savePage" />
         <waitForPageLoad stepKey="waitForPageLoad"/>
-        <see userInput="You saved the configuration." selector="div[data-ui-id='messages-message-success']" stepKey="seeSuccessMessage"/>
+        <waitForText userInput="You saved the configuration." selector="div[data-ui-id='messages-message-success']" stepKey="seeSuccessMessage"/>
         <scrollTo selector="{{AdminDotdigitalDataMappingSection.createDataFieldHeader}}" stepKey="scrollToHeader2"/>
         <seeOptionIsSelected userInput="{{DataFields.customerIdDataField}}" selector="{{AdminDotdigitalDataMappingSection.customDataFieldSelect}}" stepKey="seeCustomDataField"/>
     </actionGroup>

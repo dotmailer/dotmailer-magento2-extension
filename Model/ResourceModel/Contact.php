@@ -401,4 +401,27 @@ class Contact extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         }
         return $collection->getFirstItem()->getExecutedAt();
     }
+
+    /**
+     * Set contact ids for emails by website id.
+     *
+     * @param array $contacts
+     * @param int $websiteId
+     *
+     * @return void
+     * @throws LocalizedException
+     */
+    public function setContactIdsForEmailsByWebsiteId(array $contacts, int $websiteId): void
+    {
+        foreach ($contacts as $email => $contactId) {
+            $this->getConnection()->update(
+                $this->getMainTable(),
+                ['contact_id' => $contactId],
+                [
+                    'email = ?' => $email,
+                    'website_id = ?' => $websiteId,
+                ]
+            );
+        }
+    }
 }
