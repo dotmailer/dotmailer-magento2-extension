@@ -144,7 +144,7 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
                 ['customer_email']
             )->joinLeft(
                 ['email_contact' => $this->getTable('email_contact')],
-                'sales_order.customer_email = email_contact.email',
+                'sales_order.customer_email = email_contact.email AND sales_order.store_id = email_contact.store_id',
                 ['contact_id']
             );
         $connectorCollection
