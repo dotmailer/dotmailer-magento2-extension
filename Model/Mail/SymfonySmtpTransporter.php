@@ -48,7 +48,7 @@ class SymfonySmtpTransporter
         Transactional $transactionalEmailSettings,
         EmailMessageMethodChecker $emailMessageMethodChecker,
         SymfonyMailerFactory $mailerFactory,
-        File $fileSystem,
+        File $fileSystem
     ) {
         $this->transactionalEmailSettings = $transactionalEmailSettings;
         $this->emailMessageMethodChecker = $emailMessageMethodChecker;
