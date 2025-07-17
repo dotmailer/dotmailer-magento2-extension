@@ -8,6 +8,7 @@ use Magento\Catalog\Api\ProductRepositoryInterface;
 use Dotdigitalgroup\Email\Model\Catalog\UpdateCatalog;
 use Dotdigitalgroup\Email\Model\Catalog\CatalogService;
 use Magento\Framework\App\State;
+use Magento\Catalog\Model\Product;
 
 class StockUpdatePlugin
 {
@@ -73,13 +74,25 @@ class StockUpdatePlugin
         $result,
         $productSku
     ) {
-        if (!$this->helper->isEnabled() ||
-            $this->state->getAreaCode() !== \Magento\Framework\App\Area::AREA_WEBAPI_REST) {
+        if ($this->state->getAreaCode() !== \Magento\Framework\App\Area::AREA_WEBAPI_REST) {
             return $result;
         }
 
         try {
             $product = $this->productRepository->get($productSku);
+            /** @var Product $product */
+            $websiteIds = $product->getWebsiteIds();
+            $apiEnabled = false;
+            foreach ($websiteIds as $websiteId) {
+                if ($this->helper->isEnabled($websiteId)) {
+                    $apiEnabled = true;
+                    break;
+                }
+            }
+            if (!$apiEnabled) {
+                return $result;
+            }
+
             $this->catalogUpdater->execute($product);
             $this->catalogService->setIsCatalogUpdated();
         } catch (\Magento\Framework\Exception\NoSuchEntityException $e) {
