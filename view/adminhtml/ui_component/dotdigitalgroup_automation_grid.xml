@@ -53,6 +53,12 @@
                 <indexField>id</indexField>
             </settings>
         </selectionsColumn>
+        <column name="id">
+            <settings>
+                <filter>text</filter>
+                <label translate="true">Automation Id</label>
+            </settings>
+        </column>
         <column name="email">
             <settings>
                 <filter>text</filter>

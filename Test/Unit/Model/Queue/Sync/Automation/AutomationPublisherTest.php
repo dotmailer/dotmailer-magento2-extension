@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Dotdigitalgroup\Email\Test\Unit\Model\Queue\Sync\Automation;
 
+use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Queue\Sync\Automation\AutomationPublisher;
 use Dotdigitalgroup\Email\Model\Automation;
@@ -15,6 +16,11 @@ use PHPUnit\Framework\TestCase;
 
 class AutomationPublisherTest extends TestCase
 {
+    /**
+     * @var Data|MockObject
+     */
+    private $emailHelperMock;
+
     /**
      * @var Logger|MockObject
      */
@@ -37,12 +43,13 @@ class AutomationPublisherTest extends TestCase
 
     protected function setUp(): void
     {
-
+        $this->emailHelperMock = $this->createMock(Data::class);
         $this->loggerMock = $this->createMock(Logger::class);
         $this->automationDataFactoryMock = $this->createMock(AutomationDataFactory::class);
         $this->publisherMock = $this->createMock(PublisherInterface::class);
 
         $this->automationPublisher = new AutomationPublisher(
+            $this->emailHelperMock,
             $this->loggerMock,
             $this->automationDataFactoryMock,
             $this->publisherMock
