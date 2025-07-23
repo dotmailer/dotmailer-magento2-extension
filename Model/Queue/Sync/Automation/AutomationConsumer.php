@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Dotdigitalgroup\Email\Model\Queue\Sync\Automation;
 
 use Dotdigitalgroup\Email\Exception\PendingOptInException;
+use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Automation;
 use Dotdigitalgroup\Email\Model\AutomationFactory;
@@ -19,6 +20,11 @@ use Magento\Framework\Exception\LocalizedException;
 
 class AutomationConsumer
 {
+    /**
+     * @var Data
+     */
+    private $emailHelper;
+
     /**
      * @var Logger
      */
@@ -52,6 +58,7 @@ class AutomationConsumer
     /**
      * AutomationConsumer constructor.
      *
+     * @param Data $emailHelper
      * @param Logger $logger
      * @param AutomationResource $automationResource
      * @param AutomationFactory $automationFactory
@@ -60,6 +67,7 @@ class AutomationConsumer
      * @param Sender $sender
      */
     public function __construct(
+        Data $emailHelper,
         Logger $logger,
         AutomationResource $automationResource,
         AutomationFactory $automationFactory,
@@ -67,6 +75,7 @@ class AutomationConsumer
         AbandonedCartFactory $abandonedCartAutomationFactory,
         Sender $sender
     ) {
+        $this->emailHelper = $emailHelper;
         $this->logger = $logger;
         $this->automationFactory = $automationFactory;
         $this->automationResource = $automationResource;
@@ -85,6 +94,17 @@ class AutomationConsumer
      */
     public function process(AutomationData $automationData): void
     {
+        $start = microtime(true);
+        if ($this->emailHelper->isDebugEnabled()) {
+            $this->logger->info(
+                "Automation queue consumer start",
+                [
+                    'id' => $automationData->getId(),
+                    'type' => $automationData->getType()
+                ]
+            );
+        }
+
         $model = $this->automationFactory->create();
         $this->automationResource->load($model, $automationData->getId());
 
@@ -114,10 +134,16 @@ class AutomationConsumer
             return;
         }
 
-        $this->logger->info(
-            "Queued automation send complete",
-            ['id' => $automationData->getId()]
-        );
+        if ($this->emailHelper->isDebugEnabled()) {
+            $this->logger->info(
+                "Queued automation send complete",
+                [
+                    'id' => $automationData->getId(),
+                    'type' => $automationData->getType(),
+                    'time' => gmdate('H:i:s', (int)(microtime(true) - $start))
+                ]
+            );
+        }
     }
 
     /**

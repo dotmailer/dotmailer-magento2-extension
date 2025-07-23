@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Dotdigitalgroup\Email\Test\Unit\Model\Queue\Sync\Automation;
 
 use Dotdigitalgroup\Email\Exception\PendingOptInException;
+use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\AutomationFactory;
 use Dotdigitalgroup\Email\Model\Queue\Data\AutomationData;
@@ -22,6 +23,11 @@ use PHPUnit\Framework\TestCase;
 
 class AutomationConsumerTest extends TestCase
 {
+    /**
+     * @var Data|MockObject
+     */
+    private $emailHelper;
+
     /**
      * @var Logger|MockObject
      */
@@ -59,6 +65,7 @@ class AutomationConsumerTest extends TestCase
 
     protected function setUp(): void
     {
+        $this->emailHelper = $this->createMock(Data::class);
         $this->logger = $this->createMock(Logger::class);
         $this->automationFactory = $this->createMock(AutomationFactory::class);
         $this->automationResource = $this->createMock(AutomationResource::class);
@@ -67,6 +74,7 @@ class AutomationConsumerTest extends TestCase
         $this->sender = $this->createMock(Sender::class);
 
         $this->automationConsumer = new AutomationConsumer(
+            $this->emailHelper,
             $this->logger,
             $this->automationResource,
             $this->automationFactory,
