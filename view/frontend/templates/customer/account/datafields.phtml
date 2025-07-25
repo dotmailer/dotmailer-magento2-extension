@@ -7,61 +7,69 @@
 // phpcs:disable Magento2.Legacy.EscapeMethodsOnBlockClass
 
 $view = $block->getData('config');
+
+if (!$view->canShowDataFields()) {
+    return '';
+}
 ?>
 
-<?php
-$dataFields = $view->getDataFieldsToShow();
-$dataFieldHtmlProperties = [
-    'Numeric' => [
-        'input_type' => 'number',
-        'class' => 'form-input'
-    ],
-    'Date' => [
-        'input_type' => 'date',
-        'class' => 'form-input date-field'
-    ],
-    'String' => [
-        'input_type' => 'text',
-        'class' => 'input-text form-input'
-    ]
-];
-
-if (!empty($dataFields)): ?>
     <fieldset class="fieldset">
         <legend class="legend">
             <span><?= $block->escapeHtml(__('Information')) ?></span>
         </legend>
-        <?php foreach ($dataFields as $dataField): ?>
-            <div class="field">
-                <label for="<?= $block->escapeHtml($dataField['name']) ?>">
-                    <?= $block->escapeHtml($dataField['name']) ?>
-                </label>
-                <?php if ($dataField['type'] == "Boolean"): ?>
-                    <div class="control">
-                        <select class="form-select"
-                                name="data_fields[<?= $block->escapeHtml($dataField['name']) ?>]"
-                                id="<?= $block->escapeHtml($dataField['name']) ?>"
-                                title="<?= $block->escapeHtml($dataField['name']) ?>">
-                            <option value="1"<?php if ($block->escapeHtml($dataField['value'])): ?>
-                                selected="selected"<?php endif; ?>><?= $block->escapeHtml(__('Yes')) ?></option>
-                            <option value="0"<?php if (!$block->escapeHtml($dataField['value'])): ?>
-                                selected="selected"<?php endif; ?>><?= $block->escapeHtml(__('No')) ?></option>
-                        </select>
-                    </div>
-                <?php else: ?>
-                    <div class="input-box">
-                        <input type="<?= $block->escapeHtml($dataFieldHtmlProperties[$dataField['type']]['input_type']) // phpcs:ignore Generic.Files.LineLength.TooLong ?>"
-                               class="<?= $block->escapeHtml($dataFieldHtmlProperties[$dataField['type']]['class']) ?>"
-                               title="<?= $block->escapeHtml($dataField['name']) ?>"
-                               value="<?= $block->escapeHtml($dataField['value']) ?>"
-                               name="data_fields[<?= $block->escapeHtml($dataField['name']) ?>]"
-                               id="<?= $block->escapeHtml($dataField['name']) ?>"
-                        />
-                    </div>
-                <?php endif; ?>
-            </div>
-        <?php endforeach; ?>
+        <?php if (!$view->hasContactId()): ?>
+            <p class="note">
+                <?= $block->escapeHtml(__('Not yet available. Check back soon to manage your information.')) ?>
+            </p>
+        <?php else:
+            $dataFields = $view->getDataFieldsToShow();
+            $dataFieldHtmlProperties = [
+                'Numeric' => [
+                    'input_type' => 'number',
+                    'class' => 'form-input'
+                ],
+                'Date' => [
+                    'input_type' => 'date',
+                    'class' => 'form-input date-field'
+                ],
+                'String' => [
+                    'input_type' => 'text',
+                    'class' => 'input-text form-input'
+                ]
+            ];
+
+            foreach ($dataFields as $dataField): ?>
+                <div class="field">
+                    <label for="<?= $block->escapeHtml($dataField['name']) ?>">
+                        <?= $block->escapeHtml($dataField['name']) ?>
+                    </label>
+                    <?php if ($dataField['type'] == "Boolean"): ?>
+                        <div class="control">
+                            <select class="form-select"
+                                    name="data_fields[<?= $block->escapeHtml($dataField['name']) ?>]"
+                                    id="<?= $block->escapeHtml($dataField['name']) ?>"
+                                    title="<?= $block->escapeHtml($dataField['name']) ?>">
+                                <option value="1"<?php if ($block->escapeHtml($dataField['value'])): ?>
+                                    selected="selected"<?php endif; ?>><?= $block->escapeHtml(__('Yes')) ?></option>
+                                <option value="0"<?php if (!$block->escapeHtml($dataField['value'])): ?>
+                                    selected="selected"<?php endif; ?>><?= $block->escapeHtml(__('No')) ?></option>
+                            </select>
+                        </div>
+                    <?php else: ?>
+                        <div class="input-box">
+                            <input type="<?= $block->escapeHtml($dataFieldHtmlProperties[$dataField['type']]['input_type']) // phpcs:ignore Generic.Files.LineLength.TooLong ?>"
+                                   class="<?= $block->escapeHtml($dataFieldHtmlProperties[$dataField['type']]['class'])  // phpcs:ignore Generic.Files.LineLength.TooLong ?>"
+                                   title="<?= $block->escapeHtml($dataField['name']) ?>"
+                                   value="<?= $block->escapeHtml($dataField['value']) ?>"
+                                   name="data_fields[<?= $block->escapeHtml($dataField['name']) ?>]"
+                                   id="<?= $block->escapeHtml($dataField['name']) ?>"
+                            />
+                        </div>
+                    <?php endif; ?>
+                </div>
+            <?php endforeach; ?>
+        <?php endif; ?>
     </fieldset>
-<?php endif;
+<?php
 // phpcs:enable
 ?>

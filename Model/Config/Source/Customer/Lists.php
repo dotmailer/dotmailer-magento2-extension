@@ -54,7 +54,7 @@ class Lists implements \Magento\Framework\Data\OptionSourceInterface
     public function toOptionArray()
     {
         $fields[] = [
-            'label' => __('---- Default Option ----'),
+            'label' => __('---- None ----'),
             'value' => '0',
         ];
         $websiteId = $this->helper->getWebsiteForSelectedScopeInAdmin()->getId();

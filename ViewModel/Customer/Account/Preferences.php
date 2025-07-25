@@ -64,6 +64,17 @@ class Preferences implements ArgumentInterface
     }
 
     /**
+     * Check if contact ID exists.
+     *
+     * @return bool
+     * @throws LocalizedException
+     */
+    public function hasContactId(): bool
+    {
+        return $this->containerViewModel->hasContactWithId();
+    }
+
+    /**
      * Process preferences.
      *
      * @param array $preferences

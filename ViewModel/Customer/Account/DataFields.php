@@ -52,6 +52,18 @@ class DataFields implements ArgumentInterface
     }
 
     /**
+     * Check if data fields are to be shown to the customer.
+     *
+     * @return bool
+     * @throws LocalizedException
+     */
+    public function canShowDataFields(): bool
+    {
+        $websiteId = $this->storeManager->getWebsite()->getId();
+        return !empty($this->accountConfig->getDataFieldsToShow($websiteId));
+    }
+
+    /**
      * Getter for datafields to show. Fully processed.
      *
      * @return array
@@ -86,6 +98,17 @@ class DataFields implements ArgumentInterface
             $dataFieldsFromConfig,
             $processedContactDataFields
         );
+    }
+
+    /**
+     * Check if contact ID exists.
+     *
+     * @return bool
+     * @throws LocalizedException
+     */
+    public function hasContactId(): bool
+    {
+        return $this->containerViewModel->hasContactWithId();
     }
 
     /**

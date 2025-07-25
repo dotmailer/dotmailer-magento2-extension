@@ -7,32 +7,37 @@
 // phpcs:disable Magento2.Legacy.EscapeMethodsOnBlockClass
 
 $view = $block->getData('config');
+
+if (!$view->canShowLists()) {
+    return '';
+}
 ?>
-
-<?php
-$additionalBooks = $view->getAdditionalBooksToShow();
-
-if (!empty($additionalBooks)): ?>
     <fieldset class="fieldset">
         <legend class="legend">
             <span><?= $block->escapeHtml(__('Lists')) ?></span>
         </legend>
-        <?php foreach ($additionalBooks as $books): ?>
-            <div class="control field choice" >
-                <input type="checkbox" name="additional_subscriptions[]"
-                       id="<?= $block->escapeHtml($books["name"]); ?>"
-                       value="<?= $block->escapeHtml($books["value"]) ?>"
-                       title="<?= $block->escapeHtml($books["name"]) ?>"
-                    <?php if ($books["subscribed"]): ?>
-                        checked="checked"
-                    <?php endif; ?> class="checkbox"
-                />
-                <label for="<?= $block->escapeHtml($books["name"]); ?>">
-                    <?= $block->escapeHtml($books["name"]) ?>
-                </label>
-            </div>
-        <?php endforeach; ?>
+        <?php if (!$view->hasContactId()): ?>
+            <p class="note">
+                <?= $block->escapeHtml(__('Not yet available. Check back soon to manage your lists.')) ?>
+            </p>
+        <?php else:
+            foreach ($view->getAdditionalBooksToShow() as $books): ?>
+                <div class="control field choice" >
+                    <input type="checkbox" name="additional_subscriptions[]"
+                           id="<?= $block->escapeHtml($books["name"]); ?>"
+                           value="<?= $block->escapeHtml($books["value"]) ?>"
+                           title="<?= $block->escapeHtml($books["name"]) ?>"
+                        <?php if ($books["subscribed"]): ?>
+                            checked="checked"
+                        <?php endif; ?> class="checkbox"
+                    />
+                    <label for="<?= $block->escapeHtml($books["name"]); ?>">
+                        <?= $block->escapeHtml($books["name"]) ?>
+                    </label>
+                </div>
+            <?php endforeach; ?>
+        <?php endif; ?>
     </fieldset>
-<?php endif;
+<?php
 // phpcs:enable
 ?>
