@@ -47,7 +47,7 @@ class Publicdatafields implements OptionSourceInterface
     public function toOptionArray()
     {
         $fields[] = [
-            'label' => __('---- Default Option ----'),
+            'label' => __('---- None ----'),
             'value' => '0',
         ];
         $apiEnabled = $this->helper->isEnabled($this->helper->getWebsite());

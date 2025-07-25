@@ -41,6 +41,19 @@ class AddressBooks implements ArgumentInterface
     }
 
     /**
+     * Check if lists are to be shown to the customer.
+     *
+     * @return bool
+     * @throws LocalizedException
+     */
+    public function canShowLists(): bool
+    {
+        return !empty($this->accountConfig->getAddressBookIdsToShow(
+            $this->storeManager->getWebsite()->getId()
+        ));
+    }
+
+    /**
      * Getter for additional books. Fully processed.
      *
      * @return array
@@ -75,6 +88,17 @@ class AddressBooks implements ArgumentInterface
             $processedAddressBooks,
             $additionalBooksToShow
         );
+    }
+
+    /**
+     * Check if contact ID exists.
+     *
+     * @return bool
+     * @throws LocalizedException
+     */
+    public function hasContactId(): bool
+    {
+        return $this->containerViewModel->hasContactWithId();
     }
 
     /**

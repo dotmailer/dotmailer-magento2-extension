@@ -103,6 +103,18 @@ class AccountSubscriptions implements ArgumentInterface
     }
 
     /**
+     * Check if contact exists in the table and has a contact id.
+     *
+     * @return bool
+     * @throws LocalizedException
+     */
+    public function hasContactWithId()
+    {
+        $contact = $this->getContactFromTable();
+        return $contact && $contact->getContactId() > 0;
+    }
+
+    /**
      * Get connector contact.
      *
      * @return stdClass

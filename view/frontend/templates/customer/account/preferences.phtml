@@ -12,40 +12,46 @@ $view = $block->getData('config');
 
 <fieldset class="fieldset">
     <legend class="legend"><span><?= $block->escapeHtml(__('Preferences')) ?></span></legend>
-    <?php foreach ($view->getPreferencesToShow() as $prefId => $preferences): ?>
-        <?php $uniqId = uniqid('pr-'); ?>
-        <?php if (! $preferences['isPreference']): ?>
-            <h5><?= $block->escapeHtml($preferences['catLabel']) ?></h5>
-            <?php foreach ($preferences['catPreferences'] as $catPrefId => $catPref): ?>
-                <div class="control field choice">
+    <?php if (!$view->hasContactId()): ?>
+        <p class="note">
+            <?= $block->escapeHtml(__('Not yet available. Check back soon to manage your preferences.')) ?>
+        </p>
+    <?php else: ?>
+        <?php foreach ($view->getPreferencesToShow() as $prefId => $preferences): ?>
+            <?php $uniqId = uniqid('pr-'); ?>
+            <?php if (! $preferences['isPreference']): ?>
+                <h5><?= $block->escapeHtml($preferences['catLabel']) ?></h5>
+                <?php foreach ($preferences['catPreferences'] as $catPrefId => $catPref): ?>
+                    <div class="control field choice">
+                        <input type="checkbox" name="preferences[]"
+                               id="<?= $block->escapeHtml($uniqId . $catPrefId); ?>"
+                               value="<?= $block->escapeHtml($prefId . ',' . $catPrefId) ?>"
+                               title="<?= $block->escapeHtml($catPref["label"]) ?>"
+                            <?php if ($catPref["isOptedIn"]): ?>
+                                checked="checked"
+                            <?php endif; ?> class="checkbox"
+                        />
+                        <label for="<?= $block->escapeHtml($uniqId . $catPrefId); ?>">
+                            <?= $block->escapeHtml($catPref["label"]) ?>
+                        </label>
+                    </div>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <div class="control field choice dd-uncategorised">
                     <input type="checkbox" name="preferences[]"
-                           id="<?= $block->escapeHtml($uniqId . $catPrefId); ?>"
-                           value="<?= $block->escapeHtml($prefId . ',' . $catPrefId) ?>"
-                           title="<?= $block->escapeHtml($catPref["label"]) ?>"
-                        <?php if ($catPref["isOptedIn"]): ?>
+                           id="<?= $block->escapeHtml($uniqId . $prefId); ?>"
+                           value="<?= $block->escapeHtml($prefId) ?>"
+                           title="<?= $block->escapeHtml($preferences["label"]) ?>"
+                        <?php if ($preferences["isOptedIn"]): ?>
                             checked="checked"
                         <?php endif; ?> class="checkbox"
                     />
-                    <label for="<?= $block->escapeHtml($uniqId . $catPrefId); ?>">
-                        <?= $block->escapeHtml($catPref["label"]) ?>
+                    <label for="<?= $block->escapeHtml($uniqId . $prefId); ?>">
+                        <?= $block->escapeHtml($preferences["label"]) ?>
                     </label>
                 </div>
-            <?php endforeach; ?>
-        <?php else: ?>
-            <div class="control field choice dd-uncategorised">
-                <input type="checkbox" name="preferences[]"
-                       id="<?= $block->escapeHtml($uniqId . $prefId); ?>"
-                       value="<?= $block->escapeHtml($prefId) ?>"
-                       title="<?= $block->escapeHtml($preferences["label"]) ?>"
-                    <?php if ($preferences["isOptedIn"]): ?>
-                        checked="checked"
-                    <?php endif; ?> class="checkbox"
-                />
-                <label for="<?= $block->escapeHtml($uniqId . $prefId); ?>">
-                    <?= $block->escapeHtml($preferences["label"]) ?>
-                </label>
-            </div>
-        <?php endif; ?>
-    <?php endforeach; ?>
+            <?php endif; ?>
+        <?php endforeach; ?>
+    <?php endif; ?>
 </fieldset>
 <?php // phpcs:enable ?>

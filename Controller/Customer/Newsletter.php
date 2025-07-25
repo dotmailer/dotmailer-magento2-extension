@@ -7,8 +7,8 @@ use Dotdigitalgroup\Email\Model\Apiconnector\Client;
 use Dotdigitalgroup\Email\Model\Contact;
 use Dotdigitalgroup\Email\Model\Customer\Account\Configuration;
 use Dotdigitalgroup\Email\Model\Customer\DataField\Date;
-use Dotdigitalgroup\Email\Model\ResourceModel\Contact as ContactResource;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory as ContactCollectionFactory;
+use Dotdigitalgroup\Email\Model\StatusInterface;
 use Magento\Customer\Api\CustomerRepositoryInterface as CustomerRepository;
 use Magento\Customer\Model\Session;
 use Magento\Framework\App\Action\Context;
@@ -23,7 +23,6 @@ use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Newsletter\Model\Subscriber;
 use Magento\Newsletter\Model\SubscriberFactory;
 use Magento\Store\Model\StoreManagerInterface;
-use Dotdigitalgroup\Email\Model\Contact\ContactResponseHandler;
 
 class Newsletter implements HttpPostActionInterface
 {
@@ -31,11 +30,6 @@ class Newsletter implements HttpPostActionInterface
      * @var Data
      */
     private $helper;
-
-    /**
-     * @var ContactResource
-     */
-    private $contactResource;
 
     /**
      * @var ContactCollectionFactory
@@ -93,13 +87,7 @@ class Newsletter implements HttpPostActionInterface
     private $dateField;
 
     /**
-     * @var ContactResponseHandler
-     */
-    private $contactResponseHandler;
-
-    /**
      * @param Data $helper
-     * @param ContactResource $contactResource
      * @param ContactCollectionFactory $contactCollectionFactory
      * @param Configuration $accountConfig
      * @param Session $session
@@ -111,11 +99,9 @@ class Newsletter implements HttpPostActionInterface
      * @param SubscriberFactory $subscriberFactory
      * @param StoreManagerInterface $storeManager
      * @param Date $dateField
-     * @param ContactResponseHandler $contactResponseHandler
      */
     public function __construct(
         Data $helper,
-        ContactResource $contactResource,
         ContactCollectionFactory $contactCollectionFactory,
         Configuration $accountConfig,
         Session $session,
@@ -126,12 +112,10 @@ class Newsletter implements HttpPostActionInterface
         CustomerRepository $customerRepository,
         SubscriberFactory $subscriberFactory,
         StoreManagerInterface $storeManager,
-        Date $dateField,
-        ContactResponseHandler $contactResponseHandler
+        Date $dateField
     ) {
         $this->helper = $helper;
         $this->contactCollectionFactory = $contactCollectionFactory;
-        $this->contactResource = $contactResource;
         $this->accountConfig = $accountConfig;
         $this->customerSession = $session;
         $this->request = $context->getRequest();
@@ -142,7 +126,6 @@ class Newsletter implements HttpPostActionInterface
         $this->subscriberFactory = $subscriberFactory;
         $this->storeManager = $storeManager;
         $this->dateField = $dateField;
-        $this->contactResponseHandler = $contactResponseHandler;
     }
 
     /**
@@ -168,7 +151,9 @@ class Newsletter implements HttpPostActionInterface
         if ($this->helper->isEnabled($websiteId)) {
             $customerEmail = $this->customerSession->getCustomer()->getEmail();
             $client = $this->helper->getWebsiteApiClient($websiteId);
-            $contactId = $this->loadOrFetchContactId($customerEmail, $websiteId, $client);
+            $contactId = $this->contactCollectionFactory->create()
+                ->loadByCustomerEmail($customerEmail, $websiteId)
+                ->getContactId();
 
             if ($contactId) {
                 $additionalSubscriptionsSuccess = $this->processAdditionalSubscriptions(
@@ -177,6 +162,7 @@ class Newsletter implements HttpPostActionInterface
                     $client,
                     $websiteId
                 );
+                $message = $additionalSubscriptionsSuccess->message ?? '';
 
                 $contactDataFieldsSuccess = $this->processContactDataFields(
                     $customerEmail,
@@ -186,10 +172,14 @@ class Newsletter implements HttpPostActionInterface
 
                 $contactPreferencesSuccess = $this->processContactPreferences($client, $contactId);
 
-                if (! $contactDataFieldsSuccess || ! $additionalSubscriptionsSuccess || ! $contactPreferencesSuccess) {
+                if (! $contactDataFieldsSuccess ||
+                    $additionalSubscriptionsSuccess !== true ||
+                    ! $contactPreferencesSuccess) {
                     $this->messageManager->addErrorMessage(
-                        __(
-                            'An error occurred while saving your subscription preferences.'
+                        sprintf(
+                            '%s %s',
+                            __('An error occurred while saving your subscription preferences.'),
+                            $message
                         )
                     );
                 } else {
@@ -197,61 +187,10 @@ class Newsletter implements HttpPostActionInterface
                         __('Your subscription preferences have been saved.')
                     );
                 }
-            } else {
-                $this->messageManager->addErrorMessage(
-                    __(
-                        'An error occurred while saving your subscription preferences.'
-                    )
-                );
             }
         }
         return $this->resultRedirectFactory->create()
             ->setPath('connector/customer/index/');
-    }
-
-    /**
-     * Load or fetch contact id.
-     *
-     * @param string $customerEmail
-     * @param int $websiteId
-     * @param Client $client
-     *
-     * @return int
-     * @throws LocalizedException
-     */
-    private function loadOrFetchContactId($customerEmail, $websiteId, $client)
-    {
-        $existingContact = $this->contactCollectionFactory->create()
-            ->loadByCustomerEmail($customerEmail, $websiteId);
-
-        return $existingContact->getContactId() ?
-            $existingContact->getContactId() :
-            $this->createContact($client, $existingContact);
-    }
-
-    /**
-     * Create contact.
-     *
-     * @param Client $apiClient
-     * @param Contact $contactFromTable
-     *
-     * @return int
-     * @throws LocalizedException
-     */
-    private function createContact($apiClient, $contactFromTable)
-    {
-        $contact = $apiClient->postContactWithConsentAndPreferences(
-            $contactFromTable->getEmail()
-        );
-
-        $contactId = $this->contactResponseHandler->getContactIdFromResponse($contact);
-
-        if ($contactId) {
-            $contactFromTable->setContactId($contactId);
-            $this->contactResource->save($contactFromTable);
-        }
-
-        return $contactId;
     }
 
     /**
@@ -262,7 +201,7 @@ class Newsletter implements HttpPostActionInterface
      * @param Client $client
      * @param int $websiteId
      *
-     * @return bool
+     * @return bool|\StdClass
      * @throws LocalizedException
      */
     private function processAdditionalSubscriptions($customerEmail, $contactId, $client, $websiteId)
@@ -285,6 +224,12 @@ class Newsletter implements HttpPostActionInterface
                 );
                 if (isset($bookResponse->message)) {
                     $success = false;
+                }
+                if (isset($bookResponse->id) &&
+                    isset($bookResponse->status) &&
+                    $bookResponse->status === StatusInterface::PENDING_OPT_IN) {
+                    $success = new \StdClass();
+                    $success->message = __('Please confirm your subscription and try again.');
                 }
             }
         }

@@ -44,6 +44,10 @@ class Configuration
      * @param string|int $websiteId
      *
      * @return bool
+     *
+     * @deprecated This method is deprecated and will be removed in a future version.
+     * The config is only referenced in layout.xml.
+     * @see getAddressBookIdsToShow
      */
     public function canShowAddressBooks($websiteId): bool
     {
@@ -60,6 +64,10 @@ class Configuration
      * @param string|int $websiteId
      *
      * @return bool
+     *
+     * @deprecated This config is deprecated and will be removed in a future version.
+     * The config is only referenced in layout.xml.
+     * @see getDataFieldsToShow
      */
     public function canShowDataFields($websiteId): bool
     {
@@ -120,7 +128,7 @@ class Configuration
      *
      * @return bool
      */
-    private function canShowPreferences($websiteId): bool
+    public function canShowPreferences($websiteId): bool
     {
         return $this->scopeConfig->isSetFlag(
             Config::XML_PATH_CONNECTOR_SHOW_PREFERENCES,
