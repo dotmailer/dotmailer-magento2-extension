@@ -83,6 +83,13 @@ class Monitor implements TaskRunInterface
             if (empty($monitorErrors['items'])) {
                 continue;
             }
+
+            foreach ($monitorErrors['items'] as $key => $items) {
+                if (empty($items)) {
+                    unset($monitorErrors['items'][$key]);
+                }
+            }
+
             $errors[$monitor->getTypeName()] = $monitorErrors;
         }
 
