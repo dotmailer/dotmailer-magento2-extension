@@ -173,4 +173,7 @@
             </argument>
         </arguments>
     </type>
+    <type name="Magento\Catalog\Controller\Adminhtml\Product\MassStatus">
+        <plugin name="dotdigital_catalog_mass_status_update" type="Dotdigitalgroup\Email\Plugin\CatalogMassStatusUpdatePlugin" sortOrder="10" />
+    </type>
 </config>
