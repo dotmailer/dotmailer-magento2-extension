@@ -79,7 +79,7 @@ class MonitorTest extends TestCase
         $this->setDdgMonitorMessagesAndEmailsEnabled();
         $this->cronMonitorMock->expects($this->once())
             ->method('fetchErrors')
-            ->willReturn(['items' => 'errorsFound']);
+            ->willReturn(['items' => ['errorsFound' => ['items']]]);
 
         $this->cronMonitorMock->expects($this->once())
             ->method('setSystemMessages');
@@ -118,7 +118,7 @@ class MonitorTest extends TestCase
 
         $this->cronMonitorMock->expects($this->once())
             ->method('fetchErrors')
-            ->willReturn(['items' => 'errorsFound']);
+            ->willReturn(['items' => ['errorsFound' => ['items']]]);
 
         $this->cronMonitorMock->expects($this->once())
             ->method('setSystemMessages');
