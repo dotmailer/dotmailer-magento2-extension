@@ -151,6 +151,9 @@ class NewsletterTest extends \Magento\TestFramework\TestCase\AbstractController
         $this->mockFormKeyValidator->method('validate')
             ->willReturn(true);
 
+        $this->mockCustomerSession->method('isLoggedIn')
+            ->willReturn(true);
+
         $this->mockStoreManager->method('getStore')
             ->willReturn($this->mockStore);
 

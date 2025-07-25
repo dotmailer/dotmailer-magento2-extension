@@ -137,6 +137,12 @@ class Newsletter implements HttpPostActionInterface
      */
     public function execute()
     {
+        if (!$this->customerSession->isLoggedIn()) {
+            $this->messageManager->addErrorMessage(__('Something went wrong while saving your subscription.'));
+            return $this->resultRedirectFactory->create()
+                ->setPath('customer/account/login');
+        }
+
         if (! $this->formKeyValidator->validate($this->request)) {
             return $this->resultRedirectFactory->create()
                 ->setPath('customer/account/');
