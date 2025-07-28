@@ -1,3 +1,15 @@
+# 4.32.1
+
+### Improvements
+- We added extra debug logging to the automation queue flow.
+
+### Bug fixes
+- The enabled check in the `StockUpdatePlugin` now checks at website level.
+- When products have their status changed in bulk, they will now be reset for sync.
+- Empty tables could be output in system alert emails; this has been fixed.
+- We fixed a problem with subscribers not being added to the correct list, if double opt-in was configured at Dotdigital.
+- We added an extra check to prevent form submission in the account if the customer session has expired.
+
 # 4.32.0
 
 ### What's new
