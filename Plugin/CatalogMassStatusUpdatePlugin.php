@@ -63,7 +63,7 @@ class CatalogMassStatusUpdatePlugin
      * @param MassStatus $subject
      * @return null
      */
-    public function beforeExecute(MassStatus $subject): null
+    public function beforeExecute(MassStatus $subject)
     {
         try {
             /** @var Collection $collection */
