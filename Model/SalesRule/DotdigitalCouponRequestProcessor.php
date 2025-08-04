@@ -266,7 +266,11 @@ class DotdigitalCouponRequestProcessor
                 $expireDays ? (int) $expireDays : null
             );
         } catch (LocalizedException $e) {
-            throw new \ErrorException('Coupon cannot be created for the rule specified');
+            throw new \ErrorException(sprintf(
+                '%s [%s]',
+                __('Coupon cannot be created for the rule specified'),
+                $e->getMessage()
+            ));
         }
 
         return $this;
