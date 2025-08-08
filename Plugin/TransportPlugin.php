@@ -117,8 +117,8 @@ class TransportPlugin
             );
 
             $this->logger->error("TransportPlugin send exception: " . $e->getMessage());
-            return $proceed();
         }
+        return $proceed();
     }
 
     /**
