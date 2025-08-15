@@ -129,18 +129,28 @@ class DataMigrationHelper
      */
     public function emptyTables(?string $table = null)
     {
+        $tablesProcessed = [];
+        $connection = $this->resourceConnection->getConnection();
+        $connection->query('SET FOREIGN_KEY_CHECKS = 0');
+
         foreach ($this->dataMigrationTypeProvider->getEnabledTypes($table) as $migrationType) {
             /** @var AbstractDataMigration $migrationType */
             $tableName = $this->resourceConnection->getTableName($migrationType->getTableName());
-            $connection = $this->resourceConnection->getConnection();
+
+            if (in_array($tableName, $tablesProcessed)) {
+                continue;
+            }
 
             if (!$connection->isTableExists($tableName)) {
                 continue;
             }
 
-            $connection->delete($tableName);
-            $connection->query(sprintf('ALTER TABLE %s AUTO_INCREMENT = 1', $tableName));
+            $connection->query(sprintf('TRUNCATE TABLE %s', $tableName));
+
+            $tablesProcessed[] = $tableName;
         }
+
+        $connection->query('SET FOREIGN_KEY_CHECKS = 1');
 
         return $this;
     }

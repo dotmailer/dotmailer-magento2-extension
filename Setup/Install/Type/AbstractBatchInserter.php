@@ -42,14 +42,14 @@ abstract class AbstractBatchInserter extends AbstractDataMigration
     {
         do {
             // select offset for query
-            $selectStatement->limit(self::BATCH_SIZE, $this->useOffset ? $this->rowsAffected : 0);
+            $selectStatement->limit($this->batchSize, $this->useOffset ? $this->rowsAffected : 0);
 
             $rowCount = $this->insertData($selectStatement);
 
             // increase the batch offset
             $this->rowsAffected += $rowCount;
 
-        } while ($rowCount === self::BATCH_SIZE);
+        } while ($rowCount === $this->batchSize);
     }
 
     /**

@@ -346,6 +346,9 @@
                 <pwa_url></pwa_url>
                 <use_rewrites></use_rewrites>
             </pwa_settings>
+            <data_migration>
+                <batch_size>100000</batch_size>
+            </data_migration>
         </connector_developer_settings>
     </default>
 </config>
