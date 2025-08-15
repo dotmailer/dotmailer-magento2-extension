@@ -9,10 +9,7 @@ use Magento\Framework\DB\Select;
 
 abstract class AbstractDataMigration
 {
-    /**
-     * The size queries will be batched in
-     */
-    public const BATCH_SIZE = 1000;
+    public const XML_PATH_DATA_MIGRATION_BATCH_SIZE = 'connector_developer_settings/data_migration/batch_size';
 
     /**
      * The table name this type writes to
@@ -49,6 +46,11 @@ abstract class AbstractDataMigration
     protected $useOffset = true;
 
     /**
+     * @var int
+     */
+    protected $batchSize;
+
+    /**
      * @param ResourceConnection $resourceConnection
      * @param ScopeConfigInterface $scopeConfig
      * @param Config $config
@@ -61,6 +63,7 @@ abstract class AbstractDataMigration
         $this->resourceConnection = $resourceConnection;
         $this->scopeConfig = $scopeConfig;
         $this->config = $config;
+        $this->batchSize = $this->getBatchSize();
     }
 
     /**
@@ -76,6 +79,18 @@ abstract class AbstractDataMigration
      * @return Select
      */
     abstract protected function getSelectStatement();
+
+    /**
+     * Get batch size from configuration
+     *
+     * @return int
+     */
+    protected function getBatchSize(): int
+    {
+        return (int) $this->scopeConfig->getValue(
+            self::XML_PATH_DATA_MIGRATION_BATCH_SIZE
+        );
+    }
 
     /**
      * Get the rows affected by this type

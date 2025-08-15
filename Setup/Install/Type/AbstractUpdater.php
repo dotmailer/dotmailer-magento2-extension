@@ -33,13 +33,13 @@ abstract class AbstractUpdater extends AbstractDataMigration
         $totalRowsSelected = 0;
 
         do {
-            $selectStatement->limit(self::BATCH_SIZE, $this->useOffset ? $totalRowsSelected : 0);
+            $selectStatement->limit($this->batchSize, $this->useOffset ? $totalRowsSelected : 0);
             $rowsSelected = $this->countSelected($selectStatement);
             $totalRowsSelected += $rowsSelected;
 
             $rowsUpdated = $this->updateData($selectStatement);
             $this->rowsAffected += $rowsUpdated;
-        } while ($rowsSelected === self::BATCH_SIZE);
+        } while ($rowsSelected === $this->batchSize);
     }
 
     /**

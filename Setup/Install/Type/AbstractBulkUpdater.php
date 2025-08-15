@@ -29,7 +29,7 @@ abstract class AbstractBulkUpdater extends AbstractDataMigration
         $totalRowsSelected = 0;
 
         do {
-            $selectStatement->limit(self::BATCH_SIZE, $this->useOffset ? $totalRowsSelected : 0);
+            $selectStatement->limit($this->batchSize, $this->useOffset ? $totalRowsSelected : 0);
             $records = $this->fetchRecords($selectStatement);
             $rowsSelected = count($records);
             $totalRowsSelected += $rowsSelected;
@@ -43,7 +43,7 @@ abstract class AbstractBulkUpdater extends AbstractDataMigration
                         $this->getUpdateWhereClause($record)
                     );
             }
-        } while ($rowsSelected === self::BATCH_SIZE);
+        } while ($rowsSelected === $this->batchSize);
     }
 
     /**

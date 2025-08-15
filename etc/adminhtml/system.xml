@@ -2057,6 +2057,14 @@
                     <label>Transactional data break</label>
                 </field>
             </group>
+            <group id="data_migration" translate="label" sortOrder="110" showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>Data Migration</label>
+                <field id="batch_size" translate="label comment" sortOrder="10" type="text" showInStore="0" showInWebsite="0" showInDefault="1" canRestore="1">
+                    <label>Batch size</label>
+                    <comment><![CDATA[Number of records to process in each batch during data migration operations.]]></comment>
+                    <validate>validate-digits validate-greater-than-zero</validate>
+                </field>
+            </group>
         </section>
     </system>
 </config>

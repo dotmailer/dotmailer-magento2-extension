@@ -7,6 +7,7 @@ use Dotdigitalgroup\Email\Helper\Transactional;
 use Dotdigitalgroup\Email\Model\AbandonedCart\Interval;
 use Dotdigitalgroup\Email\Model\Email\Template;
 use Dotdigitalgroup\Email\Model\Sales\Quote;
+use Dotdigitalgroup\Email\Setup\Install\Type\AbstractDataMigration;
 
 interface DotdigitalConfigInterface
 {
@@ -241,6 +242,7 @@ interface DotdigitalConfigInterface
         Interval::XML_PATH_LOSTBASKET_GUEST_INTERVAL_3,
         Quote::XML_PATH_LOSTBASKET_GUEST_CAMPAIGN_1,
         Quote::XML_PATH_LOSTBASKET_GUEST_CAMPAIGN_2,
-        Quote::XML_PATH_LOSTBASKET_GUEST_CAMPAIGN_3
+        Quote::XML_PATH_LOSTBASKET_GUEST_CAMPAIGN_3,
+        AbstractDataMigration::XML_PATH_DATA_MIGRATION_BATCH_SIZE
     ];
 }
