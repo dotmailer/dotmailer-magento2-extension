@@ -137,6 +137,11 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     public function getOrdersToProcess($limit, $storeIds)
     {
         $connectorCollection = $this;
+        $emailContactJoinCondition = $this->getConnection()->quoteInto(
+            'sales_order.customer_email = email_contact.email AND email_contact.store_id IN (?)',
+            $storeIds
+        );
+
         $connectorCollection->getSelect()
             ->joinLeft(
                 ['sales_order' => $this->getTable('sales_order')],
@@ -144,7 +149,7 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
                 ['customer_email']
             )->joinLeft(
                 ['email_contact' => $this->getTable('email_contact')],
-                'sales_order.customer_email = email_contact.email AND sales_order.store_id = email_contact.store_id',
+                $emailContactJoinCondition,
                 ['contact_id']
             );
         $connectorCollection
