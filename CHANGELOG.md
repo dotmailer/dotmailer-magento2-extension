@@ -1,3 +1,14 @@
+# 4.32.2
+
+### Improvements
+- We increased the overall speed of our data migration process.
+- We optimised the `InsertEmailContactTableSubscribers` migration type.
+- We improved exception reporting in `DotdigitalCouponRequestProcessor`.
+  
+### Bug fixes
+- We fixed a bug in `TransportPlugin` that could prevent execution of subsequent plugins.
+- We fixed a problem with order sync where mismatching store ids could prevent some orders being synced.
+
 # 4.32.1
 
 ### Improvements
