@@ -2,7 +2,7 @@
   "name": "dotdigital/dotdigital-magento2-extension",
   "description": "Dotdigital for Magento 2",
   "type": "magento2-module",
-  "version": "4.32.2",
+  "version": "4.32.3",
   "license": "MIT",
   "repositories": [
     {

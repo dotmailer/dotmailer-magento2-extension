@@ -1,3 +1,8 @@
+# 4.32.3
+
+### Bug fixes
+- We reverted the fix introduced in 4.32.2 for the `TransportPlugin`, as it was causing issues with transactional email sending in some cases.
+
 # 4.32.2
 
 ### Improvements
