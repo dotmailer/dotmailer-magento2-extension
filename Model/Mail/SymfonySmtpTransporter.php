@@ -8,7 +8,6 @@ use Dotdigitalgroup\Email\Helper\Transactional;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Mail\EmailMessage;
 use Magento\Framework\Mail\EmailMessageInterface;
-use Magento\Framework\Mail\MimePart;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\Transport\Smtp\Auth\LoginAuthenticator;
 use Symfony\Component\Mailer\Transport\Smtp\EsmtpTransport;
@@ -98,14 +97,37 @@ class SymfonySmtpTransporter
 
         $parts = $message->getMessageBody()->getParts();
 
+        $headers = new \Symfony\Component\Mime\Header\Headers();
+
+        foreach ($message->getHeaders() as $headerName => $headerValue) {
+            if ($headerName === 'Date') {
+                $headers->addDateHeader($headerName, new \DateTime($headerValue));
+            }
+            if ($headerName === 'Subject') {
+                $headers->addTextHeader('Subject', $headerValue);
+            }
+            if (in_array($headerName, ['From', 'Reply-to', 'To', 'Cc', 'Bcc'], true)) {
+                if (strpos($headerValue, ',') !== false) {
+                    $headerValues = explode(',', $headerValue);
+                    $headers->addMailboxListHeader($headerName, $headerValues);
+                } else {
+                    $headers->addMailboxListHeader($headerName, [$headerValue]);
+                }
+            }
+        }
+
         // Use Email class to support attachments
-        $symfonyEmail = new \Symfony\Component\Mime\Email();
+        $symfonyEmail = new \Symfony\Component\Mime\Email($headers);
 
         $contentSet = false;
         // Find HTML or text content
         foreach ($parts as $mimePart) {
             $contentType = $mimePart->getType();
-            $disposition = $mimePart->getDisposition();
+            try {
+                $disposition = $mimePart->getDisposition();
+            } catch (\Throwable $e) {
+                $disposition = null;
+            }
 
             if ($disposition === 'attachment') {
                 $filename = $mimePart->getFileName();
@@ -139,26 +161,7 @@ class SymfonySmtpTransporter
             throw new LocalizedException(__('Unable to get raw content from message parts'));
         }
 
-        $symfonyMessage = new SymfonyMimeMessage(null, $symfonyEmail->getBody());
-
-        foreach ($message->getHeaders() as $headerName => $headerValue) {
-            if ($headerName === 'Date') {
-                $symfonyMessage->getHeaders()->addDateHeader($headerName, new \DateTime($headerValue));
-            }
-            if ($headerName === 'Subject') {
-                $symfonyMessage->getHeaders()->addTextHeader('Subject', $headerValue);
-            }
-            if (in_array($headerName, ['From', 'Reply-to', 'To', 'Cc', 'Bcc'], true)) {
-                if (strpos($headerValue, ',') !== false) {
-                    $headerValues = explode(',', $headerValue);
-                    $symfonyMessage->getHeaders()->addMailboxListHeader($headerName, $headerValues);
-                } else {
-                    $symfonyMessage->getHeaders()->addMailboxListHeader($headerName, [$headerValue]);
-                }
-            }
-        }
-
-        return $symfonyMessage;
+        return new SymfonyMimeMessage($headers, $symfonyEmail->getBody());
     }
     /**
      * Create SMTP object.
