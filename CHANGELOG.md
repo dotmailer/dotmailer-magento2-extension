@@ -1,3 +1,8 @@
+# 4.32.4
+
+### Bug fixes
+- We fixed a bug in `TransportPlugin` affecting merchants running older versions of `symfony/mime` and `symfony/mailer`.
+
 # 4.32.3
 
 ### Bug fixes
