@@ -1,11 +1,27 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework-message-queue:etc/publisher.xsd">
-    <publisher topic="ddg.sync.integration"/>
-    <publisher topic="ddg.sync.automation"/>
-    <publisher topic="ddg.newsletter.subscription"/>
-    <publisher topic="ddg.newsletter.unsubscribe"/>
-    <publisher topic="ddg.newsletter.resubscribe"/>
-    <publisher topic="ddg.contact.email_update"/>
-    <publisher topic="ddg.sales.cart_phase_update"/>
-    <publisher topic="ddg.catalog.rules"/>
+    <publisher topic="ddg.sync.integration">
+        <connection name="db" exchange="magento-db" />
+    </publisher>
+    <publisher topic="ddg.sync.automation">
+        <connection name="db" exchange="magento-db" />
+    </publisher>
+    <publisher topic="ddg.newsletter.subscription">
+        <connection name="db" exchange="magento-db" />
+    </publisher>
+    <publisher topic="ddg.newsletter.unsubscribe">
+        <connection name="db" exchange="magento-db" />
+    </publisher>
+    <publisher topic="ddg.newsletter.resubscribe">
+        <connection name="db" exchange="magento-db" />
+    </publisher>
+    <publisher topic="ddg.contact.email_update">
+        <connection name="db" exchange="magento-db" />
+    </publisher>
+    <publisher topic="ddg.sales.cart_phase_update">
+        <connection name="db" exchange="magento-db" />
+    </publisher>
+    <publisher topic="ddg.catalog.rules">
+        <connection name="db" exchange="magento-db" />
+    </publisher>
 </config>
