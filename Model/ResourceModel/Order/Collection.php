@@ -157,6 +157,7 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
             ->addFieldToFilter('main_table.store_id', ['in' => $storeIds])
             ->addFieldToFilter('email_contact.contact_id', ['notnull' => true])
             ->addFieldToFilter('email_contact.contact_id', ['neq' => '']);
+        $connectorCollection->getSelect()->group('order_id');
         $connectorCollection->getSelect()->limit($limit);
         $connectorCollection->setOrder(
             'order_id',
