@@ -1,3 +1,9 @@
+# 4.32.5
+
+### Bug fixes
+- The filtered order sync collection query now has a group by clause to allow for multiple contact rows with the same contact_id.
+- We removed AppEmulation from the OrderSaveAfter observer, which was causing problems in some cases.
+
 # 4.32.4
 
 ### Bug fixes
@@ -321,7 +327,7 @@
 # 4.23.5
 
 ### Bug fixes
-We fixed an issue with `explode()` when syncing multi-select custom attribute values.
+- We fixed an issue with `explode()` when syncing multi-select custom attribute values.
 
 # 4.23.4
 
