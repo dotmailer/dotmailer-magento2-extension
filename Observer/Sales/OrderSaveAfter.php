@@ -26,7 +26,6 @@ use Magento\Framework\Exception\AlreadyExistsException;
 use Magento\Framework\MessageQueue\PublisherInterface;
 use Magento\Framework\Serialize\SerializerInterface;
 use Magento\Sales\Model\Order;
-use Magento\Store\Model\App\EmulationFactory;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
 
@@ -59,11 +58,6 @@ class OrderSaveAfter implements ObserverInterface
      * @var StoreManagerInterface
      */
     private $storeManager;
-
-    /**
-     * @var EmulationFactory
-     */
-    private $emulationFactory;
 
     /**
      * @var OrderFactory
@@ -129,7 +123,6 @@ class OrderSaveAfter implements ObserverInterface
      * @param SerializerInterface $serializer
      * @param ScopeConfigInterface $scopeConfig
      * @param StoreManagerInterface $storeManagerInterface
-     * @param EmulationFactory $emulationFactory
      * @param \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollectionFactory
      * @param Data $data
      * @param \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contactResource
@@ -148,7 +141,6 @@ class OrderSaveAfter implements ObserverInterface
         SerializerInterface $serializer,
         ScopeConfigInterface $scopeConfig,
         StoreManagerInterface $storeManagerInterface,
-        EmulationFactory $emulationFactory,
         \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollectionFactory,
         Data $data,
         \Dotdigitalgroup\Email\Model\ResourceModel\Contact $contactResource,
@@ -166,7 +158,6 @@ class OrderSaveAfter implements ObserverInterface
         $this->emailOrderFactory = $emailOrderFactory;
         $this->scopeConfig = $scopeConfig;
         $this->storeManager = $storeManagerInterface;
-        $this->emulationFactory = $emulationFactory;
         $this->orderCollectionFactory = $orderCollectionFactory;
         $this->helper = $data;
         $this->contactResource = $contactResource;
@@ -197,9 +188,7 @@ class OrderSaveAfter implements ObserverInterface
             if (empty($storeId)) {
                 $storeId = $store->getId();
             }
-            // start app emulation
-            $appEmulation = $this->emulationFactory->create();
-            $appEmulation->startEnvironmentEmulation($storeId);
+
             $emailOrder = $this->emailOrderFactory->create()
                 ->loadOrCreateOrder($order->getEntityId(), $order->getQuoteId());
             //reimport email order
@@ -209,8 +198,6 @@ class OrderSaveAfter implements ObserverInterface
                 ->setProcessed(0)
                 ->setOrderStatus($status);
 
-            // set back the current store
-            $appEmulation->stopEnvironmentEmulation();
             $this->orderResource->save($emailOrder);
 
             if (!$this->helper->isEnabled($websiteId)) {
