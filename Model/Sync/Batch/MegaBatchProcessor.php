@@ -5,17 +5,13 @@ declare(strict_types=1);
 namespace Dotdigitalgroup\Email\Model\Sync\Batch;
 
 use Dotdigital\Exception\ResponseValidationException;
-
 use Dotdigitalgroup\Email\Api\Model\Sync\Batch\BatchProcessorInterface;
 use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Importer as ImporterModel;
 use Dotdigitalgroup\Email\Model\Sync\Batch\Record\RecordImportedStrategyFactory;
 use Dotdigitalgroup\Email\Model\Sync\Batch\Sender\SenderStrategyFactory;
 use Dotdigitalgroup\Email\Model\Sync\Importer\BulkSaver;
-use Http\Client\Exception;
-use InvalidArgumentException;
 use Magento\Framework\Exception\AlreadyExistsException;
-use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Stdlib\DateTime;
 
 class MegaBatchProcessor implements BatchProcessorInterface
@@ -118,15 +114,24 @@ class MegaBatchProcessor implements BatchProcessorInterface
                 $importType,
                 $bulkImportMode
             );
-        } catch (AlreadyExistsException | InvalidArgumentException $e) {
+
+        } catch (\Exception $e) {
             $this->logger->error(
                 sprintf(
-                    "Data save error: import type (%s) / website id (%s) / %s",
+                    'Unexpected error sending batch: import type (%s) / website id (%s) / %s',
                     $importType,
                     $websiteId,
                     $e->getMessage()
                 )
             );
+            $this->importBulkSaver->addFailedBatchToImportTable(
+                $batch,
+                $websiteId,
+                $e->getMessage(),
+                $importType,
+                $bulkImportMode
+            );
+
         } finally {
             $this->markAsImported($batch, $importType);
         }
