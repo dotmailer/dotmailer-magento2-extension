@@ -13,5 +13,6 @@
     <css src="Dotdigitalgroup_Email::styles.css"/>
     <css src="Dotdigitalgroup_Email::css/select2/select2.min.css"/>
     <css src="Dotdigitalgroup_Email::css/select2/select2-magento.css"/>
+    <css src="Dotdigitalgroup_Email::css/config/email-capture-selectors.css"/>
 </head>
 </page>

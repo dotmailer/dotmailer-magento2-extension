@@ -94,7 +94,6 @@
     <preference for="Dotdigitalgroup\Email\Api\Data\CouponAttributeInterface" type="Dotdigitalgroup\Email\Model\Coupon\CouponAttribute"/>
     <preference for="Dotdigitalgroup\Email\Api\TierPriceFinderInterface" type="Dotdigitalgroup\Email\Model\Product\TierPriceFinder" />
     <preference for="Dotdigitalgroup\Email\Api\StockFinderInterface" type="Dotdigitalgroup\Email\Model\Product\StockFinder" />
-    <preference for="Dotdigitalgroup\Email\Api\Product\PriceFinderInterface" type="Dotdigitalgroup\Email\Model\Product\PriceFinder" />
     <preference for="Magento\Framework\Filesystem\DriverInterface" type="Magento\Framework\Filesystem\Driver\File" />
     <preference for="Dotdigitalgroup\Email\Model\Validator\Schema\SchemaValidatorInterface" type="Dotdigitalgroup\Email\Model\Validator\Schema\SchemaValidator" />
     <preference for="Dotdigitalgroup\Email\Model\Validator\Schema\SchemaValidatorRuleSetInterface" type="Dotdigitalgroup\Email\Model\Validator\Schema\SchemaValidatorRuleSet" />
@@ -103,6 +102,13 @@
     <preference for="Dotdigitalgroup\Email\Api\Model\Sync\Batch\Record\RecordImportedStrategyInterface" type="Dotdigitalgroup\Email\Model\Sync\Batch\Record\ContactImportedStrategy"/>
     <preference for="Dotdigitalgroup\Email\Api\Model\Sync\Batch\Sender\SenderStrategyInterface" type="Dotdigitalgroup\Email\Model\Sync\Batch\Sender\ContactSenderStrategy"/>
     <preference for="Dotdigitalgroup\Email\Api\Model\Sync\Batch\BatchMergerInterface" type="Dotdigitalgroup\Email\Model\Sync\Batch\MergeManager"/>
+
+    <preference for="Dotdigitalgroup\Email\Api\Model\Product\Provider\Attributes\ProductMediaProviderInterface" type="Dotdigitalgroup\Email\Model\Product\Provider\Attributes\ProductMediaProvider" />
+    <preference for="Dotdigitalgroup\Email\Api\Model\Product\Provider\Attributes\ProductPriceProviderInterface" type="Dotdigitalgroup\Email\Model\Product\Provider\Attributes\ProductPriceProvider" />
+    <preference for="Dotdigitalgroup\Email\Api\Model\Product\Provider\Attributes\ProductStockProviderInterface" type="Dotdigitalgroup\Email\Model\Product\Provider\Attributes\ProductStockProvider" />
+    <preference for="Dotdigitalgroup\Email\Api\Model\Product\Provider\Attributes\ProductTaxonomyProviderInterface" type="Dotdigitalgroup\Email\Model\Product\Provider\Attributes\ProductTaxonomyProvider" />
+    <preference for="Dotdigitalgroup\Email\Api\Model\Product\Provider\Attributes\ProductGeneralProviderInterface" type="Dotdigitalgroup\Email\Model\Product\Provider\Attributes\ProductGeneralProvider" />
+
     <preference for="Dotdigitalgroup\Email\Api\Logger\LoggerInterface" type="Dotdigitalgroup\Email\Logger\Logger"/>
 
     <type name="Dotdigitalgroup\Email\Logger\Handler\ConnectorLogHandler">
@@ -167,6 +173,48 @@
             <argument name="syncDeferral" xsi:type="object">Dotdigitalgroup\Email\Model\Sync\Catalog\CatalogSyncDeferralHandler</argument>
         </arguments>
     </type>
+
+    <!-- Current Product: Start -->
+    <virtualType name="CurrentProductProvider" type="Dotdigitalgroup\Email\Model\Product\Provider\CurrentProductProvider"/>
+    <virtualType name="CurrentProductGeneralProvider" type="Dotdigitalgroup\Email\Model\Product\Provider\Attributes\ProductGeneralProvider">
+        <arguments>
+            <argument name="productProvider" xsi:type="object">CurrentProductProvider</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="CurrentProductStockProvider" type="Dotdigitalgroup\Email\Model\Product\Provider\Attributes\ProductStockProvider">
+        <arguments>
+            <argument name="productProvider" xsi:type="object">CurrentProductProvider</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="CurrentProductPriceProvider" type="Dotdigitalgroup\Email\Model\Product\Provider\Attributes\ProductPriceProvider">
+        <arguments>
+            <argument name="productProvider" xsi:type="object">CurrentProductProvider</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="CurrentProductTaxonomyProvider" type="Dotdigitalgroup\Email\Model\Product\Provider\Attributes\ProductTaxonomyProvider">
+        <arguments>
+            <argument name="productProvider" xsi:type="object">CurrentProductProvider</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="CurrentProductMediaProvider" type="Dotdigitalgroup\Email\Model\Product\Provider\Attributes\ProductMediaProvider">
+        <arguments>
+            <argument name="productProvider" xsi:type="object">CurrentProductProvider</argument>
+        </arguments>
+    </virtualType>
+    <!-- Current Product: End -->
+
+    <!-- Tracking Product Aggregation: Start -->
+    <type name="Dotdigitalgroup\Email\Model\Product\Aggregation\TrackingProductAggregation">
+        <arguments>
+            <argument name="generalProductProvider" xsi:type="object">CurrentProductGeneralProvider</argument>
+            <argument name="stockProvider" xsi:type="object">CurrentProductStockProvider</argument>
+            <argument name="productProvider" xsi:type="object">CurrentProductPriceProvider</argument>
+            <argument name="productTaxonomyProvider" xsi:type="object">CurrentProductTaxonomyProvider</argument>
+            <argument name="productMediaProvider" xsi:type="object">CurrentProductMediaProvider</argument>
+        </arguments>
+    </type>
+    <!-- Tracking Product Aggregation: End -->
+
     <type name="Magento\CatalogRule\Cron\DailyCatalogUpdate">
         <plugin name="dotdigital_catalog_rule_expiration_event"
                 type="Dotdigitalgroup\Email\Plugin\DailyCatalogUpdatePlugin"

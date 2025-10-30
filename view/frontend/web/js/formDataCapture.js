@@ -13,8 +13,8 @@ define([
         ecPF.onComplete(function (formData) {
             let hasContactEmail = formData.contactEmail != null && formData.contactEmail.length > 0;
 
-            if (typeof window.dmPt !== 'undefined' && hasContactEmail) {
-                window.dmPt('identify', formData.contactEmail);
+            if (hasContactEmail) {
+                window?.ddg?.identify({'email':formData.contactEmail});
             }
 
             if (shouldSubscribe && hasContactEmail) {

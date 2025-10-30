@@ -578,6 +578,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @param string|int $websiteId
      * @return bool
+     *
+     * @deprecated Page Tracking is now handled via the Dotdigital Tag.
+     * @see isWebBehaviourTrackingEnabled()
      */
     public function isPageTrackingEnabled($websiteId)
     {
@@ -605,6 +608,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     /**
      * Is WBT enabled.
+     *
+     * @deprecated Method is no longer used.
+     * @see \Dotdigitalgroup\Email\ViewModel\DotdigitalTagView::class
      *
      * @param string|int $websiteId
      * @return bool
@@ -1360,6 +1366,21 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         }
 
         return $this->account->getRegionPrefix($apiEndpoint);
+    }
+
+    /**
+     * Get tracking region prefix.
+     *
+     * @param int $websiteId
+     * @return string|null
+     */
+    public function getTrackingRegionPrefix(int $websiteId): ?string
+    {
+        $apiEndpoint = $this->getApiEndPointFromConfig($websiteId);
+        $apiEndpointParts = explode('.', $apiEndpoint);
+        $region = array_shift($apiEndpointParts);
+
+        return str_replace('-api', '', $region);
     }
 
     /**

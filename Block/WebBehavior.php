@@ -13,7 +13,8 @@ use Magento\Store\Model\StoreManagerInterface;
 /**
  * Tracking block
  *
- * @api
+ * @deprecated Features and function have been moved
+ * @see \Dotdigitalgroup\Email\ViewModel\DotdigitalTagView::class
  */
 class WebBehavior extends Template
 {

@@ -1,0 +1,20 @@
+<?php
+
+declare(strict_types=1);
+
+use Magento\Framework\Escaper;
+use Dotdigitalgroup\Email\ViewModel\DotdigitalTagView;
+use Magento\Framework\View\Element\Template;
+
+/**
+ * @var Escaper $escaper
+ * @var $block Template
+ * @var $viewModel DotdigitalTagView
+ */
+$viewModel = $block->getData('view_model');
+?>
+<?php if ($viewModel->shouldRender()): ?>
+    <?= /** no-escape */ $viewModel->renderTag(); ?>
+    <?= /** no-escape */ $viewModel->renderScript(); ?>
+<?php endif; ?>
+

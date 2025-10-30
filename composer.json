@@ -2,7 +2,7 @@
   "name": "dotdigital/dotdigital-magento2-extension",
   "description": "Dotdigital for Magento 2",
   "type": "magento2-module",
-  "version": "4.32.5",
+  "version": "4.33.0",
   "license": "MIT",
   "repositories": [
     {
@@ -15,7 +15,7 @@
   },
   "require": {
     "php": "^7.4||^8.0",
-    "magento/framework": ">=102 <103.0.9",
+    "magento/framework": ">=103 <103.0.9",
     "magento/module-newsletter": "^100.3|^100.4",
     "magento/module-review": "^100.3|^100.4",
     "magento/module-sales": ">=102 <104",

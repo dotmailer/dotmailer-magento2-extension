@@ -363,6 +363,8 @@ class Config extends AbstractHelper
         'connector_configuration/tracking/tracking_profile_id';
     public const TRACKING_HOST =
         'connector_configuration/tracking/host';
+    public const XML_PATH_CONNECTOR_EMAIL_CAPTURE_SELECTORS =
+        'connector_developer_settings/tracking/email_capture_selectors';
     /**
      * CONSENT SECTION.
      */
@@ -484,6 +486,8 @@ class Config extends AbstractHelper
     public const ACCOUNT_CALLBACK_ROUTE =
         'connector/email/callback';
     public const INTERNAL_SUB_DOMAIN = 'internal';
+
+    public const EASY_EMAIL_CAPTURE_ROUTE = 'connector/ajax/emailcapture';
 
     /**
      * Chat Paths

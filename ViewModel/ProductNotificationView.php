@@ -195,7 +195,9 @@ class ProductNotificationView implements ArgumentInterface
             'bm' => 'true'
         ];
 
-        return '//' . $this->helper->getRegionPrefix() . $trackingHost . '/ddmbis.js?' .
+        return $this->helper->getTrackingRegionPrefix(
+            (int)$this->_storeManager->getStore()->getWebsiteId()
+        ) .'.'. $trackingHost . '/ddmbis.js?' .
             http_build_query($params);
     }
 

@@ -6,7 +6,7 @@ use Dotdigitalgroup\Email\Block\EmailCapture;
 
 /** @var EmailCapture $block */
 // phpcs:disable Magento2.Legacy.EscapeMethodsOnBlockClass
-
+// @deprecated please see Dotdigitalgroup/Email/view/frontend/templates/tracking/dotdigital_email_capture.phtml
 if ($block->isEasyEmailCaptureEnabled() || $block->isWebBehaviourTrackingEnabled()):
     $emailCaptureType = $block->getData('email_capture_type');
     $emailCaptureUrl = $emailCaptureType === 'checkout' ?

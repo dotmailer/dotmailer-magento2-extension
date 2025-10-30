@@ -1,26 +1,34 @@
 <?xml version="1.0"?>
 
-<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <body>
         <referenceContainer name="before.body.end">
-            <block class="Dotdigitalgroup\Email\Block\EmailCapture"
-                   name="emailCapture"
-                   template="Dotdigitalgroup_Email::email/email_capture.phtml">
+            <block class="Magento\Framework\View\Element\Template"
+                   name="dotdigital.tag"
+                   template="Dotdigitalgroup_Email::tracking/dotdigital_tag.phtml">
                 <arguments>
-                    <argument name="email_capture_type" xsi:type="string">newsletter</argument>
+                    <argument name="view_model" xsi:type="object">Dotdigitalgroup\Email\ViewModel\DotdigitalTagView</argument>
                 </arguments>
             </block>
         </referenceContainer>
-        <referenceContainer name="after.body.start">
-            <block class="Dotdigitalgroup\Email\Block\Tracking"
-                   name="ddg.checkout.tag"
-                   template="Dotdigitalgroup_Email::email/tracking_code.phtml"
-            />
-            <block ifconfig="connector_configuration/tracking/tracking_profile_id"
-                   class="Dotdigitalgroup\Email\Block\WebBehavior"
-                   name="web.behavior.tracking"
-                   template="Dotdigitalgroup_Email::email/web_behavior_tracking.phtml"
-            />
+        <referenceContainer name="before.body.end">
+            <block class="Magento\Framework\View\Element\Template"
+                   name="dotdigital.search.capture"
+                   template="Dotdigitalgroup_Email::tracking/dotdigital_search_capture.phtml">
+                <arguments>
+                    <argument name="view_model" xsi:type="object">Dotdigitalgroup\Email\ViewModel\DotdigitalSearchCaptureView</argument>
+                </arguments>
+            </block>
+        </referenceContainer>
+        <referenceContainer name="before.body.end">
+            <block class="Magento\Framework\View\Element\Template"
+                   name="dotdigital.email.capture"
+                   template="Dotdigitalgroup_Email::tracking/dotdigital_email_capture.phtml">
+                <arguments>
+                    <argument name="view_model" xsi:type="object">Dotdigitalgroup\Email\ViewModel\DotdigitalEmailCaptureView</argument>
+                </arguments>
+            </block>
         </referenceContainer>
     </body>
 </page>

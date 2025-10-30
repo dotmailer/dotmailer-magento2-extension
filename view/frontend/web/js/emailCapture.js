@@ -1,69 +1,89 @@
-define(['jquery', 'domReady!'], function ($) {
-    'use strict';
+/**
+ * Configuration for email capture.
+ *
+ * @type {{
+ *  layout: string,
+ *  layout_postable: string[],
+ *  layout_identifiable: string[],
+ *  layout_identifiers: {string: string[]},
+ *  capture_url: string,
+ *  form_key: string, capture_url: string
+ * }}
+ */
+const config = JSON.parse(document.getElementById('dotdigital-email-capture-config').textContent);
 
-    /**
-     * Email validation
-     * @param {String} sEmail
-     * @returns {Boolean}
-     */
-    function validateEmail(sEmail) {
-        return /^([+\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/
-            .test(sEmail);
+/**
+ * Determine the layout type based on the configuration.
+ *
+ * @type {{
+ *  string: string[]
+ * }}
+ */
+const layoutsIdentifiers = config.layout_identifiers;
+
+/**
+ * Determine the layout type based on the configuration.
+ *
+ * @type {string|string|PlaneLayout[]|*}
+ */
+const currentLayoutType = layoutsIdentifiers.hasOwnProperty(config.layout) ? config.layout : 'default';
+
+/**
+ * Layout-actionable functions for specific page types.
+ *
+ * @type {(function(*, *): *)|*}
+ */
+const postEmailCapture = async (url, email) => {
+    await fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: `email=${encodeURIComponent(email)}&form_key=${encodeURIComponent(config.form_key)}`
+    }).catch(error => console.error('Error:', error));
+}
+
+/**
+ * Capture an email address from the given element.
+ *
+ * @param element
+ * @param layoutType
+ */
+const capture = async (element, layoutType) => {
+    if (!/^([+\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/.test(element.value)) {
+        return;
     }
 
-    /**
-     * Send captured email
-     * For checkout, post email to emailCapture controller
-     * For all types, de-anonymise the user in the tracking script (if present)
-     *
-     * @param {Array} selectors
-     * @param {String} type - (checkout, newsletter, login)
-     * @param {String} url
-     */
-    function emailCapture(selectors, type, url) {
-        $(document).on('blur', selectors.join(', '), function () {
-            var email = $(this).val();
+    if(config.layout_postable.includes(layoutType)) {
+        await postEmailCapture(config.capture_url, element.value);
+    }
 
-            if (!email || !validateEmail(email)) {
+    if(window.ddg && typeof window.ddg.identify === 'function') {
+        window.ddg.identify({'email': element.value});
+    }
+}
+
+/**
+ * Initialize email capture by attaching event listeners to relevant fields.
+ *
+ * @param event
+ */
+const emailCapture = async (event) => {
+    for (const layoutType of [currentLayoutType, 'default']) {
+        if (!layoutsIdentifiers[layoutType]) continue;
+        for (const field of layoutsIdentifiers[layoutType]) {
+            if (event.target.matches(field)) {
+                await capture(event.target, layoutType);
                 return;
             }
-
-            if (typeof window.dmPt !== 'undefined') {
-                window.dmPt('identify', email);
-            }
-
-            if (type === 'checkout' && url.length > 0) {
-                $.post(url, {
-                    email: email
-                });
-            }
-        });
+        }
     }
+}
 
-    /**
-     * Exported/return email capture
-     * @param {Object} config
-     */
-    return function (config) {
-        let selectors = [];
-
-        switch (config.type) {
-            case 'checkout' :
-                selectors.push('input[id="customer-email"]');
-                break;
-
-            case 'newsletter' :
-                selectors.push('input[id="newsletter"]');
-                break;
-
-            case 'login' :
-                selectors.push('input[id="email"]');
-                break;
-        }
-
-        if (selectors.length !== 0) {
-            var ajaxUrl = config.url ? config.url : null;
-            emailCapture(selectors, config.type, ajaxUrl);
-        }
-    };
-});
+/**
+ * Initialize email capture when the DOM is fully loaded.
+ *
+ * @event DOMContentLoaded
+ */
+document.addEventListener("blur", (event) => emailCapture(event), { once: false, capture: true });

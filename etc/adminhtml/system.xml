@@ -1423,31 +1423,24 @@
             </group>
             <group id="tracking" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="0">
                 <label>Tracking</label>
+                <field id="tracking_profile_id" translate="label" sortOrder="1" showInStore="0" showInWebsite="1" showInDefault="1">
+                    <label>Dotdigital Tag ID</label>
+                    <comment><![CDATA[Adding the Dotdigital Tag to your website enables Web behavior tracking and Site tracking. <a href="https://support.dotdigital.com/en/articles/9298184-add-the-dotdigital-tag-to-your-website" target="_blank">Learn more</a>.]]>
+                    </comment>
+                </field>
                 <field id="integration_insights" translate="label" sortOrder="5" type="select" showInStore="0"
                        showInWebsite="0" showInDefault="0">
                     <label>Integration Insights</label>
                 </field>
-                <field id="roi_enabled" translate="label" sortOrder="10" type="select" showInStore="0" showInWebsite="1"
-                       showInDefault="1">
+                <field id="roi_enabled" translate="label" sortOrder="10" type="select" showInStore="0" showInWebsite="1" showInDefault="1">
                     <label>ROI Tracking</label>
                     <source_model>Magento\Config\Model\Config\Source\Enabledisable</source_model>
-                </field>
-                <field id="page_enabled" translate="label" sortOrder="20" type="select" showInStore="0"
-                       showInWebsite="1" showInDefault="1">
-                    <label>Page Tracking</label>
-                    <source_model>Magento\Config\Model\Config\Source\Enabledisable</source_model>
+                    <comment><![CDATA[Learn more about <a href="https://support.dotdigital.com/en/articles/8198919-site-and-roi-tracking" target="_blank">ROI tracking</a>.]]>
+                    </comment>
                 </field>
                 <field id="script_version" translate="label" sortOrder="20" type="select" showInStore="0"
                        showInWebsite="0" showInDefault="0">
                     <label>Script version</label>
-                </field>
-                <field id="tracking_profile_id" translate="label" sortOrder="50" showInStore="0" showInWebsite="1"
-                       showInDefault="1">
-                    <label>Web Behavior Tracking Profile Id</label>
-                    <comment><![CDATA[Web Behavior Tracking enables you to have greater insight into how customers and visitors interact with your website.
-                        Check out how <a href="https://support.dotdigital.com/hc/en-gb/articles/219045108-Installing-Web-Behavior-Tracking#profile" target="_blank">
-                        to set up your unique tracking profile</a>.]]>
-                    </comment>
                 </field>
                 <field id="host" translate="label" sortOrder="60" showInDefault="0" showInStore="0" showInWebsite="0">
                     <label>Tracking Host</label>
@@ -2063,6 +2056,22 @@
                     <label>Batch size</label>
                     <comment><![CDATA[Number of records to process in each batch during data migration operations.]]></comment>
                     <validate>validate-digits validate-greater-than-zero</validate>
+                </field>
+            </group>
+            <group id="tracking" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="0">
+                <label>Tracking</label>
+                <field id="email_capture_selectors" translate="label" sortOrder="70" showInDefault="1" showInWebsite="1"
+                       showInStore="0">
+                    <label>Email Input Selectors</label>
+                    <backend_model>Dotdigitalgroup\Email\Model\Config\Backend\EmailCaptureSelectors</backend_model>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Source\Tracking\EmailCaptureLayouts</source_model>
+                    <frontend_model>Dotdigitalgroup\Email\Block\Adminhtml\Config\EmailCaptureSelectors</frontend_model>
+                    <comment><![CDATA[
+                                        Use CSS selectors to specify which input fields should be used for email capture on your website in cases where the default selectors do not work. This is typically used when you use custom themes or forms that have different IDs or classes than the standard Magento markup.<br/><br/>
+                                        <strong>How to use:</strong><br/>
+                                        • Enter one or more CSS selectors for each layout or page type where email addresses are collected (e.g. #newsletter, .email_address).<br/>
+                                        • Separate multiple selectors with commas.]]>
+                    </comment>
                 </field>
             </group>
         </section>
