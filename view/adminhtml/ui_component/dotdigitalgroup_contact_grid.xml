@@ -57,6 +57,12 @@
             </settings>
         </selectionsColumn>
 
+        <column name="email_contact_id" sortOrder="10">
+            <settings>
+                <filter>text</filter>
+                <label translate="true">Id</label>
+            </settings>
+        </column>
         <column name="contact_id" sortOrder="10">
             <settings>
                 <filter>text</filter>
