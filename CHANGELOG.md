@@ -1,3 +1,15 @@
+# 4.33.0
+
+### What's new
+- The connector's various client-side tracking scripts have been converted to use the unified Dotdigital Tag.
+
+### Improvements
+- The contact report can now be filtered by row id.
+- ddlnk.net is added to the CSP whitelist for the `img-src` policy.
+
+### Notes
+- Magento 2.4.2+ is required for this version of the connector.
+
 # 4.32.5
 
 ### Bug fixes
