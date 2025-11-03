@@ -4,13 +4,18 @@ declare(strict_types=1);
 
 namespace Dotdigitalgroup\Email\Model\Sync\Importer;
 
+use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Importer;
 use Dotdigitalgroup\Email\Model\ImporterFactory;
-use InvalidArgumentException;
 use Magento\Framework\Exception\AlreadyExistsException;
 
 class BulkSaver
 {
+    /**
+     * @var Logger
+     */
+    private $logger;
+
     /**
      * @var ImporterFactory
      */
@@ -38,7 +43,6 @@ class BulkSaver
      * @param string $mode
      *
      * @return void
-     * @throws AlreadyExistsException
      */
     public function addInProgressBatchToImportTable(
         array $batch,
@@ -48,18 +52,29 @@ class BulkSaver
         string $importStarted,
         string $mode
     ) {
-        $this->importerFactory->create()
-            ->addToImporterQueue(
-                $importType,
-                $batch,
-                $mode,
-                $websiteId,
-                0,
-                Importer::IMPORTING,
-                $importId,
-                '',
-                $importStarted
+        try {
+            $this->importerFactory->create()
+                ->addToImporterQueue(
+                    $importType,
+                    $batch,
+                    $mode,
+                    $websiteId,
+                    0,
+                    Importer::IMPORTING,
+                    $importId,
+                    '',
+                    $importStarted
+                );
+        } catch (AlreadyExistsException $e) {
+            $this->logger->error(
+                sprintf(
+                    "Data save error (in-progress batch): import type (%s) / website id (%s) / %s",
+                    $importType,
+                    $websiteId,
+                    $e->getMessage()
+                )
             );
+        }
     }
 
     /**
@@ -72,7 +87,6 @@ class BulkSaver
      * @param string $mode
      *
      * @return void
-     * @throws AlreadyExistsException
      */
     public function addFailedBatchToImportTable(
         array $batch,
@@ -81,16 +95,27 @@ class BulkSaver
         string $importType,
         string $mode
     ) {
-        $this->importerFactory->create()
-            ->addToImporterQueue(
-                $importType,
-                $batch,
-                $mode,
-                $websiteId,
-                0,
-                Importer::FAILED,
-                '',
-                $message
+        try {
+            $this->importerFactory->create()
+                ->addToImporterQueue(
+                    $importType,
+                    $batch,
+                    $mode,
+                    $websiteId,
+                    0,
+                    Importer::FAILED,
+                    '',
+                    $message
+                );
+        } catch (AlreadyExistsException $e) {
+            $this->logger->error(
+                sprintf(
+                    "Data save error (failed batch): import type (%s) / website id (%s) / %s",
+                    $importType,
+                    $websiteId,
+                    $e->getMessage()
+                )
             );
+        }
     }
 }

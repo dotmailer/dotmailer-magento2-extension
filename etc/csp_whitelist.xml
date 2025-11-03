@@ -26,6 +26,7 @@
         <policy id="img-src">
             <values>
                 <value id="dotdigital_trackedlink" type="host">*.trackedlink.net</value>
+                <value id="dotdigital_ddlnk" type="host">*.ddlnk.net</value>
             </values>
         </policy>
     </policies>

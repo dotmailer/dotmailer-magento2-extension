@@ -3,22 +3,30 @@
 namespace Dotdigitalgroup\Email\Block;
 
 use Dotdigitalgroup\Email\Helper\Config;
+use Dotdigitalgroup\Email\Helper\Data;
+use Magento\Checkout\Model\Session;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\View\Element\Template;
+use Magento\Framework\View\Element\Template\Context;
+use Magento\Framework\View\Helper\SecureHtmlRenderer;
+use Magento\Sales\Model\Order;
+use Magento\Store\Model\ScopeInterface;
 
 /**
  * Roi block
  *
  * @api
  */
-class Roi extends \Magento\Framework\View\Element\Template
+class Roi extends Template
 {
 
     /**
-     * @var \Dotdigitalgroup\Email\Helper\Data
+     * @var Data
      */
     public $helper;
 
     /**
-     * @var \Magento\Checkout\Model\Session
+     * @var Session
      */
     public $session;
 
@@ -30,15 +38,15 @@ class Roi extends \Magento\Framework\View\Element\Template
     /**
      * Roi constructor.
      *
-     * @param \Magento\Framework\View\Element\Template\Context $context
-     * @param \Dotdigitalgroup\Email\Helper\Data $helper
-     * @param \Magento\Checkout\Model\Session $session
+     * @param Context $context
+     * @param Data $helper
+     * @param Session $session
      * @param array $data
      */
     public function __construct(
-        \Magento\Framework\View\Element\Template\Context $context,
-        \Dotdigitalgroup\Email\Helper\Data $helper,
-        \Magento\Checkout\Model\Session $session,
+        Context $context,
+        Data $helper,
+        Session $session,
         array $data = []
     ) {
         $this->helper = $helper;
@@ -65,7 +73,12 @@ class Roi extends \Magento\Framework\View\Element\Template
      */
     public function getTotal()
     {
-        return number_format((float) $this->getOrder()->getBaseGrandTotal(), 2, '.', ',');
+        return number_format(
+            (float) $this->getOrder()->getBaseGrandTotal(),
+            2,
+            '.',
+            ','
+        );
     }
 
     /**
@@ -89,24 +102,25 @@ class Roi extends \Magento\Framework\View\Element\Template
      * Tracking Url.
      *
      * @return string
+     * @throws LocalizedException
      */
     public function getPageTrackingUrlForSuccessPage()
     {
         $trackingHost = $this->_scopeConfig->getValue(
             Config::TRACKING_HOST,
-            \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE,
+            ScopeInterface::SCOPE_WEBSITE,
             $this->websiteId
         );
 
         $version = $this->helper->getTrackingScriptVersionNumber();
-        return '//' . $this->helper->getRegionPrefix() . $trackingHost . '/_dmmpt'
+        return $this->helper->getTrackingRegionPrefix((int)$this->websiteId) . '.' . $trackingHost . '/_dmmpt'
             . ($version ? '.js?v=' . $version : '');
     }
 
     /**
      * Get order.
      *
-     * @return \Magento\Sales\Model\Order
+     * @return Order
      */
     private function getOrder()
     {

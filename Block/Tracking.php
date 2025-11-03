@@ -45,6 +45,9 @@ class Tracking extends \Magento\Framework\View\Element\Template
      * Checks if extension and page tracking is enabled.
      *
      * @return bool
+     *
+     * @deprecated Page Tracking is now handled via the Dotdigital Tag.
+     * @see \Dotdigitalgroup\Email\Block\WebBehavior
      */
     public function isPageTrackingAvailable()
     {
@@ -55,6 +58,9 @@ class Tracking extends \Magento\Framework\View\Element\Template
      * Page tracking url.
      *
      * @return string
+     *
+     * @deprecated Page Tracking is now handled via the Dotdigital Tag.
+     * @see \Dotdigitalgroup\Email\Block\WebBehavior
      */
     public function getPageTrackingUrl(): string
     {

@@ -1,0 +1,14 @@
+<?php
+/**
+ * @var \Dotdigitalgroup\Email\Block\Adminhtml\Config\EmailCaptureSelectors $block
+ * @var \Magento\Framework\Escaper $escaper
+ */
+?>
+<div class="email-capture-selectors-stacked">
+    <div class="email-capture-selectors-field-label">
+        <strong><?= $escaper->escapeHtml($block->getData('field_label')) ?></strong>
+    </div>
+    <div class="email-capture-selectors-field-value">
+        <?= /* @noEscape */ $block->getData('field_html') ?>
+    </div>
+</div>

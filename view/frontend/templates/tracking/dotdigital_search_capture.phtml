@@ -1,0 +1,21 @@
+<?php
+
+declare(strict_types=1);
+
+use Dotdigitalgroup\Email\ViewModel\DotdigitalSearchCaptureView;
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+
+/**
+ * @var Escaper $escaper
+ * @var DotdigitalSearchCaptureView $viewModel
+ * @var Template $block
+ */
+$viewModel = $block->getData('view_model');
+$searchQuery = $viewModel->getSearchQuery();
+?>
+<?php if (!empty($searchQuery)): ?>
+<script>
+    window.ddg.event("Searched term",{"Term":<?= /* @noEscape */ json_encode($searchQuery) ?>})
+</script>
+<?php endif; ?>

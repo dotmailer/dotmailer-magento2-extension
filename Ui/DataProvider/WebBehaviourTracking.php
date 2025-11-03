@@ -15,6 +15,10 @@ use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Catalog\Model\Product;
 
+/**
+ * @deprecated We now use a view model to provide product data for tracking.
+ * @see \Dotdigitalgroup\Email\ViewModel\DotdigitalProductCaptureView
+ */
 class WebBehaviourTracking implements ProductRenderCollectorInterface
 {
     /**

@@ -195,9 +195,8 @@
             <tracking>
                 <integration_insights>1</integration_insights>
                 <roi_enabled>1</roi_enabled>
-                <page_enabled>1</page_enabled>
                 <script_version>0</script_version>
-                <host>t.trackedlink.net</host>
+                <host>ddlnk.net</host>
             </tracking>
             <dynamic_content_style>
                 <dynamic_styling><![CDATA[table{font-family: Arial, Helvetica, sans-serif; font-size:12px;}]]></dynamic_styling>
@@ -309,6 +308,9 @@
                 <mega_batch_size_catalog>5000</mega_batch_size_catalog>
                 <mega_batch_size_contact>2000</mega_batch_size_contact>
             </import_settings>
+            <tracking>
+                <email_capture_selectors>{"default":["#newsletter"],"checkout_index_index":["#customer-email","#login-email"],"customer_account_login":["#email"],"customer_account_create":["#email_address"]}</email_capture_selectors>
+            </tracking>
             <debug>
                 <debug_enabled>0</debug_enabled>
                 <api_log_time>60</api_log_time>

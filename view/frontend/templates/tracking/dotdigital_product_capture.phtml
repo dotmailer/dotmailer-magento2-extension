@@ -1,0 +1,20 @@
+<?php
+
+declare(strict_types=1);
+
+use Magento\Framework\Escaper;
+use Dotdigitalgroup\Email\ViewModel\DotdigitalProductCaptureView;
+use Magento\Framework\View\Element\Template;
+
+/**
+ * @var Escaper $escaper
+ * @var DotdigitalProductCaptureView $viewModel
+ * @var Template $block
+ */
+$viewModel = $block->getData('view_model');
+?>
+
+<script>
+    const product = <?= /* @noEscape */ json_encode($viewModel->product()->toArray()); ?>;
+    window.ddg.productBrowse( product || {});
+</script>

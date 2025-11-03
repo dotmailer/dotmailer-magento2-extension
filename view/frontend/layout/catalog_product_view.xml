@@ -11,5 +11,14 @@
                 </arguments>
             </block>
         </referenceContainer>
+        <referenceContainer name="before.body.end">
+            <block class="Magento\Framework\View\Element\Template"
+                   name="dotdigital.product.capture"
+                   template="Dotdigitalgroup_Email::tracking/dotdigital_product_capture.phtml">
+                <arguments>
+                    <argument name="view_model" xsi:type="object">Dotdigitalgroup\Email\ViewModel\DotdigitalProductCaptureView</argument>
+                </arguments>
+            </block>
+        </referenceContainer>
     </body>
 </page>

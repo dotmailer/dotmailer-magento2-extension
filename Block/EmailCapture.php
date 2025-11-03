@@ -10,7 +10,8 @@ use Magento\Store\Model\Store;
 /**
  * Email Capture block
  *
- * @api
+ * @deprecated since 4.33.0
+ * @see \Dotdigitalgroup\Sms\ViewModel\DotdigitalEmailCaptureView
  */
 class EmailCapture extends Template
 {

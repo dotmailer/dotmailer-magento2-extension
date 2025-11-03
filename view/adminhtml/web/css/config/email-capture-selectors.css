@@ -1,0 +1,33 @@
+.email-capture-selectors-wrapper {
+    width: 100%;
+}
+
+.email-capture-selectors-field-label {
+    padding: 0rem 2rem;
+}
+
+.email-capture-selectors-field-value {
+    padding: 0.5rem 2rem;
+}
+
+.email-capture-selectors-wrapper .label-row {
+    width: 100%;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.email-capture-selectors-wrapper .value-row {
+    width: 100%;
+}
+
+#row_connector_developer_settings_tracking_email_capture_selectors .label {
+    display: none;
+}
+
+#row_connector_developer_settings_tracking_email_capture_selectors .value {
+    width: 100%;
+}
+
+#row_connector_developer_settings_tracking_email_capture_selectors > .value > .note {
+    padding: 0rem 2rem;
+}
