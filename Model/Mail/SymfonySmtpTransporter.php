@@ -120,10 +120,13 @@ class SymfonySmtpTransporter
         if ($this->emailHelper->isDebugEnabled()) {
             $laminasHeaders = [];
             foreach ($message->getHeaders() as $headerName => $headerValue) {
-                $laminasHeaders[$headerName] = $headerValue;
+                if (in_array(strtolower($headerName), ['from', 'reply-to', 'to', 'cc', 'bcc'], true)) {
+                    $laminasHeaders[$headerName] = $headerValue;
+                }
             }
-            $this->logger->debug('Laminas headers:', $laminasHeaders);
+            $this->logger->debug('Laminas address headers:', $laminasHeaders);
         }
+
         foreach ($message->getHeaders() as $headerName => $headerValue) {
             if ($headerName === 'Date') {
                 $headers->addDateHeader($headerName, new \DateTime($headerValue));
@@ -135,6 +138,7 @@ class SymfonySmtpTransporter
                 if (empty(trim($headerValue))) {
                     continue;
                 }
+                $headerName = ucfirst(strtolower($headerName));
                 if (strpos($headerValue, ',') !== false) {
                     $headerValues = array_filter(array_map('trim', explode(',', $headerValue)));
                     $headers->addMailboxListHeader($headerName, $headerValues);
@@ -147,9 +151,11 @@ class SymfonySmtpTransporter
         if ($this->emailHelper->isDebugEnabled()) {
             $symfonyHeaders = [];
             foreach ($headers->all() as $header) {
-                $symfonyHeaders[$header->getName()] = $header->getBodyAsString();
+                if (in_array(strtolower($header->getName()), ['from', 'reply-to', 'to', 'cc', 'bcc'], true)) {
+                    $symfonyHeaders[$header->getName()] = $header->getBodyAsString();
+                }
             }
-            $this->logger->debug('Symfony headers:', $symfonyHeaders);
+            $this->logger->debug('Symfony address headers:', $symfonyHeaders);
         }
 
         // Use Email class to support attachments
