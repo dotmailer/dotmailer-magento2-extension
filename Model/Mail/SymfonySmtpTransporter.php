@@ -106,7 +106,7 @@ class SymfonySmtpTransporter
             if ($headerName === 'Subject') {
                 $headers->addTextHeader('Subject', $headerValue);
             }
-            if (in_array($headerName, ['From', 'Reply-to', 'To', 'Cc', 'Bcc'], true)) {
+            if (in_array(strtolower($headerName), ['from', 'reply-to', 'to', 'cc', 'bcc'], true)) {
                 if (empty(trim($headerValue))) {
                     continue;
                 }
