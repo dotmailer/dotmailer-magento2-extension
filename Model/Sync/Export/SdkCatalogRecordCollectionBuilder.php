@@ -43,13 +43,13 @@ class SdkCatalogRecordCollectionBuilder implements SdkCollectionBuilderInterface
     /**
      * @param ConnectorProductFactory $connectorProductFactory
      * @param Logger $logger
-     * @param int $storeId
+     * @param int|null $storeId
      * @param int|null $customerGroupId
      */
     public function __construct(
         ConnectorProductFactory $connectorProductFactory,
         Logger $logger,
-        int $storeId,
+        ?int $storeId = null,
         ?int $customerGroupId = null
     ) {
         $this->connectorProductFactory = $connectorProductFactory;

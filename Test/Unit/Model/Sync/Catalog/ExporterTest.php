@@ -223,6 +223,125 @@ class ExporterTest extends TestCase
     }
 
     /**
+     * @dataProvider getProductIdStoreIdsTypesAndVisibilities
+     *
+     * @param int $storeId
+     * @param int $product1Id
+     * @param int $product2Id
+     * @param string $types
+     * @param string $visibilities
+     *
+     * @return       void
+     * @throws Exception
+     */
+    public function testThatExportKeysAndProductsMatchAtDefaultLevelSync(
+        int $storeId,
+        int $product1Id,
+        int $product2Id,
+        string $types,
+        string $visibilities
+    ) {
+        $productsToProcess = $this->getMockProductsToProcess();
+        $this->scopeConfigMock->expects($this->exactly(2))
+            ->method('getValue')
+            ->willReturnOnConsecutiveCalls(
+                $types,
+                $visibilities
+            );
+
+        $this->scopeConfigMock->method('isSetFlag')
+            ->willReturn(true);
+
+        $this->collectionFactoryMock->expects($this->once())
+            ->method('create')
+            ->willReturn($this->productCollectionMock);
+
+        $this->productCollectionMock->method('addAttributeToSelect')->willReturnSelf();
+        $this->productCollectionMock->method('addAttributeToFilter')->willReturnSelf();
+        $this->productCollectionMock->method('addUrlRewrite')->willReturnSelf();
+        $this->productCollectionMock->method('addWebsiteNamesToResult')->willReturnSelf();
+        $this->productCollectionMock->method('addCategoryIds')->willReturnSelf();
+        $this->productCollectionMock->method('addOptionsToResult')->willReturnSelf();
+
+        $selectMock = $this->createMock(\Magento\Framework\DB\Select::class);
+        $this->productCollectionMock->method('getSelect')->willReturn($selectMock);
+        $selectMock->method('joinLeft')->willReturnSelf();
+
+        $productMock1 = $this->getMockProducts($product1Id);
+        $productMock2 = $this->getMockProducts($product2Id);
+
+        $exposedProduct1 = $this->getExposedProduct($product1Id);
+        $exposedProduct2 = $this->getExposedProduct($product2Id);
+
+        $connectorProductMock1 = $this->getMockConnectorProducts($productMock1, $exposedProduct1);
+        $connectorProductMock2 = $this->getMockConnectorProducts($productMock2, $exposedProduct2);
+
+        $this->productCollectionMock->expects($this->atLeastOnce())
+            ->method('getIterator')
+            ->willReturn(new \ArrayIterator([$productMock1, $productMock2]));
+
+        $this->productCollectionMock->method('getSize')
+            ->willReturn(2);
+
+        $this->customerGroupCollectionMock->expects($this->atLeastOnce())
+            ->method('toOptionArray')
+            ->willReturn([
+                ['value' => 1, 'label' => 'General'],
+                ['value' => 2, 'label' => 'Wholesale'],
+                ['value' => 3, 'label' => 'Retailer']
+            ]);
+
+        $storeMock = $this->createMock(\Magento\Store\Model\Store::class);
+        $this->storeManagerMock->expects($this->once())
+            ->method('getStore')
+            ->willReturn($storeMock);
+
+        $storeMock->expects($this->once())
+            ->method('getWebsiteId')
+            ->willReturn(1);
+
+        $this->productFactoryMock
+            ->expects($this->exactly(2))
+            ->method('create')
+            ->willReturnOnConsecutiveCalls(
+                $connectorProductMock1,
+                $connectorProductMock2
+            );
+
+        $builder = new SdkCatalogRecordCollectionBuilder(
+            $this->productFactoryMock,
+            $this->loggerMock,
+            null // storeId
+        );
+
+        $builderResult = $builder->setBuildableData($this->productCollectionMock)->build()->all();
+        $this->sdkCatalogRecordCollectionBuilderFactory->expects($this->once())
+            ->method('create')
+            ->willReturn($this->sdkCatalogRecordCollectionBuilder);
+
+        $this->sdkCatalogRecordCollectionBuilder->expects($this->once())
+            ->method('setBuildableData')
+            ->with($this->productCollectionMock)
+            ->willReturn($this->sdkCatalogRecordCollectionBuilder);
+
+        $this->sdkCatalogRecordCollectionBuilder->expects($this->once())
+            ->method('build')
+            ->willReturn($this->sdkRecordsCollection);
+
+        $this->sdkRecordsCollection->expects($this->once())
+            ->method('all')
+            ->willReturn($builderResult);
+
+        $actual = $this->exporter->exportCatalog($storeId, $productsToProcess);
+        $actualExposedProduct1 = $actual[$product1Id]->getJson();
+
+        $this->assertEquals($exposedProduct1, $actualExposedProduct1);
+
+        $actualExposedProduct2 = $actual[$product2Id]->getJson();
+        $this->assertEquals($exposedProduct2, $actualExposedProduct2);
+    }
+
+    /**
      * Returns the mocked Products
      *
      * @param int $productId
