@@ -2,7 +2,9 @@
 
 namespace Dotdigitalgroup\Email\Test\Unit\Model\Mail;
 
+use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Helper\Transactional;
+use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Mail\EmailMessageMethodChecker;
 use Dotdigitalgroup\Email\Model\Mail\SymfonyMailerFactory;
 use Dotdigitalgroup\Email\Model\Mail\SymfonySmtpTransporter;
@@ -13,7 +15,7 @@ use Magento\Framework\Mail\MimeMessageInterface;
 use Magento\Framework\Mail\MimePartInterface;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Mailer\Mailer;
-use Symfony\Component\Mailer\Transport\TransportInterface as SymfonyTransportInterface;
+use Symfony\Component\Mailer\Transport\TransportInterface;
 use Symfony\Component\Mime\Message as SymfonyMimeMessage;
 
 class SymfonySmtpTransporterTest extends TestCase
@@ -39,6 +41,16 @@ class SymfonySmtpTransporterTest extends TestCase
     private $fileSystemMock;
 
     /**
+     * @var Data|\PHPUnit\Framework\MockObject\MockObject
+     */
+    private $emailHelperMock;
+
+    /**
+     * @var Logger|\PHPUnit\Framework\MockObject\MockObject
+     */
+    private $loggerMock;
+
+    /**
      * @var SymfonySmtpTransporter
      */
     private $symfonySmtpTransporter;
@@ -52,12 +64,16 @@ class SymfonySmtpTransporterTest extends TestCase
         $this->emailMessageMethodCheckerMock = $this->createMock(EmailMessageMethodChecker::class);
         $this->symfonyMailerFactoryMock = $this->createMock(SymfonyMailerFactory::class);
         $this->fileSystemMock = $this->createMock(File::class);
+        $this->emailHelperMock = $this->createMock(Data::class);
+        $this->loggerMock = $this->createMock(Logger::class);
 
         $this->symfonySmtpTransporter = new SymfonySmtpTransporter(
             $this->transactionalEmailSettingsMock,
             $this->emailMessageMethodCheckerMock,
             $this->symfonyMailerFactoryMock,
-            $this->fileSystemMock
+            $this->fileSystemMock,
+            $this->emailHelperMock,
+            $this->loggerMock
         );
     }
 
@@ -68,7 +84,16 @@ class SymfonySmtpTransporterTest extends TestCase
     {
         $storeId = 1;
 
-        $emailMessage = $this->createMock(EmailMessage::class);
+        $mockBuilder = $this->getMockBuilder(EmailMessage::class)
+            ->disableOriginalConstructor();
+
+        if (method_exists(EmailMessage::class, 'getSymfonyMessage')) {
+            $mockBuilder->onlyMethods(['getSymfonyMessage']);
+        } else {
+            $mockBuilder->addMethods(['getSymfonyMessage']);
+        }
+
+        $emailMessage = $mockBuilder->getMock();
         $symfonyMimeMessage = $this->createMock(SymfonyMimeMessage::class);
 
         $this->emailMessageMethodCheckerMock->expects($this->once())
@@ -100,8 +125,8 @@ class SymfonySmtpTransporterTest extends TestCase
             ->method('getSymfonyMessage')
             ->willReturn($symfonyMimeMessage);
 
-        // Create a real Mailer instance with a mock transport (because Mailer is final and connot be mocked)
-        $symfonyTransport = $this->createMock(SymfonyTransportInterface::class);
+        // Create a real Mailer instance with a mock transport (because Mailer is final and cannot be mocked)
+        $symfonyTransport = $this->createMock(TransportInterface::class);
         $realMailer = new Mailer($symfonyTransport);
 
         $this->symfonyMailerFactoryMock->expects($this->once())
@@ -122,6 +147,10 @@ class SymfonySmtpTransporterTest extends TestCase
         $this->emailMessageMethodCheckerMock->expects($this->once())
             ->method('hasGetSymfonyMessageMethod')
             ->with($emailMessage)
+            ->willReturn(false);
+
+        $this->emailHelperMock->expects($this->atLeastOnce())
+            ->method('isDebugEnabled')
             ->willReturn(false);
 
         $mimeMessageMock = $this->createMock(MimeMessageInterface::class);
@@ -177,7 +206,7 @@ class SymfonySmtpTransporterTest extends TestCase
             ->willReturn('password');
 
         // Create a real Mailer instance with a mock transport
-        $symfonyTransport = $this->createMock(SymfonyTransportInterface::class);
+        $symfonyTransport = $this->createMock(TransportInterface::class);
         $realMailer = new Mailer($symfonyTransport);
 
         $this->symfonyMailerFactoryMock->expects($this->once())
@@ -198,6 +227,10 @@ class SymfonySmtpTransporterTest extends TestCase
         $this->emailMessageMethodCheckerMock->expects($this->once())
             ->method('hasGetSymfonyMessageMethod')
             ->with($emailMessage)
+            ->willReturn(false);
+
+        $this->emailHelperMock->expects($this->atLeastOnce())
+            ->method('isDebugEnabled')
             ->willReturn(false);
 
         $mimeMessageMock = $this->createMock(MimeMessageInterface::class);
@@ -237,12 +270,25 @@ class SymfonySmtpTransporterTest extends TestCase
     {
         $storeId = 1;
 
-        $emailMessage = $this->createMock(EmailMessage::class);
+        $mockBuilder = $this->getMockBuilder(EmailMessage::class)
+            ->disableOriginalConstructor();
+
+        if (method_exists(EmailMessage::class, 'getSymfonyMessage')) {
+            $mockBuilder->onlyMethods(['getSymfonyMessage']);
+        } else {
+            $mockBuilder->addMethods(['getSymfonyMessage']);
+        }
+
+        $emailMessage = $mockBuilder->getMock();
 
         $this->emailMessageMethodCheckerMock->expects($this->once())
             ->method('hasGetSymfonyMessageMethod')
             ->with($emailMessage)
             ->willReturn(true);
+
+        $emailMessage->expects($this->once())
+            ->method('getSymfonyMessage')
+            ->willReturn($this->createMock(SymfonyMimeMessage::class));
 
         $this->transactionalEmailSettingsMock->expects($this->once())
             ->method('getSmtpHost')
@@ -252,7 +298,6 @@ class SymfonySmtpTransporterTest extends TestCase
         $this->expectException(LocalizedException::class);
         $this->expectExceptionMessage('Dotdigital SMTP options are not correctly defined');
 
-        $emailMessage = $this->createMock(EmailMessage::class);
         $this->symfonySmtpTransporter->execute($emailMessage, $storeId);
     }
 }

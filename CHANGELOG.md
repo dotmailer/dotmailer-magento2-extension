@@ -1,3 +1,13 @@
+# 4.33.1
+
+### Improvements
+- We added extra logging to assist debugging of transactional email sending issues.
+- We updated a unit test for our `SymfonySmtpTransporter`.
+
+### Bug fixes
+- Catalog sync was broken when run at default level; this has been fixed.
+- Store-scoped catalog sync configs are now visible in store scopes as expected.
+
 # 4.33.0
 
 ### What's new
