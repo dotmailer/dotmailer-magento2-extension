@@ -1683,7 +1683,7 @@
                 </field>
             </group>
             <group id="catalog_sync" translate="label" sortOrder="80" showInDefault="1" showInWebsite="1"
-                   showInStore="0">
+                   showInStore="1">
                 <label>Catalog Sync Settings</label>
                 <field id="catalog_values" translate="label" sortOrder="10" type="select" showInStore="0" showInWebsite="0" showInDefault="1">
                     <label>Catalog Values</label>
