@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Dotdigitalgroup\Email\Model\Mail;
 
+use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Helper\Transactional;
+use Dotdigitalgroup\Email\Logger\Logger;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Mail\EmailMessage;
 use Magento\Framework\Mail\EmailMessageInterface;
@@ -38,21 +40,37 @@ class SymfonySmtpTransporter
     private $fileSystem;
 
     /**
+     * @var Data
+     */
+    private $emailHelper;
+
+    /**
+     * @var Logger
+     */
+    private $logger;
+
+    /**
      * @param Transactional $transactionalEmailSettings
      * @param EmailMessageMethodChecker $emailMessageMethodChecker
      * @param SymfonyMailerFactory $mailerFactory
      * @param File $fileSystem
+     * @param Data $emailHelper
+     * @param Logger $logger
      */
     public function __construct(
         Transactional $transactionalEmailSettings,
         EmailMessageMethodChecker $emailMessageMethodChecker,
         SymfonyMailerFactory $mailerFactory,
-        File $fileSystem
+        File $fileSystem,
+        Data $emailHelper,
+        Logger $logger
     ) {
         $this->transactionalEmailSettings = $transactionalEmailSettings;
         $this->emailMessageMethodChecker = $emailMessageMethodChecker;
         $this->mailerFactory = $mailerFactory;
         $this->fileSystem = $fileSystem;
+        $this->emailHelper = $emailHelper;
+        $this->logger = $logger;
     }
 
     /**
@@ -99,6 +117,16 @@ class SymfonySmtpTransporter
 
         $headers = new \Symfony\Component\Mime\Header\Headers();
 
+        if ($this->emailHelper->isDebugEnabled()) {
+            $laminasHeaders = [];
+            foreach ($message->getHeaders() as $headerName => $headerValue) {
+                if (in_array(strtolower($headerName), ['from', 'reply-to', 'to', 'cc', 'bcc'], true)) {
+                    $laminasHeaders[$headerName] = $headerValue;
+                }
+            }
+            $this->logger->debug('Laminas address headers:', $laminasHeaders);
+        }
+
         foreach ($message->getHeaders() as $headerName => $headerValue) {
             if ($headerName === 'Date') {
                 $headers->addDateHeader($headerName, new \DateTime($headerValue));
@@ -106,14 +134,28 @@ class SymfonySmtpTransporter
             if ($headerName === 'Subject') {
                 $headers->addTextHeader('Subject', $headerValue);
             }
-            if (in_array($headerName, ['From', 'Reply-to', 'To', 'Cc', 'Bcc'], true)) {
+            if (in_array(strtolower($headerName), ['from', 'reply-to', 'to', 'cc', 'bcc'], true)) {
+                if (empty(trim($headerValue))) {
+                    continue;
+                }
+                $headerName = ucfirst(strtolower($headerName));
                 if (strpos($headerValue, ',') !== false) {
-                    $headerValues = explode(',', $headerValue);
+                    $headerValues = array_filter(array_map('trim', explode(',', $headerValue)));
                     $headers->addMailboxListHeader($headerName, $headerValues);
                 } else {
-                    $headers->addMailboxListHeader($headerName, [$headerValue]);
+                    $headers->addMailboxListHeader($headerName, [trim($headerValue)]);
                 }
             }
+        }
+
+        if ($this->emailHelper->isDebugEnabled()) {
+            $symfonyHeaders = [];
+            foreach ($headers->all() as $header) {
+                if (in_array(strtolower($header->getName()), ['from', 'reply-to', 'to', 'cc', 'bcc'], true)) {
+                    $symfonyHeaders[$header->getName()] = $header->getBodyAsString();
+                }
+            }
+            $this->logger->debug('Symfony address headers:', $symfonyHeaders);
         }
 
         // Use Email class to support attachments
