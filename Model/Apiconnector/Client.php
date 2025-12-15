@@ -1843,6 +1843,9 @@ class Client extends Rest implements ClientInterface
      *
      * @return object
      * @throws LocalizedException
+     *
+     * @deprecated use the V3 SDK.
+     * @see \Dotdigital\V3\Resources\Contacts::patchByIdentifier
      */
     public function postContactWithConsentAndPreferences(
         string $email,

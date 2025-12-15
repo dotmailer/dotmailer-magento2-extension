@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Dotdigitalgroup\Email\Model\Newsletter;
 
+use Dotdigital\V3\Models\Contact\ChannelProperties\EmailChannelProperties\OptInTypeInterface;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Newsletter\Model\Subscriber;
 use Magento\Store\Model\ScopeInterface;
@@ -39,6 +40,6 @@ class OptInTypeFinder
             $storeId
         );
 
-        return $needToConfirm ? 'double' : null;
+        return $needToConfirm ? OptInTypeInterface::DOUBLE : null;
     }
 }

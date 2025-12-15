@@ -4,14 +4,17 @@ declare(strict_types=1);
 
 namespace Dotdigitalgroup\Email\Model\Sync\Automation;
 
+use Dotdigital\V3\Models\Contact as ContactModel;
+use Dotdigital\V3\Models\ContactFactory as DotdigitalContactFactory;
 use Dotdigitalgroup\Email\Exception\PendingOptInException;
 use Dotdigitalgroup\Email\Helper\Data;
+use Dotdigitalgroup\Email\Model\Apiconnector\V3\ClientFactory;
+use Dotdigitalgroup\Email\Model\Apiconnector\V3\StatusInterface as V3StatusInterface;
 use Dotdigitalgroup\Email\Model\Contact;
-use Dotdigitalgroup\Email\Model\Contact\ContactResponseHandler;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact as ContactResource;
-use Dotdigitalgroup\Email\Model\StatusInterface;
 use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\DataFieldCollector;
 use Dotdigitalgroup\Email\Model\Sync\Subscriber\SingleSubscriberSyncer;
+use Http\Client\Exception;
 use Magento\Framework\Exception\AlreadyExistsException;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Newsletter\Model\Subscriber;
@@ -19,14 +22,19 @@ use Magento\Newsletter\Model\Subscriber;
 class ContactManager
 {
     /**
+     * @var DotdigitalContactFactory
+     */
+    private $sdkContactFactory;
+
+    /**
      * @var Data
      */
     private $helper;
 
     /**
-     * @var ContactResponseHandler
+     * @var ClientFactory
      */
-    private $contactResponseHandler;
+    private $clientFactory;
 
     /**
      * @var ContactResource
@@ -46,21 +54,24 @@ class ContactManager
     /**
      * ContactManager constructor.
      *
+     * @param DotdigitalContactFactory $sdkContactFactory
      * @param Data $helper
-     * @param ContactResponseHandler $contactResponseHandler
+     * @param ClientFactory $clientFactory
      * @param ContactResource $contactResource
      * @param DataFieldCollector $dataFieldCollector
      * @param SingleSubscriberSyncer $singleSubscriberSyncer
      */
     public function __construct(
+        DotdigitalContactFactory $sdkContactFactory,
         Data $helper,
-        ContactResponseHandler $contactResponseHandler,
+        ClientFactory $clientFactory,
         ContactResource $contactResource,
         DataFieldCollector $dataFieldCollector,
         SingleSubscriberSyncer $singleSubscriberSyncer
     ) {
+        $this->sdkContactFactory = $sdkContactFactory;
         $this->helper = $helper;
-        $this->contactResponseHandler = $contactResponseHandler;
+        $this->clientFactory = $clientFactory;
         $this->contactResource = $contactResource;
         $this->dataFieldCollector = $dataFieldCollector;
         $this->singleSubscriberSyncer = $singleSubscriberSyncer;
@@ -76,8 +87,11 @@ class ContactManager
      * @param Subscriber $subscriber
      * @param array $automationDataFields
      * @param string $automationType
+     * @param string|null $optInType
      *
      * @return int
+     * @throws AlreadyExistsException
+     * @throws Exception
      * @throws LocalizedException
      * @throws PendingOptInException
      */
@@ -85,43 +99,47 @@ class ContactManager
         Contact $contact,
         Subscriber $subscriber,
         array $automationDataFields,
-        string $automationType
+        string $automationType,
+        ?string $optInType = null
     ): int {
-        $addressBookId = '';
+        $addressBookId = 0;
         $dataFields = [];
         $email = $contact->getEmail();
         $websiteId = (int) $contact->getWebsiteId();
 
         if ($this->canPushContactToCustomerAddressBook($contact, $subscriber, $automationType)) {
-            $addressBookId = $this->helper->getCustomerAddressBook($websiteId);
+            $addressBookId = (int) $this->helper->getCustomerAddressBook($websiteId);
             $dataFields = $this->dataFieldCollector->mergeFields(
                 $automationDataFields,
                 $this->dataFieldCollector->collectForCustomer(
                     $contact,
                     $websiteId,
-                    (int) $addressBookId
+                    $addressBookId
                 )
             );
         } elseif ($this->canPushContactToGuestAddressBook($contact, $subscriber, $automationType)) {
-            $addressBookId = $this->helper->getGuestAddressBook($websiteId);
+            $addressBookId = (int) $this->helper->getGuestAddressBook($websiteId);
             $dataFields = $this->dataFieldCollector->mergeFields(
                 $automationDataFields,
                 $this->dataFieldCollector->collectForGuest(
                     $contact,
                     $websiteId,
-                    (int) $addressBookId
+                    $addressBookId
                 )
             );
         }
 
-        $response = $addressBookId ?
-            $this->pushContactToAddressBook($email, $websiteId, $addressBookId, $dataFields) :
-            $this->pushContactToAllContacts($email, $websiteId, $automationDataFields);
+        $sdkContact = $this->buildSdkContact($email, $dataFields, $optInType, $addressBookId);
 
-        $status = $this->contactResponseHandler->getStatusFromResponse($response);
-        $contactId = $this->contactResponseHandler->getContactIdFromResponse($response);
+        $response = $this->pushContactToDotdigital(
+            $email,
+            $sdkContact,
+            $websiteId
+        );
 
-        if ($status === StatusInterface::PENDING_OPT_IN) {
+        $contactId = $response->getContactId();
+
+        if ($response->getChannelProperties()->getEmail()->getStatus() === V3StatusInterface::PENDING_OPT_IN) {
             throw new PendingOptInException(__('Contact status is PendingOptIn, cannot be enrolled.'));
         }
 
@@ -207,40 +225,70 @@ class ContactManager
     }
 
     /**
-     * Push contact to Dotdigital without specifying an address book.
+     * Build SDK contact.
+     *
+     * If an address book ID is provided, the contact will be added to that address book.
      *
      * @param string $email
-     * @param int $websiteId
      * @param array $dataFields
+     * @param string|null $optInType
+     * @param int $addressBookId
      *
-     * @return bool|\stdClass
-     * @throws LocalizedException
+     * @return ContactModel
+     * @throws \Exception
      */
-    private function pushContactToAllContacts(string $email, int $websiteId, array $dataFields)
-    {
-        $client = $this->helper->getWebsiteApiClient($websiteId);
-        $response = $client->postContactWithConsentAndPreferences($email, $dataFields);
+    private function buildSdkContact(
+        string $email,
+        array $dataFields,
+        ?string $optInType,
+        int $addressBookId
+    ): ContactModel {
+        $contact = $this->sdkContactFactory->create();
+        $contact->setMatchIdentifier('email');
+        $contact->setIdentifiers(['email' => $email]);
 
-        return $this->contactResponseHandler->processContactResponse($response, $email, $websiteId);
+        if ($optInType) {
+            $contact->setChannelProperties([
+                'email' => [
+                    'optInType' => $optInType
+                ]
+            ]);
+        }
+
+        $contact->setDataFields($dataFields);
+
+        if ($addressBookId) {
+            $contact->setLists([(int) $addressBookId]);
+        }
+
+        return $contact;
     }
 
     /**
-     * Add contact to an address book.
+     * Push contact to Dotdigital.
+     *
+     * This method does not return a 'processed' v3 contact response via the ContactResponseHandler,
+     * because that ends up doing the same things multiple times.
      *
      * @param string $email
+     * @param ContactModel $contact
      * @param int $websiteId
-     * @param string $addressBookId
-     * @param array $dataFields
      *
-     * @return \stdClass
-     * @throws LocalizedException
+     * @return ContactModel
+     * @throws Exception
      */
-    private function pushContactToAddressBook(string $email, int $websiteId, string $addressBookId, array $dataFields)
-    {
-        $client = $this->helper->getWebsiteApiClient($websiteId);
-        $response = $client->addContactToAddressBook($email, $addressBookId, null, $dataFields);
+    private function pushContactToDotdigital(
+        string $email,
+        ContactModel $contact,
+        int $websiteId
+    ): ContactModel {
+        $client = $this->clientFactory
+            ->create(['data' => ['websiteId' => $websiteId]]);
 
-        return $this->contactResponseHandler->processContactResponse($response, $email, $websiteId);
+        return $client->contacts->patchByIdentifier(
+            $email,
+            $contact
+        );
     }
 
     /**

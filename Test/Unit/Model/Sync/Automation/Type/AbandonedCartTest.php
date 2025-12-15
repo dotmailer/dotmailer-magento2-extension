@@ -8,13 +8,13 @@ use Dotdigitalgroup\Email\Model\Automation;
 use Dotdigitalgroup\Email\Model\Contact;
 use Dotdigitalgroup\Email\Model\Contact\ContactResponseHandler;
 use Dotdigitalgroup\Email\Model\Newsletter\BackportedSubscriberLoader;
+use Dotdigitalgroup\Email\Model\Newsletter\OptInTypeFinder;
 use Dotdigitalgroup\Email\Model\ResourceModel\Automation as AutomationResource;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory as ContactCollectionFactory;
 use Dotdigitalgroup\Email\Model\Sales\QuoteFactory as DotdigitalQuoteFactory;
 use Dotdigitalgroup\Email\Model\StatusInterface;
 use Dotdigitalgroup\Email\Model\Sync\Automation\AutomationTypeHandler;
 use Dotdigitalgroup\Email\Model\Sync\Automation\ContactManager;
-use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\DataFieldCollector;
 use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\DataFieldTypeHandler;
 use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\Updater\AbandonedCart as AbandonedCartUpdater;
 use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\Updater\AbandonedCartFactory as AbandonedCartUpdaterFactory;
@@ -74,11 +74,6 @@ class AbandonedCartTest extends TestCase
     private $orderManagerMock;
 
     /**
-     * @var DataFieldCollector|\PHPUnit_Framework_MockObject_MockObject
-     */
-    private $dataFieldCollectorMock;
-
-    /**
      * @var DataFieldTypeHandler|\PHPUnit_Framework_MockObject_MockObject
      */
     private $dataFieldTypeHandlerMock;
@@ -109,6 +104,11 @@ class AbandonedCartTest extends TestCase
     private $backportedSubscriberLoaderMock;
 
     /**
+     * @var OptInTypeFinder|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $optInTypeFinderMock;
+
+    /**
      * @var AbandonedCart
      */
     private $abandonedCart;
@@ -132,13 +132,13 @@ class AbandonedCartTest extends TestCase
         $this->contactCollectionFactoryMock = $this->createMock(ContactCollectionFactory::class);
         $this->contactManagerMock = $this->createMock(ContactManager::class);
         $this->orderManagerMock = $this->createMock(OrderManager::class);
-        $this->dataFieldCollectorMock = $this->createMock(DataFieldCollector::class);
         $this->dataFieldTypeHandlerMock = $this->createMock(DataFieldTypeHandler::class);
         $this->dataFieldUpdaterMock = $this->createMock(AbandonedCartUpdater::class);
         $this->dataFieldUpdaterFactoryMock = $this->createMock(AbandonedCartUpdaterFactory::class);
         $this->ddgQuoteFactoryMock = $this->createMock(DotdigitalQuoteFactory::class);
         $this->quoteFactoryMock = $this->createMock(QuoteFactory::class);
         $this->backportedSubscriberLoaderMock = $this->createMock(BackportedSubscriberLoader::class);
+        $this->optInTypeFinderMock = $this->createMock(OptInTypeFinder::class);
         $this->contactModelMock = $this->getMockBuilder(Contact::class)
             ->onlyMethods(['loadByCustomerEmail'])
             ->addMethods(['getCustomerId', 'getIsGuest'])
@@ -153,11 +153,11 @@ class AbandonedCartTest extends TestCase
         $this->abandonedCart = new AbandonedCart(
             $this->helperMock,
             $this->loggerMock,
+            $this->optInTypeFinderMock,
             $this->automationResourceMock,
             $this->contactCollectionFactoryMock,
             $this->contactManagerMock,
             $this->orderManagerMock,
-            $this->dataFieldCollectorMock,
             $this->dataFieldTypeHandlerMock,
             $this->backportedSubscriberLoaderMock,
             $this->dataFieldUpdaterFactoryMock,

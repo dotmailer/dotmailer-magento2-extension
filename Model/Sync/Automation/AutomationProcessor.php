@@ -9,12 +9,14 @@ use Dotdigitalgroup\Email\Exception\PendingOptInException;
 use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Automation;
-use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory as ContactCollectionFactory;
 use Dotdigitalgroup\Email\Model\Newsletter\BackportedSubscriberLoader;
+use Dotdigitalgroup\Email\Model\Newsletter\OptInTypeFinder;
 use Dotdigitalgroup\Email\Model\ResourceModel\Automation as AutomationResource;
+use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory as ContactCollectionFactory;
 use Dotdigitalgroup\Email\Model\StatusInterface;
-use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\DataFieldCollector;
 use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\DataFieldTypeHandler;
+use Http\Client\Exception;
+use Magento\Framework\Exception\AlreadyExistsException;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Newsletter\Model\Subscriber;
 
@@ -29,6 +31,11 @@ class AutomationProcessor
      * @var Logger
      */
     protected $logger;
+
+    /**
+     * @var OptInTypeFinder
+     */
+    protected $optInTypeFinder;
 
     /**
      * @var AutomationResource
@@ -51,11 +58,6 @@ class AutomationProcessor
     private $orderManager;
 
     /**
-     * @var DataFieldCollector
-     */
-    private $dataFieldCollector;
-
-    /**
      * @var DataFieldTypeHandler
      */
     private $dataFieldTypeHandler;
@@ -70,32 +72,32 @@ class AutomationProcessor
      *
      * @param Data $helper
      * @param Logger $logger
+     * @param OptInTypeFinder $optInTypeFinder
      * @param AutomationResource $automationResource
      * @param ContactCollectionFactory $contactCollectionFactory
      * @param ContactManager $contactManager
      * @param OrderManager $orderManager
-     * @param DataFieldCollector $dataFieldCollector
      * @param DataFieldTypeHandler $dataFieldTypeHandler
      * @param BackportedSubscriberLoader $backportedSubscriberLoader
      */
     public function __construct(
         Data $helper,
         Logger $logger,
+        OptInTypeFinder $optInTypeFinder,
         AutomationResource $automationResource,
         ContactCollectionFactory $contactCollectionFactory,
         ContactManager $contactManager,
         OrderManager $orderManager,
-        DataFieldCollector $dataFieldCollector,
         DataFieldTypeHandler $dataFieldTypeHandler,
         BackportedSubscriberLoader $backportedSubscriberLoader
     ) {
         $this->helper = $helper;
         $this->logger = $logger;
+        $this->optInTypeFinder = $optInTypeFinder;
         $this->automationResource = $automationResource;
         $this->contactCollectionFactory = $contactCollectionFactory;
         $this->contactManager = $contactManager;
         $this->orderManager = $orderManager;
-        $this->dataFieldCollector = $dataFieldCollector;
         $this->dataFieldTypeHandler = $dataFieldTypeHandler;
         $this->backportedSubscriberLoader = $backportedSubscriberLoader;
     }
@@ -166,13 +168,16 @@ class AutomationProcessor
      * @param Automation $automation
      *
      * @return int
+     * @throws LocalizedException
      * @throws PendingOptInException
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws Exception
+     * @throws AlreadyExistsException
      */
     public function assembleDataForEnrolment(Automation $automation)
     {
         $email = $automation->getEmail();
         $websiteId = (int) $automation->getWebsiteId();
+        $storeId = (int) $automation->getStoreId();
 
         $automationContact = $this->contactCollectionFactory->create()
             ->loadByCustomerEmail($email, $websiteId);
@@ -187,12 +192,14 @@ class AutomationProcessor
         $this->checkNonSubscriberCanBeEnrolled($automationSubscriber, $automation);
 
         $automationDataFields = $this->retrieveAutomationDataFields($automation, $email, $websiteId);
+        $automationOptInType = $this->optInTypeFinder->getOptInType($storeId);
 
         $contactId = $this->contactManager->prepareDotdigitalContact(
             $automationContact,
             $automationSubscriber,
             $automationDataFields,
-            $automation->getAutomationType()
+            $automation->getAutomationType(),
+            $automationOptInType
         );
 
         $this->orderManager->maybeSendOrderInsightData($automation);

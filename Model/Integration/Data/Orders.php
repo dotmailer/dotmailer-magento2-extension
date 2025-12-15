@@ -2,10 +2,17 @@
 
 namespace Dotdigitalgroup\Email\Model\Integration\Data;
 
+use Dotdigital\Exception\ResponseValidationException;
+use Dotdigital\V3\Models\ContactFactory as DotdigitalContactFactory;
+use Dotdigital\V3\Models\Contact\ChannelProperties\EmailChannelProperties\EmailTypeInterface;
+use Dotdigital\V3\Models\Contact\ChannelProperties\EmailChannelProperties\OptInTypeInterface;
 use Dotdigitalgroup\Email\Helper\Config;
 use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Logger\Logger;
+use Dotdigitalgroup\Email\Model\Apiconnector\V3\ClientFactory;
 use Dotdigitalgroup\Email\Model\Sync\Order\Exporter;
+use Dotdigitalgroup\Email\Model\Newsletter\OptInTypeFinder;
+use Http\Client\Exception;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Newsletter\Model\Subscriber;
 use Magento\Sales\Model\ResourceModel\Order\CollectionFactory as SalesOrderCollectionFactory;
@@ -15,6 +22,11 @@ use Magento\Store\Model\StoreManagerInterface;
 class Orders
 {
     private const NUMBER_OF_ORDERS = 10;
+
+    /**
+     * @var DotdigitalContactFactory
+     */
+    private $sdkContactFactory;
 
     /**
      * @var Logger
@@ -27,9 +39,19 @@ class Orders
     private $helper;
 
     /**
+     * @var ClientFactory
+     */
+    private $clientFactory;
+
+    /**
      * @var Exporter
      */
     private $exporter;
+
+    /**
+     * @var OptInTypeFinder
+     */
+    private $optInTypeFinder;
 
     /**
      * @var SalesOrderCollectionFactory
@@ -47,24 +69,33 @@ class Orders
     private $storeManager;
 
     /**
+     * @param DotdigitalContactFactory $sdkContactFactory
      * @param Logger $logger
      * @param Data $helper
+     * @param ClientFactory $clientFactory
      * @param Exporter $exporter
+     * @param OptInTypeFinder $optInTypeFinder
      * @param SalesOrderCollectionFactory $salesOrderCollectionFactory
      * @param ScopeConfigInterface $scopeConfig
      * @param StoreManagerInterface $storeManager
      */
     public function __construct(
+        DotdigitalContactFactory $sdkContactFactory,
         Logger $logger,
         Data $helper,
+        ClientFactory $clientFactory,
         Exporter $exporter,
+        OptInTypeFinder $optInTypeFinder,
         SalesOrderCollectionFactory $salesOrderCollectionFactory,
         ScopeConfigInterface $scopeConfig,
         StoreManagerInterface $storeManager
     ) {
+        $this->sdkContactFactory = $sdkContactFactory;
         $this->logger = $logger;
         $this->helper = $helper;
+        $this->clientFactory = $clientFactory;
         $this->exporter = $exporter;
+        $this->optInTypeFinder = $optInTypeFinder;
         $this->salesOrderCollectionFactory = $salesOrderCollectionFactory;
         $this->scopeConfig = $scopeConfig;
         $this->storeManager = $storeManager;
@@ -192,7 +223,8 @@ class Orders
         $customerAddressBookId = $this->helper->getCustomerAddressBook($websiteId);
         $guestAddressBookId = $this->helper->getGuestAddressBook($websiteId);
         $subscriberAddressBookId = $this->helper->getSubscriberAddressBook($websiteId);
-        $client = $this->helper->getWebsiteApiClient($websiteId);
+        $client = $this->clientFactory
+            ->create(['data' => ['websiteId' => $websiteId]]);
         $processed = [];
 
         foreach ($data as $row) {
@@ -200,21 +232,53 @@ class Orders
                 continue;
             }
 
-            $addressBookId = $row['customer_id'] ? $customerAddressBookId : $guestAddressBookId;
-            $contact = [
-                'Email' => $row['customer_email'],
-                'EmailType' => 'Html',
-            ];
-            $result = $client->postAddressBookContacts($addressBookId, $contact);
-            if (isset($result->message)) {
-                return false;
-            }
+            try {
+                $contact = $this->sdkContactFactory->create();
+                $contact->setMatchIdentifier('email');
+                $contact->setIdentifiers(['email' => $row['customer_email']]);
+                $contact->setChannelProperties([
+                    'email' => [
+                        'emailType' => EmailTypeInterface::HTML
+                    ]
+                ]);
 
-            if ($row['subscriber_status'] == Subscriber::STATUS_SUBSCRIBED) {
-                $result = $client->postAddressBookContacts($subscriberAddressBookId, $contact);
-                if (isset($result->message)) {
-                    return false;
+                $optInType = $this->optInTypeFinder->getOptInType($row['store_id']);
+                if ($optInType) {
+                    $contact->setChannelProperties([
+                        'email' => [
+                            'optInType' => OptInTypeInterface::SINGLE
+                        ]
+                    ]);
                 }
+
+                $addressBookId = $row['customer_id'] ? $customerAddressBookId : $guestAddressBookId;
+                if ($addressBookId) {
+                    $contact->setLists([(int) $addressBookId]);
+                }
+                $client->contacts->patchByIdentifier(
+                    $row['customer_email'],
+                    $contact
+                );
+
+                if ($row['subscriber_status'] == Subscriber::STATUS_SUBSCRIBED) {
+                    if ($subscriberAddressBookId) {
+                        $contact->setLists([(int) $subscriberAddressBookId]);
+                    }
+                    $client->contacts->patchByIdentifier(
+                        $row['customer_email'],
+                        $contact
+                    );
+                }
+            } catch (ResponseValidationException|Exception $e) {
+                $this->logger->error(
+                    sprintf(
+                        '%s: %s',
+                        'Error creating contact in setup integration',
+                        $e->getMessage()
+                    ),
+                    [(string) $e]
+                );
+                return false;
             }
 
             $processed[] = $row['customer_email'];

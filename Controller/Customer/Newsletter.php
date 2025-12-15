@@ -7,6 +7,7 @@ use Dotdigitalgroup\Email\Model\Apiconnector\Client;
 use Dotdigitalgroup\Email\Model\Contact;
 use Dotdigitalgroup\Email\Model\Customer\Account\Configuration;
 use Dotdigitalgroup\Email\Model\Customer\DataField\Date;
+use Dotdigitalgroup\Email\Model\Newsletter\OptInTypeFinder;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory as ContactCollectionFactory;
 use Dotdigitalgroup\Email\Model\StatusInterface;
 use Magento\Customer\Api\CustomerRepositoryInterface as CustomerRepository;
@@ -17,9 +18,9 @@ use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Controller\Result\Redirect;
 use Magento\Framework\Controller\Result\RedirectFactory;
 use Magento\Framework\Data\Form\FormKey\Validator;
-use Magento\Framework\Message\ManagerInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Framework\Message\ManagerInterface;
 use Magento\Newsletter\Model\Subscriber;
 use Magento\Newsletter\Model\SubscriberFactory;
 use Magento\Store\Model\StoreManagerInterface;
@@ -30,6 +31,11 @@ class Newsletter implements HttpPostActionInterface
      * @var Data
      */
     private $helper;
+
+    /**
+     * @var OptInTypeFinder
+     */
+    private $optInTypeFinder;
 
     /**
      * @var ContactCollectionFactory
@@ -88,6 +94,7 @@ class Newsletter implements HttpPostActionInterface
 
     /**
      * @param Data $helper
+     * @param OptInTypeFinder $optInTypeFinder
      * @param ContactCollectionFactory $contactCollectionFactory
      * @param Configuration $accountConfig
      * @param Session $session
@@ -102,6 +109,7 @@ class Newsletter implements HttpPostActionInterface
      */
     public function __construct(
         Data $helper,
+        OptInTypeFinder $optInTypeFinder,
         ContactCollectionFactory $contactCollectionFactory,
         Configuration $accountConfig,
         Session $session,
@@ -115,6 +123,7 @@ class Newsletter implements HttpPostActionInterface
         Date $dateField
     ) {
         $this->helper = $helper;
+        $this->optInTypeFinder = $optInTypeFinder;
         $this->contactCollectionFactory = $contactCollectionFactory;
         $this->accountConfig = $accountConfig;
         $this->customerSession = $session;
@@ -153,6 +162,7 @@ class Newsletter implements HttpPostActionInterface
         /** @var \Magento\Store\Model\Store $store */
         $store = $this->storeManager->getStore();
         $websiteId = $store->getWebsiteId();
+        $storeId = $store->getId();
 
         if ($this->helper->isEnabled($websiteId)) {
             $customerEmail = $this->customerSession->getCustomer()->getEmail();
@@ -166,7 +176,8 @@ class Newsletter implements HttpPostActionInterface
                     $customerEmail,
                     $contactId,
                     $client,
-                    $websiteId
+                    $websiteId,
+                    $storeId
                 );
                 $message = $additionalSubscriptionsSuccess->message ?? '';
 
@@ -206,11 +217,12 @@ class Newsletter implements HttpPostActionInterface
      * @param string|int $contactId
      * @param Client $client
      * @param int $websiteId
+     * @param int $storeId
      *
      * @return bool|\StdClass
      * @throws LocalizedException
      */
-    private function processAdditionalSubscriptions($customerEmail, $contactId, $client, $websiteId)
+    private function processAdditionalSubscriptions($customerEmail, $contactId, $client, $websiteId, $storeId)
     {
         $additionalFromConfig = $this->accountConfig->getAddressBookIdsToShow($websiteId);
 
@@ -226,7 +238,8 @@ class Newsletter implements HttpPostActionInterface
             if (in_array($bookId, $additionalSubscriptions)) {
                 $bookResponse = $client->addContactToAddressBook(
                     $customerEmail,
-                    $bookId
+                    $bookId,
+                    $this->optInTypeFinder->getOptInType($storeId)
                 );
                 if (isset($bookResponse->message)) {
                     $success = false;

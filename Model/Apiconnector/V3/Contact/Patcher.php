@@ -8,6 +8,7 @@ use Dotdigital\V3\Models\Contact as ContactModel;
 use Dotdigital\V3\Models\ContactFactory as DotdigitalContactFactory;
 use Dotdigitalgroup\Email\Model\Apiconnector\V3\ClientFactory;
 use Dotdigitalgroup\Email\Model\Contact\ContactResponseHandler;
+use Dotdigitalgroup\Email\Model\Newsletter\OptInTypeFinder;
 
 class Patcher
 {
@@ -27,18 +28,26 @@ class Patcher
     private $contactResponseHandler;
 
     /**
+     * @var OptInTypeFinder
+     */
+    private $optInTypeFinder;
+
+    /**
      * @param DotdigitalContactFactory $sdkContactFactory
      * @param ClientFactory $clientFactory
      * @param ContactResponseHandler $contactResponseHandler
+     * @param OptInTypeFinder $optInTypeFinder
      */
     public function __construct(
         DotdigitalContactFactory $sdkContactFactory,
         ClientFactory $clientFactory,
-        ContactResponseHandler $contactResponseHandler
+        ContactResponseHandler $contactResponseHandler,
+        OptInTypeFinder $optInTypeFinder
     ) {
         $this->sdkContactFactory = $sdkContactFactory;
         $this->clientFactory = $clientFactory;
         $this->contactResponseHandler = $contactResponseHandler;
+        $this->optInTypeFinder = $optInTypeFinder;
     }
 
     /**
@@ -59,6 +68,15 @@ class Patcher
         $contact = $this->sdkContactFactory->create();
         $contact->setMatchIdentifier('email');
         $contact->setIdentifiers(['email' => $email]);
+
+        $optInType = $this->optInTypeFinder->getOptInType($storeId);
+        if ($optInType) {
+            $contact->setChannelProperties([
+                'email' => [
+                    'optInType' => $optInType
+                ]
+            ]);
+        }
 
         $response = $client->contacts->patchByIdentifier(
             $email,
