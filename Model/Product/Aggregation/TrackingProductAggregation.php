@@ -198,7 +198,6 @@ class TrackingProductAggregation implements ProductAggregationInterface
     {
         /** @var \Magento\Catalog\Model\ResourceModel\Category\Collection $categoryCollection */
         $categoryCollection = $this->taxonomyProvider->getCategories();
-        $categoryCollection->addAttributeToSelect('name');
         $categoryNames = array_reduce($categoryCollection->getItems(), function ($acc, $category) {
             $acc[] = $category->getName();
             return $acc;
