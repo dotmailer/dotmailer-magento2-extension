@@ -309,14 +309,14 @@ class PriceFinderTest extends TestCase
         $firstElement = $this->createMock(Product::class);
         $firstElement->expects($this->once())->method('getStoreIds')->willReturn([1]);
         $firstElement->expects($this->once())->method('getPrice')->willReturn('20.00');
-        $firstElement->expects($this->exactly(2))
+        $firstElement->expects($this->exactly(1))
             ->method('getSpecialPrice')
             ->willReturn('15.00');
 
         $secondElement = $this->createMock(Product::class);
         $secondElement->expects($this->once())->method('getStoreIds')->willReturn([1]);
         $secondElement->expects($this->once())->method('getPrice')->willReturn('15.00');
-        $secondElement->expects($this->exactly(2))
+        $secondElement->expects($this->exactly(1))
             ->method('getSpecialPrice')
             ->willReturn('8.00');
 
@@ -342,13 +342,13 @@ class PriceFinderTest extends TestCase
     {
         $firstElement = $this->createMock(Product::class);
         $firstElement->expects($this->once())->method('getPrice')->willReturn('20.00');
-        $firstElement->expects($this->exactly(2))
+        $firstElement->expects($this->exactly(1))
             ->method('getSpecialPrice')
             ->willReturn('15.00');
 
         $secondElement = $this->createMock(Product::class);
         $secondElement->expects($this->once())->method('getPrice')->willReturn('15.00');
-        $secondElement->expects($this->exactly(2))
+        $secondElement->expects($this->exactly(1))
             ->method('getSpecialPrice')
             ->willReturn('8.00');
 

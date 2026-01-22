@@ -49,20 +49,20 @@ class TrackingProductAggregation implements ProductAggregationInterface
      *
      * @param ProductGeneralProviderInterface $generalProductProvider
      * @param ProductStockProviderInterface $stockProvider
-     * @param ProductPriceProviderInterface $productProvider
+     * @param ProductPriceProviderInterface $productPriceProvider
      * @param ProductTaxonomyProviderInterface $productTaxonomyProvider
      * @param ProductMediaProviderInterface $productMediaProvider
      */
     public function __construct(
         ProductGeneralProviderInterface $generalProductProvider,
         ProductStockProviderInterface $stockProvider,
-        ProductPriceProviderInterface $productProvider,
+        ProductPriceProviderInterface $productPriceProvider,
         ProductTaxonomyProviderInterface $productTaxonomyProvider,
         ProductMediaProviderInterface $productMediaProvider
     ) {
         $this->generalProvider = $generalProductProvider;
         $this->stockProvider = $stockProvider;
-        $this->priceProvider = $productProvider;
+        $this->priceProvider = $productPriceProvider;
         $this->taxonomyProvider = $productTaxonomyProvider;
         $this->mediaProvider = $productMediaProvider;
     }
