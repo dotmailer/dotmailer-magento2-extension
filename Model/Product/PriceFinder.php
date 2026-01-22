@@ -27,6 +27,16 @@ class PriceFinder implements PriceFinderInterface
     private $pricesInclTax;
 
     /**
+     * @var Product
+     */
+    private $childProductWithLowestPrice;
+
+    /**
+     * @var Product
+     */
+    private $childProductWithLowestSpecialPrice;
+
+    /**
      * @param TaxCalculator $taxCalculator
      */
     public function __construct(
@@ -90,21 +100,45 @@ class PriceFinder implements PriceFinderInterface
     private function setPrices(Product $product, ?int $storeId)
     {
         if ($product->getTypeId() == 'configurable') {
-            $configurableProductInstance = $product->getTypeInstance();
             /** @var Configurable $configurableProductInstance */
+            $configurableProductInstance = $product->getTypeInstance();
             $childProducts = $configurableProductInstance->getUsedProducts($product);
+            $price = null;
+            $specialPrice = null;
+
             /** @var Product $childProduct */
             foreach ($childProducts as $childProduct) {
                 if ($storeId && !in_array($storeId, $childProduct->getStoreIds())) {
                     continue;
                 }
-                $childPrices[] = $childProduct->getPrice();
-                if ($childProduct->getSpecialPrice() !== null) {
-                    $childSpecialPrices[] = $childProduct->getSpecialPrice();
+                $childPrice = $childProduct->getPrice();
+                $childSpecialPrice = $childProduct->getSpecialPrice();
+                if ($price === null || $childPrice < $price) {
+                    $this->childProductWithLowestPrice = $childProduct;
+                    $price = $childPrice;
+                }
+                if ($specialPrice === null || (!empty($childSpecialPrice) && $childSpecialPrice < $specialPrice)) {
+                    $this->childProductWithLowestSpecialPrice = $childProduct;
+                    $specialPrice = $childSpecialPrice;
                 }
             }
-            $price = isset($childPrices) ? min($childPrices) : null;
-            $specialPrice = isset($childSpecialPrices) ? min($childSpecialPrices) : null;
+        } elseif ($product->getTypeId() == 'grouped') {
+            $childProducts = $product->getTypeInstance()->getAssociatedProducts($product);
+            $price = null;
+            $specialPrice = null;
+
+            foreach ($childProducts as $childProduct) {
+                $childPrice = $childProduct->getPrice();
+                $childSpecialPrice = $childProduct->getSpecialPrice();
+                if ($price === null || $childPrice < $price) {
+                    $this->childProductWithLowestPrice = $childProduct;
+                    $price = $childPrice;
+                }
+                if ($specialPrice === null || (!empty($childSpecialPrice) && $childSpecialPrice < $specialPrice)) {
+                    $this->childProductWithLowestSpecialPrice = $childProduct;
+                    $specialPrice = $childSpecialPrice;
+                }
+            }
         } elseif ($product->getTypeId() == 'bundle') {
             $regularPrice = $product->getPriceInfo()->getPrice('regular_price');
             /** @var \Magento\Bundle\Pricing\Price\BundleRegularPrice $regularPrice */
@@ -116,15 +150,6 @@ class PriceFinder implements PriceFinderInterface
 
             // if special price equals to price then it's wrong.
             $specialPrice = ($specialPrice === $price) ? null : $specialPrice;
-        } elseif ($product->getTypeId() == 'grouped') {
-            foreach ($product->getTypeInstance()->getAssociatedProducts($product) as $childProduct) {
-                $childPrices[] = $childProduct->getPrice();
-                if ($childProduct->getSpecialPrice() !== null) {
-                    $childSpecialPrices[] = $childProduct->getSpecialPrice();
-                }
-            }
-            $price = isset($childPrices) ? min($childPrices) : null;
-            $specialPrice = isset($childSpecialPrices) ? min($childSpecialPrices) : null;
         } else {
             $price = $product->getPrice();
             $specialPrice = $product->getSpecialPrice();
@@ -151,6 +176,10 @@ class PriceFinder implements PriceFinderInterface
         $price = $this->getPrice($product, $storeId);
         $specialPrice = $this->getSpecialPrice($product, $storeId);
 
+        if (isset($this->childProductWithLowestPrice)) {
+            $product = $this->childProductWithLowestPrice;
+        }
+
         $this->pricesInclTax['price'] = $this->formatPriceValue(
             $this->taxCalculator->calculatePriceInclTax(
                 $product,
@@ -159,6 +188,11 @@ class PriceFinder implements PriceFinderInterface
                 $customerId
             )
         );
+
+        if (isset($this->childProductWithLowestSpecialPrice)) {
+            $product = $this->childProductWithLowestSpecialPrice;
+        }
+
         $this->pricesInclTax['specialPrice'] = $this->formatPriceValue(
             $this->taxCalculator->calculatePriceInclTax(
                 $product,

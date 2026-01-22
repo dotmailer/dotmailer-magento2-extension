@@ -19,6 +19,11 @@ class ProductPriceProvider implements ProductPriceProviderInterface
     private $productProvider;
 
     /**
+     * @var ProductProviderInterface
+     */
+    private $productSaleProvider;
+
+    /**
      * @var StoreManagerInterface
      */
     private $storeManager;
@@ -35,17 +40,20 @@ class ProductPriceProvider implements ProductPriceProviderInterface
 
     /**
      * @param ProductProviderInterface $productProvider
+     * @param ProductProviderInterface $productSaleProvider
      * @param StoreManagerInterface $storeManager
      * @param TaxCalculator $taxCalculator
      * @param CustomerSession $customerSession
      */
     public function __construct(
         ProductProviderInterface $productProvider,
+        ProductProviderInterface $productSaleProvider,
         StoreManagerInterface $storeManager,
         TaxCalculator $taxCalculator,
         CustomerSession $customerSession
     ) {
         $this->productProvider = $productProvider;
+        $this->productSaleProvider = $productSaleProvider;
         $this->storeManager = $storeManager;
         $this->taxCalculator = $taxCalculator;
         $this->customerSession = $customerSession;
@@ -96,7 +104,7 @@ class ProductPriceProvider implements ProductPriceProviderInterface
     public function getSalePrice(): float
     {
         /** @var Product $product */
-        $product = $this->productProvider->getProduct();
+        $product = $this->productSaleProvider->getProduct();
         if (!$product) {
             return 0.0;
         }
@@ -113,7 +121,7 @@ class ProductPriceProvider implements ProductPriceProviderInterface
     public function getSalePriceInclTax(): float
     {
         /** @var Product $product */
-        $product = $this->productProvider->getProduct();
+        $product = $this->productSaleProvider->getProduct();
         if (!$product) {
             return 0.0;
         }
