@@ -2,15 +2,15 @@
 
 namespace Dotdigitalgroup\Email\Model\Catalog;
 
-use Dotdigitalgroup\Email\Helper\Config;
+use Dotdigitalgroup\Email\Api\Model\Product\PwaUrlFinderInterface;
 use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Frontend\PwaUrlConfig;
 use Dotdigitalgroup\Email\Model\Product\ParentFinder;
+use Laminas\Uri\Http;
 use Magento\Catalog\Block\Product\ImageBuilder;
 use Magento\Catalog\Model\Product;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
-use Laminas\Uri\Http;
 
 class UrlFinder
 {
@@ -55,6 +55,11 @@ class UrlFinder
     private $zendUri;
 
     /**
+     * @var PwaUrlFinderInterface
+     */
+    private $pwaUrlFinder;
+
+    /**
      * UrlFinder constructor.
      *
      * @param Logger $logger
@@ -65,6 +70,7 @@ class UrlFinder
      * @param ScopeConfigInterface $scopeConfig
      * @param ParentFinder $parentFinder
      * @param Http $zendUri
+     * @param PwaUrlFinderInterface $pwaUrlFinder
      */
     public function __construct(
         Logger $logger,
@@ -74,7 +80,8 @@ class UrlFinder
         \Magento\Catalog\Block\Product\ImageBuilderFactory $imageBuilderFactory,
         ScopeConfigInterface $scopeConfig,
         ParentFinder $parentFinder,
-        Http $zendUri
+        Http $zendUri,
+        PwaUrlFinderInterface $pwaUrlFinder
     ) {
         $this->logger = $logger;
         $this->pwaUrlConfig = $pwaUrlConfig;
@@ -84,6 +91,7 @@ class UrlFinder
         $this->scopeConfig = $scopeConfig;
         $this->parentFinder = $parentFinder;
         $this->zendUri = $zendUri;
+        $this->pwaUrlFinder = $pwaUrlFinder;
     }
 
     /**
@@ -130,7 +138,7 @@ class UrlFinder
             );
         }
 
-        return ($pwaUrl) ? $this->getProductUrlForPwa($pwaUrl, $product) : $product->getProductUrl();
+        return ($pwaUrl) ? $this->pwaUrlFinder->buildPwaProductUrl($pwaUrl, $product) : $product->getProductUrl();
     }
 
     /**
@@ -198,26 +206,5 @@ class UrlFinder
         }
 
         return $uri->getScheme() . '://' . $uri->getHost() . implode('/', $pathArray);
-    }
-
-    /**
-     * Retrieves product url when in pwa.
-     *
-     * @param string $pwaUrl
-     * @param Product $product
-     * @return string
-     */
-    private function getProductUrlForPwa(string $pwaUrl, Product $product): string
-    {
-        $useRewrites = $this->scopeConfig->getValue(
-            Config::XML_PATH_PWA_URL_REWRITES
-        );
-
-        if ($useRewrites) {
-            $uri = $this->zendUri->parse($product->getProductUrl());
-            return $pwaUrl . substr($uri->getPath(), 1);
-        }
-
-        return $pwaUrl . $product->getUrlKey() . '.html';
     }
 }

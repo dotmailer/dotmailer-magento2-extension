@@ -2,10 +2,12 @@
 
 namespace Dotdigitalgroup\Email\Test\Unit\Model\Catalog;
 
+use Dotdigitalgroup\Email\Api\Model\Product\PwaUrlFinderInterface;
 use Dotdigitalgroup\Email\Logger\Logger;
-use Dotdigitalgroup\Email\Model\Frontend\PwaUrlConfig;
 use Dotdigitalgroup\Email\Model\Catalog\UrlFinder as UrlFinder;
+use Dotdigitalgroup\Email\Model\Frontend\PwaUrlConfig;
 use Dotdigitalgroup\Email\Model\Product\ParentFinder;
+use Laminas\Uri\Http;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Catalog\Block\Product\ImageBuilder;
 use Magento\Catalog\Block\Product\ImageBuilderFactory;
@@ -13,7 +15,6 @@ use Magento\Catalog\Model\Product;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Store\Model\Website;
-use Laminas\Uri\Http;
 use PHPUnit\Framework\TestCase;
 
 class UrlFinderTest extends TestCase
@@ -73,6 +74,11 @@ class UrlFinderTest extends TestCase
      */
     private $zendUriMock;
 
+    /**
+     * @var \PHPUnit\Framework\MockObject\MockObject
+     */
+    private $pwaUrlBuilderMock;
+
     protected function setUp() :void
     {
         $this->loggerMock = $this->createMock(Logger::class);
@@ -98,6 +104,8 @@ class UrlFinderTest extends TestCase
 
         $this->zendUriMock = $this->createMock(Http::class);
 
+        $this->pwaUrlBuilderMock = $this->createMock(PwaUrlFinderInterface::class);
+
         $this->urlFinder = new UrlFinder(
             $this->loggerMock,
             $this->pwaUrlConfigMock,
@@ -106,7 +114,8 @@ class UrlFinderTest extends TestCase
             $imageBuilderFactory,
             $this->scopeConfigInterfaceMock,
             $this->parentFinderMock,
-            $this->zendUriMock
+            $this->zendUriMock,
+            $this->pwaUrlBuilderMock
         );
     }
 
@@ -289,6 +298,7 @@ class UrlFinderTest extends TestCase
     {
         $pwaUrl = 'https://pwa.engagementcloudformagento.com/';
         $urlKey = 'chaz-kangeroo-hoodie';
+        $expectedUrl = $pwaUrl . $urlKey . '.html';
         $visibleInCatalogAndSearchInt = 4;
 
         $this->productMock = $this->getInScopeProduct($this->productMock);
@@ -302,13 +312,14 @@ class UrlFinderTest extends TestCase
         $this->productMock->expects($this->never())
             ->method('getProductUrl');
 
-        $this->productMock->expects($this->once())
-            ->method('getUrlKey')
-            ->willReturn($urlKey);
+        $this->pwaUrlBuilderMock->expects($this->once())
+            ->method('buildPwaProductUrl')
+            ->with($pwaUrl, $this->productMock)
+            ->willReturn($expectedUrl);
 
         $returnedUrl = $this->urlFinder->fetchFor($this->productMock);
 
-        $this->assertEquals($pwaUrl . $urlKey . '.html', $returnedUrl);
+        $this->assertEquals($expectedUrl, $returnedUrl);
     }
 
     private function checksForPwaUrl($productMock, $pwaUrl = '')
