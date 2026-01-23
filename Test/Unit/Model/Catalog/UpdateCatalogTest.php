@@ -76,7 +76,7 @@ class UpdateCatalogTest extends TestCase
             ->with('setProductId');
 
         $this->parentFinderMock->expects($this->once())
-            ->method('getConfigurableParentIdsFromProductIds')
+            ->method('getParentIdsFromProductIds')
             ->willReturn(['100', '101', '102']);
 
         $this->catalogResourceMock->expects($this->once())

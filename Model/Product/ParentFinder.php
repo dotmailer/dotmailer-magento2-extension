@@ -191,6 +191,37 @@ class ParentFinder
     }
 
     /**
+     * Get all parent id's from product id's.
+     *
+     * @param array $productIds
+     * @return array
+     */
+    public function getParentIdsFromProductIds($productIds)
+    {
+        $parentProductIds = [];
+
+        foreach ($productIds as $productId) {
+            try {
+                $product = $this->productRepository->getById($productId);
+            } catch (\Magento\Framework\Exception\NoSuchEntityException $e) {
+                $this->logger->debug(
+                    $e->getMessage() . ' Product ID: ' . $productId
+                );
+                continue;
+            }
+
+            if ($product instanceof Product) {
+                $parentIds = $this->getProductParentIds($product);
+                foreach ($parentIds as $parentId) {
+                    $parentProductIds[] = $parentId;
+                }
+            }
+        }
+
+        return array_unique($parentProductIds);
+    }
+
+    /**
      * Get first parent id.
      *
      * @param Product $product
@@ -246,5 +277,32 @@ class ParentFinder
         }
 
         return null;
+    }
+
+    /**
+     * Get all parent ids for a specific product.
+     *
+     * @param Product $product
+     * @return array
+     */
+    private function getProductParentIds(Product $product)
+    {
+        $parentIds = [];
+        $configurableProducts = $this->configurableType->getParentIdsByChild($product->getId());
+        if (count($configurableProducts) > 0) {
+            $parentIds = array_merge($configurableProducts, $parentIds);
+        }
+
+        $groupedProducts = $this->groupedType->getParentIdsByChild($product->getId());
+        if (count($groupedProducts) > 0) {
+            $parentIds = array_merge($groupedProducts, $parentIds);
+        }
+
+        $bundleProducts = $this->bundleSelection->getParentIdsByChild($product->getId());
+        if (count($bundleProducts) > 0) {
+            $parentIds = array_merge($bundleProducts, $parentIds);
+        }
+
+        return $parentIds;
     }
 }
