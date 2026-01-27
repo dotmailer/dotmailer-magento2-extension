@@ -70,8 +70,7 @@ class ProductPriceProvider implements ProductPriceProviderInterface
             return 0.0;
         }
 
-        $priceInfo = $product->getPriceInfo();
-        $price = $priceInfo->getPrice('regular_price')->getAmount()->getBaseAmount();
+        $price = $product->getPrice();
 
         return (float) $price;
     }
@@ -87,8 +86,7 @@ class ProductPriceProvider implements ProductPriceProviderInterface
             return 0.0;
         }
 
-        $priceInfo = $product->getPriceInfo();
-        $price = $priceInfo->getPrice('regular_price')->getAmount()->getBaseAmount();
+        $price = $product->getPrice();
 
         return $this->taxCalculator->calculatePriceInclTax(
             $product,
@@ -109,8 +107,7 @@ class ProductPriceProvider implements ProductPriceProviderInterface
             return 0.0;
         }
 
-        $priceInfo = $product->getPriceInfo();
-        $price = $priceInfo->getPrice('final_price')->getAmount()->getBaseAmount();
+        $price = $product->getFinalPrice();
 
         return (float) $price;
     }
@@ -126,8 +123,7 @@ class ProductPriceProvider implements ProductPriceProviderInterface
             return 0.0;
         }
 
-        $priceInfo = $product->getPriceInfo();
-        $price = $priceInfo->getPrice('final_price')->getAmount()->getBaseAmount();
+        $price = $product->getFinalPrice();
 
         return $this->taxCalculator->calculatePriceInclTax(
             $product,
