@@ -1,3 +1,11 @@
+# 4.33.2
+
+### Bug fixes
+- We fixed a mismatch between web insight prices and displayed prices in certain tax configurations.
+- We fixed lowest tax prices for configurable and grouped products in catalog sync and web insight data.
+- We fixed a problem with missing categories in `productBrowse`.
+- Products with customizable options will now be re-synced as expected after purchase.
+
 # 4.33.1
 
 ### Improvements
