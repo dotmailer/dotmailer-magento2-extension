@@ -63,7 +63,7 @@ class UpdateCatalogBulkTest extends TestCase
             $this->collectionFactoryMock,
             $this->dateTimeMock,
             $this->parentFinderMock,
-            $this->productResourceMock
+            $this->productResourceMock,
         );
     }
 

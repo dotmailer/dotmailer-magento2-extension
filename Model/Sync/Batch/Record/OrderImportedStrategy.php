@@ -59,28 +59,28 @@ class OrderImportedStrategy implements RecordImportedStrategyInterface
     public function process(): void
     {
         $this->orderResourceFactory->create()->setImportedDateByIds(array_keys($this->records));
-        $this->bulkUpdate->execute($this->getAllProductsFromBatch($this->records));
+        $this->bulkUpdate->executeByIds($this->getAllProductIdsFromBatch($this->records));
     }
 
     /**
-     * Get all products from the batch of records.
+     * Get all product ids from the batch of records.
      *
      * @param array $insightRecords
-     * @return array Returns an array of products extracted from the records.
+     * @return array Returns an array of product ids extracted from the records.
      */
-    private function getAllProductsFromBatch(array $insightRecords): array
+    private function getAllProductIdsFromBatch(array $insightRecords): array
     {
-        $allProducts = [];
+        $productIds = [];
         foreach ($insightRecords as $insightRecord) {
             $recordData = $insightRecord->getJson();
             if (!isset($recordData['products'])) {
                 continue;
             }
             foreach ($recordData['products'] as $product) {
-                $allProducts[] = $product;
+                $productIds[] = $product['product_id'];
             }
         }
 
-        return $allProducts;
+        return $productIds;
     }
 }

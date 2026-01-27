@@ -49,7 +49,7 @@ class UpdateCatalogBulk
         CollectionFactory $catalogFactory,
         DateTime $dateTime,
         ParentFinder $parentFinder,
-        Product $productResource
+        Product $productResource,
     ) {
         $this->catalogResource = $catalogResource;
         $this->catalogFactory = $catalogFactory;
@@ -69,22 +69,48 @@ class UpdateCatalogBulk
         $chunkBunches = array_chunk($bunch, $bunchLimit);
 
         foreach ($chunkBunches as $chunk) {
+            $productIds = $this->getProductIdsFromSku($chunk);
+            $this->processBatch($productIds);
+        }
+    }
+
+    /**
+     * Process bunch of product ids.
+     *
+     * @param array $bunch
+     */
+    public function executeByIds($bunch)
+    {
+        $bunchLimit = 500;
+        $chunkBunches = array_chunk($bunch, $bunchLimit);
+
+        foreach ($chunkBunches as $chunk) {
             $this->processBatch($chunk);
         }
     }
 
     /**
-     * Process bunch of products.
+     * Returns product ids from product collection.
+     *
+     * @param array $bunch
+     * @return array
+     */
+    private function getProductIdsFromSku($bunch)
+    {
+        return $this->productResource->getProductsIdsBySkus(
+            array_unique(array_column($bunch, 'sku'))
+        );
+    }
+
+    /**
+     * Process bunch of product ids.
      *
      * Adds products to email_catalog or marks existing products (and their parents) as unprocessed.
      *
-     * @param array $bunch
+     * @param array $bunchProductIds
      */
-    private function processBatch($bunch)
+    private function processBatch($bunchProductIds)
     {
-        $bunchProductIds = $this->productResource->getProductsIdsBySkus(
-            array_unique(array_column($bunch, 'sku'))
-        );
         $existingProductIds = $this->getExistingProductIds($bunchProductIds);
         $newEntryIds = array_diff($bunchProductIds, $existingProductIds);
 
