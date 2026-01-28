@@ -49,7 +49,7 @@ class UpdateCatalogBulk
         CollectionFactory $catalogFactory,
         DateTime $dateTime,
         ParentFinder $parentFinder,
-        Product $productResource,
+        Product $productResource
     ) {
         $this->catalogResource = $catalogResource;
         $this->catalogFactory = $catalogFactory;
