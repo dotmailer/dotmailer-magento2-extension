@@ -185,6 +185,120 @@ class SymfonySmtpTransporterTest extends TestCase
                 'Date' => '2023-10-01 12:00:00',
             ]);
 
+        // Mock address objects
+        $fromAddress = $this->createMock(\Magento\Framework\Mail\Address::class);
+        $fromAddress->method('getEmail')->willReturn('sender@example.com');
+        $fromAddress->method('getName')->willReturn('');
+
+        $toAddress = $this->createMock(\Magento\Framework\Mail\Address::class);
+        $toAddress->method('getEmail')->willReturn('recipient@example.com');
+        $toAddress->method('getName')->willReturn('');
+
+        $emailMessage->expects($this->once())
+            ->method('getFrom')
+            ->willReturn([$fromAddress]);
+
+        $emailMessage->expects($this->once())
+            ->method('getTo')
+            ->willReturn([$toAddress]);
+
+        $this->transactionalEmailSettingsMock->expects($this->once())
+            ->method('getSmtpHost')
+            ->with($storeId)
+            ->willReturn('smtp.example.com');
+
+        $this->transactionalEmailSettingsMock->expects($this->once())
+            ->method('getSmtpPort')
+            ->with($storeId)
+            ->willReturn(587);
+
+        $this->transactionalEmailSettingsMock->expects($this->once())
+            ->method('getSmtpUsername')
+            ->with($storeId)
+            ->willReturn('user@example.com');
+
+        $this->transactionalEmailSettingsMock->expects($this->once())
+            ->method('getSmtpPassword')
+            ->with($storeId)
+            ->willReturn('password');
+
+        // Create a real Mailer instance with a mock transport
+        $symfonyTransport = $this->createMock(TransportInterface::class);
+        $realMailer = new Mailer($symfonyTransport);
+
+        $this->symfonyMailerFactoryMock->expects($this->once())
+            ->method('create')
+            ->willReturn($realMailer);
+
+        $this->symfonySmtpTransporter->execute($emailMessage, $storeId);
+    }
+
+    /**
+     * Test the execute method with company name containing comma.
+     */
+    public function testExecuteWithLaminasMimeMessageAndCommaInName()
+    {
+        $storeId = 1;
+
+        $emailMessage = $this->createMock(EmailMessage::class);
+        $this->emailMessageMethodCheckerMock->expects($this->once())
+            ->method('hasGetSymfonyMessageMethod')
+            ->with($emailMessage)
+            ->willReturn(false);
+
+        $this->emailHelperMock->expects($this->atLeastOnce())
+            ->method('isDebugEnabled')
+            ->willReturn(false);
+
+        $mimeMessageMock = $this->createMock(MimeMessageInterface::class);
+        $mimePartMock = $this->createMock(MimePartInterface::class);
+
+        $emailMessage->expects($this->once())
+            ->method('getMessageBody')
+            ->willReturn($mimeMessageMock);
+
+        $mimeMessageMock->expects($this->once())
+            ->method('getParts')
+            ->willReturn([$mimePartMock]);
+
+        $mimePartMock->expects($this->atLeastOnce())
+            ->method('getType')
+            ->willReturn('text/html');
+
+        $mimePartMock->expects($this->atLeastOnce())
+            ->method('getDisposition')
+            ->willReturn('inline');
+
+        $mimePartMock->expects($this->once())
+            ->method('getRawContent')
+            ->willReturn('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" etc.');
+
+        $emailMessage->expects($this->once())
+            ->method('getHeaders')
+            ->willReturn([
+                'From' => 'sender@example.com',
+                'To' => '"Company, LTD" <recipient@example.com>',
+                'Subject' => 'Test Email',
+                'Date' => '2023-10-01 12:00:00',
+            ]);
+
+        // Mock address objects
+        $fromAddress = $this->createMock(\Magento\Framework\Mail\Address::class);
+        $fromAddress->method('getEmail')->willReturn('sender@example.com');
+        $fromAddress->method('getName')->willReturn('');
+
+        $toAddress = $this->createMock(\Magento\Framework\Mail\Address::class);
+        $toAddress->method('getEmail')->willReturn('recipient@example.com');
+        $toAddress->method('getName')->willReturn('Company, LTD');
+
+        $emailMessage->expects($this->once())
+            ->method('getFrom')
+            ->willReturn([$fromAddress]);
+
+        $emailMessage->expects($this->once())
+            ->method('getTo')
+            ->willReturn([$toAddress]);
+
         $this->transactionalEmailSettingsMock->expects($this->once())
             ->method('getSmtpHost')
             ->with($storeId)
