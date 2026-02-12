@@ -6,16 +6,16 @@ use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Automation;
 use Dotdigitalgroup\Email\Model\Newsletter\BackportedSubscriberLoader;
+use Dotdigitalgroup\Email\Model\Newsletter\OptInTypeFinder;
 use Dotdigitalgroup\Email\Model\ResourceModel\Automation as AutomationResource;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory as ContactCollectionFactory;
 use Dotdigitalgroup\Email\Model\Sales\QuoteFactory as DotdigitalQuoteFactory;
 use Dotdigitalgroup\Email\Model\StatusInterface;
 use Dotdigitalgroup\Email\Model\Sync\Automation\AutomationProcessor;
 use Dotdigitalgroup\Email\Model\Sync\Automation\ContactManager;
-use Dotdigitalgroup\Email\Model\Sync\Automation\OrderManager;
-use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\DataFieldCollector;
 use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\DataFieldTypeHandler;
 use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\Updater\AbandonedCartFactory as AbandonedCartUpdaterFactory;
+use Dotdigitalgroup\Email\Model\Sync\Automation\OrderManager;
 use Magento\Framework\Exception\AlreadyExistsException;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Newsletter\Model\Subscriber;
@@ -48,11 +48,11 @@ class AbandonedCart extends AutomationProcessor
      *
      * @param Data $helper
      * @param Logger $logger
+     * @param OptInTypeFinder $optInTypeFinder
      * @param AutomationResource $automationResource
      * @param ContactCollectionFactory $contactCollectionFactory
      * @param ContactManager $contactManager
      * @param OrderManager $orderManager
-     * @param DataFieldCollector $dataFieldCollector
      * @param DataFieldTypeHandler $dataFieldTypeHandler
      * @param BackportedSubscriberLoader $backportedSubscriberLoader
      * @param AbandonedCartUpdaterFactory $dataFieldUpdaterFactory
@@ -62,11 +62,11 @@ class AbandonedCart extends AutomationProcessor
     public function __construct(
         Data $helper,
         Logger $logger,
+        OptInTypeFinder $optInTypeFinder,
         AutomationResource $automationResource,
         ContactCollectionFactory $contactCollectionFactory,
         ContactManager $contactManager,
         OrderManager $orderManager,
-        DataFieldCollector $dataFieldCollector,
         DataFieldTypeHandler $dataFieldTypeHandler,
         BackportedSubscriberLoader $backportedSubscriberLoader,
         AbandonedCartUpdaterFactory $dataFieldUpdaterFactory,
@@ -80,11 +80,11 @@ class AbandonedCart extends AutomationProcessor
         parent::__construct(
             $helper,
             $logger,
+            $optInTypeFinder,
             $automationResource,
             $contactCollectionFactory,
             $contactManager,
             $orderManager,
-            $dataFieldCollector,
             $dataFieldTypeHandler,
             $backportedSubscriberLoader
         );

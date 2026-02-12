@@ -14,7 +14,11 @@ use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\Transport\Smtp\Auth\LoginAuthenticator;
 use Symfony\Component\Mailer\Transport\Smtp\EsmtpTransport;
 use Symfony\Component\Mailer\Transport\TransportInterface as SymfonyTransportInterface;
+use Symfony\Component\Mime\Address;
+use Symfony\Component\Mime\Email;
+use Symfony\Component\Mime\Header\Headers;
 use Symfony\Component\Mime\Message as SymfonyMimeMessage;
+use Symfony\Component\Mime\Part\AbstractPart;
 use Magento\Framework\Filesystem\Io\File;
 
 class SymfonySmtpTransporter
@@ -104,7 +108,8 @@ class SymfonySmtpTransporter
      * @param EmailMessageInterface $message
      *
      * @return SymfonyMimeMessage
-     * @throws \DateMalformedStringException|LocalizedException
+     * @throws LocalizedException
+     * @throws \DateMalformedStringException
      */
     private function getOrConvertMimeMessage(EmailMessageInterface $message): SymfonyMimeMessage
     {
@@ -113,56 +118,88 @@ class SymfonySmtpTransporter
             return $message->getSymfonyMessage();
         }
 
-        $parts = $message->getMessageBody()->getParts();
+        $headers = $this->getSymfonyEmailHeaders($message);
+        $body = $this->getSymfonyEmailBody($message, $headers);
 
-        $headers = new \Symfony\Component\Mime\Header\Headers();
+        return new SymfonyMimeMessage($headers, $body);
+    }
 
-        if ($this->emailHelper->isDebugEnabled()) {
-            $laminasHeaders = [];
-            foreach ($message->getHeaders() as $headerName => $headerValue) {
-                if (in_array(strtolower($headerName), ['from', 'reply-to', 'to', 'cc', 'bcc'], true)) {
-                    $laminasHeaders[$headerName] = $headerValue;
-                }
-            }
-            $this->logger->debug('Laminas address headers:', $laminasHeaders);
-        }
+    /**
+     * Returns Symfony email headers.
+     *
+     * @param EmailMessageInterface $message
+     *
+     * @return Headers
+     * @throws \DateMalformedStringException
+     */
+    private function getSymfonyEmailHeaders(EmailMessageInterface $message): Headers
+    {
+        $this->debugLaminasHeaders($message);
+
+        $headers = new Headers();
+
+        $addressMethodMap = [
+            'To' => 'getTo',
+            'Cc' => 'getCc',
+            'Bcc' => 'getBcc',
+            'Reply-To' => 'getReplyTo',
+            'From' => 'getFrom',
+        ];
 
         foreach ($message->getHeaders() as $headerName => $headerValue) {
+            $headerName = ucwords(strtolower($headerName), "-");
             if ($headerName === 'Date') {
                 $headers->addDateHeader($headerName, new \DateTime($headerValue));
+                continue;
             }
             if ($headerName === 'Subject') {
                 $headers->addTextHeader('Subject', $headerValue);
+                continue;
             }
-            if (in_array(strtolower($headerName), ['from', 'reply-to', 'to', 'cc', 'bcc'], true)) {
-                if (empty(trim($headerValue))) {
-                    continue;
-                }
-                $headerName = ucfirst(strtolower($headerName));
-                if (strpos($headerValue, ',') !== false) {
-                    $headerValues = array_filter(array_map('trim', explode(',', $headerValue)));
-                    $headers->addMailboxListHeader($headerName, $headerValues);
-                } else {
-                    $headers->addMailboxListHeader($headerName, [trim($headerValue)]);
-                }
+            if (!in_array($headerName, ['From', 'Reply-To', 'To', 'Cc', 'Bcc'], true)) {
+                continue;
             }
+            if (empty(trim($headerValue))) {
+                continue;
+            }
+
+            $addressHeaders = $message->{$addressMethodMap[$headerName]}();
+            if (empty($addressHeaders)) {
+                continue;
+            }
+
+            $emails = [];
+            foreach ($addressHeaders as $address) {
+                $emails[] = $address->getName() ?
+                    sprintf('%s <%s>', $address->getName(), $address->getEmail()) :
+                    $address->getEmail();
+            }
+            $headerValue = Address::createArray($emails);
+            $headers->addMailboxListHeader($headerName, $headerValue);
         }
 
-        if ($this->emailHelper->isDebugEnabled()) {
-            $symfonyHeaders = [];
-            foreach ($headers->all() as $header) {
-                if (in_array(strtolower($header->getName()), ['from', 'reply-to', 'to', 'cc', 'bcc'], true)) {
-                    $symfonyHeaders[$header->getName()] = $header->getBodyAsString();
-                }
-            }
-            $this->logger->debug('Symfony address headers:', $symfonyHeaders);
-        }
+        $this->debugSymfonyHeaders($headers);
 
-        // Use Email class to support attachments
-        $symfonyEmail = new \Symfony\Component\Mime\Email($headers);
+        return $headers;
+    }
 
+    /**
+     * Returns Symfony email body.
+     *
+     * We specifically use Symfony Email to support attachments.
+     *
+     * @param EmailMessageInterface $message
+     * @param Headers $headers
+     *
+     * @return AbstractPart
+     * @throws LocalizedException
+     */
+    private function getSymfonyEmailBody(EmailMessageInterface $message, Headers $headers): AbstractPart
+    {
+        $symfonyEmail = new Email($headers);
+        $parts = $message->getMessageBody()->getParts();
         $contentSet = false;
-        // Find HTML or text content
+
         foreach ($parts as $mimePart) {
             $contentType = $mimePart->getType();
             try {
@@ -203,8 +240,9 @@ class SymfonySmtpTransporter
             throw new LocalizedException(__('Unable to get raw content from message parts'));
         }
 
-        return new SymfonyMimeMessage($headers, $symfonyEmail->getBody());
+        return $symfonyEmail->getBody();
     }
+
     /**
      * Create SMTP object.
      *
@@ -250,5 +288,43 @@ class SymfonySmtpTransporter
     {
         $this->mailerFactory->create($transport)
             ->send($message);
+    }
+
+    /**
+     * Logs Laminas headers for debugging.
+     *
+     * @param EmailMessageInterface $message
+     * @return void
+     */
+    private function debugLaminasHeaders(EmailMessageInterface $message): void
+    {
+        if ($this->emailHelper->isDebugEnabled()) {
+            $laminasHeaders = [];
+            foreach ($message->getHeaders() as $headerName => $headerValue) {
+                if (in_array(strtolower($headerName), ['from', 'reply-to', 'to', 'cc', 'bcc'], true)) {
+                    $laminasHeaders[$headerName] = $headerValue;
+                }
+            }
+            $this->logger->debug('Laminas address headers:', $laminasHeaders);
+        }
+    }
+
+    /**
+     * Logs Symfony headers for debugging.
+     *
+     * @param Headers $headers
+     * @return void
+     */
+    private function debugSymfonyHeaders(Headers $headers): void
+    {
+        if ($this->emailHelper->isDebugEnabled()) {
+            $symfonyHeaders = [];
+            foreach ($headers->all() as $header) {
+                if (in_array(strtolower($header->getName()), ['from', 'reply-to', 'to', 'cc', 'bcc'], true)) {
+                    $symfonyHeaders[$header->getName()] = $header->getBodyAsString();
+                }
+            }
+            $this->logger->debug('Symfony address headers:', $symfonyHeaders);
+        }
     }
 }

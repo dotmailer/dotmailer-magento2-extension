@@ -1,3 +1,13 @@
+# 4.34.0
+
+### Improvements
+- Opt-in type is now passed in all API calls creating or updating single contacts.
+- Merchants can now extend our code to customize product URLs for PWA front ends.
+- All types of parent products (including bundle and grouped) will now be resynced when their children are updated.
+
+### Bug fixes
+- We fixed transactional email sends if the recipient name contained a comma.
+
 # 4.33.2
 
 ### Bug fixes

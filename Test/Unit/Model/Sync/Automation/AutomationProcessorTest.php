@@ -2,6 +2,7 @@
 
 namespace Dotdigitalgroup\Email\Test\Unit\Model\Sync\Automation;
 
+use Dotdigital\V3\Models\Contact\ChannelProperties\EmailChannelProperties\OptInTypeInterface;
 use Dotdigitalgroup\Email\Exception\PendingOptInException;
 use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Logger\Logger;
@@ -10,13 +11,13 @@ use Dotdigitalgroup\Email\Model\Contact;
 use Dotdigitalgroup\Email\Model\Contact\ContactResponseHandler;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory as ContactCollectionFactory;
 use Dotdigitalgroup\Email\Model\Newsletter\BackportedSubscriberLoader;
+use Dotdigitalgroup\Email\Model\Newsletter\OptInTypeFinder;
 use Dotdigitalgroup\Email\Model\ResourceModel\Automation as AutomationResource;
 use Dotdigitalgroup\Email\Model\StatusInterface;
 use Dotdigitalgroup\Email\Model\Sync\Automation\AutomationProcessor;
 use Dotdigitalgroup\Email\Model\Sync\Automation\AutomationTypeHandler;
 use Dotdigitalgroup\Email\Model\Sync\Automation\ContactManager;
 use Dotdigitalgroup\Email\Model\Sync\Automation\OrderManager;
-use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\DataFieldCollector;
 use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\DataFieldTypeHandler;
 use Dotdigitalgroup\Email\Test\Unit\Traits\AutomationProcessorTrait;
 use Magento\Newsletter\Model\Subscriber;
@@ -62,11 +63,6 @@ class AutomationProcessorTest extends TestCase
     private $orderManagerMock;
 
     /**
-     * @var DataFieldCollector|\PHPUnit_Framework_MockObject_MockObject
-     */
-    private $dataFieldCollectorMock;
-
-    /**
      * @var DataFieldTypeHandler|\PHPUnit_Framework_MockObject_MockObject
      */
     private $dataFieldTypeHandlerMock;
@@ -75,6 +71,11 @@ class AutomationProcessorTest extends TestCase
      * @var BackportedSubscriberLoader|\PHPUnit_Framework_MockObject_MockObject
      */
     private $backportedSubscriberLoaderMock;
+
+    /**
+     * @var OptInTypeFinder|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $optInTypeFinderMock;
 
     /**
      * @var AutomationProcessor
@@ -104,9 +105,9 @@ class AutomationProcessorTest extends TestCase
         $this->contactCollectionFactoryMock = $this->createMock(ContactCollectionFactory::class);
         $this->contactManagerMock = $this->createMock(ContactManager::class);
         $this->orderManagerMock = $this->createMock(OrderManager::class);
-        $this->dataFieldCollectorMock = $this->createMock(DataFieldCollector::class);
         $this->dataFieldTypeHandlerMock = $this->createMock(DataFieldTypeHandler::class);
         $this->backportedSubscriberLoaderMock = $this->createMock(BackportedSubscriberLoader::class);
+        $this->optInTypeFinderMock = $this->createMock(OptInTypeFinder::class);
         $this->contactModelMock = $this->getMockBuilder(Contact::class)
             ->onlyMethods(['loadByCustomerEmail'])
             ->addMethods(['getCustomerId', 'getIsGuest'])
@@ -121,11 +122,11 @@ class AutomationProcessorTest extends TestCase
         $this->automationProcessor = new AutomationProcessor(
             $this->helperMock,
             $this->loggerMock,
+            $this->optInTypeFinderMock,
             $this->automationResourceMock,
             $this->contactCollectionFactoryMock,
             $this->contactManagerMock,
             $this->orderManagerMock,
-            $this->dataFieldCollectorMock,
             $this->dataFieldTypeHandlerMock,
             $this->backportedSubscriberLoaderMock
         );
@@ -143,6 +144,10 @@ class AutomationProcessorTest extends TestCase
 
         $this->dataFieldTypeHandlerMock->expects($this->once())
             ->method('retrieveDatafieldsByType');
+
+        $this->optInTypeFinderMock->expects($this->once())
+            ->method('getOptInType')
+            ->willReturn(OptInTypeInterface::DOUBLE);
 
         $this->contactManagerMock->expects($this->once())
             ->method('prepareDotdigitalContact')
@@ -168,6 +173,9 @@ class AutomationProcessorTest extends TestCase
 
         $this->dataFieldTypeHandlerMock->expects($this->never())
             ->method('retrieveDatafieldsByType');
+
+        $this->optInTypeFinderMock->expects($this->never())
+            ->method('getOptInType');
 
         $this->contactManagerMock->expects($this->never())
             ->method('prepareDotdigitalContact');
@@ -195,6 +203,9 @@ class AutomationProcessorTest extends TestCase
         $this->dataFieldTypeHandlerMock->expects($this->never())
             ->method('retrieveDatafieldsByType');
 
+        $this->optInTypeFinderMock->expects($this->never())
+            ->method('getOptInType');
+
         $this->contactManagerMock->expects($this->never())
             ->method('prepareDotdigitalContact');
 
@@ -216,6 +227,10 @@ class AutomationProcessorTest extends TestCase
 
         $this->dataFieldTypeHandlerMock->expects($this->once())
             ->method('retrieveDatafieldsByType');
+
+        $this->optInTypeFinderMock->expects($this->once())
+            ->method('getOptInType')
+            ->willReturn(null);
 
         $this->contactManagerMock->expects($this->once())
             ->method('prepareDotdigitalContact')
@@ -239,6 +254,10 @@ class AutomationProcessorTest extends TestCase
 
         $this->dataFieldTypeHandlerMock->expects($this->once())
             ->method('retrieveDatafieldsByType');
+
+        $this->optInTypeFinderMock->expects($this->once())
+            ->method('getOptInType')
+            ->willReturn(null);
 
         $this->contactManagerMock->expects($this->once())
             ->method('prepareDotdigitalContact')

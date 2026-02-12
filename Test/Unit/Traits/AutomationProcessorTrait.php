@@ -57,24 +57,4 @@ trait AutomationProcessorTrait
             ->method('loadBySubscriberEmail')
             ->willReturn($this->subscriberModelMock);
     }
-
-    private function getSubscribedContact()
-    {
-        $contact = [
-            'id' => 1,
-            'status' => StatusInterface::SUBSCRIBED
-        ];
-
-        return (object) $contact;
-    }
-
-    private function getPendingOptInContact()
-    {
-        $contact = [
-            'id' => 1,
-            'status' => StatusInterface::PENDING_OPT_IN
-        ];
-
-        return (object) $contact;
-    }
 }

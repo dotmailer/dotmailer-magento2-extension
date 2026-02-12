@@ -81,7 +81,7 @@ class UpdateCatalogBulkTest extends TestCase
             ->willReturn('randomDate');
 
         $this->parentFinderMock->expects($this->never())
-            ->method('getConfigurableParentIdsFromProductIds');
+            ->method('getParentIdsFromProductIds');
 
         $this->resourceCatalogMock->expects($this->once())
             ->method('bulkProductImport');
@@ -107,7 +107,7 @@ class UpdateCatalogBulkTest extends TestCase
             ->willReturn('randomDate');
 
         $this->parentFinderMock->expects($this->once())
-            ->method('getConfigurableParentIdsFromProductIds')
+            ->method('getParentIdsFromProductIds')
             ->willReturn(['100', '101', '102']);
 
         $this->resourceCatalogMock->expects($this->never())
@@ -135,7 +135,7 @@ class UpdateCatalogBulkTest extends TestCase
             ->willReturn('randomDate');
 
         $this->parentFinderMock->expects($this->once())
-            ->method('getConfigurableParentIdsFromProductIds')
+            ->method('getParentIdsFromProductIds')
             ->willReturn(['100', '101', '102']);
 
         $this->resourceCatalogMock->expects($this->once())
