@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dotdigitalgroup\Email\Console\Command;
 
 use Dotdigitalgroup\Email\Console\Command\Provider\TaskProvider;
@@ -46,11 +48,11 @@ class TaskRunnerCommand extends Command
     {
         $this
             ->setName('dotdigital:task')
-            ->setDescription(__('Run dotdigital module tasks on demand'))
+            ->setDescription('Run dotdigital module tasks on demand')
             ->addArgument(
                 'task',
                 InputArgument::OPTIONAL,
-                __('The name of the task to run')
+                'The name of the task to run'
             );
         parent::configure();
     }
@@ -63,7 +65,7 @@ class TaskRunnerCommand extends Command
      * @return int
      * @throws LocalizedException
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         try {
             $this->state->setAreaCode(Area::AREA_CRONTAB);

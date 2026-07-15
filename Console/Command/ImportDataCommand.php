@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dotdigitalgroup\Email\Console\Command;
 
 use Dotdigitalgroup\Email\Setup\Install\DataMigrationHelper;
@@ -39,7 +41,7 @@ class ImportDataCommand extends Command
                 'table',
                 't',
                 InputArgument::OPTIONAL,
-                __('The name of the table you want to migrate'),
+                'The name of the table you want to migrate',
                 null
             );
 
@@ -56,7 +58,7 @@ class ImportDataCommand extends Command
      * @throws InputException
      * @throws LocalizedException
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $requestedTable = $input->getOption('table');
         $availableTables = $this->migrateData->getTablesFromAvailableTypes();

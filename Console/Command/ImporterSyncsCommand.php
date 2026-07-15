@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dotdigitalgroup\Email\Console\Command;
 
 use Dotdigitalgroup\Email\Console\Command\Provider\SyncProvider;
@@ -49,23 +51,23 @@ class ImporterSyncsCommand extends Command
     {
         $this
             ->setName('dotdigital:sync')
-            ->setDescription(__('Run syncs to collect data from email_ tables and import to Dotdigital'))
+            ->setDescription('Run syncs to collect data from email_ tables and import to Dotdigital')
             ->addArgument(
                 'sync',
                 InputArgument::OPTIONAL,
-                __('The name of the sync to run')
+                'The name of the sync to run'
             )
             ->addOption(
                 'from',
                 null,
                 InputOption::VALUE_OPTIONAL,
-                __('Specify a date/time (parsable by \DateTime) to run a sync from (if supported)')
+                'Specify a date/time (parsable by \DateTime) to run a sync from (if supported)'
             )
             ->addOption(
                 'mode',
                 null,
                 InputOption::VALUE_OPTIONAL,
-                __('Switch to debug mode to output database profiler queries (if enabled)')
+                'Switch to debug mode to output database profiler queries (if enabled)'
             )
         ;
         parent::configure();
@@ -79,7 +81,7 @@ class ImporterSyncsCommand extends Command
      * @return int
      * @throws LocalizedException
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         try {
             $this->state->setAreaCode(Area::AREA_CRONTAB);

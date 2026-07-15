@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dotdigitalgroup\Email\Console\Command;
 
 use Dotdigitalgroup\Email\Model\Connector\DataFieldAutoMapper;
@@ -30,7 +32,7 @@ class AutoMapDataFieldsCommand extends Command
     protected function configure()
     {
         $this->setName('dotdigital:connector:automap')
-            ->setDescription(__('Auto-map data fields'));
+            ->setDescription('Auto-map data fields');
 
         parent::configure();
     }
@@ -42,7 +44,7 @@ class AutoMapDataFieldsCommand extends Command
      * @param OutputInterface $output
      * @return int
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $output->writeln(__('Auto-mapping data fields')->getText());
 
