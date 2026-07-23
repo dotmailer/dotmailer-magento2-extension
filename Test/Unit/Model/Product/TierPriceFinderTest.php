@@ -12,11 +12,16 @@ use Magento\Catalog\Api\Data\ProductTierPriceInterface;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ProductRepository;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
+use Magento\Framework\TestFramework\Unit\Helper\MockCreationTrait;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class TierPriceFinderTest extends TestCase
 {
+    use MockCreationTrait;
+
     /**
      * @var TierPriceFinder
      */
@@ -60,10 +65,7 @@ class TierPriceFinderTest extends TestCase
 
         $product = $this->createMock(Product::class);
         $tierPrice = $this->createMock(ProductTierPriceInterface::class);
-        $extensionAttributes = $this->getMockBuilder(ProductTierPriceExtensionInterface::class)
-            ->disableOriginalConstructor()
-            ->addMethods(['getPercentageValue'])
-            ->getMock();
+        $extensionAttributes = $this->getProductTierPriceExtensionInterfaceMock();
 
         $product->expects($this->once())
             ->method('getTypeId')
@@ -129,10 +131,7 @@ class TierPriceFinderTest extends TestCase
 
         $product = $this->createMock(Product::class);
         $tierPrice = $this->createMock(ProductTierPriceInterface::class);
-        $extensionAttributes = $this->getMockBuilder(ProductTierPriceExtensionInterface::class)
-            ->disableOriginalConstructor()
-            ->addMethods(['getPercentageValue'])
-            ->getMock();
+        $extensionAttributes = $this->getProductTierPriceExtensionInterfaceMock();
 
         $product->expects($this->once())
             ->method('getTypeId')
@@ -235,10 +234,7 @@ class TierPriceFinderTest extends TestCase
         $configurableProductInstance = $this->createMock(Configurable::class);
         $childProduct = $this->createMock(Product::class);
         $tierPrice = $this->createMock(ProductTierPriceInterface::class);
-        $extensionAttributes = $this->getMockBuilder(ProductTierPriceExtensionInterface::class)
-            ->disableOriginalConstructor()
-            ->addMethods(['getPercentageValue'])
-            ->getMock();
+        $extensionAttributes = $this->getProductTierPriceExtensionInterfaceMock();
 
         $configurableProduct->expects($this->once())
             ->method('getTypeId')
@@ -359,10 +355,7 @@ class TierPriceFinderTest extends TestCase
         $simpleProduct = $this->createMock(Product::class);
         $bundleProductInstance = $this->createMock(\Magento\Bundle\Model\Product\Type::class);
         $tierPrice = $this->createMock(ProductTierPriceInterface::class);
-        $extensionAttributes = $this->getMockBuilder(ProductTierPriceExtensionInterface::class)
-            ->disableOriginalConstructor()
-            ->addMethods(['getPercentageValue'])
-            ->getMock();
+        $extensionAttributes = $this->getProductTierPriceExtensionInterfaceMock();
 
         $bundleProduct->expects($this->once())
             ->method('getTypeId')
@@ -446,5 +439,18 @@ class TierPriceFinderTest extends TestCase
             'percentage' => 20,
             'type' => 'Percentage Discount'
         ], $result[0]);
+    }
+
+    /**
+     * Build ProductTierPriceExtensionInterface mock.
+     *
+     * @return MockObject
+     */
+    private function getProductTierPriceExtensionInterfaceMock(): MockObject
+    {
+        return $this->createPartialMockWithReflection(
+            ProductTierPriceExtensionInterface::class,
+            ['getWebsiteId', 'setWebsiteId', 'getPercentageValue', 'setPercentageValue']
+        );
     }
 }

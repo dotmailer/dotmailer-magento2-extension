@@ -18,15 +18,20 @@ use Dotdigitalgroup\Email\Model\Sync\Subscriber\SubscriberExporter;
 use Dotdigitalgroup\Email\Model\Sync\Subscriber\SubscriberExporterFactory;
 use Dotdigitalgroup\Email\Model\Sync\Subscriber\SubscriberWithSalesExporter;
 use Dotdigitalgroup\Email\Model\Sync\Subscriber\SubscriberWithSalesExporterFactory;
+use Dotdigitalgroup\Email\Test\Unit\Traits\MockBuilderCompatibilityTrait;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Store\Api\Data\WebsiteInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class SubscriberTest extends TestCase
 {
+    use MockBuilderCompatibilityTrait;
+
     /**
      * @var Data|MockObject
      */
@@ -119,7 +124,10 @@ class SubscriberTest extends TestCase
         $this->subscriberExporterMock = $this->createMock(ContactExporterInterface::class);
         $this->subscriberWithSalesExporterMock = $this->createMock(ContactExporterInterface::class);
 
-        $this->websiteInterfaceMock = $this->getMockBuilder(WebsiteInterface::class)
+        $this->websiteInterfaceMock = $this->getMockBuilder($this->classWithAddedMethods(
+            WebsiteInterface::class,
+            ['getStoreIds', 'getConfig']
+        ))
             ->onlyMethods(
                 [
                     'getId',
@@ -131,10 +139,11 @@ class SubscriberTest extends TestCase
                     'getDefaultGroupId',
                     'setDefaultGroupId',
                     'getExtensionAttributes',
-                    'setExtensionAttributes'
+                    'setExtensionAttributes',
+                    'getStoreIds',
+                    'getConfig'
                 ]
             )
-            ->addMethods(['getStoreIds', 'getConfig'])
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -581,8 +590,11 @@ class SubscriberTest extends TestCase
         $stubs = [];
 
         for ($i = $start; $i <= $count; $i++) {
-            $subStub = $this->getMockBuilder(SubscriberModel::class)
-                ->addMethods(['getId', 'getCustomerId', 'getEmail'])
+            $subStub = $this->getMockBuilder($this->classWithAddedMethods(
+                SubscriberModel::class,
+                ['getId', 'getCustomerId', 'getEmail']
+            ))
+                ->onlyMethods(['getId', 'getCustomerId', 'getEmail'])
                 ->disableOriginalConstructor()
                 ->getMock();
             $subStub->method('getId')->willReturn($i);
@@ -605,8 +617,11 @@ class SubscriberTest extends TestCase
         $stubs = [];
 
         for ($i = $start; $i < ($start + $count); $i++) {
-            $subStub = $this->getMockBuilder(SubscriberModel::class)
-                ->addMethods(['getId', 'getCustomerId', 'getEmail'])
+            $subStub = $this->getMockBuilder($this->classWithAddedMethods(
+                SubscriberModel::class,
+                ['getId', 'getCustomerId', 'getEmail']
+            ))
+                ->onlyMethods(['getId', 'getCustomerId', 'getEmail'])
                 ->disableOriginalConstructor()
                 ->getMock();
             $subStub->method('getId')->willReturn($i);

@@ -17,6 +17,7 @@ use Dotdigitalgroup\Email\Model\Product\PriceFinder;
 use Dotdigitalgroup\Email\Model\Product\PriceFinderFactory;
 use Dotdigitalgroup\Email\Model\Product\IndexPriceFinder;
 use Dotdigitalgroup\Email\Model\Product\TierPriceFinder;
+use Dotdigitalgroup\Email\Test\Unit\Traits\MockBuilderCompatibilityTrait;
 use Dotdigitalgroup\Email\Model\Validator\Schema\Exception\SchemaValidationException;
 use Dotdigitalgroup\Email\Model\Validator\Schema\SchemaValidator;
 use Dotdigitalgroup\Email\Model\Validator\Schema\SchemaValidatorFactory;
@@ -32,9 +33,13 @@ use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class ProductTest extends TestCase
 {
+    use MockBuilderCompatibilityTrait;
+
     /**
      * @var StoreManagerInterface|MockObject
      */
@@ -150,7 +155,10 @@ class ProductTest extends TestCase
         $this->storeManagerMock = $this->createMock(StoreManagerInterface::class);
         $this->statusFactoryMock = $this->createMock(StatusFactory::class);
         $this->visibilityFactoryMock = $this->createMock(VisibilityFactory::class);
-        $this->mageProductMock = $this->getMockBuilder(MageProduct::class)
+        $this->mageProductMock = $this->getMockBuilder($this->classWithAddedMethods(MageProduct::class, [
+            'getTaxClassId',
+            'getShortDescription'
+        ]))
             ->disableOriginalConstructor()
             ->onlyMethods(
                 [
@@ -164,11 +172,7 @@ class ProductTest extends TestCase
                 'getVisibility',
                 'getCategoryCollection',
                 'getWebsiteIds',
-                'getCreatedAt'
-                ]
-            )
-            ->addMethods(
-                [
+                'getCreatedAt',
                     'getTaxClassId',
                     'getShortDescription'
                 ]

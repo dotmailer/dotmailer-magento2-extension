@@ -6,8 +6,10 @@ use Dotdigitalgroup\Email\Model\Catalog\UpdateCatalog;
 use Dotdigitalgroup\Email\Observer\Catalog\ReimportProduct;
 use Dotdigitalgroup\Email\Model\Catalog\CatalogService;
 use Magento\Framework\Event\Observer;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\TestCase;
 
+#[AllowMockObjectsWithoutExpectations]
 class ReimportProductTest extends TestCase
 {
     /**

@@ -7,7 +7,9 @@ use Dotdigitalgroup\Email\Model\AbandonedCart\ProgramEnrolment\Rules;
 use Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory;
 use Dotdigitalgroup\Email\Model\RulesFactory;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class ProgramEnrolmentRulesTest extends TestCase
 {
     /**

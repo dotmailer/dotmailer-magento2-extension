@@ -12,7 +12,9 @@ use Dotdigitalgroup\Email\Model\ResourceModel\Contact\Collection as ContactColle
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory as ContactCollectionFactory;
 use Magento\Store\Api\StoreWebsiteRelationInterface;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class UnsubscriberTest extends TestCase
 {
     /**
@@ -203,7 +205,6 @@ class UnsubscriberTest extends TestCase
     {
         $class = new \ReflectionClass(Unsubscriber::class);
         $method = $class->getMethod($name);
-        $method->setAccessible(true);
         return $method;
     }
 

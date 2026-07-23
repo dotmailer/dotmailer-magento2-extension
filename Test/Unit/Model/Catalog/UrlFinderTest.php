@@ -7,6 +7,7 @@ use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Catalog\UrlFinder as UrlFinder;
 use Dotdigitalgroup\Email\Model\Frontend\PwaUrlConfig;
 use Dotdigitalgroup\Email\Model\Product\ParentFinder;
+use Dotdigitalgroup\Email\Test\Unit\Traits\MockBuilderCompatibilityTrait;
 use Laminas\Uri\Http;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Catalog\Block\Product\ImageBuilder;
@@ -16,9 +17,13 @@ use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Store\Model\Website;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class UrlFinderTest extends TestCase
 {
+    use MockBuilderCompatibilityTrait;
+
     /**
      * @var \PHPUnit\Framework\MockObject\MockObject
      */
@@ -85,9 +90,16 @@ class UrlFinderTest extends TestCase
         $this->pwaUrlConfigMock = $this->createMock(PwaUrlConfig::class);
         $this->productRepositoryMock = $this->createMock(ProductRepositoryInterface::class);
         //$this->productMock = $this->createMock(Product::class);
-        $this->productMock = $this->getMockBuilder(Product::class)
-            ->addMethods(['getUrlKey'])
-            ->onlyMethods(['getVisibility', 'getData', 'getProductUrl', 'getWebsiteIds', 'getStoreId', 'getStoreIds'])
+        $this->productMock = $this->getMockBuilder($this->classWithAddedMethods(Product::class, ['getUrlKey']))
+            ->onlyMethods([
+                'getVisibility',
+                'getData',
+                'getProductUrl',
+                'getWebsiteIds',
+                'getStoreId',
+                'getStoreIds',
+                'getUrlKey'
+            ])
             ->disableOriginalConstructor()
             ->getMock();
         $this->storeManagerMock = $this->createMock(StoreManagerInterface::class);

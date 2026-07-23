@@ -168,6 +168,11 @@ class AbandonedCart extends AutomationProcessor
      */
     private function getQuoteItems($quoteId)
     {
+        // Handle null or empty quote ID
+        if (!$quoteId) {
+            return [];
+        }
+
         if (isset($this->quoteItems[$quoteId])) {
             return $this->quoteItems[$quoteId];
         }

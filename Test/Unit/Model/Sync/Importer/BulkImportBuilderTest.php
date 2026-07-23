@@ -8,7 +8,9 @@ use Dotdigitalgroup\Email\Model\Sync\Importer\BulkImportBuilder;
 use Dotdigitalgroup\Email\Model\Sync\Importer\Type\Contact\BulkJson;
 use Dotdigitalgroup\Email\Model\Sync\Importer\Type\Contact\BulkJsonFactory;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class BulkImportBuilderTest extends TestCase
 {
     public function testBulkImportBuilder()

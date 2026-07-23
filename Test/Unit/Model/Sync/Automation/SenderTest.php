@@ -9,7 +9,9 @@ use Dotdigitalgroup\Email\Model\Sync\Automation\Sender;
 use Dotdigitalgroup\Email\Model\StatusInterface;
 use Magento\Framework\Stdlib\DateTime;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class SenderTest extends TestCase
 {
     /**

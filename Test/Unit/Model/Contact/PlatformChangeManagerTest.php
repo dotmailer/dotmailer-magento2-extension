@@ -17,7 +17,9 @@ use Dotdigitalgroup\Email\Model\Contact\ContactUpdaterPool;
 use Dotdigitalgroup\Email\Model\Contact\PlatformChangeManager;
 use Dotdigitalgroup\Email\Model\Cron\CronFromTimeSetter;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class PlatformChangeManagerTest extends TestCase
 {
     /**

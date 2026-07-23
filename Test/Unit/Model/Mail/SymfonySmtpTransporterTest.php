@@ -8,6 +8,7 @@ use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Mail\EmailMessageMethodChecker;
 use Dotdigitalgroup\Email\Model\Mail\SymfonyMailerFactory;
 use Dotdigitalgroup\Email\Model\Mail\SymfonySmtpTransporter;
+use Dotdigitalgroup\Email\Test\Unit\Traits\MockBuilderCompatibilityTrait;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Filesystem\Io\File;
 use Magento\Framework\Mail\EmailMessage;
@@ -17,9 +18,13 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\Mailer\Mailer;
 use Symfony\Component\Mailer\Transport\TransportInterface;
 use Symfony\Component\Mime\Message as SymfonyMimeMessage;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class SymfonySmtpTransporterTest extends TestCase
 {
+    use MockBuilderCompatibilityTrait;
+
     /**
      * @var Transactional|\PHPUnit\Framework\MockObject\MockObject
      */
@@ -84,14 +89,9 @@ class SymfonySmtpTransporterTest extends TestCase
     {
         $storeId = 1;
 
-        $mockBuilder = $this->getMockBuilder(EmailMessage::class)
+        $mockBuilder = $this->getMockBuilder($this->classWithAddedMethods(EmailMessage::class, ['getSymfonyMessage']))
             ->disableOriginalConstructor();
-
-        if (method_exists(EmailMessage::class, 'getSymfonyMessage')) {
-            $mockBuilder->onlyMethods(['getSymfonyMessage']);
-        } else {
-            $mockBuilder->addMethods(['getSymfonyMessage']);
-        }
+        $mockBuilder->onlyMethods(['getSymfonyMessage']);
 
         $emailMessage = $mockBuilder->getMock();
         $symfonyMimeMessage = $this->createMock(SymfonyMimeMessage::class);
@@ -384,14 +384,9 @@ class SymfonySmtpTransporterTest extends TestCase
     {
         $storeId = 1;
 
-        $mockBuilder = $this->getMockBuilder(EmailMessage::class)
+        $mockBuilder = $this->getMockBuilder($this->classWithAddedMethods(EmailMessage::class, ['getSymfonyMessage']))
             ->disableOriginalConstructor();
-
-        if (method_exists(EmailMessage::class, 'getSymfonyMessage')) {
-            $mockBuilder->onlyMethods(['getSymfonyMessage']);
-        } else {
-            $mockBuilder->addMethods(['getSymfonyMessage']);
-        }
+        $mockBuilder->onlyMethods(['getSymfonyMessage']);
 
         $emailMessage = $mockBuilder->getMock();
 

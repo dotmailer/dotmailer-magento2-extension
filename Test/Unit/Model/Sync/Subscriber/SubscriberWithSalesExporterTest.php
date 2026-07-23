@@ -17,13 +17,18 @@ use Dotdigitalgroup\Email\Model\Sync\Export\SdkContactBuilder;
 use Dotdigitalgroup\Email\Model\Sync\Export\SalesDataManager;
 use Dotdigitalgroup\Email\Model\Sync\Subscriber\SubscriberExporterFactory;
 use Dotdigitalgroup\Email\Model\Sync\Subscriber\SubscriberWithSalesExporter;
+use Dotdigitalgroup\Email\Test\Unit\Traits\MockBuilderCompatibilityTrait;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Store\Api\Data\WebsiteInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class SubscriberWithSalesExporterTest extends TestCase
 {
+    use MockBuilderCompatibilityTrait;
+
     /**
      * @var Logger|MockObject
      */
@@ -109,7 +114,10 @@ class SubscriberWithSalesExporterTest extends TestCase
         $this->csvHandlerMock = $this->createMock(CsvHandler::class);
         $this->sdkContactBuilderMock = $this->createMock(SdkContactBuilder::class);
 
-        $this->websiteInterfaceMock = $this->getMockBuilder(WebsiteInterface::class)
+        $this->websiteInterfaceMock = $this->getMockBuilder($this->classWithAddedMethods(
+            WebsiteInterface::class,
+            ['getStoreIds', 'getConfig']
+        ))
             ->onlyMethods([
                 'getId',
                 'setId',
@@ -120,9 +128,10 @@ class SubscriberWithSalesExporterTest extends TestCase
                 'getDefaultGroupId',
                 'setDefaultGroupId',
                 'getExtensionAttributes',
-                'setExtensionAttributes'
+                'setExtensionAttributes',
+                'getStoreIds',
+                'getConfig'
             ])
-            ->addMethods(['getStoreIds', 'getConfig'])
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -240,9 +249,11 @@ class SubscriberWithSalesExporterTest extends TestCase
         $mocks = [];
 
         for ($i = 1; $i <= 5; $i++) {
-            $contactMock = $this->getMockBuilder(\Dotdigitalgroup\Email\Model\Contact::class)
-                ->onlyMethods(['getId', 'setData', 'clearInstance'])
-                ->addMethods(['getEmail', 'getEmailContactId'])
+            $contactMock = $this->getMockBuilder($this->classWithAddedMethods(
+                \Dotdigitalgroup\Email\Model\Contact::class,
+                ['getEmail', 'getEmailContactId']
+            ))
+                ->onlyMethods(['getId', 'setData', 'clearInstance', 'getEmail', 'getEmailContactId'])
                 ->disableOriginalConstructor()
                 ->getMock();
             $contactMock->method('getId')->willReturn($i);

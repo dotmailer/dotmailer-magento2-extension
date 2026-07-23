@@ -9,12 +9,17 @@ use Dotdigitalgroup\Email\Model\Contact;
 use Dotdigitalgroup\Email\Model\Sync\Export\CsvHandler;
 use Dotdigitalgroup\Email\Model\Sync\Export\SdkContactBuilder;
 use Dotdigitalgroup\Email\Model\Sync\Guest\GuestExporter;
+use Dotdigitalgroup\Email\Test\Unit\Traits\MockBuilderCompatibilityTrait;
 use Magento\Store\Api\Data\WebsiteInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class GuestExporterTest extends TestCase
 {
+    use MockBuilderCompatibilityTrait;
+
     /**
      * @var ContactDataFactory|ContactDataFactory&MockObject|MockObject
      */
@@ -55,8 +60,8 @@ class GuestExporterTest extends TestCase
         $this->contactDataFactoryMock = $this->createMock(ContactDataFactory::class);
         $this->csvHandlerMock = $this->createMock(CsvHandler::class);
         $this->sdkContactBuilderMock = $this->createMock(SdkContactBuilder::class);
-        $this->contactMock = $this->getMockBuilder(Contact::class)
-            ->addMethods(['getEmailContactId'])
+        $this->contactMock = $this->getMockBuilder($this->classWithAddedMethods(Contact::class, ['getEmailContactId']))
+            ->onlyMethods(['getEmailContactId'])
             ->disableOriginalConstructor()
             ->getMock();
         $this->websiteInterfaceMock = $this->createMock(WebsiteInterface::class);

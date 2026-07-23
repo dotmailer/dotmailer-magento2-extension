@@ -4,13 +4,18 @@ namespace Dotdigitalgroup\Email\Test\Unit\Model\Product;
 
 use Dotdigitalgroup\Email\Helper\Config;
 use Dotdigitalgroup\Email\Model\Product\PwaUrlFinder;
+use Dotdigitalgroup\Email\Test\Unit\Traits\MockBuilderCompatibilityTrait;
 use Laminas\Uri\Http;
 use Magento\Catalog\Model\Product;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class PwaUrlBuilderTest extends TestCase
 {
+    use MockBuilderCompatibilityTrait;
+
     /**
      * @var ScopeConfigInterface|\PHPUnit\Framework\MockObject\MockObject
      */
@@ -35,9 +40,8 @@ class PwaUrlBuilderTest extends TestCase
     {
         $this->scopeConfigMock = $this->createMock(ScopeConfigInterface::class);
         $this->zendUriMock = $this->createMock(Http::class);
-        $this->productMock = $this->getMockBuilder(Product::class)
-            ->addMethods(['getUrlKey'])
-            ->onlyMethods(['getProductUrl'])
+        $this->productMock = $this->getMockBuilder($this->classWithAddedMethods(Product::class, ['getUrlKey']))
+            ->onlyMethods(['getProductUrl', 'getUrlKey'])
             ->disableOriginalConstructor()
             ->getMock();
 

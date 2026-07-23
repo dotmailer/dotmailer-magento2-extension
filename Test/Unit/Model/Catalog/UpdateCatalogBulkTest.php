@@ -9,8 +9,11 @@ use Dotdigitalgroup\Email\Model\ResourceModel\Catalog\Collection;
 use Dotdigitalgroup\Email\Model\ResourceModel\Catalog\CollectionFactory;
 use Magento\Catalog\Model\ResourceModel\Product as ProductResource;
 use Magento\Framework\Stdlib\DateTime;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class UpdateCatalogBulkTest extends TestCase
 {
     /**
@@ -67,10 +70,7 @@ class UpdateCatalogBulkTest extends TestCase
         );
     }
 
-    /**
-     * @dataProvider getProductCount
-     * @param        $numberOfProducts
-     */
+    #[DataProvider('getProductCount')]
     public function testIfWeHaveOnlyNewProducts($numberOfProducts)
     {
         $scope = 0;
@@ -92,11 +92,7 @@ class UpdateCatalogBulkTest extends TestCase
         $this->bulkUpdate->execute($this->generateBunches($numberOfProducts));
     }
 
-    /**
-     * $numberOfProducts;
-     *
-     * @dataProvider getProductCount
-     */
+    #[DataProvider('getProductCount')]
     public function testIfWeHaveNoNewProducts($numberOfProducts)
     {
         $scope = 1;
@@ -119,11 +115,7 @@ class UpdateCatalogBulkTest extends TestCase
         $this->bulkUpdate->execute($this->generateBunches($numberOfProducts));
     }
 
-    /**
-     * $numberOfProducts;
-     *
-     * @dataProvider getProductCount
-     */
+    #[DataProvider('getProductCount')]
     public function testIfWeHaveBothNewAndAlreadyExistingEntries($numberOfProducts)
     {
         $scope = 2;

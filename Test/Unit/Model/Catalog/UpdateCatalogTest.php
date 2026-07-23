@@ -9,7 +9,9 @@ use Dotdigitalgroup\Email\Model\ResourceModel\Catalog;
 use Dotdigitalgroup\Email\Model\CatalogFactory;
 use Dotdigitalgroup\Email\Model\Catalog\UpdateCatalog as Update;
 use Dotdigitalgroup\Email\Model\Catalog as ModelCatalog;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class UpdateCatalogTest extends TestCase
 {
     /**

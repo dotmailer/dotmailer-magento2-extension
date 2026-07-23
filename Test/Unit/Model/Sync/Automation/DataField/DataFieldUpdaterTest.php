@@ -8,7 +8,9 @@ use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\DataFieldUpdater;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Store\Model\Website;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class DataFieldUpdaterTest extends TestCase
 {
     /**

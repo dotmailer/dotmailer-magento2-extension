@@ -9,7 +9,9 @@ use Magento\Catalog\Model\Product;
 use Magento\Tax\Api\TaxCalculationInterface;
 use Magento\Tax\Helper\Data as TaxHelper;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class TaxCalculatorTest extends TestCase
 {
     /**

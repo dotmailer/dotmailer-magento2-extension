@@ -9,7 +9,9 @@ use Dotdigitalgroup\Email\Model\Apiconnector\Account;
 use Magento\Framework\App\Config\Storage\Writer;
 use Magento\Framework\App\Config\ReinitableConfigInterface;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class ApiTestTest extends TestCase
 {
     /**

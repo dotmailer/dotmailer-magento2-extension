@@ -13,11 +13,16 @@ use Dotdigitalgroup\Email\Model\Contact;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact as ContactResource;
 use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\DataFieldCollector;
 use Dotdigitalgroup\Email\Model\Sync\Subscriber\SingleSubscriberSyncer;
+use Dotdigitalgroup\Email\Test\Unit\Traits\MockBuilderCompatibilityTrait;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class SingleSubscriberSyncerTest extends TestCase
 {
+    use MockBuilderCompatibilityTrait;
+
     /**
      * @var Data|MockObject
      */
@@ -63,9 +68,17 @@ class SingleSubscriberSyncerTest extends TestCase
     {
         $this->helperMock = $this->createMock(Data::class);
         $this->dataFieldCollectorMock = $this->createMock(DataFieldCollector::class);
-        $this->contactModelMock = $this->getMockBuilder(Contact::class)
-            ->onlyMethods(['getId'])
-            ->addMethods([
+        $this->contactModelMock = $this->getMockBuilder($this->classWithAddedMethods(Contact::class, [
+                'getEmail',
+                'getWebsiteId',
+                'getCustomerId',
+                'getIsGuest',
+                'setSubscriberImported',
+                'setEmailImported',
+                'setContactId',
+            ]))
+            ->onlyMethods([
+                'getId',
                 'getEmail',
                 'getWebsiteId',
                 'getCustomerId',

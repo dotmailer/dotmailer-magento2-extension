@@ -17,12 +17,17 @@ use Dotdigitalgroup\Email\Model\Sync\Automation\AutomationTypeHandler;
 use Dotdigitalgroup\Email\Model\Sync\Automation\Type\AbandonedCart;
 use Dotdigitalgroup\Email\Model\Sync\Automation\Type\AbandonedCartFactory;
 use Dotdigitalgroup\Email\Model\Sync\Automation\Sender;
+use Dotdigitalgroup\Email\Test\Unit\Traits\MockBuilderCompatibilityTrait;
 use Magento\Framework\Exception\LocalizedException;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class AutomationConsumerTest extends TestCase
 {
+    use MockBuilderCompatibilityTrait;
+
     /**
      * @var Data|MockObject
      */
@@ -175,12 +180,12 @@ class AutomationConsumerTest extends TestCase
 
     private function setupAutomation($type = AutomationTypeHandler::AUTOMATION_TYPE_NEW_CUSTOMER)
     {
-        $model = $this->getMockBuilder(\Dotdigitalgroup\Email\Model\Automation::class)
-            ->addMethods([
+        $model = $this->getMockBuilder($this->classWithAddedMethods(\Dotdigitalgroup\Email\Model\Automation::class, [
                 'getAutomationType',
                 'getWebsiteId',
                 'getProgramId'
-            ])
+            ]))
+            ->onlyMethods(['getAutomationType', 'getWebsiteId', 'getProgramId'])
             ->disableOriginalConstructor()
             ->getMock();
         $model->method('getAutomationType')->willReturn($type);

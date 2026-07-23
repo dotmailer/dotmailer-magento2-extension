@@ -9,7 +9,9 @@ use Magento\Framework\Mail\EmailMessageInterface;
 use Magento\Framework\Mail\TransportInterface;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class SmtpTransporterTest extends TestCase
 {
     /**

@@ -14,15 +14,20 @@ use Dotdigitalgroup\Email\Model\Sync\Export\CategoryNameFinder;
 use Dotdigitalgroup\Email\Model\Sync\Export\CsvHandler;
 use Dotdigitalgroup\Email\Model\Sync\Export\SalesDataManager;
 use Dotdigitalgroup\Email\Model\Sync\Export\SdkContactBuilder;
+use Dotdigitalgroup\Email\Test\Unit\Traits\MockBuilderCompatibilityTrait;
 use Magento\Customer\Model\ResourceModel\Customer\Collection as MageCustomerCollection;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Serialize\SerializerInterface;
 use Magento\Store\Api\Data\WebsiteInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class ExporterTest extends TestCase
 {
+    use MockBuilderCompatibilityTrait;
+
     /**
      * @var Logger|MockObject
      */
@@ -106,7 +111,10 @@ class ExporterTest extends TestCase
         $this->salesDataManagerMock = $this->createMock(SalesDataManager::class);
         $this->scopeConfigMock = $this->createMock(ScopeConfigInterface::class);
         $this->serializerMock = $this->createMock(SerializerInterface::class);
-        $this->websiteInterfaceMock = $this->getMockBuilder(WebsiteInterface::class)
+        $this->websiteInterfaceMock = $this->getMockBuilder($this->classWithAddedMethods(
+            WebsiteInterface::class,
+            ['getStoreIds']
+        ))
             ->onlyMethods([
                 'getId',
                 'setId',
@@ -117,9 +125,9 @@ class ExporterTest extends TestCase
                 'getDefaultGroupId',
                 'setDefaultGroupId',
                 'getExtensionAttributes',
-                'setExtensionAttributes'
+                'setExtensionAttributes',
+                'getStoreIds'
             ])
-            ->addMethods(['getStoreIds'])
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -266,9 +274,11 @@ class ExporterTest extends TestCase
         $contactIds = ['2', '4', '6', '8', '10'];
 
         for ($i = 1; $i <= 5; $i++) {
-            $mageCustomerMock = $this->getMockBuilder(\Magento\Customer\Model\Customer::class)
-                ->onlyMethods(['getId', 'setData', 'clearInstance'])
-                ->addMethods(['getEmail', 'getEmailContactId'])
+            $mageCustomerMock = $this->getMockBuilder($this->classWithAddedMethods(
+                \Magento\Customer\Model\Customer::class,
+                ['getEmail', 'getEmailContactId']
+            ))
+                ->onlyMethods(['getId', 'setData', 'clearInstance', 'getEmail', 'getEmailContactId'])
                 ->disableOriginalConstructor()
                 ->getMock();
             $mageCustomerMock->method('getId')->willReturn($i);

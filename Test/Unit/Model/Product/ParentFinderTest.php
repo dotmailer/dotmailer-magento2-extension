@@ -10,7 +10,9 @@ use Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable;
 use Magento\GroupedProduct\Model\Product\Type\Grouped;
 use Magento\Bundle\Model\ResourceModel\Selection;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class ParentFinderTest extends TestCase
 {
     /**

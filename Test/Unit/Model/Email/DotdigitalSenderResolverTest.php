@@ -12,7 +12,9 @@ use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Registry;
 use PHPUnit\Framework\TestCase;
 use Dotdigitalgroup\Email\Logger\Logger;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class DotdigitalSenderResolverTest extends TestCase
 {
     /**

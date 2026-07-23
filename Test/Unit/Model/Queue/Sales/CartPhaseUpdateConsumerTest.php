@@ -11,6 +11,7 @@ use Dotdigitalgroup\Email\Model\Apiconnector\V3\Client;
 use Dotdigitalgroup\Email\Model\Apiconnector\V3\ClientFactory;
 use Dotdigitalgroup\Email\Model\ResourceModel\Automation\Collection as AutomationCollection;
 use Dotdigitalgroup\Email\Model\ResourceModel\Automation\CollectionFactory;
+use Dotdigitalgroup\Email\Test\Unit\Traits\MockBuilderCompatibilityTrait;
 use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigital\Resources\AbstractResource;
 use Magento\Quote\Model\Quote;
@@ -19,9 +20,13 @@ use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class CartPhaseUpdateConsumerTest extends TestCase
 {
+    use MockBuilderCompatibilityTrait;
+
     /**
      * @var Logger|MockObject
      */
@@ -71,8 +76,11 @@ class CartPhaseUpdateConsumerTest extends TestCase
         $this->quoteRepositoryMock = $this->createMock(QuoteRepository::class);
         $this->storeManagerMock = $this->createMock(StoreManagerInterface::class);
 
-        $this->abstractResourceMock = $this->getMockBuilder(AbstractResource::class)
-            ->addMethods(['createOrUpdateContactCollectionRecord'])
+        $this->abstractResourceMock = $this->getMockBuilder($this->classWithAddedMethods(
+            AbstractResource::class,
+            ['createOrUpdateContactCollectionRecord']
+        ))
+            ->onlyMethods(['createOrUpdateContactCollectionRecord'])
             ->disableOriginalConstructor()
             ->getMock();
 

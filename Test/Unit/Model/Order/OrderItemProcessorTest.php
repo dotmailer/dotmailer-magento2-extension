@@ -6,13 +6,18 @@ use Dotdigitalgroup\Email\Model\Order\OrderItemOptionProcessor;
 use Dotdigitalgroup\Email\Model\Order\OrderItemProcessor;
 use Dotdigitalgroup\Email\Model\Product\Attribute;
 use Dotdigitalgroup\Email\Model\Product\AttributeFactory;
+use Dotdigitalgroup\Email\Test\Unit\Traits\MockBuilderCompatibilityTrait;
 use Magento\Catalog\Model\Product;
 use Magento\Eav\Model\Entity\Collection\AbstractCollection;
 use Magento\Sales\Model\Order\Item as ProductItem;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class OrderItemProcessorTest extends TestCase
 {
+    use MockBuilderCompatibilityTrait;
+
     /**
      * @var AttributeFactory|AttributeFactory&\PHPUnit\Framework\MockObject\MockObject|\PHPUnit\Framework\MockObject\MockObject
      */
@@ -55,9 +60,10 @@ class OrderItemProcessorTest extends TestCase
         $this->productItemMock = $this->createMock(ProductItem::class);
         $this->productModelMock = $this->createMock(Product::class);
         $this->attributeMock = $this->createMock(Attribute::class);
-        $this->collectionMock = $this->getMockBuilder(AbstractCollection::class)
-            ->onlyMethods(['addAttributeToSelect','getIterator'])
-            ->addMethods(['getName'])
+        $this->collectionMock = $this->getMockBuilder(
+            $this->classWithAddedMethods(AbstractCollection::class, ['getName'])
+        )
+            ->onlyMethods(['addAttributeToSelect', 'getIterator', 'getName'])
             ->disableOriginalConstructor()
             ->getMock();
 

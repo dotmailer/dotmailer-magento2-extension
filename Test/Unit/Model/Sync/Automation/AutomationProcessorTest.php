@@ -20,12 +20,16 @@ use Dotdigitalgroup\Email\Model\Sync\Automation\ContactManager;
 use Dotdigitalgroup\Email\Model\Sync\Automation\OrderManager;
 use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\DataFieldTypeHandler;
 use Dotdigitalgroup\Email\Test\Unit\Traits\AutomationProcessorTrait;
+use Dotdigitalgroup\Email\Test\Unit\Traits\MockBuilderCompatibilityTrait;
 use Magento\Newsletter\Model\Subscriber;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class AutomationProcessorTest extends TestCase
 {
     use AutomationProcessorTrait;
+    use MockBuilderCompatibilityTrait;
 
     /**
      * @var Data|\PHPUnit_Framework_MockObject_MockObject
@@ -108,13 +112,18 @@ class AutomationProcessorTest extends TestCase
         $this->dataFieldTypeHandlerMock = $this->createMock(DataFieldTypeHandler::class);
         $this->backportedSubscriberLoaderMock = $this->createMock(BackportedSubscriberLoader::class);
         $this->optInTypeFinderMock = $this->createMock(OptInTypeFinder::class);
-        $this->contactModelMock = $this->getMockBuilder(Contact::class)
-            ->onlyMethods(['loadByCustomerEmail'])
-            ->addMethods(['getCustomerId', 'getIsGuest'])
+        $this->contactModelMock = $this->getMockBuilder($this->classWithAddedMethods(
+            Contact::class,
+            ['getCustomerId', 'getIsGuest']
+        ))
+            ->onlyMethods(['loadByCustomerEmail', 'getCustomerId', 'getIsGuest'])
             ->disableOriginalConstructor()
             ->getMock();
-        $this->automationModelMock = $this->getMockBuilder(Automation::class)
-            ->addMethods(['getEmail', 'getWebsiteId', 'getStoreId', 'getAutomationType'])
+        $this->automationModelMock = $this->getMockBuilder($this->classWithAddedMethods(
+            Automation::class,
+            ['getEmail', 'getWebsiteId', 'getStoreId', 'getAutomationType']
+        ))
+            ->onlyMethods(['getEmail', 'getWebsiteId', 'getStoreId', 'getAutomationType'])
             ->disableOriginalConstructor()
             ->getMock();
         $this->subscriberModelMock = $this->createMock(Subscriber::class);

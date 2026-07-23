@@ -15,15 +15,20 @@ use Dotdigitalgroup\Email\Model\ResourceModel\Automation\Collection as Automatio
 use Dotdigitalgroup\Email\Model\ResourceModel\Automation\CollectionFactory as AutomationCollectionFactory;
 use Dotdigitalgroup\Email\Model\ResourceModel\Order\Collection;
 use Dotdigitalgroup\Email\Model\ResourceModel\Order\CollectionFactory;
+use Dotdigitalgroup\Email\Test\Unit\Traits\MockBuilderCompatibilityTrait;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Quote\Model\Quote;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class ProgramEnrolmentEnrollerTest extends TestCase
 {
+    use MockBuilderCompatibilityTrait;
+
     /**
      * @var CollectionFactory|MockObject
      */
@@ -103,9 +108,8 @@ class ProgramEnrolmentEnrollerTest extends TestCase
         $this->rules = $this->createMock(Rules::class);
         $this->cartInsight = $this->createMock(CartInsight::class);
         $this->patcherMock = $this->createMock(Patcher::class);
-        $this->quoteMock = $this->getMockBuilder(Quote::class)
-            ->onlyMethods(['hasItems'])
-            ->addMethods(['getCustomerEmail'])
+        $this->quoteMock = $this->getMockBuilder($this->classWithAddedMethods(Quote::class, ['getCustomerEmail']))
+            ->onlyMethods(['hasItems', 'getCustomerEmail'])
             ->disableOriginalConstructor()
             ->getMock();
         $this->orderCollectionMock = $this->createMock(Collection::class);

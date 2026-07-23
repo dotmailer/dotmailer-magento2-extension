@@ -12,12 +12,17 @@ use Dotdigitalgroup\Email\Model\Automation;
 use Dotdigitalgroup\Email\Model\Sync\Automation\AutomationTypeHandler;
 use Dotdigitalgroup\Email\Model\Sync\Automation\OrderManager;
 use Dotdigitalgroup\Email\Model\Sync\Order\Exporter;
+use Dotdigitalgroup\Email\Test\Unit\Traits\MockBuilderCompatibilityTrait;
 use Magento\Sales\Model\ResourceModel\Order\CollectionFactory as SalesOrderCollectionFactory;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class OrderManagerTest extends TestCase
 {
+    use MockBuilderCompatibilityTrait;
+
     /**
      * @var Logger|MockObject
      */
@@ -83,9 +88,12 @@ class OrderManagerTest extends TestCase
     {
         $automationType = 'order_automation';
 
-        $automation = $this->getMockBuilder(Automation::class)
+        $automation = $this->getMockBuilder($this->classWithAddedMethods(
+            Automation::class,
+            ['getAutomationType', 'getTypeId', 'getEmail', 'getWebsiteId']
+        ))
             ->disableOriginalConstructor()
-            ->addMethods(['getAutomationType', 'getTypeId', 'getEmail', 'getWebsiteId'])
+            ->onlyMethods(['getAutomationType', 'getTypeId', 'getEmail', 'getWebsiteId'])
             ->getMock();
 
         $automation->expects($this->once())
@@ -122,9 +130,12 @@ class OrderManagerTest extends TestCase
             ->willReturn(['1' => ['order_data']]);
 
         $clientMock = $this->createMock(Client::class);
-        $abstractResourceMock = $this->getMockBuilder(AbstractResource::class)
+        $abstractResourceMock = $this->getMockBuilder($this->classWithAddedMethods(
+            AbstractResource::class,
+            ['createOrUpdateContactCollectionRecord']
+        ))
             ->disableOriginalConstructor()
-            ->addMethods(['createOrUpdateContactCollectionRecord'])
+            ->onlyMethods(['createOrUpdateContactCollectionRecord'])
             ->getMock();
         $clientMock->insightData = $abstractResourceMock;
 
@@ -142,9 +153,12 @@ class OrderManagerTest extends TestCase
     {
         $automationType = 'customer_automation';
 
-        $automation = $this->getMockBuilder(Automation::class)
+        $automation = $this->getMockBuilder($this->classWithAddedMethods(
+            Automation::class,
+            ['getAutomationType', 'getTypeId', 'getEmail', 'getWebsiteId']
+        ))
             ->disableOriginalConstructor()
-            ->addMethods(['getAutomationType', 'getTypeId', 'getEmail', 'getWebsiteId'])
+            ->onlyMethods(['getAutomationType', 'getTypeId', 'getEmail', 'getWebsiteId'])
             ->getMock();
 
         $automation->expects($this->once())
@@ -170,9 +184,12 @@ class OrderManagerTest extends TestCase
     {
         $automationType = 'order_automation';
 
-        $automation = $this->getMockBuilder(Automation::class)
+        $automation = $this->getMockBuilder($this->classWithAddedMethods(
+            Automation::class,
+            ['getAutomationType', 'getTypeId', 'getEmail', 'getWebsiteId']
+        ))
             ->disableOriginalConstructor()
-            ->addMethods(['getAutomationType', 'getTypeId', 'getEmail', 'getWebsiteId'])
+            ->onlyMethods(['getAutomationType', 'getTypeId', 'getEmail', 'getWebsiteId'])
             ->getMock();
 
         $automation->expects($this->once())

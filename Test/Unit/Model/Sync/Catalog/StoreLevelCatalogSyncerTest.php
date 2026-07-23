@@ -11,9 +11,12 @@ use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Store\Model\App\Emulation;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class StoreLevelCatalogSyncerTest extends TestCase
 {
     /**
@@ -62,14 +65,7 @@ class StoreLevelCatalogSyncerTest extends TestCase
         );
     }
 
-    /**
-     * @dataProvider getProducts
-     *
-     * @param        $products
-     *
-     * @throws LocalizedException
-     * @throws NoSuchEntityException
-     */
+    #[DataProvider('getProducts')]
     public function testNumberOfProductsIfBothAreEnabled($products)
     {
         $store1 = $this->getMockedStoresEnabled();
@@ -104,14 +100,7 @@ class StoreLevelCatalogSyncerTest extends TestCase
         $this->assertEquals(count($result), $expected);
     }
 
-    /**
-     * @dataProvider getProducts
-     *
-     * @param        $products
-     *
-     * @throws LocalizedException
-     * @throws NoSuchEntityException
-     */
+    #[DataProvider('getProducts')]
     public function testNumberOfProductsIfOnlyOneEnabled($products)
     {
         $store1 = $this->getMockedStoresEnabled();
@@ -160,14 +149,7 @@ class StoreLevelCatalogSyncerTest extends TestCase
         $this->assertEquals(count($result), $expected);
     }
 
-    /**
-     * @dataProvider getProducts
-     *
-     * @param        $products
-     *
-     * @throws LocalizedException
-     * @throws NoSuchEntityException
-     */
+    #[DataProvider('getProducts')]
     public function testNumberOfProductsIfNoStoreEnabled($products)
     {
         $store1 = $this->getMockedStoresDisabled();
@@ -214,14 +196,7 @@ class StoreLevelCatalogSyncerTest extends TestCase
         $this->assertEquals(count($result), $expected);
     }
 
-    /**
-     * @dataProvider getProducts
-     *
-     * @param        $products
-     *
-     * @throws LocalizedException
-     * @throws NoSuchEntityException
-     */
+    #[DataProvider('getProducts')]
     public function testAppEmulationIsUsedIfSyncEnabled($products)
     {
         $store1 = $this->getMockedStoresEnabled();

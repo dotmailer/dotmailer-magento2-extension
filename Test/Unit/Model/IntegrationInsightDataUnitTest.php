@@ -12,7 +12,9 @@ use Magento\Store\Model\StoreManagerInterface;
 use Magento\Store\Model\Website;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class IntegrationInsightDataUnitTest extends TestCase
 {
     private const PLATFORM = 'Magento';
@@ -152,16 +154,13 @@ class IntegrationInsightDataUnitTest extends TestCase
         $this->helperMock
             ->expects($this->any())
             ->method('isEnabled')
-            ->will(
-                $this->returnCallback(
-                    function () use (&$enabledCheck) {
-                        if ($enabledCheck++ === 1) {
-                            return false;
-                        }
-                        return true;
-                    }
-                )
-            );
+            ->willReturnCallback(function () use (&$enabledCheck) {
+                if ($enabledCheck++ === 1) {
+                    return false;
+                }
+
+                return true;
+            });
 
         $data = $this->integrationInsightData->getIntegrationInsightData();
 

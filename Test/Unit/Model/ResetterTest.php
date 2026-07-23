@@ -11,7 +11,9 @@ use Dotdigitalgroup\Email\Model\Subscriber;
 use Dotdigitalgroup\Email\Model\Resetter;
 
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class ResetterTest extends TestCase
 {
     /**

@@ -5,7 +5,9 @@ namespace Dotdigitalgroup\Email\Test\Unit\Model\SalesRule;
 use Dotdigitalgroup\Email\Model\SalesRule\DotdigitalCouponCodeGenerator;
 use Magento\SalesRule\Helper\Coupon;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class DotdigitalCouponCodeGeneratorTest extends TestCase
 {
     /**

@@ -8,12 +8,13 @@ use Dotdigitalgroup\Email\Model\ResourceModel\Importer;
 use Dotdigitalgroup\Email\Model\ResourceModel\Importer\CollectionFactory;
 use Magento\Framework\Stdlib\DateTime;
 use Magento\Framework\Serialize\SerializerInterface;
-use Magento\Framework\Model\ResourceModel\AbstractResource;
 use Magento\Framework\Data\Collection\AbstractDb;
 use Dotdigitalgroup\Email\Model\Importer as ImporterModel;
 use Dotdigitalgroup\Email\Helper\Data;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class ImporterTest extends TestCase
 {
     /**
@@ -47,7 +48,7 @@ class ImporterTest extends TestCase
     private $serializerMock;
 
     /**
-     * @var AbstractResource
+     * @var Importer
      */
     private $resourceModelMock;
 
@@ -68,15 +69,13 @@ class ImporterTest extends TestCase
 
     protected function setUp() :void
     {
-        $this->markTestSkipped('Needs refactor to run in PHPUnit 10+');
-
         $this->contextMock = $this->createMock(Context::class);
         $this->registryMock = $this->createMock(Registry::class);
         $this->importerMock = $this->createMock(Importer::class);
         $this->collectionFactoryMock = $this->createMock(CollectionFactory::class);
         $this->dateTimeMock = $this->createMock(DateTime::class);
         $this->serializerMock = $this->createMock(SerializerInterface::class);
-        $this->resourceModelMock= $this->createMock(AbstractResource::class);
+        $this->resourceModelMock= $this->createMock(Importer::class);
         $this->resourceCollectionMock = $this->createMock(AbstractDb::class);
         $this->helperMock = $this->createMock(Data::class);
 

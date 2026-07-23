@@ -6,6 +6,7 @@ use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Catalog\UrlFinder;
 use Dotdigitalgroup\Email\Model\Product\ImageFinder;
 use Dotdigitalgroup\Email\Model\Product\ParentFinder;
+use Dotdigitalgroup\Email\Test\Unit\Traits\MockBuilderCompatibilityTrait;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Catalog\Helper\Image;
 use Magento\Catalog\Model\Product;
@@ -15,9 +16,13 @@ use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Quote\Model\Quote\Item;
 
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class ImageFinderTest extends TestCase
 {
+    use MockBuilderCompatibilityTrait;
+
     /**
      * @var UrlFinder\PHPUnit_Framework_MockObject_MockObject
      */
@@ -80,9 +85,8 @@ class ImageFinderTest extends TestCase
         $this->productRepositoryMock = $this->createMock(ProductRepositoryInterface::class);
         $this->scopeConfigMock = $this->createMock(ScopeConfigInterface::class);
         $this->productMock = $this->createMock(Product::class);
-        $this->itemMock = $this->getMockBuilder(Item::class)
-            ->addMethods(['getProductId'])
-            ->onlyMethods(['getChildren', 'getProductType', 'getProduct'])
+        $this->itemMock = $this->getMockBuilder($this->classWithAddedMethods(Item::class, ['getProductId']))
+            ->onlyMethods(['getChildren', 'getProductType', 'getProduct', 'getProductId'])
             ->disableOriginalConstructor()
             ->getMock();
         $this->mediaConfigMock = $this->createMock(Config::class);

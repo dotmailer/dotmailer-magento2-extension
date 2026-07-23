@@ -11,12 +11,17 @@ use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory as Conta
 use Dotdigitalgroup\Email\Model\Sync\Export\CsvHandler;
 use Dotdigitalgroup\Email\Model\Sync\Export\SdkContactBuilder;
 use Dotdigitalgroup\Email\Model\Sync\Subscriber\SubscriberExporter;
+use Dotdigitalgroup\Email\Test\Unit\Traits\MockBuilderCompatibilityTrait;
 use Magento\Store\Api\Data\WebsiteInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class SubscriberExporterTest extends TestCase
 {
+    use MockBuilderCompatibilityTrait;
+
     /**
      * @var Logger|MockObject
      */
@@ -66,7 +71,10 @@ class SubscriberExporterTest extends TestCase
         $this->csvHandlerMock = $this->createMock(CsvHandler::class);
         $this->sdkContactBuilderMock = $this->createMock(SdkContactBuilder::class);
 
-        $this->websiteInterfaceMock = $this->getMockBuilder(WebsiteInterface::class)
+        $this->websiteInterfaceMock = $this->getMockBuilder($this->classWithAddedMethods(
+            WebsiteInterface::class,
+            ['getStoreIds', 'getConfig']
+        ))
             ->onlyMethods([
                 'getId',
                 'setId',
@@ -77,9 +85,10 @@ class SubscriberExporterTest extends TestCase
                 'getDefaultGroupId',
                 'setDefaultGroupId',
                 'getExtensionAttributes',
-                'setExtensionAttributes'
+                'setExtensionAttributes',
+                'getStoreIds',
+                'getConfig'
             ])
-            ->addMethods(['getStoreIds', 'getConfig'])
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -198,9 +207,11 @@ class SubscriberExporterTest extends TestCase
         $mocks = [];
 
         for ($i = 1; $i <= 5; $i++) {
-            $mageCustomerMock = $this->getMockBuilder(\Dotdigitalgroup\Email\Model\Contact::class)
-                ->onlyMethods(['getId', 'setData', 'clearInstance'])
-                ->addMethods(['getEmail', 'getEmailContactId'])
+            $mageCustomerMock = $this->getMockBuilder($this->classWithAddedMethods(
+                \Dotdigitalgroup\Email\Model\Contact::class,
+                ['getEmail', 'getEmailContactId']
+            ))
+                ->onlyMethods(['getId', 'setData', 'clearInstance', 'getEmail', 'getEmailContactId'])
                 ->disableOriginalConstructor()
                 ->getMock();
             $mageCustomerMock->method('getId')->willReturn($i);

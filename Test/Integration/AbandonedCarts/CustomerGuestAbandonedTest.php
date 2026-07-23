@@ -17,6 +17,7 @@ use Dotdigitalgroup\Email\Model\ResourceModel\Abandoned as AbandonedResource;
 use Dotdigitalgroup\Email\Model\ResourceModel\Abandoned\Collection as AbandonedCollection;
 use Dotdigitalgroup\Email\Model\Sales\Quote;
 use Dotdigitalgroup\Email\Test\Integration\MocksApiResponses;
+use Dotdigitalgroup\Email\Test\Unit\Traits\MockBuilderCompatibilityTrait;
 use Magento\Framework\Exception\AlreadyExistsException;
 use Magento\Quote\Model\ResourceModel\Quote\Collection;
 use PHPUnit\Framework\TestCase;
@@ -24,6 +25,7 @@ use PHPUnit\Framework\TestCase;
 class CustomerGuestAbandonedTest extends TestCase
 {
     use MocksApiResponses;
+    use MockBuilderCompatibilityTrait;
 
     /**
      * @var \Magento\Framework\ObjectManagerInterface
@@ -43,7 +45,7 @@ class CustomerGuestAbandonedTest extends TestCase
     /**
      * @return void
      */
-    public function setUp() :void
+    protected function setUp() :void
     {
         $this->objectManager = \Magento\TestFramework\Helper\Bootstrap::getObjectManager();
 
@@ -84,13 +86,16 @@ class CustomerGuestAbandonedTest extends TestCase
         ]);
 
         // add mocks for classes related to V3 Client (because authentication won't work in an integration test)
-        $contactResponseMock = $this->getMockBuilder(Contact::class)
+        $contactResponseMock = $this->getMockBuilder($this->classWithAddedMethods(
+            Contact::class,
+            ['getChannelProperties']
+        ))
             ->disableOriginalConstructor()
-            ->addMethods(['getChannelProperties'])
+            ->onlyMethods(['getChannelProperties'])
             ->getMock();
-        $channelPropertyMock = $this->getMockBuilder(ChannelProperty::class)
+        $channelPropertyMock = $this->getMockBuilder($this->classWithAddedMethods(ChannelProperty::class, ['getEmail']))
             ->disableOriginalConstructor()
-            ->addMethods(['getEmail'])
+            ->onlyMethods(['getEmail'])
             ->getMock();
         $emailChannelPropertyMock = $this->createMock(EmailChannelProperty::class);
         $v3PatcherMock = $this->createMock(Patcher::class);
@@ -100,7 +105,7 @@ class CustomerGuestAbandonedTest extends TestCase
         $this->objectManager->addSharedInstance($v3PatcherMock, Patcher::class);
     }
 
-    public function tearDown() :void
+    protected function tearDown() :void
     {
         $abandonedCollection = $this->objectManager->create(
             AbandonedCollection::class

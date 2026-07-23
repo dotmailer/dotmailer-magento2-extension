@@ -9,7 +9,9 @@ use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\Updater\Order;
 use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\DataFieldUpdaterFactory;
 use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\Updater\OrderFactory;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class DataFieldTypeHandlerTest extends TestCase
 {
     /**

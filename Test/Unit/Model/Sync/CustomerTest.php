@@ -12,13 +12,18 @@ use Dotdigitalgroup\Email\Model\Sync\Batch\MergeManager;
 use Dotdigitalgroup\Email\Model\Sync\Customer;
 use Dotdigitalgroup\Email\Model\Sync\Customer\Exporter;
 use Dotdigitalgroup\Email\Model\Sync\Customer\ExporterFactory;
+use Dotdigitalgroup\Email\Test\Unit\Traits\MockBuilderCompatibilityTrait;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Store\Api\Data\WebsiteInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class CustomerTest extends TestCase
 {
+    use MockBuilderCompatibilityTrait;
+
     /**
      * @var Data|\PHPUnit\Framework\MockObject\MockObject
      */
@@ -92,7 +97,10 @@ class CustomerTest extends TestCase
         $this->storeManagerMock = $this->createMock(StoreManagerInterface::class);
 
         $this->exporterMock = $this->createMock(Exporter::class);
-        $this->websiteInterfaceMock = $this->getMockBuilder(WebsiteInterface::class)
+        $this->websiteInterfaceMock = $this->getMockBuilder($this->classWithAddedMethods(
+            WebsiteInterface::class,
+            ['getStoreIds']
+        ))
             ->onlyMethods(
                 [
                 'getId',
@@ -104,10 +112,10 @@ class CustomerTest extends TestCase
                 'getDefaultGroupId',
                 'setDefaultGroupId',
                 'getExtensionAttributes',
-                'setExtensionAttributes'
+                'setExtensionAttributes',
+                'getStoreIds'
                 ]
             )
-            ->addMethods(['getStoreIds'])
             ->disableOriginalConstructor()
             ->getMock();
 

@@ -24,7 +24,9 @@ use Dotdigitalgroup\Email\Model\Validator\Schema\SchemaValidatorRuleSetFactory;
 use Magento\Framework\Url\Validator;
 use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class SchemaValidatorTest extends TestCase
 {
     public const PATTERN = [

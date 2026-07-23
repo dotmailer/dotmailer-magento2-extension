@@ -18,7 +18,9 @@ use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\MessageQueue\PublisherInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class SubscriptionConsumerTest extends TestCase
 {
     /**

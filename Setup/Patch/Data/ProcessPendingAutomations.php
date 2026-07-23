@@ -51,7 +51,7 @@ class ProcessPendingAutomations implements DataPatchInterface
     {
         try {
             $this->appState->setAreaCode(Area::AREA_CRONTAB);
-        } catch (LocalizedException $e) {
+        } catch (LocalizedException $e) { // phpcs:ignore Magento2.CodeAnalysis.EmptyBlock.DetectedCatch
             // Area code is already set; proceed.
         }
 
