@@ -201,7 +201,7 @@ class SubscriberExporter extends AbstractExporter implements ContactExporterInte
     private function isOptInTypeDouble($website)
     {
         /** @var \Magento\Store\Model\Website $website */
-        return (boolean) $website->getConfig(
+        return (bool) $website->getConfig(
             \Magento\Newsletter\Model\Subscriber::XML_PATH_CONFIRMATION_FLAG
         );
     }

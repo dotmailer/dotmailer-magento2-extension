@@ -8,7 +8,9 @@ use Dotdigitalgroup\Email\Model\Product\IndexPriceFinder;
 use Dotdigitalgroup\Email\Model\Tax\TaxCalculator;
 use Magento\Catalog\Model\Product as MagentoProduct;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class IndexPriceFinderTest extends TestCase
 {
     /**

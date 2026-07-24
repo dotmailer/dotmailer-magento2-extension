@@ -15,7 +15,9 @@ use Dotdigitalgroup\Email\Model\Sync\Importer\V2InProgressImportResponseHandler;
 use Dotdigitalgroup\Email\Model\Sync\Importer\V2InProgressImportResponseHandlerFactory as V2HandlerFactory;
 use Dotdigitalgroup\Email\Model\Apiconnector\Client;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class V2InProgressImportResponseHandlerTest extends TestCase
 {
     /**

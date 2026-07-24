@@ -16,10 +16,13 @@ use Magento\Catalog\Model\ResourceModel\Product\Collection as ProductCollection;
 use Magento\Customer\Model\ResourceModel\Group\Collection as CustomerGroupCollection;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Store\Model\StoreManagerInterface;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class ExporterTest extends TestCase
 {
     /**
@@ -103,18 +106,7 @@ class ExporterTest extends TestCase
         );
     }
 
-    /**
-     * @dataProvider getProductIdStoreIdsTypesAndVisibilities
-     *
-     * @param int $storeId
-     * @param int $product1Id
-     * @param int $product2Id
-     * @param string $types
-     * @param string $visibilities
-     *
-     * @return       void
-     * @throws Exception
-     */
+    #[DataProvider('getProductIdStoreIdsTypesAndVisibilities')]
     public function testThatExportKeysAndProductsMatch(
         int $storeId,
         int $product1Id,
@@ -222,18 +214,7 @@ class ExporterTest extends TestCase
         $this->assertEquals($exposedProduct2, $actualExposedProduct2);
     }
 
-    /**
-     * @dataProvider getProductIdStoreIdsTypesAndVisibilities
-     *
-     * @param int $storeId
-     * @param int $product1Id
-     * @param int $product2Id
-     * @param string $types
-     * @param string $visibilities
-     *
-     * @return       void
-     * @throws Exception
-     */
+    #[DataProvider('getProductIdStoreIdsTypesAndVisibilities')]
     public function testThatExportKeysAndProductsMatchAtDefaultLevelSync(
         int $storeId,
         int $product1Id,

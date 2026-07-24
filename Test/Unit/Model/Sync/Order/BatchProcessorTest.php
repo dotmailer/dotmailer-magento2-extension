@@ -12,7 +12,9 @@ use Magento\Sales\Model\ResourceModel\Order\CollectionFactory as OrderCollection
 use Dotdigitalgroup\Email\Model\ResourceModel\OrderFactory as OrderResourceFactory;
 use Dotdigitalgroup\Email\Model\Sync\Order\BatchProcessor;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class BatchProcessorTest extends TestCase
 {
     /**

@@ -7,7 +7,9 @@ use Dotdigitalgroup\Email\Model\ResourceModel\Automation\CollectionFactory;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\FlagManager;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class AutomationMonitorTest extends TestCase
 {
     /**

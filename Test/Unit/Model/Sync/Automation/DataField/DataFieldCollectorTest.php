@@ -15,13 +15,18 @@ use Dotdigitalgroup\Email\Model\Sync\Subscriber\SubscriberExporter;
 use Dotdigitalgroup\Email\Model\Sync\Subscriber\SubscriberExporterFactory;
 use Dotdigitalgroup\Email\Model\Sync\Subscriber\SubscriberWithSalesExporter;
 use Dotdigitalgroup\Email\Model\Sync\Subscriber\SubscriberWithSalesExporterFactory;
+use Dotdigitalgroup\Email\Test\Unit\Traits\MockBuilderCompatibilityTrait;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Store\Model\Website;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class DataFieldCollectorTest extends TestCase
 {
+    use MockBuilderCompatibilityTrait;
+
     /**
      * @var CustomerExporterFactory|\PHPUnit_Framework_MockObject_MockObject
      */
@@ -81,9 +86,8 @@ class DataFieldCollectorTest extends TestCase
         $this->subscriberWithSalesExporterFactoryMock = $this->createMock(SubscriberWithSalesExporterFactory::class);
         $this->scopeConfigMock = $this->createMock(ScopeConfigInterface::class);
         $this->storeManagerMock = $this->createMock(StoreManagerInterface::class);
-        $this->contactModelMock = $this->getMockBuilder(Contact::class)
-            ->onlyMethods(['getId'])
-            ->addMethods(['getCustomerId'])
+        $this->contactModelMock = $this->getMockBuilder($this->classWithAddedMethods(Contact::class, ['getCustomerId']))
+            ->onlyMethods(['getId', 'getCustomerId'])
             ->disableOriginalConstructor()
             ->getMock();
         $this->websiteMock = $this->createMock(Website::class);
@@ -123,7 +127,7 @@ class DataFieldCollectorTest extends TestCase
                 $contactId => $sdkContactMock
             ]);
 
-        $this->contactModelMock->expects($this->exactly(2))
+        $this->contactModelMock->expects($this->exactly(1))
             ->method('getId')
             ->willReturn($contactId);
 

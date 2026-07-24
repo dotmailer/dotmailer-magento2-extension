@@ -6,7 +6,9 @@ use Dotdigitalgroup\Email\Model\Cron\CronFromTimeSetter;
 use Magento\Framework\Stdlib\DateTime\DateTimeFactory;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterfaceFactory;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class CronFromTimeSetterTest extends TestCase
 {
     /**

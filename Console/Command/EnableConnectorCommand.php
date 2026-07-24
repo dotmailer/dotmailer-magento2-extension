@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dotdigitalgroup\Email\Console\Command;
 
 use Dotdigitalgroup\Email\Helper\Data;
@@ -81,13 +83,13 @@ class EnableConnectorCommand extends Command
     protected function configure()
     {
         $this->setName('dotdigital:connector:enable')
-            ->setDescription(__('Add Dotdigital API credentials and enable the connector'))
-            ->addOption('username', null, InputOption::VALUE_REQUIRED, __('API username'))
-            ->addOption('password', null, InputOption::VALUE_REQUIRED, __('API password'))
-            ->addOption('automap-datafields', null, InputOption::VALUE_OPTIONAL, __('Automap data fields'))
-            ->addOption('enable-syncs', null, InputOption::VALUE_OPTIONAL, __('Enable syncs'))
-            ->addOption('remove-ip-restriction', null, InputOption::VALUE_OPTIONAL, __('Remove IP restriction'))
-            ->addOption('enable-email-capture', null, InputOption::VALUE_OPTIONAL, __('Enable email capture'));
+            ->setDescription('Add Dotdigital API credentials and enable the connector')
+            ->addOption('username', null, InputOption::VALUE_REQUIRED, 'API username')
+            ->addOption('password', null, InputOption::VALUE_REQUIRED, 'API password')
+            ->addOption('automap-datafields', null, InputOption::VALUE_OPTIONAL, 'Automap data fields')
+            ->addOption('enable-syncs', null, InputOption::VALUE_OPTIONAL, 'Enable syncs')
+            ->addOption('remove-ip-restriction', null, InputOption::VALUE_OPTIONAL, 'Remove IP restriction')
+            ->addOption('enable-email-capture', null, InputOption::VALUE_OPTIONAL, 'Enable email capture');
 
         parent::configure();
     }
@@ -100,7 +102,7 @@ class EnableConnectorCommand extends Command
      * @return int
      * @throws \Symfony\Component\Console\Exception\ExceptionInterface
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->output = $output;
         $username = $input->getOption('username');

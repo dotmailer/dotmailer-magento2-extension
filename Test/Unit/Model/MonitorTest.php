@@ -9,7 +9,9 @@ use Dotdigitalgroup\Email\Model\Monitor\EmailNotifier;
 use Dotdigitalgroup\Email\Model\Monitor\MonitorTypeProvider;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class MonitorTest extends TestCase
 {
     /**

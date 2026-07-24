@@ -11,6 +11,7 @@ use Dotdigitalgroup\Email\Model\Apiconnector\V3\ClientFactory;
 use Dotdigitalgroup\Email\Model\Catalog\UrlFinder;
 use Dotdigitalgroup\Email\Model\Product\ImageFinder;
 use Dotdigitalgroup\Email\Model\Product\ImageType\Context\AbandonedCart;
+use Dotdigitalgroup\Email\Test\Unit\Traits\MockBuilderCompatibilityTrait;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Catalog\Model\Product;
 use Magento\Framework\Pricing\PriceCurrencyInterface;
@@ -24,9 +25,13 @@ use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class DataTest extends TestCase
 {
+    use MockBuilderCompatibilityTrait;
+
     /**
      * @var Client|MockObject
      */
@@ -136,7 +141,14 @@ class DataTest extends TestCase
         $this->storeManagerInterfaceMock = $this->createMock(StoreManagerInterface::class);
         $this->storeMock = $this->createMock(Store::class);
         $this->quoteMock = $this->createMock(Quote::class);
-        $this->itemMock = $this->getMockBuilder(Item::class)
+        $this->itemMock = $this->getMockBuilder($this->classWithAddedMethods(Item::class, [
+            'getBasePrice',
+            'getDiscountAmount',
+            'getRowTotal',
+            'getRowTotalInclTax',
+            'getTaxPercent',
+            'getPriceInclTax'
+        ]))
             ->disableOriginalConstructor()
             ->onlyMethods(
                 [
@@ -144,11 +156,7 @@ class DataTest extends TestCase
                     'getSku',
                     'getName',
                     'getQty',
-                    'getPrice'
-                ]
-            )
-            ->addMethods(
-                [
+                    'getPrice',
                     'getBasePrice',
                     'getDiscountAmount',
                     'getRowTotal',
@@ -167,9 +175,12 @@ class DataTest extends TestCase
         $this->cartTotalRepositoryMock = $this->createMock(CartTotalRepositoryInterface::class);
 
         $this->clientMock = $this->createMock(Client::class);
-        $this->abstractResourceMock = $this->getMockBuilder(AbstractResource::class)
+        $this->abstractResourceMock = $this->getMockBuilder($this->classWithAddedMethods(
+            AbstractResource::class,
+            ['createOrUpdateContactCollectionRecord']
+        ))
             ->disableOriginalConstructor()
-            ->addMethods(['createOrUpdateContactCollectionRecord'])
+            ->onlyMethods(['createOrUpdateContactCollectionRecord'])
             ->getMock();
         $this->clientMock->insightData = $this->abstractResourceMock;
 

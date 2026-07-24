@@ -90,7 +90,8 @@ class Monitor implements TaskRunInterface
                 }
             }
 
-            $errors[$monitor->getTypeName()] = $monitorErrors;
+            $typeName = $monitor->getTypeName() ?? '';
+            $errors[$typeName] = $monitorErrors;
         }
 
         if (!empty($errors) && $ddgEmailNotificationsEnabledInConfig) {

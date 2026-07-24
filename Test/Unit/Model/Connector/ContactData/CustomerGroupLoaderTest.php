@@ -10,7 +10,9 @@ use Magento\Customer\Model\Group;
 use Dotdigitalgroup\Email\Model\Connector\ContactData\CustomerGroupLoader;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class CustomerGroupLoaderTest extends TestCase
 {
     /**

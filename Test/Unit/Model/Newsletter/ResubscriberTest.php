@@ -8,12 +8,17 @@ use Dotdigitalgroup\Email\Model\Cron\CronFromTimeSetter;
 use Dotdigitalgroup\Email\Model\Newsletter\Resubscriber;
 use Dotdigitalgroup\Email\Model\Newsletter\SubscriberFilterer;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact;
+use Dotdigitalgroup\Email\Test\Unit\Traits\MockBuilderCompatibilityTrait;
 use Magento\Newsletter\Model\ResourceModel\Subscriber\Collection as SubscriberCollection;
 use Magento\Store\Api\StoreWebsiteRelationInterface;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class ResubscriberTest extends TestCase
 {
+    use MockBuilderCompatibilityTrait;
+
     /**
      * @var Logger|\PHPUnit_Framework_MockObject_MockObject
      */
@@ -75,8 +80,11 @@ class ResubscriberTest extends TestCase
         $this->sharedFlow();
 
         $subscriberCollectionMock = $this->createMock(SubscriberCollection::class);
-        $subscriberModelMock = $this->getMockBuilder(\Magento\Newsletter\Model\Subscriber::class)
-            ->addMethods(['getSubscriberEmail', 'getChangeStatusAt', 'getStoreId'])
+        $subscriberModelMock = $this->getMockBuilder($this->classWithAddedMethods(
+            \Magento\Newsletter\Model\Subscriber::class,
+            ['getSubscriberEmail', 'getChangeStatusAt', 'getStoreId']
+        ))
+            ->onlyMethods(['getSubscriberEmail', 'getChangeStatusAt', 'getStoreId'])
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -127,8 +135,11 @@ class ResubscriberTest extends TestCase
         $this->sharedFlow();
 
         $subscriberCollectionMock = $this->createMock(SubscriberCollection::class);
-        $subscriberModelMock = $this->getMockBuilder(\Magento\Newsletter\Model\Subscriber::class)
-            ->addMethods(['getSubscriberEmail', 'getChangeStatusAt', 'getStoreId'])
+        $subscriberModelMock = $this->getMockBuilder($this->classWithAddedMethods(
+            \Magento\Newsletter\Model\Subscriber::class,
+            ['getSubscriberEmail', 'getChangeStatusAt', 'getStoreId']
+        ))
+            ->onlyMethods(['getSubscriberEmail', 'getChangeStatusAt', 'getStoreId'])
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -202,7 +213,6 @@ class ResubscriberTest extends TestCase
     {
         $class = new \ReflectionClass(Resubscriber::class);
         $method = $class->getMethod($name);
-        $method->setAccessible(true);
         return $method;
     }
 

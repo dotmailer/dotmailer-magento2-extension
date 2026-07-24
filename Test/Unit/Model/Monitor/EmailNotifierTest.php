@@ -15,6 +15,7 @@ use Dotdigitalgroup\Email\Model\Monitor\Queue\Monitor as QueueMonitor;
 use Dotdigitalgroup\Email\Model\Monitor\Smtp\Monitor as SmtpMonitor;
 use Dotdigitalgroup\Email\Model\ResourceModel\User\Collection as UserCollection;
 use Dotdigitalgroup\Email\Model\ResourceModel\User\CollectionFactory as UserCollectionFactory;
+use Dotdigitalgroup\Email\Test\Unit\Traits\MockBuilderCompatibilityTrait;
 use Magento\Authorization\Model\ResourceModel\Role;
 use Magento\Backend\Helper\Data as BackendData;
 use Magento\Framework\App\Config\ScopeConfigInterface;
@@ -24,9 +25,13 @@ use Magento\Framework\Mail\Template\TransportBuilder;
 use Magento\Framework\UrlInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class EmailNotifierTest extends TestCase
 {
+    use MockBuilderCompatibilityTrait;
+
     /**
      * @var UrlInterface|MockObject
      */
@@ -148,7 +153,10 @@ class EmailNotifierTest extends TestCase
             ->onlyMethods(['fetchUsersByRole'])
             ->getMock();
 
-        $this->transportBuilderMock = $this->getMockBuilder(TransportBuilder::class)
+        $this->transportBuilderMock = $this->getMockBuilder($this->classWithAddedMethods(
+            TransportBuilder::class,
+            ['sendMessage', 'getMessage']
+        ))
             ->disableOriginalConstructor()
             ->onlyMethods(
                 [
@@ -158,10 +166,6 @@ class EmailNotifierTest extends TestCase
                     'setFrom',
                     'addTo',
                     'getTransport',
-                ]
-            )
-            ->addMethods(
-                [
                     'sendMessage',
                     'getMessage',
                 ]
@@ -316,9 +320,12 @@ class EmailNotifierTest extends TestCase
 
     private function setUpUserRecipient()
     {
-        $userMock = $this->getMockBuilder(\Magento\User\Model\ResourceModel\User::class)
+        $userMock = $this->getMockBuilder($this->classWithAddedMethods(
+            \Magento\User\Model\ResourceModel\User::class,
+            ['getEmail', 'getFirstName', 'getLastName']
+        ))
             ->disableOriginalConstructor()
-            ->addMethods(['getEmail', 'getFirstName', 'getLastName'])
+            ->onlyMethods(['getEmail', 'getFirstName', 'getLastName'])
             ->getMock();
 
         $this->scopeConfigInterfaceMock->expects($this->atLeast(4))

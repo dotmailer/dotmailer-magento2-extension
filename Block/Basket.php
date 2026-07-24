@@ -291,7 +291,7 @@ class Basket extends Recommended
      */
     public function canShowUrl()
     {
-        return (boolean)$this->quote->getStore()->getWebsite()->getConfig(
+        return (bool) $this->quote->getStore()->getWebsite()->getConfig(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_CONTENT_LINK_ENABLED
         );
     }

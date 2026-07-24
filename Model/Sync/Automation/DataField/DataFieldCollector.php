@@ -103,9 +103,11 @@ class DataFieldCollector
 
         $keyedExport = $exporter->export([$contact->getCustomerId()], $website, $listId);
 
-        return isset($keyedExport[$contact->getId()]) ?
-            $keyedExport[$contact->getId()]->getDataFields()->all() :
-            [];
+        $contactId = $contact->getId();
+        if ($contactId !== null && isset($keyedExport[$contactId])) {
+            return $keyedExport[$contactId]->getDataFields()->all();
+        }
+        return [];
     }
 
     /**

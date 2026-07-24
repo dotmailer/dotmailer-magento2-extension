@@ -22,10 +22,15 @@ use Magento\Store\Api\Data\WebsiteInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Store\Api\Data\StoreInterface;
 use Dotdigitalgroup\Email\Model\Sync\Order\Exporter;
+use Dotdigitalgroup\Email\Test\Unit\Traits\MockBuilderCompatibilityTrait;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class ExporterTest extends TestCase
 {
+    use MockBuilderCompatibilityTrait;
+
     /**
      * @var Data|\PHPUnit\Framework\MockObject\MockObject
      */
@@ -124,9 +129,11 @@ class ExporterTest extends TestCase
         $this->connectorOrderMock = $this->createMock(ConnectorOrder::class);
 
         $this->orderFactoryMock = $this->createMock(OrderFactory::class);
-        $this->orderCollectionMock = $this->getMockBuilder(OrderCollection::class)
-            ->onlyMethods(['getOrdersFromIds'])
-            ->addMethods(['getId','getOrderStatus', 'getStoreId', 'getStore', 'getIncrementId'])
+        $this->orderCollectionMock = $this->getMockBuilder($this->classWithAddedMethods(
+            OrderCollection::class,
+            ['getId', 'getOrderStatus', 'getStoreId', 'getStore', 'getIncrementId']
+        ))
+            ->onlyMethods(['getOrdersFromIds', 'getId', 'getOrderStatus', 'getStoreId', 'getStore', 'getIncrementId'])
             ->disableOriginalConstructor()
             ->getMock();
         $this->websiteInterfaceMock = $this->createMock(WebsiteInterface::class);
@@ -139,8 +146,6 @@ class ExporterTest extends TestCase
         $this->orderCollection = $this->getMockBuilder(OrderCollection::class)
             ->disableOriginalConstructor()
             ->disableOriginalClone()
-            ->disableArgumentCloning()
-            ->disallowMockingUnknownTypes()
             ->getMock();
 
         $this->sdkOrderRecordCollectionBuilderFactory = $this->createMock(
@@ -164,7 +169,7 @@ class ExporterTest extends TestCase
     {
         $iterator = new \ArrayIterator([]);
 
-        $this->orderCollection->expects($this->any())->method('getIterator')->will($this->returnValue($iterator));
+        $this->orderCollection->expects($this->any())->method('getIterator')->willReturn($iterator);
 
         $this->fetchMockedOrdersFromIds();
 
@@ -181,12 +186,12 @@ class ExporterTest extends TestCase
         $this->orderCollection
             ->expects($this->atLeastOnce())
             ->method('getIterator')
-            ->will($this->returnValue($iterator));
+            ->willReturn($iterator);
 
         $this->orderCollection
             ->expects($this->atLeastOnce())
             ->method('getIterator')
-            ->will($this->returnValue($iterator));
+            ->willReturn($iterator);
 
         $this->fetchMockedOrdersFromIds();
 

@@ -119,18 +119,7 @@ class OrderSyncTest extends \Magento\TestFramework\TestCase\AbstractController
         $order->setQuoteId($latestQuote->getId());
         $order->save();
 
-        /** @var \Dotdigitalgroup\Email\Model\Order $order */
-        $emailOrder = ObjectManager::getInstance()->create(\Dotdigitalgroup\Email\Model\Order::class);
-        $emailOrder->setData([
-            'order_id' => $order->getId(),
-            'order_status' => $order->getStatus(),
-            'quote_id' => $order->getQuoteId(),
-            'store_id' => $order->getStoreId(),
-            'processed' => '0',
-        ]);
-        ObjectManager::getInstance()
-            ->create(\Dotdigitalgroup\Email\Model\ResourceModel\Order::class)
-            ->save($emailOrder);
+        $this->createEmailOrderForOrder($order);
 
         $result = $this->orderSync->sync();
 
@@ -162,6 +151,8 @@ class OrderSyncTest extends \Magento\TestFramework\TestCase\AbstractController
         ObjectManager::getInstance()
             ->create(\Dotdigitalgroup\Email\Model\ResourceModel\Contact::class)
             ->save($emailContact);
+
+        $this->createEmailOrderForOrder($order);
 
         $result = $this->orderSync->sync();
 
@@ -234,5 +225,28 @@ class OrderSyncTest extends \Magento\TestFramework\TestCase\AbstractController
             ->setShippingAddress($shippingAddress);
 
         $orderRepository->save($order);
+    }
+
+    /**
+     * Build the email_order fixture explicitly so sync tests stay focused on sync behaviour.
+     *
+     * @param \Magento\Sales\Model\Order $order
+     * @return void
+     */
+    private function createEmailOrderForOrder(\Magento\Sales\Model\Order $order): void
+    {
+        /** @var \Dotdigitalgroup\Email\Model\Order $emailOrder */
+        $emailOrder = ObjectManager::getInstance()->create(\Dotdigitalgroup\Email\Model\Order::class);
+        $emailOrder->setData([
+            'order_id' => $order->getId(),
+            'order_status' => $order->getStatus(),
+            'quote_id' => $order->getQuoteId(),
+            'store_id' => $order->getStoreId(),
+            'processed' => '0',
+        ]);
+
+        ObjectManager::getInstance()
+            ->create(\Dotdigitalgroup\Email\Model\ResourceModel\Order::class)
+            ->save($emailOrder);
     }
 }

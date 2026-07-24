@@ -14,7 +14,9 @@ use Dotdigital\V3\Models\Contact\Import;
 use Dotdigitalgroup\Email\Model\Apiconnector\V3\ClientFactory;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class V3InProgressImportResponseHandlerTest extends TestCase
 {
     /**

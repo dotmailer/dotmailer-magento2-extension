@@ -10,10 +10,15 @@ use Dotdigitalgroup\Email\Model\Sync\Export\SdkContactBuilder;
 use Dotdigitalgroup\Email\Model\Connector\ContactData;
 use Dotdigital\V3\Models\Contact as SdkContact;
 use Dotdigitalgroup\Email\Model\Sync\Export\DataFieldMapper;
+use Dotdigitalgroup\Email\Test\Unit\Traits\MockBuilderCompatibilityTrait;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class SdkContactBuilderTest extends TestCase
 {
+    use MockBuilderCompatibilityTrait;
+
     /**
      * @var SdkContactBuilder
      */
@@ -39,9 +44,9 @@ class SdkContactBuilderTest extends TestCase
         $this->dataFieldMapperMock = $this->createMock(DataFieldMapper::class);
 
         $this->connectorModelMock = $this->createMock(ContactData::class);
-        $this->contactMock = $this->getMockBuilder(Contact::class)
+        $this->contactMock = $this->getMockBuilder($this->classWithAddedMethods(Contact::class, ['getEmail']))
             ->disableOriginalConstructor()
-            ->addMethods(['getEmail'])
+            ->onlyMethods(['getEmail'])
             ->getMock();
 
         $this->contactMock->method('getEmail')->willReturn('test@example.com');

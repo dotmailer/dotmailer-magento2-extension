@@ -4,7 +4,9 @@ namespace Dotdigitalgroup\Email\Test\Unit\Model\Connector;
 
 use Dotdigitalgroup\Email\Model\Connector\KeyValidator;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class KeyValidatorTest extends TestCase
 {
     /**

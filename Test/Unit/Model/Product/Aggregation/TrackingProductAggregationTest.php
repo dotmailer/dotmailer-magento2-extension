@@ -12,7 +12,9 @@ use Dotdigitalgroup\Email\Api\Model\Product\Provider\Attributes\ProductPriceProv
 use Dotdigitalgroup\Email\Api\Model\Product\Provider\Attributes\ProductTaxonomyProviderInterface;
 use Dotdigitalgroup\Email\Api\Model\Product\Provider\Attributes\ProductMediaProviderInterface;
 use Dotdigitalgroup\Email\Model\Catalog\UrlFinder;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class TrackingProductAggregationTest extends TestCase
 {
     public function testToArrayReturnsCorrectValues()

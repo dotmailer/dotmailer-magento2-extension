@@ -8,8 +8,11 @@ use Dotdigitalgroup\Email\Model\Sync\Catalog\DefaultLevelCatalogSyncerFactory;
 use Dotdigitalgroup\Email\Model\Sync\Catalog\StoreLevelCatalogSyncer;
 use Dotdigitalgroup\Email\Model\Sync\Catalog\StoreLevelCatalogSyncerFactory;
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class CatalogSyncFactoryTest extends TestCase
 {
     /**
@@ -89,11 +92,7 @@ class CatalogSyncFactoryTest extends TestCase
         $this->assertEquals($result, $this->storeLevelCatalogSyncerMock);
     }
 
-    /**
-     * @dataProvider getInvalidSyncLevel
-     *
-     * @param int $syncLevel
-     */
+    #[DataProvider('getInvalidSyncLevel')]
     public function testThatIfSyncLevelFailsToBeDefinedAsStoredOrDefaultLevel($syncLevel)
     {
         $this->mockSyncLevel($syncLevel);

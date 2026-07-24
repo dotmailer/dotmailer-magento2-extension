@@ -38,6 +38,10 @@ trait AutomationProcessorTrait
         $this->automationModelMock->expects($this->any())
             ->method('getStoreId')
             ->willReturn('1');
+
+        $this->automationModelMock->setData('id', '1');
+        $this->automationModelMock->setData('type_id', '123');
+        $this->automationModelMock->setData('store_name', 'Default Store');
     }
 
     private function setupContactModel()

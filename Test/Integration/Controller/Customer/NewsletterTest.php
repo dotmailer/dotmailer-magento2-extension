@@ -8,6 +8,7 @@ use Dotdigitalgroup\Email\Model\Contact;
 use Dotdigitalgroup\Email\Model\Customer\Account\Configuration;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact\Collection as ContactCollection;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory as ContactCollectionFactory;
+use Dotdigitalgroup\Email\Test\Unit\Traits\MockBuilderCompatibilityTrait;
 use Magento\Customer\Model\Customer;
 use Magento\Customer\Model\Session as CustomerSession;
 use Magento\Framework\App\Request\Http as HttpRequest;
@@ -18,6 +19,8 @@ use Magento\Framework\App\ObjectManager;
 
 class NewsletterTest extends \Magento\TestFramework\TestCase\AbstractController
 {
+    use MockBuilderCompatibilityTrait;
+
     /**
      * @var Data|\PHPUnit\Framework\MockObject\MockObject
      */
@@ -78,17 +81,16 @@ class NewsletterTest extends \Magento\TestFramework\TestCase\AbstractController
      */
     private $mockStoreManager;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 
         $objectManager = ObjectManager::getInstance();
 
         $this->mockFormKeyValidator = $this->createMock(FormKeyValidator::class);
-        $this->mockContact = $this->getMockBuilder(Contact::class)
+        $this->mockContact = $this->getMockBuilder($this->classWithAddedMethods(Contact::class, ['getContactId']))
             ->disableOriginalConstructor()
-            ->onlyMethods(['loadByCustomerEmail'])
-            ->addMethods(['getContactId'])
+            ->onlyMethods(['loadByCustomerEmail', 'getContactId'])
             ->getMock();
         $this->mockContactCollection = $this->createMock(ContactCollection::class);
         $this->mockContactCollectionFactory = $this->createMock(ContactCollectionFactory::class);

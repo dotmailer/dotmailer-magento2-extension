@@ -13,7 +13,9 @@ use Dotdigitalgroup\Email\Model\Sync\Importer\BulkSaver;
 use Magento\Framework\Stdlib\DateTime;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class MegaBatchProcessorTest extends TestCase
 {
     /**

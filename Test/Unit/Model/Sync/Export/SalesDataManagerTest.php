@@ -4,15 +4,20 @@ namespace Dotdigitalgroup\Email\Test\Unit\Model\Sync\Export;
 
 use Dotdigitalgroup\Email\Model\Connector\Datafield;
 use Dotdigitalgroup\Email\Model\Sync\Export\SalesDataManager;
+use Dotdigitalgroup\Email\Test\Unit\Traits\MockBuilderCompatibilityTrait;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Quote\Model\ResourceModel\Quote\CollectionFactory as QuoteCollectionFactory;
 use Magento\Sales\Model\ResourceModel\Order\Collection as SalesOrderCollection;
 use Magento\Sales\Model\ResourceModel\Order\CollectionFactory as SalesOrderCollectionFactory;
 use Magento\Store\Api\Data\WebsiteInterface;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class SalesDataManagerTest extends TestCase
 {
+    use MockBuilderCompatibilityTrait;
+
     /**
      * @var Datafield|\PHPUnit\Framework\MockObject\MockObject
      */
@@ -54,7 +59,10 @@ class SalesDataManagerTest extends TestCase
         $this->salesOrderCollectionFactoryMock = $this->createMock(SalesOrderCollectionFactory::class);
         $this->quoteCollectionFactoryMock = $this->createMock(QuoteCollectionFactory::class);
         $this->scopeConfigMock = $this->createMock(ScopeConfigInterface::class);
-        $this->websiteInterfaceMock = $this->getMockBuilder(WebsiteInterface::class)
+        $this->websiteInterfaceMock = $this->getMockBuilder($this->classWithAddedMethods(
+            WebsiteInterface::class,
+            ['getStoreIds']
+        ))
             ->onlyMethods([
                 'getId',
                 'setId',
@@ -65,9 +73,9 @@ class SalesDataManagerTest extends TestCase
                 'getDefaultGroupId',
                 'setDefaultGroupId',
                 'getExtensionAttributes',
-                'setExtensionAttributes'
+                'setExtensionAttributes',
+                'getStoreIds'
             ])
-            ->addMethods(['getStoreIds'])
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -248,9 +256,11 @@ class SalesDataManagerTest extends TestCase
         $stubs = [];
 
         for ($i = 1; $i <= 5; $i++) {
-            $mageQuoteStub = $this->getMockBuilder(\Magento\Quote\Model\Quote::class)
-                ->onlyMethods(['toArray'])
-                ->addMethods(['getCustomerEmail'])
+            $mageQuoteStub = $this->getMockBuilder($this->classWithAddedMethods(
+                \Magento\Quote\Model\Quote::class,
+                ['getCustomerEmail']
+            ))
+                ->onlyMethods(['toArray', 'getCustomerEmail'])
                 ->disableOriginalConstructor()
                 ->getMock();
             $mageQuoteStub->method('getCustomerEmail')->willReturn('chaz'.$i.'@emailsim.io');

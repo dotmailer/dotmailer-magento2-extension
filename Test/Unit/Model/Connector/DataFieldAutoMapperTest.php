@@ -9,7 +9,9 @@ use Dotdigitalgroup\Email\Model\Connector\Datafield;
 use Magento\Framework\App\Config\ReinitableConfigInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class DataFieldAutoMapperTest extends TestCase
 {
     /**

@@ -18,7 +18,7 @@
     <event name="sales_order_place_after">
         <observer name="ddg_sales_order_place_after" instance="Dotdigitalgroup\Email\Observer\Sales\OrderPlaceAfter"/>
     </event>
-    <event name="sales_order_save_after">
+    <event name="sales_order_save_commit_after">
         <observer name="ddg_sales_order_save_after" instance="Dotdigitalgroup\Email\Observer\Sales\OrderSaveAfter"/>
     </event>
     <event name="sales_order_creditmemo_save_after">

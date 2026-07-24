@@ -6,7 +6,9 @@ use Dotdigitalgroup\Email\Model\Sync\Subscriber\OrderHistoryChecker;
 use Magento\Framework\Data\Collection\AbstractDb;
 use Magento\Sales\Api\Data\OrderSearchResultInterfaceFactory;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class OrderHistoryCheckerTest extends TestCase
 {
     /**

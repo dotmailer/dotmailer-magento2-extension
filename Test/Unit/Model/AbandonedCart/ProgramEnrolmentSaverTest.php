@@ -8,13 +8,18 @@ use Dotdigitalgroup\Email\Model\Automation;
 use Dotdigitalgroup\Email\Model\AutomationFactory;
 use Dotdigitalgroup\Email\Model\Queue\Sync\Automation\AutomationPublisher;
 use Dotdigitalgroup\Email\Model\ResourceModel\Automation as AutomationResource;
+use Dotdigitalgroup\Email\Test\Unit\Traits\MockBuilderCompatibilityTrait;
 use Magento\Quote\Model\Quote;
 use Magento\Store\Model\Store;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class ProgramEnrolmentSaverTest extends TestCase
 {
+    use MockBuilderCompatibilityTrait;
+
     /**
      * @var Logger|MockObject
      */
@@ -62,8 +67,8 @@ class ProgramEnrolmentSaverTest extends TestCase
             ->method('create')
             ->willReturn($automationModelMock);
 
-        $quoteModel = $this->getMockBuilder(Quote::class)
-            ->addMethods(['getCustomerEmail'])
+        $quoteModel = $this->getMockBuilder($this->classWithAddedMethods(Quote::class, ['getCustomerEmail']))
+            ->onlyMethods(['getCustomerEmail'])
             ->disableOriginalConstructor()
             ->getMock();
 

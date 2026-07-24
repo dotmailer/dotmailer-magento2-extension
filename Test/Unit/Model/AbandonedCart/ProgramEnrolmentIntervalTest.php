@@ -8,7 +8,9 @@ use Dotdigitalgroup\Email\Model\Sync\SyncTimeService;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Store\Model\ScopeInterface;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class ProgramEnrolmentIntervalTest extends TestCase
 {
     /**

@@ -16,14 +16,19 @@ use Dotdigitalgroup\Email\Model\Sync\Batch\MegaBatchProcessorFactory;
 use Dotdigitalgroup\Email\Model\Sync\Order\Exporter;
 use Dotdigitalgroup\Email\Model\Sync\Order\ExporterFactory;
 use Dotdigitalgroup\Email\Model\Sync\Order;
+use Dotdigitalgroup\Email\Test\Unit\Traits\MockBuilderCompatibilityTrait;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Store\Api\Data\WebsiteInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class OrderTest extends TestCase
 {
+    use MockBuilderCompatibilityTrait;
+
     /**
      * @var StoreManagerInterface|MockObject
      */
@@ -90,7 +95,10 @@ class OrderTest extends TestCase
         $this->orderCollectionFactoryMock = $this->createMock(OrderCollectionFactory::class);
         $this->mergeManagerMock = $this->createMock(BatchMergerInterface::class);
         $this->loggerMock = $this->createMock(Logger::class);
-        $this->websiteInterfaceMock = $this->getMockBuilder(WebsiteInterface::class)
+        $this->websiteInterfaceMock = $this->getMockBuilder($this->classWithAddedMethods(
+            WebsiteInterface::class,
+            ['getStoreIds']
+        ))
             ->onlyMethods(
                 [
                     'getId',
@@ -102,10 +110,10 @@ class OrderTest extends TestCase
                     'getDefaultGroupId',
                     'setDefaultGroupId',
                     'getExtensionAttributes',
-                    'setExtensionAttributes'
+                    'setExtensionAttributes',
+                    'getStoreIds'
                 ]
             )
-            ->addMethods(['getStoreIds'])
             ->disableOriginalConstructor()
             ->getMock();
 

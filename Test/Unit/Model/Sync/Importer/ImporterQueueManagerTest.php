@@ -17,7 +17,9 @@ use Dotdigitalgroup\Email\Model\Sync\Importer\Type\TransactionalData\UpdateFacto
 use Dotdigitalgroup\Email\Model\Sync\Importer\BulkImportBuilderFactory;
 use Dotdigitalgroup\Email\Model\Sync\Importer;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class ImporterQueueManagerTest extends TestCase
 {
     /**

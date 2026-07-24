@@ -6,7 +6,9 @@ use PHPUnit\Framework\TestCase;
 use Dotdigitalgroup\Email\Model\SalesRule\DotdigitalCouponRequestProcessor;
 use Magento\SalesRule\Model\Rule as RuleModel;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class DotdigitalCouponRequestProcessorTest extends TestCase
 {
     /**
@@ -85,7 +87,6 @@ class DotdigitalCouponRequestProcessorTest extends TestCase
     {
         $reflection = new \ReflectionClass($this->_dotdigitalCouponRequestProcessor);
         $method = $reflection->getMethod('isRuleExpired');
-        $method->setAccessible(true);
 
         return $method->invokeArgs($this->_dotdigitalCouponRequestProcessor, [$rule]);
     }

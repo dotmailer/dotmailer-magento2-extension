@@ -6,7 +6,9 @@ use Dotdigitalgroup\Email\Model\Catalog\UpdateCatalogBulk;
 use Dotdigitalgroup\Email\Observer\Catalog\ReimportBunch;
 use Magento\Framework\Event\Observer;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class ReimportBunchTest extends TestCase
 {
     /**

@@ -33,7 +33,7 @@ class TrialSetupTest extends \PHPUnit\Framework\TestCase
      */
     private $reinitableConfig;
 
-    public function setUp() :void
+    protected function setUp() :void
     {
         $this->objectManager = ObjectManager::getInstance(); /** @phpstan-ignore-line */
         $this->configWriter = $this->objectManager->create(WriterInterface::class);
@@ -100,9 +100,9 @@ class TrialSetupTest extends \PHPUnit\Framework\TestCase
         $this->mockClient
             ->expects($this->atLeast(count($trialSetup->getAddressBookMap())))
             ->method('postAddressBooks')
-            ->will($this->returnCallback(function () use (&$id) {
+            ->willReturnCallback(function () use (&$id) {
                 return (object) ['id' => $id += 10];
-            }));
+            });
 
         $trialSetup->createAddressBooks();
     }

@@ -8,11 +8,16 @@ use Dotdigitalgroup\Email\Model\ResourceModel\Importer as ImporterResource;
 use Dotdigitalgroup\Email\Model\Sync\Importer\ImporterCurlErrorChecker;
 use Dotdigitalgroup\Email\Model\Sync\Importer\Type\Contact\Update;
 use Dotdigitalgroup\Email\Model\Sync\Importer\Type\SingleItemPostProcessor;
+use Dotdigitalgroup\Email\Test\Unit\Traits\MockBuilderCompatibilityTrait;
 use Magento\Framework\Stdlib\DateTime;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class SingleItemPostProcessorTest extends TestCase
 {
+    use MockBuilderCompatibilityTrait;
+
     /**
      * @var Data|\PHPUnit\Framework\MockObject\MockObject
      */
@@ -46,8 +51,11 @@ class SingleItemPostProcessorTest extends TestCase
     protected function setUp() :void
     {
         $this->helperMock = $this->createMock(Data::class);
-        $this->importerModelMock = $this->getMockBuilder(ImporterModel::class)
-            ->addMethods(['setImportStatus', 'setImportFinished', 'setImportStarted', 'setMessage'])
+        $this->importerModelMock = $this->getMockBuilder($this->classWithAddedMethods(
+            ImporterModel::class,
+            ['setImportStatus', 'setImportFinished', 'setImportStarted', 'setMessage']
+        ))
+            ->onlyMethods(['setImportStatus', 'setImportFinished', 'setImportStarted', 'setMessage'])
             ->disableOriginalConstructor()
             ->getMock();
         $this->importerResourceMock = $this->createMock(ImporterResource::class);

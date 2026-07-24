@@ -8,8 +8,11 @@ use Dotdigitalgroup\Email\Model\Sync\Catalog\DefaultLevelCatalogSyncer;
 use Dotdigitalgroup\Email\Model\Sync\Catalog\StoreCatalogSyncer;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Store\Model\App\Emulation;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class DefaultLevelCatalogSyncerTest extends TestCase
 {
     /**
@@ -57,10 +60,7 @@ class DefaultLevelCatalogSyncerTest extends TestCase
         );
     }
 
-    /**
-     * @dataProvider getProducts
-     * @param        $products
-     */
+    #[DataProvider('getProducts')]
     public function testIfUserAndCatalogSyncAreEnabledNumberOfProductsGreaterThanZero($products)
     {
         $this->mockProducts($products);
@@ -79,10 +79,7 @@ class DefaultLevelCatalogSyncerTest extends TestCase
         $this->assertEquals($result, $products);
     }
 
-    /**
-     * @dataProvider getProducts
-     * @param        $products
-     */
+    #[DataProvider('getProducts')]
     public function testIfUserIsDisabledThenSyncReturnsNull($products)
     {
         $this->helperMock->expects($this->once())
@@ -100,10 +97,7 @@ class DefaultLevelCatalogSyncerTest extends TestCase
         $this->assertEmpty($result);
     }
 
-    /**
-     * @dataProvider getProducts
-     * @param        $products
-     */
+    #[DataProvider('getProducts')]
     public function testIfCatalogSyncIsDisabledThenSyncReturnsNull($products)
     {
         $this->helperMock->expects($this->once())
@@ -121,10 +115,7 @@ class DefaultLevelCatalogSyncerTest extends TestCase
         $this->assertEmpty($result);
     }
 
-    /**
-     * @dataProvider getProducts
-     * @param        $products
-     */
+    #[DataProvider('getProducts')]
     public function testIfCatalogSyncAndUserAreDisabledThenSyncReturnsNull($products)
     {
         $this->helperMock->expects($this->once())

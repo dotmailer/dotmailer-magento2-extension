@@ -9,13 +9,18 @@ use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Queue\Sync\Automation\AutomationPublisher;
 use Dotdigitalgroup\Email\Model\Automation;
 use Dotdigitalgroup\Email\Model\Queue\Data\AutomationDataFactory;
+use Dotdigitalgroup\Email\Test\Unit\Traits\MockBuilderCompatibilityTrait;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\MessageQueue\PublisherInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class AutomationPublisherTest extends TestCase
 {
+    use MockBuilderCompatibilityTrait;
+
     /**
      * @var Data|MockObject
      */
@@ -58,9 +63,8 @@ class AutomationPublisherTest extends TestCase
 
     public function testPublish(): void
     {
-        $automationMock = $this->getMockBuilder(Automation::class)
-            ->onlyMethods(['getId'])
-            ->addMethods(['getAutomationType'])
+        $automationMock = $this->getMockBuilder($this->classWithAddedMethods(Automation::class, ['getAutomationType']))
+            ->onlyMethods(['getId', 'getAutomationType'])
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -95,9 +99,8 @@ class AutomationPublisherTest extends TestCase
 
     public function testExceptionThrownForBadTopic()
     {
-        $automationMock = $this->getMockBuilder(Automation::class)
-            ->onlyMethods(['getId'])
-            ->addMethods(['getAutomationType'])
+        $automationMock = $this->getMockBuilder($this->classWithAddedMethods(Automation::class, ['getAutomationType']))
+            ->onlyMethods(['getId', 'getAutomationType'])
             ->disableOriginalConstructor()
             ->getMock();
 

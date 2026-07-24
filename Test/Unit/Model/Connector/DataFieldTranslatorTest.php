@@ -11,7 +11,9 @@ use Dotdigitalgroup\Email\Model\Apiconnector\Client;
 use Dotdigitalgroup\Email\Model\Connector\DataFieldTranslator;
 use Magento\Framework\TranslateInterface;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class DataFieldTranslatorTest extends TestCase
 {
     /**

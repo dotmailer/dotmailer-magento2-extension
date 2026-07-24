@@ -16,7 +16,9 @@ use Magento\Catalog\Model\Product as MagentoProduct;
 use Magento\Framework\Phrase;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class SdkCatalogRecordCollectionBuilderTest extends TestCase
 {
     /** @var ConnectorProductFactory|MockObject */

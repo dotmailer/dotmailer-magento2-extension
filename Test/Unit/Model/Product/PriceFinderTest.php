@@ -6,6 +6,7 @@ namespace Dotdigitalgroup\Email\Test\Unit\Model\Product;
 
 use Dotdigitalgroup\Email\Model\Product\PriceFinder;
 use Dotdigitalgroup\Email\Model\Tax\TaxCalculator;
+use Dotdigitalgroup\Email\Test\Unit\Traits\MockBuilderCompatibilityTrait;
 use Magento\Bundle\Pricing\Price\BundleRegularPrice;
 use Magento\Catalog\Model\Product;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
@@ -14,9 +15,13 @@ use Magento\Framework\Pricing\PriceInfo\Base;
 use Magento\Tax\Helper\Data as TaxHelper;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class PriceFinderTest extends TestCase
 {
+    use MockBuilderCompatibilityTrait;
+
     /**
      * @var Product|MockObject
      */
@@ -59,7 +64,7 @@ class PriceFinderTest extends TestCase
 
     protected function setup(): void
     {
-        $this->productMock = $this->getMockBuilder(Product::class)
+        $this->productMock = $this->getMockBuilder($this->classWithAddedMethods(Product::class, ['getTaxClassId']))
             ->disableOriginalConstructor()
             ->onlyMethods(
                 [
@@ -67,11 +72,7 @@ class PriceFinderTest extends TestCase
                     'getTypeId',
                     'getPrice',
                     'getSpecialPrice',
-                    'getPriceInfo'
-                ]
-            )
-            ->addMethods(
-                [
+                    'getPriceInfo',
                     'getTaxClassId'
                 ]
             )

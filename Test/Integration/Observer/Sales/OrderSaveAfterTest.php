@@ -22,6 +22,7 @@ use Magento\Customer\Model\Customer;
 use Magento\Customer\Model\CustomerRegistry;
 use Magento\Customer\Model\ResourceModel\Customer as CustomerResource;
 use Magento\Customer\Model\ResourceModel\Customer\Collection as CustomerCollection;
+use Magento\Framework\Event\ManagerInterface;
 use Magento\MysqlMq\Model\ResourceModel\MessageCollectionFactory;
 use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\Sales\Model\Order;
@@ -108,6 +109,8 @@ class OrderSaveAfterTest extends TestCase
             ->loadByIncrementId('100000001');
 
         $this->assertNotNull($salesOrder->getId(), 'Order should exist');
+
+        $this->dispatchOrderSaveCommitAfter($salesOrder);
 
         $dotdigitalOrder = $this->orderCollectionFactory->create()
             ->addFieldToFilter('order_id', $salesOrder->getId())
@@ -380,6 +383,22 @@ class OrderSaveAfterTest extends TestCase
         /** @var OrderRepositoryInterface $orderRepository */
         $orderRepository = $objectManager->create(OrderRepositoryInterface::class);
         $orderRepository->save($order);
+
+        $this->dispatchOrderSaveCommitAfter($order);
+    }
+
+    /**
+     * The commit-after event is not fired automatically in integration tests that run inside
+     * database transactions, so dispatch it explicitly when asserting observer behaviour.
+     *
+     * @param Order $order
+     * @return void
+     */
+    private function dispatchOrderSaveCommitAfter(Order $order): void
+    {
+        /** @var ManagerInterface $eventManager */
+        $eventManager = $this->objectManager->get(ManagerInterface::class);
+        $eventManager->dispatch('sales_order_save_commit_after', ['order' => $order]);
     }
 
     /**

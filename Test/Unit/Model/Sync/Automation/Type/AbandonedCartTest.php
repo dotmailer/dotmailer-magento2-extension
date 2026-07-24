@@ -21,17 +21,21 @@ use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\Updater\AbandonedCartF
 use Dotdigitalgroup\Email\Model\Sync\Automation\OrderManager;
 use Dotdigitalgroup\Email\Model\Sync\Automation\Type\AbandonedCart;
 use Dotdigitalgroup\Email\Test\Unit\Traits\AutomationProcessorTrait;
+use Dotdigitalgroup\Email\Test\Unit\Traits\MockBuilderCompatibilityTrait;
 use Magento\Newsletter\Model\Subscriber;
 use Magento\Quote\Model\QuoteFactory;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
 /**
  * This test is essentially a further test for Sync\Automation\AutomationProcessor,
  * which AbandonedCart extends.
  */
+#[AllowMockObjectsWithoutExpectations]
 class AbandonedCartTest extends TestCase
 {
     use AutomationProcessorTrait;
+    use MockBuilderCompatibilityTrait;
 
     /**
      * @var Data|\PHPUnit_Framework_MockObject_MockObject
@@ -139,13 +143,18 @@ class AbandonedCartTest extends TestCase
         $this->quoteFactoryMock = $this->createMock(QuoteFactory::class);
         $this->backportedSubscriberLoaderMock = $this->createMock(BackportedSubscriberLoader::class);
         $this->optInTypeFinderMock = $this->createMock(OptInTypeFinder::class);
-        $this->contactModelMock = $this->getMockBuilder(Contact::class)
-            ->onlyMethods(['loadByCustomerEmail'])
-            ->addMethods(['getCustomerId', 'getIsGuest'])
+        $this->contactModelMock = $this->getMockBuilder($this->classWithAddedMethods(
+            Contact::class,
+            ['getCustomerId', 'getIsGuest']
+        ))
+            ->onlyMethods(['loadByCustomerEmail', 'getCustomerId', 'getIsGuest'])
             ->disableOriginalConstructor()
             ->getMock();
-        $this->automationModelMock = $this->getMockBuilder(Automation::class)
-            ->addMethods(['getEmail', 'getWebsiteId', 'getStoreId', 'getAutomationType'])
+        $this->automationModelMock = $this->getMockBuilder($this->classWithAddedMethods(
+            Automation::class,
+            ['getEmail', 'getWebsiteId', 'getStoreId', 'getAutomationType']
+        ))
+            ->onlyMethods(['getEmail', 'getWebsiteId', 'getStoreId', 'getAutomationType'])
             ->disableOriginalConstructor()
             ->getMock();
         $this->subscriberModelMock = $this->createMock(Subscriber::class);
@@ -185,6 +194,7 @@ class AbandonedCartTest extends TestCase
 
     public function testThatWeExitProcessLoopIfQuoteHasNoItems()
     {
+        $this->setupAutomationModel();
         $quoteModelMock = $this->createMock(\Magento\Quote\Model\Quote::class);
 
         $this->quoteFactoryMock->expects($this->once())

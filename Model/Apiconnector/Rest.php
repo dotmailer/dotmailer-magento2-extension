@@ -273,12 +273,10 @@ class Rest
                     );
             }
         } catch (\InvalidArgumentException $e) {
-            // @codingStandardsIgnoreLine
-            curl_close($ch);
+            $this->closeCurlHandle($ch);
             throw $e;
         } catch (\Exception $e) {
-            // @codingStandardsIgnoreLine
-            curl_close($ch);
+            $this->closeCurlHandle($ch);
             throw $e;
         }
 
@@ -450,9 +448,9 @@ class Rest
             //save the error
             $this->curlError = curl_error($ch);
         }
-
-        curl_close($ch);
         // @codingStandardsIgnoreEnd
+
+        $this->closeCurlHandle($ch);
     }
 
     /**
@@ -689,5 +687,22 @@ class Rest
         }
 
         return $this;
+    }
+
+    /**
+     * Close a cURL handle on PHP 7.x where it is still required.
+     *
+     * PHP 8+ manages cURL handles automatically and curl_close() is deprecated
+     * in PHP 8.5, so we skip the call there.
+     *
+     * @param mixed $ch
+     * @return void
+     */
+    private function closeCurlHandle($ch)
+    {
+        if (PHP_VERSION_ID < 80000) {
+            // @codingStandardsIgnoreLine
+            curl_close($ch);
+        }
     }
 }

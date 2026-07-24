@@ -89,10 +89,16 @@ trait MocksApiResponses
         // build all constructor parameters, sneaking in any overridden parameters
         $args = array_map(function ($param) use ($objectManager, $parameters) {
             /** @var ReflectionParameter $param */
-            if (array_key_exists($param->getType()->getName(), $parameters)) {
-                return $parameters[$param->getType()->getName()];
+            $paramType = $param->getType();
+            if (!$paramType) {
+                return $param->isDefaultValueAvailable() ? $param->getDefaultValue() : null;
             }
-            return $objectManager->create($param->getType()->getName());
+
+            $typeName = $paramType->getName();
+            if (array_key_exists($typeName, $parameters)) {
+                return $parameters[$typeName];
+            }
+            return $objectManager->create($typeName);
         }, $class->getConstructor()->getParameters());
 
         // share a pre-generated data helper
