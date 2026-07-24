@@ -1,3 +1,16 @@
+# 4.35.0
+
+### What's new
+- Our connector is now compatible with Magento v2.4.9.
+- We updated various assets in line with Dotdigital's recent rebrand.
+
+### Bug fixes
+- The module's console commands have been updated for compatibility with Symfony 7+.
+- We fixed a compile error caused by a deprecated non-canonical type cast.
+- We fixed the `ProcessPendingAutomations` data patch by ensuring area code was set in advance.
+- The OrderSaveAfter observer now listens for the `sales_order_commit_save_after` event to prevent failed nested transactions.
+- We removed `curl_close()` in PHP 8+.
+
 # 4.34.2
 
 ### Bug fixes
