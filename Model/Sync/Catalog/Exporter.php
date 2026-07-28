@@ -252,7 +252,9 @@ class Exporter
                     "index_pricing_min_price_" . $groupId => 'min_price',
                     "index_pricing_max_price_" . $groupId => 'max_price',
                     "index_pricing_tier_price_" . $groupId => 'tier_price',
-                    "index_pricing_group_name_" . $groupId => new Zend_Db_Expr("'$groupLabel'")
+                    "index_pricing_group_name_" . $groupId => new Zend_Db_Expr(
+                        $productCollection->getConnection()->quote($groupLabel)
+                    )
                 ]
             );
         }

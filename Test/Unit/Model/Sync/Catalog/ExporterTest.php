@@ -15,6 +15,7 @@ use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductColl
 use Magento\Catalog\Model\ResourceModel\Product\Collection as ProductCollection;
 use Magento\Customer\Model\ResourceModel\Group\Collection as CustomerGroupCollection;
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\DB\Adapter\AdapterInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\Exception;
@@ -140,6 +141,10 @@ class ExporterTest extends TestCase
         $this->productCollectionMock->method('getSelect')->willReturn($selectMock);
         $selectMock->method('joinLeft')->willReturnSelf();
 
+        $dbAdapterMock = $this->createMock(AdapterInterface::class);
+        $dbAdapterMock->method('quote')->willReturnCallback(fn($val) => "'$val'");
+        $this->productCollectionMock->method('getConnection')->willReturn($dbAdapterMock);
+
         $productMock1 = $this->getMockProducts($product1Id);
         $productMock2 = $this->getMockProducts($product2Id);
 
@@ -247,6 +252,10 @@ class ExporterTest extends TestCase
         $selectMock = $this->createMock(\Magento\Framework\DB\Select::class);
         $this->productCollectionMock->method('getSelect')->willReturn($selectMock);
         $selectMock->method('joinLeft')->willReturnSelf();
+
+        $dbAdapterMock = $this->createMock(AdapterInterface::class);
+        $dbAdapterMock->method('quote')->willReturnCallback(fn($val) => "'$val'");
+        $this->productCollectionMock->method('getConnection')->willReturn($dbAdapterMock);
 
         $productMock1 = $this->getMockProducts($product1Id);
         $productMock2 = $this->getMockProducts($product2Id);
