@@ -1,3 +1,8 @@
+# 4.35.1
+
+### Improvements
+- We fixed a potential SQL injection vulnerability for the catalog sync index prices which required admin privileges.
+
 # 4.35.0
 
 ### What's new
