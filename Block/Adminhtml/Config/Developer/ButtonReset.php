@@ -72,7 +72,7 @@ class ButtonReset extends \Magento\Config\Block\System\Config\Form\Field
      *
      * @return string
      */
-    protected function getButtonUrl()
+    private function getButtonUrl()
     {
         $query = [
             '_query' => [

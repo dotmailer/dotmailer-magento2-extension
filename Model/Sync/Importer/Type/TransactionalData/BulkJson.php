@@ -23,12 +23,12 @@ class BulkJson extends AbstractItemSyncer implements BulkSyncInterface
     /**
      * @var SerializerInterface
      */
-    protected $serializer;
+    private $serializer;
 
     /**
      * @var SenderStrategyFactory
      */
-    protected $senderStrategyFactory;
+    private $senderStrategyFactory;
 
     /**
      * BulkJson constructor.

@@ -21,7 +21,7 @@ class InsertEmailContactTableCustomerSales extends AbstractBatchInserter impleme
     /**
      * @var string
      */
-    protected $resourceName = 'sales';
+    private $resourceName = 'sales';
 
     /**
      * Do not use offset for this migration.

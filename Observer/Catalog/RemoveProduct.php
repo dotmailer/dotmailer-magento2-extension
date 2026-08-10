@@ -2,6 +2,8 @@
 
 namespace Dotdigitalgroup\Email\Observer\Catalog;
 
+use Magento\Framework\Exception\NoSuchEntityException;
+
 /**
  * Product that was deleted to be removed.
  */
@@ -83,9 +85,11 @@ class RemoveProduct implements \Magento\Framework\Event\ObserverInterface
      * Delete piece of transactional data by key.
      *
      * @param int $key
+     *
      * @return void
+     * @throws NoSuchEntityException
      */
-    protected function deleteFromAccount($key): void
+    private function deleteFromAccount($key): void
     {
         $apiEnabled = $this->scopeConfig->getValue(
             \Dotdigitalgroup\Email\Helper\Config::XML_PATH_CONNECTOR_API_ENABLED
