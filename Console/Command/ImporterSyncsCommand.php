@@ -7,7 +7,6 @@ namespace Dotdigitalgroup\Email\Console\Command;
 use Dotdigitalgroup\Email\Console\Command\Provider\SyncProvider;
 use Dotdigitalgroup\Email\Model\Sync\SyncInterface;
 use Magento\Framework\App\Area;
-use Magento\Framework\App\ObjectManager;
 use Magento\Framework\App\ResourceConnection;
 use Magento\Framework\App\State;
 use Magento\Framework\Exception\LocalizedException;
@@ -27,19 +26,27 @@ class ImporterSyncsCommand extends Command
     private $syncProvider;
 
     /**
+     * @var ResourceConnection
+     */
+    private $resourceConnection;
+
+    /**
      * @var State
      */
     private $state;
 
     /**
      * @param SyncProvider $syncProvider
+     * @param ResourceConnection $resourceConnection
      * @param State $state
      */
     public function __construct(
         SyncProvider $syncProvider,
+        ResourceConnection $resourceConnection,
         State $state
     ) {
         $this->syncProvider = $syncProvider;
+        $this->resourceConnection = $resourceConnection;
         $this->state = $state;
         parent::__construct();
     }
@@ -169,8 +176,7 @@ class ImporterSyncsCommand extends Command
      */
     private function outputDbProfilerQueries(OutputInterface $output): void
     {
-        /** @var ResourceConnection $res */
-        $res = ObjectManager::getInstance()->get(ResourceConnection::class);
+        $res = $this->resourceConnection;
         /** @var \Magento\Framework\DB\Adapter\Pdo\Mysql $connection */
         $connection = $res->getConnection('read');
         /** @var \Magento\Framework\DB\Profiler $profiler */
