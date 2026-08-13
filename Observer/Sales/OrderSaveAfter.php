@@ -179,12 +179,14 @@ class OrderSaveAfter implements ObserverInterface
     {
         try {
             $order = $observer->getEvent()->getOrder();
-            $status         = $order->getStatus();
-            $storeId        = $order->getStoreId();
-            $customerEmail  = $order->getCustomerEmail();
-            $store      = $this->storeManager->getStore($storeId);
-            $storeName  = $store->getName();
-            $websiteId  = $store->getWebsiteId();
+            $origEmail = $order->getOrigData('customer_email');
+            $customerEmail = $order->getCustomerEmail();
+
+            $status = $order->getStatus();
+            $storeId = $order->getStoreId();
+            $store = $this->storeManager->getStore($storeId);
+            $storeName = $store->getName();
+            $websiteId = $store->getWebsiteId();
             if (empty($storeId)) {
                 $storeId = $store->getId();
             }
@@ -201,6 +203,13 @@ class OrderSaveAfter implements ObserverInterface
             $this->orderResource->save($emailOrder);
 
             if (!$this->helper->isEnabled($websiteId)) {
+                return $this;
+            }
+
+            if ($origEmail && $origEmail !== $customerEmail) {
+                $this->logger->info(
+                    'Exiting OrderSaveAfter observer - email change in progress.'
+                );
                 return $this;
             }
 

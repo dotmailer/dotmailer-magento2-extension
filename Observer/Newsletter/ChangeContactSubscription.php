@@ -6,11 +6,11 @@ namespace Dotdigitalgroup\Email\Observer\Newsletter;
 
 use Dotdigitalgroup\Email\Helper\Config;
 use Dotdigitalgroup\Email\Helper\Data;
+use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\AutomationFactory;
 use Dotdigitalgroup\Email\Model\Contact as ContactModel;
 use Dotdigitalgroup\Email\Model\ContactFactory;
-use Dotdigitalgroup\Email\Model\ImporterFactory;
-use Dotdigitalgroup\Email\Model\Queue\Sync\Automation\AutomationPublisher;
+use Dotdigitalgroup\Email\Model\Queue\Data\SubscriptionDataFactory;
 use Dotdigitalgroup\Email\Model\ResourceModel\Automation;
 use Dotdigitalgroup\Email\Model\ResourceModel\Automation\CollectionFactory;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact;
@@ -23,13 +23,12 @@ use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Exception\AlreadyExistsException;
 use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Framework\MessageQueue\PublisherInterface;
 use Magento\Framework\Registry;
 use Magento\Framework\Stdlib\DateTime;
 use Magento\Newsletter\Model\Subscriber;
 use Magento\Store\Model\ScopeInterface;
-use Magento\Framework\MessageQueue\PublisherInterface;
 use Magento\Store\Model\StoreManagerInterface;
-use Dotdigitalgroup\Email\Model\Queue\Data\SubscriptionDataFactory;
 
 /**
  * Contact newsletter subscription change.
@@ -45,6 +44,11 @@ class ChangeContactSubscription implements ObserverInterface
      * @var Data
      */
     private $helper;
+
+    /**
+     * @var Logger
+     */
+    private $logger;
 
     /**
      * @var Registry
@@ -75,16 +79,6 @@ class ChangeContactSubscription implements ObserverInterface
      * @var Automation\CollectionFactory
      */
     private $automationCollectionFactory;
-
-    /**
-     * @var ImporterFactory
-     */
-    private $importerFactory;
-
-    /**
-     * @var AutomationPublisher
-     */
-    private $automationPublisher;
 
     /**
      * @var DateTime
@@ -121,9 +115,8 @@ class ChangeContactSubscription implements ObserverInterface
      * @param Contact $contactResource
      * @param Registry $registry
      * @param Data $data
+     * @param Logger $logger
      * @param StoreManagerInterface $storeManagerInterface
-     * @param ImporterFactory $importerFactory
-     * @param AutomationPublisher $automationPublisher
      * @param DateTime $dateTime
      * @param ScopeConfigInterface $scopeConfig
      * @param PublisherInterface $publisher
@@ -137,9 +130,8 @@ class ChangeContactSubscription implements ObserverInterface
         Contact $contactResource,
         Registry $registry,
         Data $data,
+        Logger $logger,
         StoreManagerInterface $storeManagerInterface,
-        ImporterFactory $importerFactory,
-        AutomationPublisher $automationPublisher,
         DateTime $dateTime,
         ScopeConfigInterface $scopeConfig,
         PublisherInterface $publisher,
@@ -151,10 +143,9 @@ class ChangeContactSubscription implements ObserverInterface
         $this->automationCollectionFactory = $automationCollectionFactory;
         $this->contactFactory = $contactFactory;
         $this->helper = $data;
+        $this->logger = $logger;
         $this->storeManager = $storeManagerInterface;
         $this->registry = $registry;
-        $this->importerFactory = $importerFactory;
-        $this->automationPublisher = $automationPublisher;
         $this->dateTime = $dateTime;
         $this->scopeConfig = $scopeConfig;
         $this->publisher = $publisher;
@@ -172,17 +163,25 @@ class ChangeContactSubscription implements ObserverInterface
     public function execute(Observer $observer)
     {
         $subscriber = $observer->getEvent()->getSubscriber();
+        $websiteId = $this->storeManager->getStore($subscriber->getStoreId())
+            ->getWebsiteId();
+        if (!$this->helper->isEnabled($websiteId)) {
+            return $this;
+        }
+
+        $origEmail = $subscriber->getOrigData('subscriber_email');
+        $email = $subscriber->getEmail();
+        if ($origEmail && $origEmail !== $email) {
+            $this->logger->info(
+                'Skipping ChangeContactSubscription observer - email change in progress.'
+            );
+            return $this;
+        }
+
         $this->isSubscriberNew = $subscriber->isObjectNew();
         $email = $subscriber->getEmail();
         $storeId = $subscriber->getStoreId();
         $subscriberStatus = $subscriber->getSubscriberStatus();
-        $websiteId = $this->storeManager->getStore($subscriber->getStoreId())
-            ->getWebsiteId();
-
-        //api is enabled
-        if (!$this->helper->isEnabled($websiteId)) {
-            return $this;
-        }
 
         try {
             $contactEmail = $this->contactFactory->create()
