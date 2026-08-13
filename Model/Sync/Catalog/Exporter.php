@@ -235,26 +235,29 @@ class Exporter
         }
 
         $customerGroups = $this->customerGroup->toOptionArray();
-        $websiteId = $this->storeManager->getStore($storeId)->getWebsiteId();
+        $websiteId = (int) $this->storeManager->getStore($storeId)->getWebsiteId();
+        $connection = $productCollection->getConnection();
 
         foreach ($customerGroups as $customerGroup) {
-            $groupId = $customerGroup['value'];
-            $groupLabel = $customerGroup['label'];
-            $alias = 'price_index_' . $groupId;
+            $groupId = (int) $customerGroup['value'];
+            $groupLabel = (string) $customerGroup['label'];
+            $alias = sprintf('price_index_%d', $groupId);
+            $joinCondition = implode(' AND ', [
+                sprintf('e.entity_id = %s.entity_id', $alias),
+                $connection->quoteInto(sprintf('%s.customer_group_id = ?', $alias), $groupId),
+                $connection->quoteInto(sprintf('%s.website_id = ?', $alias), $websiteId),
+            ]);
+
             $productCollection->getSelect()->joinLeft(
                 [$alias => $productCollection->getTable('catalog_product_index_price')],
-                "e.entity_id = " . $alias . ".entity_id AND " .
-                $alias . ".customer_group_id = " . $groupId . " AND " .
-                $alias . ".website_id = " . $websiteId,
+                $joinCondition,
                 [
                     "index_pricing_price_" . $groupId => 'price',
                     "index_pricing_final_price_" . $groupId => 'final_price',
                     "index_pricing_min_price_" . $groupId => 'min_price',
                     "index_pricing_max_price_" . $groupId => 'max_price',
                     "index_pricing_tier_price_" . $groupId => 'tier_price',
-                    "index_pricing_group_name_" . $groupId => new Zend_Db_Expr(
-                        $productCollection->getConnection()->quote($groupLabel)
-                    )
+                    "index_pricing_group_name_" . $groupId => new Zend_Db_Expr($connection->quote($groupLabel))
                 ]
             );
         }
