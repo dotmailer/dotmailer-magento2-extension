@@ -24,7 +24,7 @@ abstract class AbstractBulkUpdater extends AbstractDataMigration
      *
      * @return void
      */
-    protected function bulkUpdate(Select $selectStatement)
+    private function bulkUpdate(Select $selectStatement)
     {
         $totalRowsSelected = 0;
 
@@ -53,7 +53,7 @@ abstract class AbstractBulkUpdater extends AbstractDataMigration
      *
      * @return array
      */
-    protected function fetchRecords(Select $selectStatement)
+    private function fetchRecords(Select $selectStatement)
     {
         return $this->resourceConnection
             ->getConnection()
@@ -70,16 +70,6 @@ abstract class AbstractBulkUpdater extends AbstractDataMigration
      * @return mixed
      */
     abstract protected function getUpdateBindings($bind);
-
-    /**
-     * Get the key for the update clause
-     *
-     * @return mixed
-     *
-     * @deprecated getUpdateBindings() needs to receive an array for flexibility.
-     * @see getUpdateBindings
-     */
-    abstract protected function getBindKey();
 
     /**
      * Get the where clause for this update

@@ -1,3 +1,14 @@
+# 4.36.0
+
+### Improvements
+- We moved some protected class properties to private.
+- We removed usage of ObjectManager from a console command script.
+- We improved a join query to export indexed product prices.
+
+### Bug fixes
+- We fixed a bug with contact creation following a customer email address change.
+- We fixed a subscriber sync error in the case that the subscriber list was left empty.
+
 # 4.35.1
 
 ### Improvements

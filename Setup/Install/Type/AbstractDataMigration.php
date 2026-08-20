@@ -81,18 +81,6 @@ abstract class AbstractDataMigration
     abstract protected function getSelectStatement();
 
     /**
-     * Get batch size from configuration
-     *
-     * @return int
-     */
-    protected function getBatchSize(): int
-    {
-        return (int) $this->scopeConfig->getValue(
-            self::XML_PATH_DATA_MIGRATION_BATCH_SIZE
-        );
-    }
-
-    /**
      * Get the rows affected by this type
      *
      * @return int
@@ -120,5 +108,17 @@ abstract class AbstractDataMigration
     public function isEnabled(): bool
     {
         return true;
+    }
+
+    /**
+     * Get batch size from configuration
+     *
+     * @return int
+     */
+    private function getBatchSize(): int
+    {
+        return (int) $this->scopeConfig->getValue(
+            self::XML_PATH_DATA_MIGRATION_BATCH_SIZE
+        );
     }
 }

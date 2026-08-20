@@ -15,12 +15,12 @@ class SenderStrategyFactory implements BatchStrategyFactoryInterface
     /**
      * @var ObjectManagerInterface Magento's object manager for creating instances.
      */
-    protected $objectManager;
+    private $objectManager;
 
     /**
      * @var array Mapping of import types to their corresponding strategy class names.
      */
-    protected $strategies = [
+    private $strategies = [
         Importer::IMPORT_TYPE_CUSTOMER => ContactSenderStrategy::class,
         Importer::IMPORT_TYPE_GUEST => ContactSenderStrategy::class,
         Importer::IMPORT_TYPE_SUBSCRIBERS => ContactSenderStrategy::class,

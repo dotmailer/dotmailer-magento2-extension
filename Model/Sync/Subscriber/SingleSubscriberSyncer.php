@@ -112,12 +112,12 @@ class SingleSubscriberSyncer
      * Mark contact as imported.
      *
      * @param Contact $contact
-     * @param SdkContact $response
+     * @param SdkContact|null $response
      *
      * @return void
      * @throws AlreadyExistsException
      */
-    private function markProcessedSubscriberAsImported(Contact $contact, SdkContact $response): void
+    private function markProcessedSubscriberAsImported(Contact $contact, ?SdkContact $response): void
     {
         if ($response) {
             $contact->setContactId($response->getContactId());

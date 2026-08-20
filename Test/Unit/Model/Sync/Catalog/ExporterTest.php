@@ -5,23 +5,24 @@ declare(strict_types=1);
 namespace Dotdigitalgroup\Email\Test\Unit\Model\Sync\Catalog;
 
 use Dotdigital\V3\Models\InsightData\RecordsCollection as RecordsCollectionAlias;
-use Dotdigitalgroup\Email\Model\Connector\ProductFactory as ConnectorProductFactory;
 use Dotdigitalgroup\Email\Logger\Logger;
+use Dotdigitalgroup\Email\Model\Connector\ProductFactory as ConnectorProductFactory;
 use Dotdigitalgroup\Email\Model\Sync\Catalog\Exporter;
 use Dotdigitalgroup\Email\Model\Sync\Export\SdkCatalogRecordCollectionBuilder;
 use Dotdigitalgroup\Email\Model\Sync\Export\SdkCatalogRecordCollectionBuilderFactory;
 use Magento\Catalog\Model\Product;
-use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
 use Magento\Catalog\Model\ResourceModel\Product\Collection as ProductCollection;
+use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
 use Magento\Customer\Model\ResourceModel\Group\Collection as CustomerGroupCollection;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\DB\Adapter\AdapterInterface;
+use Magento\Framework\DB\Select;
 use Magento\Store\Model\StoreManagerInterface;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
 #[AllowMockObjectsWithoutExpectations]
 class ExporterTest extends TestCase
@@ -137,13 +138,7 @@ class ExporterTest extends TestCase
         $this->productCollectionMock->method('addCategoryIds')->willReturnSelf();
         $this->productCollectionMock->method('addOptionsToResult')->willReturnSelf();
 
-        $selectMock = $this->createMock(\Magento\Framework\DB\Select::class);
-        $this->productCollectionMock->method('getSelect')->willReturn($selectMock);
-        $selectMock->method('joinLeft')->willReturnSelf();
-
-        $dbAdapterMock = $this->createMock(AdapterInterface::class);
-        $dbAdapterMock->method('quote')->willReturnCallback(fn($val) => "'$val'");
-        $this->productCollectionMock->method('getConnection')->willReturn($dbAdapterMock);
+        $this->mockIndexedPriceJoin(1);
 
         $productMock1 = $this->getMockProducts($product1Id);
         $productMock2 = $this->getMockProducts($product2Id);
@@ -249,13 +244,7 @@ class ExporterTest extends TestCase
         $this->productCollectionMock->method('addCategoryIds')->willReturnSelf();
         $this->productCollectionMock->method('addOptionsToResult')->willReturnSelf();
 
-        $selectMock = $this->createMock(\Magento\Framework\DB\Select::class);
-        $this->productCollectionMock->method('getSelect')->willReturn($selectMock);
-        $selectMock->method('joinLeft')->willReturnSelf();
-
-        $dbAdapterMock = $this->createMock(AdapterInterface::class);
-        $dbAdapterMock->method('quote')->willReturnCallback(fn($val) => "'$val'");
-        $this->productCollectionMock->method('getConnection')->willReturn($dbAdapterMock);
+        $this->mockIndexedPriceJoin(1);
 
         $productMock1 = $this->getMockProducts($product1Id);
         $productMock2 = $this->getMockProducts($product2Id);
@@ -441,5 +430,49 @@ class ExporterTest extends TestCase
             'websites' => [],
             'type' => ''
         ];
+    }
+
+    /**
+     * Mocks indexed price joins and asserts join conditions are assembled using quoteInto output.
+     */
+    private function mockIndexedPriceJoin(int $websiteId): void
+    {
+        $selectMock = $this->createMock(Select::class);
+        $this->productCollectionMock->method('getSelect')->willReturn($selectMock);
+
+        $dbAdapterMock = $this->createMock(AdapterInterface::class);
+        $dbAdapterMock->expects($this->exactly(6))
+            ->method('quoteInto')
+            ->willReturnCallback(
+                static fn (string $text, int $value): string => str_replace('?', (string) $value, $text)
+            );
+        $dbAdapterMock->expects($this->exactly(3))
+            ->method('quote')
+            ->willReturnCallback(static fn ($val): string => "'" . $val . "'");
+        $this->productCollectionMock->method('getConnection')->willReturn($dbAdapterMock);
+
+        $groupIds = [1, 2, 3];
+        $call = 0;
+        $selectMock->expects($this->exactly(3))
+            ->method('joinLeft')
+            ->willReturnCallback(
+                function (array $table, string $condition) use (&$call, $groupIds, $websiteId, $selectMock) {
+                    $expectedGroupId = $groupIds[$call++];
+                    $alias = array_key_first($table);
+
+                    $this->assertSame(sprintf('price_index_%d', $expectedGroupId), $alias);
+                    $this->assertSame(
+                        sprintf(
+                            'e.entity_id = %1$s.entity_id AND %1$s.customer_group_id = %2$d AND %1$s.website_id = %3$d',
+                            $alias,
+                            $expectedGroupId,
+                            $websiteId
+                        ),
+                        $condition
+                    );
+
+                    return $selectMock;
+                }
+            );
     }
 }

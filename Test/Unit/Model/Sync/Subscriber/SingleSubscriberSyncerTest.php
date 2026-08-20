@@ -139,6 +139,30 @@ class SingleSubscriberSyncerTest extends TestCase
             ->method('setSubscriberImported')
             ->with(1);
 
+        $this->contactResourceMock->expects($this->once())
+            ->method('save')
+            ->with($this->contactModelMock);
+
+        $this->singleSubscriberSyncer->execute($this->contactModelMock);
+    }
+
+    public function testExecuteDoesNotMarkSubscriberAsImportedWhenResponseIsNull()
+    : void
+    {
+        $websiteId = 1;
+
+        $this->contactModelMock->method('getWebsiteId')->willReturn($websiteId);
+        $this->helperMock->method('isSubscriberSyncEnabled')->willReturn(false);
+
+        $this->contactModelMock->expects($this->never())
+            ->method('setContactId');
+
+        $this->contactModelMock->expects($this->never())
+            ->method('setSubscriberImported');
+
+        $this->contactResourceMock->expects($this->never())
+            ->method('save');
+
         $this->singleSubscriberSyncer->execute($this->contactModelMock);
     }
 

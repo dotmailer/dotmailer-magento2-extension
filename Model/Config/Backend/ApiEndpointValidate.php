@@ -3,8 +3,6 @@
 namespace Dotdigitalgroup\Email\Model\Config\Backend;
 
 use Dotdigitalgroup\Email\Model\Apiconnector\Test;
-use Magento\Framework\App\ObjectManager;
-use Magento\Framework\Serialize\SerializerInterface;
 
 class ApiEndpointValidate extends \Magento\Framework\App\Config\Value
 {
