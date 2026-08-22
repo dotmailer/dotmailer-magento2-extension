@@ -62,8 +62,12 @@ bin/magento dotdigital:task
 This will yield a list of options:
 ```
 Please select a dotdigital CLI task to run
-  [0] Cleaner
-  [1] SmsSenderManager (SMS module required)
+  [0] PlatformChangeManager
+  [1] Cleaner
+  [2] Monitor
+  [3] Unsubscriber
+  [4] PendingContactChecker
+  [5] SmsSenderManager (SMS module required)
 ```
 
 #### migrate
