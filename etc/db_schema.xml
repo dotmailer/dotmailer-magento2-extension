@@ -3,7 +3,7 @@
     <table name="email_contact" resource="default" engine="innodb" comment="Connector Contacts">
         <column xsi:type="int" name="email_contact_id" padding="10" unsigned="true" nullable="false" identity="true" comment="Primary Key"/>
         <column xsi:type="smallint" name="is_guest" padding="5" unsigned="true" nullable="true" identity="false" comment="Is Guest"/>
-        <column xsi:type="varchar" name="contact_id" nullable="true" length="15" comment="Connector Contact ID"/>
+        <column xsi:type="bigint" name="contact_id" padding="20" unsigned="true" nullable="true" identity="false" comment="Connector Contact ID"/>
         <column xsi:type="int" name="customer_id" padding="10" unsigned="true" nullable="false" identity="false" default="0" comment="Customer ID"/>
         <column xsi:type="smallint" name="website_id" padding="5" unsigned="true" nullable="false" identity="false" default="0" comment="Website ID"/>
         <column xsi:type="smallint" name="store_id" padding="5" unsigned="true" nullable="false" identity="false" default="0" comment="Store ID"/>
