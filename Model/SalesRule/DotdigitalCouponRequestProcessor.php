@@ -5,11 +5,9 @@ declare(strict_types=1);
 namespace Dotdigitalgroup\Email\Model\SalesRule;
 
 use Dotdigitalgroup\Email\Logger\Logger;
-use Dotdigitalgroup\Email\Model\Coupon\CouponAttributeCollection;
-use Dotdigitalgroup\Email\Model\Coupon\CouponAttributeCollectionFactory;
+use Dotdigitalgroup\Email\Model\ResourceModel\CouponAttribute as CouponAttributeResource;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Exception\LocalizedException;
-use Magento\Framework\Stdlib\DateTime\DateTime;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 use Magento\SalesRule\Model\ResourceModel\Rule;
 use Magento\SalesRule\Model\Rule as RuleModel;
@@ -44,11 +42,6 @@ class DotdigitalCouponRequestProcessor
     private $request;
 
     /**
-     * @var DateTime
-     */
-    private $dateTime;
-
-    /**
      * @var TimezoneInterface
      */
     private $localeDate;
@@ -64,14 +57,14 @@ class DotdigitalCouponRequestProcessor
     private $couponGeneratorStatus;
 
     /**
-     * @var CouponAttributeCollectionFactory
+     * @var CouponAttributeResource
      */
-    private $couponAttributeCollectionFactory;
+    private $couponAttributeResource;
 
     /**
-     * @var CouponAttributeCollection
+     * @var bool|null
      */
-    private $couponAttributeCollection;
+    private $isDebug;
 
     /**
      * @var DotdigitalCouponGenerator
@@ -83,9 +76,8 @@ class DotdigitalCouponRequestProcessor
      * @param RuleFactory $ruleFactory
      * @param Rule $ruleResource
      * @param RequestInterface $request
-     * @param DateTime $dateTime
      * @param TimezoneInterface $timezoneInterface
-     * @param CouponAttributeCollectionFactory $couponAttributeCollectionFactory
+     * @param CouponAttributeResource $couponAttributeResource
      * @param DotdigitalCouponGenerator $dotdigitalCouponGenerator
      */
     public function __construct(
@@ -93,18 +85,16 @@ class DotdigitalCouponRequestProcessor
         RuleFactory $ruleFactory,
         Rule $ruleResource,
         RequestInterface $request,
-        DateTime $dateTime,
         TimezoneInterface $timezoneInterface,
-        CouponAttributeCollectionFactory $couponAttributeCollectionFactory,
+        CouponAttributeResource $couponAttributeResource,
         DotdigitalCouponGenerator $dotdigitalCouponGenerator
     ) {
         $this->logger = $logger;
         $this->ruleFactory = $ruleFactory;
         $this->ruleResource = $ruleResource;
         $this->request = $request;
-        $this->dateTime = $dateTime;
         $this->localeDate = $timezoneInterface;
-        $this->couponAttributeCollectionFactory = $couponAttributeCollectionFactory;
+        $this->couponAttributeResource = $couponAttributeResource;
         $this->dotdigitalCouponGenerator = $dotdigitalCouponGenerator;
     }
 
@@ -117,7 +107,7 @@ class DotdigitalCouponRequestProcessor
      */
     public function processCouponRequest(array $params)
     {
-        if ($this->request->getParam('debug')) {
+        if ($this->isDebug()) {
             $this->logger->debug(
                 sprintf("Coupon request for sales rule id %s being processed", $params['id']),
                 $params
@@ -133,7 +123,7 @@ class DotdigitalCouponRequestProcessor
         // check rule expiry
         if ($this->isRuleExpired($rule)) {
             $this->couponGeneratorStatus = self::STATUS_USED_EXPIRED;
-            if ($this->request->getParam('debug')) {
+            if ($this->isDebug()) {
                 $this->logger->debug(
                     sprintf("Rule id %s is expired", $params['id'])
                 );
@@ -156,9 +146,9 @@ class DotdigitalCouponRequestProcessor
         if ($email) {
             // an existing coupon for the email address exists
             if ($activeCoupon = $this->getActiveCouponForEmail($rule, $email)) {
-                if ($this->request->getParam('debug')) {
+                if ($this->isDebug()) {
                     $this->logger->debug(
-                        sprintf("Active coupon %s found for %s", $activeCoupon->code, $email)
+                        sprintf("Active coupon %s found for %s", $activeCoupon['code'], $email)
                     );
                 }
                 return $this->handleExistingCoupon($activeCoupon, $params, $rule, $email);
@@ -193,7 +183,7 @@ class DotdigitalCouponRequestProcessor
      *
      * If we find an active coupon for the email address, use the params to determine how to handle this.
      *
-     * @param object $activeCoupon
+     * @param array $activeCoupon
      * @param array $params
      * @param RuleModel $rule
      * @param string $email
@@ -201,36 +191,36 @@ class DotdigitalCouponRequestProcessor
      * @return $this
      * @throws \ErrorException
      */
-    private function handleExistingCoupon($activeCoupon, array $params, RuleModel $rule, string $email)
+    private function handleExistingCoupon(array $activeCoupon, array $params, RuleModel $rule, string $email)
     {
         $allowResend = (bool) ($params['code_allow_resend'] ?? 0);
         $cancelSend = (bool) ($params['code_cancel_send'] ?? 0);
 
         if ($allowResend) {
             if ($cancelSend) {
-                if ($activeCoupon->is_expired) {
-                    if ($this->request->getParam('debug')) {
+                if ($activeCoupon['is_expired']) {
+                    if ($this->isDebug()) {
                         $this->logger->debug(
-                            sprintf("Coupon code %s is expired", $activeCoupon->code)
+                            sprintf("Coupon code %s is expired", $activeCoupon['code'])
                         );
                     }
                     return $this->generateNewCoupon($params, $rule, $email);
-                } elseif ($activeCoupon->is_used) {
+                } elseif ($activeCoupon['is_used']) {
                     $this->couponGeneratorStatus = self::STATUS_USED_EXPIRED;
-                    if ($this->request->getParam('debug')) {
+                    if ($this->isDebug()) {
                         $this->logger->debug(
-                            sprintf("Coupon code %s is used", $activeCoupon->code)
+                            sprintf("Coupon code %s is used", $activeCoupon['code'])
                         );
                     }
                     return $this;
                 }
             } else {
-                if ($activeCoupon->is_used || $activeCoupon->is_expired) {
+                if ($activeCoupon['is_used'] || $activeCoupon['is_expired']) {
                     return $this->generateNewCoupon($params, $rule, $email);
                 }
             }
             $this->couponGeneratorStatus = self::STATUS_RESENT;
-            $this->couponCode = $activeCoupon->code;
+            $this->couponCode = $activeCoupon['code'];
             return $this;
         }
         $this->couponGeneratorStatus = self::STATUS_REGENERATED;
@@ -248,7 +238,7 @@ class DotdigitalCouponRequestProcessor
      */
     private function generateNewCoupon(array $params, RuleModel $rule, ?string $email)
     {
-        if ($this->request->getParam('debug')) {
+        if ($this->isDebug()) {
             $this->logger->debug(
                 sprintf("New coupon requested for %s", $email)
             );
@@ -263,7 +253,9 @@ class DotdigitalCouponRequestProcessor
                 $params['code_prefix'] ?? null,
                 $params['code_suffix'] ?? null,
                 $email,
-                $expireDays ? (int) $expireDays : null
+                $expireDays ? (int) $expireDays : null,
+                $params['code_length'] ?? null,
+                $params['code_dash'] ?? null
             );
         } catch (LocalizedException $e) {
             throw new \ErrorException(sprintf(
@@ -281,21 +273,21 @@ class DotdigitalCouponRequestProcessor
      *
      * @param RuleModel $rule
      * @param string $email
-     * @return object|null
+     * @return array|null
      * @throws \Exception
      */
-    private function getActiveCouponForEmail(RuleModel $rule, string $email)
+    private function getActiveCouponForEmail(RuleModel $rule, string $email): ?array
     {
-        $couponData = $this->getCouponAttributeCollection()
-            ->getActiveCouponsForEmail((int) $rule->getRuleId(), $email)
-            ->getLastItem()
-            ->toArray();
+        $couponData = $this->couponAttributeResource->getLatestForEmailAndRule(
+            (int) $rule->getRuleId(),
+            $email
+        );
 
-        if (empty($couponData)) {
+        if ($couponData === null) {
             return null;
         }
 
-        return (object) [
+        return [
             'code' => $couponData['code'],
             'is_used' => (int) $couponData['times_used'] > 0,
             'is_expired' => $this->isCouponExpired($couponData)
@@ -337,14 +329,19 @@ class DotdigitalCouponRequestProcessor
     }
 
     /**
-     * Get coupon attribute collection.
+     * Whether the request is in debug mode.
      *
-     * @return CouponAttributeCollection
+     * Memoised - the value cannot change during a request.
+     *
+     * @return bool
      */
-    private function getCouponAttributeCollection()
+    private function isDebug(): bool
     {
-        return $this->couponAttributeCollection
-            ?: $this->couponAttributeCollection = $this->couponAttributeCollectionFactory->create();
+        if ($this->isDebug === null) {
+            $this->isDebug = (bool) $this->request->getParam('debug');
+        }
+
+        return $this->isDebug;
     }
 
     /**

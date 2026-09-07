@@ -66,6 +66,12 @@
             <argument name="resourceModel" xsi:type="string">Dotdigitalgroup\Email\Model\ResourceModel\Abandoned</argument>
         </arguments>
     </virtualType>
+    <virtualType name="Dotdigitalgroup\Email\Ui\Model\ResourceModel\CouponJob\Collection" type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">email_coupon_job</argument>
+            <argument name="resourceModel" xsi:type="string">Dotdigitalgroup\Email\Model\ResourceModel\CouponJob</argument>
+        </arguments>
+    </virtualType>
     <virtualType name="resetCatalogVirtualType" type="Dotdigitalgroup\Email\Block\Adminhtml\Config\Developer\ButtonReset">
         <arguments>
             <argument name="resetType" xsi:type="string">catalog</argument>

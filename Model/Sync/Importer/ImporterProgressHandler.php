@@ -4,14 +4,19 @@ declare(strict_types=1);
 
 namespace Dotdigitalgroup\Email\Model\Sync\Importer;
 
-use Dotdigitalgroup\Email\Model\Importer as ImporterModel;
+use Dotdigitalgroup\Email\Api\Model\Sync\Importer\InProgressImportResponseHandlerInterface;
 use Dotdigitalgroup\Email\Model\ResourceModel\Importer\CollectionFactory;
-use Dotdigitalgroup\Email\Model\Sync\Importer\V2InProgressImportResponseHandlerFactory as V2HandlerFactory;
-use Dotdigitalgroup\Email\Model\Sync\Importer\V3InProgressImportResponseHandlerFactory as V3HandlerFactory;
+use Dotdigitalgroup\Email\Model\Sync\Importer\InProgress\Config\V2ContactsConfigInterface;
+use Dotdigitalgroup\Email\Model\Sync\Importer\InProgress\Config\V2TransactionalConfigInterface;
+use Dotdigitalgroup\Email\Model\Sync\Importer\InProgress\Config\V3ContactsConfigInterface;
+use Dotdigitalgroup\Email\Model\Sync\Importer\InProgress\Config\V3CouponJobConfigInterface;
+use Dotdigitalgroup\Email\Model\Sync\Importer\InProgress\Config\V3InsightDataConfigInterface;
+use Dotdigitalgroup\Email\Model\Sync\Importer\Context\InProgressImportContext;
+use Dotdigitalgroup\Email\Model\Sync\Importer\Handler\InProgressImportResponseHandlerPool;
 
 class ImporterProgressHandler
 {
-    public const PROGRESS_GROUP_MODEL = 'model';
+    public const PROGRESS_GROUP_HANDLER = 'handler';
     public const PROGRESS_GROUP_METHOD = 'method';
     public const PROGRESS_GROUP_RESOURCE = 'resource';
     public const PROGRESS_GROUP_TYPES = 'types';
@@ -25,36 +30,30 @@ class ImporterProgressHandler
 
     public const INSIGHTDATA = 'InsightData';
 
+    public const COUPON_JOB = 'CouponJob';
+
     /**
      * @var CollectionFactory
      */
     private $importerCollectionFactory;
 
     /**
-     * @var V2HandlerFactory
+     * @var InProgressImportResponseHandlerPool
      */
-    private $v2HandlerFactory;
-
-    /**
-     * @var V3HandlerFactory
-     */
-    private $v3HandlerFactory;
+    private $handlerPool;
 
     /**
      * ImporterProgressHandler constructor.
      *
      * @param CollectionFactory $importerCollectionFactory
-     * @param V2HandlerFactory $v2HandlerFactory
-     * @param V3HandlerFactory $v3HandlerFactory
+     * @param InProgressImportResponseHandlerPool $handlerPool
      */
     public function __construct(
         CollectionFactory $importerCollectionFactory,
-        V2HandlerFactory $v2HandlerFactory,
-        V3HandlerFactory $v3HandlerFactory
+        InProgressImportResponseHandlerPool $handlerPool
     ) {
         $this->importerCollectionFactory = $importerCollectionFactory;
-        $this->v2HandlerFactory = $v2HandlerFactory;
-        $this->v3HandlerFactory = $v3HandlerFactory;
+        $this->handlerPool = $handlerPool;
     }
 
     /**
@@ -72,20 +71,22 @@ class ImporterProgressHandler
 
         foreach ($this->getInProgressGroups() as $groups) {
             foreach ($groups as $group) {
+                $context = $this->createContext($group);
+
                 $items = $this->importerCollectionFactory->create()
                     ->getItemsWithImportingStatus(
                         $websiteIds,
-                        $group[self::PROGRESS_GROUP_TYPES],
-                        $group[self::PROGRESS_GROUP_MODE]
+                        $context->getImportTypes(),
+                        $context->getImportMode()
                     );
 
                 if (!$items) {
                     continue;
                 }
 
-                $handler = $group['model']->create();
-                /** @var AbstractInProgressImportResponseHandler $handler */
-                $itemCount += $handler->process($group, $items);
+                /** @var InProgressImportResponseHandlerInterface $handler */
+                $handler = $this->handlerPool->get($context->getHandlerCode());
+                $itemCount += $handler->process($context, $items);
             }
         }
 
@@ -100,52 +101,41 @@ class ImporterProgressHandler
     public function getInProgressGroups()
     {
         $transactionalBulk = [
-            self::PROGRESS_GROUP_MODE => ImporterModel::MODE_BULK,
-            self::PROGRESS_GROUP_MODEL => $this->v2HandlerFactory,
-            self::PROGRESS_GROUP_METHOD => 'getContactsTransactionalDataImportByImportId',
-            self::PROGRESS_GROUP_TYPES => [
-                ImporterModel::IMPORT_TYPE_ORDERS,
-                ImporterModel::IMPORT_TYPE_REVIEWS,
-                ImporterModel::IMPORT_TYPE_WISHLIST,
-                ImporterModel::IMPORT_TYPE_CATALOG
-            ]
+            self::PROGRESS_GROUP_MODE => V2TransactionalConfigInterface::IMPORT_MODE,
+            self::PROGRESS_GROUP_HANDLER => V2TransactionalConfigInterface::HANDLER,
+            self::PROGRESS_GROUP_METHOD => V2TransactionalConfigInterface::METHOD,
+            self::PROGRESS_GROUP_TYPES => V2TransactionalConfigInterface::IMPORT_TYPES,
         ];
 
         $contactsV3Bulk = [
-            self::PROGRESS_GROUP_MODE => ImporterModel::MODE_BULK_JSON,
-            self::PROGRESS_GROUP_TYPES => [
-                ImporterModel::IMPORT_TYPE_CONSENT,
-                ImporterModel::IMPORT_TYPE_CUSTOMER,
-                ImporterModel::IMPORT_TYPE_GUEST,
-                ImporterModel::IMPORT_TYPE_SUBSCRIBERS
-            ],
-            self::PROGRESS_GROUP_MODEL => $this->v3HandlerFactory,
-            self::PROGRESS_GROUP_RESOURCE => 'contacts',
-            self::PROGRESS_GROUP_METHOD => 'getImportById'
+            self::PROGRESS_GROUP_MODE => V3ContactsConfigInterface::IMPORT_MODE,
+            self::PROGRESS_GROUP_TYPES => V3ContactsConfigInterface::IMPORT_TYPES,
+            self::PROGRESS_GROUP_HANDLER => V3ContactsConfigInterface::HANDLER,
+            self::PROGRESS_GROUP_RESOURCE => V3ContactsConfigInterface::RESOURCE,
+            self::PROGRESS_GROUP_METHOD => V3ContactsConfigInterface::METHOD,
+        ];
+
+        $couponJobV3Bulk = [
+            self::PROGRESS_GROUP_MODE => V3CouponJobConfigInterface::IMPORT_MODE,
+            self::PROGRESS_GROUP_TYPES => V3CouponJobConfigInterface::IMPORT_TYPES,
+            self::PROGRESS_GROUP_HANDLER => V3CouponJobConfigInterface::HANDLER,
+            self::PROGRESS_GROUP_RESOURCE => V3CouponJobConfigInterface::RESOURCE,
+            self::PROGRESS_GROUP_METHOD => V3CouponJobConfigInterface::METHOD,
         ];
 
         $contactsBulk = [
-            self::PROGRESS_GROUP_MODE => ImporterModel::MODE_BULK,
-            self::PROGRESS_GROUP_TYPES => [
-                ImporterModel::IMPORT_TYPE_CONTACT,
-                ImporterModel::IMPORT_TYPE_CONSENT,
-                ImporterModel::IMPORT_TYPE_CUSTOMER,
-                ImporterModel::IMPORT_TYPE_GUEST,
-                ImporterModel::IMPORT_TYPE_SUBSCRIBERS,
-            ],
-            self::PROGRESS_GROUP_MODEL => $this->v2HandlerFactory,
-            self::PROGRESS_GROUP_METHOD => 'getContactsImportByImportId'
+            self::PROGRESS_GROUP_MODE => V2ContactsConfigInterface::IMPORT_MODE,
+            self::PROGRESS_GROUP_TYPES => V2ContactsConfigInterface::IMPORT_TYPES,
+            self::PROGRESS_GROUP_HANDLER => V2ContactsConfigInterface::HANDLER,
+            self::PROGRESS_GROUP_METHOD => V2ContactsConfigInterface::METHOD,
         ];
 
         $insightDataV3Bulk = [
-            self::PROGRESS_GROUP_MODE => ImporterModel::MODE_BULK_JSON,
-            self::PROGRESS_GROUP_RESOURCE => 'insightData',
-            self::PROGRESS_GROUP_TYPES => [
-                ImporterModel::IMPORT_TYPE_ORDERS,
-                ImporterModel::IMPORT_TYPE_CATALOG
-            ],
-            self::PROGRESS_GROUP_MODEL => $this->v3HandlerFactory,
-            self::PROGRESS_GROUP_METHOD => 'getImportById'
+            self::PROGRESS_GROUP_MODE => V3InsightDataConfigInterface::IMPORT_MODE,
+            self::PROGRESS_GROUP_RESOURCE => V3InsightDataConfigInterface::RESOURCE,
+            self::PROGRESS_GROUP_TYPES => V3InsightDataConfigInterface::IMPORT_TYPES,
+            self::PROGRESS_GROUP_HANDLER => V3InsightDataConfigInterface::HANDLER,
+            self::PROGRESS_GROUP_METHOD => V3InsightDataConfigInterface::METHOD,
         ];
 
         return [
@@ -155,8 +145,26 @@ class ImporterProgressHandler
             ],
             self::VERSION_3 => [
                 self::CONTACT => $contactsV3Bulk,
-                self::INSIGHTDATA => $insightDataV3Bulk
+                self::INSIGHTDATA => $insightDataV3Bulk,
+                self::COUPON_JOB => $couponJobV3Bulk,
             ]
         ];
+    }
+
+    /**
+     * Create context.
+     *
+     * @param array $group
+     * @return InProgressImportContext
+     */
+    private function createContext(array $group): InProgressImportContext
+    {
+        return new InProgressImportContext(
+            $group[self::PROGRESS_GROUP_HANDLER],
+            $group[self::PROGRESS_GROUP_MODE],
+            $group[self::PROGRESS_GROUP_TYPES],
+            $group[self::PROGRESS_GROUP_METHOD],
+            $group[self::PROGRESS_GROUP_RESOURCE] ?? null
+        );
     }
 }

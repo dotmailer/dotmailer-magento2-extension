@@ -8,6 +8,15 @@ use Dotdigitalgroup\Email\Model\Importer as ImporterModel;
 use Dotdigitalgroup\Email\Model\ResourceModel\Importer as ImporterResource;
 use Dotdigitalgroup\Email\Model\ResourceModel\Importer\Collection as ImporterCollection;
 
+/**
+ * @deprecated Inheritance has been replaced by composition. Implement
+ * InProgressImportResponseHandlerInterface and compose ImporterItemStatusManager
+ * (and V3ImportStatusChecker for V3 imports) instead. This class will be removed
+ * in a future release.
+ * @see \Dotdigitalgroup\Email\Api\Model\Sync\Importer\InProgressImportResponseHandlerInterface
+ * @see \Dotdigitalgroup\Email\Model\Sync\Importer\ImporterItemStatusManager
+ * @see \Dotdigitalgroup\Email\Model\Sync\Importer\V3ImportStatusChecker
+ */
 abstract class AbstractInProgressImportResponseHandler
 {
     /**

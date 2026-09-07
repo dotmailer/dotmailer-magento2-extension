@@ -8,6 +8,7 @@
                         <resource id="Dotdigitalgroup_Email::automation_studio" title="Dotdigital" translate="title" sortOrder="10"/>
                         <resource id="Dotdigitalgroup_Email::exclusion_rules" title="Dotdigital Exclusion Rules" translate="title" sortOrder="20"/>
                     </resource>
+                    <resource id="Dotdigitalgroup_Email::coupon_job" title="Dotdigital Bulk Coupons" translate="title" sortOrder="15"/>
                 </resource>
                 <resource id="Magento_Reports::report">
                     <resource id="Dotdigitalgroup_Email::reports" title="Dotdigital" translate="title">

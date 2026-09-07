@@ -5,6 +5,8 @@
              parent="Magento_Backend::marketing" resource="Dotdigitalgroup_Email::automation"/>
         <add id="Dotdigitalgroup_Email::automation_studio" title="Dotdigital" translate="title" module="Dotdigitalgroup_Email" sortOrder="120" action="dotdigitalgroup_email/studio" resource="Dotdigitalgroup_Email::automation_studio"
              parent="Dotdigitalgroup_Email::marketing_automation" />
+        <add id="Dotdigitalgroup_Email::coupon_job" title="Dotdigital Bulk Coupons" translate="title" module="Dotdigitalgroup_Email" sortOrder="35" action="dotdigitalgroup_email/couponJob" resource="Dotdigitalgroup_Email::coupon_job"
+             parent="Magento_CatalogRule::promo" />
         <add id="Dotdigitalgroup_Email::exclusion_rules" title="Exclusion Rules" translate="title" module="Dotdigitalgroup_Email" sortOrder="126" action="dotdigitalgroup_email/rules"
              resource="Dotdigitalgroup_Email::exclusion_rules" parent="Dotdigitalgroup_Email::marketing_automation" />
         <add id="Dotdigitalgroup_Email::marketing_automation_report" title="Customer Engagement" translate="title" module="Dotdigitalgroup_Email" sortOrder="100"

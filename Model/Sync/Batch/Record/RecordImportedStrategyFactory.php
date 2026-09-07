@@ -26,6 +26,7 @@ class RecordImportedStrategyFactory implements BatchStrategyFactoryInterface
         Importer::IMPORT_TYPE_SUBSCRIBERS => SubscriberImportedStrategy::class,
         Importer::IMPORT_TYPE_ORDERS => OrderImportedStrategy::class,
         'Catalog' => CatalogImportedStrategy::class,
+        Importer::IMPORT_TYPE_COUPON_JOB => CouponImportedStrategy::class,
     ];
 
     /**

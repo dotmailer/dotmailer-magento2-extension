@@ -6,12 +6,18 @@ use Dotdigitalgroup\Email\Model\Validator\Schema\Rule\DateFormatAtomRule;
 use Dotdigitalgroup\Email\Model\Validator\Schema\Rule\DateFormatRule;
 use Dotdigitalgroup\Email\Model\Validator\Schema\Rule\DateFormatAtomRuleFactory;
 use Dotdigitalgroup\Email\Model\Validator\Schema\Rule\DateFormatRuleFactory;
+use Dotdigitalgroup\Email\Model\Validator\Schema\Rule\EnumRule;
+use Dotdigitalgroup\Email\Model\Validator\Schema\Rule\EnumRuleFactory;
 use Dotdigitalgroup\Email\Model\Validator\Schema\Rule\IsFloatRule;
 use Dotdigitalgroup\Email\Model\Validator\Schema\Rule\IsFloatRuleFactory;
 use Dotdigitalgroup\Email\Model\Validator\Schema\Rule\IsIntRule;
 use Dotdigitalgroup\Email\Model\Validator\Schema\Rule\IsIntRuleFactory;
 use Dotdigitalgroup\Email\Model\Validator\Schema\Rule\IsStringRule;
 use Dotdigitalgroup\Email\Model\Validator\Schema\Rule\IsStringRuleFactory;
+use Dotdigitalgroup\Email\Model\Validator\Schema\Rule\MinRule;
+use Dotdigitalgroup\Email\Model\Validator\Schema\Rule\MinRuleFactory;
+use Dotdigitalgroup\Email\Model\Validator\Schema\Rule\NullableRule;
+use Dotdigitalgroup\Email\Model\Validator\Schema\Rule\NullableRuleFactory;
 use Dotdigitalgroup\Email\Model\Validator\Schema\Rule\RequiredRule;
 use Dotdigitalgroup\Email\Model\Validator\Schema\Rule\RequiredRuleFactory;
 use Dotdigitalgroup\Email\Model\Validator\Schema\Rule\UrlRule;
@@ -142,6 +148,41 @@ class SchemaValidatorTest extends TestCase
     }
 
     /**
+     * A `nullable` field paired with `dateFormat` should:
+     * - pass when the value is null or an empty string (rules skipped)
+     * - still be validated against dateFormat when a value is present
+     *
+     * @throws \Dotdigitalgroup\Email\Model\Validator\Schema\Exception\RuleNotDefinedException
+     * @throws \Dotdigitalgroup\Email\Model\Validator\Schema\Exception\PatternInvalidException
+     */
+    public function testNullableSkipsRemainingRulesOnlyWhenValueIsEmpty()
+    {
+        $pattern = ['expiresAt' => 'nullable|dateFormat:Y-m-d'];
+
+        $buildValidator = function () use ($pattern) {
+            $ruleSetFactory = $this->createMock(SchemaValidatorRuleSetFactory::class);
+            $ruleFactory = $this->createMock(SchemaValidatorRuleFactory::class);
+            $ruleFactory->method('create')->willReturnOnConsecutiveCalls(
+                $this->getRuleFactory('nullable'),
+                $this->getRuleFactory('dateFormat:Y-m-d')
+            );
+            $ruleSetFactory->method('create')->willReturn(
+                new SchemaValidatorRuleSet($ruleFactory)
+            );
+
+            return new SchemaValidator($ruleSetFactory, $pattern);
+        };
+
+        $this->assertTrue($buildValidator()->isValid(['expiresAt' => null]));
+        $this->assertTrue($buildValidator()->isValid(['expiresAt' => '']));
+        $this->assertTrue($buildValidator()->isValid(['expiresAt' => '2024-01-01']));
+
+        $invalidValueValidator = $buildValidator();
+        $this->assertFalse($invalidValueValidator->isValid(['expiresAt' => 'not-a-date']));
+        $this->assertArrayHasKey('expiresAt', $invalidValueValidator->getErrors());
+    }
+
+    /**
      * @throws \Dotdigitalgroup\Email\Model\Validator\Schema\Exception\RuleNotDefinedException
      */
     private function getRuleFactory($rule)
@@ -154,6 +195,10 @@ class SchemaValidatorTest extends TestCase
         $dateFormatRuleFactory
             ->method('create')
             ->willReturn(new DateFormatRule());
+        $enumRuleFactory = $this->createMock(EnumRuleFactory::class);
+        $enumRuleFactory
+            ->method('create')
+            ->willReturn(new EnumRule());
         $isFloatRuleFactory = $this->createMock(IsFloatRuleFactory::class);
         $isFloatRuleFactory
             ->method('create')
@@ -166,6 +211,14 @@ class SchemaValidatorTest extends TestCase
         $isStringRuleFactory
             ->method('create')
             ->willReturn(new IsStringRule());
+        $minRuleFactory = $this->createMock(MinRuleFactory::class);
+        $minRuleFactory
+            ->method('create')
+            ->willReturn(new MinRule());
+        $nullableRuleFactory = $this->createMock(NullableRuleFactory::class);
+        $nullableRuleFactory
+            ->method('create')
+            ->willReturn(new NullableRule());
         $requiredRuleFactory = $this->createMock(RequiredRuleFactory::class);
         $requiredRuleFactory
             ->method('create')
@@ -178,9 +231,12 @@ class SchemaValidatorTest extends TestCase
         return new SchemaValidatorRule(
             $dateFormatAtomRuleFactory,
             $dateFormatRuleFactory,
+            $enumRuleFactory,
             $isFloatRuleFactory,
             $isIntRuleFactory,
             $isStringRuleFactory,
+            $minRuleFactory,
+            $nullableRuleFactory,
             $requiredRuleFactory,
             $urlRuleFactory,
             $rule

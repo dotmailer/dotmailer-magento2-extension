@@ -4,20 +4,24 @@ declare(strict_types=1);
 
 namespace Dotdigitalgroup\Email\Model\Sync\Importer;
 
-use Dotdigital\Exception\ResponseValidationException;
-use Dotdigitalgroup\Email\Model\Sync\Importer\ReportHandler\V3ImporterReportHandler;
 use Dotdigital\V3\Models\Import\ImportInterface as V3ImportInterface;
-use Dotdigitalgroup\Email\Logger\Logger;
-use Dotdigitalgroup\Email\Model\Apiconnector\V3\ClientFactory;
+use Dotdigitalgroup\Email\Api\Model\Sync\Importer\InProgressImportResponseHandlerInterface;
 use Dotdigitalgroup\Email\Model\Importer as ImporterModel;
-use Dotdigitalgroup\Email\Model\ResourceModel\Importer as ImporterResource;
+use Dotdigitalgroup\Email\Model\ResourceModel\Importer\Collection as ImporterCollection;
+use Dotdigitalgroup\Email\Model\Sync\Importer\Context\InProgressImportContext;
+use Dotdigitalgroup\Email\Model\Sync\Importer\ReportHandler\V3ImporterReportHandler;
 
-class V3InProgressImportResponseHandler extends AbstractInProgressImportResponseHandler
+class V3InProgressImportResponseHandler implements InProgressImportResponseHandlerInterface
 {
     /**
-     * @var ClientFactory
+     * @var V3ImportStatusChecker
      */
-    private $clientFactory;
+    private $importStatusChecker;
+
+    /**
+     * @var ImporterItemStatusManager
+     */
+    private $importerItemStatusManager;
 
     /**
      * @var V3ImporterReportHandler
@@ -25,56 +29,46 @@ class V3InProgressImportResponseHandler extends AbstractInProgressImportResponse
     private $reportHandler;
 
     /**
-     * @param Logger $logger
-     * @param ClientFactory $clientFactory
-     * @param ImporterResource $importerResource
+     * @param V3ImportStatusChecker $importStatusChecker
+     * @param ImporterItemStatusManager $importerItemStatusManager
      * @param V3ImporterReportHandler $reportHandler
      */
     public function __construct(
-        Logger $logger,
-        ClientFactory $clientFactory,
-        ImporterResource $importerResource,
+        V3ImportStatusChecker $importStatusChecker,
+        ImporterItemStatusManager $importerItemStatusManager,
         V3ImporterReportHandler $reportHandler
     ) {
+        $this->importStatusChecker = $importStatusChecker;
+        $this->importerItemStatusManager = $importerItemStatusManager;
         $this->reportHandler = $reportHandler;
-        $this->clientFactory = $clientFactory;
-        parent::__construct($logger, $importerResource);
     }
 
     /**
-     * Check item import status.
+     * Process.
      *
-     * @param ImporterModel $item
-     * @param array $group
-     *
-     * @return V3ImportInterface
-     * @throws \Exception
+     * @param InProgressImportContext $context
+     * @param ImporterCollection $items
+     * @return int
+     * @throws \Magento\Framework\Exception\AlreadyExistsException
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
-    protected function checkItemImportStatus(
-        ImporterModel $item,
-        array $group
-    ) :V3ImportInterface {
-        $method = $group['method'];
-        $resource = $group['resource'];
+    public function process(InProgressImportContext $context, ImporterCollection $items): int
+    {
+        $itemsCount = 0;
 
-        try {
-            return $this->getClient($item->getWebsiteId())
-                ->$resource
-                ->$method(
-                    $item->getImportId()
-                );
-        } catch (ResponseValidationException $e) {
-            $this->logger->error(
-                sprintf(
-                    'Checking import id %s: %s - %s',
-                    $item->getImportId(),
-                    $e->getCode(),
-                    $e->getMessage()
-                ),
-                [$e->getDetails()]
-            );
-            throw new \Exception($e->getMessage());
+        foreach ($items as $item) {
+            try {
+                $response = $this->importStatusChecker->check($item, $context);
+            } catch (\Exception $e) {
+                $this->importerItemStatusManager->markFailed($item, $e->getMessage());
+                $this->importerItemStatusManager->save($item);
+                continue;
+            }
+
+            $itemsCount += $this->processResponse($response, $item);
         }
+
+        return $itemsCount;
     }
 
     /**
@@ -86,14 +80,16 @@ class V3InProgressImportResponseHandler extends AbstractInProgressImportResponse
      * @return int
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    protected function processResponse($response, $item)
+    private function processResponse($response, $item)
     {
         $itemCount = 0;
         if ($response->getStatus() == 'Finished') {
-            $item = $this->processFinishedItem($item);
-        } elseif (in_array($response->getStatus(), self::$importStatuses)) {
-            $item->setImportStatus(ImporterModel::FAILED)
-                ->setMessage('Import failed with status ' . $response->getStatus());
+            $item = $this->importerItemStatusManager->markImported($item);
+        } elseif ($this->importerItemStatusManager->isFailedStatus($response->getStatus())) {
+            $this->importerItemStatusManager->markFailed(
+                $item,
+                'Import failed with status ' . $response->getStatus()
+            );
         } else {
             //Not finished
             $itemCount = 1;
@@ -103,23 +99,8 @@ class V3InProgressImportResponseHandler extends AbstractInProgressImportResponse
         $this->reportHandler->logFailures($response);
         $this->reportHandler->storeContactIds($response, (int) $item->getWebsiteId());
 
-        $this->importerResource->save($item);
+        $this->importerItemStatusManager->save($item);
 
         return $itemCount;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    protected function getClient($websiteId)
-    {
-        if (!isset($this->client)) {
-            $this->client = $this->clientFactory->create([
-                'data' => [
-                    'websiteId' => $websiteId
-                ]
-            ]);
-        }
-        return $this->client;
     }
 }

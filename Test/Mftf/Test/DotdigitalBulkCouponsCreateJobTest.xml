@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
+    <test name="DotdigitalBulkCouponsCreateJobTest">
+        <annotations>
+            <features value="Dotdigital module"/>
+            <stories value="Dotdigital Bulk Coupons"/>
+            <title value="Create a bulk coupon job from the admin UI"/>
+            <description value="The bulk coupons report and create-job flow can be reached from the admin menu, reviewed, and submitted."/>
+            <severity value="MINOR"/>
+            <group value="dotmailer"/>
+        </annotations>
+
+        <before>
+            <actionGroup ref="AdminLoginActionGroup" stepKey="AdminLoginActionGroup1"/>
+
+            <!-- Fill in API credentials and enable -->
+            <actionGroup ref="SetDotmailerAccountData" stepKey="SetDotmailerAccountData"/>
+
+            <!-- Create a cart price rule for the coupon job form -->
+            <actionGroup ref="DotAdminCreateCartPriceRuleActionGroup" stepKey="createCartPriceRule">
+                <argument name="ruleName" value="DotSalesRule"/>
+            </actionGroup>
+        </before>
+
+        <after>
+            <!-- Delete the sales rule we created for the test -->
+            <actionGroup ref="DeleteCartPriceRuleByName" stepKey="DeleteCartPriceRuleByName">
+                <argument name="ruleName" value="{{DotSalesRule.name}}"/>
+            </actionGroup>
+
+            <actionGroup ref="ResetDotmailerAccountData" stepKey="resetAccountData"/>
+            <actionGroup ref="AdminLogoutActionGroup" stepKey="logout"/>
+        </after>
+
+        <!-- Return to the admin dashboard before navigating via the menu -->
+        <amOnPage url="{{AdminDashboardPage.url}}" stepKey="amOnAdminDashboardPage"/>
+        <waitForPageLoad stepKey="waitForDashboard"/>
+        <see userInput="Dashboard" selector="h1.page-title" stepKey="seeDashboardTitle"/>
+
+        <!-- Verify the admin menu link under Marketing > Promotions -->
+        <conditionalClick selector="{{AdminDotdigitalBulkCouponsReportSection.marketingMenu}}" dependentSelector="{{AdminDotdigitalBulkCouponsReportSection.promotionsGroupTitle}}" visible="false" stepKey="openMarketingMenu"/>
+        <waitForElementVisible selector="{{AdminDotdigitalBulkCouponsReportSection.promotionsGroupTitle}}" time="30" stepKey="waitForPromotionsGroup"/>
+        <seeElement selector="{{AdminDotdigitalBulkCouponsReportSection.bulkCouponsMenuLink}}" stepKey="seeBulkCouponsMenuLink"/>
+        <click selector="{{AdminDotdigitalBulkCouponsReportSection.bulkCouponsMenuLink}}" stepKey="clickBulkCouponsMenuLink"/>
+
+        <!-- Confirm the report page -->
+        <waitForPageLoad stepKey="waitForBulkCouponsPage"/>
+        <see userInput="Dotdigital Bulk Coupons" selector="{{AdminDotdigitalBulkCouponsReportSection.pageTitle}}" stepKey="seeBulkCouponsPageTitle"/>
+
+        <!-- Open the create form -->
+        <click selector="{{AdminDotdigitalBulkCouponsReportSection.addNewJobButton}}" stepKey="clickAddNewJob"/>
+        <waitForPageLoad stepKey="waitForCouponJobForm"/>
+        <see userInput="Coupon Job Form" selector="{{AdminDotdigitalBulkCouponJobFormSection.pageTitle}}" stepKey="seeCouponJobFormPageTitle"/>
+
+        <!-- Verify the expected fieldset and fields -->
+        <seeElement selector="{{AdminDotdigitalBulkCouponJobFormSection.fieldsetHeader}}" stepKey="seeCouponJobFieldset"/>
+        <seeElement selector="{{AdminDotdigitalBulkCouponJobFormSection.salesRuleId}}" stepKey="seeSalesRuleField"/>
+        <seeElement selector="{{AdminDotdigitalBulkCouponJobFormSection.codeFormat}}" stepKey="seeCodeFormatField"/>
+        <seeElement selector="{{AdminDotdigitalBulkCouponJobFormSection.codePrefix}}" stepKey="seeCodePrefixField"/>
+        <seeElement selector="{{AdminDotdigitalBulkCouponJobFormSection.codeSuffix}}" stepKey="seeCodeSuffixField"/>
+        <seeElement selector="{{AdminDotdigitalBulkCouponJobFormSection.codeLength}}" stepKey="seeCodeLengthField"/>
+        <seeElement selector="{{AdminDotdigitalBulkCouponJobFormSection.codeDash}}" stepKey="seeCodeDashField"/>
+        <seeElement selector="{{AdminDotdigitalBulkCouponJobFormSection.audienceTypeListRadio}}" stepKey="seeAudienceListRadio"/>
+        <seeElement selector="{{AdminDotdigitalBulkCouponJobFormSection.audienceTypeSegmentRadio}}" stepKey="seeAudienceSegmentRadio"/>
+        <seeElement selector="{{AdminDotdigitalBulkCouponJobFormSection.dataFieldSelect}}" stepKey="seeDataFieldSelect"/>
+
+        <!-- Populate the minimum required form fields -->
+        <selectOption selector="{{AdminDotdigitalBulkCouponJobFormSection.salesRuleId}}" userInput="{{DotSalesRule.name}}" stepKey="selectSalesRule"/>
+        <selectOption selector="{{AdminDotdigitalBulkCouponJobFormSection.codeFormat}}" userInput="Numeric" stepKey="selectCodeFormat"/>
+
+        <!-- Verify Audience Preview loads lists (target Dotdigital account requires at least 1 list!) -->
+        <click selector="{{AdminDotdigitalBulkCouponJobFormSection.audienceSelect}}" stepKey="openAudienceListDropdown"/>
+        <wait time="3" stepKey="waitForAudienceLists"/>
+        <waitForElementVisible selector="{{AdminDotdigitalBulkCouponJobFormSection.firstSelect2Result}}" time="30" stepKey="waitForAudienceListResults"/>
+        <seeElement selector="{{AdminDotdigitalBulkCouponJobFormSection.firstSelect2Result}}" stepKey="seeAudienceListResults"/>
+        <click selector="{{AdminDotdigitalBulkCouponJobFormSection.audienceSelect}}" stepKey="closeAudienceListDropdown"/>
+
+        <!-- Verify Audience Preview loads segments (target Dotdigital account requires at least 1 segment!)  -->
+        <click selector="{{AdminDotdigitalBulkCouponJobFormSection.audienceTypeSegmentRadio}}" stepKey="switchAudienceTypeToSegment"/>
+        <click selector="{{AdminDotdigitalBulkCouponJobFormSection.audienceSelect}}" stepKey="openAudienceSegmentDropdown"/>
+        <wait time="3" stepKey="waitForAudienceSegments"/>
+        <waitForElementVisible selector="{{AdminDotdigitalBulkCouponJobFormSection.firstSelect2Result}}" time="30" stepKey="waitForAudienceSegmentResults"/>
+        <seeElement selector="{{AdminDotdigitalBulkCouponJobFormSection.firstSelect2Result}}" stepKey="seeAudienceSegmentResults"/>
+        <click selector="{{AdminDotdigitalBulkCouponJobFormSection.firstSelect2Result}}" stepKey="selectFirstAudienceResult"/>
+
+        <!-- Verify Dotdigital Data Field loads data fields (target Dotdigital account requires at least 1 data field!) -->
+        <click selector="{{AdminDotdigitalBulkCouponJobFormSection.dataFieldSelect}}" stepKey="openDataFieldDropdown"/>
+        <wait time="3" stepKey="waitForDataFields"/>
+        <waitForElementVisible selector="{{AdminDotdigitalBulkCouponJobFormSection.firstSelect2Result}}" time="30" stepKey="waitForDataFieldResults"/>
+        <seeElement selector="{{AdminDotdigitalBulkCouponJobFormSection.firstSelect2Result}}" stepKey="seeDataFieldResults"/>
+        <click selector="{{AdminDotdigitalBulkCouponJobFormSection.firstSelect2Result}}" stepKey="selectFirstDataFieldResult"/>
+
+        <!-- Review and generate -->
+        <click selector="{{AdminDotdigitalBulkCouponJobFormSection.reviewButton}}" stepKey="clickReview"/>
+        <waitForElementVisible selector="{{AdminDotdigitalBulkCouponJobFormSection.confirmationModalTitle}}" time="30" stepKey="waitForConfirmationModal"/>
+        <seeElement selector="{{AdminDotdigitalBulkCouponJobFormSection.confirmationSummary}}" stepKey="seeConfirmationSummary"/>
+        <click selector="{{AdminDotdigitalBulkCouponJobFormSection.generateButton}}" stepKey="clickGenerate"/>
+
+        <!-- Confirm the new job is shown as Pending in the report -->
+        <waitForPageLoad stepKey="waitForReturnToBulkCouponsReport"/>
+        <waitForText userInput="Coupon job created successfully." selector="div[data-ui-id='messages-message-success']" stepKey="seeSuccessMessage"/>
+        <see userInput="Dotdigital Bulk Coupons" selector="{{AdminDotdigitalBulkCouponsReportSection.pageTitle}}" stepKey="seeBulkCouponsReportPageTitle"/>
+        <waitForElementVisible selector="{{AdminDotdigitalBulkCouponsReportSection.statusInRowBySalesRule(DotSalesRule.name, 'Pending')}}" time="30" stepKey="waitForPendingJob"/>
+        <seeElement selector="{{AdminDotdigitalBulkCouponsReportSection.statusInRowBySalesRule(DotSalesRule.name, 'Pending')}}" stepKey="seePendingJob"/>
+    </test>
+</tests>

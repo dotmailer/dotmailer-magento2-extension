@@ -64,4 +64,40 @@ class DotdigitalCouponCodeGeneratorTest extends TestCase
 
         $this->assertStringMatchesFormat('DOT-%c%c%c$%c%c%c$%c%c%c', $couponCode);
     }
+
+    public function testCustomCouponLengthAndDashAreApplied()
+    {
+        $this->couponHelperMock->method('getCodeSeparator')->willReturn('$');
+        $this->couponHelperMock->method('getCharset')->willReturn(['1', '2', '3', 'A', 'S', 'D']);
+
+        $this->model->setData([
+            'codePrefix' => 'PRE-',
+            'codeSuffix' => '-SUF',
+            'codeLength' => 12,
+            'codeDash' => 4,
+        ]);
+
+        $couponCode = $this->model->generateCode();
+
+        $this->assertStringMatchesFormat('PRE-%c%c%c%c$%c%c%c%c$%c%c%c%c-SUF', $couponCode);
+    }
+
+    public function testDashCanBeDisabled()
+    {
+        $this->couponHelperMock->method('getCodeSeparator')->willReturn('$');
+        $this->couponHelperMock->method('getCharset')->willReturn(['1', '2', '3', 'A', 'S', 'D']);
+
+        $this->model->setData([
+            'codePrefix' => 'PRE-',
+            'codeSuffix' => '-SUF',
+            'codeLength' => 5,
+            'codeDash' => 0,
+        ]);
+
+        $couponCode = $this->model->generateCode();
+        $generatedSegment = substr($couponCode, strlen('PRE-'), 5);
+
+        $this->assertStringMatchesFormat('PRE-%c%c%c%c%c-SUF', $couponCode);
+        $this->assertStringNotContainsString('$', $generatedSegment);
+    }
 }

@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Dotdigitalgroup\Email\Ui\Component\Listing;
 
+use Magento\Framework\UrlInterface as UrlBuilder;
 use Magento\Framework\View\Element\UiComponent\ContextInterface;
 use Magento\Framework\View\Element\UiComponentFactory;
 use Magento\Ui\Component\Listing\Columns\Column;
-use Magento\Framework\UrlInterface as UrlBuilder;
 
 class Action extends Column
 {

@@ -34,9 +34,8 @@ class DotdigitalCouponRequestProcessorTest extends TestCase
             $this->createMock(\Magento\SalesRule\Model\RuleFactory::class),
             $this->createMock(\Magento\SalesRule\Model\ResourceModel\Rule::class),
             $this->createMock(\Magento\Framework\App\RequestInterface::class),
-            $this->createMock(\Magento\Framework\Stdlib\DateTime\DateTime::class),
             $this->_localeDateMock,
-            $this->createMock(\Dotdigitalgroup\Email\Model\Coupon\CouponAttributeCollectionFactory::class),
+            $this->createMock(\Dotdigitalgroup\Email\Model\ResourceModel\CouponAttribute::class),
             $this->createMock(\Dotdigitalgroup\Email\Model\SalesRule\DotdigitalCouponGenerator::class)
         );
     }

@@ -1,0 +1,23 @@
+.ddg-audience-type-toggle {
+    display: flex;
+    gap: 24px;
+    padding-top: 6px;
+}
+
+.ddg-radio-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.admin__field-control .select2-container {
+    width: 100% !important;
+}
+
+.modal-popup.ddg-coupon-job-confirmation-modal .action-close {
+    padding-top: 3rem;
+    padding-right: 3rem;
+}
+

@@ -1,0 +1,21 @@
+<div class="dg-coupon-job-table-cell"
+     data-bind="afterRender: function() { $col.processRows($row()) }">
+    <div style="clear:both;">
+        <strong>Data Source: </strong>
+        <span data-bind="text: configuration.filter_type"></span> ( ID: <span data-bind="text: configuration.filter_id"></span> )
+    </div>
+    <div style="clear:both;">
+        <strong>DataField: </strong>
+        <span data-bind="text: configuration.data_field"></span>
+    </div>
+    <div style="clear:both;">
+        <strong>Preview: </strong>
+        <span data-bind="text: configuration.coupon_preview"></span>
+    </div>
+    <!-- ko if: configuration.expires_at -->
+    <div style="clear:both;">
+        <strong>Expires: </strong>
+        <span data-bind="text: $col.formatExpiresAt(configuration.expires_at)"></span>
+    </div>
+    <!-- /ko -->
+</div>

@@ -6,7 +6,10 @@ namespace Dotdigitalgroup\Email\Test\Unit\Traits;
 
 trait MockBuilderCompatibilityTrait
 {
-    private const GENERATED_CLASS_DIR = 'dotdigital-phpunit12-compat';
+    /**
+     * @var string
+     */
+    private $generatedClassDir = 'dotdigital-phpunit12-compat';
 
     /**
      * Create a generated abstract type that declares missing methods so PHPUnit 12 can mock them.
@@ -60,7 +63,7 @@ trait MockBuilderCompatibilityTrait
         string $className,
         string $methodDefinitions
     ): void {
-        $dir = rtrim(sys_get_temp_dir(), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . self::GENERATED_CLASS_DIR;
+        $dir = rtrim(sys_get_temp_dir(), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $this->generatedClassDir;
         if (!is_dir($dir) && !mkdir($dir, 0700, true) && !is_dir($dir)) {
             throw new \RuntimeException(sprintf('Unable to create compatibility class directory "%s"', $dir));
         }

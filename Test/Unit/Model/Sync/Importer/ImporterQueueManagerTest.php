@@ -15,6 +15,7 @@ use Dotdigitalgroup\Email\Model\Sync\Importer\Type\TransactionalData\BulkFactory
 use Dotdigitalgroup\Email\Model\Sync\Importer\Type\TransactionalData\DeleteFactory;
 use Dotdigitalgroup\Email\Model\Sync\Importer\Type\TransactionalData\UpdateFactory;
 use Dotdigitalgroup\Email\Model\Sync\Importer\BulkImportBuilderFactory;
+use Dotdigitalgroup\Email\Model\Sync\Importer\Type\CouponJob\BulkJsonFactory as CouponJobBulkJsonFactory;
 use Dotdigitalgroup\Email\Model\Sync\Importer;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
@@ -77,6 +78,11 @@ class ImporterQueueManagerTest extends TestCase
      */
     private $bulkImportBuilderMock;
 
+    /**
+     * @var CouponJobBulkJsonFactory|\PHPUnit\Framework\MockObject\MockObject
+     */
+    private $couponJobBulkJsonFactory;
+
     protected function setUp(): void
     {
         $this->contactBulkFactory = $this->createMock(ContactBulkFactory::class);
@@ -89,6 +95,7 @@ class ImporterQueueManagerTest extends TestCase
         $this->deleteFactory = $this->createMock(DeleteFactory::class);
         $this->bulkImportBuilderMock = $this->createMock(BulkImportBuilder::class);
         $this->bulkImportBuilderFactoryMock = $this->createMock(BulkImportBuilderFactory::class);
+        $this->couponJobBulkJsonFactory = $this->createMock(CouponJobBulkJsonFactory::class);
 
         $this->importerQueueManager = new ImporterQueueManager(
             $this->contactBulkFactory,
@@ -99,7 +106,8 @@ class ImporterQueueManagerTest extends TestCase
             $this->bulkFactory,
             $this->updateFactory,
             $this->deleteFactory,
-            $this->bulkImportBuilderFactoryMock
+            $this->bulkImportBuilderFactoryMock,
+            $this->couponJobBulkJsonFactory
         );
     }
 
@@ -110,7 +118,7 @@ class ImporterQueueManagerTest extends TestCase
         $result = $this->importerQueueManager->getBulkQueue();
 
         $this->assertIsArray($result);
-        $this->assertCount(4, $result);
+        $this->assertCount(5, $result);
     }
 
     public function testGetBulkQueuePluggable()
@@ -126,20 +134,20 @@ class ImporterQueueManagerTest extends TestCase
                 ->setLimit(Importer::TOTAL_IMPORT_SYNC_LIMIT)
         ];
 
-        $this->bulkImportBuilderFactoryMock->expects($this->exactly(5))
+        $this->bulkImportBuilderFactoryMock->expects($this->exactly(6))
             ->method('create')
             ->willReturn($this->bulkImportBuilderMock);
 
-        $this->bulkImportBuilderMock->expects($this->exactly(5))
+        $this->bulkImportBuilderMock->expects($this->exactly(6))
             ->method('setModel')
             ->willReturn($this->bulkImportBuilderMock);
 
-        $this->bulkImportBuilderMock->expects($this->exactly(4))
+        $this->bulkImportBuilderMock->expects($this->exactly(5))
             ->method('setType')
             ->willReturn($this->bulkImportBuilderMock);
 
         $result = $this->importerQueueManager->getBulkQueue($additional);
-        $this->assertEquals($bulkImportBuilder->build(), $result[5]);
+        $this->assertEquals($bulkImportBuilder->build(), $result[6]);
     }
 
     public function testGetSingleQueue()
@@ -152,23 +160,23 @@ class ImporterQueueManagerTest extends TestCase
 
     public function testBulkQueueItemsHaveExpectedStructure()
     {
-        $this->bulkImportBuilderFactoryMock->expects($this->exactly(4))
+        $this->bulkImportBuilderFactoryMock->expects($this->exactly(5))
             ->method('create')
             ->willReturn($this->bulkImportBuilderMock);
-        $this->bulkImportBuilderMock->expects($this->exactly(4))
+        $this->bulkImportBuilderMock->expects($this->exactly(5))
             ->method('setModel')
             ->willReturn($this->bulkImportBuilderMock);
-        $this->bulkImportBuilderMock->expects($this->exactly(4))
+        $this->bulkImportBuilderMock->expects($this->exactly(5))
             ->method('setType')
             ->willReturn($this->bulkImportBuilderMock);
-        $this->bulkImportBuilderMock->expects($this->exactly(2))
+        $this->bulkImportBuilderMock->expects($this->exactly(3))
             ->method('setLimit')
             ->willReturn($this->bulkImportBuilderMock);
-        $this->bulkImportBuilderMock->expects($this->exactly(3))
+        $this->bulkImportBuilderMock->expects($this->exactly(4))
             ->method('setMode')
             ->willReturn($this->bulkImportBuilderMock);
 
-        $this->bulkImportBuilderMock->expects($this->exactly(4))
+        $this->bulkImportBuilderMock->expects($this->exactly(5))
             ->method('build')
             ->willReturn([
                 'model' => $this->bulkFactory,

@@ -3,6 +3,7 @@
 namespace Dotdigitalgroup\Email\Model\Apiconnector;
 
 use Dotdigitalgroup\Email\Helper\Data;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Stdlib\DateTime\DateTimeFactory;
 use Magento\Framework\Stdlib\StringUtils;
 
@@ -39,6 +40,32 @@ class DataField
         $this->helper = $helper;
         $this->datetime = $datetimeFactory;
         $this->stringUtils = $stringUtils;
+    }
+
+    /**
+     * Check if a data field exists in the Dotdigital account.
+     *
+     * @param int $websiteId
+     * @param string $name
+     * @return bool
+     * @throws LocalizedException
+     */
+    public function checkDataFieldExists(int $websiteId, string $name): bool
+    {
+        $client = $this->helper->getWebsiteApiClient($websiteId);
+        $dataFields = $client->getDataFields();
+
+        if (isset($dataFields->message)) {
+            throw new LocalizedException(__('Error retrieving data fields: %1', $dataFields->message));
+        }
+
+        foreach ($dataFields as $dataField) {
+            if (isset($dataField->name) && strtoupper($dataField->name) === $name) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sections xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:noNamespaceSchemaLocation="urn:magento:mftf:Page/etc/SectionObject.xsd">
+    <section name="AdminDotdigitalBulkCouponsReportSection">
+        <element name="marketingMenu" type="button" selector="//li[contains(@class, 'item-marketing') and contains(@class, 'level-0')]//a[.//span[normalize-space(.)='Marketing']]" timeout="30"/>
+        <element name="promotionsGroupTitle" type="text" selector="//li[contains(@class, 'item-marketing')]//strong[contains(@class, 'submenu-group-title') and normalize-space(.)='Promotions']" timeout="30"/>
+        <element name="bulkCouponsMenuLink" type="button" selector="//li[contains(@class, 'item-marketing')]//a[.//span[normalize-space(.)='Dotdigital Bulk Coupons']]" timeout="30"/>
+        <element name="pageTitle" type="text" selector="h1.page-title" timeout="30"/>
+        <element name="addNewJobButton" type="button" selector="//button[normalize-space(.)='Add New Job']" timeout="30"/>
+        <element name="statusInRowBySalesRule" type="text" selector="//div[@data-role='grid-wrapper']//tr[contains(@class, 'data-row')][.//*[contains(normalize-space(.), '{{ruleName}}')]]//*[normalize-space(.)='{{status}}']" parameterized="true" timeout="30"/>
+    </section>
+</sections>

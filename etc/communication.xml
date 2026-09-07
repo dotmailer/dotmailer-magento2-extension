@@ -58,4 +58,18 @@
             method="process"
         />
     </topic>
+    <topic name="ddg.coupon.start" request="Dotdigitalgroup\Email\Model\Queue\Data\CouponStartData">
+        <handler
+            name="ddg_coupon_start"
+            type="Dotdigitalgroup\Email\Model\Queue\Coupon\CouponStartConsumer"
+            method="process"
+        />
+    </topic>
+    <topic name="ddg.coupon.sync" request="Dotdigitalgroup\Email\Model\Queue\Data\CouponSyncData">
+        <handler
+            name="ddg_coupon_sync"
+            type="Dotdigitalgroup\Email\Model\Queue\Coupon\CouponSyncConsumer"
+            method="process"
+        />
+    </topic>
 </config>

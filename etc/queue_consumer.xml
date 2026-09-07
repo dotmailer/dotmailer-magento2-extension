@@ -34,4 +34,12 @@
               queue="ddg.catalog.queue"
               handler="Dotdigitalgroup\Email\Model\Queue\Catalog\PriceRuleUpdateConsumer::process"
               connection="db" />
+    <consumer name="ddg.coupon.start"
+              queue="ddg.coupon.start.queue"
+              handler="Dotdigitalgroup\Email\Model\Queue\Coupon\CouponStartConsumer::process"
+              connection="db" />
+    <consumer name="ddg.coupon.sync"
+              queue="ddg.coupon.sync.queue"
+              handler="Dotdigitalgroup\Email\Model\Queue\Coupon\CouponSyncConsumer::process"
+              connection="db" />
 </config>

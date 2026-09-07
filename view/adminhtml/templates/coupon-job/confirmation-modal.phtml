@@ -1,0 +1,30 @@
+<?php
+
+/** @var \Magento\Framework\View\Element\Template $block */
+/** @var \Dotdigitalgroup\Email\ViewModel\Adminhtml\CouponJob\ConfirmationViewModel $viewModel */
+
+$viewModel = $block->getData('view_model');
+?>
+
+<!-- KO component renders #coupon-job-confirmation-modal and all its content via the html template -->
+<div data-bind="scope: 'ddg_coupon_job_confirmation_modal'">
+    <!-- ko template: getTemplate() --><!-- /ko -->
+</div>
+
+<script type="text/x-magento-init">
+{
+    "*": {
+        "Magento_Ui/js/core/app": {
+            "components": {
+                "ddg_coupon_job_confirmation_modal": {
+                    "component": "Dotdigitalgroup_Email/js/form/modal/coupon-job/confirmation-modal",
+                    "modalSelector": "#coupon-job-confirmation-modal",
+                    "formName": "dotdigitalgroup_coupon_job_form",
+                    "batchSize": <?= (int) $viewModel->getBatchSize() ?>,
+                    "codeSeparator": "<?= $escaper->escapeJs($viewModel->getCodeSeparator()) ?>"
+                }
+            }
+        }
+    }
+}
+</script>

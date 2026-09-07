@@ -9,10 +9,10 @@ use Dotdigitalgroup\Email\Model\Importer;
 use Dotdigitalgroup\Email\Model\Importer as ImporterModel;
 use Dotdigitalgroup\Email\Model\ResourceModel\Importer as ImporterResource;
 use Dotdigitalgroup\Email\Model\ResourceModel\Importer\Collection as ImporterCollection;
-use Dotdigitalgroup\Email\Model\Sync\Importer\ImporterProgressHandler;
+use Dotdigitalgroup\Email\Model\Sync\Importer\Context\InProgressImportContext;
+use Dotdigitalgroup\Email\Model\Sync\Importer\ImporterItemStatusManager;
 use Dotdigitalgroup\Email\Model\Sync\Importer\ReportHandler\V2ImporterReportHandler;
 use Dotdigitalgroup\Email\Model\Sync\Importer\V2InProgressImportResponseHandler;
-use Dotdigitalgroup\Email\Model\Sync\Importer\V2InProgressImportResponseHandlerFactory as V2HandlerFactory;
 use Dotdigitalgroup\Email\Model\Apiconnector\Client;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
@@ -51,11 +51,6 @@ class V2InProgressImportResponseHandlerTest extends TestCase
     private $v2ResponseHandler;
 
     /**
-     * @var V2HandlerFactory|V2HandlerFactory&\PHPUnit\Framework\MockObject\MockObject|\PHPUnit\Framework\MockObject\MockObject
-     */
-    private $v2HandlerFactoryMock;
-
-    /**
      * @var ImporterCollection|ImporterCollection&\PHPUnit\Framework\MockObject\MockObject|\PHPUnit\Framework\MockObject\MockObject
      */
     private $importerCollectionMock;
@@ -71,6 +66,11 @@ class V2InProgressImportResponseHandlerTest extends TestCase
     private $clientMock;
 
     /**
+     * @var ImporterItemStatusManager
+     */
+    private $importerItemStatusManager;
+
+    /**
      * @return void
      */
     protected function setUp(): void
@@ -79,13 +79,14 @@ class V2InProgressImportResponseHandlerTest extends TestCase
         $this->fileMock = $this->createMock(File::class);
         $this->loggerMock = $this->createMock(Logger::class);
         $this->importerResourceMock = $this->createMock(ImporterResource::class);
-        $this->v2HandlerFactoryMock = $this->createMock(V2HandlerFactory::class);
         $this->v2ReportHandler = $this->createMock(V2ImporterReportHandler::class);
 
         $this->clientMock = $this->createMock(Client::class);
         $this->importerModelMock = $this->createMock(Importer::class);
 
         $this->importerCollectionMock = $this->createMock(ImporterCollection::class);
+
+        $this->importerItemStatusManager = new ImporterItemStatusManager($this->importerResourceMock);
 
         $this->importerCollectionMock->expects($this->atLeastOnce())
             ->method('getIterator')
@@ -97,7 +98,7 @@ class V2InProgressImportResponseHandlerTest extends TestCase
 
         $this->v2ResponseHandler = new V2InProgressImportResponseHandler(
             $this->helperMock,
-            $this->importerResourceMock,
+            $this->importerItemStatusManager,
             $this->v2ReportHandler,
             $this->fileMock,
             $this->loggerMock
@@ -106,16 +107,17 @@ class V2InProgressImportResponseHandlerTest extends TestCase
 
     public function testFinishedInsightDataItems()
     {
-        $groups = [
-            ImporterProgressHandler::PROGRESS_GROUP_MODEL => $this->v2HandlerFactoryMock,
-            ImporterProgressHandler::PROGRESS_GROUP_METHOD => 'getContactsTransactionalDataImportByImportId',
-            ImporterProgressHandler::PROGRESS_GROUP_TYPES => [
+        $context = new InProgressImportContext(
+            'v2',
+            ImporterModel::MODE_BULK,
+            [
                 ImporterModel::IMPORT_TYPE_ORDERS,
                 ImporterModel::IMPORT_TYPE_REVIEWS,
                 ImporterModel::IMPORT_TYPE_WISHLIST,
                 'Catalog'
-            ]
-        ];
+            ],
+            'getContactsTransactionalDataImportByImportId'
+        );
 
         $this->clientMock->expects($this->atLeastOnce())
             ->method('getContactsTransactionalDataImportByImportId')
@@ -158,23 +160,24 @@ class V2InProgressImportResponseHandlerTest extends TestCase
         $this->v2ReportHandler->expects($this->atLeastOnce())
             ->method('processInsightReportFaults');
 
-        $inProgress = $this->v2ResponseHandler->process($groups, $this->importerCollectionMock);
+        $inProgress = $this->v2ResponseHandler->process($context, $this->importerCollectionMock);
 
         $this->assertEquals($inProgress, 0);
     }
 
     public function testFinishedContactDataItems()
     {
-        $groups = [
-            ImporterProgressHandler::PROGRESS_GROUP_TYPES => [
+        $context = new InProgressImportContext(
+            'v2',
+            ImporterModel::MODE_BULK,
+            [
                 ImporterModel::IMPORT_TYPE_CONTACT,
                 ImporterModel::IMPORT_TYPE_CUSTOMER,
                 ImporterModel::IMPORT_TYPE_GUEST,
                 ImporterModel::IMPORT_TYPE_SUBSCRIBERS,
             ],
-            ImporterProgressHandler::PROGRESS_GROUP_MODEL => $this->v2HandlerFactoryMock,
-            ImporterProgressHandler::PROGRESS_GROUP_METHOD => 'getContactsImportByImportId'
-        ];
+            'getContactsImportByImportId'
+        );
 
         $this->clientMock->expects($this->atLeastOnce())
             ->method('getContactsImportByImportId')
@@ -228,7 +231,7 @@ class V2InProgressImportResponseHandlerTest extends TestCase
         $this->v2ReportHandler->expects($this->atLeastOnce())
             ->method('processContactImportReportFaults');
 
-        $inProgress = $this->v2ResponseHandler->process($groups, $this->importerCollectionMock);
+        $inProgress = $this->v2ResponseHandler->process($context, $this->importerCollectionMock);
 
         $this->assertEquals($inProgress, 0);
     }

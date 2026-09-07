@@ -1,0 +1,28 @@
+<div data-bind="afterRender: onAfterRender">
+
+    <!-- Radio toggle: List / Segment -->
+    <div class="audience-type-radios" style="margin-bottom: 10px;">
+        <label style="margin-right: 16px; cursor: pointer;">
+            <input type="radio"
+                   name="audience_type_radio"
+                   value="list"
+                   checked="checked"
+                   style="margin-right: 4px;"/>
+            <span data-bind="i18n: 'List'"></span>
+        </label>
+        <label style="cursor: pointer;">
+            <input type="radio"
+                   name="audience_type_radio"
+                   value="segment"
+                   style="margin-right: 4px;"/>
+            <span data-bind="i18n: 'Segment'"></span>
+        </label>
+    </div>
+
+    <!-- select2 AJAX typeahead -->
+    <select class="audience-select2"
+            data-bind="value: value">
+        <option value=""></option>
+    </select>
+
+</div>

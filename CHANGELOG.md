@@ -37,6 +37,16 @@
 ### Bug fixes
 - Product special prices in web insight data will be set to zero if there is no discount.
 
+# 4.34.2
+
+### Bug fixes
+- We fixed a bug with updating contacts in Dotdigital during automation enrolments.
+
+# 4.34.1
+
+### Bug fixes
+- Product special prices in web insight data will be set to zero if there is no discount.
+
 # 4.34.0
 
 ### Improvements

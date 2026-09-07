@@ -2,15 +2,8 @@
 
 namespace Dotdigitalgroup\Email\Model\Coupon;
 
-use Magento\Framework\Data\Collection\Db\FetchStrategyInterface;
-use Magento\Framework\Data\Collection\EntityFactoryInterface;
-use Magento\Framework\DB\Adapter\AdapterInterface;
-use Magento\Framework\Event\ManagerInterface;
-use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
 use Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
 use Dotdigitalgroup\Email\Model\ResourceModel\CouponAttribute as CouponAttributeResource;
-use Magento\Framework\Stdlib\DateTime\DateTime;
-use Psr\Log\LoggerInterface;
 
 class CouponAttributeCollection extends AbstractCollection
 {
@@ -27,6 +20,12 @@ class CouponAttributeCollection extends AbstractCollection
 
     /**
      * Get active coupons for email.
+     *
+     * @deprecated Loads every matching row and column, and callers relying on getLastItem() get a
+     * non-deterministic result. Use
+     * Dotdigitalgroup\Email\Model\ResourceModel\CouponAttribute::getLatestForEmailAndRule() when
+     * you only need the most recent coupon.
+     * @see CouponAttributeResource::getLatestForEmailAndRule()
      *
      * @param int $ruleId
      * @param string $email

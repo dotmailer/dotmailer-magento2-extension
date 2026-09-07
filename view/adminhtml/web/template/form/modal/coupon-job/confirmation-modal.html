@@ -1,0 +1,140 @@
+<style>
+    .confirmation-list {
+        display: flex;
+        row-gap: 2rem;
+        width: 100%;
+        flex-direction: column;
+        align-items: flex-start;
+        border-left: 1px solid;
+        padding-left: 2rem;
+        flex: 1;
+        min-width: 0;
+    }
+
+    .confirmation-list-cell {
+        display: table-cell;
+        padding: 0 1rem 0 0;
+        width: 100%;
+    }
+
+    .confirmation-list-label {
+        display: block;
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #999;
+    }
+
+    .confirmation-list-value {
+        font-size: 2.4rem;
+        font-weight: 700;
+    }
+
+    .confirmation-details {
+        padding: 0rem 1rem;
+        flex: 3;
+    }
+
+    .confirmation-details > p {
+        padding: 0rem 0rem 2rem 0rem;
+    }
+
+    .confirmation-summary {
+        display: flex;
+        flex-direction: row;
+    }
+</style>
+
+<div id="coupon-job-confirmation-modal" style="display: none;" data-bind="afterRender: onAfterRender">
+    <div id="ddg-confirmation-summary" data-bind="visible: data()?.audienceMeta">
+        <div class="confirmation-summary">
+
+            <div class="confirmation-details">
+                <p></p>
+                <p>
+                    You are about to generate coupons using the
+                    <strong data-bind="text: data().salesRuleMeta.label"></strong>
+                    price rule.<br/>Each coupon will be generated in
+                    <strong data-bind="text: getCodeFormatLabel()"></strong>
+                    format,
+                    <!-- ko if: data().code_prefix -->
+                    prefixed with "<strong data-bind="text: data().code_prefix"></strong>"<!-- /ko --><!-- ko if: data().code_suffix -->
+                    and suffixed with "<strong data-bind="text: data().code_suffix"></strong>"<!-- /ko --><!-- ko ifnot: data().code_prefix --><!-- ko ifnot: data().code_suffix -->
+                    with no prefix or suffix applied<!-- /ko --><!-- /ko -->.<br/>
+                    The final coupon code will appear like:
+                    <strong data-bind="text: getCouponPreview()"></strong>.
+                </p>
+                <p>
+                    <!-- ko if: data().expires_at -->
+                    These coupons will expire on
+                    <strong data-bind="text: getFormattedExpiryDate()"></strong>.
+                    <!-- /ko -->
+                    <!-- ko ifnot: data().expires_at -->
+                    These coupons will not have an expiry date unless the parent rule sets one.
+                    <!-- /ko -->
+                </p>
+                <p>
+                    These coupons will be distributed to
+                    <strong data-bind="text: data().audienceMeta.contacts"></strong>
+                    contact(s) in the
+                    <strong data-bind="text: data().audienceMeta.audienceType"></strong>
+                    audience "<strong data-bind="text: data().audienceMeta.text"></strong>".
+                    <br/>The generation will be processed across
+                    <strong data-bind="text: getTotalBatches()"></strong>
+                    batch(es).<br/>Each contact will receive
+                    their unique coupon code written to the
+                    <strong data-bind="text: data().data_field"></strong>
+                    data field on their contact record.
+                </p>
+                <p>
+                    You can track progress in the Dotdigital Bulk Coupons area.
+                </p>
+                <p style="color: #d40707;">
+                    Confirming will immediately start generating and syncing coupons in the background.<br/>
+                    Sending these codes to the selected Dotdigital data field cannot be undone, although you can overwrite them by generating new coupons.
+                </p>
+            </div>
+
+
+
+            <ul class="confirmation-list">
+                <li class="confirmation-list-cell">
+                    <span class="confirmation-list-label">Total Contacts</span>
+                    <strong class="confirmation-list-value">
+                        <span class="total-contacts" data-bind="text: data().audienceMeta.contacts"></span>
+                    </strong>
+                </li>
+
+                <li class="confirmation-list-cell">
+                    <span class="confirmation-list-label">Total Batches</span>
+                    <strong class="confirmation-list-value">
+                        <span class="total-batches" data-bind="text: getTotalBatches()"></span>
+                        <span class="dashboard-totals-decimals"></span>
+                    </strong>
+                </li>
+
+                <li class="confirmation-list-cell">
+                    <span class="confirmation-list-label">Audience Type</span>
+                    <strong class="confirmation-list-value">
+                        <span class="audience-type" data-bind="text: getAudienceType()"></span>
+                    </strong>
+                </li>
+
+                <li class="confirmation-list-cell">
+                    <span class="confirmation-list-label">Audience</span>
+                    <strong class="confirmation-list-value">
+                        <span class="audience-name" data-bind="text: data().audienceMeta.text"></span>
+                    </strong>
+                </li>
+
+                <li class="confirmation-list-cell">
+                    <span class="confirmation-list-label">Coupon Preview</span>
+                    <strong class="confirmation-list-value" style="font-size: 1.8rem;">
+                        <span class="coupon-preview" data-bind="text: getCouponPreview()"></span>
+                    </strong>
+                </li>
+
+            </ul>
+        </div>
+
+    </div>
+</div>

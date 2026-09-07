@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" component="Dotdigitalgroup_Email/js/form/coupon-job-form" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    <argument name="data" xsi:type="array">
+        <item name="js_config" xsi:type="array">
+            <item name="provider" xsi:type="string">dotdigitalgroup_coupon_job_form.coupon_job_report_form_data_source</item>
+            <item name="component" xsi:type="string"></item>
+        </item>
+        <item name="label" xsi:type="string" translate="true">Generate Bulk Coupons</item>
+        <item name="template" xsi:type="string">templates/form/collapsible</item>
+    </argument>
+    <settings>
+        <namespace>dotdigitalgroup_coupon_job_form</namespace>
+        <dataScope>data</dataScope>
+        <deps>
+            <dep>dotdigitalgroup_coupon_job_form.coupon_job_report_form_data_source</dep>
+        </deps>
+        <buttons>
+            <button name="back">
+                <url path="*/*/index"/>
+                <class>back</class>
+                <label translate="true">Back</label>
+            </button>
+            <button name="generate" class="Dotdigitalgroup\Email\Block\Adminhtml\CouponJob\GenerateButton"/>
+        </buttons>
+    </settings>
+
+    <dataSource name="coupon_job_report_form_data_source">
+        <argument name="data" xsi:type="array">
+            <item name="js_config" xsi:type="array">
+                <item name="component" xsi:type="string">Magento_Ui/js/form/provider</item>
+            </item>
+        </argument>
+        <settings>
+            <submitUrl path="dotdigitalgroup_email/couponjob/create"/>
+        </settings>
+        <dataProvider class="Dotdigitalgroup\Email\Ui\DataProvider\CouponJob\DataProvider"
+                      name="coupon_job_report_form_data_source">
+            <settings>
+                <requestFieldName>id</requestFieldName>
+                <primaryFieldName>id</primaryFieldName>
+            </settings>
+        </dataProvider>
+    </dataSource>
+
+    <fieldset name="general">
+        <settings>
+            <label translate="true">Generate Bulk Coupons</label>
+        </settings>
+
+        <field name="sales_rule_id" sortOrder="10" formElement="select" component="Dotdigitalgroup_Email/js/form/element/coupon-job/sales-rule-select">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Cart Price Rule</label>
+                <dataScope>sales_rule_id</dataScope>
+                <validation>
+                    <rule name="required-entry" xsi:type="boolean">true</rule>
+                </validation>
+                <notice translate="true">Only rules with "Specific Coupon" and "Use Auto Generation" enabled are shown.</notice>
+            </settings>
+        </field>
+
+        <field name="code_format" sortOrder="20" formElement="select" component="Magento_Ui/js/form/element/select">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Code Format</label>
+                <dataScope>code_format</dataScope>
+                <validation>
+                    <rule name="required-entry" xsi:type="boolean">true</rule>
+                </validation>
+            </settings>
+        </field>
+
+        <field name="code_prefix" sortOrder="30" formElement="input">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Code Prefix</label>
+                <dataScope>code_prefix</dataScope>
+            </settings>
+        </field>
+
+        <field name="code_suffix" sortOrder="40" formElement="input">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Code Suffix</label>
+                <dataScope>code_suffix</dataScope>
+            </settings>
+        </field>
+
+        <field name="code_length" sortOrder="50" formElement="input">
+            <settings>
+                <dataType>number</dataType>
+                <label translate="true">Code Length</label>
+                <dataScope>code_length</dataScope>
+                <notice translate="true">Total generated coupon characters, excluding prefix, suffix, and separators.</notice>
+                <validation>
+                    <rule name="required-entry" xsi:type="boolean">true</rule>
+                    <rule name="validate-digits" xsi:type="boolean">true</rule>
+                    <rule name="validate-greater-than-zero" xsi:type="boolean">true</rule>
+                </validation>
+            </settings>
+        </field>
+
+        <field name="code_dash" sortOrder="60" formElement="input">
+            <settings>
+                <dataType>number</dataType>
+                <label translate="true">Dash Every X Characters</label>
+                <dataScope>code_dash</dataScope>
+                <notice translate="true">Set to 0 for no separators.</notice>
+                <validation>
+                    <rule name="required-entry" xsi:type="boolean">true</rule>
+                    <rule name="validate-digits" xsi:type="boolean">true</rule>
+                </validation>
+            </settings>
+        </field>
+
+        <field name="audience"
+                sortOrder="70"
+                formElement="input"
+                component="Dotdigitalgroup_Email/js/form/element/coupon-job/audience-select">
+                <settings>
+                    <elementTmpl>Dotdigitalgroup_Email/form/element/coupon-job/audience-select</elementTmpl>
+                    <dataType>text</dataType>
+                    <label translate="true">Audience Preview</label>
+                    <dataScope>audience</dataScope>
+                    <notice translate="true">Preview of the selected audience. Not editable.</notice>
+                    <validation>
+                        <rule name="required-entry" xsi:type="boolean">true</rule>
+                    </validation>
+                </settings>
+        </field>
+
+        <field name="data_field"
+               sortOrder="80"
+               formElement="input"
+               component="Dotdigitalgroup_Email/js/form/element/coupon-job/data-field-select">
+            <settings>
+                <elementTmpl>Dotdigitalgroup_Email/form/element/coupon-job/data-field-select</elementTmpl>
+                <dataType>text</dataType>
+                <label translate="true">Dotdigital Data Field</label>
+                <dataScope>data_field</dataScope>
+                <validation>
+                    <rule name="required-entry" xsi:type="boolean">true</rule>
+                </validation>
+                <notice translate="true">Only string-type fields shown. Excludes default and mapped data fields. Type a new name and press Enter to create it on generation.</notice>
+            </settings>
+        </field>
+
+        <field name="expires_at" sortOrder="90" formElement="date">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Expires At</label>
+                <dataScope>expires_at</dataScope>
+                <notice translate="true">Leave blank to generate coupons without an expiry date.</notice>
+                <validation>
+                    <rule name="validate-date" xsi:type="boolean">true</rule>
+                </validation>
+            </settings>
+        </field>
+
+
+    </fieldset>
+
+</form>

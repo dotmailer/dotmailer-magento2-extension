@@ -24,4 +24,10 @@
     <publisher topic="ddg.catalog.rules">
         <connection name="db" exchange="magento-db" />
     </publisher>
+    <publisher topic="ddg.coupon.start">
+        <connection name="db" exchange="magento-db" />
+    </publisher>
+    <publisher topic="ddg.coupon.sync">
+        <connection name="db" exchange="magento-db" />
+    </publisher>
 </config>

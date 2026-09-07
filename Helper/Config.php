@@ -432,7 +432,8 @@ class Config extends AbstractHelper
         'connector_developer_settings/pwa_settings/pwa_url';
     public const XML_PATH_PWA_URL_REWRITES =
         'connector_developer_settings/pwa_settings/use_rewrites';
-
+    public const XML_PATH_COUPON_JOB_BATCH_SIZE =
+        'connector_developer_settings/import_settings/coupon_job_batch_size';
     /*
      * Cron schedules
      */
@@ -461,6 +462,9 @@ class Config extends AbstractHelper
         'connector_developer_settings/cleaner/schedule';
     public const XML_PATH_CRON_SCHEDULE_TABLE_CLEANER_INTERVAL =
         'connector_developer_settings/cleaner/table_cleaner_interval';
+
+    public const XML_PATH_CLEANER_ALLOWED_TABLES =
+        'connector_developer_settings/cleaner/allowed_tables';
 
     /**
      * API and portal endpoints

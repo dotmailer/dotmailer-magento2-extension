@@ -27,6 +27,7 @@ class SenderStrategyFactory implements BatchStrategyFactoryInterface
         Importer::IMPORT_TYPE_CONSENT => ContactSenderStrategy::class,
         Importer::IMPORT_TYPE_ORDERS => OrderSenderStrategy::class,
         Importer::IMPORT_TYPE_CATALOG => CatalogSenderStrategy::class,
+        Importer::IMPORT_TYPE_COUPON_JOB => CouponJobSenderStrategy::class,
     ];
 
     /**

@@ -25,6 +25,13 @@ interface SenderStrategyInterface extends BatchStrategyInterface
     public function setWebsiteId(int $websiteId): SenderStrategyInterface;
 
     /**
+     * Returns the number of business records in the configured batch.
+     *
+     * @return int
+     */
+    public function getRecordCount(): int;
+
+    /**
      * Processes a batch of records.
      *
      * @return string An import ID, or an empty string.
