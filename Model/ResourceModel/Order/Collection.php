@@ -7,6 +7,7 @@ use Dotdigitalgroup\Email\Model\Newsletter\SubscriberFilterer;
 use Magento\Framework\Data\Collection\Db\FetchStrategyInterface;
 use Magento\Framework\Data\Collection\EntityFactoryInterface;
 use Magento\Framework\DB\Adapter\AdapterInterface;
+use Magento\Framework\DB\Select;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
 use Magento\Quote\Model\ResourceModel\Quote\CollectionFactory as QuoteCollectionFactory;
@@ -143,6 +144,14 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
         );
 
         $connectorCollection->getSelect()
+            ->reset(Select::COLUMNS)
+            ->columns(['order_id' => 'main_table.order_id']);
+
+        $connectorCollection
+            ->addFieldToFilter('main_table.processed', '0')
+            ->addFieldToFilter('main_table.store_id', ['in' => $storeIds]);
+
+        $connectorCollection->getSelect()
             ->joinLeft(
                 ['sales_order' => $this->getTable('sales_order')],
                 'main_table.order_id = sales_order.entity_id',
@@ -153,8 +162,6 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
                 ['contact_id']
             );
         $connectorCollection
-            ->addFieldToFilter('main_table.processed', '0')
-            ->addFieldToFilter('main_table.store_id', ['in' => $storeIds])
             ->addFieldToFilter('email_contact.contact_id', ['notnull' => true])
             ->addFieldToFilter('email_contact.contact_id', ['neq' => 0]);
         $connectorCollection->getSelect()->group('order_id');
