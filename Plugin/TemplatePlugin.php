@@ -125,6 +125,25 @@ class TemplatePlugin
     }
 
     /**
+     * Before set template text.
+     *
+     * Magento_Email\Model\AbstractTemplate now declares a concrete setTemplateText() method
+     * (WEB-9494), so calls to it are resolved directly and never reach __call(), meaning
+     * before__call() above no longer fires for it. Compress here instead so the value stored
+     * in template_text stays compressed for dotmailer templates.
+     *
+     * @param \Magento\Email\Model\Template $subject
+     * @param mixed $value
+     * @return array|void
+     */
+    public function beforeSetTemplateText(\Magento\Email\Model\Template $subject, $value)
+    {
+        if ($this->transactionalHelper->isDotmailerTemplate($subject['template_code'])) {
+            return [$this->compressString($value)];
+        }
+    }
+
+    /**
      * Compress string.
      *
      * @param string $templateText
