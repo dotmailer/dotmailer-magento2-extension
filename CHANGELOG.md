@@ -1,3 +1,8 @@
+# 4.36.1
+
+### Bug fixes
+- We patched `TemplatePlugin` for compatibility with Adobe's VULN-39341 security patch.
+
 # 4.36.0
 
 ### Improvements

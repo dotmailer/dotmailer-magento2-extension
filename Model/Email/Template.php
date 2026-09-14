@@ -409,7 +409,14 @@ class Template extends \Magento\Framework\DataObject implements SyncInterface
 
             $this->templateResource->save($template);
         } catch (\Exception $e) {
-            $this->helper->debug($e->getMessage());
+            $this->helper->debug(
+                sprintf(
+                    'Error saving template "%s" (campaign id: %s): %s',
+                    $templateName,
+                    $campaignId,
+                    $e->getMessage()
+                )
+            );
         }
     }
 
