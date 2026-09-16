@@ -213,24 +213,27 @@ class OrderSaveAfter implements ObserverInterface
                 return $this;
             }
 
-            $this->statusCheckAutomationEnrolment($order, $status, $customerEmail, $websiteId, $storeId, $storeName);
+            $automationQueued = $this->statusCheckAutomationEnrolment(
+                $order,
+                $status,
+                $customerEmail,
+                $websiteId,
+                $storeId,
+                $storeName
+            );
 
-            //Reset contact if found
-            $this->resetContactByEmailAndWebsiteId($customerEmail, $websiteId);
-
-            //If customer's first order
+            // If customer's first order
             if ($order->getCustomerId()) {
                 $orders = $this->orderCollectionFactory->create()
                     ->addFieldToFilter('customer_id', $order->getCustomerId());
-                if ($orders->getSize()==1) {
+                if ($orders->getSize() == 1) {
                     $automationTypeNewOrder = AutomationTypeHandler::AUTOMATION_TYPE_CUSTOMER_FIRST_ORDER;
                     $programIdNewOrder = $this->helper->getAutomationIdByType(
                         'XML_PATH_CONNECTOR_AUTOMATION_STUDIO_FIRST_ORDER',
                         $storeId
                     );
                     if ($programIdNewOrder) {
-                        //send to automation queue
-                        $this->doAutomationEnrolment(
+                        $automationQueued = $this->doAutomationEnrolment(
                             [
                                 'programId' => $programIdNewOrder,
                                 'automationType' => $automationTypeNewOrder,
@@ -240,10 +243,12 @@ class OrderSaveAfter implements ObserverInterface
                                 'store_id' => $storeId,
                                 'store_name' => $storeName
                             ]
-                        );
+                        ) || $automationQueued;
                     }
                 }
             }
+
+            $this->resetContactByEmailAndWebsiteId($customerEmail, $websiteId, $automationQueued);
         } catch (\Exception $e) {
             $this->logger->error('Error in OrderSaveAfter observer', [(string) $e]);
         }
@@ -254,14 +259,17 @@ class OrderSaveAfter implements ObserverInterface
     /**
      * Reset contact based on email and website_id.
      *
-     * Reset any customers, guest or subscribers after saving an order.
+     * Reset any customers, guest or subscribers after automation checks.
+     * For guest subscribers, if an automation has already been queued,
+     * defer subscriber sync to cron.
      *
      * @param string $email
      * @param int $websiteId
+     * @param bool $automationQueued
      *
      * @throws AlreadyExistsException
      */
-    private function resetContactByEmailAndWebsiteId($email, $websiteId)
+    private function resetContactByEmailAndWebsiteId($email, $websiteId, bool $automationQueued = false)
     {
         $contact = $this->contactCollectionFactory->create()
             ->loadByCustomerEmail($email, $websiteId);
@@ -273,8 +281,15 @@ class OrderSaveAfter implements ObserverInterface
         $contact->setEmailImported(Contact::EMAIL_CONTACT_NOT_IMPORTED);
         $this->contactResource->save($contact);
 
-        if (! $contact->getCustomerId() && $contact->getIsSubscriber()) {
-            // the queue will do the sync so mark as imported now
+        if (!$contact->getCustomerId() && $contact->getIsSubscriber()) {
+            if ($automationQueued) {
+                // Defer subscriber sync to cron to avoid racing automation-triggered contact upserts.
+                $contact->setSubscriberImported(Contact::EMAIL_CONTACT_NOT_IMPORTED);
+                $this->contactResource->save($contact);
+                return;
+            }
+
+            // The queue will do the sync so mark as imported now.
             $contact->setSubscriberImported(Contact::EMAIL_CONTACT_IMPORTED);
             $this->contactResource->save($contact);
 
@@ -291,10 +306,11 @@ class OrderSaveAfter implements ObserverInterface
      * Save enrolment to queue for cron automation enrolment.
      *
      * @param array $data
+     *
+     * @return bool
      */
     private function doAutomationEnrolment($data)
     {
-        //the program is not mapped
         if ($data['programId']) {
             try {
                 $typeId = $data['order_id'];
@@ -304,8 +320,7 @@ class OrderSaveAfter implements ObserverInterface
                     ->addFieldToFilter('automation_type', $automationTypeId)
                     ->setPageSize(1);
 
-                //automation type, and type should be unique
-                if (! $exists->getSize()) {
+                if (!$exists->getSize()) {
                     $automation = $this->automationFactory->create()
                         ->setEmail($data['email'])
                         ->setAutomationType($data['automationType'])
@@ -319,12 +334,16 @@ class OrderSaveAfter implements ObserverInterface
 
                     $this->automationPublisher->publish($automation);
                 }
+
+                return true;
             } catch (Exception $e) {
-                $this->logger->debug((string)$e, []);
+                $this->logger->debug((string) $e, []);
+                return false;
             }
-        } else {
-            $this->logger->info('automation type : ' . $data['automationType'] . ' program id not found');
         }
+
+        $this->logger->info('automation type : ' . $data['automationType'] . ' program id not found');
+        return false;
     }
 
     /**
@@ -337,7 +356,7 @@ class OrderSaveAfter implements ObserverInterface
      * @param int $storeId
      * @param string $storeName
      *
-     * @return void
+     * @return bool
      */
     private function statusCheckAutomationEnrolment($order, $status, $customerEmail, $websiteId, $storeId, $storeName)
     {
@@ -348,18 +367,20 @@ class OrderSaveAfter implements ObserverInterface
         );
 
         if (null === $orderStatusAutomations) {
-            return;
+            return false;
         }
+
+        $automationQueued = false;
 
         try {
             $configStatusAutomationMap = $this->serializer->unserialize($orderStatusAutomations);
             if (!is_array($configStatusAutomationMap)) {
-                return;
+                return false;
             }
             foreach ($configStatusAutomationMap as $configMap) {
                 if ($configMap['status'] == $status) {
-                    //send to automation queue
-                    $this->doAutomationEnrolment(
+                    // Send to automation queue.
+                    $automationQueued = $this->doAutomationEnrolment(
                         [
                             'programId' => $configMap['automation'],
                             'automationType' => 'order_automation_' . $status,
@@ -369,12 +390,14 @@ class OrderSaveAfter implements ObserverInterface
                             'store_id' => $storeId,
                             'store_name' => $storeName
                         ]
-                    );
+                    ) || $automationQueued;
                 }
             }
         } catch (InvalidArgumentException $e) {
-            $this->logger->debug((string)$e, []);
-            return;
+            $this->logger->debug((string) $e, []);
+            return false;
         }
+
+        return $automationQueued;
     }
 }
