@@ -1,3 +1,15 @@
+# 4.37.0
+
+### What's new
+- You can now generate Magento coupons in bulk and add them as data fields to a cohort of Dotdigital contacts.
+
+### Improvements
+- We updated the main order sync collection query to improve efficiency.
+
+### Bug fixes
+- We fixed ordering of the contact report on contact_id.
+- We updated the OrderSaveAfter observer to prevent a queue consumer race for guest subscribers.
+
 # 4.36.1
 
 ### Bug fixes
