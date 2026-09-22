@@ -303,6 +303,36 @@ class DotdigitalCouponGeneratorTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(6, (new \DateTime('now', new \DateTimeZone('UTC')))->diff($expiresAt)->days);
     }
 
+    public function testExplicitUtcExpiryDateTimeIsSavedAsProvided()
+    {
+        $explicitExpiry = '2026-12-31 23:59:59';
+        $code = $this->codeGenerator->generateCoupon(
+            $this->salesRule,
+            null,
+            null,
+            null,
+            'utc-expiry@test.com',
+            null,
+            null,
+            null,
+            $explicitExpiry
+        );
+
+        /** @var CouponRepository $couponRepo */
+        $couponRepo = ObjectManager::getInstance()->create(CouponRepository::class);
+        $searchCriteria = ObjectManager::getInstance()->create(SearchCriteriaBuilder::class)
+            ->addFilter('code', $code)
+            ->create();
+
+        $couponResult = $couponRepo->getList($searchCriteria)->getItems();
+        $coupon = reset($couponResult);
+        $savedExpiresAt = $coupon->getExtensionAttributes()
+            ->getDdgExtensionAttributes()
+            ->getExpiresAt();
+
+        $this->assertSame($explicitExpiry, $savedExpiresAt);
+    }
+
     /**
      * Expire the sales rule
      *

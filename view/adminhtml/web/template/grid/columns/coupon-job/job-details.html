@@ -1,0 +1,25 @@
+<div class="dg-coupon-job-table-cell"
+     data-bind="afterRender: function() { $col.processRows($row()) }">
+        <div style="clear:both;">
+            <strong>Batches: </strong>
+            <span data-bind="text: report.total_batches_processed"></span> /
+            <span data-bind="text: report.total_batches"></span>
+            <span class="ddg-coupon-job-details-percentage">
+                ( <span data-bind="text: formatPercentage(
+                    report.total_batches_processed,
+                    report.total_batches
+                    )"></span>% )
+            </span>
+        </div>
+        <div style="clear:both;">
+            <strong>Records: </strong>
+            <span data-bind="text: report.total_records_imported"></span> /
+            <span data-bind="text: report.total_records"></span>
+            <span class="ddg-coupon-job-details-percentage">
+                ( <span data-bind="text: formatPercentage(
+                    report.total_records_imported,
+                    report.total_records
+                    )"></span>% )
+            </span>
+        </div>
+</div>

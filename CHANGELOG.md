@@ -1,3 +1,15 @@
+# 4.37.0
+
+### What's new
+- You can now generate Magento coupons in bulk and add them as data fields to a cohort of Dotdigital contacts.
+
+### Improvements
+- We updated the main order sync collection query to improve efficiency.
+
+### Bug fixes
+- We fixed ordering of the contact report on contact_id.
+- We updated the OrderSaveAfter observer to prevent a queue consumer race for guest subscribers.
+
 # 4.36.1
 
 ### Bug fixes
@@ -31,6 +43,16 @@
 - We fixed the `ProcessPendingAutomations` data patch by ensuring area code was set in advance.
 - The OrderSaveAfter observer now listens for the `sales_order_commit_save_after` event to prevent failed nested transactions.
 - We removed `curl_close()` in PHP 8+.
+
+# 4.34.2
+
+### Bug fixes
+- We fixed a bug with updating contacts in Dotdigital during automation enrolments.
+
+# 4.34.1
+
+### Bug fixes
+- Product special prices in web insight data will be set to zero if there is no discount.
 
 # 4.34.2
 

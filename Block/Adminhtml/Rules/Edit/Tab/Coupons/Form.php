@@ -138,7 +138,7 @@ EOT;
             'options' => $this->getYesNoOption(),
             'required' => true,
             'class' => 'field-has-description',
-            'value' => $this->couponHelper->getDefaultFormat(),
+            'value' => '1',
             'onchange' => 'window.updateEdcCouponUrl()',
             'after_element_html' => __('This allows a previously generated coupon code ' .
                 'to be resent to the same customer. If set to no, a new coupon will be generated.'),
@@ -146,11 +146,11 @@ EOT;
 
         $fieldset->addField('cancel_send', 'select', [
             'label' => __('Cancel Send If Used'),
-            'name' => 'allow_resend',
+            'name' => 'cancel_send',
             'options' => $this->getYesNoOption(false),
             'required' => true,
             'class' => 'field-has-description',
-            'value' => $this->couponHelper->getDefaultFormat(),
+            'value' => '1',
             'onchange' => 'window.updateEdcCouponUrl()',
             'after_element_html' => __('Enable this to ensure the send will be cancelled ' .
                 '(if the coupon has been used) or regenerated (if the coupon has expired). ' .

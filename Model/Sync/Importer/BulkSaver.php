@@ -7,6 +7,7 @@ namespace Dotdigitalgroup\Email\Model\Sync\Importer;
 use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Importer;
 use Dotdigitalgroup\Email\Model\ImporterFactory;
+use Dotdigitalgroup\Email\Model\ResourceModel\CouponJob\ImporterLink as CouponJobImporterLinkResource;
 use Magento\Framework\Exception\AlreadyExistsException;
 
 class BulkSaver
@@ -22,14 +23,25 @@ class BulkSaver
     private $importerFactory;
 
     /**
+     * @var CouponJobImporterLinkResource
+     */
+    private $couponJobImporterLinkResource;
+
+    /**
      * Bulk Saver constructor.
      *
+     * @param Logger $logger
      * @param ImporterFactory $importerFactory
+     * @param CouponJobImporterLinkResource $couponJobImporterLinkResource
      */
     public function __construct(
-        ImporterFactory $importerFactory
+        Logger $logger,
+        ImporterFactory $importerFactory,
+        CouponJobImporterLinkResource $couponJobImporterLinkResource
     ) {
+        $this->logger = $logger;
         $this->importerFactory = $importerFactory;
+        $this->couponJobImporterLinkResource = $couponJobImporterLinkResource;
     }
 
     /**
@@ -53,18 +65,19 @@ class BulkSaver
         string $mode
     ) {
         try {
-            $this->importerFactory->create()
-                ->addToImporterQueue(
-                    $importType,
-                    $batch,
-                    $mode,
-                    $websiteId,
-                    0,
-                    Importer::IMPORTING,
-                    $importId,
-                    '',
-                    $importStarted
-                );
+            $importer = $this->importerFactory->create();
+            $importer->addToImporterQueue(
+                $importType,
+                $batch,
+                $mode,
+                $websiteId,
+                0,
+                Importer::IMPORTING,
+                $importId,
+                '',
+                $importStarted
+            );
+            $this->linkCouponJobImporter($importType, $batch, $importer);
         } catch (AlreadyExistsException $e) {
             $this->logger->error(
                 sprintf(
@@ -96,23 +109,64 @@ class BulkSaver
         string $mode
     ) {
         try {
-            $this->importerFactory->create()
-                ->addToImporterQueue(
-                    $importType,
-                    $batch,
-                    $mode,
-                    $websiteId,
-                    0,
-                    Importer::FAILED,
-                    '',
-                    $message
-                );
+            $importer = $this->importerFactory->create();
+            $importer->addToImporterQueue(
+                $importType,
+                $batch,
+                $mode,
+                $websiteId,
+                0,
+                Importer::FAILED,
+                '',
+                $message
+            );
+            $this->linkCouponJobImporter($importType, $batch, $importer);
         } catch (AlreadyExistsException $e) {
             $this->logger->error(
                 sprintf(
                     "Data save error (failed batch): import type (%s) / website id (%s) / %s",
                     $importType,
                     $websiteId,
+                    $e->getMessage()
+                )
+            );
+        }
+    }
+
+    /**
+     * Record a coupon-job-to-importer link for CouponJob batches.
+     *
+     * CouponJob batches are wrapped as {"coupon_job_id":<id>,"records":{...}}.
+     * Storing the importer row id against the coupon job id lets the report
+     * builder fetch a job's batches via an indexed join instead of a LIKE scan
+     * over the serialized import_data column.
+     *
+     * @param string $importType
+     * @param array $batch
+     * @param Importer $importer
+     * @return void
+     */
+    private function linkCouponJobImporter(string $importType, array $batch, Importer $importer): void
+    {
+        if ($importType !== Importer::IMPORT_TYPE_COUPON_JOB) {
+            return;
+        }
+
+        $couponJobId = (int) ($batch['coupon_job_id'] ?? 0);
+        $importerId = (int) $importer->getId();
+
+        if ($couponJobId <= 0 || $importerId <= 0) {
+            return;
+        }
+
+        try {
+            $this->couponJobImporterLinkResource->linkImporter($couponJobId, $importerId);
+        } catch (\Exception $e) {
+            $this->logger->error(
+                sprintf(
+                    'BulkSaver: could not link coupon job %d to importer %d: %s',
+                    $couponJobId,
+                    $importerId,
                     $e->getMessage()
                 )
             );

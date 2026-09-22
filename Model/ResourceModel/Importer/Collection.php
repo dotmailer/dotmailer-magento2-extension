@@ -148,4 +148,26 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
             ->addFieldToFilter('import_id', $importId)
             ->getFirstItem();
     }
+
+    /**
+     * Fetch all importer rows for a given coupon job ID.
+     *
+     * CouponJob batches are linked to their coupon job via the
+     * email_coupon_job_importer table. Joining on that indexed link avoids
+     * scanning the serialized import_data JSON column with a LIKE query.
+     *
+     * @param int $couponJobId
+     * @return $this
+     */
+    public function getBatchesByCouponJobId(int $couponJobId): self
+    {
+        $this->getSelect()->join(
+            ['cjil' => $this->getTable('email_coupon_job_importer')],
+            'main_table.id = cjil.email_importer_id',
+            []
+        )->where('cjil.coupon_job_id = ?', $couponJobId);
+
+        return $this->addFieldToSelect(['import_status', 'import_id', 'message', 'updated_at', 'import_finished'])
+            ->addFieldToFilter('import_type', ['eq' => ImporterModel::IMPORT_TYPE_COUPON_JOB]);
+    }
 }

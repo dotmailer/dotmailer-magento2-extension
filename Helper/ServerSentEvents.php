@@ -199,7 +199,7 @@ class ServerSentEvents
         while (ob_get_level() != 0) {
             ob_end_flush();
         }
-        ob_implicit_flush(1);
+        ob_implicit_flush((bool)1);
     }
 
     /**

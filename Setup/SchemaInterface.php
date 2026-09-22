@@ -17,4 +17,6 @@ interface SchemaInterface
     public const EMAIL_CONTACT_CONSENT_TABLE = 'email_contact_consent';
     public const EMAIL_FAILED_AUTH_TABLE = 'email_failed_auth';
     public const EMAIL_COUPON_TABLE = 'email_coupon_attribute';
+    public const EMAIL_COUPON_JOB_TABLE = 'email_coupon_job';
+    public const EMAIL_COUPON_JOB_IMPORTER_TABLE = 'email_coupon_job_importer';
 }

@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Dotdigitalgroup\Email\Model\Cron;
 
+use Dotdigitalgroup\Email\Helper\Config;
 use Dotdigitalgroup\Email\Helper\File;
-use Dotdigitalgroup\Email\Setup\SchemaInterface;
 use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Task\TaskRunInterface;
-use Dotdigitalgroup\Email\Helper\Config;
+use Dotdigitalgroup\Email\Setup\SchemaInterface;
+use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\ResourceConnection;
 use Magento\Framework\Exception\FileSystemException;
 use Magento\Framework\Intl\DateTimeFactory;
-use Magento\Framework\App\Config\ScopeConfigInterface;
 
 class Cleaner implements TaskRunInterface
 {
@@ -46,11 +46,12 @@ class Cleaner implements TaskRunInterface
     /**
      * @var array
      */
-    private $tables = [
+    public const TABLES = [
         'automation' => SchemaInterface::EMAIL_AUTOMATION_TABLE,
         'importer' => SchemaInterface::EMAIL_IMPORTER_TABLE,
         'campaign' => SchemaInterface::EMAIL_CAMPAIGN_TABLE,
-        'consent' => SchemaInterface::EMAIL_CONTACT_CONSENT_TABLE
+        'consent' => SchemaInterface::EMAIL_CONTACT_CONSENT_TABLE,
+        'coupon_job' => SchemaInterface::EMAIL_COUPON_JOB_TABLE
     ];
 
     /**
@@ -88,9 +89,17 @@ class Cleaner implements TaskRunInterface
         $olderThanDateString = $this->getOlderThanDateString();
 
         foreach ($tables as $table) {
-            $dateColumn = $table === SchemaInterface::EMAIL_CONTACT_CONSENT_TABLE ?
-                'consent_datetime' :
-                'created_at';
+            switch ($table) {
+                case SchemaInterface::EMAIL_CONTACT_CONSENT_TABLE:
+                    $dateColumn = 'consent_datetime';
+                    break;
+                case SchemaInterface::EMAIL_COUPON_JOB_TABLE:
+                    $dateColumn = 'updated_at';
+                    break;
+                default:
+                    $dateColumn = 'created_at';
+            }
+
             $this->cleanTable($table, $dateColumn, $olderThanDateString);
         }
 
@@ -106,7 +115,11 @@ class Cleaner implements TaskRunInterface
      */
     public function getTablesForCleanUp(array $additionalTables = [])
     {
-        return $this->tables + $additionalTables;
+        $tables = $this->scopeConfig->getValue(Config::XML_PATH_CLEANER_ALLOWED_TABLES);
+        return [
+            ...explode(',', $tables),
+            ...$additionalTables
+        ];
     }
 
     /**

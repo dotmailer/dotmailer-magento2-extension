@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sections xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:noNamespaceSchemaLocation="urn:magento:mftf:Page/etc/SectionObject.xsd">
+    <section name="AdminDotdigitalBulkCouponJobFormSection">
+        <element name="pageTitle" type="text" selector="h1.page-title" timeout="30"/>
+        <element name="fieldsetHeader" type="text" selector="//div[contains(@class, 'fieldset-wrapper-title') and normalize-space(.)='Generate Bulk Coupons']" timeout="30"/>
+        <element name="salesRuleId" type="select" selector="select[name='sales_rule_id']" timeout="30"/>
+        <element name="codeFormat" type="select" selector="select[name='code_format']" timeout="30"/>
+        <element name="codePrefix" type="input" selector="input[name='code_prefix']" timeout="30"/>
+        <element name="codeSuffix" type="input" selector="input[name='code_suffix']" timeout="30"/>
+        <element name="codeLength" type="input" selector="input[name='code_length']" timeout="30"/>
+        <element name="codeDash" type="input" selector="input[name='code_dash']" timeout="30"/>
+        <element name="audienceTypeListRadio" type="radio" selector="input[name='audience_type_radio'][value='list']" timeout="30"/>
+        <element name="audienceTypeSegmentRadio" type="radio" selector="input[name='audience_type_radio'][value='segment']" timeout="30"/>
+        <element name="audienceSelect" type="select" selector="//select[contains(@class, 'audience-select2')]/following-sibling::span[contains(@class, 'select2')]//span[contains(@class, 'select2-selection')]" timeout="30"/>
+        <element name="dataFieldSelect" type="select" selector="//select[contains(@class, 'datafield-select2')]/following-sibling::span[contains(@class, 'select2')]//span[contains(@class, 'select2-selection')]" timeout="30"/>
+        <element name="firstSelect2Result" type="text" selector="//ul[contains(@class, 'select2-results__options')]/li[contains(@class, 'select2-results__option') and not(contains(@class, 'select2-results__message')) and not(@aria-disabled='true')][1]" timeout="30"/>
+        <element name="reviewButton" type="button" selector="#save" timeout="30"/>
+        <element name="confirmationSummary" type="text" selector="#ddg-confirmation-summary" timeout="30"/>
+        <element name="confirmationModalTitle" type="text" selector="//aside[contains(@class, 'ddg-coupon-job-confirmation-modal')]//h1[contains(@class, 'modal-title') and normalize-space(.)='Confirm Coupon Generation']" timeout="30"/>
+        <element name="generateButton" type="button" selector="//aside[contains(@class, 'ddg-coupon-job-confirmation-modal')]//button[normalize-space(.)='Generate']" timeout="30"/>
+    </section>
+</sections>

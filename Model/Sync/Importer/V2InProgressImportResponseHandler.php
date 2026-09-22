@@ -2,19 +2,27 @@
 
 namespace Dotdigitalgroup\Email\Model\Sync\Importer;
 
+use Dotdigitalgroup\Email\Api\Model\Sync\Importer\InProgressImportResponseHandlerInterface;
 use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Helper\File;
 use Dotdigitalgroup\Email\Logger\Logger;
+use Dotdigitalgroup\Email\Model\Apiconnector\Client;
 use Dotdigitalgroup\Email\Model\Importer as ImporterModel;
-use Dotdigitalgroup\Email\Model\ResourceModel\Importer as ImporterResource;
+use Dotdigitalgroup\Email\Model\ResourceModel\Importer\Collection as ImporterCollection;
+use Dotdigitalgroup\Email\Model\Sync\Importer\Context\InProgressImportContext;
 use Dotdigitalgroup\Email\Model\Sync\Importer\ReportHandler\V2ImporterReportHandler;
 
-class V2InProgressImportResponseHandler extends AbstractInProgressImportResponseHandler
+class V2InProgressImportResponseHandler implements InProgressImportResponseHandlerInterface
 {
     /**
      * @var Data
      */
     private $helper;
+
+    /**
+     * @var ImporterItemStatusManager
+     */
+    private $importerItemStatusManager;
 
     /**
      * @var V2ImporterReportHandler
@@ -27,38 +35,75 @@ class V2InProgressImportResponseHandler extends AbstractInProgressImportResponse
     private $fileHelper;
 
     /**
+     * @var Logger
+     */
+    private $logger;
+
+    /**
      * @param Data $helper
-     * @param ImporterResource $importerResource
+     * @param ImporterItemStatusManager $importerItemStatusManager
      * @param V2ImporterReportHandler $reportHandler
      * @param File $fileHelper
      * @param Logger $logger
      */
     public function __construct(
         Data $helper,
-        ImporterResource $importerResource,
+        ImporterItemStatusManager $importerItemStatusManager,
         V2ImporterReportHandler $reportHandler,
         File $fileHelper,
         Logger $logger
     ) {
         $this->helper = $helper;
+        $this->importerItemStatusManager = $importerItemStatusManager;
         $this->reportHandler = $reportHandler;
         $this->fileHelper = $fileHelper;
-        parent::__construct($logger, $importerResource);
+        $this->logger = $logger;
+    }
+
+    /**
+     * Process.
+     *
+     * @param InProgressImportContext $context
+     * @param ImporterCollection $items
+     * @return int
+     * @throws \Magento\Framework\Exception\AlreadyExistsException
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function process(InProgressImportContext $context, ImporterCollection $items): int
+    {
+        $itemsCount = 0;
+
+        foreach ($items as $item) {
+            try {
+                $response = $this->checkItemImportStatus($item, $context);
+            } catch (\Exception $e) {
+                $this->logger->error(
+                    sprintf('Checking import id %s: %s', $item->getImportId(), $e->getMessage())
+                );
+                $this->importerItemStatusManager->markFailed($item, $e->getMessage());
+                $this->importerItemStatusManager->save($item);
+                continue;
+            }
+
+            $itemsCount += $this->processResponse($response, $item);
+        }
+
+        return $itemsCount;
     }
 
     /**
      * Check item import status.
      *
      * @param ImporterModel $item
-     * @param array $group
+     * @param InProgressImportContext $context
      *
      * @return object|null
      */
-    protected function checkItemImportStatus(
+    private function checkItemImportStatus(
         ImporterModel $item,
-        array $group
+        InProgressImportContext $context
     ) {
-        $method = $group['method'];
+        $method = $context->getMethod();
         return $this->getClient($item->getWebsiteId())
             ->$method($item->getImportId());
     }
@@ -72,25 +117,26 @@ class V2InProgressImportResponseHandler extends AbstractInProgressImportResponse
      * @return int
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    protected function processResponse($response, $item)
+    private function processResponse($response, $item)
     {
         $itemCount = 0;
         if (isset($response->message)) {
-            $item->setImportStatus(ImporterModel::FAILED)
-                ->setMessage($response->message);
+            $this->importerItemStatusManager->markFailed($item, $response->message);
         } elseif (isset($response->status)) {
             if ($response->status == 'Finished') {
                 $item = $this->processFinishedItem($item);
-            } elseif (in_array($response->status, self::$importStatuses)) {
-                $item->setImportStatus(ImporterModel::FAILED)
-                    ->setMessage('Import failed with status ' . $response->status);
+            } elseif ($this->importerItemStatusManager->isFailedStatus($response->status)) {
+                $this->importerItemStatusManager->markFailed(
+                    $item,
+                    'Import failed with status ' . $response->status
+                );
             } else {
                 //Not finished
                 $itemCount = 1;
             }
         }
 
-        $this->importerResource->save($item);
+        $this->importerItemStatusManager->save($item);
 
         return $itemCount;
     }
@@ -103,13 +149,9 @@ class V2InProgressImportResponseHandler extends AbstractInProgressImportResponse
      * @return ImporterModel
      * @throws \Magento\Framework\Exception\LocalizedException|\Exception
      */
-    protected function processFinishedItem(ImporterModel $item)
+    private function processFinishedItem(ImporterModel $item)
     {
-        $now = gmdate('Y-m-d H:i:s');
-
-        $item->setImportStatus(ImporterModel::IMPORTED)
-            ->setImportFinished($now)
-            ->setMessage('');
+        $item = $this->importerItemStatusManager->markImported($item);
 
         switch ($item->getImportType()) {
             case ImporterModel::IMPORT_TYPE_CONTACT:
@@ -174,13 +216,14 @@ class V2InProgressImportResponseHandler extends AbstractInProgressImportResponse
     }
 
     /**
-     * @inheritdoc
+     * Get the V2 client for a website.
+     *
+     * @param int|string $websiteId
+     *
+     * @return Client
      */
-    protected function getClient($websiteId)
+    private function getClient($websiteId)
     {
-        if (!isset($this->client)) {
-            return $this->helper->getWebsiteApiClient($websiteId);
-        }
-        return $this->client;
+        return $this->helper->getWebsiteApiClient((int) $websiteId);
     }
 }

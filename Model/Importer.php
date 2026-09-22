@@ -47,6 +47,7 @@ class Importer extends AbstractModel
     public const IMPORT_TYPE_SUBSCRIBER_RESUBSCRIBED = 'Subscriber';
     public const IMPORT_TYPE_CART_INSIGHT_CART_PHASE = 'CartInsight';
     public const IMPORT_TYPE_CONSENT = 'Consent';
+    public const IMPORT_TYPE_COUPON_JOB = 'CouponJob';
 
     /**
      * @deprecated

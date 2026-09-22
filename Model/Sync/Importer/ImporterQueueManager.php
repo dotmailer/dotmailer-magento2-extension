@@ -10,6 +10,7 @@ use Dotdigitalgroup\Email\Model\Sync\Importer\Type\Contact\BulkFactory as Contac
 use Dotdigitalgroup\Email\Model\Sync\Importer\Type\Contact\BulkJsonFactory as ContactBulkJsonFactory;
 use Dotdigitalgroup\Email\Model\Sync\Importer\Type\Contact\DeleteFactory as ContactDeleteFactory;
 use Dotdigitalgroup\Email\Model\Sync\Importer\Type\Contact\UpdateFactory as ContactUpdateFactory;
+use Dotdigitalgroup\Email\Model\Sync\Importer\Type\CouponJob\BulkJsonFactory as CouponJobBulkJsonFactory;
 use Dotdigitalgroup\Email\Model\Sync\Importer\Type\TransactionalData\BulkJsonFactory as TransactionalBulkJsonFactory;
 use Dotdigitalgroup\Email\Model\Sync\Importer\Type\TransactionalData\BulkFactory;
 use Dotdigitalgroup\Email\Model\Sync\Importer\Type\TransactionalData\DeleteFactory;
@@ -63,6 +64,11 @@ class ImporterQueueManager
     private $bulkImportBuilderFactory;
 
     /**
+     * @var CouponJobBulkJsonFactory
+     */
+    private $couponJobBulkJsonFactory;
+
+    /**
      * ImporterQueueManager constructor.
      *
      * @param ContactBulkFactory $contactBulkFactory
@@ -74,6 +80,7 @@ class ImporterQueueManager
      * @param UpdateFactory $updateFactory
      * @param DeleteFactory $deleteFactory
      * @param BulkImportBuilderFactory $bulkImportBuilderFactory
+     * @param CouponJobBulkJsonFactory $couponJobBulkJsonFactory
      */
     public function __construct(
         ContactBulkFactory $contactBulkFactory,
@@ -84,7 +91,8 @@ class ImporterQueueManager
         BulkFactory $bulkFactory,
         UpdateFactory $updateFactory,
         DeleteFactory $deleteFactory,
-        BulkImportBuilderFactory $bulkImportBuilderFactory
+        BulkImportBuilderFactory $bulkImportBuilderFactory,
+        CouponJobBulkJsonFactory $couponJobBulkJsonFactory
     ) {
         $this->contactBulkFactory = $contactBulkFactory;
         $this->contactBulkJsonFactory = $contactBulkJsonFactory;
@@ -95,6 +103,7 @@ class ImporterQueueManager
         $this->updateFactory = $updateFactory;
         $this->deleteFactory = $deleteFactory;
         $this->bulkImportBuilderFactory = $bulkImportBuilderFactory;
+        $this->couponJobBulkJsonFactory = $couponJobBulkJsonFactory;
     }
 
     /**
@@ -173,11 +182,19 @@ class ImporterQueueManager
             ->setMode(ImporterModel::MODE_BULK_JSON)
             ->setType([ImporterModel::IMPORT_TYPE_CATALOG,ImporterModel::IMPORT_TYPE_ORDERS]);
 
+        $couponJobBulkJson = $this->bulkImportBuilderFactory
+            ->create()
+            ->setModel($this->couponJobBulkJsonFactory)
+            ->setType([ImporterModel::IMPORT_TYPE_COUPON_JOB])
+            ->setLimit(Importer::CONTACT_IMPORT_SYNC_LIMIT)
+            ->setMode(ImporterModel::MODE_BULK_JSON);
+
         return [
             $contactDeprecated->build(),
             $contactJson->build(),
             $transactionalDeprecated->build(),
-            $transactionalJson->build()
+            $transactionalJson->build(),
+            $couponJobBulkJson->build(),
         ];
     }
 

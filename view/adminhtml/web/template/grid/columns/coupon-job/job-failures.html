@@ -1,0 +1,36 @@
+<div class="dg-coupon-job-table-cell"
+     data-bind="afterRender: function() { $col.processRows($row()) }">
+
+    <div class="ddg-coupon-job-failed-imports">
+        <div class="ddg-coupon-job-notice ddg-coupon-job-warning"
+             data-bind="visible: hasFailedImports()">
+            <strong>
+                <span data-bind="text: failedImportsCount"></span>
+                Import(s) have failures.
+            </strong>
+            <a href="#" class="ddg-coupon-job-failures-link"
+               data-bind="click: function() { $col.viewImports($row()); return false; }">
+                View
+            </a>
+        </div>
+    </div>
+
+    <div class="ddg-coupon-job-failed-messages">
+        <div class="ddg-coupon-job-notice ddg-coupon-job-warning"
+             data-bind="visible: hasFailedMessages()">
+            <strong>
+                <span data-bind="text: failedMessagesCount"></span>
+                consumer(s) have failures.
+            </strong>
+            <a href="#" class="ddg-coupon-job-failures-link"
+               data-bind="click: function() { $col.viewMessages($row()); return false; }">
+                View
+            </a>
+        </div>
+    </div>
+
+    <div data-bind="visible: !hasFailedMessages() && !hasFailedImports()">
+        No failures recorded for this job.
+    </div>
+
+</div>

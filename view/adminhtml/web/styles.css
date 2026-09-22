@@ -194,3 +194,57 @@ div.dotmailer-error{background:url(images/i_msg-error.png) no-repeat;padding:10p
     display: inline-block;
     transform: translate(0px, -5px);
 }
+
+/* Coupon Job Grid - Job Details */
+.ddg-coupon-job-table-cell {
+    line-height: 1.8;
+}
+
+.ddg-coupon-job-details-percentage {
+    color: #666;
+}
+
+.ddg-coupon-job-notice {
+    margin-top: 8px;
+    padding: 6px 10px;
+    border-left: 3px solid;
+}
+
+.ddg-coupon-job-success {
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+    color: #155724;
+}
+
+.ddg-coupon-job-warning {
+    background-color: #fff3cd;
+    border-color: #ffc107;
+    color: #856404;
+}
+
+/* Coupon Job Grid - Failure viewer link */
+.ddg-coupon-job-failures-link {
+    display: inline-block;
+    margin-left: 6px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* Coupon Job Failure modal — pager row */
+.ddg-failure-modal-wrap .admin__data-grid-pager-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 0;
+}
+
+.ddg-failure-modal-wrap .ddg-pager-info {
+    color: #666;
+    flex: 1;
+    text-align: center;
+}
+
+.ddg-failure-modal-wrap._loading {
+    opacity: .6;
+    pointer-events: none;
+}

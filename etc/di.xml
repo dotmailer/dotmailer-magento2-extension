@@ -1,5 +1,13 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <preference for="Dotdigitalgroup\Email\Model\CouponJob\Contracts\JobDetailsInterface" type="Dotdigitalgroup\Email\Model\CouponJob\Struct\JobDetails"/>
+    <preference for="Dotdigitalgroup\Email\Model\CouponJob\Contracts\JobDetails\ReportInterface" type="Dotdigitalgroup\Email\Model\CouponJob\Struct\JobDetails\Report"/>
+    <preference for="Dotdigitalgroup\Email\Model\CouponJob\Contracts\JobConfigurationInterface" type="Dotdigitalgroup\Email\Model\CouponJob\Struct\JobConfiguration"/>
+    <preference for="Dotdigitalgroup\Email\Model\CouponJob\Contracts\ReportBuilderInterface" type="Dotdigitalgroup\Email\Model\CouponJob\ReportBuilder"/>
+    <preference for="Dotdigitalgroup\Email\Model\CouponJob\Contracts\JobUpdaterInterface" type="Dotdigitalgroup\Email\Model\CouponJob\JobUpdater"/>
+    <preference for="Dotdigitalgroup\Email\Model\CouponJob\Contracts\JobCancellerInterface" type="Dotdigitalgroup\Email\Model\CouponJob\JobCanceller"/>
+    <preference for="Dotdigitalgroup\Email\Model\CouponJob\Contracts\FailureLogInterface" type="Dotdigitalgroup\Email\Model\CouponJob\FailureLog"/>
+
     <type name="Magento\Sales\Api\OrderCustomerManagementInterface">
         <plugin name="Ddg_CustomerManagementPlugin" type="Dotdigitalgroup\Email\Plugin\CustomerManagementPlugin" sortOrder="1"/>
     </type>
@@ -32,6 +40,9 @@
     </type>
     <type name="Magento\SalesRule\Api\CouponRepositoryInterface">
         <plugin name="coupon_plugin" type="Dotdigitalgroup\Email\Plugin\CouponPlugin"/>
+    </type>
+    <type name="Magento\Framework\Session\SessionStartChecker">
+        <plugin name="ddg_edc_coupon_session_start_checker" type="Dotdigitalgroup\Email\Plugin\Session\EdcSessionStartChecker"/>
     </type>
     <type name="Magento\SalesRule\Model\ResourceModel\Coupon\Collection">
         <plugin name="ddg_generated_for_email_plugin" type="Dotdigitalgroup\Email\Plugin\CouponCollectionPlugin"/>
@@ -72,6 +83,7 @@
                 <item name="wishlist_report_grid_data_source" xsi:type="string">Dotdigitalgroup\Email\Ui\Model\ResourceModel\Wishlist\Collection</item>
                 <item name="abandoned_report_grid_data_source" xsi:type="string">Dotdigitalgroup\Email\Ui\Model\ResourceModel\Abandoned\Collection</item>
                 <item name="queue_data_source" xsi:type="string">Dotdigitalgroup\Email\Ui\DataProvider\Queue\Listing\Collection</item>
+                <item name="coupon_job_report_grid_data_source" xsi:type="string">Dotdigitalgroup\Email\Ui\Model\ResourceModel\CouponJob\Collection</item>
             </argument>
         </arguments>
     </type>
@@ -111,6 +123,18 @@
     <preference for="Dotdigitalgroup\Email\Api\Model\Product\Provider\Attributes\ProductGeneralProviderInterface" type="Dotdigitalgroup\Email\Model\Product\Provider\Attributes\ProductGeneralProvider" />
 
     <preference for="Dotdigitalgroup\Email\Api\Logger\LoggerInterface" type="Dotdigitalgroup\Email\Logger\Logger"/>
+
+    <type name="Dotdigitalgroup\Email\Model\Sync\Importer\Handler\InProgressImportResponseHandlerPool">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="v2_transactional" xsi:type="object">Dotdigitalgroup\Email\Model\Sync\Importer\V2InProgressImportResponseHandler</item>
+                <item name="v2_contacts" xsi:type="object">Dotdigitalgroup\Email\Model\Sync\Importer\V2InProgressImportResponseHandler</item>
+                <item name="v3_contacts" xsi:type="object">Dotdigitalgroup\Email\Model\Sync\Importer\V3InProgressImportResponseHandler</item>
+                <item name="v3_insight_data" xsi:type="object">Dotdigitalgroup\Email\Model\Sync\Importer\V3InProgressImportResponseHandler</item>
+                <item name="v3_coupon_job" xsi:type="object">Dotdigitalgroup\Email\Model\Sync\Importer\CouponJobInProgressImportResponseHandler</item>
+            </argument>
+        </arguments>
+    </type>
 
     <type name="Dotdigitalgroup\Email\Logger\Handler\ConnectorLogHandler">
         <arguments>
@@ -242,4 +266,14 @@
                 type="Dotdigitalgroup\Email\Plugin\DailyCatalogUpdatePlugin"
                 sortOrder="10"/>
     </type>
+
+    <!-- Integration Insight Metric Providers: Start -->
+    <type name="Dotdigitalgroup\Email\Model\Sync\Integration\IntegrationInsightData">
+        <arguments>
+            <argument name="metricProviders" xsi:type="array">
+                <item name="bulk_coupons" xsi:type="object">Dotdigitalgroup\Email\Model\Sync\Integration\Metrics\BulkCouponMetricData</item>
+            </argument>
+        </arguments>
+    </type>
+    <!-- Integration Insight Metric Providers: End -->
 </config>

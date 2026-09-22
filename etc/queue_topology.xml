@@ -33,5 +33,13 @@
                  topic="ddg.catalog.rules"
                  destinationType="queue"
                  destination="ddg.catalog.queue"/>
+        <binding id="dotdigitalCouponStartBinding"
+                 topic="ddg.coupon.start"
+                 destinationType="queue"
+                 destination="ddg.coupon.start.queue"/>
+        <binding id="dotdigitalCouponSyncBinding"
+                 topic="ddg.coupon.sync"
+                 destinationType="queue"
+                 destination="ddg.coupon.sync.queue"/>
     </exchange>
 </config>

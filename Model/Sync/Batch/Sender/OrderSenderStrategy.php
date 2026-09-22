@@ -74,6 +74,14 @@ class OrderSenderStrategy implements SenderStrategyInterface
 
     /**
      * @inheritDoc
+     */
+    public function getRecordCount(): int
+    {
+        return count($this->batch);
+    }
+
+    /**
+     * @inheritDoc
      *
      * @throws \Exception
      * @throws Exception

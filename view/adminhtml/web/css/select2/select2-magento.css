@@ -2,6 +2,10 @@
     display: none;
 }
 
+.admin__control-select .select2-selection__clear{
+    display: none;
+}
+
 .select2-selection {
     border: none !important;
 }

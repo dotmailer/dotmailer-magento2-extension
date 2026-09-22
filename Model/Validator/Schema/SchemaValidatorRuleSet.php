@@ -52,8 +52,8 @@ class SchemaValidatorRuleSet implements SchemaValidatorRuleSetInterface
      */
     public function processRulePattern(string $rulePattern)
     {
-        foreach (explode(' ', ltrim($rulePattern, ':')) as $rulePattern) {
-            $this->rules[] = $this->schemaValidatorRuleFactory->create(["pattern" => $rulePattern]);
+        foreach (explode('|', ltrim($rulePattern, ':')) as $individualRule) {
+            $this->rules[] = $this->schemaValidatorRuleFactory->create(["pattern" => $individualRule]);
         }
     }
 }

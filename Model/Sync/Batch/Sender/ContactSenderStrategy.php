@@ -73,6 +73,14 @@ class ContactSenderStrategy implements SenderStrategyInterface
     /**
      * @inheritDoc
      */
+    public function getRecordCount(): int
+    {
+        return count($this->batch);
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function process(): string
     {
         $importId = '';

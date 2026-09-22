@@ -68,6 +68,11 @@ class ExternalDynamicContentController implements ActionInterface
     protected $layout;
 
     /**
+     * @var bool|null
+     */
+    private $isDebug;
+
+    /**
      * @param Data $data
      * @param StoreManagerInterface $storeManager
      * @param FailedAuthFactory $failedAuthFactory
@@ -132,11 +137,27 @@ class ExternalDynamicContentController implements ActionInterface
             return false;
         }
 
-        if ($this->request->getParam('debug')) {
+        if ($this->isDebug()) {
             $this->helper->debug('EDC request passed authentication');
         }
 
         return true;
+    }
+
+    /**
+     * Whether the request is in debug mode.
+     *
+     * Memoised - the value cannot change during a request.
+     *
+     * @return bool
+     */
+    protected function isDebug(): bool
+    {
+        if ($this->isDebug === null) {
+            $this->isDebug = (bool) $this->request->getParam('debug');
+        }
+
+        return $this->isDebug;
     }
 
     /**
@@ -205,7 +226,7 @@ class ExternalDynamicContentController implements ActionInterface
     public function checkResponse()
     {
         if (strlen($this->layout->getLayout()->getOutput()) < 10) {
-            if ($this->request->getParam('debug')) {
+            if ($this->isDebug()) {
                 $this->helper->debug(
                     'Output is less than 10 characters, no content',
                     ['Output' => $this->layout->getLayout()->getOutput()]

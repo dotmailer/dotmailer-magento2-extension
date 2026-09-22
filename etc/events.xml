@@ -51,4 +51,7 @@
     <event name="catalogrule_rule_daily_update">
         <observer name="dotdigitalgroup_email_catalogrule_daily_update" instance="Dotdigitalgroup\Email\Observer\CatalogRule\CatalogRuleObserver" />
     </event>
+    <event name="email_coupon_job_save_commit_after">
+        <observer name="ddg_coupon_job_status_complete" instance="Dotdigitalgroup\Email\Observer\CouponJob\StatusComplete"/>
+    </event>
 </config>

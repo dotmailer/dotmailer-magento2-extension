@@ -4,8 +4,8 @@ namespace Dotdigitalgroup\Email\Helper;
 
 use Dotdigitalgroup\Email\Helper\Config as EmailConfig;
 use Dotdigitalgroup\Email\Logger\Logger;
-use Dotdigitalgroup\Email\Model\Contact\ContactResponseHandler;
 use Dotdigitalgroup\Email\Model\Apiconnector\Account;
+use Dotdigitalgroup\Email\Model\Contact\ContactResponseHandler;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Encryption\EncryptorInterface;
@@ -13,7 +13,6 @@ use Magento\Framework\Exception\AlreadyExistsException;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Store\Api\Data\WebsiteInterface;
 use Magento\Store\Model\ScopeInterface;
-use Magento\Store\Model\StoreManager;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Store\Model\Website;
 
@@ -738,6 +737,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     /**
      * Get the address book for customer.
+     *
+     * @deprecated Use V2 Client alternative.
+     * @see \Dotdigitalgroup\Email\Model\Apiconnector\V3\Contact\AddressBook
      *
      * @param int $websiteId
      *

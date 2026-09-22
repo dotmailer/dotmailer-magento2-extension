@@ -155,6 +155,11 @@ class SchemaValidator implements SchemaValidatorInterface
             if (array_key_exists($validatableKey, $this->patternRules)) {
                 $ruleSet = $this->getRuleSet($validatableKey);
                 $ruleSet->hasProcessed();
+
+                if ($this->skipNullable($ruleSet, $validatableValue)) {
+                    continue;
+                }
+
                 foreach ($ruleSet->rules as $rule) {
                     if (empty($rule)) {
                         continue;
@@ -183,6 +188,33 @@ class SchemaValidator implements SchemaValidatorInterface
     private function getRuleSet(string $validatableKey):SchemaValidatorRuleSet
     {
         return $this->patternRules[$validatableKey];
+    }
+
+    /**
+     * Whether an empty/null value should skip all other rules for its key.
+     *
+     * Purely additive: only applies when the pattern explicitly includes the
+     * `nullable` rule (e.g. 'nullable|dateFormat:Y-m-d'). Every other pattern,
+     * with no `nullable` rule present, is unaffected and behaves exactly as
+     * before — empty values still fail their assigned rules as normal.
+     *
+     * @param SchemaValidatorRuleSet $ruleSet
+     * @param mixed $validatableValue
+     * @return bool
+     */
+    private function skipNullable(SchemaValidatorRuleSet $ruleSet, $validatableValue): bool
+    {
+        if ($validatableValue !== null && $validatableValue !== '') {
+            return false;
+        }
+
+        foreach ($ruleSet->rules as $rule) {
+            if (!empty($rule) && $rule->key === 'nullable') {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

@@ -3,6 +3,8 @@
 namespace Dotdigitalgroup\Email\Plugin;
 
 use Dotdigitalgroup\Email\Model\Coupon\CouponAttribute;
+use Dotdigitalgroup\Email\Model\DateTimeFactory;
+use Dotdigitalgroup\Email\Model\DateTimeZoneFactory;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\SalesRule\Api\CouponRepositoryInterface;
@@ -13,6 +15,11 @@ use Magento\Quote\Model\Quote\Address;
 
 class CouponExpiredPlugin
 {
+    /**
+     * Time of day a coupon remains valid until, in the store's own timezone.
+     */
+    private const END_OF_DAY = '23:59:59';
+
     /**
      * @var CouponRepositoryInterface
      */
@@ -29,18 +36,34 @@ class CouponExpiredPlugin
     private $timezone;
 
     /**
+     * @var DateTimeFactory
+     */
+    private $dateTimeFactory;
+
+    /**
+     * @var DateTimeZoneFactory
+     */
+    private $dateTimeZoneFactory;
+
+    /**
      * @param CouponRepositoryInterface $couponRepository
      * @param SearchCriteriaBuilder $criteriaBuilder
      * @param TimezoneInterface $timezone
+     * @param DateTimeFactory $dateTimeFactory
+     * @param DateTimeZoneFactory $dateTimeZoneFactory
      */
     public function __construct(
         CouponRepositoryInterface $couponRepository,
         SearchCriteriaBuilder $criteriaBuilder,
-        TimezoneInterface $timezone
+        TimezoneInterface $timezone,
+        DateTimeFactory $dateTimeFactory,
+        DateTimeZoneFactory $dateTimeZoneFactory
     ) {
         $this->couponRepository = $couponRepository;
         $this->criteriaBuilder = $criteriaBuilder;
         $this->timezone = $timezone;
+        $this->dateTimeFactory = $dateTimeFactory;
+        $this->dateTimeZoneFactory = $dateTimeZoneFactory;
     }
 
     /**
@@ -78,8 +101,7 @@ class CouponExpiredPlugin
 
             if ($ddgExtensionAttributes = $coupon->getExtensionAttributes()->getDdgExtensionAttributes()) {
                 /** @var CouponAttribute $ddgExtensionAttributes */
-                $expiresAt = $ddgExtensionAttributes->getExpiresAtDate();
-                if ($expiresAt && $this->timezone->date($expiresAt) < $this->timezone->date()) {
+                if ($this->isExpired($ddgExtensionAttributes)) {
                     // individual coupon has expired
                     $rule->setIsValidForAddress($address, false);
                     return false;
@@ -88,5 +110,47 @@ class CouponExpiredPlugin
         }
 
         return $result;
+    }
+
+    /**
+     * Check whether a coupon's expiry has passed.
+     *
+     * Bulk coupon expiry dates are stored at 23:59:59 and treated as floating calendar dates in
+     * the current store's timezone. EDC coupon expiries retain their exact stored UTC timestamp.
+     *
+     * @param CouponAttribute $couponAttribute
+     * @return bool
+     */
+    private function isExpired(CouponAttribute $couponAttribute): bool
+    {
+        $expiresAt = $couponAttribute->getExpiresAt();
+        if (empty($expiresAt)) {
+            return false;
+        }
+
+        try {
+            $expiresAtDate = $couponAttribute->getExpiresAtDate();
+        } catch (\Exception $e) {
+            return false;
+        }
+
+        if (!$expiresAtDate || $expiresAtDate->format('Y-m-d H:i:s') !== $expiresAt) {
+            return false;
+        }
+
+        if ($expiresAtDate->format('H:i:s') !== self::END_OF_DAY) {
+            return $this->timezone->date($expiresAtDate) < $this->timezone->date();
+        }
+
+        $storeTimezone = $this->dateTimeZoneFactory->create([
+            'timezone' => $this->timezone->getConfigTimezone()
+        ]);
+
+        $expiresAtDate = $this->dateTimeFactory->create([
+            'time' => sprintf('%s %s', $expiresAtDate->format('Y-m-d'), self::END_OF_DAY),
+            'timezone' => $storeTimezone
+        ]);
+
+        return $expiresAtDate < $this->timezone->date();
     }
 }

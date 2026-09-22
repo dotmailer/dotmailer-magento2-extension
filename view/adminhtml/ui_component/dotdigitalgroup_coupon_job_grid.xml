@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<listing xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    <argument name="data" xsi:type="array">
+        <item name="js_config" xsi:type="array">
+            <item name="provider" xsi:type="string">dotdigitalgroup_coupon_job_grid.coupon_job_report_grid_data_source</item>
+        </item>
+    </argument>
+    <settings>
+        <buttons>
+            <button name="create" class="Dotdigitalgroup\Email\Block\Adminhtml\CouponJob\AddNewJobButton"/>
+        </buttons>
+        <spinner>dotdigitalgroup_coupon_job_columns</spinner>
+        <deps>
+            <dep>dotdigitalgroup_coupon_job_grid.coupon_job_report_grid_data_source</dep>
+        </deps>
+    </settings>
+    <dataSource name="coupon_job_report_grid_data_source" component="Magento_Ui/js/grid/provider">
+        <settings>
+            <storageConfig>
+                <param name="indexField" xsi:type="string">id</param>
+            </storageConfig>
+            <updateUrl path="mui/index/render"/>
+        </settings>
+        <aclResource>Dotdigitalgroup_Email::coupon_job</aclResource>
+        <dataProvider class="Magento\Framework\View\Element\UiComponent\DataProvider\DataProvider" name="coupon_job_report_grid_data_source">
+            <settings>
+                <requestFieldName>id</requestFieldName>
+                <primaryFieldName>id</primaryFieldName>
+            </settings>
+        </dataProvider>
+    </dataSource>
+    <listingToolbar name="listing_top">
+        <bookmark name="bookmarks"/>
+        <columnsControls name="columns_controls"/>
+        <filters name="listing_filters"/>
+        <exportButton name="export_button"/>
+        <massaction name="listing_massaction" component="Dotdigitalgroup_Email/js/grid/coupon-job/massactions">
+            <action name="delete">
+                <settings>
+                    <url path="*/*/massDelete"/>
+                    <type>delete</type>
+                    <label translate="true">Delete</label>
+                    <confirm>
+                        <title translate="true">Delete coupon jobs</title>
+                        <message translate="true">Are you sure you want to delete the selected coupon job(s)? This cannot be undone.</message>
+                    </confirm>
+                </settings>
+            </action>
+        </massaction>
+        <paging name="listing_paging"/>
+    </listingToolbar>
+    <columns name="dotdigitalgroup_coupon_job_columns">
+        <selectionsColumn name="ids" sortOrder="10">
+            <settings>
+                <indexField>id</indexField>
+            </settings>
+        </selectionsColumn>
+        <column name="sales_rule_id" class="Dotdigitalgroup\Email\Ui\Component\Listing\SalesRuleName" sortOrder="20">
+            <settings>
+                <label translate="true">Sales Rule</label>
+                <bodyTmpl>ui/grid/cells/html</bodyTmpl>
+                <sortable>false</sortable>
+            </settings>
+        </column>
+        <column name="website_id" class="Dotdigitalgroup\Email\Ui\Component\Listing\WebsiteName" sortOrder="30">
+            <settings>
+                <label translate="true">Website</label>
+                <sortable>false</sortable>
+            </settings>
+        </column>
+        <column name="status" sortOrder="40" component="Magento_Ui/js/grid/columns/select">
+            <settings>
+                <filter>select</filter>
+                <options class="Dotdigitalgroup\Email\Model\Adminhtml\Source\CouponJob\Status"/>
+                <label translate="true">Status</label>
+                <dataType>select</dataType>
+            </settings>
+        </column>
+        <column name="job_configuration" sortOrder="50">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="label" translate="true" xsi:type="string">Job Configuration</item>
+                    <item name="component" xsi:type="string">Dotdigitalgroup_Email/js/grid/columns/coupon-job/job-configuration</item>
+                    <item name="bodyTmpl" xsi:type="string">Dotdigitalgroup_Email/grid/columns/coupon-job/job-configuration</item>
+                </item>
+            </argument>
+        </column>
+
+        <column name="job_details" sortOrder="60">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="label" translate="true" xsi:type="string">Job Details</item>
+                    <item name="component" xsi:type="string">Dotdigitalgroup_Email/js/grid/columns/coupon-job/job-details</item>
+                    <item name="bodyTmpl" xsi:type="string">Dotdigitalgroup_Email/grid/columns/coupon-job/job-details</item>
+                </item>
+            </argument>
+        </column>
+        <column name="job_failures" sortOrder="70">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="label" translate="true" xsi:type="string">Job Failures</item>
+                    <item name="component" xsi:type="string">Dotdigitalgroup_Email/js/grid/columns/coupon-job/job-failures</item>
+                    <item name="bodyTmpl" xsi:type="string">Dotdigitalgroup_Email/grid/columns/coupon-job/job-failures</item>
+                    <item name="failuresUrl" xsi:type="url" path="dotdigitalgroup_email/couponjob/failures"/>
+                </item>
+            </argument>
+        </column>
+        <column name="created_at" class="Magento\Ui\Component\Listing\Columns\Date" component="Magento_Ui/js/grid/columns/date" sortOrder="80">
+            <settings>
+                <filter>dateRange</filter>
+                <label translate="true">Created At</label>
+            </settings>
+        </column>
+        <column name="updated_at" class="Magento\Ui\Component\Listing\Columns\Date" component="Magento_Ui/js/grid/columns/date" sortOrder="90">
+            <settings>
+                <filter>dateRange</filter>
+                <label translate="true">Updated At</label>
+                <sorting>desc</sorting>
+            </settings>
+        </column>
+        <actionsColumn name="actions" class="Dotdigitalgroup\Email\Ui\Component\Listing\CouponJob\Actions" sortOrder="100">
+            <settings>
+                <indexField>id</indexField>
+                <label translate="true">Action</label>
+            </settings>
+        </actionsColumn>
+    </columns>
+</listing>

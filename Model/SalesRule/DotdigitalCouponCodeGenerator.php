@@ -9,8 +9,8 @@ use Magento\Framework\DataObject;
 
 class DotdigitalCouponCodeGenerator extends DataObject implements CodegeneratorInterface
 {
-    private const SPLIT = 3;
-    private const LENGTH = 9;
+    private const DEFAULT_DASH_INTERVAL = 3;
+    private const DEFAULT_LENGTH = 9;
 
     /**
      * @var Coupon
@@ -49,11 +49,13 @@ class DotdigitalCouponCodeGenerator extends DataObject implements CodegeneratorI
         $charset = $this->salesRuleCoupon->getCharset($format);
         $charsetSize = count($charset);
         $splitChar = $this->getDelimiter();
+        $split = max(0, (int) ($this->getData('codeDash') ?? self::DEFAULT_DASH_INTERVAL));
+        $length = max(1, (int) ($this->getData('codeLength') ?? self::DEFAULT_LENGTH));
         $code = '';
 
-        for ($i = 0; $i < self::LENGTH; ++$i) {
+        for ($i = 0; $i < $length; ++$i) {
             $char = $charset[Random::getRandomNumber(0, $charsetSize - 1)];
-            if ($i % self::SPLIT === 0 && $i !== 0) {
+            if (($split > 0) && (($i % $split) === 0) && ($i !== 0)) {
                 $char = $splitChar . $char;
             }
             $code .= $char;

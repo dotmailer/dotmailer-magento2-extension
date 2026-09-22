@@ -85,6 +85,9 @@ class MegaBatchProcessorTest extends TestCase
         $senderStrategyInterfaceMock->expects($this->once())
             ->method('process')
             ->willReturn('c58c075f-3ae8-458d-8681-c7e55db08775');
+        $senderStrategyInterfaceMock->expects($this->once())
+            ->method('getRecordCount')
+            ->willReturn(3);
 
         $this->bulkSaverMock->expects($this->once())
             ->method('addInProgressBatchToImportTable');
@@ -92,7 +95,8 @@ class MegaBatchProcessorTest extends TestCase
         $this->dateTimeMock->method('formatDate')->willReturn('2022-03-17 11:28:46');
 
         $this->loggerMock->expects($this->once())
-            ->method('info');
+            ->method('info')
+            ->with('3 customer records batched for website id 2');
 
         $recordImportedStrategyInterfaceMock = $this->createMock(RecordImportedStrategyInterface::class);
         $this->recordImportedStrategyFactoryMock->expects($this->once())
@@ -111,6 +115,40 @@ class MegaBatchProcessorTest extends TestCase
             2,
             'Customer'
         );
+    }
+
+    public function testCouponJobBatchLogsTheRecordCountFromItsSenderStrategy(): void
+    {
+        $batch = [
+            'coupon_job_id' => 8,
+            'records' => array_fill(0, 25, ['identifiers' => ['email' => 'test@example.com']]),
+        ];
+        $senderStrategyMock = $this->createMock(SenderStrategyInterface::class);
+        $recordImportedStrategyMock = $this->createMock(RecordImportedStrategyInterface::class);
+
+        $this->senderStrategyFactoryMock->expects($this->once())
+            ->method('create')
+            ->with('CouponJob')
+            ->willReturn($senderStrategyMock);
+        $senderStrategyMock->expects($this->once())->method('setBatch')->with($batch)->willReturnSelf();
+        $senderStrategyMock->expects($this->once())->method('setWebsiteId')->with(1)->willReturnSelf();
+        $senderStrategyMock->expects($this->once())->method('process')->willReturn('import-id');
+        $senderStrategyMock->expects($this->once())->method('getRecordCount')->willReturn(25);
+
+        $this->bulkSaverMock->expects($this->once())->method('addInProgressBatchToImportTable');
+        $this->dateTimeMock->method('formatDate')->willReturn('2022-03-17 11:28:46');
+        $this->loggerMock->expects($this->once())
+            ->method('info')
+            ->with('25 couponjob records batched for website id 1');
+
+        $this->recordImportedStrategyFactoryMock->expects($this->once())
+            ->method('create')
+            ->with('CouponJob')
+            ->willReturn($recordImportedStrategyMock);
+        $recordImportedStrategyMock->expects($this->once())->method('setRecords')->with($batch)->willReturnSelf();
+        $recordImportedStrategyMock->expects($this->once())->method('process');
+
+        $this->megaBatchProcessor->process($batch, 1, 'CouponJob');
     }
 
     public function testThatEmptyBatchIsNotProcessed()

@@ -50,6 +50,11 @@ class Coupon extends \Magento\Framework\View\Element\Template
     private $websiteId;
 
     /**
+     * @var bool|null
+     */
+    private $isDebug;
+
+    /**
      * @param Context $context
      * @param Data $helper
      * @param DotdigitalCouponRequestProcessorFactory $dotdigitalCouponRequestProcessorFactory
@@ -81,7 +86,7 @@ class Coupon extends \Magento\Framework\View\Element\Template
      */
     public function generateCoupon()
     {
-        if ($this->_request->getParam('debug')) {
+        if ($this->isDebug()) {
             $this->helper->debug('Starting Dotdigital coupon generation from Block');
         }
 
@@ -112,6 +117,22 @@ class Coupon extends \Magento\Framework\View\Element\Template
     {
         return $this->dotdigitalCouponRequestProcessor
             ?: $this->dotdigitalCouponRequestProcessor = $this->dotdigitalCouponRequestProcessorFactory->create();
+    }
+
+    /**
+     * Whether the request is in debug mode.
+     *
+     * Memoised - the value cannot change during a request.
+     *
+     * @return bool
+     */
+    private function isDebug(): bool
+    {
+        if ($this->isDebug === null) {
+            $this->isDebug = (bool) $this->_request->getParam('debug');
+        }
+
+        return $this->isDebug;
     }
 
     /**

@@ -5,12 +5,16 @@ namespace Dotdigitalgroup\Email\Model\Validator\Schema;
 use Dotdigitalgroup\Email\Model\Validator\Schema\Exception\RuleNotDefinedException;
 use Dotdigitalgroup\Email\Model\Validator\Schema\Rule\DateFormatAtomRuleFactory;
 use Dotdigitalgroup\Email\Model\Validator\Schema\Rule\DateFormatRuleFactory;
+use Dotdigitalgroup\Email\Model\Validator\Schema\Rule\EnumRuleFactory;
 use Dotdigitalgroup\Email\Model\Validator\Schema\Rule\IsFloatRuleFactory;
 use Dotdigitalgroup\Email\Model\Validator\Schema\Rule\IsIntRuleFactory;
 use Dotdigitalgroup\Email\Model\Validator\Schema\Rule\IsStringRuleFactory;
+use Dotdigitalgroup\Email\Model\Validator\Schema\Rule\MinRuleFactory;
+use Dotdigitalgroup\Email\Model\Validator\Schema\Rule\NullableRuleFactory;
 use Dotdigitalgroup\Email\Model\Validator\Schema\Rule\RequiredRuleFactory;
 use Dotdigitalgroup\Email\Model\Validator\Schema\Rule\UrlRuleFactory;
 use Dotdigitalgroup\Email\Model\Validator\Schema\Rule\ValidatorRuleInterface;
+use Dotdigitalgroup\Email\Model\Validator\Schema\Rule\ValidatorRuleWithParamsInterface;
 
 class SchemaValidatorRule implements SchemaValidatorRuleInterface
 {
@@ -35,6 +39,11 @@ class SchemaValidatorRule implements SchemaValidatorRuleInterface
     private $dateFormatRuleFactory;
 
     /**
+     * @var EnumRuleFactory
+     */
+    private $enumRuleFactory;
+
+    /**
      * @var IsFloatRuleFactory
      */
     private $isFloatRuleFactory;
@@ -48,6 +57,16 @@ class SchemaValidatorRule implements SchemaValidatorRuleInterface
      * @var IsStringRuleFactory
      */
     private $isStringRuleFactory;
+
+    /**
+     * @var MinRuleFactory
+     */
+    private $minRuleFactory;
+
+    /**
+     * @var NullableRuleFactory
+     */
+    private $nullableRuleFactory;
 
     /**
      * @var RequiredRuleFactory
@@ -64,9 +83,12 @@ class SchemaValidatorRule implements SchemaValidatorRuleInterface
      *
      * @param DateFormatAtomRuleFactory $dateFormatAtomRuleFactory
      * @param DateFormatRuleFactory $dateFormatRuleFactory
+     * @param EnumRuleFactory $enumRuleFactory
      * @param IsFloatRuleFactory $isFloatRuleFactory
      * @param IsIntRuleFactory $isIntRuleFactory
      * @param IsStringRuleFactory $isStringRuleFactory
+     * @param MinRuleFactory $minRuleFactory
+     * @param NullableRuleFactory $nullableRuleFactory
      * @param RequiredRuleFactory $requiredRuleFactory
      * @param UrlRuleFactory $urlRuleFactory
      * @param string $pattern
@@ -76,18 +98,24 @@ class SchemaValidatorRule implements SchemaValidatorRuleInterface
     public function __construct(
         DateFormatAtomRuleFactory $dateFormatAtomRuleFactory,
         DateFormatRuleFactory $dateFormatRuleFactory,
+        EnumRuleFactory $enumRuleFactory,
         IsFloatRuleFactory $isFloatRuleFactory,
         IsIntRuleFactory $isIntRuleFactory,
         IsStringRuleFactory $isStringRuleFactory,
+        MinRuleFactory $minRuleFactory,
+        NullableRuleFactory $nullableRuleFactory,
         RequiredRuleFactory $requiredRuleFactory,
         UrlRuleFactory $urlRuleFactory,
         string $pattern
     ) {
         $this->dateFormatAtomRuleFactory = $dateFormatAtomRuleFactory;
         $this->dateFormatRuleFactory = $dateFormatRuleFactory;
+        $this->enumRuleFactory = $enumRuleFactory;
         $this->isFloatRuleFactory = $isFloatRuleFactory;
         $this->isIntRuleFactory = $isIntRuleFactory;
         $this->isStringRuleFactory = $isStringRuleFactory;
+        $this->minRuleFactory = $minRuleFactory;
+        $this->nullableRuleFactory = $nullableRuleFactory;
         $this->requiredRuleFactory = $requiredRuleFactory;
         $this->urlRuleFactory = $urlRuleFactory;
         $this->key  = $pattern;
@@ -103,7 +131,14 @@ class SchemaValidatorRule implements SchemaValidatorRuleInterface
      */
     public function setRule(string $key):ValidatorRuleInterface
     {
-        $ruleFactoryKey = "{$key}RuleFactory";
+        $ruleName = $key;
+        $ruleParams = null;
+
+        if (strpos($key, ':') !== false) {
+            list($ruleName, $ruleParams) = explode(':', $key, 2);
+        }
+
+        $ruleFactoryKey = "{$ruleName}RuleFactory";
 
         if (!property_exists($this, $ruleFactoryKey)) {
             throw new RuleNotDefinedException(
@@ -117,7 +152,14 @@ class SchemaValidatorRule implements SchemaValidatorRuleInterface
             );
         }
 
-        return $this->{$ruleFactoryKey}->create();
+        $rule = $this->{$ruleFactoryKey}->create();
+
+        if ($ruleParams !== null && $rule instanceof ValidatorRuleWithParamsInterface) {
+            $parameters = explode(',', $ruleParams);
+            $rule->setParameters($parameters);
+        }
+
+        return $rule;
     }
 
     /**

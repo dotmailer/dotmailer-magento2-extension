@@ -2004,8 +2004,12 @@
             </group>
             <group id="cleaner" translate="label" sortOrder="80" showInDefault="1" showInWebsite="0" showInStore="0">
                 <label>Cleaner</label>
-                <comment><![CDATA[The cleaner cron purges data from the email_automation, email_importer, email_campaign and email_contact_consent tables on a schedule.]]></comment>
-
+                <comment><![CDATA[The cleaner cron purges data from the below selected tables on a schedule.]]></comment>
+                <field id="allowed_tables" translate="label" sortOrder="10" type="multiselect" showInDefault="1" showInStore="0" showInWebsite="0" canRestore="1">
+                    <label>Tables to be cleaned</label>
+                    <source_model>Dotdigitalgroup\Email\Model\Config\Developer\CleanerAllowedTables</source_model>
+                    <comment><![CDATA[Select multiple tables by pressing Ctrl button while selecting]]></comment>
+                </field>
                 <field id="schedule" translate="label" sortOrder="10" type="select" showInDefault="1" showInStore="0" showInWebsite="0" canRestore="1">
                     <label>Cleaner</label>
                     <comment><![CDATA[Cron schedule for cleaner. Defaults to the first day of the month.]]></comment>

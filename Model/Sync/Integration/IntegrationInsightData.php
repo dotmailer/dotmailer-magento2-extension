@@ -4,11 +4,12 @@ namespace Dotdigitalgroup\Email\Model\Sync\Integration;
 
 use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Model\Connector\Module;
-use Magento\Framework\Exception\LocalizedException;
-use Magento\Store\Model\StoreManagerInterface;
+use Dotdigitalgroup\Email\Model\Sync\Integration\Metrics\MetricProviderInterface;
 use Magento\Framework\App\ProductMetadataInterface;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\UrlInterface;
 use Magento\Store\Model\Store;
+use Magento\Store\Model\StoreManagerInterface;
 
 class IntegrationInsightData
 {
@@ -43,6 +44,11 @@ class IntegrationInsightData
     private $moduleManager;
 
     /**
+     * @var MetricProviderInterface[]
+     */
+    private $metricProviders;
+
+    /**
      * IntegrationInsightData constructor.
      *
      * @param Data $helper
@@ -50,19 +56,22 @@ class IntegrationInsightData
      * @param DotdigitalConfig $dotdigitalConfig
      * @param StoreManagerInterface $storeManager
      * @param Module $moduleManager
+     * @param MetricProviderInterface[] $metricProviders
      */
     public function __construct(
         Data $helper,
         ProductMetadataInterface $productMetadata,
         DotdigitalConfig $dotdigitalConfig,
         StoreManagerInterface $storeManager,
-        Module $moduleManager
+        Module $moduleManager,
+        array $metricProviders = []
     ) {
         $this->helper = $helper;
         $this->productMetadata = $productMetadata;
         $this->dotdigitalConfig = $dotdigitalConfig;
         $this->storeManager = $storeManager;
         $this->moduleManager = $moduleManager;
+        $this->metricProviders = $metricProviders;
     }
 
     /**
@@ -74,18 +83,38 @@ class IntegrationInsightData
     public function getIntegrationInsightData(): array
     {
         $websiteData = [];
+
         foreach ($this->storeManager->getStores() as $store) {
             /** @var Store $store */
             if (!$this->helper->isEnabled($store->getWebsiteId()) || isset($websiteData[$store->getWebsiteId()])) {
                 continue;
             }
 
-            $websiteData[$store->getWebsiteId()] = [
+            $websiteId = (int) $store->getWebsiteId();
+
+            $websiteData[$websiteId] = [
                 'recordId' => $this->getBaseUrlWithWebsiteCode($store),
-            ] + $this->getIntegrationMetaData() + ['configuration' => $this->getConfiguration($store->getWebsiteId())];
+            ] + $this->getIntegrationMetaData()
+              + ['configuration' => $this->getConfiguration($websiteId)]
+              + ['metrics' => $this->buildMetrics($websiteId)];
         }
 
         return $websiteData;
+    }
+
+    /**
+     * Build the metrics array by collecting data from all registered providers.
+     *
+     * @param int $websiteId
+     * @return array
+     */
+    private function buildMetrics(int $websiteId): array
+    {
+        $metrics = [];
+        foreach ($this->metricProviders as $key => $provider) {
+            $metrics[$key] = $provider->getMetricData($websiteId);
+        }
+        return $metrics;
     }
 
     /**

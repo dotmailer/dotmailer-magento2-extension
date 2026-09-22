@@ -6,6 +6,9 @@ use Dotdigital\V3\Resources\Contacts;
 use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Importer;
 use Dotdigitalgroup\Email\Model\ResourceModel\Importer as ImporterResource;
+use Dotdigitalgroup\Email\Model\Sync\Importer\ImporterItemStatusManager;
+use Dotdigitalgroup\Email\Model\Sync\Importer\Context\InProgressImportContext;
+use Dotdigitalgroup\Email\Model\Sync\Importer\V3ImportStatusChecker;
 use Dotdigitalgroup\Email\Model\Sync\Importer\V3InProgressImportResponseHandler;
 use Dotdigitalgroup\Email\Model\Apiconnector\V3\Client;
 use Dotdigitalgroup\Email\Model\ResourceModel\Importer\Collection as ImporterCollection;
@@ -93,9 +96,8 @@ class V3InProgressImportResponseHandlerTest extends TestCase
             ->willReturn(new \ArrayIterator([$this->importerModelMock]));
 
         $this->v3ProgressHandler = new V3InProgressImportResponseHandler(
-            $this->loggerMock,
-            $this->clientFactoryMock,
-            $this->importerResourceMock,
+            new V3ImportStatusChecker($this->clientFactoryMock, $this->loggerMock),
+            new ImporterItemStatusManager($this->importerResourceMock),
             $this->reportHandlerMock
         );
     }
@@ -106,12 +108,13 @@ class V3InProgressImportResponseHandlerTest extends TestCase
             ->method('create')
             ->willReturn($this->v3ClientMock);
 
-        $group = [
-            'types' => ['Consent'],
-            'client' => $this->v3ClientMock,
-            'resource' => 'contacts',
-            'method' => 'getImportById'
-        ];
+        $context = new InProgressImportContext(
+            'v3',
+            Importer::MODE_BULK_JSON,
+            ['Consent'],
+            'getImportById',
+            'contacts'
+        );
 
         $matcher = $this->exactly(3);
         $this->importerModelMock->expects($this->atLeastOnce())
@@ -129,7 +132,7 @@ class V3InProgressImportResponseHandlerTest extends TestCase
             ->method('getImportById')
             ->willReturn($this->responseMock);
 
-        $itemsCount = $this->v3ProgressHandler->process($group, $this->importerCollectionMock);
+        $itemsCount = $this->v3ProgressHandler->process($context, $this->importerCollectionMock);
 
         $this->assertEquals($itemsCount, 1);
     }
@@ -140,12 +143,13 @@ class V3InProgressImportResponseHandlerTest extends TestCase
             ->method('create')
             ->willReturn($this->v3ClientMock);
 
-        $group = [
-            'types' => ['Consent'],
-            'client' => $this->v3ClientMock,
-            'resource' => 'contacts',
-            'method' => 'getImportById'
-        ];
+        $context = new InProgressImportContext(
+            'v3',
+            Importer::MODE_BULK_JSON,
+            ['Consent'],
+            'getImportById',
+            'contacts'
+        );
 
         $matcher = $this->exactly(6);
         $this->importerModelMock->expects($this->atLeastOnce())
@@ -177,7 +181,7 @@ class V3InProgressImportResponseHandlerTest extends TestCase
             ->method('getStatus')
             ->willReturn('Finished');
 
-        $itemsCount = $this->v3ProgressHandler->process($group, $this->importerCollectionMock);
+        $itemsCount = $this->v3ProgressHandler->process($context, $this->importerCollectionMock);
         $this->assertEquals($itemsCount, 0);
     }
 }

@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <head>
+        <css src="Dotdigitalgroup_Email::css/coupon-job-form.css"/>
+        <css src="Dotdigitalgroup_Email::css/select2/select2.min.css"/>
+        <css src="Dotdigitalgroup_Email::css/select2/select2-magento.css"/>
+    </head>
+    <body>
+        <referenceBlock name="page.main.actions">
+            <block class="Magento\Backend\Block\Store\Switcher"
+                   name="store_switcher"
+                   template="Magento_Backend::store/switcher.phtml">
+                <arguments>
+                    <argument name="switch_websites" xsi:type="string">1</argument>
+                    <argument name="switch_store_groups" xsi:type="string">0</argument>
+                    <argument name="switch_store_views" xsi:type="string">0</argument>
+                    <argument name="default_selection_name" xsi:type="string" translate="true">Select a Website</argument>
+                </arguments>
+            </block>
+        </referenceBlock>
+        <referenceContainer name="content">
+            <uiComponent name="dotdigitalgroup_coupon_job_form" />
+            <block class="Magento\Framework\View\Element\Template"
+                   name="coupon_job_confirmation_modal"
+                   template="Dotdigitalgroup_Email::coupon-job/confirmation-modal.phtml"
+                   after="dotdigitalgroup_coupon_job_form">
+                <arguments>
+                    <argument name="view_model" xsi:type="object">
+                        Dotdigitalgroup\Email\ViewModel\Adminhtml\CouponJob\ConfirmationViewModel
+                    </argument>
+                </arguments>
+            </block>
+        </referenceContainer>
+    </body>
+</page>
+

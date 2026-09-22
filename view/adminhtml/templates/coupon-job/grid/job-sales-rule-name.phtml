@@ -1,0 +1,26 @@
+<?php
+/**
+ * @var \Magento\Framework\View\Element\Template $block
+ * @var \Magento\Framework\Escaper $escaper
+ */
+
+$ruleName = $block->getData('rule_name');
+$editUrl = $block->getData('edit_url');
+$ruleNotFound = $block->getData('rule_not_found');
+$salesRuleId = $block->getData('sales_rule_id');
+?>
+
+<div class="ddg-coupon-job-rule-wrapper">
+    <?php if ($ruleNotFound): ?>
+        <span class="ddg-coupon-job-rule-muted"><?= $escaper->escapeHtml(__('(Rule Not Found)')) ?></span>
+    <?php elseif ($ruleName && $editUrl): ?>
+        <a href="<?= $escaper->escapeUrl($editUrl) ?>"
+           target="_blank"
+           title="<?= $escaper->escapeHtmlAttr(__('Edit Rule: %1', $ruleName)) ?>">
+            <?= $escaper->escapeHtml($ruleName) ?>
+        </a>
+    <?php elseif ($salesRuleId): ?>
+        <span class="ddg-coupon-job-rule-muted"><?= $escaper->escapeHtml(__('Rule #%1', $salesRuleId)) ?></span>
+    <?php endif; ?>
+</div>
+

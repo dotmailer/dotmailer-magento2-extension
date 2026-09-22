@@ -344,9 +344,51 @@
         }
     },
     "email_quote": [],
+    "email_coupon_job": {
+        "column": {
+            "id": true,
+            "name": true,
+            "status": true,
+            "sales_rule_id": true,
+            "website_id": true,
+            "job_details": true,
+            "job_configuration": true,
+            "created_at": true,
+            "updated_at": true
+        },
+        "index": {
+            "EMAIL_COUPON_JOB_NAME": true,
+            "EMAIL_COUPON_JOB_STATUS": true,
+            "EMAIL_COUPON_JOB_SALES_RULE_ID": true,
+            "EMAIL_COUPON_JOB_WEBSITE_ID": true,
+            "EMAIL_COUPON_JOB_CREATED_AT": true,
+            "EMAIL_COUPON_JOB_UPDATED_AT": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "EMAIL_COUPON_JOB_SALES_RULE_ID_SALESRULE_RULE_ID": true,
+            "EMAIL_COUPON_JOB_WEBSITE_ID_STORE_WEBSITE_WEBSITE_ID": true
+        }
+    },
     "salesrule_coupon": {
         "column": {
             "generated_by_dotmailer": true
+        }
+    },
+    "email_coupon_job_importer": {
+        "column": {
+            "id": true,
+            "coupon_job_id": true,
+            "email_importer_id": true
+        },
+        "index": {
+            "EMAIL_COUPON_JOB_IMPORTER_COUPON_JOB_ID": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "EMAIL_COUPON_JOB_IMPORTER_EMAIL_IMPORTER_ID": true,
+            "EMAIL_CPN_JOB_IMP_CPN_JOB_ID_EMAIL_COUPON_JOB_ID": true,
+            "EMAIL_CPN_JOB_IMP_IMP_ID_EMAIL_IMPORTER_ID": true
         }
     }
 }

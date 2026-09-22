@@ -84,7 +84,7 @@ class MegaBatchProcessor implements BatchProcessorInterface
         }
 
         try {
-            $importId = $this->sendBatch($batch, $websiteId, $importType);
+            [$importId, $recordCount] = $this->sendBatch($batch, $websiteId, $importType);
             if ($importId) {
                 $this->importBulkSaver->addInProgressBatchToImportTable(
                     $batch,
@@ -99,7 +99,7 @@ class MegaBatchProcessor implements BatchProcessorInterface
             $this->logger->info(
                 sprintf(
                     '%s %s records batched for website id %s',
-                    count($batch),
+                    $recordCount,
                     strtolower($importType),
                     $websiteId
                 )
@@ -143,21 +143,22 @@ class MegaBatchProcessor implements BatchProcessorInterface
      * This method is responsible for sending a batch of data to the appropriate sender strategy,
      * determined by the import type. It utilizes the SenderStrategyFactory to create an instance
      * of the sender strategy, sets the batch and website ID on the strategy, and then calls the
-     * process method on the strategy to handle the data. The process method is expected to return
-     * a string that represents the import ID, which is then returned by this method.
+     * process method on the strategy to handle the data. The strategy also reports the count of
+     * business records in its batch, allowing the processor to remain agnostic of batch shape.
      *
      * @param array $batch
      * @param int $websiteId
      * @param string $importType
      *
-     * @return string The import ID returned by the sender strategy's process method.
+     * @return array{string, int} The import ID and record count reported by the sender strategy.
      */
-    private function sendBatch(array $batch, int $websiteId, string $importType): string
+    private function sendBatch(array $batch, int $websiteId, string $importType): array
     {
-        return $this->senderStrategyFactory->create($importType)
+        $senderStrategy = $this->senderStrategyFactory->create($importType)
             ->setBatch($batch)
-            ->setWebsiteId($websiteId)
-            ->process();
+            ->setWebsiteId($websiteId);
+
+        return [$senderStrategy->process(), $senderStrategy->getRecordCount()];
     }
 
     /**

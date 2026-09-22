@@ -74,7 +74,10 @@ class BeforeBlockToHtml implements \Magento\Framework\Event\ObserverInterface
                 [
                     'header' => __('Expires At'),
                     'index' => 'expires_at',
+                    // Rendered in UTC, with no locale conversion, so the grid shows the value
+                    // exactly as it is stored in email_coupon_attribute.expires_at.
                     'type' => 'datetime',
+                    'timezone' => false,
                     'default' => '',
                     'width' => 30,
                     'align' => 'center',

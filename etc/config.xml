@@ -301,6 +301,7 @@
             <import_settings>
                 <batch_size>500</batch_size>
                 <transactional_data>1000</transactional_data>
+                <coupon_job_batch_size>2000</coupon_job_batch_size>
                 <subscriber_sales_data_enabled>0</subscriber_sales_data_enabled>
                 <strip_pub_from_media_paths>0</strip_pub_from_media_paths>
                 <transactional_data_break></transactional_data_break>
@@ -334,6 +335,7 @@
                 <consent>*/15 * * * *</consent>
             </cron_schedules>
             <cleaner>
+                <allowed_tables>email_automation,email_importer,email_campaign,email_contact_consent</allowed_tables>
                 <schedule>0 0 1 * *</schedule>
                 <table_cleaner_interval>30</table_cleaner_interval>
             </cleaner>
