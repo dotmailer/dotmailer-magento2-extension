@@ -12,13 +12,13 @@ const queuedMethodCalls = [];
 /**
  * Initialize Dotdigital tracking and load the external script
  *
- * @param {string} regionPrefix - Dotdigital region identifier (e.g., 'r1', 'r2', 'r3')
+ * @param {string} endpoint - Dotdigital tracking endpoint
  * @param {string} profileId - Dotdigital profile/account identifier
  * @returns {void}
  */
-const initializeDotdigital = (regionPrefix, profileId) => {
-    if (!regionPrefix || !profileId) {
-        console.warn('Dotdigital initialization failed: regionId and profileId are required');
+const initializeDotdigital = (endpoint, profileId) => {
+    if (!endpoint || !profileId) {
+        console.warn('Dotdigital initialization failed: endpoint and profileId are required');
         return;
     }
 
@@ -28,7 +28,7 @@ const initializeDotdigital = (regionPrefix, profileId) => {
     }
 
     const script = document.createElement('script');
-    script.src = `//${regionPrefix}.ddlnk.net/${profileId}/ddgtag.js`;
+    script.src = `//${endpoint}/${profileId}/ddgtag.js`;
     script.async = true;
     script.onerror = () => console.error('Failed to load Dotdigital script');
     document.head.appendChild(script);

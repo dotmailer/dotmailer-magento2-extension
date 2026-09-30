@@ -6,7 +6,8 @@
         <referenceContainer name="before.body.end">
             <block class="Magento\Framework\View\Element\Template"
                    name="dotdigital.tag"
-                   template="Dotdigitalgroup_Email::tracking/dotdigital_tag.phtml">
+                   template="Dotdigitalgroup_Email::tracking/dotdigital_tag.phtml"
+                   ifconfig="connector_configuration/tracking/tracking_profile_id">
                 <arguments>
                     <argument name="view_model" xsi:type="object">Dotdigitalgroup\Email\ViewModel\DotdigitalTagView</argument>
                 </arguments>
@@ -15,7 +16,8 @@
         <referenceContainer name="before.body.end">
             <block class="Magento\Framework\View\Element\Template"
                    name="dotdigital.search.capture"
-                   template="Dotdigitalgroup_Email::tracking/dotdigital_search_capture.phtml">
+                   template="Dotdigitalgroup_Email::tracking/dotdigital_search_capture.phtml"
+                   ifconfig="connector_configuration/tracking/tracking_profile_id">
                 <arguments>
                     <argument name="view_model" xsi:type="object">Dotdigitalgroup\Email\ViewModel\DotdigitalSearchCaptureView</argument>
                 </arguments>
@@ -27,6 +29,16 @@
                    template="Dotdigitalgroup_Email::tracking/dotdigital_email_capture.phtml">
                 <arguments>
                     <argument name="view_model" xsi:type="object">Dotdigitalgroup\Email\ViewModel\DotdigitalEmailCaptureView</argument>
+                </arguments>
+            </block>
+        </referenceContainer>
+        <referenceContainer name="before.body.end">
+            <block class="Magento\Framework\View\Element\Template"
+                   name="dotdigital.configuration"
+                   template="Dotdigitalgroup_Email::tracking/dotdigital_configuration.phtml"
+                   ifconfig="connector_configuration/tracking/tracking_profile_id">
+                <arguments>
+                    <argument name="view_model" xsi:type="object">Dotdigitalgroup\Email\ViewModel\DotdigitalConfigurationView</argument>
                 </arguments>
             </block>
         </referenceContainer>

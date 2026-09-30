@@ -690,19 +690,32 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getApiEndPointFromConfig($websiteId)
     {
-        if ($websiteId > 0) {
-            $apiEndpoint = $this->getWebsiteConfig(
-                EmailConfig::PATH_FOR_API_ENDPOINT,
-                $websiteId
-            );
-        } else {
-            $apiEndpoint = $this->getWebsiteConfig(
-                EmailConfig::PATH_FOR_API_ENDPOINT,
-                $websiteId,
-                ScopeConfigInterface::SCOPE_TYPE_DEFAULT
-            );
-        }
+        $apiEndpoint = $this->getWebsiteConfig(
+            EmailConfig::PATH_FOR_API_ENDPOINT,
+            $websiteId,
+            $websiteId > 0 ? ScopeInterface::SCOPE_WEBSITE : ScopeConfigInterface::SCOPE_TYPE_DEFAULT
+        );
         return trim($apiEndpoint);
+    }
+
+    /**
+     * Get full tracking end point host.
+     *
+     * Useful for using internal tracking endpoints that are not like ddlnk.net.
+     * e.g. debug-webbehavior.dotdigital.internal
+     *
+     * @param int $websiteId
+     *
+     * @return string|boolean
+     */
+    public function getTrackingEndPointFromConfig($websiteId)
+    {
+        $trackingEndpoint = $this->getWebsiteConfig(
+            EmailConfig::TRACKING_HOST,
+            $websiteId,
+            $websiteId > 0 ? ScopeInterface::SCOPE_WEBSITE : ScopeConfigInterface::SCOPE_TYPE_DEFAULT
+        );
+        return trim((string)$trackingEndpoint);
     }
 
     /**
