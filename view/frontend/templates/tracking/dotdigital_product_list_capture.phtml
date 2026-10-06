@@ -1,0 +1,39 @@
+<?php
+
+declare(strict_types=1);
+
+use Magento\Framework\Escaper;
+use Dotdigitalgroup\Email\ViewModel\DotdigitalProductListCaptureView;
+use Magento\Framework\View\Element\Template;
+
+/**
+ * @var Escaper $escaper
+ * @var DotdigitalProductListCaptureView $viewModel
+ * @var Template $block
+ */
+$viewModel = $block->getData('view_model');
+
+$request = $block->getRequest();
+/** @var \Magento\Framework\App\Request\Http $request */
+$actionName = $request->getFullActionName();
+
+switch ($actionName) {
+    case 'catalogsearch_result_index':
+    case 'catalogsearch_advanced_result':
+        $listBlockName = 'search_result_list';
+        break;
+    case 'catalog_category_view':
+    default:
+        $listBlockName = 'category.products.list';
+        break;
+}
+
+$listBlock = $block->getLayout()->getBlock($listBlockName);
+/** @var \Magento\Catalog\Block\Product\ListProduct|boolean $listBlock */
+$products = $listBlock->getLoadedProductCollection()->getItems();
+?>
+
+<script>
+    const products = <?= /* @noEscape */ json_encode($viewModel->products()->toArray($products)); ?>;
+    window.ddg.productList(products || []);
+</script>

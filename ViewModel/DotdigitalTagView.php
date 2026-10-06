@@ -89,7 +89,7 @@ class DotdigitalTagView implements ArgumentInterface
      */
     private const DOTDIGITAL_TAG_PAGE_TYPE_MAP = [
         'cms_index_index'                => 1,  // Home_Page
-        'catalog_category_view'           => 3,  // Product_List REVERT TO UNTRACKED WHEN IMPLEMENTING THE PRODUCTLIST
+        'catalog_category_view'           => -1, // Tracked by ProductList
         'catalogsearch_result_index'     => -1, // Tracked by ProductList
         'catalogsearch_advanced_result'  => -1, // Tracked by ProductList (Advanced Search)
         'catalog_product_view'            => -1, // Tracked by ProductBrowse

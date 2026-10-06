@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceContainer name="before.body.end">
+            <block class="Magento\Framework\View\Element\Template"
+                   name="dotdigital.productlist.capture"
+                   template="Dotdigitalgroup_Email::tracking/dotdigital_product_list_capture.phtml"
+                   ifconfig="connector_configuration/tracking/tracking_profile_id">
+                <arguments>
+                    <argument name="view_model" xsi:type="object">Dotdigitalgroup\Email\ViewModel\DotdigitalProductListCaptureView</argument>
+                </arguments>
+            </block>
+        </referenceContainer>
+    </body>
+</page>

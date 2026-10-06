@@ -201,24 +201,29 @@
 
     <!-- Current Product: Start -->
     <virtualType name="CurrentProductProvider" type="Dotdigitalgroup\Email\Model\Product\Provider\CurrentProductProvider"/>
-    <virtualType name="LowestRegularPriceFinder" type="Dotdigitalgroup\Email\Model\Product\Provider\LowestPriceProductFinder">
+    <virtualType name="ProductProvider" type="Dotdigitalgroup\Email\Model\Product\Provider\ProductProvider"/>
+    <virtualType name="CurrentLowestRegularPriceProductProvider" type="Dotdigitalgroup\Email\Model\Product\Provider\LowestPriceProductProvider">
         <arguments>
+            <argument name="productProvider" xsi:type="object">CurrentProductProvider</argument>
             <argument name="useSpecialPrice" xsi:type="boolean">false</argument>
-        </arguments>
-    </virtualType>
-    <virtualType name="LowestSpecialPriceFinder" type="Dotdigitalgroup\Email\Model\Product\Provider\LowestPriceProductFinder">
-        <arguments>
-            <argument name="useSpecialPrice" xsi:type="boolean">true</argument>
         </arguments>
     </virtualType>
     <virtualType name="LowestRegularPriceProductProvider" type="Dotdigitalgroup\Email\Model\Product\Provider\LowestPriceProductProvider">
         <arguments>
-            <argument name="productFinder" xsi:type="object">LowestRegularPriceFinder</argument>
+            <argument name="productProvider" xsi:type="object">ProductProvider</argument>
+            <argument name="useSpecialPrice" xsi:type="boolean">false</argument>
         </arguments>
     </virtualType>
-    <virtualType name="LowestSalePriceProductProvider" type="Dotdigitalgroup\Email\Model\Product\Provider\LowestPriceProductProvider">
+    <virtualType name="CurrentLowestSpecialPriceProductProvider" type="Dotdigitalgroup\Email\Model\Product\Provider\LowestPriceProductProvider">
         <arguments>
-            <argument name="productFinder" xsi:type="object">LowestSpecialPriceFinder</argument>
+            <argument name="productProvider" xsi:type="object">CurrentProductProvider</argument>
+            <argument name="useSpecialPrice" xsi:type="boolean">true</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="LowestSpecialPriceProductProvider" type="Dotdigitalgroup\Email\Model\Product\Provider\LowestPriceProductProvider">
+        <arguments>
+            <argument name="productProvider" xsi:type="object">ProductProvider</argument>
+            <argument name="useSpecialPrice" xsi:type="boolean">true</argument>
         </arguments>
     </virtualType>
     <virtualType name="CurrentProductGeneralProvider" type="Dotdigitalgroup\Email\Model\Product\Provider\Attributes\ProductGeneralProvider">
@@ -226,15 +231,31 @@
             <argument name="productProvider" xsi:type="object">CurrentProductProvider</argument>
         </arguments>
     </virtualType>
+    <virtualType name="ProductGeneralProvider" type="Dotdigitalgroup\Email\Model\Product\Provider\Attributes\ProductGeneralProvider">
+        <arguments>
+            <argument name="productProvider" xsi:type="object">ProductProvider</argument>
+        </arguments>
+    </virtualType>
     <virtualType name="CurrentProductStockProvider" type="Dotdigitalgroup\Email\Model\Product\Provider\Attributes\ProductStockProvider">
         <arguments>
             <argument name="productProvider" xsi:type="object">CurrentProductProvider</argument>
         </arguments>
     </virtualType>
+    <virtualType name="ProductStockProvider" type="Dotdigitalgroup\Email\Model\Product\Provider\Attributes\ProductStockProvider">
+        <arguments>
+            <argument name="productProvider" xsi:type="object">ProductProvider</argument>
+        </arguments>
+    </virtualType>
     <virtualType name="CurrentProductPriceProvider" type="Dotdigitalgroup\Email\Model\Product\Provider\Attributes\ProductPriceProvider">
         <arguments>
+            <argument name="productProvider" xsi:type="object">CurrentLowestRegularPriceProductProvider</argument>
+            <argument name="productSaleProvider" xsi:type="object">CurrentLowestSpecialPriceProductProvider</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="ProductPriceProvider" type="Dotdigitalgroup\Email\Model\Product\Provider\Attributes\ProductPriceProvider">
+        <arguments>
             <argument name="productProvider" xsi:type="object">LowestRegularPriceProductProvider</argument>
-            <argument name="productSaleProvider" xsi:type="object">LowestSalePriceProductProvider</argument>
+            <argument name="productSaleProvider" xsi:type="object">LowestSpecialPriceProductProvider</argument>
         </arguments>
     </virtualType>
     <virtualType name="CurrentProductTaxonomyProvider" type="Dotdigitalgroup\Email\Model\Product\Provider\Attributes\ProductTaxonomyProvider">
@@ -242,9 +263,19 @@
             <argument name="productProvider" xsi:type="object">CurrentProductProvider</argument>
         </arguments>
     </virtualType>
+    <virtualType name="ProductTaxonomyProvider" type="Dotdigitalgroup\Email\Model\Product\Provider\Attributes\ProductTaxonomyProvider">
+        <arguments>
+            <argument name="productProvider" xsi:type="object">ProductProvider</argument>
+        </arguments>
+    </virtualType>
     <virtualType name="CurrentProductMediaProvider" type="Dotdigitalgroup\Email\Model\Product\Provider\Attributes\ProductMediaProvider">
         <arguments>
             <argument name="productProvider" xsi:type="object">CurrentProductProvider</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="ProductMediaProvider" type="Dotdigitalgroup\Email\Model\Product\Provider\Attributes\ProductMediaProvider">
+        <arguments>
+            <argument name="productProvider" xsi:type="object">ProductProvider</argument>
         </arguments>
     </virtualType>
     <!-- Current Product: End -->
@@ -257,6 +288,21 @@
             <argument name="productPriceProvider" xsi:type="object">CurrentProductPriceProvider</argument>
             <argument name="productTaxonomyProvider" xsi:type="object">CurrentProductTaxonomyProvider</argument>
             <argument name="productMediaProvider" xsi:type="object">CurrentProductMediaProvider</argument>
+        </arguments>
+    </type>
+    <virtualType name="TrackingProductAggregation" type="Dotdigitalgroup\Email\Model\Product\Aggregation\TrackingProductAggregation">
+        <arguments>
+            <argument name="generalProductProvider" xsi:type="object">ProductGeneralProvider</argument>
+            <argument name="stockProvider" xsi:type="object">ProductStockProvider</argument>
+            <argument name="productPriceProvider" xsi:type="object">ProductPriceProvider</argument>
+            <argument name="productTaxonomyProvider" xsi:type="object">ProductTaxonomyProvider</argument>
+            <argument name="productMediaProvider" xsi:type="object">ProductMediaProvider</argument>
+        </arguments>
+    </virtualType>
+    <type name="Dotdigitalgroup\Email\Model\Product\Aggregation\TrackingProductListAggregation">
+        <arguments>
+            <argument name="productAggregation" xsi:type="object">TrackingProductAggregation</argument>
+            <argument name="productProvider" xsi:type="object">ProductProvider</argument>
         </arguments>
     </type>
     <!-- Tracking Product Aggregation: End -->
