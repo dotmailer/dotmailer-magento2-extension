@@ -195,6 +195,7 @@
             <tracking>
                 <integration_insights>1</integration_insights>
                 <roi_enabled>1</roi_enabled>
+                <product_list_capture_enabled>1</product_list_capture_enabled>
                 <script_version>0</script_version>
                 <host>ddlnk.net</host>
             </tracking>

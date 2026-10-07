@@ -1438,6 +1438,11 @@
                     <comment><![CDATA[Learn more about <a href="https://support.dotdigital.com/en/articles/8198919-site-and-roi-tracking" target="_blank">ROI tracking</a>.]]>
                     </comment>
                 </field>
+                <field id="product_list_capture_enabled" translate="label" sortOrder="15" type="select" showInStore="0" showInWebsite="0" showInDefault="0">
+                    <label>Product List Capture</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment><![CDATA[Hidden config: set to No to disable Dotdigital product aggregation on product list/search pages. Default is Yes.]]></comment>
+                </field>
                 <field id="script_version" translate="label" sortOrder="20" type="select" showInStore="0"
                        showInWebsite="0" showInDefault="0">
                     <label>Script version</label>

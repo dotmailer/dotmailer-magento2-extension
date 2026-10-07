@@ -13,6 +13,10 @@ use Magento\Framework\View\Element\Template;
  */
 $viewModel = $block->getData('view_model');
 
+if (!$viewModel->isProductListCaptureEnabled()) {
+    return;
+}
+
 $request = $block->getRequest();
 /** @var \Magento\Framework\App\Request\Http $request */
 $actionName = $request->getFullActionName();

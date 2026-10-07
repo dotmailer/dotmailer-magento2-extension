@@ -361,6 +361,8 @@ class Config extends AbstractHelper
         'connector_configuration/tracking/page_enabled';
     public const XML_PATH_CONNECTOR_TRACKING_PROFILE_ID =
         'connector_configuration/tracking/tracking_profile_id';
+    public const XML_PATH_CONNECTOR_PRODUCT_LIST_CAPTURE_ENABLED =
+        'connector_configuration/tracking/product_list_capture_enabled';
     public const TRACKING_HOST =
         'connector_configuration/tracking/host';
     public const XML_PATH_CONNECTOR_EMAIL_CAPTURE_SELECTORS =
