@@ -751,9 +751,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Get the address book for customer.
      *
-     * @deprecated Use V2 Client alternative.
-     * @see \Dotdigitalgroup\Email\Model\Apiconnector\V3\Contact\AddressBook
-     *
      * @param int $websiteId
      *
      * @return string
