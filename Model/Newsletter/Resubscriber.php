@@ -15,6 +15,12 @@ use Magento\Store\Api\StoreWebsiteRelationInterface;
 class Resubscriber implements ContactUpdaterInterface
 {
     /**
+     * Dotdigital stamps LASTSUBSCRIBED at creation time. A value this close to
+     * the contact's created date is the platform default, not an opt-in.
+     */
+    private const CREATION_STAMP_TOLERANCE_SECONDS = 60;
+
+    /**
      * @var Logger
      */
     private $logger;
@@ -149,12 +155,42 @@ class Resubscriber implements ContactUpdaterInterface
                 continue;
             }
 
+            if ($this->isCreationStamp($contact->getCreated(), $utcLastSubscribedAt)) {
+                continue;
+            }
+
             $recentlySubscribedContacts[strtolower($contact->getIdentifiers()->getEmail())] = [
                 'subscribed_at' => $utcLastSubscribedAt,
             ];
         }
 
         return $recentlySubscribedContacts;
+    }
+
+    /**
+     * Check whether LASTSUBSCRIBED merely reflects the contact's creation.
+     *
+     * A missing or unparseable created date is treated as untrustworthy.
+     *
+     * @param string|null $created
+     * @param \DateTime $lastSubscribedAt
+     *
+     * @return bool
+     */
+    private function isCreationStamp(?string $created, \DateTime $lastSubscribedAt): bool
+    {
+        if (empty($created)) {
+            return true;
+        }
+
+        try {
+            $utcCreated = new \DateTime($created, new \DateTimeZone('UTC'));
+        } catch (\Exception $e) {
+            return true;
+        }
+
+        return abs($lastSubscribedAt->getTimestamp() - $utcCreated->getTimestamp())
+            <= self::CREATION_STAMP_TOLERANCE_SECONDS;
     }
 
     /**
@@ -219,24 +255,25 @@ class Resubscriber implements ContactUpdaterInterface
                 continue;
             }
 
-            // If change_status_at is empty, always resubscribe
+            // Magento sets change_status_at on every status change, so an empty value is untrustworthy
             if (empty($subscriber->getChangeStatusAt())) {
+                $this->logger->debug(
+                    'Skipping resubscribe, subscriber has no change_status_at',
+                    ['email' => $email]
+                );
+                continue;
+            }
+
+            $utcChangeStatusAt = new \DateTime(
+                $subscriber->getChangeStatusAt(),
+                new \DateTimeZone('UTC')
+            );
+
+            // Note that 'subscribed_at' is already a date object
+            if ($utcChangeStatusAt < $contacts[strtolower($email)]['subscribed_at']) {
                 $filteredSubscribers[$subscriber->getStoreId()][] = [
                     'email' => $email
                 ];
-            // resubscribe if change_status_at is older
-            } else {
-                $utcChangeStatusAt = new \DateTime(
-                    $subscriber->getChangeStatusAt(),
-                    new \DateTimeZone('UTC')
-                );
-
-                // Note that 'subscribed_at' is already a date object
-                if ($utcChangeStatusAt < $contacts[strtolower($email)]['subscribed_at']) {
-                    $filteredSubscribers[$subscriber->getStoreId()][] = [
-                        'email' => $email
-                    ];
-                }
             }
         }
 
