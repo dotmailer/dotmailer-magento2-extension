@@ -7,15 +7,22 @@ namespace Dotdigitalgroup\Email\Test\Unit\Model\Product;
 use Dotdigitalgroup\Email\Model\Product\PriceFinder;
 use Dotdigitalgroup\Email\Model\Tax\TaxCalculator;
 use Dotdigitalgroup\Email\Test\Unit\Traits\MockBuilderCompatibilityTrait;
+use Magento\Bundle\Model\Product\Price as BundlePrice;
+use Magento\Bundle\Pricing\Adjustment\SelectionPriceListProviderInterface;
 use Magento\Bundle\Pricing\Price\BundleRegularPrice;
+use Magento\Bundle\Pricing\Price\BundleSelectionPrice;
+use Magento\Bundle\Pricing\Price\FinalPrice as BundleFinalPrice;
 use Magento\Catalog\Model\Product;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
 use Magento\Framework\Pricing\Amount\Base as AmountBase;
 use Magento\Framework\Pricing\PriceInfo\Base;
+use Magento\Tax\Api\TaxCalculationInterface;
 use Magento\Tax\Helper\Data as TaxHelper;
+use Magento\Tax\Model\Config as TaxConfig;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 #[AllowMockObjectsWithoutExpectations]
 class PriceFinderTest extends TestCase
@@ -58,13 +65,20 @@ class PriceFinderTest extends TestCase
     private $taxHelperMock;
 
     /**
+     * @var SelectionPriceListProviderInterface|MockObject
+     */
+    private $selectionPriceListProviderMock;
+
+    /**
      * @var PriceFinder
      */
     private $priceFinder;
 
     protected function setup(): void
     {
-        $this->productMock = $this->getMockBuilder($this->classWithAddedMethods(Product::class, ['getTaxClassId']))
+        $this->productMock = $this->getMockBuilder(
+            $this->classWithAddedMethods(Product::class, ['getTaxClassId', 'getPriceType'])
+        )
             ->disableOriginalConstructor()
             ->onlyMethods(
                 [
@@ -73,7 +87,8 @@ class PriceFinderTest extends TestCase
                     'getPrice',
                     'getSpecialPrice',
                     'getPriceInfo',
-                    'getTaxClassId'
+                    'getTaxClassId',
+                    'getPriceType'
                 ]
             )
             ->getMock();
@@ -82,9 +97,13 @@ class PriceFinderTest extends TestCase
         $this->amountBaseMock = $this->createMock(AmountBase::class);
         $this->configurableMock = $this->createMock(Configurable::class);
         $this->taxCalculatorMock = $this->createMock(TaxCalculator::class);
+        $this->taxHelperMock = $this->createMock(TaxHelper::class);
+        $this->selectionPriceListProviderMock = $this->createMock(SelectionPriceListProviderInterface::class);
 
         $this->priceFinder = new PriceFinder(
-            $this->taxCalculatorMock
+            $this->taxCalculatorMock,
+            $this->taxHelperMock,
+            $this->selectionPriceListProviderMock
         );
     }
 
@@ -303,6 +322,165 @@ class PriceFinderTest extends TestCase
 
         $this->assertEquals($price_incl_tax, $priceInclTax);
         $this->assertEquals($specialPrice_incl_tax, $specialPriceInclTax);
+    }
+
+    #[DataProvider('taxSettingsProvider')]
+    public function testPricesFollowCatalogTaxSettingForAllProductTypes(
+        string $typeId,
+        ?int $bundlePriceType,
+        bool $catalogPricesInclTax,
+        int $displayType
+    ) {
+        $price = 100.00;
+        $specialPrice = 50.00;
+        $displayInclTax = $displayType !== TaxConfig::DISPLAY_TYPE_EXCLUDING_TAX;
+
+        $this->taxHelperMock->method('priceIncludesTax')->willReturn($catalogPricesInclTax);
+        $taxCalculationMock = $this->createMock(TaxCalculationInterface::class);
+        $taxCalculationMock->method('getCalculatedRate')->willReturn(20.0);
+        $priceFinder = new PriceFinder(
+            new TaxCalculator($taxCalculationMock, $this->taxHelperMock),
+            $this->taxHelperMock,
+            $this->selectionPriceListProviderMock
+        );
+
+        $this->productMock->method('getTypeId')->willReturn($typeId);
+        switch ($typeId) {
+            case 'configurable':
+            case 'grouped':
+                $child = $this->createMock(Product::class);
+                $child->method('getStoreIds')->willReturn([1]);
+                $child->method('getPrice')->willReturn($price);
+                $child->method('getSpecialPrice')->willReturn($specialPrice);
+                $this->productMock->method('getTypeInstance')->willReturn($this->configurableMock);
+                $this->configurableMock->method('getUsedProducts')->willReturn([$child]);
+                $this->configurableMock->method('getAssociatedProducts')->willReturn([$child]);
+                break;
+            case 'bundle':
+                $regularPriceMock = $this->createMock(BundleRegularPrice::class);
+                $regularPriceMock->method('getMinimalPrice')
+                    ->willReturn($this->getBundleAmount($price, $catalogPricesInclTax, $displayInclTax));
+                $finalPriceMock = $this->createMock(BundleFinalPrice::class);
+                $finalPriceMock->method('getMinimalPrice')
+                    ->willReturn($this->getBundleAmount($specialPrice, $catalogPricesInclTax, $displayInclTax));
+                $this->baseMock->method('getPrice')->willReturnMap([
+                    ['regular_price', $regularPriceMock],
+                    ['final_price', $finalPriceMock]
+                ]);
+                $this->productMock->method('getPriceInfo')->willReturn($this->baseMock);
+                $this->productMock->method('getPriceType')->willReturn($bundlePriceType);
+                $this->selectionPriceListProviderMock->method('getPriceList')->willReturnCallback(
+                    fn ($product, $searchMin, $useRegularPrice) => [
+                        $this->getSelection($useRegularPrice ? $price : $specialPrice, 2)
+                    ]
+                );
+                break;
+            default:
+                $this->productMock->method('getPrice')->willReturn($price);
+                $this->productMock->method('getSpecialPrice')->willReturn($specialPrice);
+        }
+
+        $expectedPriceInclTax = $catalogPricesInclTax ? $price : $price * 1.2;
+        $expectedSpecialPriceInclTax = $catalogPricesInclTax ? $specialPrice : $specialPrice * 1.2;
+
+        $this->assertEquals($price, $priceFinder->getPrice($this->productMock, 1));
+        $this->assertEquals($specialPrice, $priceFinder->getSpecialPrice($this->productMock, 1));
+        $this->assertEquals($expectedPriceInclTax, $priceFinder->getPriceInclTax($this->productMock, 1));
+        $this->assertEquals($expectedSpecialPriceInclTax, $priceFinder->getSpecialPriceInclTax($this->productMock, 1));
+    }
+
+    public static function taxSettingsProvider(): array
+    {
+        $cases = [];
+        $types = [
+            'simple' => ['simple', null],
+            'configurable' => ['configurable', null],
+            'grouped' => ['grouped', null],
+            'fixed bundle' => ['bundle', BundlePrice::PRICE_TYPE_FIXED],
+            'dynamic bundle' => ['bundle', BundlePrice::PRICE_TYPE_DYNAMIC],
+        ];
+        $displayTypes = [
+            'display excl' => TaxConfig::DISPLAY_TYPE_EXCLUDING_TAX,
+            'display incl' => TaxConfig::DISPLAY_TYPE_INCLUDING_TAX,
+            'display both' => TaxConfig::DISPLAY_TYPE_BOTH,
+        ];
+        foreach ($types as $typeLabel => [$typeId, $bundlePriceType]) {
+            foreach (['catalog excl' => false, 'catalog incl' => true] as $catalogLabel => $catalogPricesInclTax) {
+                foreach ($displayTypes as $displayLabel => $displayType) {
+                    $cases["$typeLabel, $catalogLabel, $displayLabel"] =
+                        [$typeId, $bundlePriceType, $catalogPricesInclTax, $displayType];
+                }
+            }
+        }
+        return $cases;
+    }
+
+    #[DataProvider('mixedTaxClassBundleProvider')]
+    public function testBundlePriceInclTaxMatchesStorefrontWithMixedSelectionTaxClasses(
+        int $bundlePriceType,
+        float $storefrontPriceInclTax
+    ) {
+        $this->taxHelperMock->method('priceIncludesTax')->willReturn(false);
+        $taxCalculationMock = $this->createMock(TaxCalculationInterface::class);
+        $taxCalculationMock->method('getCalculatedRate')
+            ->willReturnCallback(fn ($taxClassId) => $taxClassId ? 8.25 : 0.0);
+        $priceFinder = new PriceFinder(
+            new TaxCalculator($taxCalculationMock, $this->taxHelperMock),
+            $this->taxHelperMock,
+            $this->selectionPriceListProviderMock
+        );
+
+        $this->productMock->method('getTypeId')->willReturn('bundle');
+        $this->productMock->method('getPriceType')->willReturn($bundlePriceType);
+        $this->productMock->method('getTaxClassId')->willReturn(2);
+        $this->productMock->method('getPriceInfo')->willReturn($this->baseMock);
+        $this->baseMock->method('getPrice')->willReturn($this->bundleRegularPriceMock);
+        $this->bundleRegularPriceMock->method('getMinimalPrice')
+            ->willReturn(new AmountBase($storefrontPriceInclTax, ['tax' => $storefrontPriceInclTax - 61.00]));
+        $this->selectionPriceListProviderMock->method('getPriceList')->willReturn([
+            $this->getSelection(23.00, 2),
+            $this->getSelection(5.00, 2),
+            $this->getSelection(14.00, 2),
+            $this->getSelection(19.00, 0),
+        ]);
+
+        $this->assertEquals(61.00, $priceFinder->getPrice($this->productMock, 1));
+        $this->assertEquals($storefrontPriceInclTax, $priceFinder->getPriceInclTax($this->productMock, 1));
+    }
+
+    public static function mixedTaxClassBundleProvider(): array
+    {
+        return [
+            'dynamic bundle taxes each selection' => [BundlePrice::PRICE_TYPE_DYNAMIC, 64.47],
+            'fixed bundle uses the bundle tax class' => [BundlePrice::PRICE_TYPE_FIXED, 66.03],
+        ];
+    }
+
+    private function getSelection(float $value, int $taxClassId): BundleSelectionPrice
+    {
+        $product = $this->getMockBuilder($this->classWithAddedMethods(Product::class, ['getTaxClassId']))
+            ->disableOriginalConstructor()
+            ->onlyMethods(['getTaxClassId'])
+            ->getMock();
+        $product->method('getTaxClassId')->willReturn($taxClassId);
+
+        $selection = $this->createMock(BundleSelectionPrice::class);
+        $selection->method('getValue')->willReturn($value);
+        $selection->method('getQuantity')->willReturn(1.0);
+        $selection->method('getProduct')->willReturn($product);
+
+        return $selection;
+    }
+
+    /**
+     * Mirrors Magento's bundle amount: tax is added when catalog prices include tax or are displayed incl. tax.
+     */
+    private function getBundleAmount(float $catalogPrice, bool $catalogPricesInclTax, bool $displayInclTax): AmountBase
+    {
+        $exclTax = $catalogPricesInclTax ? $catalogPrice / 1.2 : $catalogPrice;
+        $amount = ($catalogPricesInclTax || $displayInclTax) ? $exclTax * 1.2 : $exclTax;
+
+        return new AmountBase($amount, ['tax' => $amount - $exclTax]);
     }
 
     private function getConfigurableChildProducts()

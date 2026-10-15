@@ -6,8 +6,11 @@ namespace Dotdigitalgroup\Email\Model\Product;
 
 use Dotdigitalgroup\Email\Api\Product\PriceFinderInterface;
 use Dotdigitalgroup\Email\Model\Tax\TaxCalculator;
+use Magento\Bundle\Model\Product\Price as BundlePrice;
+use Magento\Bundle\Pricing\Adjustment\SelectionPriceListProviderInterface;
 use Magento\Catalog\Model\Product;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
+use Magento\Tax\Helper\Data as TaxHelper;
 
 class PriceFinder implements PriceFinderInterface
 {
@@ -15,6 +18,16 @@ class PriceFinder implements PriceFinderInterface
      * @var TaxCalculator
      */
     private $taxCalculator;
+
+    /**
+     * @var TaxHelper
+     */
+    private $taxHelper;
+
+    /**
+     * @var SelectionPriceListProviderInterface
+     */
+    private $selectionPriceListProvider;
 
     /**
      * @var array
@@ -38,11 +51,17 @@ class PriceFinder implements PriceFinderInterface
 
     /**
      * @param TaxCalculator $taxCalculator
+     * @param TaxHelper $taxHelper
+     * @param SelectionPriceListProviderInterface $selectionPriceListProvider
      */
     public function __construct(
-        TaxCalculator $taxCalculator
+        TaxCalculator $taxCalculator,
+        TaxHelper $taxHelper,
+        SelectionPriceListProviderInterface $selectionPriceListProvider
     ) {
         $this->taxCalculator = $taxCalculator;
+        $this->taxHelper = $taxHelper;
+        $this->selectionPriceListProvider = $selectionPriceListProvider;
     }
 
     /**
@@ -140,13 +159,16 @@ class PriceFinder implements PriceFinderInterface
                 }
             }
         } elseif ($product->getTypeId() == 'bundle') {
+            // Bundle amounts include tax if displayed incl. tax, so strip it when catalog prices exclude tax.
+            $exclude = $this->taxHelper->priceIncludesTax($storeId) ? null : 'tax';
+
             $regularPrice = $product->getPriceInfo()->getPrice('regular_price');
             /** @var \Magento\Bundle\Pricing\Price\BundleRegularPrice $regularPrice */
-            $price = $regularPrice->getMinimalPrice()->getValue();
+            $price = $regularPrice->getMinimalPrice()->getValue($exclude);
 
             $finalPrice = $product->getPriceInfo()->getPrice('final_price');
             /** @var \Magento\Bundle\Pricing\Price\FinalPrice $finalPrice */
-            $specialPrice = $finalPrice->getMinimalPrice()->getValue();
+            $specialPrice = $finalPrice->getMinimalPrice()->getValue($exclude);
 
             // if special price equals to price then it's wrong.
             $specialPrice = ($specialPrice === $price) ? null : $specialPrice;
@@ -176,6 +198,16 @@ class PriceFinder implements PriceFinderInterface
         $price = $this->getPrice($product, $storeId);
         $specialPrice = $this->getSpecialPrice($product, $storeId);
 
+        if ($product->getTypeId() == 'bundle' && $product->getPriceType() == BundlePrice::PRICE_TYPE_DYNAMIC) {
+            $this->pricesInclTax['price'] = $this->formatPriceValue(
+                $this->getDynamicBundlePriceInclTax($product, $price, true, $storeId, $customerId)
+            );
+            $this->pricesInclTax['specialPrice'] = $specialPrice ? $this->formatPriceValue(
+                $this->getDynamicBundlePriceInclTax($product, $specialPrice, false, $storeId, $customerId)
+            ) : 0.00;
+            return;
+        }
+
         if (isset($this->childProductWithLowestPrice)) {
             $product = $this->childProductWithLowestPrice;
         }
@@ -201,6 +233,42 @@ class PriceFinder implements PriceFinderInterface
                 $customerId
             )
         );
+    }
+
+    /**
+     * Get dynamic bundle price including tax.
+     *
+     * Like Magento, each selection is taxed with its own tax class and rounded, and any
+     * remaining base price is taxed with the bundle's tax class.
+     *
+     * @param Product $product
+     * @param float $price
+     * @param bool $useRegularPrice
+     * @param int|null $storeId
+     * @param int|null $customerId
+     *
+     * @return float
+     */
+    private function getDynamicBundlePriceInclTax(
+        Product $product,
+        float $price,
+        bool $useRegularPrice,
+        ?int $storeId,
+        ?int $customerId
+    ): float {
+        $basePrice = $price;
+        $priceInclTax = 0.0;
+        foreach ($this->selectionPriceListProvider->getPriceList($product, true, $useRegularPrice) as $selection) {
+            $value = (float) $selection->getValue();
+            $qty = (float) $selection->getQuantity();
+            $basePrice -= round($value, 2) * $qty;
+            $priceInclTax += round(
+                $this->taxCalculator->calculatePriceInclTax($selection->getProduct(), $value, $storeId, $customerId),
+                2
+            ) * $qty;
+        }
+
+        return $priceInclTax + $this->taxCalculator->calculatePriceInclTax($product, $basePrice, $storeId, $customerId);
     }
 
     /**
