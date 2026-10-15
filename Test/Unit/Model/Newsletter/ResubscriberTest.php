@@ -198,6 +198,59 @@ class ResubscriberTest extends TestCase
         $this->assertEquals(2, count($filtered));
     }
 
+    public function testContactsCreatedAtLastSubscribedTimeAreIgnored()
+    {
+        $this->sharedFlow();
+
+        $defaultStamp = new SdkContact(['created' => '2021-11-19T15:39:53.4935929Z']);
+        $defaultStamp->setIdentifiers(['email' => 'new@emailsim.io']);
+        $defaultStamp->setDataFields(['LASTSUBSCRIBED' => '2021-11-19T15:39:53.493592Z']);
+
+        $noCreated = new SdkContact();
+        $noCreated->setIdentifiers(['email' => 'nocreated@emailsim.io']);
+        $noCreated->setDataFields(['LASTSUBSCRIBED' => '2021-11-19T15:39:53.493592Z']);
+
+        $genuine = new SdkContact(['created' => '2021-11-19T15:39:53.4935929Z']);
+        $genuine->setIdentifiers(['email' => 'genuine@emailsim.io']);
+        $genuine->setDataFields(['LASTSUBSCRIBED' => '2021-11-19T15:50:00.000000Z']);
+
+        $filtered = self::getMethod('filterModifiedContacts')
+            ->invokeArgs($this->model, [[$defaultStamp, $noCreated, $genuine]]);
+
+        $this->assertSame(['genuine@emailsim.io'], array_keys($filtered));
+    }
+
+    public function testSubscribersWithEmptyChangeStatusAtAreNotResubscribed()
+    {
+        $this->sharedFlow();
+
+        $subscriberCollectionMock = $this->createMock(SubscriberCollection::class);
+        $subscriberModelMock = $this->getMockBuilder($this->classWithAddedMethods(
+            \Magento\Newsletter\Model\Subscriber::class,
+            ['getSubscriberEmail', 'getChangeStatusAt', 'getStoreId']
+        ))
+            ->onlyMethods(['getSubscriberEmail', 'getChangeStatusAt', 'getStoreId'])
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->subscriberFiltererMock->method('getSubscribersByEmailsStoresAndStatus')
+            ->willReturn($subscriberCollectionMock);
+        $this->storeWebsiteRelationInterfaceMock->method('getStoreByWebsiteId')
+            ->willReturn(['1']);
+        $subscriberCollectionMock->method('getIterator')
+            ->willReturn(new \ArrayIterator([$subscriberModelMock]));
+        $subscriberModelMock->method('getSubscriberEmail')->willReturn('chaz@emailsim.io');
+        $subscriberModelMock->method('getChangeStatusAt')->willReturn(null);
+        $subscriberModelMock->method('getStoreId')->willReturn(1);
+
+        $this->contactResourceMock->expects($this->once())
+            ->method('subscribeByEmailAndStore')
+            ->with([])
+            ->willReturn(0);
+
+        $this->model->processBatch($this->getDotdigitalModifiedContacts(), [1]);
+    }
+
     /**
      * Not considered great practice, but especially useful in this case.
      * We want to test that the method filterModifiedContacts()
@@ -231,15 +284,15 @@ class ResubscriberTest extends TestCase
      */
     private function getDotdigitalModifiedContacts()
     {
-        $contact1 = new SdkContact();
+        $contact1 = new SdkContact(['created' => '2021-01-01T00:00:00Z']);
         $contact1->setIdentifiers(['email' => 'chaz@emailsim.io']);
         $contact1->setDataFields(['LASTSUBSCRIBED' => '2021-11-19T11:24:08.94976Z']);
 
-        $contact2 = new SdkContact();
+        $contact2 = new SdkContact(['created' => '2021-01-01T00:00:00Z']);
         $contact2->setIdentifiers(['email' => 'chaz2@emailsim.io']);
         $contact2->setDataFields(['LASTSUBSCRIBED' => '2021-11-19T11:00:00.94976Z']);
 
-        $contact3 = new SdkContact();
+        $contact3 = new SdkContact(['created' => '2021-01-01T00:00:00Z']);
         $contact3->setIdentifiers(['email' => 'chaz3@emailsim.io']);
         $contact3->setDataFields(['LASTSUBSCRIBED' => '2021-11-17T11:24:08.94976Z']);
 
