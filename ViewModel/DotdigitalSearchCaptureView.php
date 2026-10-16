@@ -7,8 +7,9 @@ use Magento\Framework\View\Element\Block\ArgumentInterface;
 use Magento\Search\Helper\Data as SearchHelper;
 
 /**
- * @deprecated The Tag captures Search data via dotdigital_product_list_capture.phtml
- * @see \Dotdigitalgroup\Email\ViewModel/DotdigitalSearchCaptureView
+ * @deprecated The Tag captures Search data via dotdigital_product_list_capture.phtml.
+ * Retained for compatibility until the next major release.
+ * @see \Dotdigitalgroup\Email\ViewModel\DotdigitalProductListCaptureView
  */
 class DotdigitalSearchCaptureView implements ArgumentInterface
 {

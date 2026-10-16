@@ -14,6 +14,18 @@
             </block>
         </referenceContainer>
         <referenceContainer name="before.body.end">
+            <!-- @deprecated Retained for layout compatibility until the next major release.
+                 Search tracking is now handled by dotdigital_product_list_capture.phtml. -->
+            <block class="Magento\Framework\View\Element\Template"
+                   name="dotdigital.search.capture"
+                   template="Dotdigitalgroup_Email::tracking/dotdigital_search_capture.phtml"
+                   ifconfig="connector_configuration/tracking/tracking_profile_id">
+                <arguments>
+                    <argument name="view_model" xsi:type="object">Dotdigitalgroup\Email\ViewModel\DotdigitalSearchCaptureView</argument>
+                </arguments>
+            </block>
+        </referenceContainer>
+        <referenceContainer name="before.body.end">
             <block class="Magento\Framework\View\Element\Template"
                    name="dotdigital.email.capture"
                    template="Dotdigitalgroup_Email::tracking/dotdigital_email_capture.phtml">

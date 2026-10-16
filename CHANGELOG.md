@@ -1,3 +1,10 @@
+# 4.38.0
+
+### What's new
+
+### Deprecations
+- The `dotdigital.search.capture` layout block, `tracking/dotdigital_search_capture.phtml` template, and `DotdigitalSearchCaptureView` are deprecated and retained until the next major release for third-party layout and template compatibility. The template now renders no output; search tracking is handled by `tracking/dotdigital_product_list_capture.phtml` and `DotdigitalProductListCaptureView`. The legacy `Searched term` event is no longer emitted by the module.
+
 # 4.37.0
 
 ### What's new
