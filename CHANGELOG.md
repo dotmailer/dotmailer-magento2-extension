@@ -1,9 +1,8 @@
-# 4.38.0
+# 4.37.1
 
-### What's new
-
-### Deprecations
-- The `dotdigital.search.capture` layout block, `tracking/dotdigital_search_capture.phtml` template, and `DotdigitalSearchCaptureView` are deprecated and retained until the next major release for third-party layout and template compatibility. The template now renders no output; search tracking is handled by `tracking/dotdigital_product_list_capture.phtml` and `DotdigitalProductListCaptureView`. The legacy `Searched term` event is no longer emitted by the module.
+### Bug fixes
+- We fixed bundle pricing when catalog prices are set to include tax.
+- We prevented resubscribe where Dotdigital contacts' LASTSUBSCRIBED time matches their creation time.
 
 # 4.37.0
 
