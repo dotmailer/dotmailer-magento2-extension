@@ -1,3 +1,9 @@
+# 4.37.1
+
+### Bug fixes
+- We fixed bundle pricing when catalog prices are set to include tax.
+- We prevented resubscribe where Dotdigital contacts' LASTSUBSCRIBED time matches their creation time.
+
 # 4.37.0
 
 ### What's new
