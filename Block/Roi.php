@@ -2,15 +2,13 @@
 
 namespace Dotdigitalgroup\Email\Block;
 
-use Dotdigitalgroup\Email\Helper\Config;
 use Dotdigitalgroup\Email\Helper\Data;
+use Dotdigitalgroup\Email\Model\Tracking\EndpointResolver;
 use Magento\Checkout\Model\Session;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
-use Magento\Framework\View\Helper\SecureHtmlRenderer;
 use Magento\Sales\Model\Order;
-use Magento\Store\Model\ScopeInterface;
 
 /**
  * Roi block
@@ -36,21 +34,29 @@ class Roi extends Template
     private $websiteId;
 
     /**
+     * @var EndpointResolver
+     */
+    private $endpointResolver;
+
+    /**
      * Roi constructor.
      *
      * @param Context $context
      * @param Data $helper
      * @param Session $session
+     * @param EndpointResolver $endpointResolver
      * @param array $data
      */
     public function __construct(
         Context $context,
         Data $helper,
         Session $session,
+        EndpointResolver $endpointResolver,
         array $data = []
     ) {
         $this->helper = $helper;
         $this->session = $session;
+        $this->endpointResolver = $endpointResolver;
         parent::__construct($context, $data);
 
         $this->websiteId = $this->_storeManager->getWebsite()->getId();
@@ -106,14 +112,10 @@ class Roi extends Template
      */
     public function getPageTrackingUrlForSuccessPage()
     {
-        $trackingHost = $this->_scopeConfig->getValue(
-            Config::TRACKING_HOST,
-            ScopeInterface::SCOPE_WEBSITE,
-            $this->websiteId
-        );
+        $trackingUrl = $this->endpointResolver->getUrl((int)$this->websiteId);
 
         $version = $this->helper->getTrackingScriptVersionNumber();
-        return $this->helper->getTrackingRegionPrefix((int)$this->websiteId) . '.' . $trackingHost . '/_dmmpt'
+        return $trackingUrl . '/_dmmpt'
             . ($version ? '.js?v=' . $version : '');
     }
 

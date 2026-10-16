@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace Dotdigitalgroup\Email\ViewModel;
 
 use Dotdigitalgroup\Email\Helper\Config;
+use Dotdigitalgroup\Email\Model\Tracking\EndpointResolver;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\View\Element\Block\ArgumentInterface;
 use Magento\Framework\View\Element\Template\Context;
 use Magento\Framework\View\Helper\SecureHtmlRenderer;
-use Dotdigitalgroup\Email\Helper\Data;
 use Magento\Customer\Model\Session;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
@@ -21,8 +21,6 @@ use Magento\Store\Model\StoreManagerInterface;
  */
 class DotdigitalTagView implements ArgumentInterface
 {
-    private const TRACKING_HOST_DEFAULT = 'ddlnk.net';
-
     /**
      * Context instance.
      *
@@ -38,9 +36,9 @@ class DotdigitalTagView implements ArgumentInterface
     private $secureRenderer;
 
     /**
-     * @var Data
+     * @var EndpointResolver
      */
-    private $helper;
+    private $endpointResolver;
 
     /**
      * @var ScopeConfigInterface
@@ -107,7 +105,7 @@ class DotdigitalTagView implements ArgumentInterface
      *
      * @param Context $context
      * @param SecureHtmlRenderer $secureRenderer
-     * @param Data $helper
+     * @param EndpointResolver $endpointResolver
      * @param ScopeConfigInterface $scopeConfig
      * @param StoreManagerInterface $storeManager
      * @param Session $customerSession
@@ -115,14 +113,14 @@ class DotdigitalTagView implements ArgumentInterface
     public function __construct(
         Context $context,
         SecureHtmlRenderer $secureRenderer,
-        Data $helper,
+        EndpointResolver $endpointResolver,
         ScopeConfigInterface $scopeConfig,
         StoreManagerInterface $storeManager,
         Session $customerSession,
     ) {
         $this->context = $context;
         $this->secureRenderer = $secureRenderer;
-        $this->helper = $helper;
+        $this->endpointResolver = $endpointResolver;
         $this->scopeConfig = $scopeConfig;
         $this->storeManager = $storeManager;
         $this->customerSession = $customerSession;
@@ -162,7 +160,9 @@ class DotdigitalTagView implements ArgumentInterface
                 preg_replace(
                     '/^https?:\/\//',
                     '',
-                    $this->getUrl()
+                    $this->endpointResolver->getUrl(
+                        (int)$this->storeManager->getStore()->getWebsiteId()
+                    )
                 ),
                 $this->getTagId()
             ),
@@ -229,24 +229,6 @@ class DotdigitalTagView implements ArgumentInterface
             ScopeInterface::SCOPE_WEBSITE,
             $this->storeManager->getStore()->getWebsiteId()
         );
-    }
-
-    /**
-     * Get the tracking URL.
-     *
-     * @return string
-     * @throws NoSuchEntityException
-     */
-    private function getUrl(): string
-    {
-        $websiteId = (int)$this->storeManager->getStore()->getWebsiteId();
-        $trackingEndpoint = $this->helper->getTrackingEndPointFromConfig($websiteId);
-
-        if (!$trackingEndpoint || $trackingEndpoint === self::TRACKING_HOST_DEFAULT) {
-            $trackingEndpoint = $this->helper->getTrackingRegionPrefix($websiteId) . '.' . self::TRACKING_HOST_DEFAULT;
-        }
-
-        return $trackingEndpoint;
     }
 
     /**

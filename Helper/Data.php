@@ -704,6 +704,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * Useful for using internal tracking endpoints that are not like ddlnk.net.
      * e.g. debug-webbehavior.dotdigital.internal
      *
+     * @deprecated Use \Dotdigitalgroup\Email\Model\Tracking\EndpointResolver::getUrl() for tracking URLs.
+     * @see \Dotdigitalgroup\Email\Model\Tracking\EndpointResolver
+     *
      * @param int $websiteId
      *
      * @return string|boolean
@@ -1382,6 +1385,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     /**
      * Get tracking region prefix.
+     *
+     * @deprecated Use \Dotdigitalgroup\Email\Model\Tracking\EndpointResolver::getUrl() for tracking URLs.
+     * @see \Dotdigitalgroup\Email\Model\Tracking\EndpointResolver
      *
      * @param int $websiteId
      * @return string|null

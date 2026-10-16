@@ -1449,6 +1449,7 @@
                 </field>
                 <field id="host" translate="label" sortOrder="60" showInDefault="0" showInStore="0" showInWebsite="0">
                     <label>Tracking Host</label>
+                    <backend_model>Dotdigitalgroup\Email\Model\Config\Backend\TrackingHostValidate</backend_model>
                 </field>
             </group>
             <group id="transactional_data" translate="label" sortOrder="30" showInDefault="1" showInWebsite="1"
