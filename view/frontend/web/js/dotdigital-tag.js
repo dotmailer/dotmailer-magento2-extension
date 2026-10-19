@@ -1,13 +1,14 @@
 /**
  * Dotdigital tracking proxy for Magento
- * Queues method calls until the real Dotdigital script loads
+ * Queues tracking calls until the real Dotdigital script loads and is configured
  *
  * @fileoverview Provides a proxy interface for Dotdigital tracking that queues
- * method calls until the external Dotdigital script is loaded and ready.
+ * method calls until the external Dotdigital script is loaded and configured.
  * @author Dotdigitalgroup
  * @version 1.0.0
  */
 const queuedMethodCalls = [];
+let isConfigured = false;
 
 /**
  * Initialize Dotdigital tracking and load the external script
@@ -40,22 +41,32 @@ const initializeDotdigital = (endpoint, profileId) => {
  * @returns {void}
  */
 const triggerReadyEvent = () => {
-    if ('isProxy' in window.ddg) return;
+    if (!window._ddgCurrent || window._ddgCurrent.isProxy) return;
     window.dispatchEvent(new CustomEvent('DotdigitalTagLoaded', { detail: { timestamp: Date.now() } }));
     processQueuedMethodCalls();
 };
 
 /**
- * Execute all queued method calls using the current Dotdigital object
+ * Execute eligible queued calls, configuring the tag before tracking
  *
  * @returns {void}
  */
 const processQueuedMethodCalls = () => {
+    if (!window._ddgCurrent || window._ddgCurrent.isProxy) return;
+
     while (queuedMethodCalls.length > 0) {
-        const { methodName, methodArguments, promiseResolve } = queuedMethodCalls.shift();
-        if (window.ddg && typeof window.ddg[methodName] === 'function') {
+        // Configuration must overtake tracking calls queued earlier in the page.
+        const configurationIndex = queuedMethodCalls.findIndex(call => call.methodName === 'configuration');
+        const index = configurationIndex >= 0 ? configurationIndex : (isConfigured ? 0 : -1);
+        if (index < 0) return;
+
+        const { methodName, methodArguments, promiseResolve } = queuedMethodCalls.splice(index, 1)[0];
+        if (typeof window._ddgCurrent[methodName] === 'function') {
             try {
-                const result = window.ddg[methodName](...methodArguments);
+                const result = window._ddgCurrent[methodName](...methodArguments);
+                if (methodName === 'configuration') {
+                    isConfigured = true;
+                }
                 promiseResolve?.(result);
             } catch (error) {
                 console.error(`Error calling Dotdigital ${methodName}:`, error);
@@ -84,28 +95,63 @@ const createDotdigitalProxy = () => new Proxy(
      * @returns {Function} The intercepted method or queuing function
      */
     get(target, methodName) {
-        if (methodName in target) {
+        const current = window._ddgCurrent;
+        const isLoaded = current && !current.isProxy;
+        if (!isLoaded && methodName in target) {
             return target[methodName];
         }
+        if (isLoaded && typeof current[methodName] !== 'function') {
+            return current[methodName];
+        }
         return (...args) => {
+            const current = window._ddgCurrent;
+            if (current && !current.isProxy &&
+                (methodName === 'configuration' || isConfigured)) {
+                const result = current[methodName](...args);
+                if (methodName === 'configuration') {
+                    isConfigured = true;
+                    processQueuedMethodCalls();
+                }
+                return result;
+            }
             return new Promise(resolve => {
                 queuedMethodCalls.push({
                     methodName,
                     methodArguments: args,
                     promiseResolve: resolve
                 });
+                processQueuedMethodCalls();
             });
         };
+    },
+    has(target, property) {
+        const current = window._ddgCurrent;
+        return property in (current && !current.isProxy ? current : target);
+    },
+    set(target, property, value) {
+        window._ddgCurrent[property] = value;
+        return true;
+    },
+    ownKeys() {
+        return Reflect.ownKeys(window._ddgCurrent);
+    },
+    getOwnPropertyDescriptor(target, property) {
+        const descriptor = Object.getOwnPropertyDescriptor(window._ddgCurrent, property);
+        return descriptor ? { ...descriptor, configurable: true } : undefined;
+    },
+    deleteProperty(target, property) {
+        return Reflect.deleteProperty(window._ddgCurrent, property);
     }
 });
 
 /**
  * Override window.ddg setter to detect object replacement
  */
+const dotdigitalProxy = createDotdigitalProxy();
 Object.defineProperty(window, 'ddg', {
-    get: () => window._ddgCurrent,
+    get: () => dotdigitalProxy,
     set: (value)  => (window._ddgCurrent = value, triggerReadyEvent())
 });
 
-// Initialize with our proxy
-window._ddgCurrent = createDotdigitalProxy();
+// Keep the facade in place when the SDK replaces the underlying object.
+window._ddgCurrent = { init: initializeDotdigital, isProxy: true };
