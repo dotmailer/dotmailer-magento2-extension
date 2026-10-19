@@ -16,10 +16,12 @@ class DotdigitalConfigurationView implements ArgumentInterface
      * @var Context
      */
     private $context;
+
     /**
      * @var SecureHtmlRenderer
      */
     private $secureRenderer;
+
     /**
      * @var StoreManagerInterface
      */
@@ -50,7 +52,7 @@ class DotdigitalConfigurationView implements ArgumentInterface
         /** @var Store $store */
         $store = $this->storeManager->getStore();
         $configData = [
-            'currencyCode' => $store->getCurrentCurrency()->getCode(),
+            'currencyCode' => $store->getCurrentCurrencyCode(),
             'locale' =>$store->getConfig('general/locale/code'),
             'storeCode' => $store->getCode(),
         ];
