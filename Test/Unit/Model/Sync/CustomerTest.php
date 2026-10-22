@@ -4,6 +4,7 @@ namespace Dotdigitalgroup\Email\Test\Unit\Model\Sync;
 
 use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Logger\Logger;
+use Dotdigitalgroup\Email\Model\Customer\RegistrationStoreResolver;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact\Collection as ContactCollection;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory as ContactCollectionFactory;
 use Dotdigitalgroup\Email\Model\Sync\Batch\MegaBatchProcessor;
@@ -12,6 +13,7 @@ use Dotdigitalgroup\Email\Model\Sync\Batch\MergeManager;
 use Dotdigitalgroup\Email\Model\Sync\Customer;
 use Dotdigitalgroup\Email\Model\Sync\Customer\Exporter;
 use Dotdigitalgroup\Email\Model\Sync\Customer\ExporterFactory;
+use Dotdigitalgroup\Email\Model\Sync\Customer\ListCohortResolver;
 use Dotdigitalgroup\Email\Test\Unit\Traits\MockBuilderCompatibilityTrait;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Store\Api\Data\WebsiteInterface;
@@ -75,6 +77,16 @@ class CustomerTest extends TestCase
     private $websiteInterfaceMock;
 
     /**
+     * @var ListCohortResolver|\PHPUnit\Framework\MockObject\MockObject
+     */
+    private $listCohortResolverMock;
+
+    /**
+     * @var RegistrationStoreResolver|\PHPUnit\Framework\MockObject\MockObject
+     */
+    private $registrationStoreResolverMock;
+
+    /**
      * @var Customer
      */
     private $customer;
@@ -95,6 +107,9 @@ class CustomerTest extends TestCase
         $this->exporterFactoryMock = $this->createMock(ExporterFactory::class);
         $this->scopeConfigMock = $this->createMock(ScopeConfigInterface::class);
         $this->storeManagerMock = $this->createMock(StoreManagerInterface::class);
+        $this->listCohortResolverMock = $this->createMock(ListCohortResolver::class);
+        $this->registrationStoreResolverMock = $this->createMock(RegistrationStoreResolver::class);
+        $this->registrationStoreResolverMock->method('getWebsiteStoreIds')->willReturn([1]);
 
         $this->exporterMock = $this->createMock(Exporter::class);
         $this->websiteInterfaceMock = $this->getMockBuilder($this->classWithAddedMethods(
@@ -131,7 +146,9 @@ class CustomerTest extends TestCase
             $this->mergeManagerMock,
             $this->exporterFactoryMock,
             $this->scopeConfigMock,
-            $this->storeManagerMock
+            $this->storeManagerMock,
+            $this->listCohortResolverMock,
+            $this->registrationStoreResolverMock
         );
     }
 
@@ -149,7 +166,7 @@ class CustomerTest extends TestCase
             ->method('create');
 
         $this->contactCollectionMock->expects($this->never())
-            ->method('getCustomersToImportByWebsite');
+            ->method('getCustomersToImportByRegistrationStores');
 
         $this->exporterFactoryMock->expects($this->never())
             ->method('create');
@@ -174,7 +191,7 @@ class CustomerTest extends TestCase
             ->willReturn($this->contactCollectionMock);
 
         $this->contactCollectionMock->expects($this->once())
-            ->method('getCustomersToImportByWebsite')
+            ->method('getCustomersToImportByRegistrationStores')
             ->willReturn($this->contactCollectionMock);
 
         $this->contactCollectionMock->expects($this->once())
@@ -215,7 +232,7 @@ class CustomerTest extends TestCase
             ->willReturn($this->contactCollectionMock);
 
         $this->contactCollectionMock->expects($this->once())
-            ->method('getCustomersToImportByWebsite')
+            ->method('getCustomersToImportByRegistrationStores')
             ->willReturn($this->contactCollectionMock);
 
         $this->contactCollectionMock->expects($this->once())
@@ -264,7 +281,7 @@ class CustomerTest extends TestCase
             ->willReturn($this->contactCollectionMock);
 
         $this->contactCollectionMock->expects($this->exactly(3))
-            ->method('getCustomersToImportByWebsite')
+            ->method('getCustomersToImportByRegistrationStores')
             ->willReturn($this->contactCollectionMock);
 
         $this->contactCollectionMock->expects($this->exactly(3))
@@ -316,7 +333,7 @@ class CustomerTest extends TestCase
             ->willReturn($this->contactCollectionMock);
 
         $this->contactCollectionMock->expects($this->exactly(2))
-            ->method('getCustomersToImportByWebsite')
+            ->method('getCustomersToImportByRegistrationStores')
             ->willReturn($this->contactCollectionMock);
 
         $this->contactCollectionMock->expects($this->exactly(2))
@@ -376,7 +393,7 @@ class CustomerTest extends TestCase
             ->willReturn($this->contactCollectionMock);
 
         $this->contactCollectionMock->expects($this->exactly(4))
-            ->method('getCustomersToImportByWebsite')
+            ->method('getCustomersToImportByRegistrationStores')
             ->willReturn($this->contactCollectionMock);
 
         $this->contactCollectionMock->expects($this->exactly(4))
@@ -416,6 +433,57 @@ class CustomerTest extends TestCase
     }
 
     /**
+     * @return void
+     * @throws \Magento\Framework\Exception\LocalizedException|\PHPUnit\Framework\MockObject\Exception
+     */
+    public function testCohortsOfOneWebsiteShareASingleImportBatch()
+    {
+        $this->storeManagerMock->expects($this->once())
+            ->method('getWebsites')
+            ->willReturn([$this->websiteInterfaceMock]);
+        $this->helperMock->method('isEnabled')->willReturn(true);
+        $this->helperMock->method('isCustomerSyncEnabled')->willReturn(true);
+
+        $secondCohort = array_merge($this->getCohort(), ['listId' => 456, 'storeIds' => [2]]);
+        $this->listCohortResolverMock->expects($this->once())
+            ->method('resolve')
+            ->willReturn([$this->getCohort(), $secondCohort]);
+
+        $this->exporterFactoryMock->expects($this->exactly(2))
+            ->method('create')
+            ->willReturn($this->exporterMock);
+
+        $this->scopeConfigMock->method('getValue')
+            ->willReturnOnConsecutiveCalls(1000, 0, 5, 5);
+
+        $this->contactCollectionFactoryMock->method('create')->willReturn($this->contactCollectionMock);
+        $this->contactCollectionMock->method('getCustomersToImportByRegistrationStores')
+            ->willReturn($this->contactCollectionMock);
+        $this->contactCollectionMock->method('getColumnValues')
+            ->willReturnOnConsecutiveCalls([1, 21, 309], [], [321, 322, 323], []);
+
+        $listIds = [];
+        $this->exporterMock->expects($this->exactly(2))
+            ->method('export')
+            ->willReturnCallback(function ($ids, $website, $listId) use (&$listIds) {
+                $listIds[] = $listId;
+                return $listId === 123 ? $this->getCustomersBatch() : $this->getCustomersBatchTwo();
+            });
+
+        $this->mergeManagerMock->method('mergeBatch')
+            ->willReturnOnConsecutiveCalls($this->getCustomersBatch(), $this->getMergedMegaBatch());
+
+        $batchProcessorMock = $this->createMock(MegaBatchProcessor::class);
+        $this->batchProcessorFactoryMock->method('create')->willReturn($batchProcessorMock);
+        $batchProcessorMock->expects($this->once())->method('process');
+
+        $data = $this->customer->sync();
+
+        $this->assertSame([123, 456], $listIds);
+        $this->assertEquals(6, $data['syncedCustomers']);
+    }
+
+    /**
      * Reflects the edge-case where we have duplicate contacts in our table.
      *
      * The customerIdCount is 10 and we use this for the offset on the next query
@@ -444,7 +512,7 @@ class CustomerTest extends TestCase
             ->willReturn($this->contactCollectionMock);
 
         $this->contactCollectionMock->expects($this->exactly(2))
-            ->method('getCustomersToImportByWebsite')
+            ->method('getCustomersToImportByRegistrationStores')
             ->willReturn($this->contactCollectionMock);
 
         $this->contactCollectionMock->expects($this->exactly(2))
@@ -494,7 +562,7 @@ class CustomerTest extends TestCase
             ->willReturn($this->contactCollectionMock);
 
         $this->contactCollectionMock->expects($this->exactly(3))
-            ->method('getCustomersToImportByWebsite')
+            ->method('getCustomersToImportByRegistrationStores')
             ->willReturn($this->contactCollectionMock);
 
         $this->contactCollectionMock->expects($this->exactly(3))
@@ -541,9 +609,9 @@ class CustomerTest extends TestCase
             ->method('isCustomerSyncEnabled')
             ->willReturn(true);
 
-        $this->helperMock->expects($this->once())
-            ->method('getCustomerAddressBook')
-            ->willReturn('Customers');
+        $this->listCohortResolverMock->expects($this->once())
+            ->method('resolve')
+            ->willReturn([$this->getCohort()]);
     }
 
     /**
@@ -568,9 +636,22 @@ class CustomerTest extends TestCase
             ->method('isCustomerSyncEnabled')
             ->willReturn(true);
 
-        $this->helperMock->expects($this->exactly(2))
-            ->method('getCustomerAddressBook')
-            ->willReturn('Customers');
+        $this->listCohortResolverMock->expects($this->exactly(2))
+            ->method('resolve')
+            ->willReturn([$this->getCohort()]);
+    }
+
+    /**
+     * @return array
+     */
+    private function getCohort()
+    {
+        return [
+            'listId' => 123,
+            'onlySubscribers' => true,
+            'storeIds' => [1],
+            'includeUnassigned' => true
+        ];
     }
 
     /**

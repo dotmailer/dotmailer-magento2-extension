@@ -17,6 +17,7 @@ use Dotdigitalgroup\Email\Model\ResourceModel\Automation as AutomationResource;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact as ContactResource;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact\Collection as ContactCollection;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory;
+use Dotdigitalgroup\Email\Model\Customer\RegistrationStoreResolver;
 use Dotdigitalgroup\Email\Model\Sync\Automation\AutomationTypeHandler;
 use Dotdigitalgroup\Email\Model\Sync\Automation\ContactManager;
 use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\DataFieldCollector;
@@ -128,6 +129,11 @@ class ContactManagerTest extends TestCase
      */
     private $contactManager;
 
+    /**
+     * @var RegistrationStoreResolver|MockObject
+     */
+    private $registrationStoreResolverMock;
+
     protected function setUp() :void
     {
         $this->sdkContactFactoryMock = $this->createMock(DotdigitalContactFactory::class);
@@ -171,13 +177,17 @@ class ContactManagerTest extends TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
+        $this->registrationStoreResolverMock = $this->createMock(RegistrationStoreResolver::class);
+        $this->registrationStoreResolverMock->method('resolve')->willReturn(7);
+
         $this->contactManager = new ContactManager(
             $this->sdkContactFactoryMock,
             $this->helperMock,
             $this->clientFactoryMock,
             $this->contactResourceMock,
             $this->dataFieldCollectorMock,
-            $this->singleSubscriberSyncerMock
+            $this->singleSubscriberSyncerMock,
+            $this->registrationStoreResolverMock
         );
     }
 
@@ -247,7 +257,7 @@ class ContactManagerTest extends TestCase
             ->method('getWebsiteId')
             ->willReturn('1');
 
-        $this->contactModelMock->expects($this->once())
+        $this->contactModelMock->expects($this->atLeastOnce())
             ->method('getCustomerId')
             ->willReturn('10');
 
@@ -260,7 +270,8 @@ class ContactManagerTest extends TestCase
             ->willReturn(false);
 
         $this->helperMock->expects($this->once())
-            ->method('getCustomerAddressBook')
+            ->method('getCustomerListByStoreId')
+            ->with(7)
             ->willReturn('9856');
 
         $this->dataFieldCollectorMock->expects($this->once())
@@ -318,7 +329,7 @@ class ContactManagerTest extends TestCase
             ->method('getWebsiteId')
             ->willReturn('1');
 
-        $this->contactModelMock->expects($this->once())
+        $this->contactModelMock->expects($this->atLeastOnce())
             ->method('getCustomerId')
             ->willReturn(0);
 
@@ -449,7 +460,7 @@ class ContactManagerTest extends TestCase
             ->method('getWebsiteId')
             ->willReturn('1');
 
-        $this->contactModelMock->expects($this->once())
+        $this->contactModelMock->expects($this->atLeastOnce())
             ->method('getCustomerId')
             ->willReturn('10');
 
@@ -462,7 +473,7 @@ class ContactManagerTest extends TestCase
             ->willReturn(false);
 
         $this->helperMock->expects($this->once())
-            ->method('getCustomerAddressBook')
+            ->method('getCustomerListByStoreId')
             ->willReturn('9856');
 
         $this->dataFieldCollectorMock->expects($this->once())
@@ -514,7 +525,7 @@ class ContactManagerTest extends TestCase
             ->method('getWebsiteId')
             ->willReturn('1');
 
-        $this->contactModelMock->expects($this->once())
+        $this->contactModelMock->expects($this->atLeastOnce())
             ->method('getCustomerId')
             ->willReturn('10');
 
@@ -527,7 +538,7 @@ class ContactManagerTest extends TestCase
             ->willReturn(true);
 
         $this->helperMock->expects($this->once())
-            ->method('getCustomerAddressBook')
+            ->method('getCustomerListByStoreId')
             ->willReturn(0);
 
         $this->dataFieldCollectorMock->expects($this->once())
@@ -587,7 +598,7 @@ class ContactManagerTest extends TestCase
             ->method('getWebsiteId')
             ->willReturn('1');
 
-        $this->contactModelMock->expects($this->once())
+        $this->contactModelMock->expects($this->atLeastOnce())
             ->method('getCustomerId')
             ->willReturn('10');
 
@@ -663,7 +674,7 @@ class ContactManagerTest extends TestCase
             ->willReturn('1');
 
         // Ensure we don't qualify for customer address book
-        $this->contactModelMock->expects($this->once())
+        $this->contactModelMock->expects($this->atLeastOnce())
             ->method('getCustomerId')
             ->willReturn(0);
 

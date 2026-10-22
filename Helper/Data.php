@@ -757,6 +757,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param int $websiteId
      *
      * @return string
+     * @deprecated List mapping is store-scoped. Use getCustomerListByStoreId().
+     * @see getCustomerListByStoreId
      */
     public function getCustomerAddressBook($websiteId)
     {
@@ -764,6 +766,22 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             EmailConfig::XML_PATH_CONNECTOR_CUSTOMERS_ADDRESS_BOOK_ID,
             ScopeInterface::SCOPE_WEBSITE,
             $websiteId
+        );
+    }
+
+    /**
+     * Get the customer list mapped to a store (inheriting from website and default scope).
+     *
+     * @param int|string $storeId
+     *
+     * @return string
+     */
+    public function getCustomerListByStoreId($storeId)
+    {
+        return $this->scopeConfig->getValue(
+            EmailConfig::XML_PATH_CONNECTOR_CUSTOMERS_ADDRESS_BOOK_ID,
+            ScopeInterface::SCOPE_STORE,
+            $storeId
         );
     }
 

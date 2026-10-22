@@ -11,6 +11,7 @@ use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Model\Apiconnector\V3\ClientFactory;
 use Dotdigitalgroup\Email\Model\Apiconnector\V3\StatusInterface as V3StatusInterface;
 use Dotdigitalgroup\Email\Model\Contact;
+use Dotdigitalgroup\Email\Model\Customer\RegistrationStoreResolver;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact as ContactResource;
 use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\DataFieldCollector;
 use Dotdigitalgroup\Email\Model\Sync\Subscriber\SingleSubscriberSyncer;
@@ -52,6 +53,11 @@ class ContactManager
     private $singleSubscriberSyncer;
 
     /**
+     * @var RegistrationStoreResolver
+     */
+    private $registrationStoreResolver;
+
+    /**
      * ContactManager constructor.
      *
      * @param DotdigitalContactFactory $sdkContactFactory
@@ -60,6 +66,7 @@ class ContactManager
      * @param ContactResource $contactResource
      * @param DataFieldCollector $dataFieldCollector
      * @param SingleSubscriberSyncer $singleSubscriberSyncer
+     * @param RegistrationStoreResolver $registrationStoreResolver
      */
     public function __construct(
         DotdigitalContactFactory $sdkContactFactory,
@@ -67,7 +74,8 @@ class ContactManager
         ClientFactory $clientFactory,
         ContactResource $contactResource,
         DataFieldCollector $dataFieldCollector,
-        SingleSubscriberSyncer $singleSubscriberSyncer
+        SingleSubscriberSyncer $singleSubscriberSyncer,
+        RegistrationStoreResolver $registrationStoreResolver
     ) {
         $this->sdkContactFactory = $sdkContactFactory;
         $this->helper = $helper;
@@ -75,6 +83,7 @@ class ContactManager
         $this->contactResource = $contactResource;
         $this->dataFieldCollector = $dataFieldCollector;
         $this->singleSubscriberSyncer = $singleSubscriberSyncer;
+        $this->registrationStoreResolver = $registrationStoreResolver;
     }
 
     /**
@@ -82,6 +91,8 @@ class ContactManager
      *
      * Ensure that, prior to automation enrolment, we have a contact in Dotdigital,
      * in the expected address books, and with the expected data fields.
+     *
+     * Customers go to the customer list of their registration store, not the store they are shopping in.
      *
      * @param Contact $contact
      * @param Subscriber $subscriber
@@ -108,7 +119,11 @@ class ContactManager
         $websiteId = (int) $contact->getWebsiteId();
 
         if ($this->canPushContactToCustomerAddressBook($contact, $subscriber, $automationType)) {
-            $addressBookId = (int) $this->helper->getCustomerAddressBook($websiteId);
+            $registrationStoreId = $this->registrationStoreResolver->resolve(
+                (int) $contact->getCustomerId(),
+                $websiteId
+            );
+            $addressBookId = (int) $this->helper->getCustomerListByStoreId($registrationStoreId);
             $dataFields = $this->dataFieldCollector->mergeFields(
                 $automationDataFields,
                 $this->dataFieldCollector->collectForCustomer(

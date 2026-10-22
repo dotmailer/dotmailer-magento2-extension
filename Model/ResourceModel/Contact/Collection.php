@@ -237,19 +237,66 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     public function getCustomersToImportByWebsite($websiteId, $onlySubscriber, $pageSize, $offset)
     {
         $collection = $this->addFieldToSelect('*')
-            ->addFieldToFilter('customer_id', ['neq' => '0'])
-            ->addFieldToFilter('email_imported', 0)
-            ->addFieldToFilter('website_id', $websiteId);
+            ->addFieldToFilter('main_table.customer_id', ['neq' => '0'])
+            ->addFieldToFilter('main_table.email_imported', 0)
+            ->addFieldToFilter('main_table.website_id', $websiteId);
 
         if ($onlySubscriber) {
-            $collection->addFieldToFilter('is_subscriber', 1)
+            $collection->addFieldToFilter('main_table.is_subscriber', 1)
                 ->addFieldToFilter(
-                    'subscriber_status',
+                    'main_table.subscriber_status',
                     \Magento\Newsletter\Model\Subscriber::STATUS_SUBSCRIBED
                 );
         }
 
         $collection->getSelect()->limit($pageSize, $offset);
+
+        return $collection;
+    }
+
+    /**
+     * Get customers to import for a cohort of registration stores within a website.
+     *
+     * Customers are matched on customer_entity.store_id (their registration store), not email_contact.store_id.
+     * When $includeUnassigned is set, customers with no registration store in the website
+     * (missing or belonging to another website) are included too.
+     *
+     * @param int|string $websiteId
+     * @param array $storeIds Registration store IDs of the cohort.
+     * @param array $websiteStoreIds All store IDs of the website.
+     * @param bool $includeUnassigned
+     * @param bool $onlySubscriber
+     * @param int $pageSize
+     * @param int $offset
+     * @return Collection
+     */
+    public function getCustomersToImportByRegistrationStores(
+        $websiteId,
+        array $storeIds,
+        array $websiteStoreIds,
+        bool $includeUnassigned,
+        bool $onlySubscriber,
+        $pageSize,
+        $offset
+    ) {
+        $collection = $this->getCustomersToImportByWebsite($websiteId, $onlySubscriber, $pageSize, $offset);
+        $select = $collection->getSelect();
+        $select->joinLeft(
+            ['registration' => $this->getTable('customer_entity')],
+            'main_table.customer_id = registration.entity_id',
+            []
+        );
+
+        $connection = $this->getConnection();
+        $condition = $connection->quoteInto('registration.store_id IN (?)', $storeIds ?: [0]);
+        if ($includeUnassigned) {
+            $unassigned = 'registration.store_id IS NULL';
+            if ($websiteStoreIds) {
+                $unassigned .= ' OR ' . $connection->quoteInto('registration.store_id NOT IN (?)', $websiteStoreIds);
+            }
+            $condition .= ' OR ' . $unassigned;
+        }
+        $select->where($condition);
 
         return $collection;
     }

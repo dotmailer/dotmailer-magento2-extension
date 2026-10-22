@@ -8,3 +8,5 @@ composer.lock
 .DS_Store
 auth.json
 *testsuite.xml
+AGENTS.md
+docs/agents/*
