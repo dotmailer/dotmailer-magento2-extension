@@ -52,7 +52,7 @@ class DotdigitalConfigurationView implements ArgumentInterface
         /** @var Store $store */
         $store = $this->storeManager->getStore();
         $configData = [
-            'currencyCode' => $store->getCurrentCurrencyCode(),
+            'currencyCode' => $store->getDefaultCurrencyCode(),
             'locale' =>$store->getConfig('general/locale/code'),
             'storeCode' => $store->getCode(),
         ];
