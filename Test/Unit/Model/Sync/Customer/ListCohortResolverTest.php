@@ -106,4 +106,23 @@ class ListCohortResolverTest extends TestCase
         $this->assertFalse($cohorts[0]['onlySubscribers']);
         $this->assertFalse($cohorts[1]['onlySubscribers']);
     }
+
+    public function testGuestCohortsUseTheGuestListNotTheCustomerList(): void
+    {
+        $this->storeResolver->method('getWebsiteStoreIds')->willReturn([1, 2]);
+        $this->storeResolver->method('getFallbackStoreId')->willReturn(1);
+        $this->helper->method('isOnlySubscribersForContactSync')->willReturn(false);
+        $this->helper->method('getCustomerListByStoreId')->willReturn('10');
+        $this->helper->method('getGuestListByStoreId')
+            ->willReturnCallback(static function ($storeId) {
+                return [1 => '30', 2 => '40'][$storeId];
+            });
+
+        $cohorts = $this->resolver()->resolveGuests($this->website);
+
+        $this->assertSame(30, $cohorts[0]['listId']);
+        $this->assertTrue($cohorts[0]['includeUnassigned']);
+        $this->assertSame(40, $cohorts[1]['listId']);
+        $this->assertSame([2], $cohorts[1]['storeIds']);
+    }
 }

@@ -11,6 +11,8 @@ use Dotdigitalgroup\Email\Model\AutomationFactory;
 use Dotdigitalgroup\Email\Model\Contact;
 use Dotdigitalgroup\Email\Model\OrderFactory;
 use Dotdigitalgroup\Email\Model\Queue\Data\SubscriptionDataFactory;
+use Dotdigitalgroup\Email\Model\Queue\Sales\GuestListAdditionPublisher;
+use Dotdigitalgroup\Email\Model\Sales\GuestListAdditionService;
 use Dotdigitalgroup\Email\Model\Queue\Sync\Automation\AutomationPublisher;
 use Dotdigitalgroup\Email\Model\ResourceModel\Automation;
 use Dotdigitalgroup\Email\Model\ResourceModel\Automation\CollectionFactory;
@@ -115,6 +117,16 @@ class OrderSaveAfter implements ObserverInterface
     private $publisher;
 
     /**
+     * @var GuestListAdditionPublisher
+     */
+    private $guestListAdditionPublisher;
+
+    /**
+     * @var GuestListAdditionService
+     */
+    private $guestListAdditionService;
+
+    /**
      * @param Logger $logger
      * @param AutomationFactory $automationFactory
      * @param Automation $automationResource
@@ -131,6 +143,8 @@ class OrderSaveAfter implements ObserverInterface
      * @param SubscriptionDataFactory $subscriptionDataFactory
      * @param AutomationPublisher $automationPublisher
      * @param PublisherInterface $publisher
+     * @param GuestListAdditionPublisher $guestListAdditionPublisher
+     * @param GuestListAdditionService $guestListAdditionService
      */
     public function __construct(
         Logger $logger,
@@ -148,7 +162,9 @@ class OrderSaveAfter implements ObserverInterface
         CollectionFactory $emailAutomationFactory,
         SubscriptionDataFactory $subscriptionDataFactory,
         AutomationPublisher $automationPublisher,
-        PublisherInterface $publisher
+        PublisherInterface $publisher,
+        GuestListAdditionPublisher $guestListAdditionPublisher,
+        GuestListAdditionService $guestListAdditionService
     ) {
         $this->logger = $logger;
         $this->serializer = $serializer;
@@ -166,6 +182,8 @@ class OrderSaveAfter implements ObserverInterface
         $this->subscriptionDataFactory = $subscriptionDataFactory;
         $this->automationPublisher = $automationPublisher;
         $this->publisher = $publisher;
+        $this->guestListAdditionPublisher = $guestListAdditionPublisher;
+        $this->guestListAdditionService = $guestListAdditionService;
     }
 
     /**
@@ -249,6 +267,17 @@ class OrderSaveAfter implements ObserverInterface
             }
 
             $this->resetContactByEmailAndWebsiteId($customerEmail, $websiteId, $automationQueued);
+
+            // A queued automation enrolment (new guest order or order status) already adds the guest to
+            // the list. Publishing both would race to create the same contact (contacts:identifierConflict).
+            $incrementId = (string) $order->getIncrementId();
+            $guestOrderAutomationQueued = $this->guestListAdditionService->isAutomationQueued($incrementId);
+            if ($this->guestListAdditionService->consumePlaced($incrementId) &&
+                !$automationQueued &&
+                !$guestOrderAutomationQueued
+            ) {
+                $this->queueGuestListAddition($order, (int) $websiteId, (int) $storeId);
+            }
         } catch (\Exception $e) {
             $this->logger->error('Error in OrderSaveAfter observer', [(string) $e]);
         }
@@ -299,6 +328,51 @@ class OrderSaveAfter implements ObserverInterface
             $subscriptionData->setWebsiteId($contact->getWebsiteId());
             $subscriptionData->setType('subscribe');
             $this->publisher->publish(DotdigitalSubscriber::TOPIC_NEWSLETTER_SUBSCRIPTION, $subscriptionData);
+        }
+    }
+
+    /**
+     * Queue the addition of a guest to the guest list of the order store.
+     *
+     * Runs once the order is committed. A publish failure is logged and must not affect the order.
+     *
+     * @param Order $order
+     * @param int $websiteId
+     * @param int $storeId
+     *
+     * @return void
+     */
+    private function queueGuestListAddition($order, int $websiteId, int $storeId)
+    {
+        if (!$this->helper->isGuestSyncEnabled($websiteId) ||
+            !$this->helper->getGuestListByStoreId($storeId)
+        ) {
+            return;
+        }
+
+        $email = (string) $order->getCustomerEmail();
+        $contact = $this->contactCollectionFactory->create()->loadByCustomerEmail($email, $websiteId);
+        if (!$contact || !$contact->getId()) {
+            $this->logger->error(
+                'Guest list addition not queued: guest contact was not recorded',
+                ['order' => $order->getIncrementId()]
+            );
+            return;
+        }
+
+        try {
+            $this->guestListAdditionPublisher->publish(
+                $websiteId,
+                $storeId,
+                (int) $contact->getId(),
+                $email,
+                (string) $order->getIncrementId()
+            );
+        } catch (Exception $e) {
+            $this->logger->error(
+                'Guest list addition publish failed',
+                ['order' => $order->getIncrementId(), 'exception' => (string) $e]
+            );
         }
     }
 

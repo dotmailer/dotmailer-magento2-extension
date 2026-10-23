@@ -153,6 +153,7 @@ class ContactManagerTest extends TestCase
         $this->contactModelMock = $this->getMockBuilder($this->classWithAddedMethods(Contact::class, [
                 'getEmail',
                 'getWebsiteId',
+                'getStoreId',
                 'getCustomerId',
                 'getIsGuest',
                 'setSubscriberImported',
@@ -162,6 +163,7 @@ class ContactManagerTest extends TestCase
                 'getId',
                 'getEmail',
                 'getWebsiteId',
+                'getStoreId',
                 'getCustomerId',
                 'getIsGuest',
                 'setSubscriberImported',
@@ -179,6 +181,8 @@ class ContactManagerTest extends TestCase
 
         $this->registrationStoreResolverMock = $this->createMock(RegistrationStoreResolver::class);
         $this->registrationStoreResolverMock->method('resolve')->willReturn(7);
+        $this->registrationStoreResolverMock->method('getWebsiteStoreIds')->willReturn([7, 8]);
+        $this->registrationStoreResolverMock->method('getFallbackStoreId')->willReturn(8);
 
         $this->contactManager = new ContactManager(
             $this->sdkContactFactoryMock,
@@ -329,6 +333,8 @@ class ContactManagerTest extends TestCase
             ->method('getWebsiteId')
             ->willReturn('1');
 
+        $this->contactModelMock->method('getStoreId')->willReturn(7);
+
         $this->contactModelMock->expects($this->atLeastOnce())
             ->method('getCustomerId')
             ->willReturn(0);
@@ -346,7 +352,8 @@ class ContactManagerTest extends TestCase
             ->willReturn(false);
 
         $this->helperMock->expects($this->once())
-            ->method('getGuestAddressBook')
+            ->method('getGuestListByStoreId')
+            ->with(7)
             ->willReturn('9541');
 
         $this->dataFieldCollectorMock->expects($this->once())
@@ -387,6 +394,162 @@ class ContactManagerTest extends TestCase
             $this->subscriberModelMock,
             $this->getDefaultDataFields(),
             AutomationTypeHandler::AUTOMATION_TYPE_NEW_GUEST_ORDER
+        );
+    }
+
+    public function testGuestListFallsBackToWebsiteDefaultStoreWhenContactStoreIsUnassigned()
+    {
+        $email = 'chaz@emailsim.io';
+        $contactId = 123456;
+
+        $this->contactModelMock->expects($this->once())
+            ->method('getEmail')
+            ->willReturn($email);
+
+        $this->contactModelMock->expects($this->atLeastOnce())
+            ->method('getWebsiteId')
+            ->willReturn('1');
+
+        $this->contactModelMock->method('getStoreId')->willReturn(0);
+
+        $this->contactModelMock->expects($this->atLeastOnce())
+            ->method('getCustomerId')
+            ->willReturn(0);
+
+        $this->contactModelMock->expects($this->once())
+            ->method('getIsGuest')
+            ->willReturn(1);
+
+        $this->helperMock->expects($this->once())
+            ->method('isGuestSyncEnabled')
+            ->willReturn(true);
+
+        $this->subscriberModelMock->expects($this->any())
+            ->method('isSubscribed')
+            ->willReturn(false);
+
+        $this->helperMock->expects($this->once())
+            ->method('getGuestListByStoreId')
+            ->with(8)
+            ->willReturn('9541');
+
+        $this->dataFieldCollectorMock->expects($this->once())
+            ->method('collectForGuest')
+            ->willReturn($this->getDummyGuestDataFields());
+
+        $sdkContact = $this->createMock(ContactModel::class);
+        $this->sdkContactFactoryMock->expects($this->once())
+            ->method('create')
+            ->willReturn($sdkContact);
+
+        $this->clientFactoryMock->expects($this->once())
+            ->method('create')
+            ->with(['data' => ['websiteId' => 1]])
+            ->willReturn($this->v3ClientMock);
+
+        $responseContact = $this->createContactModelWithChannelProperties(
+            $contactId,
+            StatusInterface::SUBSCRIBED
+        );
+
+        $contactsResourceMock = $this->createMock(Contacts::class);
+        $this->v3ClientMock->method('__get')
+            ->with('contacts')
+            ->willReturn($contactsResourceMock);
+        $contactsResourceMock->expects($this->once())
+            ->method('patchByIdentifier')
+            ->willReturn($responseContact);
+
+        $this->contactModelMock->expects($this->once())
+            ->method('setEmailImported');
+
+        $this->contactResourceMock->expects($this->once())
+            ->method('save');
+
+        $this->contactManager->prepareDotdigitalContact(
+            $this->contactModelMock,
+            $this->subscriberModelMock,
+            $this->getDefaultDataFields(),
+            AutomationTypeHandler::AUTOMATION_TYPE_NEW_GUEST_ORDER
+        );
+    }
+
+    public function testGuestListUsesTriggerStoreOverContactStore()
+    {
+        $email = 'chaz@emailsim.io';
+        $contactId = 123456;
+
+        $this->contactModelMock->expects($this->once())
+            ->method('getEmail')
+            ->willReturn($email);
+
+        $this->contactModelMock->expects($this->atLeastOnce())
+            ->method('getWebsiteId')
+            ->willReturn('1');
+
+        $this->contactModelMock->method('getStoreId')->willReturn(8);
+
+        $this->contactModelMock->expects($this->atLeastOnce())
+            ->method('getCustomerId')
+            ->willReturn(0);
+
+        $this->contactModelMock->expects($this->once())
+            ->method('getIsGuest')
+            ->willReturn(1);
+
+        $this->helperMock->expects($this->once())
+            ->method('isGuestSyncEnabled')
+            ->willReturn(true);
+
+        $this->subscriberModelMock->expects($this->any())
+            ->method('isSubscribed')
+            ->willReturn(false);
+
+        $this->helperMock->expects($this->once())
+            ->method('getGuestListByStoreId')
+            ->with(7)
+            ->willReturn('9541');
+
+        $this->dataFieldCollectorMock->expects($this->once())
+            ->method('collectForGuest')
+            ->willReturn($this->getDummyGuestDataFields());
+
+        $sdkContact = $this->createMock(ContactModel::class);
+        $this->sdkContactFactoryMock->expects($this->once())
+            ->method('create')
+            ->willReturn($sdkContact);
+
+        $this->clientFactoryMock->expects($this->once())
+            ->method('create')
+            ->with(['data' => ['websiteId' => 1]])
+            ->willReturn($this->v3ClientMock);
+
+        $responseContact = $this->createContactModelWithChannelProperties(
+            $contactId,
+            StatusInterface::SUBSCRIBED
+        );
+
+        $contactsResourceMock = $this->createMock(Contacts::class);
+        $this->v3ClientMock->method('__get')
+            ->with('contacts')
+            ->willReturn($contactsResourceMock);
+        $contactsResourceMock->expects($this->once())
+            ->method('patchByIdentifier')
+            ->willReturn($responseContact);
+
+        $this->contactModelMock->expects($this->once())
+            ->method('setEmailImported');
+
+        $this->contactResourceMock->expects($this->once())
+            ->method('save');
+
+        $this->contactManager->prepareDotdigitalContact(
+            $this->contactModelMock,
+            $this->subscriberModelMock,
+            $this->getDefaultDataFields(),
+            AutomationTypeHandler::AUTOMATION_TYPE_NEW_GUEST_ORDER,
+            null,
+            7
         );
     }
 

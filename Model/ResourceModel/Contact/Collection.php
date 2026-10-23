@@ -213,6 +213,46 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     }
 
     /**
+     * Get guests to import for a cohort of stores within a website.
+     *
+     * Guests are matched on email_contact.store_id (the store of first contact).
+     * When $includeUnassigned is set, guests whose store is not one of the website's stores are included too.
+     *
+     * @param int|string $websiteId
+     * @param array $storeIds Store IDs of the cohort.
+     * @param array $websiteStoreIds All store IDs of the website.
+     * @param bool $includeUnassigned
+     * @param bool $onlySubscriber
+     * @param int $pageSize
+     * @param int $offset
+     * @return Collection
+     */
+    public function getGuestsByStores(
+        $websiteId,
+        array $storeIds,
+        array $websiteStoreIds,
+        bool $includeUnassigned,
+        bool $onlySubscriber,
+        $pageSize,
+        $offset
+    ) {
+        $collection = $this->getGuests($websiteId, $onlySubscriber, $pageSize, $offset);
+
+        $connection = $this->getConnection();
+        $condition = $connection->quoteInto('main_table.store_id IN (?)', $storeIds ?: [0]);
+        if ($includeUnassigned) {
+            $unassigned = 'main_table.store_id = 0';
+            if ($websiteStoreIds) {
+                $unassigned = $connection->quoteInto('main_table.store_id NOT IN (?)', $websiteStoreIds);
+            }
+            $condition .= ' OR ' . $unassigned;
+        }
+        $collection->getSelect()->where($condition);
+
+        return $collection;
+    }
+
+    /**
      * Number contacts marked as imported.
      *
      * @return int

@@ -806,6 +806,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @param string|int $websiteId
      * @return string|boolean
+     * @deprecated List mapping is store-scoped. Use getGuestListByStoreId().
+     * @see getGuestListByStoreId
      */
     public function getGuestAddressBook($websiteId)
     {
@@ -813,6 +815,22 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             EmailConfig::XML_PATH_CONNECTOR_GUEST_ADDRESS_BOOK_ID,
             ScopeInterface::SCOPE_WEBSITE,
             $websiteId
+        );
+    }
+
+    /**
+     * Get the guest list mapped to a store (inheriting from website and default scope).
+     *
+     * @param int|string $storeId
+     *
+     * @return string|boolean
+     */
+    public function getGuestListByStoreId($storeId)
+    {
+        return $this->scopeConfig->getValue(
+            EmailConfig::XML_PATH_CONNECTOR_GUEST_ADDRESS_BOOK_ID,
+            ScopeInterface::SCOPE_STORE,
+            $storeId
         );
     }
 

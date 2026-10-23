@@ -8,6 +8,7 @@ use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\AutomationFactory;
 use Dotdigitalgroup\Email\Model\Queue\Data\CartPhaseUpdateDataFactory;
+use Dotdigitalgroup\Email\Model\Sales\GuestListAdditionService;
 use Dotdigitalgroup\Email\Model\Queue\Sync\Automation\AutomationPublisher;
 use Dotdigitalgroup\Email\Model\ResourceModel\Automation;
 use Dotdigitalgroup\Email\Model\Sync\Automation\AutomationTypeHandler;
@@ -88,6 +89,11 @@ class OrderPlaceAfter implements ObserverInterface
     private $storeManager;
 
     /**
+     * @var GuestListAdditionService
+     */
+    private $guestListAdditionService;
+
+    /**
      * @param Data $data
      * @param Logger $logger
      * @param AutomationFactory $automationFactory
@@ -99,6 +105,7 @@ class OrderPlaceAfter implements ObserverInterface
      * @param ContactFactory $contactFactory
      * @param PublisherInterface $publisher
      * @param StoreManagerInterface $storeManagerInterface
+     * @param GuestListAdditionService $guestListAdditionService
      */
     public function __construct(
         Data $data,
@@ -111,7 +118,8 @@ class OrderPlaceAfter implements ObserverInterface
         ContactResource $contactResource,
         ContactFactory $contactFactory,
         PublisherInterface $publisher,
-        StoreManagerInterface $storeManagerInterface
+        StoreManagerInterface $storeManagerInterface,
+        GuestListAdditionService $guestListAdditionService
     ) {
         $this->automationFactory = $automationFactory;
         $this->automationResource = $automationResource;
@@ -124,6 +132,7 @@ class OrderPlaceAfter implements ObserverInterface
         $this->contactFactory = $contactFactory;
         $this->cartPhaseUpdateDataFactory = $cartPhaseUpdateDataFactory;
         $this->publisher = $publisher;
+        $this->guestListAdditionService = $guestListAdditionService;
     }
 
     /**
@@ -148,6 +157,8 @@ class OrderPlaceAfter implements ObserverInterface
 
             if ($order->getCustomerIsGuest()) {
                 $this->createOrUpdateGuestContact($order, $websiteId);
+                // The order is not committed yet; OrderSaveAfter queues the list addition once it is.
+                $this->guestListAdditionService->markPlaced((string) $order->getIncrementId());
 
                 $programType = 'XML_PATH_CONNECTOR_AUTOMATION_STUDIO_GUEST_ORDER';
                 $automationType = AutomationTypeHandler::AUTOMATION_TYPE_NEW_GUEST_ORDER;
@@ -178,6 +189,10 @@ class OrderPlaceAfter implements ObserverInterface
             $this->automationResource->save($automation);
 
             $this->automationPublisher->publish($automation);
+
+            if ($order->getCustomerIsGuest()) {
+                $this->guestListAdditionService->markAutomationQueued((string) $order->getIncrementId());
+            }
         } catch (Exception $e) {
             $this->logger->error('Error in OrderPlaceAfter observer', [(string)$e]);
         }

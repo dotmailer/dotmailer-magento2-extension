@@ -199,7 +199,8 @@ class AutomationProcessor
             $automationSubscriber,
             $automationDataFields,
             $automation->getAutomationType(),
-            $automationOptInType
+            $automationOptInType,
+            $storeId ?: null
         );
 
         $this->orderManager->maybeSendOrderInsightData($automation);

@@ -10,7 +10,7 @@ use Magento\Framework\Exception\LocalizedException;
 use Magento\Store\Api\Data\WebsiteInterface;
 
 /**
- * Groups the stores of a website into cohorts that share one customer list.
+ * Groups the stores of a website into cohorts that share one customer or guest list.
  *
  * Stores inheriting the same website list form a single cohort, so import volume is unchanged.
  */
@@ -54,13 +54,54 @@ class ListCohortResolver
      */
     public function resolve(WebsiteInterface $website): array
     {
+        return $this->buildCohorts(
+            $website,
+            function (int $storeId) {
+                return $this->helper->getCustomerListByStoreId($storeId);
+            }
+        );
+    }
+
+    /**
+     * Resolve guest list cohorts for a website.
+     *
+     * Same shape as resolve(), but stores are resolved against the guest list. Guests are placed by the
+     * store they first made contact in (email_contact.store_id), so includeUnassigned covers guests
+     * whose store is missing or outside the website.
+     *
+     * @param WebsiteInterface $website
+     *
+     * @return array[]
+     * @throws LocalizedException
+     */
+    public function resolveGuests(WebsiteInterface $website): array
+    {
+        return $this->buildCohorts(
+            $website,
+            function (int $storeId) {
+                return $this->helper->getGuestListByStoreId($storeId);
+            }
+        );
+    }
+
+    /**
+     * Build cohorts using the given store-scoped list lookup.
+     *
+     * @param WebsiteInterface $website
+     * @param callable $listLookup
+     *
+     * @return array[]
+     * @throws LocalizedException
+     */
+    private function buildCohorts(WebsiteInterface $website, callable $listLookup): array
+    {
         $websiteId = (int) $website->getId();
         $fallbackStoreId = $this->registrationStoreResolver->getFallbackStoreId($websiteId);
         $onlySubscribers = $this->helper->isOnlySubscribersForContactSync($websiteId);
         $cohorts = [];
 
         foreach ($this->registrationStoreResolver->getWebsiteStoreIds($websiteId) as $storeId) {
-            $listId = (int) $this->helper->getCustomerListByStoreId($storeId);
+            $listId = (int) $listLookup($storeId);
             if (!$listId) {
                 continue;
             }

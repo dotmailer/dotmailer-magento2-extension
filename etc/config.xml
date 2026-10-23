@@ -327,7 +327,7 @@
             </ip_restriction>
             <cron_schedules>
                 <customer>*/15 * * * *</customer>
-                <guest>*/15 * * * *</guest>
+                <guest>0 * * * *</guest>
                 <subscriber>0 * * * *</subscriber>
                 <importer>*/5 * * * *</importer>
                 <order>*/15 * * * *</order>
