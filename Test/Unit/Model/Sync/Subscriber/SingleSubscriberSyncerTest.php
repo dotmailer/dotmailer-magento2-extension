@@ -13,6 +13,8 @@ use Dotdigitalgroup\Email\Model\Contact;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact as ContactResource;
 use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\DataFieldCollector;
 use Dotdigitalgroup\Email\Model\Sync\Subscriber\SingleSubscriberSyncer;
+use Dotdigitalgroup\Email\Model\Sync\Subscriber\SubscriberListResolver;
+use Magento\Framework\Exception\LocalizedException;
 use Dotdigitalgroup\Email\Test\Unit\Traits\MockBuilderCompatibilityTrait;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -27,6 +29,11 @@ class SingleSubscriberSyncerTest extends TestCase
      * @var Data|MockObject
      */
     private $helperMock;
+
+    /**
+     * @var SubscriberListResolver|MockObject
+     */
+    private $subscriberListResolverMock;
 
     /**
      * @var DataFieldCollector|MockObject
@@ -68,9 +75,11 @@ class SingleSubscriberSyncerTest extends TestCase
     {
         $this->helperMock = $this->createMock(Data::class);
         $this->dataFieldCollectorMock = $this->createMock(DataFieldCollector::class);
+        $this->subscriberListResolverMock = $this->createMock(SubscriberListResolver::class);
         $this->contactModelMock = $this->getMockBuilder($this->classWithAddedMethods(Contact::class, [
                 'getEmail',
                 'getWebsiteId',
+                'getStoreId',
                 'getCustomerId',
                 'getIsGuest',
                 'setSubscriberImported',
@@ -81,6 +90,7 @@ class SingleSubscriberSyncerTest extends TestCase
                 'getId',
                 'getEmail',
                 'getWebsiteId',
+                'getStoreId',
                 'getCustomerId',
                 'getIsGuest',
                 'setSubscriberImported',
@@ -103,7 +113,8 @@ class SingleSubscriberSyncerTest extends TestCase
             $this->helperMock,
             $this->clientFactoryMock,
             $this->contactResourceMock,
-            $this->dataFieldCollectorMock
+            $this->dataFieldCollectorMock,
+            $this->subscriberListResolverMock
         );
     }
 
@@ -118,9 +129,19 @@ class SingleSubscriberSyncerTest extends TestCase
         $this->contactModelMock->method('getWebsiteId')->willReturn($websiteId);
         $this->contactModelMock->method('getEmail')->willReturn($email);
         $this->helperMock->method('isSubscriberSyncEnabled')->willReturn(true);
-        $this->helperMock->method('getSubscriberAddressBook')->willReturn($subscriberAddressBookId);
+        $this->contactModelMock->method('getStoreId')->willReturn(1);
+        $this->subscriberListResolverMock->expects($this->once())
+            ->method('resolveStoreId')
+            ->with($websiteId, 3, 1)
+            ->willReturn(3);
+        $this->subscriberListResolverMock->expects($this->once())
+            ->method('getListId')
+            ->with($websiteId, 3)
+            ->willReturn((int) $subscriberAddressBookId);
 
-        $this->dataFieldCollectorMock->method('collectForSubscriber')
+        $this->dataFieldCollectorMock->expects($this->once())
+            ->method('collectForSubscriber')
+            ->with($this->contactModelMock, $websiteId, (int) $subscriberAddressBookId)
             ->willReturn($sdkSubscriber);
 
         $this->sdkContactsResourceMock->expects($this->once())
@@ -142,6 +163,33 @@ class SingleSubscriberSyncerTest extends TestCase
         $this->contactResourceMock->expects($this->once())
             ->method('save')
             ->with($this->contactModelMock);
+
+        $this->singleSubscriberSyncer->execute($this->contactModelMock, 3);
+    }
+
+    public function testPushContactReturnsNullWhenStoreHasNoSubscriberList()
+    : void
+    {
+        $this->contactModelMock->method('getWebsiteId')->willReturn(1);
+        $this->helperMock->method('isSubscriberSyncEnabled')->willReturn(true);
+        $this->subscriberListResolverMock->method('resolveStoreId')->willReturn(2);
+        $this->subscriberListResolverMock->method('getListId')->willReturn(0);
+
+        $this->dataFieldCollectorMock->expects($this->never())->method('collectForSubscriber');
+
+        $this->assertNull($this->singleSubscriberSyncer->pushContactToSubscriberAddressBook($this->contactModelMock));
+    }
+
+    public function testPushContactFailsWhenSubscriberStoreIsUnavailable()
+    : void
+    {
+        $this->contactModelMock->method('getWebsiteId')->willReturn(1);
+        $this->helperMock->method('isSubscriberSyncEnabled')->willReturn(true);
+        $this->subscriberListResolverMock->method('resolveStoreId')
+            ->willThrowException(new LocalizedException(__('Subscriber store context is unavailable')));
+
+        $this->sdkContactsResourceMock->expects($this->never())->method('patchByIdentifier');
+        $this->expectException(LocalizedException::class);
 
         $this->singleSubscriberSyncer->execute($this->contactModelMock);
     }

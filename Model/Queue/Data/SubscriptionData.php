@@ -22,6 +22,11 @@ class SubscriptionData
     private $websiteId;
 
     /**
+     * @var int|null
+     */
+    private $storeId;
+
+    /**
      * @var string
      */
     private $type;
@@ -67,6 +72,21 @@ class SubscriptionData
     public function setWebsiteId($websiteId)
     {
         (int) $this->websiteId = $websiteId;
+    }
+
+    /**
+     * Set store id.
+     *
+     * The store of the newsletter subscriber record, which selects the store-scoped subscriber list.
+     * Messages queued before store-scoped lists carry no store.
+     *
+     * @param string|int|null $storeId
+     *
+     * @return void
+     */
+    public function setStoreId($storeId)
+    {
+        $this->storeId = $storeId === null ? null : (int) $storeId;
     }
 
     /**
@@ -123,6 +143,16 @@ class SubscriptionData
     public function getWebsiteId(): int
     {
         return (int) $this->websiteId;
+    }
+
+    /**
+     * Get store id.
+     *
+     * @return int|null
+     */
+    public function getStoreId(): ?int
+    {
+        return $this->storeId === null ? null : (int) $this->storeId;
     }
 
     /**

@@ -10,7 +10,7 @@ use Magento\Framework\Exception\LocalizedException;
 use Magento\Store\Api\Data\WebsiteInterface;
 
 /**
- * Groups the stores of a website into cohorts that share one customer or guest list.
+ * Groups the stores of a website into cohorts that share one customer, guest or subscriber list.
  *
  * Stores inheriting the same website list form a single cohort, so import volume is unchanged.
  */
@@ -80,6 +80,28 @@ class ListCohortResolver
             $website,
             function (int $storeId) {
                 return $this->helper->getGuestListByStoreId($storeId);
+            }
+        );
+    }
+
+    /**
+     * Resolve subscriber list cohorts for a website.
+     *
+     * Same shape as resolve(), but stores are resolved against the subscriber list. Subscribers are placed
+     * by their subscriber store (email_contact.store_id, mirrored from newsletter_subscriber.store_id), so
+     * only the stores listed in each cohort are matched. includeUnassigned is not used for subscribers.
+     *
+     * @param WebsiteInterface $website
+     *
+     * @return array[]
+     * @throws LocalizedException
+     */
+    public function resolveSubscribers(WebsiteInterface $website): array
+    {
+        return $this->buildCohorts(
+            $website,
+            function (int $storeId) {
+                return $this->helper->getSubscriberListByStoreId($storeId);
             }
         );
     }

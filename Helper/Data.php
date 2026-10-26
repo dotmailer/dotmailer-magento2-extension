@@ -791,6 +791,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param int $websiteId
      *
      * @return string|boolean
+     * @deprecated List mapping is store-scoped. Use getSubscriberListByStoreId().
+     * @see getSubscriberListByStoreId
      */
     public function getSubscriberAddressBook($websiteId)
     {
@@ -798,6 +800,22 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             EmailConfig::XML_PATH_CONNECTOR_SUBSCRIBERS_ADDRESS_BOOK_ID,
             ScopeInterface::SCOPE_WEBSITE,
             $websiteId
+        );
+    }
+
+    /**
+     * Get the subscriber list mapped to a store (inheriting from website and default scope).
+     *
+     * @param int|string $storeId
+     *
+     * @return string|boolean
+     */
+    public function getSubscriberListByStoreId($storeId)
+    {
+        return $this->scopeConfig->getValue(
+            EmailConfig::XML_PATH_CONNECTOR_SUBSCRIBERS_ADDRESS_BOOK_ID,
+            ScopeInterface::SCOPE_STORE,
+            $storeId
         );
     }
 

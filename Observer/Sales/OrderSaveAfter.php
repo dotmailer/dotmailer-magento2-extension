@@ -326,6 +326,7 @@ class OrderSaveAfter implements ObserverInterface
             $subscriptionData->setId($contact->getId());
             $subscriptionData->setEmail($contact->getEmail());
             $subscriptionData->setWebsiteId($contact->getWebsiteId());
+            $subscriptionData->setStoreId($contact->getStoreId());
             $subscriptionData->setType('subscribe');
             $this->publisher->publish(DotdigitalSubscriber::TOPIC_NEWSLETTER_SUBSCRIPTION, $subscriptionData);
         }

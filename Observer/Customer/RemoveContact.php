@@ -136,6 +136,7 @@ class RemoveContact implements \Magento\Framework\Event\ObserverInterface
             $unsubscriber->setEmail($email);
             $unsubscriber->setId($contact->getId());
             $unsubscriber->setWebsiteId($websiteId);
+            $unsubscriber->setStoreId($contact->getStoreId());
             $unsubscriber->setType('unsubscribe');
 
             $this->publisher->publish(DotdigitalSubscriber::TOPIC_NEWSLETTER_SUBSCRIPTION, $unsubscriber);

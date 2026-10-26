@@ -48,11 +48,11 @@ class DataListMappingTest extends TestCase
     public function testStoreScopedGettersUseStoreValue(): void
     {
         $this->values['sync_settings/addressbook/customers'] = ['store' => [2 => '20']];
-        $this->values['sync_settings/addressbook/subscribers'] = ['website' => [1 => '30']];
+        $this->values['sync_settings/addressbook/subscribers'] = ['store' => [2 => '30']];
         $this->values['sync_settings/addressbook/guests'] = ['store' => [2 => '40']];
 
         $this->assertSame('20', $this->helper->getCustomerListByStoreId(2));
-        $this->assertSame('30', $this->helper->getSubscriberAddressBook(1));
+        $this->assertSame('30', $this->helper->getSubscriberListByStoreId(2));
         $this->assertSame('40', $this->helper->getGuestListByStoreId(2));
     }
 

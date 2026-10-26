@@ -14,6 +14,7 @@ use Dotdigitalgroup\Email\Model\ResourceModel\Contact as ContactResource;
 use Dotdigitalgroup\Email\Model\Queue\Data\SubscriptionData;
 use Dotdigitalgroup\Email\Model\Sync\Automation\AutomationTypeHandler;
 use Dotdigitalgroup\Email\Model\Sync\Subscriber\SingleSubscriberSyncer;
+use Dotdigitalgroup\Email\Model\Sync\Subscriber\SubscriberListResolver;
 use Http\Client\Exception;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\MessageQueue\PublisherInterface;
@@ -62,6 +63,11 @@ class SubscriptionConsumer
     private $publisher;
 
     /**
+     * @var SubscriberListResolver
+     */
+    private $subscriberListResolver;
+
+    /**
      * @param Data $helper
      * @param Logger $logger
      * @param AutomationDataFactory $automationDataFactory
@@ -70,6 +76,7 @@ class SubscriptionConsumer
      * @param ContactResource $contactResource
      * @param PublisherInterface $publisher
      * @param SingleSubscriberSyncer $singleSubscriberSyncer
+     * @param SubscriberListResolver $subscriberListResolver
      */
     public function __construct(
         Data $helper,
@@ -79,7 +86,8 @@ class SubscriptionConsumer
         ContactFactory $contactFactory,
         ContactResource $contactResource,
         PublisherInterface $publisher,
-        SingleSubscriberSyncer $singleSubscriberSyncer
+        SingleSubscriberSyncer $singleSubscriberSyncer,
+        SubscriberListResolver $subscriberListResolver
     ) {
         $this->helper = $helper;
         $this->logger = $logger;
@@ -89,6 +97,7 @@ class SubscriptionConsumer
         $this->contactResource = $contactResource;
         $this->singleSubscriberSyncer = $singleSubscriberSyncer;
         $this->publisher = $publisher;
+        $this->subscriberListResolver = $subscriberListResolver;
     }
 
     /**
@@ -105,12 +114,13 @@ class SubscriptionConsumer
             throw new LocalizedException(__('Unknown subscription type'));
         }
 
+        $storeId = $this->resolveStoreId($data);
         $client = $this->helper->getWebsiteApiClient($data->getWebsiteId());
-        $listId = (int) $this->helper->getSubscriberAddressBook($data->getWebsiteId());
+        $listId = $this->subscriberListResolver->getListId($data->getWebsiteId(), $storeId);
 
         switch ($data->getType()) {
             case 'subscribe':
-                $this->subscribe($data);
+                $this->subscribe($data, $storeId);
                 break;
             case 'unsubscribe':
                 $this->unsubscribe($data, $client, $listId);
@@ -122,21 +132,48 @@ class SubscriptionConsumer
     }
 
     /**
+     * Resolve the subscriber store of a message.
+     *
+     * Messages queued before store-scoped lists carry no store, so fall back to the contact's store.
+     *
+     * @param SubscriptionData $data
+     *
+     * @return int
+     * @throws LocalizedException
+     */
+    private function resolveStoreId(SubscriptionData $data): int
+    {
+        $contactStoreId = null;
+        if (!$data->getStoreId()) {
+            $contact = $this->contactFactory->create();
+            $this->contactResource->load($contact, $data->getId());
+            $contactStoreId = (int) $contact->getStoreId();
+        }
+
+        return $this->subscriberListResolver->resolveStoreId(
+            $data->getWebsiteId(),
+            $data->getStoreId(),
+            $contactStoreId
+        );
+    }
+
+    /**
      * Subscribe.
      *
      * If the upstream contact is unsubscribed or mail blocked,
      * the API request will trigger a resubscribe challenge.
      *
      * @param SubscriptionData $subscribeData
+     * @param int $storeId
      *
      * @return void
      */
-    private function subscribe(SubscriptionData $subscribeData)
+    private function subscribe(SubscriptionData $subscribeData, int $storeId)
     {
         try {
             $contact = $this->contactFactory->create();
             $this->contactResource->load($contact, $subscribeData->getId());
-            $this->singleSubscriberSyncer->execute($contact);
+            $this->singleSubscriberSyncer->execute($contact, $storeId);
             $this->logger->info('Newsletter subscribe success', ['email' => $subscribeData->getEmail()]);
         } catch (ResponseValidationException $e) {
             $this->logger->error(

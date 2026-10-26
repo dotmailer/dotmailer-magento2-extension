@@ -175,7 +175,10 @@ class ContactManager
         }
 
         if ($subscriber->isSubscribed()) {
-            $this->singleSubscriberSyncer->execute($contact);
+            $this->singleSubscriberSyncer->execute(
+                $contact,
+                (int) $subscriber->getStoreId() ?: null
+            );
         }
 
         return $contactId;

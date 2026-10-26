@@ -204,6 +204,7 @@ class Orders
                 ['newsletter_subscriber' => $collection->getTable('newsletter_subscriber')],
                 'newsletter_subscriber.subscriber_email = sales_order.customer_email'
             )
+            ->columns(['subscriber_store_id' => 'newsletter_subscriber.store_id'])
             ->where('sales_order.store_id IN (?)', $storeIds)
             ->order('sales_order.created_at DESC')
             ->limit($limit);
@@ -234,7 +235,7 @@ class Orders
             (int) $websiteId
         );
         $guestAddressBookId = $this->helper->getGuestAddressBook($websiteId);
-        $subscriberAddressBookId = $this->helper->getSubscriberAddressBook($websiteId);
+        $websiteStoreIds = $this->registrationStoreResolver->getWebsiteStoreIds((int) $websiteId);
         $client = $this->clientFactory
             ->create(['data' => ['websiteId' => $websiteId]]);
         $processed = [];
@@ -279,6 +280,10 @@ class Orders
                 );
 
                 if ($row['subscriber_status'] == Subscriber::STATUS_SUBSCRIBED) {
+                    $subscriberStoreId = (int) ($row['subscriber_store_id'] ?? 0);
+                    $subscriberAddressBookId = in_array($subscriberStoreId, $websiteStoreIds, true)
+                        ? $this->helper->getSubscriberListByStoreId($subscriberStoreId)
+                        : $this->helper->getSubscriberAddressBook($websiteId);
                     if ($subscriberAddressBookId) {
                         $contact->setLists([(int) $subscriberAddressBookId]);
                     }

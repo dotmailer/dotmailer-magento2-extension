@@ -14,6 +14,7 @@ use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory as Conta
 use Dotdigitalgroup\Email\Model\Sync\Batch\MegaBatchProcessor;
 use Dotdigitalgroup\Email\Model\Sync\Batch\MegaBatchProcessorFactory;
 use Dotdigitalgroup\Email\Model\Sync\Batch\MergeManager;
+use Dotdigitalgroup\Email\Model\Sync\Customer\ListCohortResolver;
 use Dotdigitalgroup\Email\Model\Sync\Export\ExporterInterface;
 use Dotdigitalgroup\Email\Model\Sync\Subscriber\OrderHistoryChecker;
 use Dotdigitalgroup\Email\Model\Sync\Subscriber\SubscriberExporterFactory;
@@ -82,6 +83,11 @@ class Subscriber extends DataObject implements SyncInterface
     private $storeManager;
 
     /**
+     * @var ListCohortResolver
+     */
+    private $listCohortResolver;
+
+    /**
      * @var array
      */
     private $cohorts = [];
@@ -139,6 +145,7 @@ class Subscriber extends DataObject implements SyncInterface
      * @param SubscriberWithSalesExporterFactory $subscriberWithSalesExporterFactory
      * @param ScopeConfigInterface $scopeConfig
      * @param StoreManagerInterface $storeManager
+     * @param ListCohortResolver $listCohortResolver
      * @param array $data
      */
     public function __construct(
@@ -152,6 +159,7 @@ class Subscriber extends DataObject implements SyncInterface
         SubscriberWithSalesExporterFactory $subscriberWithSalesExporterFactory,
         ScopeConfigInterface $scopeConfig,
         StoreManagerInterface $storeManager,
+        ListCohortResolver $listCohortResolver,
         array $data = []
     ) {
         $this->helper = $helper;
@@ -164,6 +172,7 @@ class Subscriber extends DataObject implements SyncInterface
         $this->subscriberWithSalesExporterFactory = $subscriberWithSalesExporterFactory;
         $this->scopeConfig = $scopeConfig;
         $this->storeManager = $storeManager;
+        $this->listCohortResolver = $listCohortResolver;
         parent::__construct($data);
     }
 
@@ -186,18 +195,16 @@ class Subscriber extends DataObject implements SyncInterface
         foreach ($this->storeManager->getWebsites() as $website) {
             $apiEnabled = $this->helper->isEnabled($website->getId());
             $subscriberSyncEnabled = $this->helper->isSubscriberSyncEnabled($website->getId());
-            $subscriberAddressBook = $this->helper->getSubscriberAddressBook($website->getId());
 
             if ($apiEnabled &&
                 $subscriberSyncEnabled &&
-                $subscriberAddressBook &&
                 (!$breakValue || $this->totalSubscribersSyncedCount < $breakValue)
             ) {
                 try {
                     $this->loopByWebsite(
                         $website,
                         $breakValue,
-                        (int) $subscriberAddressBook
+                        $this->listCohortResolver->resolveSubscribers($website)
                     );
                 } catch (\Exception $e) {
                     $this->logger->error(
@@ -228,19 +235,21 @@ class Subscriber extends DataObject implements SyncInterface
     /**
      * Perform batching loop by website.
      *
+     * Subscribers are synced one list cohort at a time. A list cohort is the set of subscriber stores
+     * in the website that resolve to the same subscriber list, so stores inheriting one list stay together.
+     * Mega batches are shared across list cohorts; each contact carries its own list.
+     *
      * @param WebsiteInterface $website
      * @param int $breakValue
-     * @param int $listId
+     * @param array $listCohorts
      *
      * @return void
      * @throws LocalizedException
      */
-    private function loopByWebsite(WebsiteInterface $website, int $breakValue, int $listId)
+    private function loopByWebsite(WebsiteInterface $website, int $breakValue, array $listCohorts)
     {
         $this->subscribersMegaBatch = [];
         $this->subscribersWithSalesMegaBatch = [];
-        $this->subscribersLoopStart = true;
-        $this->subscribersWithSalesLoopStart = true;
         $this->subscribersMegaBatchCount = 0;
         $this->subscribersWithSalesMegaBatchCount = 0;
         $this->cohorts = [];
@@ -250,7 +259,6 @@ class Subscriber extends DataObject implements SyncInterface
         /** @var ExporterInterface $subscriberWithSalesExporter */
         $subscriberWithSalesExporter = $this->subscriberWithSalesExporterFactory->create();
 
-        $offset = 0;
         $isSubscriberSalesDataEnabled = (int) $this->scopeConfig->getValue(
             Config::XML_PATH_CONNECTOR_ENABLE_SUBSCRIBER_SALES_DATA,
             ScopeInterface::SCOPE_WEBSITE,
@@ -262,9 +270,60 @@ class Subscriber extends DataObject implements SyncInterface
             $website->getId()
         );
 
+        foreach ($listCohorts as $listCohort) {
+            if ($breakValue && $this->totalSubscribersSyncedCount >= $breakValue) {
+                break;
+            }
+
+            $this->subscribersLoopStart = true;
+            $this->subscribersWithSalesLoopStart = true;
+
+            $this->loopByListCohort(
+                $website,
+                $breakValue,
+                $limit,
+                $isSubscriberSalesDataEnabled,
+                $listCohort,
+                $subscriberExporter,
+                $subscriberWithSalesExporter
+            );
+        }
+
+        $this->processMegaBatches($website);
+    }
+
+    /**
+     * Perform batching loop for one list cohort of a website.
+     *
+     * @param WebsiteInterface $website
+     * @param int $breakValue
+     * @param int $limit
+     * @param int $isSubscriberSalesDataEnabled
+     * @param array $listCohort
+     * @param ExporterInterface|ContactExporterInterface $subscriberExporter
+     * @param ExporterInterface|ContactExporterInterface $subscriberWithSalesExporter
+     *
+     * @return void
+     * @throws LocalizedException
+     */
+    private function loopByListCohort(
+        WebsiteInterface $website,
+        int $breakValue,
+        int $limit,
+        int $isSubscriberSalesDataEnabled,
+        array $listCohort,
+        $subscriberExporter,
+        $subscriberWithSalesExporter
+    ) {
+        $offset = 0;
+        $listId = (int) $listCohort['listId'];
+        $listCohortBatchCounts = [
+            self::COHORT_SUBSCRIBERS => 0,
+            self::COHORT_SUBSCRIBERS_WITH_SALES => 0
+        ];
+
         do {
-            /** @var \Magento\Store\Model\Website $website */
-            $subscribersToSync = $this->getSubscribers($website->getStoreIds(), $limit, $offset);
+            $subscribersToSync = $this->getSubscribers($listCohort['storeIds'], $limit, $offset);
             $subscribersCount = count($subscribersToSync->getItems());
             if ($subscribersCount === 0) {
                 break;
@@ -289,15 +348,17 @@ class Subscriber extends DataObject implements SyncInterface
                         $cohort['contacts'],
                         $exporter,
                         $website,
-                        $listId
+                        $listId,
+                        $listCohortBatchCounts[$cohortName]
                     );
 
                     $offset -= $processed;
                 } catch (\Exception $e) {
                     $this->logger->error(
                         sprintf(
-                            'Error in subscriber sync for website id: %d, cohort: %s',
+                            'Error in subscriber sync for website id: %d, list id: %d, cohort: %s',
                             $website->getId(),
+                            $listId,
                             $cohortName
                         ),
                         [(string) $e]
@@ -305,15 +366,30 @@ class Subscriber extends DataObject implements SyncInterface
                 }
             }
         } while (!$breakValue || $this->totalSubscribersSyncedCount < $breakValue);
+    }
 
-        foreach ($this->cohorts as $cohortName => $cohort) {
-            $megaBatch = $this->getPrettyCohortName($cohortName).'MegaBatch';
+    /**
+     * Import and reset the remaining mega batches of the website.
+     *
+     * @param WebsiteInterface $website
+     *
+     * @return void
+     */
+    private function processMegaBatches(WebsiteInterface $website)
+    {
+        foreach (array_keys($this->cohorts) as $cohortName) {
+            $prettyCohortName = $this->getPrettyCohortName($cohortName);
+            $megaBatch = $prettyCohortName . 'MegaBatch';
+            $megaBatchCount = $prettyCohortName . 'MegaBatchCount';
+
             $this->megaBatchProcessorFactory->create()
                 ->process(
                     $this->$megaBatch,
                     (int) $website->getId(),
                     Importer::IMPORT_TYPE_SUBSCRIBERS
                 );
+            $this->$megaBatch = [];
+            $this->$megaBatchCount = 0;
         }
     }
 
@@ -325,6 +401,7 @@ class Subscriber extends DataObject implements SyncInterface
      * @param ContactExporterInterface $exporter
      * @param WebsiteInterface $website
      * @param int $listId
+     * @param int $listCohortBatchCount
      *
      * @return int
      * @throws LocalizedException
@@ -334,7 +411,8 @@ class Subscriber extends DataObject implements SyncInterface
         array $subscribers,
         ContactExporterInterface $exporter,
         $website,
-        int $listId
+        int $listId,
+        int &$listCohortBatchCount
     ) {
         $processed = 0;
 
@@ -356,9 +434,10 @@ class Subscriber extends DataObject implements SyncInterface
         if ($this->$loopStart) {
             $this->logger->info(
                 sprintf(
-                    '%s sync: syncing website %d',
+                    '%s sync: syncing website %d, list %d',
                     $prettyCohortName,
-                    $website->getId()
+                    $website->getId(),
+                    $listId
                 )
             );
             $this->$loopStart = false;
@@ -366,6 +445,7 @@ class Subscriber extends DataObject implements SyncInterface
 
         $this->$megaBatch = $this->mergeManager->mergeBatch($batch, $this->$megaBatch);
         $this->$megaBatchCount += $batchCount;
+        $listCohortBatchCount += $batchCount;
         $this->totalSubscribersSyncedCount += $batchCount;
 
         if ($this->$megaBatchCount >= $this->megaBatchSize) {
@@ -375,7 +455,9 @@ class Subscriber extends DataObject implements SyncInterface
                     (int) $website->getId(),
                     Importer::IMPORT_TYPE_SUBSCRIBERS
                 );
-            $processed = $this->$megaBatchCount;
+            // Only contacts from the current list affect its query offset.
+            $processed = $listCohortBatchCount;
+            $listCohortBatchCount = 0;
             $this->$megaBatch = [];
             $this->$megaBatchCount = 0;
         }

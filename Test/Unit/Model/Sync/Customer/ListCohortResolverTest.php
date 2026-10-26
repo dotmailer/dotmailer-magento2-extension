@@ -125,4 +125,23 @@ class ListCohortResolverTest extends TestCase
         $this->assertSame(40, $cohorts[1]['listId']);
         $this->assertSame([2], $cohorts[1]['storeIds']);
     }
+
+    public function testSubscriberCohortsUseTheSubscriberListAndGroupInheritingStores(): void
+    {
+        $this->storeResolver->method('getWebsiteStoreIds')->willReturn([1, 2, 3]);
+        $this->storeResolver->method('getFallbackStoreId')->willReturn(1);
+        $this->helper->method('isOnlySubscribersForContactSync')->willReturn(false);
+        $this->helper->method('getSubscriberListByStoreId')
+            ->willReturnCallback(static function ($storeId) {
+                return [1 => '50', 2 => '60', 3 => '50'][$storeId];
+            });
+
+        $cohorts = $this->resolver()->resolveSubscribers($this->website);
+
+        $this->assertCount(2, $cohorts);
+        $this->assertSame(50, $cohorts[0]['listId']);
+        $this->assertSame([1, 3], $cohorts[0]['storeIds']);
+        $this->assertSame(60, $cohorts[1]['listId']);
+        $this->assertSame([2], $cohorts[1]['storeIds']);
+    }
 }

@@ -570,10 +570,6 @@ class ContactManagerTest extends TestCase
             ->method('getWebsiteId')
             ->willReturn('1');
 
-        $this->subscriberModelMock->expects($this->once())
-            ->method('isSubscribed')
-            ->willReturn(true);
-
         // Setup V3 client mocks
         $sdkContact = $this->createMock(ContactModel::class);
         $this->sdkContactFactoryMock->expects($this->once())
@@ -598,9 +594,19 @@ class ContactManagerTest extends TestCase
             ->method('patchByIdentifier')
             ->willReturn($responseContact);
 
+        $subscriberWithStore = $this->getMockBuilder(
+            $this->classWithAddedMethods(Subscriber::class, ['getStoreId'])
+        )
+            ->onlyMethods(['isSubscribed', 'getStoreId'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $subscriberWithStore->method('isSubscribed')->willReturn(true);
+        $subscriberWithStore->method('getStoreId')->willReturn('6');
+        $this->subscriberModelMock = $subscriberWithStore;
+
         $this->singleSubscriberSyncerMock->expects($this->once())
             ->method('execute')
-            ->with($this->contactModelMock);
+            ->with($this->contactModelMock, 6);
 
         $this->contactManager->prepareDotdigitalContact(
             $this->contactModelMock,

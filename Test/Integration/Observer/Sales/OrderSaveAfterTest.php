@@ -197,7 +197,7 @@ class OrderSaveAfterTest extends TestCase
         $this->assertNotNull($queueMessage->getId(), 'Queue message should exist');
         $this->assertEquals(
             sprintf(
-                '{"id":"%s","email":"customer@example.com","website_id":1,"type":"subscribe"}',
+                '{"id":"%s","email":"customer@example.com","website_id":1,"store_id":1,"type":"subscribe"}',
                 $contact->getId()
             ),
             $queueMessage->getBody()
