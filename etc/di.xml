@@ -322,4 +322,7 @@
         </arguments>
     </type>
     <!-- Integration Insight Metric Providers: End -->
+    <type name="Magento\Catalog\Model\Product\Action">
+        <plugin name="ddg_product_website_unassign" type="Dotdigitalgroup\Email\Plugin\ProductWebsiteUnassignPlugin" sortOrder="10"/>
+    </type>
 </config>
