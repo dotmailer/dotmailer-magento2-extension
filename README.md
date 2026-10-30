@@ -62,8 +62,12 @@ bin/magento dotdigital:task
 This will yield a list of options:
 ```
 Please select a dotdigital CLI task to run
-  [0] Cleaner
-  [1] SmsSenderManager (SMS module required)
+  [0] PlatformChangeManager
+  [1] Cleaner
+  [2] Monitor
+  [3] Unsubscriber
+  [4] PendingContactChecker
+  [5] SmsSenderManager (SMS module required)
 ```
 
 #### migrate
@@ -87,8 +91,13 @@ Running `migrate` with no options supplied will re-run the complete data install
 - You may lose previously saved data with this operation.
 - `migrate` will not overwrite a previously-saved dynamic content passcode (4.13.6+). 
 
+### Hidden configs
+
+| Config path | Value | Purpose |
+| --- | --- | --- |
+| `connector_configuration/tracking/product_list_capture_enabled` | `0` | Stops `productList()` tracking and data retrieval |
+
 ## Contribution
 You are welcome to contribute to Dotdigital for Magento! You can either:
 - Report a bug: create a [GitHub issue](https://github.com/dotmailer/dotmailer-magento2-extension/issues/new) including description, repro steps, Magento and extension version numbers
-- Fix a bug: please clone and use our [Develop branch](https://github.com/dotmailer/dotmailer-magento2-extension/tree/develop) to submit your Pull Request
 - Request a feature on our [roadmap](https://roadmap.dotdigital.com)
