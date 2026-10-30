@@ -382,33 +382,33 @@
                 </field>
             </group>
         </section>
-        <section id="sync_settings" translate="label" type="text" sortOrder="150" showInWebsite="1" showInStore="0"
+        <section id="sync_settings" translate="label" type="text" sortOrder="150" showInWebsite="1" showInStore="1"
                  showInDefault="1">
             <class>separator-top</class>
             <label>Sync Settings</label>
             <tab>ddg_automation</tab>
             <resource>Dotdigitalgroup_Email::config</resource>
             <group id="addressbook" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1"
-                   showInStore="0">
+                   showInStore="1">
                 <label>List Mapping</label>
                 <attribute type="expanded">1</attribute>
                 <field id="allow_non_subscribers" translate="label" type="select" sortOrder="15" showInDefault="1" showInStore="0" showInWebsite="1">
                     <label>Allow non-subscribed contacts to be imported</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="customers" translate="label" type="select" sortOrder="20" showInDefault="1" showInStore="0"
+                <field id="customers" translate="label" type="select" sortOrder="20" showInDefault="1" showInStore="1"
                        showInWebsite="1">
                     <label>Add Customers To</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Sync\Lists</source_model>
                     <backend_model>Dotdigitalgroup\Email\Model\Config\Backend\UniqueList</backend_model>
                 </field>
-                <field id="subscribers" translate="label" type="select" sortOrder="30" showInDefault="1" showInStore="0"
+                <field id="subscribers" translate="label" type="select" sortOrder="30" showInDefault="1" showInStore="1"
                        showInWebsite="1">
                     <label>Add Email Subscribers To</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Sync\Lists</source_model>
                     <backend_model>Dotdigitalgroup\Email\Model\Config\Backend\UniqueList</backend_model>
                 </field>
-                <field id="guests" translate="label" type="select" sortOrder="40" showInDefault="1" showInStore="0"
+                <field id="guests" translate="label" type="select" sortOrder="40" showInDefault="1" showInStore="1"
                        showInWebsite="1">
                     <label>Add Guests To</label>
                     <source_model>Dotdigitalgroup\Email\Model\Config\Source\Sync\Lists</source_model>
@@ -1438,12 +1438,18 @@
                     <comment><![CDATA[Learn more about <a href="https://support.dotdigital.com/en/articles/8198919-site-and-roi-tracking" target="_blank">ROI tracking</a>.]]>
                     </comment>
                 </field>
+                <field id="product_list_capture_enabled" translate="label" sortOrder="15" type="select" showInStore="0" showInWebsite="0" showInDefault="0">
+                    <label>Product List Capture</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment><![CDATA[Hidden config: set to No to disable Dotdigital product aggregation on product list/search pages. Default is Yes.]]></comment>
+                </field>
                 <field id="script_version" translate="label" sortOrder="20" type="select" showInStore="0"
                        showInWebsite="0" showInDefault="0">
                     <label>Script version</label>
                 </field>
                 <field id="host" translate="label" sortOrder="60" showInDefault="0" showInStore="0" showInWebsite="0">
                     <label>Tracking Host</label>
+                    <backend_model>Dotdigitalgroup\Email\Model\Config\Backend\TrackingHostValidate</backend_model>
                 </field>
             </group>
             <group id="transactional_data" translate="label" sortOrder="30" showInDefault="1" showInWebsite="1"

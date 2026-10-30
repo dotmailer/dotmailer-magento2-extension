@@ -8,13 +8,12 @@ use Magento\Framework\View\Element\Template;
 
 /**
  * @var Escaper $escaper
- * @var $block Template
- * @var $viewModel DotdigitalTagView
+ * @var Template $block
+ * @var DotdigitalTagView $viewModel
  */
 $viewModel = $block->getData('view_model');
 ?>
-<?php if ($viewModel->shouldRender()): ?>
-    <?= /** no-escape */ $viewModel->renderTag(); ?>
-    <?= /** no-escape */ $viewModel->renderScript(); ?>
-<?php endif; ?>
+<?= /** @noEscape */ $viewModel->renderTag(); ?>
+<?= /** @noEscape */ $viewModel->renderScript(); ?>
+<?= /** @noEscape */ $viewModel->trackPageVisit(); ?>
 

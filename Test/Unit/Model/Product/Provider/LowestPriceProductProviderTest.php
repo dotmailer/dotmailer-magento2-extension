@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Dotdigitalgroup\Email\Test\Unit\Model\Product\Provider;
 
-use Dotdigitalgroup\Email\Model\Product\Provider\LowestPriceProductFinder;
+use Dotdigitalgroup\Email\Api\Model\Product\Provider\ProductProviderInterface;
+use Dotdigitalgroup\Email\Model\Product\Provider\LowestPriceProductProvider;
 use Magento\Catalog\Helper\Data as CatalogHelper;
 use Magento\Catalog\Model\Product;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
@@ -16,12 +17,12 @@ use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
 #[AllowMockObjectsWithoutExpectations]
-class LowestPriceProductFinderTest extends TestCase
+class LowestPriceProductProviderTest extends TestCase
 {
     /**
-     * @var CatalogHelper|MockObject
+     * @var ProductProviderInterface|MockObject
      */
-    private $catalogHelperMock;
+    private $productProviderMock;
 
     /**
      * @var StoreManagerInterface|MockObject
@@ -34,13 +35,13 @@ class LowestPriceProductFinderTest extends TestCase
     private $storeMock;
 
     /**
-     * @var LowestPriceProductFinder
+     * @var LowestPriceProductProvider
      */
-    private $lowestPriceProductFinder;
+    private $lowestPriceProductProvider;
 
     protected function setUp(): void
     {
-        $this->catalogHelperMock = $this->createMock(CatalogHelper::class);
+        $this->productProviderMock = $this->createMock(ProductProviderInterface::class);
         $this->storeManagerMock = $this->createMock(StoreManagerInterface::class);
         $this->storeMock = $this->createMock(StoreInterface::class);
 
@@ -53,8 +54,8 @@ class LowestPriceProductFinderTest extends TestCase
 
     public function testFindLowestPricedProductForConfigurableWithRegularPrice(): void
     {
-        $this->lowestPriceProductFinder = new LowestPriceProductFinder(
-            $this->catalogHelperMock,
+        $this->lowestPriceProductProvider = new LowestPriceProductProvider(
+            $this->productProviderMock,
             $this->storeManagerMock,
             false
         );
@@ -72,18 +73,18 @@ class LowestPriceProductFinderTest extends TestCase
         $parentProduct->method('getTypeInstance')
             ->willReturn($configurableType);
 
-        $this->catalogHelperMock->method('getProduct')
+        $this->productProviderMock->method('getProduct')
             ->willReturn($parentProduct);
 
-        $result = $this->lowestPriceProductFinder->findLowestPricedProduct();
+        $result = $this->lowestPriceProductProvider->getProduct();
 
         $this->assertSame($childProduct2, $result);
     }
 
     public function testFindLowestPricedProductForConfigurableWithSpecialPrice(): void
     {
-        $this->lowestPriceProductFinder = new LowestPriceProductFinder(
-            $this->catalogHelperMock,
+        $this->lowestPriceProductProvider = new LowestPriceProductProvider(
+            $this->productProviderMock,
             $this->storeManagerMock,
             true
         );
@@ -101,18 +102,18 @@ class LowestPriceProductFinderTest extends TestCase
         $parentProduct->method('getTypeInstance')
             ->willReturn($configurableType);
 
-        $this->catalogHelperMock->method('getProduct')
+        $this->productProviderMock->method('getProduct')
             ->willReturn($parentProduct);
 
-        $result = $this->lowestPriceProductFinder->findLowestPricedProduct();
+        $result = $this->lowestPriceProductProvider->getProduct();
 
         $this->assertSame($childProduct2, $result);
     }
 
     public function testFindLowestPricedProductForGroupedWithRegularPrice(): void
     {
-        $this->lowestPriceProductFinder = new LowestPriceProductFinder(
-            $this->catalogHelperMock,
+        $this->lowestPriceProductProvider = new LowestPriceProductProvider(
+            $this->productProviderMock,
             $this->storeManagerMock,
             false
         );
@@ -130,18 +131,18 @@ class LowestPriceProductFinderTest extends TestCase
         $parentProduct->method('getTypeInstance')
             ->willReturn($groupedType);
 
-        $this->catalogHelperMock->method('getProduct')
+        $this->productProviderMock->method('getProduct')
             ->willReturn($parentProduct);
 
-        $result = $this->lowestPriceProductFinder->findLowestPricedProduct();
+        $result = $this->lowestPriceProductProvider->getProduct();
 
         $this->assertSame($childProduct2, $result);
     }
 
     public function testFindLowestPricedProductForGroupedWithSpecialPrice(): void
     {
-        $this->lowestPriceProductFinder = new LowestPriceProductFinder(
-            $this->catalogHelperMock,
+        $this->lowestPriceProductProvider = new LowestPriceProductProvider(
+            $this->productProviderMock,
             $this->storeManagerMock,
             true
         );
@@ -159,18 +160,18 @@ class LowestPriceProductFinderTest extends TestCase
         $parentProduct->method('getTypeInstance')
             ->willReturn($groupedType);
 
-        $this->catalogHelperMock->method('getProduct')
+        $this->productProviderMock->method('getProduct')
             ->willReturn($parentProduct);
 
-        $result = $this->lowestPriceProductFinder->findLowestPricedProduct();
+        $result = $this->lowestPriceProductProvider->getProduct();
 
         $this->assertSame($childProduct2, $result);
     }
 
     public function testFindLowestPricedProductReturnsParentForSimpleProduct(): void
     {
-        $this->lowestPriceProductFinder = new LowestPriceProductFinder(
-            $this->catalogHelperMock,
+        $this->lowestPriceProductProvider = new LowestPriceProductProvider(
+            $this->productProviderMock,
             $this->storeManagerMock,
             false
         );
@@ -178,18 +179,18 @@ class LowestPriceProductFinderTest extends TestCase
         $product = $this->createMock(Product::class);
         $product->method('getTypeId')->willReturn('simple');
 
-        $this->catalogHelperMock->method('getProduct')
+        $this->productProviderMock->method('getProduct')
             ->willReturn($product);
 
-        $result = $this->lowestPriceProductFinder->findLowestPricedProduct();
+        $result = $this->lowestPriceProductProvider->getProduct();
 
         $this->assertSame($product, $result);
     }
 
     public function testFindLowestPricedProductFallsBackToRegularPriceWhenNoSpecialPrice(): void
     {
-        $this->lowestPriceProductFinder = new LowestPriceProductFinder(
-            $this->catalogHelperMock,
+        $this->lowestPriceProductProvider = new LowestPriceProductProvider(
+            $this->productProviderMock,
             $this->storeManagerMock,
             true
         );
@@ -206,10 +207,10 @@ class LowestPriceProductFinderTest extends TestCase
         $parentProduct->method('getTypeInstance')
             ->willReturn($configurableType);
 
-        $this->catalogHelperMock->method('getProduct')
+        $this->productProviderMock->method('getProduct')
             ->willReturn($parentProduct);
 
-        $result = $this->lowestPriceProductFinder->findLowestPricedProduct();
+        $result = $this->lowestPriceProductProvider->getProduct();
 
         $this->assertSame($childProduct2, $result);
     }

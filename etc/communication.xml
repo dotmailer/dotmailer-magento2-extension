@@ -51,6 +51,13 @@
             method="process"
         />
     </topic>
+    <topic name="ddg.sales.guest_list_addition" request="Dotdigitalgroup\Email\Model\Queue\Data\GuestListAdditionData">
+        <handler
+            name="ddg_sales_guest_list_addition"
+            type="Dotdigitalgroup\Email\Model\Queue\Sales\GuestListAdditionConsumer"
+            method="process"
+        />
+    </topic>
     <topic name="ddg.catalog.rules" request="Dotdigitalgroup\Email\Model\Queue\Data\PriceRuleData">
         <handler
             name="ddg_catalog_rules"

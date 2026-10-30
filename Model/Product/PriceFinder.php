@@ -10,6 +10,7 @@ use Magento\Bundle\Model\Product\Price as BundlePrice;
 use Magento\Bundle\Pricing\Adjustment\SelectionPriceListProviderInterface;
 use Magento\Catalog\Model\Product;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
+use Magento\Store\Model\StoreManagerInterface;
 use Magento\Tax\Helper\Data as TaxHelper;
 
 class PriceFinder implements PriceFinderInterface
@@ -28,6 +29,11 @@ class PriceFinder implements PriceFinderInterface
      * @var SelectionPriceListProviderInterface
      */
     private $selectionPriceListProvider;
+
+    /**
+     * @var StoreManagerInterface
+     */
+    private $storeManager;
 
     /**
      * @var array
@@ -53,15 +59,18 @@ class PriceFinder implements PriceFinderInterface
      * @param TaxCalculator $taxCalculator
      * @param TaxHelper $taxHelper
      * @param SelectionPriceListProviderInterface $selectionPriceListProvider
+     * @param StoreManagerInterface $storeManager
      */
     public function __construct(
         TaxCalculator $taxCalculator,
         TaxHelper $taxHelper,
-        SelectionPriceListProviderInterface $selectionPriceListProvider
+        SelectionPriceListProviderInterface $selectionPriceListProvider,
+        StoreManagerInterface $storeManager
     ) {
         $this->taxCalculator = $taxCalculator;
         $this->taxHelper = $taxHelper;
         $this->selectionPriceListProvider = $selectionPriceListProvider;
+        $this->storeManager = $storeManager;
     }
 
     /**
@@ -162,13 +171,16 @@ class PriceFinder implements PriceFinderInterface
             // Bundle amounts include tax if displayed incl. tax, so strip it when catalog prices exclude tax.
             $exclude = $this->taxHelper->priceIncludesTax($storeId) ? null : 'tax';
 
-            $regularPrice = $product->getPriceInfo()->getPrice('regular_price');
-            /** @var \Magento\Bundle\Pricing\Price\BundleRegularPrice $regularPrice */
-            $price = $regularPrice->getMinimalPrice()->getValue($exclude);
-
-            $finalPrice = $product->getPriceInfo()->getPrice('final_price');
-            /** @var \Magento\Bundle\Pricing\Price\FinalPrice $finalPrice */
-            $specialPrice = $finalPrice->getMinimalPrice()->getValue($exclude);
+            [$price, $specialPrice] = $this->executeInBaseCurrency(function () use ($product, $exclude) {
+                $regularPrice = $product->getPriceInfo()->getPrice('regular_price');
+                /** @var \Magento\Bundle\Pricing\Price\BundleRegularPrice $regularPrice */
+                $finalPrice = $product->getPriceInfo()->getPrice('final_price');
+                /** @var \Magento\Bundle\Pricing\Price\FinalPrice $finalPrice */
+                return [
+                    $regularPrice->getMinimalPrice()->getValue($exclude),
+                    $finalPrice->getMinimalPrice()->getValue($exclude)
+                ];
+            });
 
             // if special price equals to price then it's wrong.
             $specialPrice = ($specialPrice === $price) ? null : $specialPrice;
@@ -256,19 +268,55 @@ class PriceFinder implements PriceFinderInterface
         ?int $storeId,
         ?int $customerId
     ): float {
-        $basePrice = $price;
-        $priceInclTax = 0.0;
-        foreach ($this->selectionPriceListProvider->getPriceList($product, true, $useRegularPrice) as $selection) {
-            $value = (float) $selection->getValue();
-            $qty = (float) $selection->getQuantity();
-            $basePrice -= round($value, 2) * $qty;
-            $priceInclTax += round(
-                $this->taxCalculator->calculatePriceInclTax($selection->getProduct(), $value, $storeId, $customerId),
-                2
-            ) * $qty;
-        }
 
-        return $priceInclTax + $this->taxCalculator->calculatePriceInclTax($product, $basePrice, $storeId, $customerId);
+        return $this->executeInBaseCurrency(
+            function () use ($product, $price, $useRegularPrice, $storeId, $customerId) {
+                $basePrice = $price;
+                $priceInclTax = 0.0;
+                $selections = $this->selectionPriceListProvider->getPriceList($product, true, $useRegularPrice);
+                foreach ($selections as $selection) {
+                    $value = (float) $selection->getValue();
+                    $qty = (float) $selection->getQuantity();
+                    $basePrice -= round($value, 2) * $qty;
+                    $priceInclTax += round(
+                        $this->taxCalculator->calculatePriceInclTax(
+                            $selection->getProduct(),
+                            $value,
+                            $storeId,
+                            $customerId
+                        ),
+                        2
+                    ) * $qty;
+                }
+
+                return $priceInclTax
+                    + $this->taxCalculator->calculatePriceInclTax($product, $basePrice, $storeId, $customerId);
+            }
+        );
+    }
+
+    /**
+     * Execute a callback with the current store's currency set to its base currency.
+     *
+     * Magento's price framework converts amounts into the store's current (display) currency,
+     * whereas catalog sync sends all prices in the base currency.
+     *
+     * @param callable $callback
+     *
+     * @return mixed
+     */
+    private function executeInBaseCurrency(callable $callback)
+    {
+        /** @var \Magento\Store\Model\Store $store */
+        $store = $this->storeManager->getStore();
+        $currentCurrency = $store->getData('current_currency');
+        $store->setData('current_currency', $store->getBaseCurrency());
+
+        try {
+            return $callback();
+        } finally {
+            $store->setData('current_currency', $currentCurrency);
+        }
     }
 
     /**

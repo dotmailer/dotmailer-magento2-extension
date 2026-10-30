@@ -160,6 +160,13 @@ class AutomationProcessorTest extends TestCase
 
         $this->contactManagerMock->expects($this->once())
             ->method('prepareDotdigitalContact')
+            ->with(
+                $this->anything(),
+                $this->anything(),
+                $this->anything(),
+                $this->anything(),
+                $this->anything()
+            )
             ->willReturn(123456);
 
         $this->automationResourceMock->expects($this->never())

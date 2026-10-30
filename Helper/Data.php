@@ -690,19 +690,35 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getApiEndPointFromConfig($websiteId)
     {
-        if ($websiteId > 0) {
-            $apiEndpoint = $this->getWebsiteConfig(
-                EmailConfig::PATH_FOR_API_ENDPOINT,
-                $websiteId
-            );
-        } else {
-            $apiEndpoint = $this->getWebsiteConfig(
-                EmailConfig::PATH_FOR_API_ENDPOINT,
-                $websiteId,
-                ScopeConfigInterface::SCOPE_TYPE_DEFAULT
-            );
-        }
+        $apiEndpoint = $this->getWebsiteConfig(
+            EmailConfig::PATH_FOR_API_ENDPOINT,
+            $websiteId,
+            $websiteId > 0 ? ScopeInterface::SCOPE_WEBSITE : ScopeConfigInterface::SCOPE_TYPE_DEFAULT
+        );
         return trim($apiEndpoint);
+    }
+
+    /**
+     * Get full tracking end point host.
+     *
+     * Useful for using internal tracking endpoints that are not like ddlnk.net.
+     * e.g. debug-webbehavior.dotdigital.internal
+     *
+     * @deprecated Use \Dotdigitalgroup\Email\Model\Tracking\EndpointResolver::getUrl() for tracking URLs.
+     * @see \Dotdigitalgroup\Email\Model\Tracking\EndpointResolver
+     *
+     * @param int $websiteId
+     *
+     * @return string|boolean
+     */
+    public function getTrackingEndPointFromConfig($websiteId)
+    {
+        $trackingEndpoint = $this->getWebsiteConfig(
+            EmailConfig::TRACKING_HOST,
+            $websiteId,
+            $websiteId > 0 ? ScopeInterface::SCOPE_WEBSITE : ScopeConfigInterface::SCOPE_TYPE_DEFAULT
+        );
+        return trim((string)$trackingEndpoint);
     }
 
     /**
@@ -738,12 +754,11 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Get the address book for customer.
      *
-     * @deprecated Use V2 Client alternative.
-     * @see \Dotdigitalgroup\Email\Model\Apiconnector\V3\Contact\AddressBook
-     *
      * @param int $websiteId
      *
      * @return string
+     * @deprecated List mapping is store-scoped. Use getCustomerListByStoreId().
+     * @see getCustomerListByStoreId
      */
     public function getCustomerAddressBook($websiteId)
     {
@@ -755,11 +770,29 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
+     * Get the customer list mapped to a store (inheriting from website and default scope).
+     *
+     * @param int|string $storeId
+     *
+     * @return string
+     */
+    public function getCustomerListByStoreId($storeId)
+    {
+        return $this->scopeConfig->getValue(
+            EmailConfig::XML_PATH_CONNECTOR_CUSTOMERS_ADDRESS_BOOK_ID,
+            ScopeInterface::SCOPE_STORE,
+            $storeId
+        );
+    }
+
+    /**
      * Get subscriber address book.
      *
      * @param int $websiteId
      *
      * @return string|boolean
+     * @deprecated List mapping is store-scoped. Use getSubscriberListByStoreId().
+     * @see getSubscriberListByStoreId
      */
     public function getSubscriberAddressBook($websiteId)
     {
@@ -771,10 +804,28 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
+     * Get the subscriber list mapped to a store (inheriting from website and default scope).
+     *
+     * @param int|string $storeId
+     *
+     * @return string|boolean
+     */
+    public function getSubscriberListByStoreId($storeId)
+    {
+        return $this->scopeConfig->getValue(
+            EmailConfig::XML_PATH_CONNECTOR_SUBSCRIBERS_ADDRESS_BOOK_ID,
+            ScopeInterface::SCOPE_STORE,
+            $storeId
+        );
+    }
+
+    /**
      * Guest address book.
      *
      * @param string|int $websiteId
      * @return string|boolean
+     * @deprecated List mapping is store-scoped. Use getGuestListByStoreId().
+     * @see getGuestListByStoreId
      */
     public function getGuestAddressBook($websiteId)
     {
@@ -782,6 +833,22 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             EmailConfig::XML_PATH_CONNECTOR_GUEST_ADDRESS_BOOK_ID,
             ScopeInterface::SCOPE_WEBSITE,
             $websiteId
+        );
+    }
+
+    /**
+     * Get the guest list mapped to a store (inheriting from website and default scope).
+     *
+     * @param int|string $storeId
+     *
+     * @return string|boolean
+     */
+    public function getGuestListByStoreId($storeId)
+    {
+        return $this->scopeConfig->getValue(
+            EmailConfig::XML_PATH_CONNECTOR_GUEST_ADDRESS_BOOK_ID,
+            ScopeInterface::SCOPE_STORE,
+            $storeId
         );
     }
 
@@ -1372,6 +1439,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     /**
      * Get tracking region prefix.
+     *
+     * @deprecated Use \Dotdigitalgroup\Email\Model\Tracking\EndpointResolver::getUrl() for tracking URLs.
+     * @see \Dotdigitalgroup\Email\Model\Tracking\EndpointResolver
      *
      * @param int $websiteId
      * @return string|null

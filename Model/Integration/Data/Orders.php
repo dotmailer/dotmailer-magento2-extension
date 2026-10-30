@@ -10,6 +10,7 @@ use Dotdigitalgroup\Email\Helper\Config;
 use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Logger\Logger;
 use Dotdigitalgroup\Email\Model\Apiconnector\V3\ClientFactory;
+use Dotdigitalgroup\Email\Model\Customer\RegistrationStoreResolver;
 use Dotdigitalgroup\Email\Model\Sync\Order\Exporter;
 use Dotdigitalgroup\Email\Model\Newsletter\OptInTypeFinder;
 use Http\Client\Exception;
@@ -69,6 +70,11 @@ class Orders
     private $storeManager;
 
     /**
+     * @var RegistrationStoreResolver
+     */
+    private $registrationStoreResolver;
+
+    /**
      * @param DotdigitalContactFactory $sdkContactFactory
      * @param Logger $logger
      * @param Data $helper
@@ -78,6 +84,7 @@ class Orders
      * @param SalesOrderCollectionFactory $salesOrderCollectionFactory
      * @param ScopeConfigInterface $scopeConfig
      * @param StoreManagerInterface $storeManager
+     * @param RegistrationStoreResolver $registrationStoreResolver
      */
     public function __construct(
         DotdigitalContactFactory $sdkContactFactory,
@@ -88,7 +95,8 @@ class Orders
         OptInTypeFinder $optInTypeFinder,
         SalesOrderCollectionFactory $salesOrderCollectionFactory,
         ScopeConfigInterface $scopeConfig,
-        StoreManagerInterface $storeManager
+        StoreManagerInterface $storeManager,
+        RegistrationStoreResolver $registrationStoreResolver
     ) {
         $this->sdkContactFactory = $sdkContactFactory;
         $this->logger = $logger;
@@ -99,6 +107,7 @@ class Orders
         $this->salesOrderCollectionFactory = $salesOrderCollectionFactory;
         $this->scopeConfig = $scopeConfig;
         $this->storeManager = $storeManager;
+        $this->registrationStoreResolver = $registrationStoreResolver;
     }
 
     /**
@@ -195,6 +204,7 @@ class Orders
                 ['newsletter_subscriber' => $collection->getTable('newsletter_subscriber')],
                 'newsletter_subscriber.subscriber_email = sales_order.customer_email'
             )
+            ->columns(['subscriber_store_id' => 'newsletter_subscriber.store_id'])
             ->where('sales_order.store_id IN (?)', $storeIds)
             ->order('sales_order.created_at DESC')
             ->limit($limit);
@@ -220,9 +230,12 @@ class Orders
      */
     private function sendContacts($data, $websiteId)
     {
-        $customerAddressBookId = $this->helper->getCustomerAddressBook($websiteId);
+        $registrationStoreIds = $this->registrationStoreResolver->resolveMany(
+            array_filter(array_column($data, 'customer_id')),
+            (int) $websiteId
+        );
         $guestAddressBookId = $this->helper->getGuestAddressBook($websiteId);
-        $subscriberAddressBookId = $this->helper->getSubscriberAddressBook($websiteId);
+        $websiteStoreIds = $this->registrationStoreResolver->getWebsiteStoreIds((int) $websiteId);
         $client = $this->clientFactory
             ->create(['data' => ['websiteId' => $websiteId]]);
         $processed = [];
@@ -251,7 +264,13 @@ class Orders
                     ]);
                 }
 
-                $addressBookId = $row['customer_id'] ? $customerAddressBookId : $guestAddressBookId;
+                $addressBookId = $guestAddressBookId;
+                if ($row['customer_id']) {
+                    $registrationStoreId = $registrationStoreIds[(int) $row['customer_id']] ?? null;
+                    $addressBookId = $registrationStoreId !== null
+                        ? $this->helper->getCustomerListByStoreId($registrationStoreId)
+                        : $this->helper->getCustomerAddressBook($websiteId);
+                }
                 if ($addressBookId) {
                     $contact->setLists([(int) $addressBookId]);
                 }
@@ -261,6 +280,10 @@ class Orders
                 );
 
                 if ($row['subscriber_status'] == Subscriber::STATUS_SUBSCRIBED) {
+                    $subscriberStoreId = (int) ($row['subscriber_store_id'] ?? 0);
+                    $subscriberAddressBookId = in_array($subscriberStoreId, $websiteStoreIds, true)
+                        ? $this->helper->getSubscriberListByStoreId($subscriberStoreId)
+                        : $this->helper->getSubscriberAddressBook($websiteId);
                     if ($subscriberAddressBookId) {
                         $contact->setLists([(int) $subscriberAddressBookId]);
                     }

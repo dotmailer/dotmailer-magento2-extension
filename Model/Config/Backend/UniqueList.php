@@ -2,12 +2,50 @@
 
 namespace Dotdigitalgroup\Email\Model\Config\Backend;
 
+use Magento\Framework\App\Cache\TypeListInterface;
+use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\Config\Value;
+use Magento\Framework\Data\Collection\AbstractDb;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Exception\ValidatorException;
+use Magento\Framework\Model\Context;
+use Magento\Framework\Model\ResourceModel\AbstractResource;
+use Magento\Framework\Registry;
+use Magento\Store\Model\ScopeInterface;
+use Magento\Store\Model\StoreManagerInterface;
 
 class UniqueList extends Value
 {
     public const DOTDIGITAL_LIST_CONFIG_PATH = 'sync_settings/addressbook';
+
+    /**
+     * @var StoreManagerInterface
+     */
+    private $storeManager;
+
+    /**
+     * @param Context $context
+     * @param Registry $registry
+     * @param ScopeConfigInterface $config
+     * @param TypeListInterface $cacheTypeList
+     * @param StoreManagerInterface $storeManager
+     * @param AbstractResource|null $resource
+     * @param AbstractDb|null $resourceCollection
+     * @param array $data
+     */
+    public function __construct(
+        Context $context,
+        Registry $registry,
+        ScopeConfigInterface $config,
+        TypeListInterface $cacheTypeList,
+        StoreManagerInterface $storeManager,
+        ?AbstractResource $resource = null,
+        ?AbstractDb $resourceCollection = null,
+        array $data = []
+    ) {
+        $this->storeManager = $storeManager;
+        parent::__construct($context, $registry, $config, $cacheTypeList, $resource, $resourceCollection, $data);
+    }
 
     /**
      * Validate unique list selection.
@@ -18,7 +56,7 @@ class UniqueList extends Value
     public function beforeSave()
     {
         $selectedValues = [];
-        $inheritedValues = $this->_config->getValue(static::DOTDIGITAL_LIST_CONFIG_PATH);
+        $inheritedValues = $this->getInheritedValues();
         $comparisonValues = $this->getComparisonValues($inheritedValues);
         $fields = array_filter(array_keys($comparisonValues), function (string $key) use ($inheritedValues) {
             return in_array($key, array_keys($inheritedValues));
@@ -56,10 +94,35 @@ class UniqueList extends Value
         $configData = $this->_data['fieldset_data'];
 
         foreach ($configData as $key => $value) {
-            if (empty($value) && array_key_exists($key, $inheritedValues)) {
+            if (($value === null || $value === '') && array_key_exists($key, $inheritedValues)) {
                 $configData[$key] = $inheritedValues[$key];
             }
         }
         return $configData;
+    }
+
+    /**
+     * Get the values this scope would inherit from its parent scope.
+     *
+     * Store scope inherits from its website, website and default scope from default.
+     *
+     * @return array
+     */
+    private function getInheritedValues(): array
+    {
+        $scope = ScopeConfigInterface::SCOPE_TYPE_DEFAULT;
+        $scopeId = null;
+
+        if ($this->getScope() === ScopeInterface::SCOPE_STORES) {
+            try {
+                $scope = ScopeInterface::SCOPE_WEBSITE;
+                $scopeId = $this->storeManager->getStore($this->getScopeId())->getWebsiteId();
+            } catch (NoSuchEntityException $e) {
+                $scope = ScopeConfigInterface::SCOPE_TYPE_DEFAULT;
+                $scopeId = null;
+            }
+        }
+
+        return (array) $this->_config->getValue(static::DOTDIGITAL_LIST_CONFIG_PATH, $scope, $scopeId);
     }
 }

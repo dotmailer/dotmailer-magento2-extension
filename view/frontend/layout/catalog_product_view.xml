@@ -14,7 +14,8 @@
         <referenceContainer name="before.body.end">
             <block class="Magento\Framework\View\Element\Template"
                    name="dotdigital.product.capture"
-                   template="Dotdigitalgroup_Email::tracking/dotdigital_product_capture.phtml">
+                   template="Dotdigitalgroup_Email::tracking/dotdigital_product_capture.phtml"
+                   ifconfig="connector_configuration/tracking/tracking_profile_id">
                 <arguments>
                     <argument name="view_model" xsi:type="object">Dotdigitalgroup\Email\ViewModel\DotdigitalProductCaptureView</argument>
                 </arguments>

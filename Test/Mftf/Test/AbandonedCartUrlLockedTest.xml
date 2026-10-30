@@ -14,7 +14,6 @@
         <before>
             <actionGroup ref="AdminLoginActionGroup" stepKey="AdminLoginActionGroup1"/>
             <amOnPage url="{{AdminDotmailerDeveloperSettingPage.url}}" stepKey="dotmailerDeveloperSettings"/>
-            <waitForPageLoad stepKey="waitForPageLoad1"/>
             <conditionalClick selector="{{AdminDeveloperSettingsSection.developerIpRestrictionFieldsetToggle}}" dependentSelector="{{AdminDeveloperSettingsSection.developerIpRestrictionFieldset}}" visible="false" stepKey="click"/>
             <grabValueFrom selector="{{AdminDeveloperSettingsSection.developerIpAddresses}}" stepKey="beforeIps"/>
             <setCookie userInput="beforeIps" value="{$beforeIps}" stepKey="setCookie1"/>
@@ -26,7 +25,6 @@
             <actionGroup ref="ClearDynamicContentPasscode" stepKey="clearDynamicContentPasscode" />
 
             <amOnPage url="{{AdminDotmailerDeveloperSettingPage.url}}" stepKey="dotmailerDeveloperSettingsBack"/>
-            <waitForPageLoad stepKey="waitForPageLoad4"/>
             <conditionalClick selector="{{AdminDeveloperSettingsSection.developerIpRestrictionFieldsetToggle}}" dependentSelector="{{AdminDeveloperSettingsSection.developerIpRestrictionFieldset}}" visible="false" stepKey="click"/>
             <grabCookie userInput="beforeIps" stepKey="grabCookie"/>
             <fillField selector="{{AdminDeveloperSettingsSection.developerIpAddresses}}" userInput="{$grabCookie}" stepKey="noIpLimitBack"/>
@@ -35,30 +33,30 @@
             <actionGroup ref="AdminLogoutActionGroup" stepKey="logoutAdminUserAfterTest"/>
         </after>
 
+        <!-- EDC responses do not require Magento's jQuery-based page-load wait. -->
+        <executeJS function="return '{{_ENV.MAGENTO_BASE_URL}}'.replace(/\/+$/, '')" stepKey="storefrontBaseUrl"/>
         <!-- Test no passcode -->
-        <amOnPage url="{{StorefrontAbandonedCartPage.url}}" stepKey="amOnAbandonedCartPage_1"/>
+        <amOnUrl url="{$storefrontBaseUrl}/{{StorefrontAbandonedCartPage.url}}" stepKey="amOnAbandonedCartPage_1"/>
         <dontSee userInput="401 Unauthorized" selector="h1" stepKey="dontSeeUnauthorized1"/>
 
         <!-- Test valid passcode -->
         <actionGroup ref="CreateDynamicContentPasscode" stepKey="createDynamicContentPasscode"/>
         <grabValueFrom selector="{{AdminDynamicContentSettingsSection.dynamicContentPasscode}}" stepKey="passcode"/>
-        <amOnPage url="{{StorefrontAbandonedCartPage.url}}/{$passcode}" stepKey="amOnAbandonedCartPage_2"/>
+        <amOnUrl url="{$storefrontBaseUrl}/{{StorefrontAbandonedCartPage.url}}/{$passcode}" stepKey="amOnAbandonedCartPage_2"/>
         <dontSee userInput="401 Unauthorized" selector="h1" stepKey="dontSeeUnauthorized2"/>
 
         <!-- Test invalid passcode -->
-        <amOnPage url="{{StorefrontAbandonedCartPage.url}}/hacked" stepKey="amOnACHackedPage"/>
+        <amOnUrl url="{$storefrontBaseUrl}/{{StorefrontAbandonedCartPage.url}}/hacked" stepKey="amOnACHackedPage"/>
         <see selector="{{StorefrontAbandonedCartEdcSection.dynamicPageContent}}" userInput="401" stepKey="seeUnauthorized"/>
 
-        <!-- Test auth is locked after multiple incorrect attempts -->
+        <!-- The first invalid passcode above counts toward the five-attempt lock threshold. -->
         <amOnPage url="{{AdminDotmailerDashboardPage.url}}" stepKey="amOnDashboardPage"/>
-        <waitForPageLoad stepKey="waitForPageLoad3"/>
         <seeInCurrentUrl url="{{AdminDotmailerDashboardPage.url}}" stepKey="seeDashboard"/>
         <see userInput="Not locked" selector="{{DotdigitalDashboardSection.dashboardContainer}}" stepKey="SeeLockStatus"/>
-        <amOnPage url="{{StorefrontAbandonedCartPage.url}}/hacked" stepKey="amOnAbandonedCartPage_3"/>
-        <amOnPage url="{{StorefrontAbandonedCartPage.url}}/hacked" stepKey="amOnAbandonedCartPage_4"/>
-        <amOnPage url="{{StorefrontAbandonedCartPage.url}}/hacked" stepKey="amOnAbandonedCartPage_5"/>
-        <amOnPage url="{{StorefrontAbandonedCartPage.url}}/hacked" stepKey="amOnAbandonedCartPage_6"/>
-        <amOnPage url="{{StorefrontAbandonedCartPage.url}}/hacked" stepKey="amOnAbandonedCartPage_7"/>
+        <amOnUrl url="{$storefrontBaseUrl}/{{StorefrontAbandonedCartPage.url}}/hacked" stepKey="amOnAbandonedCartPage_3"/>
+        <amOnUrl url="{$storefrontBaseUrl}/{{StorefrontAbandonedCartPage.url}}/hacked" stepKey="amOnAbandonedCartPage_4"/>
+        <amOnUrl url="{$storefrontBaseUrl}/{{StorefrontAbandonedCartPage.url}}/hacked" stepKey="amOnAbandonedCartPage_5"/>
+        <amOnUrl url="{$storefrontBaseUrl}/{{StorefrontAbandonedCartPage.url}}/hacked" stepKey="amOnAbandonedCartPage_6"/>
         <amOnPage url="{{AdminDotmailerDashboardPage.url}}" stepKey="amBackOnDashboard"/>
         <see userInput="Locked" selector="{{DotdigitalDashboardSection.dashboardContainer}}" stepKey="SeeLockStatus1"/>
     </test>

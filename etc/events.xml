@@ -29,6 +29,7 @@
     </event>
     <event name="catalog_product_save_after">
         <observer name="ddg_catalog_product_save_after" instance="Dotdigitalgroup\Email\Observer\Catalog\ReimportProduct"/>
+        <observer name="ddg_catalog_product_save_after_website_removal" instance="Dotdigitalgroup\Email\Observer\Catalog\RemoveProductFromWebsites"/>
     </event>
     <event name="catalog_product_delete_before">
         <observer name="ddg_catalog_product_delete_before" instance="Dotdigitalgroup\Email\Observer\Catalog\RemoveProduct"/>

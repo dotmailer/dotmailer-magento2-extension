@@ -4,37 +4,117 @@ declare(strict_types=1);
 
 namespace Dotdigitalgroup\Email\Model\Product\Provider;
 
-use Dotdigitalgroup\Email\Api\Model\Product\Provider\ProductProviderInterface;
 use Magento\Catalog\Api\Data\ProductInterface;
+use Magento\Catalog\Model\Product;
+use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
+use Magento\Store\Model\StoreManagerInterface;
+use Dotdigitalgroup\Email\Api\Model\Product\Provider\ProductProviderInterface;
 
 class LowestPriceProductProvider implements ProductProviderInterface
 {
     /**
-     * @var LowestPriceProductFinder
+     * @var ProductProviderInterface
      */
-    private $productFinder;
+    private $productProvider;
 
     /**
-     * @var ProductInterface|null
+     * @var StoreManagerInterface
      */
-    private $currentProduct = null;
+    private $storeManager;
 
     /**
-     * @param LowestPriceProductFinder $productFinder
+     * $useSpecialPrice is defined in di.xml to determine if special price should be considered
+     * @var bool
      */
-    public function __construct(LowestPriceProductFinder $productFinder)
-    {
-        $this->productFinder = $productFinder;
+    private $useSpecialPrice;
+
+    /**
+     * @param ProductProviderInterface $productProvider
+     * @param StoreManagerInterface $storeManager
+     * @param bool $useSpecialPrice
+     */
+    public function __construct(
+        ProductProviderInterface $productProvider,
+        StoreManagerInterface $storeManager,
+        bool $useSpecialPrice = false,
+    ) {
+        $this->storeManager = $storeManager;
+        $this->productProvider = $productProvider;
+        $this->useSpecialPrice = $useSpecialPrice;
     }
 
     /**
-     * @inheritDoc
+     * Find the lowest priced product
+     *
+     * @return ProductInterface|null
      */
     public function getProduct(): ?ProductInterface
     {
-        if (!isset($this->currentProduct)) {
-            $this->currentProduct = $this->productFinder->findLowestPricedProduct();
+        $product = $this->productProvider->getProduct();
+
+        if (!$product || ($product->getTypeId() !== 'configurable' && $product->getTypeId() !== 'grouped')) {
+            return $product;
         }
-        return $this->currentProduct;
+
+        $childProducts = $this->getChildProducts($product);
+        $storeId = (int)$this->storeManager->getStore()->getId();
+
+        return $this->findLowestPrice($childProducts, $storeId);
+    }
+
+    /**
+     * Get child products based on product type
+     *
+     * @param Product $product
+     * @return array
+     */
+    private function getChildProducts(Product $product): array
+    {
+        if ($product->getTypeId() === 'configurable') {
+            /** @var Configurable $configurableProductInstance */
+            $configurableProductInstance = $product->getTypeInstance();
+            return $configurableProductInstance->getUsedProducts($product);
+        }
+
+        return $product->getTypeInstance()->getAssociatedProducts($product);
+    }
+
+    /**
+     * Find the product with the lowest price
+     *
+     * @param array $childProducts
+     * @param int $storeId
+     * @return ProductInterface|null
+     */
+    private function findLowestPrice(array $childProducts, int $storeId): ?ProductInterface
+    {
+        $lowestPricedProduct = null;
+        $lowestPrice = null;
+        $lowestSalePricedProduct = null;
+        $lowestSalePrice = null;
+
+        /** @var Product $childProduct */
+        foreach ($childProducts as $childProduct) {
+            if ($storeId && !in_array($storeId, $childProduct->getStoreIds())) {
+                continue;
+            }
+
+            $childPrice = $childProduct->getPrice();
+            if ($childPrice !== null && ($lowestPrice === null || $childPrice < $lowestPrice)) {
+                $lowestPricedProduct = $childProduct;
+                $lowestPrice = $childPrice;
+            }
+
+            $childSpecialPrice = $childProduct->getSpecialPrice();
+            if ($childSpecialPrice !== null && ($lowestSalePrice === null || $childSpecialPrice < $lowestSalePrice)) {
+                $lowestSalePricedProduct = $childProduct;
+                $lowestSalePrice = $childSpecialPrice;
+            }
+        }
+
+        if ($this->useSpecialPrice) {
+            return $lowestSalePricedProduct ?? $lowestPricedProduct;
+        }
+        return $lowestPricedProduct;
     }
 }

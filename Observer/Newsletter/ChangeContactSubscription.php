@@ -214,6 +214,7 @@ class ChangeContactSubscription implements ObserverInterface
                 $subscribeData->setId($contactEmail->getId());
                 $subscribeData->setEmail($email);
                 $subscribeData->setWebsiteId($websiteId);
+                $subscribeData->setStoreId($storeId);
                 $subscribeData->setType('subscribe');
                 $subscribeData->setAutomationId($automationId);
                 $this->publisher->publish(DotdigitalSubscriber::TOPIC_NEWSLETTER_SUBSCRIPTION, $subscribeData);
@@ -236,6 +237,7 @@ class ChangeContactSubscription implements ObserverInterface
                     $unsubscriber->setId($contactEmail->getId());
                     $unsubscriber->setEmail($email);
                     $unsubscriber->setWebsiteId($websiteId);
+                    $unsubscriber->setStoreId($storeId);
                     $unsubscriber->setType('unsubscribe');
 
                     $this->publisher->publish(DotdigitalSubscriber::TOPIC_NEWSLETTER_SUBSCRIPTION, $unsubscriber);

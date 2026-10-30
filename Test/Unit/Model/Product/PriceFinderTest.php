@@ -14,8 +14,11 @@ use Magento\Bundle\Pricing\Price\BundleSelectionPrice;
 use Magento\Bundle\Pricing\Price\FinalPrice as BundleFinalPrice;
 use Magento\Catalog\Model\Product;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
+use Magento\Directory\Model\Currency;
 use Magento\Framework\Pricing\Amount\Base as AmountBase;
 use Magento\Framework\Pricing\PriceInfo\Base;
+use Magento\Store\Model\Store;
+use Magento\Store\Model\StoreManagerInterface;
 use Magento\Tax\Api\TaxCalculationInterface;
 use Magento\Tax\Helper\Data as TaxHelper;
 use Magento\Tax\Model\Config as TaxConfig;
@@ -70,6 +73,16 @@ class PriceFinderTest extends TestCase
     private $selectionPriceListProviderMock;
 
     /**
+     * @var Store|MockObject
+     */
+    private $storeMock;
+
+    /**
+     * @var StoreManagerInterface|MockObject
+     */
+    private $storeManagerMock;
+
+    /**
      * @var PriceFinder
      */
     private $priceFinder;
@@ -99,11 +112,15 @@ class PriceFinderTest extends TestCase
         $this->taxCalculatorMock = $this->createMock(TaxCalculator::class);
         $this->taxHelperMock = $this->createMock(TaxHelper::class);
         $this->selectionPriceListProviderMock = $this->createMock(SelectionPriceListProviderInterface::class);
+        $this->storeMock = $this->createMock(Store::class);
+        $this->storeManagerMock = $this->createMock(StoreManagerInterface::class);
+        $this->storeManagerMock->method('getStore')->willReturn($this->storeMock);
 
         $this->priceFinder = new PriceFinder(
             $this->taxCalculatorMock,
             $this->taxHelperMock,
-            $this->selectionPriceListProviderMock
+            $this->selectionPriceListProviderMock,
+            $this->storeManagerMock
         );
     }
 
@@ -341,7 +358,8 @@ class PriceFinderTest extends TestCase
         $priceFinder = new PriceFinder(
             new TaxCalculator($taxCalculationMock, $this->taxHelperMock),
             $this->taxHelperMock,
-            $this->selectionPriceListProviderMock
+            $this->selectionPriceListProviderMock,
+            $this->storeManagerMock
         );
 
         $this->productMock->method('getTypeId')->willReturn($typeId);
@@ -427,7 +445,8 @@ class PriceFinderTest extends TestCase
         $priceFinder = new PriceFinder(
             new TaxCalculator($taxCalculationMock, $this->taxHelperMock),
             $this->taxHelperMock,
-            $this->selectionPriceListProviderMock
+            $this->selectionPriceListProviderMock,
+            $this->storeManagerMock
         );
 
         $this->productMock->method('getTypeId')->willReturn('bundle');
@@ -456,7 +475,53 @@ class PriceFinderTest extends TestCase
         ];
     }
 
-    private function getSelection(float $value, int $taxClassId): BundleSelectionPrice
+    public function testBundlePricesAreCalculatedInBaseCurrency()
+    {
+        $baseCurrency = $this->createMock(Currency::class);
+        $displayCurrency = $this->createMock(Currency::class);
+        $storeData = ['current_currency' => $displayCurrency];
+        $this->storeMock->method('getBaseCurrency')->willReturn($baseCurrency);
+        $this->storeMock->method('getData')->willReturnCallback(
+            function ($key) use (&$storeData) {
+                return $storeData[$key] ?? null;
+            }
+        );
+        $this->storeMock->method('setData')->willReturnCallback(
+            function ($key, $value) use (&$storeData) {
+                $storeData[$key] = $value;
+                return $this->storeMock;
+            }
+        );
+        $currencyDuringCalculation = [];
+        $trackCurrency = function ($value) use (&$storeData, &$currencyDuringCalculation) {
+            $currencyDuringCalculation[] = $storeData['current_currency'];
+            return $value;
+        };
+
+        $this->taxHelperMock->method('priceIncludesTax')->willReturn(false);
+        $this->taxCalculatorMock->method('calculatePriceInclTax')->willReturnArgument(1);
+        $this->productMock->method('getTypeId')->willReturn('bundle');
+        $this->productMock->method('getPriceType')->willReturn(BundlePrice::PRICE_TYPE_DYNAMIC);
+        $this->productMock->method('getPriceInfo')->willReturn($this->baseMock);
+        $this->baseMock->method('getPrice')->willReturn($this->bundleRegularPriceMock);
+        $this->bundleRegularPriceMock->method('getMinimalPrice')->willReturnCallback(
+            fn () => $trackCurrency(new AmountBase(61.00))
+        );
+        $selection = $this->getSelection(61.00, 0, fn () => $trackCurrency(61.00));
+        $this->selectionPriceListProviderMock->method('getPriceList')->willReturnCallback(
+            fn () => $trackCurrency([$selection])
+        );
+
+        $this->assertEquals(61.00, $this->priceFinder->getPrice($this->productMock, 1));
+        $this->assertEquals(61.00, $this->priceFinder->getPriceInclTax($this->productMock, 1));
+        $this->assertCount(4, $currencyDuringCalculation);
+        foreach ($currencyDuringCalculation as $currency) {
+            $this->assertSame($baseCurrency, $currency);
+        }
+        $this->assertSame($displayCurrency, $storeData['current_currency']);
+    }
+
+    private function getSelection(float $value, int $taxClassId, ?callable $getValue = null): BundleSelectionPrice
     {
         $product = $this->getMockBuilder($this->classWithAddedMethods(Product::class, ['getTaxClassId']))
             ->disableOriginalConstructor()
@@ -465,7 +530,7 @@ class PriceFinderTest extends TestCase
         $product->method('getTaxClassId')->willReturn($taxClassId);
 
         $selection = $this->createMock(BundleSelectionPrice::class);
-        $selection->method('getValue')->willReturn($value);
+        $selection->method('getValue')->willReturnCallback($getValue ?? fn () => $value);
         $selection->method('getQuantity')->willReturn(1.0);
         $selection->method('getProduct')->willReturn($product);
 

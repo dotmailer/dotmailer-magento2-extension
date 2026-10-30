@@ -4,8 +4,8 @@ namespace Dotdigitalgroup\Email\ViewModel;
 
 use Dotdigitalgroup\Email\Api\Product\CurrentProductInterface;
 use Dotdigitalgroup\Email\Helper\Config;
-use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Logger\Logger;
+use Dotdigitalgroup\Email\Model\Tracking\EndpointResolver;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\Product\Type as ProductType;
 use Magento\Catalog\Model\Product\Visibility;
@@ -53,9 +53,9 @@ class ProductNotificationView implements ArgumentInterface
     private $currentProduct;
 
     /**
-     * @var Data
+     * @var EndpointResolver
      */
-    private $helper;
+    private $endpointResolver;
 
     /**
      * @var Logger
@@ -82,7 +82,7 @@ class ProductNotificationView implements ArgumentInterface
      *
      * @param Context $context
      * @param CurrentProductInterface $currentProduct
-     * @param Data $helper
+     * @param EndpointResolver $endpointResolver
      * @param Logger $logger
      * @param ConfigInterface $productTypesConfig
      * @param Visibility $productVisibilities
@@ -91,7 +91,7 @@ class ProductNotificationView implements ArgumentInterface
     public function __construct(
         Context $context,
         CurrentProductInterface $currentProduct,
-        Data $helper,
+        EndpointResolver $endpointResolver,
         Logger $logger,
         ConfigInterface $productTypesConfig,
         Visibility $productVisibilities,
@@ -100,7 +100,7 @@ class ProductNotificationView implements ArgumentInterface
         $this->_scopeConfig = $context->getScopeConfig();
         $this->_storeManager = $context->getStoreManager();
         $this->currentProduct = $currentProduct;
-        $this->helper = $helper;
+        $this->endpointResolver = $endpointResolver;
         $this->logger = $logger;
         $this->productTypesConfig = $productTypesConfig;
         $this->productVisibilities = $productVisibilities;
@@ -186,7 +186,9 @@ class ProductNotificationView implements ArgumentInterface
      */
     public function getProductNotificationScript():string
     {
-        $trackingHost = $this->getProductNotificationScriptHost();
+        $trackingHost = $this->endpointResolver->getUrl(
+            (int)$this->_storeManager->getStore()->getWebsiteId()
+        );
         $params = [
             // phpcs:ignore Magento2.Functions.DiscouragedFunction
             'id' => base_convert($this->getDdAccountId(), 10, 36),
@@ -195,10 +197,7 @@ class ProductNotificationView implements ArgumentInterface
             'bm' => 'true'
         ];
 
-        return $this->helper->getTrackingRegionPrefix(
-            (int)$this->_storeManager->getStore()->getWebsiteId()
-        ) .'.'. $trackingHost . '/ddmbis.js?' .
-            http_build_query($params);
+        return $trackingHost . '/ddmbis.js?' . http_build_query($params);
     }
 
     /**
@@ -355,21 +354,6 @@ class ProductNotificationView implements ArgumentInterface
         }
 
         return array_diff($allowedTypesList, self::IGNORED_PRODUCT_TYPES);
-    }
-
-    /**
-     * Get product notification script host
-     *
-     * @return bool|string
-     * @throws LocalizedException
-     */
-    private function getProductNotificationScriptHost()
-    {
-        return $this->_scopeConfig->getValue(
-            Config::TRACKING_HOST,
-            ScopeInterface::SCOPE_WEBSITE,
-            $this->_storeManager->getWebsite()->getId()
-        );
     }
 
     /**

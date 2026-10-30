@@ -1,0 +1,16 @@
+<?php
+
+declare(strict_types=1);
+
+use Dotdigitalgroup\Email\ViewModel\DotdigitalConfigurationView;
+use Magento\Framework\View\Element\Template;
+
+/**
+ * @var DotdigitalConfigurationView $viewModel
+ * @var Template $block
+ */
+$viewModel = $block->getData('view_model');
+
+?>
+<?= /** @noEscape */ $viewModel->renderConfig() ?>
+<?= /** @noEscape */ $viewModel->renderScript() ?>

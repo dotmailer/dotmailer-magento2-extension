@@ -7,10 +7,12 @@ namespace Dotdigitalgroup\Email\Model\Sync;
 use Dotdigitalgroup\Email\Helper\Config;
 use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Logger\Logger;
+use Dotdigitalgroup\Email\Model\Customer\RegistrationStoreResolver;
 use Dotdigitalgroup\Email\Model\Importer;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory as ContactCollectionFactory;
 use Dotdigitalgroup\Email\Model\Sync\Batch\MegaBatchProcessorFactory;
 use Dotdigitalgroup\Email\Model\Sync\Batch\MergeManager;
+use Dotdigitalgroup\Email\Model\Sync\Customer\ListCohortResolver;
 use Dotdigitalgroup\Email\Model\Sync\Guest\GuestExporterFactory;
 use Http\Client\Exception;
 use Magento\Framework\App\Config\ScopeConfigInterface;
@@ -68,6 +70,16 @@ class Guest extends DataObject implements SyncInterface
     private $guestExporterFactory;
 
     /**
+     * @var ListCohortResolver
+     */
+    private $listCohortResolver;
+
+    /**
+     * @var RegistrationStoreResolver
+     */
+    private $registrationStoreResolver;
+
+    /**
      * Guest constructor.
      *
      * @param ContactCollectionFactory $contactCollectionFactory
@@ -78,6 +90,8 @@ class Guest extends DataObject implements SyncInterface
      * @param MegaBatchProcessorFactory $megaBatchProcessorFactory
      * @param MergeManager $mergeManager
      * @param GuestExporterFactory $guestExporterFactory
+     * @param ListCohortResolver $listCohortResolver
+     * @param RegistrationStoreResolver $registrationStoreResolver
      * @param array $data
      */
     public function __construct(
@@ -89,6 +103,8 @@ class Guest extends DataObject implements SyncInterface
         MegaBatchProcessorFactory $megaBatchProcessorFactory,
         MergeManager $mergeManager,
         GuestExporterFactory $guestExporterFactory,
+        ListCohortResolver $listCohortResolver,
+        RegistrationStoreResolver $registrationStoreResolver,
         array $data = []
     ) {
         $this->contactCollectionFactory = $contactCollectionFactory;
@@ -99,6 +115,8 @@ class Guest extends DataObject implements SyncInterface
         $this->megaBatchProcessorFactory = $megaBatchProcessorFactory;
         $this->mergeManager = $mergeManager;
         $this->guestExporterFactory = $guestExporterFactory;
+        $this->listCohortResolver = $listCohortResolver;
+        $this->registrationStoreResolver = $registrationStoreResolver;
         parent::__construct($data);
     }
 
@@ -122,28 +140,39 @@ class Guest extends DataObject implements SyncInterface
         foreach ($this->storeManager->getWebsites() as $website) {
             $apiEnabled = $this->helper->isEnabled($website->getId());
             $guestSyncEnabled = $this->helper->isGuestSyncEnabled($website->getId());
-            $addressbook = $this->helper->getGuestAddressBook($website->getId());
 
-            if ($apiEnabled &&
-                $guestSyncEnabled &&
-                $addressbook &&
-                (!$breakValue || $this->totalGuestsSyncedCount < $breakValue)) {
-                try {
+            if (!$apiEnabled || !$guestSyncEnabled) {
+                continue;
+            }
+
+            try {
+                $megaBatch = [];
+                $megaBatchCount = 0;
+
+                foreach ($this->listCohortResolver->resolveGuests($website) as $cohort) {
+                    if ($breakValue && $this->totalGuestsSyncedCount >= $breakValue) {
+                        break;
+                    }
+
                     $this->loopByWebsite(
                         $website,
                         $megaBatchSize,
                         $breakValue,
-                        (int) $addressbook
-                    );
-                } catch (\Exception $e) {
-                    $this->logger->error(
-                        sprintf(
-                            'Error in customer sync for website id: %d',
-                            $website->getId()
-                        ),
-                        [(string) $e]
+                        $cohort,
+                        $megaBatch,
+                        $megaBatchCount
                     );
                 }
+
+                $this->processMegaBatch($megaBatch, (int) $website->getId());
+            } catch (\Exception $e) {
+                $this->logger->error(
+                    sprintf(
+                        'Error in guest sync for website id: %d',
+                        $website->getId()
+                    ),
+                    [(string) $e]
+                );
             }
         }
         $message = '----------- Guest sync ----------- : ' .
@@ -158,20 +187,32 @@ class Guest extends DataObject implements SyncInterface
     }
 
     /**
-     * Loop by website.
+     * Perform batching loop for one list cohort of a website.
+     *
+     * A cohort is the set of stores in the website that resolve to the same guest list.
+     * The mega batch is shared by all cohorts of the website; each contact carries its own list.
      *
      * @param Website $website
      * @param int $megaBatchSize
      * @param int $breakValue
-     * @param int $listId
+     * @param array $cohort
+     * @param array $megaBatch
+     * @param int $megaBatchCount
      *
      * @return void
      * @throws Exception
      * @throws LocalizedException
      */
-    private function loopByWebsite(Website $website, int $megaBatchSize, int $breakValue, int $listId)
-    {
-        $megaBatch = [];
+    private function loopByWebsite(
+        Website $website,
+        int $megaBatchSize,
+        int $breakValue,
+        array $cohort,
+        array &$megaBatch,
+        int &$megaBatchCount
+    ) {
+        $listId = (int) $cohort['listId'];
+        $websiteStoreIds = $this->registrationStoreResolver->getWebsiteStoreIds((int) $website->getId());
         $offset = 0;
         $loopStart = true;
         $limit = (int) $this->scopeConfig->getValue(
@@ -184,7 +225,7 @@ class Guest extends DataObject implements SyncInterface
         $guestExporter->setFieldMapping($website);
 
         do {
-            $guests = $this->getGuestsToSync($website->getId(), $limit, $offset);
+            $guests = $this->getGuestsToSync($website->getId(), $cohort, $websiteStoreIds, $limit, $offset);
             if (count($guests->getItems()) === 0) {
                 break;
             }
@@ -192,9 +233,10 @@ class Guest extends DataObject implements SyncInterface
             if ($loopStart) {
                 $this->logger->info(
                     sprintf(
-                        '%s sync: syncing website %d',
+                        '%s sync: syncing website %d, list %d',
                         Importer::IMPORT_TYPE_GUEST,
-                        $website->getId()
+                        $website->getId(),
+                        $listId
                     )
                 );
                 $loopStart = false;
@@ -210,42 +252,55 @@ class Guest extends DataObject implements SyncInterface
             $megaBatch = $this->mergeManager->mergeBatch($batch, $megaBatch);
 
             $offset += count($guests->getItems());
+            $megaBatchCount += $batchCount;
             $this->totalGuestsSyncedCount += $batchCount;
 
-            if (count($megaBatch) >= $megaBatchSize) {
-                $this->megaBatchProcessorFactory->create()
-                    ->process(
-                        $megaBatch,
-                        (int) $website->getId(),
-                        Importer::IMPORT_TYPE_GUEST
-                    );
+            if ($megaBatchCount >= $megaBatchSize) {
+                $this->processMegaBatch($megaBatch, (int) $website->getId());
                 $megaBatch = [];
+                $megaBatchCount = 0;
                 $offset = 0;
             }
         } while (!$breakValue || $this->totalGuestsSyncedCount < $breakValue);
+    }
 
+    /**
+     * Process a mega batch of guest contacts for a website.
+     *
+     * @param array $megaBatch
+     * @param int $websiteId
+     *
+     * @return void
+     */
+    private function processMegaBatch(array $megaBatch, int $websiteId): void
+    {
         $this->megaBatchProcessorFactory->create()
             ->process(
                 $megaBatch,
-                (int) $website->getId(),
+                $websiteId,
                 Importer::IMPORT_TYPE_GUEST
             );
     }
 
     /**
-     * Get guests to sync.
+     * Get guests to sync for a list cohort.
      *
      * @param string|int $websiteId
+     * @param array $cohort
+     * @param array $websiteStoreIds
      * @param int $pageSize
      * @param int $offset
      * @return \Dotdigitalgroup\Email\Model\ResourceModel\Contact\Collection
      */
-    private function getGuestsToSync($websiteId, $pageSize, int $offset = 0)
+    private function getGuestsToSync($websiteId, array $cohort, array $websiteStoreIds, $pageSize, int $offset = 0)
     {
         return $this->contactCollectionFactory->create()
-            ->getGuests(
+            ->getGuestsByStores(
                 $websiteId,
-                $this->helper->isOnlySubscribersForContactSync($websiteId),
+                $cohort['storeIds'],
+                $websiteStoreIds,
+                $cohort['includeUnassigned'],
+                $cohort['onlySubscribers'],
                 $pageSize,
                 $offset
             );

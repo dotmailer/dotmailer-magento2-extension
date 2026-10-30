@@ -11,6 +11,7 @@ use Dotdigitalgroup\Email\Helper\Data;
 use Dotdigitalgroup\Email\Model\Apiconnector\V3\ClientFactory;
 use Dotdigitalgroup\Email\Model\Apiconnector\V3\StatusInterface as V3StatusInterface;
 use Dotdigitalgroup\Email\Model\Contact;
+use Dotdigitalgroup\Email\Model\Customer\RegistrationStoreResolver;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact as ContactResource;
 use Dotdigitalgroup\Email\Model\Sync\Automation\DataField\DataFieldCollector;
 use Dotdigitalgroup\Email\Model\Sync\Subscriber\SingleSubscriberSyncer;
@@ -52,6 +53,11 @@ class ContactManager
     private $singleSubscriberSyncer;
 
     /**
+     * @var RegistrationStoreResolver
+     */
+    private $registrationStoreResolver;
+
+    /**
      * ContactManager constructor.
      *
      * @param DotdigitalContactFactory $sdkContactFactory
@@ -60,6 +66,7 @@ class ContactManager
      * @param ContactResource $contactResource
      * @param DataFieldCollector $dataFieldCollector
      * @param SingleSubscriberSyncer $singleSubscriberSyncer
+     * @param RegistrationStoreResolver $registrationStoreResolver
      */
     public function __construct(
         DotdigitalContactFactory $sdkContactFactory,
@@ -67,7 +74,8 @@ class ContactManager
         ClientFactory $clientFactory,
         ContactResource $contactResource,
         DataFieldCollector $dataFieldCollector,
-        SingleSubscriberSyncer $singleSubscriberSyncer
+        SingleSubscriberSyncer $singleSubscriberSyncer,
+        RegistrationStoreResolver $registrationStoreResolver
     ) {
         $this->sdkContactFactory = $sdkContactFactory;
         $this->helper = $helper;
@@ -75,6 +83,7 @@ class ContactManager
         $this->contactResource = $contactResource;
         $this->dataFieldCollector = $dataFieldCollector;
         $this->singleSubscriberSyncer = $singleSubscriberSyncer;
+        $this->registrationStoreResolver = $registrationStoreResolver;
     }
 
     /**
@@ -83,11 +92,17 @@ class ContactManager
      * Ensure that, prior to automation enrolment, we have a contact in Dotdigital,
      * in the expected address books, and with the expected data fields.
      *
+     * Customers go to the customer list of their registration store, not the store they are shopping in.
+     * Guests go to the guest list of the store the automation was triggered in when it belongs to the website,
+     * otherwise of their contact store (email_contact.store_id), as in the guest cron sync,
+     * or the website's guest list when the contact has no store.
+     *
      * @param Contact $contact
      * @param Subscriber $subscriber
      * @param array $automationDataFields
      * @param string $automationType
      * @param string|null $optInType
+     * @param int|null $triggerStoreId
      *
      * @return int
      * @throws AlreadyExistsException
@@ -100,15 +115,20 @@ class ContactManager
         Subscriber $subscriber,
         array $automationDataFields,
         string $automationType,
-        ?string $optInType = null
+        ?string $optInType = null,
+        ?int $triggerStoreId = null
     ): int {
         $addressBookId = 0;
-        $dataFields = $automationDataFields;
         $email = $contact->getEmail();
         $websiteId = (int) $contact->getWebsiteId();
+        $dataFields = $automationDataFields;
 
         if ($this->canPushContactToCustomerAddressBook($contact, $subscriber, $automationType)) {
-            $addressBookId = (int) $this->helper->getCustomerAddressBook($websiteId);
+            $registrationStoreId = $this->registrationStoreResolver->resolve(
+                (int) $contact->getCustomerId(),
+                $websiteId
+            );
+            $addressBookId = (int) $this->helper->getCustomerListByStoreId($registrationStoreId);
             $dataFields = $this->dataFieldCollector->mergeFields(
                 $automationDataFields,
                 $this->dataFieldCollector->collectForCustomer(
@@ -118,7 +138,9 @@ class ContactManager
                 )
             );
         } elseif ($this->canPushContactToGuestAddressBook($contact, $subscriber, $automationType)) {
-            $addressBookId = (int) $this->helper->getGuestAddressBook($websiteId);
+            $addressBookId = (int) $this->helper->getGuestListByStoreId(
+                $this->resolveGuestStoreId($contact, $websiteId, $triggerStoreId)
+            );
             $dataFields = $this->dataFieldCollector->mergeFields(
                 $automationDataFields,
                 $this->dataFieldCollector->collectForGuest(
@@ -153,7 +175,10 @@ class ContactManager
         }
 
         if ($subscriber->isSubscribed()) {
-            $this->singleSubscriberSyncer->execute($contact);
+            $this->singleSubscriberSyncer->execute(
+                $contact,
+                (int) $subscriber->getStoreId() ?: null
+            );
         }
 
         return $contactId;
@@ -195,7 +220,29 @@ class ContactManager
     }
 
     /**
-     * Check if we can push a guest to the guest address book.
+     * Resolve the store whose guest list a contact belongs to.
+     *
+     * Mirrors the guest sync: a contact whose store is missing or outside the website goes to the
+     * website's default store.
+     *
+     * @param Contact $contact
+     * @param int $websiteId
+     * @param int|null $triggerStoreId
+     *
+     * @return int
+     * @throws LocalizedException
+     */
+    private function resolveGuestStoreId(Contact $contact, int $websiteId, ?int $triggerStoreId = null): int
+    {
+        $storeId = $triggerStoreId ?: (int) $contact->getStoreId();
+
+        return in_array($storeId, $this->registrationStoreResolver->getWebsiteStoreIds($websiteId), true)
+            ? $storeId
+            : $this->registrationStoreResolver->getFallbackStoreId($websiteId);
+    }
+
+    /**
+     * Check whether the contact can be pushed to the guest address book.
      *
      * @param Contact $contact
      * @param Subscriber $subscriber

@@ -225,13 +225,24 @@ class CustomerSyncTest extends \PHPUnit\Framework\TestCase
     {
         foreach ([
              Config::XML_PATH_CONNECTOR_SYNC_CUSTOMER_ENABLED => 1,
-             Config::XML_PATH_CONNECTOR_CUSTOMERS_ADDRESS_BOOK_ID => 'customers called chaz',
+             Config::XML_PATH_CONNECTOR_CUSTOMERS_ADDRESS_BOOK_ID => 123456,
              Config::XML_PATH_CONNECTOR_SYNC_ALLOW_NON_SUBSCRIBERS => 1,
              Config::XML_PATH_CONNECTOR_MAPPING_CUSTOMER_ID => "CUSTOMER_ID",
              Config::XML_PATH_CONNECTOR_CUSTOMER_FIRSTNAME => "FIRSTNAME",
              Config::XML_PATH_CONNECTOR_CUSTOMER_LASTNAME => "LASTNAME",
                  ] as $path => $value) {
             $this->getMutableScopeConfig()->setValue($path, $value, ScopeInterface::SCOPE_WEBSITE);
+        }
+
+        // The test config does not cascade website values to store scope, which the list mapping is read at.
+        $storeManager = $this->objectManager->get(\Magento\Store\Model\StoreManagerInterface::class);
+        foreach ($storeManager->getStores() as $store) {
+            $this->getMutableScopeConfig()->setValue(
+                Config::XML_PATH_CONNECTOR_CUSTOMERS_ADDRESS_BOOK_ID,
+                123456,
+                ScopeInterface::SCOPE_STORE,
+                $store->getCode()
+            );
         }
     }
 }

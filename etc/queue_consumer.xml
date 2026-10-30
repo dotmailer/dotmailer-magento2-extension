@@ -26,6 +26,10 @@
               queue="ddg.cart_phase_update.queue"
               handler="Dotdigitalgroup\Email\Model\Queue\Sales\CartPhaseUpdateConsumer::process"
               connection="db" />
+    <consumer name="ddg.sales.guest_list_addition"
+              queue="ddg.guest_list_addition.queue"
+              handler="Dotdigitalgroup\Email\Model\Queue\Sales\GuestListAdditionConsumer::process"
+              connection="db" />
     <consumer name="ddg.newsletter.subscription"
               queue="ddg.subscription.queue"
               handler="Dotdigitalgroup\Email\Model\Queue\Newsletter\SubscriptionConsumer::process"

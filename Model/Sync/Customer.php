@@ -11,7 +11,9 @@ use Dotdigitalgroup\Email\Model\Importer;
 use Dotdigitalgroup\Email\Model\ResourceModel\Contact\CollectionFactory as ContactCollectionFactory;
 use Dotdigitalgroup\Email\Model\Sync\Batch\MegaBatchProcessorFactory;
 use Dotdigitalgroup\Email\Model\Sync\Batch\MergeManager;
+use Dotdigitalgroup\Email\Model\Customer\RegistrationStoreResolver;
 use Dotdigitalgroup\Email\Model\Sync\Customer\ExporterFactory;
+use Dotdigitalgroup\Email\Model\Sync\Customer\ListCohortResolver;
 use Dotdigitalgroup\Email\Model\Sync\Export\ExporterInterface;
 use Http\Client\Exception;
 use Magento\Framework\App\Config\ScopeConfigInterface;
@@ -64,6 +66,16 @@ class Customer extends DataObject implements SyncInterface
     private $storeManager;
 
     /**
+     * @var ListCohortResolver
+     */
+    private $listCohortResolver;
+
+    /**
+     * @var RegistrationStoreResolver
+     */
+    private $registrationStoreResolver;
+
+    /**
      * @var int
      */
     private $totalCustomersSyncedCount = 0;
@@ -79,6 +91,8 @@ class Customer extends DataObject implements SyncInterface
      * @param ExporterFactory $exporterFactory
      * @param ScopeConfigInterface $scopeConfig
      * @param StoreManagerInterface $storeManager
+     * @param ListCohortResolver $listCohortResolver
+     * @param RegistrationStoreResolver $registrationStoreResolver
      * @param array $data
      */
     public function __construct(
@@ -90,6 +104,8 @@ class Customer extends DataObject implements SyncInterface
         ExporterFactory $exporterFactory,
         ScopeConfigInterface $scopeConfig,
         StoreManagerInterface $storeManager,
+        ListCohortResolver $listCohortResolver,
+        RegistrationStoreResolver $registrationStoreResolver,
         array $data = []
     ) {
         $this->helper = $helper;
@@ -100,6 +116,8 @@ class Customer extends DataObject implements SyncInterface
         $this->exporterFactory = $exporterFactory;
         $this->scopeConfig = $scopeConfig;
         $this->storeManager = $storeManager;
+        $this->listCohortResolver = $listCohortResolver;
+        $this->registrationStoreResolver = $registrationStoreResolver;
         parent::__construct($data);
     }
 
@@ -122,29 +140,39 @@ class Customer extends DataObject implements SyncInterface
         foreach ($this->storeManager->getWebsites() as $website) {
             $apiEnabled = $this->helper->isEnabled($website->getId());
             $customerSyncEnabled = $this->helper->isCustomerSyncEnabled($website->getId());
-            $customerAddressBook = $this->helper->getCustomerAddressBook($website->getId());
 
-            if ($apiEnabled &&
-                $customerSyncEnabled &&
-                $customerAddressBook &&
-                (!$breakValue || $this->totalCustomersSyncedCount < $breakValue)
-            ) {
-                try {
+            if (!$apiEnabled || !$customerSyncEnabled) {
+                continue;
+            }
+
+            try {
+                $megaBatch = [];
+                $megaBatchCount = 0;
+
+                foreach ($this->listCohortResolver->resolve($website) as $cohort) {
+                    if ($breakValue && $this->totalCustomersSyncedCount >= $breakValue) {
+                        break;
+                    }
+
                     $this->loopByWebsite(
                         $website,
                         $megaBatchSize,
                         $breakValue,
-                        (int) $customerAddressBook
-                    );
-                } catch (\Exception $e) {
-                    $this->logger->error(
-                        sprintf(
-                            'Error in customer sync for website id: %d',
-                            $website->getId()
-                        ),
-                        [(string) $e]
+                        $cohort,
+                        $megaBatch,
+                        $megaBatchCount
                     );
                 }
+
+                $this->processMegaBatch($megaBatch, (int) $website->getId());
+            } catch (\Exception $e) {
+                $this->logger->error(
+                    sprintf(
+                        'Error in customer sync for website id: %d',
+                        $website->getId()
+                    ),
+                    [(string) $e]
+                );
             }
         }
 
@@ -163,21 +191,33 @@ class Customer extends DataObject implements SyncInterface
     }
 
     /**
-     * Perform batching loop by website.
+     * Perform batching loop for one list cohort of a website.
+     *
+     * A cohort is the set of registration stores in the website that resolve to the same list.
+     * The mega batch is shared by all cohorts of the website, so contacts for different lists
+     * are imported together; each contact carries its own list.
      *
      * @param WebsiteInterface $website
      * @param int $megaBatchSize
      * @param int $breakValue
-     * @param int $listId
+     * @param array $cohort
+     * @param array $megaBatch
+     * @param int $megaBatchCount
      *
      * @return void
      * @throws Exception
      * @throws LocalizedException
      */
-    private function loopByWebsite(WebsiteInterface $website, int $megaBatchSize, int $breakValue, int $listId)
-    {
-        $megaBatch = [];
-        $megaBatchCount = 0;
+    private function loopByWebsite(
+        WebsiteInterface $website,
+        int $megaBatchSize,
+        int $breakValue,
+        array $cohort,
+        array &$megaBatch,
+        int &$megaBatchCount
+    ) {
+        $listId = (int) $cohort['listId'];
+        $websiteStoreIds = $this->registrationStoreResolver->getWebsiteStoreIds((int) $website->getId());
         $offset = 0;
         $loopStart = true;
         $limit = (int) $this->scopeConfig->getValue(
@@ -191,7 +231,7 @@ class Customer extends DataObject implements SyncInterface
         $exporter->setFieldMapping($website);
 
         do {
-            $customerIds = $this->getCustomerIdsToSync($website->getId(), $limit, $offset);
+            $customerIds = $this->getCustomerIdsToSync($website->getId(), $cohort, $websiteStoreIds, $limit, $offset);
             $customerIdCount = count($customerIds);
             if ($customerIdCount === 0) {
                 break;
@@ -203,9 +243,10 @@ class Customer extends DataObject implements SyncInterface
             if ($loopStart) {
                 $this->logger->info(
                     sprintf(
-                        '%s sync: syncing website %d',
+                        '%s sync: syncing website %d, list %d',
                         Importer::IMPORT_TYPE_CUSTOMER,
-                        $website->getId()
+                        $website->getId(),
+                        $listId
                     )
                 );
                 $loopStart = false;
@@ -232,41 +273,52 @@ class Customer extends DataObject implements SyncInterface
             $this->totalCustomersSyncedCount += $batchCount;
 
             if ($megaBatchCount >= $megaBatchSize) {
-                $this->megaBatchProcessorFactory->create()
-                    ->process(
-                        $megaBatch,
-                        (int) $website->getId(),
-                        Importer::IMPORT_TYPE_CUSTOMER
-                    );
+                $this->processMegaBatch($megaBatch, (int) $website->getId());
                 $megaBatch = [];
                 $megaBatchCount = 0;
                 $offset = 0;
             }
         } while (!$breakValue || $this->totalCustomersSyncedCount < $breakValue);
+    }
 
+    /**
+     * Process a mega batch of customer contacts for a website.
+     *
+     * @param array $megaBatch
+     * @param int $websiteId
+     *
+     * @return void
+     */
+    private function processMegaBatch(array $megaBatch, int $websiteId): void
+    {
         $this->megaBatchProcessorFactory->create()
             ->process(
                 $megaBatch,
-                (int) $website->getId(),
+                $websiteId,
                 Importer::IMPORT_TYPE_CUSTOMER
             );
     }
 
     /**
-     * Get customer ids to sync.
+     * Get customer ids to sync for a list cohort.
      *
      * @param int|string $websiteId
+     * @param array $cohort
+     * @param array $websiteStoreIds
      * @param int $pageSize
      * @param int $offset
      *
      * @return array
      */
-    private function getCustomerIdsToSync($websiteId, $pageSize, $offset = 0)
+    private function getCustomerIdsToSync($websiteId, array $cohort, array $websiteStoreIds, $pageSize, $offset = 0)
     {
         return $this->contactCollectionFactory->create()
-            ->getCustomersToImportByWebsite(
+            ->getCustomersToImportByRegistrationStores(
                 $websiteId,
-                $this->helper->isOnlySubscribersForContactSync($websiteId),
+                $cohort['storeIds'],
+                $websiteStoreIds,
+                $cohort['includeUnassigned'],
+                $cohort['onlySubscribers'],
                 $pageSize,
                 $offset
             )->getColumnValues('customer_id');

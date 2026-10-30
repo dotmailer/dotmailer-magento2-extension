@@ -20,11 +20,6 @@ class RemoveProduct implements \Magento\Framework\Event\ObserverInterface
     private $scopeConfig;
 
     /**
-     * @var \Magento\Store\Model\StoreManagerInterface
-     */
-    private $storeManager;
-
-    /**
      * @var \Dotdigitalgroup\Email\Model\CatalogFactory
      */
     private $catalogFactory;
@@ -35,26 +30,31 @@ class RemoveProduct implements \Magento\Framework\Event\ObserverInterface
     private $importerFactory;
 
     /**
+     * @var \Dotdigitalgroup\Email\Model\Catalog\StoreLevelCatalogDeleter
+     */
+    private $storeLevelCatalogDeleter;
+
+    /**
      * RemoveProduct constructor.
      *
      * @param \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory
      * @param \Dotdigitalgroup\Email\Model\CatalogFactory $catalogFactory
      * @param \Dotdigitalgroup\Email\Helper\Data $data
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
-     * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
+     * @param \Dotdigitalgroup\Email\Model\Catalog\StoreLevelCatalogDeleter $storeLevelCatalogDeleter
      */
     public function __construct(
         \Dotdigitalgroup\Email\Model\ImporterFactory $importerFactory,
         \Dotdigitalgroup\Email\Model\CatalogFactory $catalogFactory,
         \Dotdigitalgroup\Email\Helper\Data $data,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-        \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
+        \Dotdigitalgroup\Email\Model\Catalog\StoreLevelCatalogDeleter $storeLevelCatalogDeleter
     ) {
         $this->importerFactory   = $importerFactory;
         $this->helper            = $data;
         $this->scopeConfig       = $scopeConfig;
         $this->catalogFactory    = $catalogFactory;
-        $this->storeManager      = $storeManagerInterface;
+        $this->storeLevelCatalogDeleter = $storeLevelCatalogDeleter;
     }
 
     /**
@@ -110,21 +110,7 @@ class RemoveProduct implements \Magento\Framework\Event\ObserverInterface
                     );
             }
             if ($scope == 2) {
-                $stores = $this->storeManager->getStores();
-                foreach ($stores as $store) {
-                    /** @var \Magento\Store\Model\Store $store */
-                    $websiteCode = $store->getWebsite()->getCode();
-                    $storeCode = $store->getCode();
-
-                    //register in queue with importer
-                    $this->importerFactory->create()
-                        ->registerQueue(
-                            'Catalog_' . $websiteCode . '_' . $storeCode,
-                            [$key],
-                            \Dotdigitalgroup\Email\Model\Importer::MODE_SINGLE_DELETE,
-                            $store->getWebsite()->getId()
-                        );
-                }
+                $this->storeLevelCatalogDeleter->execute((int) $key);
             }
         }
     }

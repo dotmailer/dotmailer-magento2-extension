@@ -11,6 +11,7 @@ use Dotdigitalgroup\Email\Model\Subscriber as SubscriberModel;
 use Dotdigitalgroup\Email\Model\Sync\Batch\MegaBatchProcessor;
 use Dotdigitalgroup\Email\Model\Sync\Batch\MegaBatchProcessorFactory;
 use Dotdigitalgroup\Email\Model\Sync\Batch\MergeManager;
+use Dotdigitalgroup\Email\Model\Sync\Customer\ListCohortResolver;
 use Dotdigitalgroup\Email\Api\Model\Sync\Export\ContactExporterInterface;
 use Dotdigitalgroup\Email\Model\Sync\Subscriber;
 use Dotdigitalgroup\Email\Model\Sync\Subscriber\OrderHistoryChecker;
@@ -23,6 +24,7 @@ use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Store\Api\Data\WebsiteInterface;
 use Magento\Store\Model\StoreManagerInterface;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
@@ -88,6 +90,11 @@ class SubscriberTest extends TestCase
     private $websiteInterfaceMock;
 
     /**
+     * @var ListCohortResolver|MockObject
+     */
+    private $listCohortResolverMock;
+
+    /**
      * @var SubscriberExporter|MockObject
      */
     private $subscriberExporterMock;
@@ -120,6 +127,7 @@ class SubscriberTest extends TestCase
         $this->subscriberWithSalesExporterFactoryMock = $this->createMock(SubscriberWithSalesExporterFactory::class);
         $this->scopeConfigMock = $this->createMock(ScopeConfigInterface::class);
         $this->storeManagerMock = $this->createMock(StoreManagerInterface::class);
+        $this->listCohortResolverMock = $this->createMock(ListCohortResolver::class);
 
         $this->subscriberExporterMock = $this->createMock(ContactExporterInterface::class);
         $this->subscriberWithSalesExporterMock = $this->createMock(ContactExporterInterface::class);
@@ -157,7 +165,8 @@ class SubscriberTest extends TestCase
             $this->subscriberExporterFactoryMock,
             $this->subscriberWithSalesExporterFactoryMock,
             $this->scopeConfigMock,
-            $this->storeManagerMock
+            $this->storeManagerMock,
+            $this->listCohortResolverMock
         );
     }
 
@@ -197,10 +206,6 @@ class SubscriberTest extends TestCase
         $this->setupForOneEnabledWebsite();
         $this->setupExporters();
 
-        $this->websiteInterfaceMock->expects($this->once())
-            ->method('getStoreIds')
-            ->willReturn([1, 2]);
-
         $this->contactCollectionFactoryMock->expects($this->once())
             ->method('create')
             ->willReturn($this->contactCollectionMock);
@@ -233,10 +238,6 @@ class SubscriberTest extends TestCase
 
         $this->setupForOneEnabledWebsite();
         $this->setupExporters();
-
-        $this->websiteInterfaceMock->expects($this->once())
-            ->method('getStoreIds')
-            ->willReturn([1, 2]);
 
         /* Set loop limits */
         $this->scopeConfigMock->expects($this->exactly(4))
@@ -298,10 +299,6 @@ class SubscriberTest extends TestCase
 
         $this->setupForOneEnabledWebsite();
         $this->setupExporters();
-
-        $this->websiteInterfaceMock->expects($this->exactly(2))
-            ->method('getStoreIds')
-            ->willReturn([1, 2]);
 
         /* Set loop limits */
         $this->scopeConfigMock->expects($this->exactly(4))
@@ -368,10 +365,6 @@ class SubscriberTest extends TestCase
         $this->setupForOneEnabledWebsite();
         $this->setupExporters();
 
-        $this->websiteInterfaceMock->expects($this->exactly(2))
-            ->method('getStoreIds')
-            ->willReturn([1, 2]);
-
         /* Set loop limits */
         $this->scopeConfigMock->expects($this->exactly(4))
             ->method('getValue')
@@ -433,10 +426,6 @@ class SubscriberTest extends TestCase
         $this->setupForOneEnabledWebsite();
         $this->setupExporters();
         $this->setupSubsWithSalesData();
-
-        $this->websiteInterfaceMock->expects($this->exactly(3))
-            ->method('getStoreIds')
-            ->willReturn([1, 2]);
 
         /* Set loop limits */
         $this->scopeConfigMock->expects($this->exactly(4))
@@ -522,6 +511,132 @@ class SubscriberTest extends TestCase
 
     /**
      * @return void
+     * @throws LocalizedException
+     */
+    #[DataProvider('sharedListBatchProvider')]
+    public function testListCohortsShareWebsiteBatches(
+        int $megaBatchSize,
+        int $salesDataEnabled,
+        int $expectedBatchCount
+    ) {
+        $this->storeManagerMock->method('getWebsites')->willReturn([$this->websiteInterfaceMock]);
+        $this->websiteInterfaceMock->method('getId')->willReturn(1);
+        $this->helperMock->method('isEnabled')->willReturn(true);
+        $this->helperMock->method('isSubscriberSyncEnabled')->willReturn(true);
+        $this->listCohortResolverMock->expects($this->once())
+            ->method('resolveSubscribers')
+            ->willReturn([$this->getListCohort(100, [1, 2]), $this->getListCohort(200, [3])]);
+        $this->setupExporters();
+
+        $this->scopeConfigMock->method('getValue')
+            ->willReturnOnConsecutiveCalls($megaBatchSize, null, $salesDataEnabled, 2);
+
+        $this->contactCollectionFactoryMock->method('create')->willReturn($this->contactCollectionMock);
+
+        $pendingSubscribers = $this->createCustomerAndGuestSubscriberStubs(8);
+        $currentPage = [];
+        $this->contactCollectionMock->method('getSubscribersToImportByStoreIds')
+            ->willReturnCallback(function (
+                array $storeIds,
+                int $limit,
+                int $offset
+            ) use (
+                &$pendingSubscribers,
+                &$currentPage
+            ) {
+                $this->assertGreaterThanOrEqual(0, $offset);
+                $currentPage = array_slice(
+                    array_filter($pendingSubscribers, function ($subscriber) use ($storeIds) {
+                        return $storeIds === [1, 2] ? $subscriber->getId() <= 2 : $subscriber->getId() > 2;
+                    }),
+                    $offset,
+                    $limit
+                );
+                return $this->contactCollectionMock;
+            });
+        $this->contactCollectionMock->method('getItems')
+            ->willReturnCallback(function () use (&$currentPage) {
+                return $currentPage;
+            });
+        $this->contactCollectionMock->method('getIterator')
+            ->willReturnCallback(function () use (&$currentPage) {
+                return new ArrayIterator($currentPage);
+            });
+        $this->orderHistoryCheckerMock->method('checkInSales')->willReturnArgument(0);
+
+        $exportedIds = [];
+        $export = function ($contacts, $website, $listId) use (&$exportedIds) {
+            $batch = [];
+            foreach ($contacts as $id => $email) {
+                $exportedIds[] = $id;
+                $this->assertSame($id <= 2 ? 100 : 200, $listId);
+                if ($id === 3) {
+                    continue;
+                }
+                $batch[$id] = ['email' => $email, 'listId' => $listId];
+            }
+            return $batch;
+        };
+        foreach ([$this->subscriberExporterMock, $this->subscriberWithSalesExporterMock] as $exporter) {
+            $exporter->method('getFieldMapping')->willReturn($this->getColumns());
+            $exporter->method('export')->willReturnCallback($export);
+        }
+        $this->mergeManagerMock->method('mergeBatch')
+            ->willReturnCallback([new MergeManager(), 'mergeBatch']);
+
+        $batchProcessorMock = $this->createMock(MegaBatchProcessor::class);
+        $this->batchProcessorFactoryMock->method('create')->willReturn($batchProcessorMock);
+        $processedBatches = [];
+        $batchProcessorMock->method('process')
+            ->willReturnCallback(function (
+                array $batch,
+                int $websiteId
+            ) use (
+                &$pendingSubscribers,
+                &$processedBatches
+            ) {
+                $this->assertSame(1, $websiteId);
+                if (!$batch) {
+                    return;
+                }
+                $processedBatches[] = $batch;
+                $pendingSubscribers = array_filter($pendingSubscribers, function ($subscriber) use ($batch) {
+                    return !isset($batch[$subscriber->getId()]);
+                });
+            });
+        $this->loggerMock->expects($this->never())->method('error');
+
+        $data = $this->subscriber->sync();
+
+        sort($exportedIds);
+        $this->assertSame(range(1, 8), $exportedIds);
+        $this->assertSame(7, $data['syncedSubscribers']);
+        $this->assertCount($expectedBatchCount, $processedBatches);
+        $this->assertSame([100, 200], array_values(array_unique(array_column($processedBatches[0], 'listId'))));
+        if ($salesDataEnabled) {
+            foreach ($processedBatches as $batch) {
+                $this->assertCount(1, array_unique(array_map(function (int $id) {
+                    return $id % 2;
+                }, array_keys($batch))));
+            }
+        }
+        $this->assertSame([3], array_values(array_map(function ($subscriber) {
+            return $subscriber->getId();
+        }, $pendingSubscribers)));
+    }
+
+    public static function sharedListBatchProvider(): array
+    {
+        return [
+            'website remainder' => [100, 0, 1],
+            'mixed-list threshold' => [3, 0, 2],
+            'sales website remainders' => [100, 1, 2],
+            'sales mixed-list thresholds' => [3, 1, 3]
+        ];
+    }
+
+    /**
+     * @return void
      */
     private function setupForOneEnabledWebsite()
     {
@@ -537,9 +652,26 @@ class SubscriberTest extends TestCase
             ->method('isSubscriberSyncEnabled')
             ->willReturn(true);
 
-        $this->helperMock->expects($this->once())
-            ->method('getSubscriberAddressBook')
-            ->willReturn('Subscribers');
+        $this->listCohortResolverMock->expects($this->once())
+            ->method('resolveSubscribers')
+            ->with($this->websiteInterfaceMock)
+            ->willReturn([$this->getListCohort(100, [1, 2])]);
+    }
+
+    /**
+     * @param int $listId
+     * @param array $storeIds
+     *
+     * @return array
+     */
+    private function getListCohort(int $listId, array $storeIds): array
+    {
+        return [
+            'listId' => $listId,
+            'onlySubscribers' => false,
+            'storeIds' => $storeIds,
+            'includeUnassigned' => false
+        ];
     }
 
     /**

@@ -13,9 +13,11 @@ use Dotdigitalgroup\Email\Model\Queue\Data\AutomationData;
 use Dotdigitalgroup\Email\Model\Queue\Data\AutomationDataFactory;
 use Dotdigitalgroup\Email\Model\Queue\Data\SubscriptionData;
 use Dotdigitalgroup\Email\Model\Sync\Subscriber\SingleSubscriberSyncer;
+use Dotdigitalgroup\Email\Model\Sync\Subscriber\SubscriberListResolver;
 use Dotdigitalgroup\Email\Model\Queue\Newsletter\SubscriptionConsumer;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\MessageQueue\PublisherInterface;
+use Dotdigitalgroup\Email\Test\Unit\Traits\MockBuilderCompatibilityTrait;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
@@ -23,6 +25,8 @@ use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 #[AllowMockObjectsWithoutExpectations]
 class SubscriptionConsumerTest extends TestCase
 {
+    use MockBuilderCompatibilityTrait;
+
     /**
      * @var Data|MockObject
      */
@@ -74,6 +78,11 @@ class SubscriptionConsumerTest extends TestCase
     private $publisherMock;
 
     /**
+     * @var SubscriberListResolver|MockObject
+     */
+    private $subscriberListResolverMock;
+
+    /**
      * @var SubscriptionConsumer
      */
     private $subscriptionConsumer;
@@ -91,7 +100,13 @@ class SubscriptionConsumerTest extends TestCase
         $this->subscriptionDataMock = $this->createMock(SubscriptionData::class);
         $this->publisherMock = $this->createMock(PublisherInterface::class);
 
+        $this->subscriberListResolverMock = $this->createMock(SubscriberListResolver::class);
+
         $this->helperMock->method('getWebsiteApiClient')->willReturn($this->clientMock);
+        $this->subscriberListResolverMock->method('resolveStoreId')
+            ->willReturnCallback(function (int $websiteId, ?int $storeId, ?int $contactStoreId) {
+                return $storeId ?: (int) $contactStoreId;
+            });
 
         $this->subscriptionConsumer = new SubscriptionConsumer(
             $this->helperMock,
@@ -101,7 +116,8 @@ class SubscriptionConsumerTest extends TestCase
             $this->contactFactoryMock,
             $this->contactResourceMock,
             $this->publisherMock,
-            $this->singleSubscriberSyncerMock
+            $this->singleSubscriberSyncerMock,
+            $this->subscriberListResolverMock
         );
     }
 
@@ -118,6 +134,7 @@ class SubscriptionConsumerTest extends TestCase
     public function testProcessSubscribe(): void
     {
         $this->subscriptionDataMock->method('getType')->willReturn('subscribe');
+        $this->subscriptionDataMock->method('getStoreId')->willReturn(4);
 
         $contactModelMock = $this->createMock(Contact::class);
         $this->contactFactoryMock->method('create')->willReturn($contactModelMock);
@@ -127,14 +144,86 @@ class SubscriptionConsumerTest extends TestCase
             ->with($contactModelMock);
 
         $this->singleSubscriberSyncerMock->expects($this->once())
-            ->method('execute');
+            ->method('execute')
+            ->with($contactModelMock, 4);
 
         $this->subscriptionConsumer->process($this->subscriptionDataMock);
+    }
+
+    public function testQueuedMessageWithoutStoreFallsBackToContactStore(): void
+    {
+        $this->subscriptionDataMock->method('getType')->willReturn('unsubscribe');
+        $this->subscriptionDataMock->method('getWebsiteId')->willReturn(1);
+        $this->subscriptionDataMock->method('getStoreId')->willReturn(null);
+
+        $contactModelMock = $this->getMockBuilder($this->classWithAddedMethods(Contact::class, ['getStoreId']))
+            ->onlyMethods(['getStoreId'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $contactModelMock->method('getStoreId')->willReturn(7);
+        $this->contactFactoryMock->method('create')->willReturn($contactModelMock);
+
+        $this->subscriberListResolverMock->expects($this->once())
+            ->method('getListId')
+            ->with(1, 7)
+            ->willReturn(555);
+
+        $this->clientMock->method('updateContactDatafieldsByEmail')->willReturn((object) ['id' => 12]);
+        $this->clientMock->expects($this->once())
+            ->method('deleteAddressBookContact')
+            ->with(555, 12);
+
+        $this->subscriptionConsumer->process($this->subscriptionDataMock);
+    }
+
+    public function testUnsubscribeUsesListOfMessageStore(): void
+    {
+        $this->subscriptionDataMock->method('getType')->willReturn('unsubscribe');
+        $this->subscriptionDataMock->method('getWebsiteId')->willReturn(1);
+        $this->subscriptionDataMock->method('getStoreId')->willReturn(3);
+
+        $this->subscriberListResolverMock->expects($this->once())
+            ->method('getListId')
+            ->with(1, 3)
+            ->willReturn(333);
+
+        $this->clientMock->method('updateContactDatafieldsByEmail')->willReturn((object) ['id' => 12]);
+        $this->clientMock->expects($this->once())
+            ->method('deleteAddressBookContact')
+            ->with(333, 12);
+
+        $this->subscriptionConsumer->process($this->subscriptionDataMock);
+    }
+
+    public function testProcessFailsExplicitlyWhenStoreContextIsUnavailable(): void
+    {
+        $resolver = $this->createMock(SubscriberListResolver::class);
+        $resolver->method('resolveStoreId')
+            ->willThrowException(new LocalizedException(__('Subscriber store context is unavailable')));
+        $consumer = new SubscriptionConsumer(
+            $this->helperMock,
+            $this->loggerMock,
+            $this->automationDataFactoryMock,
+            $this->contactDataMock,
+            $this->contactFactoryMock,
+            $this->contactResourceMock,
+            $this->publisherMock,
+            $this->singleSubscriberSyncerMock,
+            $resolver
+        );
+        $this->subscriptionDataMock->method('getType')->willReturn('unsubscribe');
+        $this->contactFactoryMock->method('create')->willReturn($this->createMock(Contact::class));
+
+        $this->clientMock->expects($this->never())->method('deleteAddressBookContact');
+        $this->expectException(LocalizedException::class);
+
+        $consumer->process($this->subscriptionDataMock);
     }
 
     public function testProcessUnsubscribe(): void
     {
         $this->subscriptionDataMock->method('getType')->willReturn('unsubscribe');
+        $this->subscriptionDataMock->method('getStoreId')->willReturn(3);
 
         $this->contactDataMock->expects($this->once())
             ->method('getSubscriberStatusString')
@@ -155,6 +244,7 @@ class SubscriptionConsumerTest extends TestCase
     public function testProcessUnsubscribeResultingInLocalSuppression(): void
     {
         $this->subscriptionDataMock->method('getType')->willReturn('unsubscribe');
+        $this->subscriptionDataMock->method('getStoreId')->willReturn(3);
 
         $this->contactDataMock->expects($this->once())
             ->method('getSubscriberStatusString')
@@ -175,6 +265,7 @@ class SubscriptionConsumerTest extends TestCase
     public function testAutomationPublish(): void
     {
         $this->subscriptionDataMock->method('getType')->willReturn('subscribe');
+        $this->subscriptionDataMock->method('getStoreId')->willReturn(4);
 
         $contactModelMock = $this->createMock(Contact::class);
         $this->contactFactoryMock->method('create')->willReturn($contactModelMock);
