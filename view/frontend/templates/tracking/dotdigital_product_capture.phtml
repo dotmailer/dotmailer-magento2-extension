@@ -15,6 +15,87 @@ $viewModel = $block->getData('view_model');
 ?>
 
 <script>
-    const product = <?= /* @noEscape */ json_encode($viewModel->product()->toArray()); ?>;
-    window.ddg.productBrowse( product || {});
+    (() => {
+        const product = <?= /* @noEscape */ json_encode($viewModel->product()->toArray()); ?> || {};
+        const isConfigurable = !!product.extraData && product.extraData.type === 'configurable';
+        let browseFired = false;
+        let lastVariantId = null;
+
+        /**
+         * @param {string|number|null} variantId
+         */
+        const browse = (variantId) => {
+            browseFired = true;
+            lastVariantId = variantId ? String(variantId) : null;
+            window.ddg.productBrowse(lastVariantId ? { ...product, variantId: lastVariantId } : product);
+        };
+
+        /**
+         * Re-fire only when a complete selection resolves to a different variant.
+         * A cleared or partial selection is ignored.
+         *
+         * @param {string|number|null} variantId
+         */
+        const onVariantResolved = (variantId) => {
+            if (variantId && String(variantId) !== lastVariantId) {
+                browse(variantId);
+            }
+        };
+
+        if (!isConfigurable) {
+            browse(null);
+            return;
+        }
+
+        // Resolve the child product from the swatch renderer or configurable widget.
+        require(['jquery', 'domReady!'], ($) => {
+            const resolveVariantId = () => {
+                // The widget data key varies between Magento versions and theme overrides, so match on API.
+                const swatchElement = $('[data-role=swatch-options], .swatch-opt').first();
+                const swatch = Object.values(swatchElement.data() || {}).find(
+                    (widget) => widget && typeof widget.getProductId === 'function'
+                );
+                if (swatch) {
+                    return swatch.getProductId();
+                }
+
+                const configurable = $('#product_addtocart_form').data('mageConfigurable');
+                if (!configurable || !configurable.options.spConfig) {
+                    return null;
+                }
+
+                const config = configurable.options.spConfig;
+                const state = configurable.options.state || {};
+                const attributeIds = Object.keys(config.attributes || {});
+                if (!attributeIds.length || !attributeIds.every((id) => state[id])) {
+                    return null;
+                }
+
+                return Object.keys(config.index || {}).find((childId) =>
+                    attributeIds.every((id) => String(config.index[childId][id]) === String(state[id]))
+                ) || null;
+            };
+
+            const onInitialised = () => {
+                if (!browseFired) {
+                    browse(resolveVariantId());
+                }
+            };
+
+            // Swatch clicks always end by triggering 'change' on the swatch input, whereas
+            // 'updatePrice' is skipped when the price box widget is absent.
+            $(document).on('change updatePrice', '.swatch-input, .super-attribute-select, [data-role=priceBox]', () => {
+                const variantId = resolveVariantId();
+                if (browseFired) {
+                    onVariantResolved(variantId);
+                } else if (variantId) {
+                    browse(variantId);
+                }
+            });
+            $(document).on('swatch.initialized configurable.initialized', onInitialised);
+
+            // Fallback if the widgets initialised before this listener was attached.
+            setTimeout(onInitialised, 1500);
+        });
+    })();
 </script>

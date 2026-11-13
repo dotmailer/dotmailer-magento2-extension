@@ -1,3 +1,8 @@
+# 4.39.0
+
+### What's new
+- `ddg.productBrowse` now includes a `variantId` (the child product's entity ID) when a visitor has selected a variant on a configurable product page, and fires again when the selected variant changes. `variantId` is omitted for simple products and for configurable products with no complete selection. Hyvä support requires `dotdigital/magento2-hyva-dotdigitalgroup-email` 1.7.0.
+
 # 4.38.0
 
 ### What's new
