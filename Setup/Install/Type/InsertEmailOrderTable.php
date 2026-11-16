@@ -80,6 +80,7 @@ class InsertEmailOrderTable extends AbstractBatchInserter implements InsertTypeI
             ])
             ->where('customer_email is ?', new \Zend_Db_Expr('not null'))
             ->where('customer_email != ?', '')
+            ->where('store_id is ?', new \Zend_Db_Expr('not null'))
             ->order('order_id');
     }
 

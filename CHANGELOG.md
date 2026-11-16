@@ -1,3 +1,8 @@
+# 4.38.1
+
+### Bug fixes
+- We fixed a null array offset bug with PHP 8.5 in the `InsertEmailOrderTable` migration.
+
 # 4.38.0
 
 ### What's new
