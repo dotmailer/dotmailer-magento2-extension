@@ -108,6 +108,9 @@ class ExporterTest extends TestCase
         );
     }
 
+    /**
+     * @dataProvider getProductIdStoreIdsTypesAndVisibilities
+     */
     #[DataProvider('getProductIdStoreIdsTypesAndVisibilities')]
     public function testThatExportKeysAndProductsMatch(
         int $storeId,
@@ -214,6 +217,9 @@ class ExporterTest extends TestCase
         $this->assertEquals($exposedProduct2, $actualExposedProduct2);
     }
 
+    /**
+     * @dataProvider getProductIdStoreIdsTypesAndVisibilities
+     */
     #[DataProvider('getProductIdStoreIdsTypesAndVisibilities')]
     public function testThatExportKeysAndProductsMatchAtDefaultLevelSync(
         int $storeId,

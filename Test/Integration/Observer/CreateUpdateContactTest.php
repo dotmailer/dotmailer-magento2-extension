@@ -54,11 +54,17 @@ class CreateUpdateContactTest extends \PHPUnit\Framework\TestCase
     private $contactCollectionFactory;
 
     /**
+     * @var \Magento\Customer\Model\ResourceModel\Customer
+     */
+    private $customerResource;
+
+    /**
      * @return void
      */
     public function setup() :void
     {
         $this->objectManager = \Magento\TestFramework\ObjectManager::getInstance();
+        $this->customerResource = $this->objectManager->create(\Magento\Customer\Model\ResourceModel\Customer::class);
         $this->customerFactory = $this->objectManager->create(\Magento\Customer\Model\CustomerFactory::class);
         $this->contactFactory = $this->objectManager->create(\Dotdigitalgroup\Email\Model\ContactFactory::class);
         $this->helper = $this->objectManager->create(\Dotdigitalgroup\Email\Helper\Data::class);
@@ -91,7 +97,7 @@ class CreateUpdateContactTest extends \PHPUnit\Framework\TestCase
         $customerModel->setFirstname('Firstname');
         $customerModel->setLastname('Lastname');
         $customerModel->setPassword('dummypassword');
-        $customerModel->save();
+        $this->customerResource->save($customerModel);
 
         $this->customerId = $customerModel->getId();
         $this->customerModel = $customerModel;
@@ -127,9 +133,9 @@ class CreateUpdateContactTest extends \PHPUnit\Framework\TestCase
      */
     private function updateCustomerEmail($updatedEmail)
     {
-        return $this->customerModel
-            ->setEmail($updatedEmail)
-            ->save();
+        $this->customerModel->setEmail($updatedEmail);
+        $this->customerResource->save($this->customerModel);
+        return $this->customerModel;
     }
 
     /**

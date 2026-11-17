@@ -65,6 +65,9 @@ class StoreLevelCatalogSyncerTest extends TestCase
         );
     }
 
+    /**
+     * @dataProvider getProducts
+     */
     #[DataProvider('getProducts')]
     public function testNumberOfProductsIfBothAreEnabled($products)
     {
@@ -100,6 +103,9 @@ class StoreLevelCatalogSyncerTest extends TestCase
         $this->assertEquals(count($result), $expected);
     }
 
+    /**
+     * @dataProvider getProducts
+     */
     #[DataProvider('getProducts')]
     public function testNumberOfProductsIfOnlyOneEnabled($products)
     {
@@ -149,6 +155,9 @@ class StoreLevelCatalogSyncerTest extends TestCase
         $this->assertEquals(count($result), $expected);
     }
 
+    /**
+     * @dataProvider getProducts
+     */
     #[DataProvider('getProducts')]
     public function testNumberOfProductsIfNoStoreEnabled($products)
     {
@@ -196,6 +205,9 @@ class StoreLevelCatalogSyncerTest extends TestCase
         $this->assertEquals(count($result), $expected);
     }
 
+    /**
+     * @dataProvider getProducts
+     */
     #[DataProvider('getProducts')]
     public function testAppEmulationIsUsedIfSyncEnabled($products)
     {

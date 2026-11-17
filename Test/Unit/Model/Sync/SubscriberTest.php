@@ -512,6 +512,8 @@ class SubscriberTest extends TestCase
     /**
      * @return void
      * @throws LocalizedException
+     *
+     * @dataProvider sharedListBatchProvider
      */
     #[DataProvider('sharedListBatchProvider')]
     public function testListCohortsShareWebsiteBatches(

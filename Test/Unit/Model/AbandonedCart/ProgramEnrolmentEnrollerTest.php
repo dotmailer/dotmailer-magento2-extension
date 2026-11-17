@@ -250,7 +250,7 @@ class ProgramEnrolmentEnrollerTest extends TestCase
         $matcher = $this->exactly(2);
         $this->scopeConfigMock->expects($this->atLeastOnce())
             ->method('getValue')
-            ->willReturnCallback(function () use ($matcher, $storeId, $programId) {
+            ->willReturnCallback(function () use ($matcher, $storeId) {
                 return match ($matcher->numberOfInvocations()) {
                     1 => [Config::XML_PATH_LOSTBASKET_ENROL_TO_PROGRAM_ID, ScopeInterface::SCOPE_STORE, $storeId],
                     2 => [Config::XML_PATH_CONNECTOR_SYNC_LIMIT, ScopeInterface::SCOPE_STORE]

@@ -77,10 +77,13 @@ class ReportBuilderTest extends TestCase
      */
     public function testBuildLogsErrorAndReturnsWhenJobNotFound(): void
     {
-        $this->jobUpdaterMock->method('update')->willReturn(false);
+        $this->jobUpdaterMock->expects($this->once())
+            ->method('update')
+            ->with(999, $this->isType('callable'))
+            ->willReturn(false);
+        $this->importerCollectionFactoryMock->expects($this->never())->method('create');
 
         $this->reportBuilder->build(999, 10, 5, []);
-        // No exception thrown means the test passes.
     }
 
     /**

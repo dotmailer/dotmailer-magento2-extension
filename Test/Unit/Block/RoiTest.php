@@ -16,6 +16,9 @@ use PHPUnit\Framework\TestCase;
 #[AllowMockObjectsWithoutExpectations]
 class RoiTest extends TestCase
 {
+    /**
+     * @dataProvider trackingScriptProvider
+     */
     #[DataProvider('trackingScriptProvider')]
     public function testTrackingScriptUsesResolvedUrl(string $url, string $version, string $expectedUrl): void
     {

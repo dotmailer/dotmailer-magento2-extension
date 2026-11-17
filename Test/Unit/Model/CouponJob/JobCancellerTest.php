@@ -176,6 +176,8 @@ class JobCancellerTest extends TestCase
      * A job that has already reached a terminal state is left completely alone.
      *
      * @param string $status
+     *
+     * @dataProvider terminalStatusProvider
      */
     #[\PHPUnit\Framework\Attributes\DataProvider('terminalStatusProvider')]
     public function testCancelRejectsTerminalStatuses(string $status): void

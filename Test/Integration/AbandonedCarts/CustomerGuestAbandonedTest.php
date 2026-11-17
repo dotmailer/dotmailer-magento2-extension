@@ -244,7 +244,7 @@ class CustomerGuestAbandonedTest extends TestCase
 
         return $this->setAbandonedModelProperties(
             $quote,
-            !empty($itemIds) ? $itemIds : $this->getQuoteItemIds($quote),
+            $this->getQuoteItemIds($quote),
             $quoteUpdatedAt
         );
     }

@@ -92,6 +92,9 @@ class CatalogSyncFactoryTest extends TestCase
         $this->assertEquals($result, $this->storeLevelCatalogSyncerMock);
     }
 
+    /**
+     * @dataProvider getInvalidSyncLevel
+     */
     #[DataProvider('getInvalidSyncLevel')]
     public function testThatIfSyncLevelFailsToBeDefinedAsStoredOrDefaultLevel($syncLevel)
     {

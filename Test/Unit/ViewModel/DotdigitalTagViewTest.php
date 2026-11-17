@@ -19,6 +19,9 @@ use PHPUnit\Framework\TestCase;
 #[AllowMockObjectsWithoutExpectations]
 class DotdigitalTagViewTest extends TestCase
 {
+    /**
+     * @dataProvider trackingUrlProvider
+     */
     #[DataProvider('trackingUrlProvider')]
     public function testRenderScriptUsesResolvedHostWithoutScheme(string $url, string $host): void
     {

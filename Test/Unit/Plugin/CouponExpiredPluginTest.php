@@ -111,6 +111,8 @@ class CouponExpiredPluginTest extends TestCase
      * @param string $nowUtc
      * @param bool $expectedExpired
      * @return void
+     *
+     * @dataProvider storeTimezoneDataProvider
      */
     #[DataProvider('storeTimezoneDataProvider')]
     public function testCouponExpiresAtEndOfDayInTheStoreTimezone(
@@ -190,6 +192,8 @@ class CouponExpiredPluginTest extends TestCase
      * @param string $nowUtc
      * @param bool $expectedExpired
      * @return void
+     *
+     * @dataProvider edcExpiryDataProvider
      */
     #[DataProvider('edcExpiryDataProvider')]
     public function testEdcCouponExpiresAtExactStoredUtcTime(string $nowUtc, bool $expectedExpired)
@@ -230,6 +234,8 @@ class CouponExpiredPluginTest extends TestCase
      *
      * @param string|null $expiresAt
      * @return void
+     *
+     * @dataProvider unusableExpiryDataProvider
      */
     #[DataProvider('unusableExpiryDataProvider')]
     public function testCouponWithoutAUsableExpiryDateIsNotExpired(?string $expiresAt)

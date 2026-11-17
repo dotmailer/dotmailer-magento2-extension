@@ -78,7 +78,7 @@ class ProgramEnrolmentIntervalTest extends TestCase
         $matcher = $this->exactly(2);
         $dateTimeMock->expects($this->exactly(2))
             ->method('format')
-            ->willReturnCallback(function () use ($matcher, $fromString, $toString) {
+            ->willReturnCallback(function () use ($matcher) {
                 return match ($matcher->numberOfInvocations()) {
                     1 => [$this->equalTo('Y-m-d H:i:s')],
                     2 => [$this->equalTo('Y-m-d H:i:s')]

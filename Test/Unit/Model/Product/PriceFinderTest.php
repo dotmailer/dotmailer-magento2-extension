@@ -341,6 +341,9 @@ class PriceFinderTest extends TestCase
         $this->assertEquals($specialPrice_incl_tax, $specialPriceInclTax);
     }
 
+    /**
+     * @dataProvider taxSettingsProvider
+     */
     #[DataProvider('taxSettingsProvider')]
     public function testPricesFollowCatalogTaxSettingForAllProductTypes(
         string $typeId,
@@ -433,6 +436,9 @@ class PriceFinderTest extends TestCase
         return $cases;
     }
 
+    /**
+     * @dataProvider mixedTaxClassBundleProvider
+     */
     #[DataProvider('mixedTaxClassBundleProvider')]
     public function testBundlePriceInclTaxMatchesStorefrontWithMixedSelectionTaxClasses(
         int $bundlePriceType,
