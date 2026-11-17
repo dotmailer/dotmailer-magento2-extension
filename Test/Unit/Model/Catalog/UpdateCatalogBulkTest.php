@@ -70,6 +70,9 @@ class UpdateCatalogBulkTest extends TestCase
         );
     }
 
+    /**
+     * @dataProvider getProductCount
+     */
     #[DataProvider('getProductCount')]
     public function testIfWeHaveOnlyNewProducts($numberOfProducts)
     {
@@ -92,6 +95,9 @@ class UpdateCatalogBulkTest extends TestCase
         $this->bulkUpdate->execute($this->generateBunches($numberOfProducts));
     }
 
+    /**
+     * @dataProvider getProductCount
+     */
     #[DataProvider('getProductCount')]
     public function testIfWeHaveNoNewProducts($numberOfProducts)
     {
@@ -115,6 +121,9 @@ class UpdateCatalogBulkTest extends TestCase
         $this->bulkUpdate->execute($this->generateBunches($numberOfProducts));
     }
 
+    /**
+     * @dataProvider getProductCount
+     */
     #[DataProvider('getProductCount')]
     public function testIfWeHaveBothNewAndAlreadyExistingEntries($numberOfProducts)
     {

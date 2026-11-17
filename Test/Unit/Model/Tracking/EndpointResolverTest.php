@@ -11,6 +11,9 @@ use PHPUnit\Framework\TestCase;
 
 class EndpointResolverTest extends TestCase
 {
+    /**
+     * @dataProvider defaultHostProvider
+     */
     #[DataProvider('defaultHostProvider')]
     public function testDefaultHostUsesApiRegion(
         ?string $trackingHost,
@@ -30,6 +33,9 @@ class EndpointResolverTest extends TestCase
         $this->assertSame($expectedUrl, (new EndpointResolver($scopeConfig))->getUrl($websiteId));
     }
 
+    /**
+     * @dataProvider customHostProvider
+     */
     #[DataProvider('customHostProvider')]
     public function testCustomHostDoesNotReadApiEndpoint(string $trackingHost, string $expectedUrl): void
     {

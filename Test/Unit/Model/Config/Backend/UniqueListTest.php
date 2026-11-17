@@ -96,7 +96,10 @@ class UniqueListTest extends TestCase
 
     public function testStoreOverrideClashingWithInheritedListIsRejected(): void
     {
-        $this->config->method('getValue')->willReturn(self::WEBSITE_VALUES);
+        $this->config->expects($this->once())
+            ->method('getValue')
+            ->with(UniqueList::DOTDIGITAL_LIST_CONFIG_PATH, 'website', '5')
+            ->willReturn(self::WEBSITE_VALUES);
 
         $this->expectException(ValidatorException::class);
 
@@ -111,7 +114,10 @@ class UniqueListTest extends TestCase
 
     public function testStoreOverridesWithDistinctListsAreAccepted(): void
     {
-        $this->config->method('getValue')->willReturn(self::WEBSITE_VALUES);
+        $this->config->expects($this->once())
+            ->method('getValue')
+            ->with(UniqueList::DOTDIGITAL_LIST_CONFIG_PATH, 'website', '5')
+            ->willReturn(self::WEBSITE_VALUES);
 
         $this->model('stores', 3, [
             'customers' => '40',
@@ -124,7 +130,10 @@ class UniqueListTest extends TestCase
 
     public function testExplicitNoneOverrideDoesNotFallBackToInheritedList(): void
     {
-        $this->config->method('getValue')->willReturn(self::WEBSITE_VALUES);
+        $this->config->expects($this->once())
+            ->method('getValue')
+            ->with(UniqueList::DOTDIGITAL_LIST_CONFIG_PATH, 'website', '5')
+            ->willReturn(self::WEBSITE_VALUES);
 
         // Guests set to "None" at store scope; customers moved onto the website's guest list is fine.
         $this->model('stores', 3, [

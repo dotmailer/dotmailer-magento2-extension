@@ -30,12 +30,25 @@ class SingleOrderSyncTest extends \PHPUnit\Framework\TestCase
     private $importerCollection;
 
     /**
+     * @var \Magento\Store\Model\ResourceModel\Store
+     */
+    private $storeResource;
+
+    /**
+     * @var \Dotdigitalgroup\Email\Model\ResourceModel\Order
+     */
+    private $emailOrderResource;
+
+    /**
      * @return void
      * @throws \ReflectionException
      */
     public function setUp() :void
     {
         $this->objectManager = \Magento\TestFramework\Helper\Bootstrap::getObjectManager();
+
+        $this->storeResource = $this->objectManager->create(\Magento\Store\Model\ResourceModel\Store::class);
+        $this->emailOrderResource = $this->objectManager->create(\Dotdigitalgroup\Email\Model\ResourceModel\Order::class);
 
         $this->setApiConfigFlags([
             Config::XML_PATH_CONNECTOR_SYNC_ORDER_ENABLED => 1,
@@ -117,7 +130,7 @@ class SingleOrderSyncTest extends \PHPUnit\Framework\TestCase
     {
         /** @var  Store $store */
         $store = $this->objectManager->create(Store::class);
-        $store->load($storeId);
+        $this->storeResource->load($store, $storeId);
 
         /** @var Order $orderSync */
         $orderSync = $this->objectManager->create(Order::class);
@@ -142,7 +155,7 @@ class SingleOrderSyncTest extends \PHPUnit\Framework\TestCase
             ->setQuoteId($order->getQuoteId())
             ->setStoreId($order->getStoreId())
             ->setProcessed('0');
-        $emailOrder->save();
+        $this->emailOrderResource->save($emailOrder);
 
         return $order;
     }
@@ -174,7 +187,7 @@ class SingleOrderSyncTest extends \PHPUnit\Framework\TestCase
             ->setEmailImported('1')
             ->setModified('1');
 
-        $emailOrder->save();
+        $this->emailOrderResource->save($emailOrder);
 
         return $order;
     }

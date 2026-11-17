@@ -5,6 +5,28 @@ namespace Dotdigitalgroup\Email\Test\Integration\AbandonedCarts;
 class Fixture
 {
     /**
+     * @var \Magento\Quote\Model\ResourceModel\Quote
+     */
+    private $quoteResource;
+
+    /**
+     * @var \Magento\Quote\Model\ResourceModel\Quote\QuoteIdMask
+     */
+    private $quoteIdMaskResource;
+
+    /**
+     * @param \Magento\Quote\Model\ResourceModel\Quote $quoteResource
+     * @param \Magento\Quote\Model\ResourceModel\Quote\QuoteIdMask $quoteIdMaskResource
+     */
+    public function __construct(
+        \Magento\Quote\Model\ResourceModel\Quote $quoteResource,
+        \Magento\Quote\Model\ResourceModel\Quote\QuoteIdMask $quoteIdMaskResource
+    ) {
+        $this->quoteResource = $quoteResource;
+        $this->quoteIdMaskResource = $quoteIdMaskResource;
+    }
+
+    /**
      * @param \Magento\Framework\ObjectManagerInterface $objectManager
      * @param int $isActive
      * @param int $reservedOrderId
@@ -90,13 +112,13 @@ class Fixture
         $quote->getPayment()->setMethod('checkmo');
         $quote->setIsMultiShipping('1');
         $quote->collectTotals();
-        $quote->save();
+        $this->quoteResource->save($quote);
 
         /** @var \Magento\Quote\Model\QuoteIdMask $quoteIdMask */
         $quoteIdMask = $objectManager->create(\Magento\Quote\Model\QuoteIdMaskFactory::class)
             ->create();
         $quoteIdMask->setQuoteId($quote->getId());
         $quoteIdMask->setDataChanges(true);
-        $quoteIdMask->save();
+        $this->quoteIdMaskResource->save($quoteIdMask);
     }
 }

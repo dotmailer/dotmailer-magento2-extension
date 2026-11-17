@@ -179,7 +179,7 @@ class AbandonedCartTest extends TestCase
     {
         $this->setupAutomationModel();
         $this->setupContactModel();
-        $this->setupSubscriberModel();
+        $this->setupSubscriberModel($this->backportedSubscriberLoaderMock);
         $this->setupACRelatedModels();
 
         $this->automationModelMock->expects($this->once())
@@ -223,7 +223,7 @@ class AbandonedCartTest extends TestCase
     {
         $this->setupAutomationModel();
         $this->setupContactModel();
-        $this->setupSubscriberModel();
+        $this->setupSubscriberModel($this->backportedSubscriberLoaderMock);
         $this->setupACRelatedModels();
 
         $this->automationModelMock->expects($this->once())
@@ -255,7 +255,7 @@ class AbandonedCartTest extends TestCase
     {
         $this->setupAutomationModel();
         $this->setupContactModel();
-        $this->setupSubscriberModel();
+        $this->setupSubscriberModel($this->backportedSubscriberLoaderMock);
 
         $quoteModelMock = $this->createMock(\Magento\Quote\Model\Quote::class);
         $quoteItemModelMock = $this->createMock(\Magento\Quote\Model\Quote\Item::class);

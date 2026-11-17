@@ -174,7 +174,7 @@ class EmailcaptureTest extends TestCase
         $matcher = $this->exactly(2);
         $this->quoteMock->expects($matcher)
             ->method('__call')
-            ->willReturnCallback(function () use ($matcher, $customerEmail) {
+            ->willReturnCallback(function () use ($matcher) {
                 return match ($matcher->numberOfInvocations()) {
                     0 => ['getCustomerEmail'],
                     1 => ['setCustomerEmail'],

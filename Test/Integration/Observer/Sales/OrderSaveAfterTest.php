@@ -82,6 +82,11 @@ class OrderSaveAfterTest extends TestCase
     private $queueMessageCollectionFactory;
 
     /**
+     * @var CustomerResource
+     */
+    private $customerResource;
+
+    /**
      * @return void
      */
     public function setup() :void
@@ -90,6 +95,7 @@ class OrderSaveAfterTest extends TestCase
 
         $this->objectManager = ObjectManager::getInstance();
         $this->automationCollectionFactory = $this->objectManager->create(AutomationCollectionFactory::class);
+        $this->customerResource = $this->objectManager->create(CustomerResource::class);
         $this->contactResource = $this->objectManager->create(ContactResource::class);
         $this->contactFactory = $this->objectManager->create(ContactFactory::class);
         $this->contactCollectionFactory = $this->objectManager->create(ContactCollectionFactory::class);
@@ -286,7 +292,7 @@ class OrderSaveAfterTest extends TestCase
             ->setGender(0);
 
         $customer->isObjectNew(true);
-        $customer->save();
+        $this->customerResource->save($customer);
         $customerRegistry->remove($customer->getId());
         /** @var \Magento\JwtUserToken\Api\RevokedRepositoryInterface $revokedRepo */
         $revokedRepo = $this->objectManager->get(\Magento\JwtUserToken\Api\RevokedRepositoryInterface::class);

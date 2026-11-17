@@ -60,6 +60,9 @@ class DefaultLevelCatalogSyncerTest extends TestCase
         );
     }
 
+    /**
+     * @dataProvider getProducts
+     */
     #[DataProvider('getProducts')]
     public function testIfUserAndCatalogSyncAreEnabledNumberOfProductsGreaterThanZero($products)
     {
@@ -79,6 +82,9 @@ class DefaultLevelCatalogSyncerTest extends TestCase
         $this->assertEquals($result, $products);
     }
 
+    /**
+     * @dataProvider getProducts
+     */
     #[DataProvider('getProducts')]
     public function testIfUserIsDisabledThenSyncReturnsNull($products)
     {
@@ -97,6 +103,9 @@ class DefaultLevelCatalogSyncerTest extends TestCase
         $this->assertEmpty($result);
     }
 
+    /**
+     * @dataProvider getProducts
+     */
     #[DataProvider('getProducts')]
     public function testIfCatalogSyncIsDisabledThenSyncReturnsNull($products)
     {
@@ -115,6 +124,9 @@ class DefaultLevelCatalogSyncerTest extends TestCase
         $this->assertEmpty($result);
     }
 
+    /**
+     * @dataProvider getProducts
+     */
     #[DataProvider('getProducts')]
     public function testIfCatalogSyncAndUserAreDisabledThenSyncReturnsNull($products)
     {

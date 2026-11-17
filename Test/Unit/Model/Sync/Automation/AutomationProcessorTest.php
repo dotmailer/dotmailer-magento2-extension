@@ -145,7 +145,7 @@ class AutomationProcessorTest extends TestCase
     {
         $this->setupAutomationModel();
         $this->setupContactModel();
-        $this->setupSubscriberModel();
+        $this->setupSubscriberModel($this->backportedSubscriberLoaderMock);
 
         $this->automationModelMock->expects($this->exactly('2'))
             ->method('getAutomationType')
@@ -206,7 +206,7 @@ class AutomationProcessorTest extends TestCase
     {
         $this->setupAutomationModel();
         $this->setupContactModel();
-        $this->setupSubscriberModel();
+        $this->setupSubscriberModel($this->backportedSubscriberLoaderMock);
 
         $this->subscriberModelMock->expects($this->once())
             ->method('isSubscribed')
@@ -235,7 +235,7 @@ class AutomationProcessorTest extends TestCase
     {
         $this->setupAutomationModel();
         $this->setupContactModel();
-        $this->setupSubscriberModel();
+        $this->setupSubscriberModel($this->backportedSubscriberLoaderMock);
 
         $this->automationModelMock->expects($this->exactly('2'))
             ->method('getAutomationType')
@@ -262,7 +262,7 @@ class AutomationProcessorTest extends TestCase
     {
         $this->setupAutomationModel();
         $this->setupContactModel();
-        $this->setupSubscriberModel();
+        $this->setupSubscriberModel($this->backportedSubscriberLoaderMock);
 
         $this->automationModelMock->expects($this->exactly('2'))
             ->method('getAutomationType')

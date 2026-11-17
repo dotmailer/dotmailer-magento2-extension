@@ -32,6 +32,9 @@ class TrackingHostValidateTest extends TestCase
         );
     }
 
+    /**
+     * @dataProvider validHostProvider
+     */
     #[DataProvider('validHostProvider')]
     public function testAcceptsPermittedHosts(?string $value, string $expected): void
     {
@@ -41,6 +44,9 @@ class TrackingHostValidateTest extends TestCase
         $this->assertSame($expected, $this->model->getValue());
     }
 
+    /**
+     * @dataProvider invalidHostProvider
+     */
     #[DataProvider('invalidHostProvider')]
     public function testRejectsInvalidHosts(string $value): void
     {

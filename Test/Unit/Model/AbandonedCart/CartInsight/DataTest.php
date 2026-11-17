@@ -217,7 +217,7 @@ class DataTest extends TestCase
         $matcher = $this->exactly(3);
         $this->quoteMock->expects($this->atLeastOnce())
             ->method('__call')
-            ->willReturnCallback(function () use ($matcher, $expectedPayload) {
+            ->willReturnCallback(function () use ($matcher) {
                 return match ($matcher->numberOfInvocations()) {
                     1 => [$this->equalTo('getQuoteCurrencyCode')],
                     2 => [$this->equalTo('getSubtotal')],
@@ -288,7 +288,7 @@ class DataTest extends TestCase
         $matcher = $this->exactly(2);
         $addressMock->expects($this->atLeastOnce())
             ->method('__call')
-            ->willReturnCallback(function () use ($matcher, $expectedPayload) {
+            ->willReturnCallback(function () use ($matcher) {
                 return match ($matcher->numberOfInvocations()) {
                     1 => [$this->equalTo('getTaxAmount')],
                     2 => [$this->equalTo('getShippingAmount')]

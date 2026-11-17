@@ -5,6 +5,7 @@ namespace Dotdigitalgroup\Email\Test\Unit\Traits;
 use Dotdigitalgroup\Email\Model\ResourceModel\Automation\Collection as AutomationCollection;
 use Dotdigitalgroup\Email\Model\StatusInterface;
 use Magento\Newsletter\Model\Subscriber;
+use Dotdigitalgroup\Email\Model\Newsletter\BackportedSubscriberLoader;
 use PHPUnit\Framework\MockObject\Exception;
 
 trait AutomationProcessorTrait
@@ -55,9 +56,12 @@ trait AutomationProcessorTrait
             ->willReturn($this->contactModelMock);
     }
 
-    private function setupSubscriberModel()
+    /**
+     * @param BackportedSubscriberLoader&\PHPUnit\Framework\MockObject\MockObject $subscriberLoader
+     */
+    private function setupSubscriberModel(BackportedSubscriberLoader $subscriberLoader)
     {
-        $this->backportedSubscriberLoaderMock->expects($this->once())
+        $subscriberLoader->expects($this->once())
             ->method('loadBySubscriberEmail')
             ->willReturn($this->subscriberModelMock);
     }
