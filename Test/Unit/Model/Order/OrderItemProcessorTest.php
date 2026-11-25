@@ -137,6 +137,27 @@ class OrderItemProcessorTest extends TestCase
         $this->assertValuesForSimpleAndBundleProduct($productData);
     }
 
+    public function testQtyOverOneThousandIsNotTruncated()
+    {
+        $this->productItemMock->expects($this->atLeastOnce())
+            ->method('getProductId')
+            ->willReturn('12345');
+
+        $this->initValuesForSimpleAndBundleProducts('2000.0000');
+
+        $this->productItemMock->expects($this->atLeastOnce())
+            ->method('getProductType')
+            ->willReturn('simple');
+
+        $this->attributeMock->expects($this->atLeastOnce())
+            ->method('hasValues')
+            ->willReturn(false);
+
+        $productData = $this->orderItemProcessor->process($this->productItemMock);
+
+        $this->assertSame(2000, $productData['qty']);
+    }
+
     public function testBundleProduct()
     {
         $this->productItemMock->expects($this->atLeastOnce())
@@ -401,7 +422,7 @@ class OrderItemProcessorTest extends TestCase
         $this->assertArrayNotHasKey("child_product_attributes", $productData);
     }
 
-    private function initValuesForSimpleAndBundleProducts()
+    private function initValuesForSimpleAndBundleProducts($qtyOrdered = 1)
     {
         $this->productItemMock->expects($this->atLeastOnce())
             ->method('getProduct')
@@ -456,7 +477,7 @@ class OrderItemProcessorTest extends TestCase
 
         $this->productItemMock->expects($this->atLeastOnce())
             ->method('getQtyOrdered')
-            ->willReturn(1);
+            ->willReturn($qtyOrdered);
     }
 
     private function assertValuesForSimpleAndBundleProduct($productData)
