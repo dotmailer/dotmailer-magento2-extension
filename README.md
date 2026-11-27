@@ -101,3 +101,5 @@ Running `migrate` with no options supplied will re-run the complete data install
 You are welcome to contribute to Dotdigital for Magento! You can either:
 - Report a bug: create a [GitHub issue](https://github.com/dotmailer/dotmailer-magento2-extension/issues/new) including description, repro steps, Magento and extension version numbers
 - Request a feature on our [roadmap](https://roadmap.dotdigital.com)
+
+You are also welcome to submit a pull request, if this helps illustrate a change or fix, but please note we are unable to merge commits from external authors (i.e. who are not Dotdigital employees) owing to an organization-level ruleset in GitHub. We will always try to give some kind of credit for adopted contributions in our CHANGELOG.md.
